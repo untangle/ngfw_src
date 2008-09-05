@@ -38,21 +38,19 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
-
 import com.untangle.uvm.LanguageInfo;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.TransactionWork;
-
 import edu.emory.mathcs.backport.java.util.Collections;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Implementation of RemoteLanguageManagerImpl.
@@ -84,7 +82,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         LANGUAGES_OFFICIAL_DIR = LANGUAGES_DIR + File.separator + "official"; // place for official languages resources files
         LOCALE_DIR = "/usr/share/locale"; // place for .mo files
     }
-    
+
     RemoteLanguageManagerImpl(UvmContextImpl uvmContext) {
         this.uvmContext = uvmContext;
 
@@ -165,9 +163,9 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             }
             zis.close();
             uploadedStream.close();
-            
+
         } catch (IOException e) {
-            logger.error(e);
+            logger.error("upload failed", e);
             throw new UvmException("Upload Language Pack Failed");
         }
     }
@@ -202,6 +200,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private void compileMoFile(ZipEntry entry) throws IOException, UvmException {
         boolean success = true;
         try {
+            System.out.println("NAME: " + entry.getName());
             String tokens[] = entry.getName().split(File.separator);
             String lang = tokens[0];
             String moduleName = tokens[1].substring(0, tokens[1].lastIndexOf("."));
@@ -252,7 +251,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             }
             in.close();
         } catch (IOException e) {
-//          e.printStackTrace();
+            logger.warn(exn, exn)
         }
 
         return languages;
