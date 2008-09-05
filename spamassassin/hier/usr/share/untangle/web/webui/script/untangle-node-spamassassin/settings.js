@@ -19,6 +19,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             this.buildRBLEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.emailPanel, this.gridEventLog, this.gridRBLEventLog]);
+            this.tabs.activate(this.emailPanel);
+            
+            Ext.getCmp('spamassassin_smtpStrengthValue').setContainerVisible(this.isCustomStrength(this.getBaseSettings().smtpConfig.strength));
+            Ext.getCmp('spamassassin_pop3StrengthValue').setContainerVisible(this.isCustomStrength(this.getBaseSettings().popConfig.strength));
+            Ext.getCmp('spamassassin_imapStrengthValue').setContainerVisible(this.isCustomStrength(this.getBaseSettings().imapConfig.strength));
         },
         lookup : function(needle, haystack1, haystack2) {
             for (var i = 0; i < haystack1.length; i++) {
@@ -48,16 +53,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     ['BLOCK', this.i18n._('Block')], ['QUARANTINE', this.i18n._('Quarantine')]];
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
             this.strengthsData = [[50, this.i18n._('Low')], [43, this.i18n._('Medium')], [35, this.i18n._('High')],
-                    [33, this.i18n._('Very High')], [30, this.i18n._('Extreme')], [0, this.i18n._('Custom')],];
+                    [33, this.i18n._('Very High')], [30, this.i18n._('Extreme')], [0, this.i18n._('Custom')]];
                     
-            var strengthValidator = function(fieldValue) {
-                if( 30 <= fieldValue && fieldValue <= 100) {
-                    return true;
-                } else {
-                    return this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'); 
-                }
-            }.createDelegate(this);
-                        
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
                 name : 'Email',
@@ -68,10 +65,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     xtype : 'fieldset',
                     title : this.i18n._('SMTP'),
                     autoHeight : true,
-                    defaults : {
-                        width : 210,
-                        labelStyle: "width:160px;"
-                    },
                     items : [{
                         xtype : 'checkbox',
                         name : 'Scan SMTP',
@@ -87,8 +80,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                         xtype : 'checkbox',
-                        name : 'Enable SMTP greylisting',
-                        boxLabel : this.i18n._('Enable SMTP greylisting'),
+                        name : 'Enable SMTP tarpitting',
+                        boxLabel : this.i18n._('Enable SMTP tarpitting'),
                         hideLabel : true,
                         checked : this.getBaseSettings().smtpConfig.throttle,
                         listeners : {
@@ -99,49 +92,64 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     }, {
-                        xtype : 'combo',
-                        name : 'SMTP Strength',
-                        editable : false,
-                        store : this.strengthsData,
-                        fieldLabel : this.i18n._('Strength'),
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
-                        value : this.getStrengthSelectionValue(this.getBaseSettings().smtpConfig.strength),
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    var customCmp = Ext.getCmp('spamassassin_smtpStrengthValue');
-                                    if (newValue == 0) {
-                                        customCmp.enable();
-                                    } else {
-                                        customCmp.disable();
-                                        this.getBaseSettings().smtpConfig.strength = newValue;
+                        border: false,
+                        layout:'column',
+                        autoWidth : true,
+                        items: [{
+                            border: false,
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'combo',
+                                name : 'SMTP Strength',
+                                editable : false,
+                                store : this.strengthsData,
+                                fieldLabel : this.i18n._('Strength'),
+                                width : 200,
+                                labelStyle: "width:150px;",
+                                mode : 'local',
+                                triggerAction : 'all',
+                                listClass : 'x-combo-list-small',
+                                value : this.getStrengthSelectionValue(this.getBaseSettings().smtpConfig.strength),
+                                listeners : {
+                                    "select" : {
+                                        fn : function(elem, record) {
+                                            var customCmp = Ext.getCmp('spamassassin_smtpStrengthValue');
+                                            if (record.data.value == 0) {
+                                                customCmp.showContainer();
+                                            } else {
+                                                customCmp.hideContainer();
+                                                this.getBaseSettings().smtpConfig.strength = record.data.value;
+                                            }
+                                            customCmp.setValue(this.getBaseSettings().smtpConfig.strength);
+                                        }.createDelegate(this)
                                     }
-                                    customCmp.setValue(this.getBaseSettings().smtpConfig.strength);
-                                }.createDelegate(this)
-                            }
-                        }
-                    }, {
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Strength Value (100-30)'),
-                        name : 'SMTP Strength Value',
-                        id: 'spamassassin_smtpStrengthValue',
-                        value : this.getBaseSettings().smtpConfig.strength,
-                        width: 50,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        allowBlank : false,
-                        blankText : this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
-                        disabled : !this.isCustomStrength(this.getBaseSettings().smtpConfig.strength),
-                        validator : strengthValidator,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getBaseSettings().smtpConfig.strength = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                                }
+                            }]
+                        },{
+                            border: false,
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'numberfield',
+                                fieldLabel : this.i18n._('Strength Value'),
+                                name : 'SMTP Strength Value',
+                                id: 'spamassassin_smtpStrengthValue',
+                                value : this.getBaseSettings().smtpConfig.strength,
+                                width : 50,
+                                //labelStyle: "width:150px;",
+                                allowDecimals: false,
+                                allowBlank : false,
+                                blankText : this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
+                                listeners : {
+                                    "change" : {
+                                        fn : function(elem, newValue) {
+                                            this.getBaseSettings().smtpConfig.strength = newValue;
+                                        }.createDelegate(this)
+                                    }
+                                }
+                            }]
+                        }]
                     }, {
                         xtype : 'combo',
                         name : 'SMTP Action',
@@ -153,6 +161,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         valueField : 'key',
                         displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
+                        width : 200,
+                        labelStyle: "width:150px;",
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
@@ -169,10 +179,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     xtype : 'fieldset',
                     title : this.i18n._('POP3'),
                     autoHeight : true,
-                    defaults : {
-                        width : 210,
-                        labelStyle: "width:160px;"
-                    },
                     items : [{
                         xtype : 'checkbox',
                         name : 'Scan POP3',
@@ -187,49 +193,63 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     }, {
-                        xtype : 'combo',
-                        name : 'POP3 Strength',
-                        editable : false,
-                        store : this.strengthsData,
-                        fieldLabel : this.i18n._('Strength'),
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
-                        value : this.getStrengthSelectionValue(this.getBaseSettings().popConfig.strength),
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    var customCmp = Ext.getCmp('spamassassin_pop3StrengthValue');
-                                    if (newValue == 0) {
-                                        customCmp.enable();
-                                    } else {
-                                        customCmp.disable();
-                                        this.getBaseSettings().popConfig.strength = newValue;
+                        border: false,
+                        layout:'column',
+                        autoWidth : true,
+                        items: [{
+                            border: false,
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'combo',
+                                name : 'POP3 Strength',
+                                editable : false,
+                                store : this.strengthsData,
+                                fieldLabel : this.i18n._('Strength'),
+                                width : 200,
+                                labelStyle: "width:150px;",
+                                mode : 'local',
+                                triggerAction : 'all',
+                                listClass : 'x-combo-list-small',
+                                value : this.getStrengthSelectionValue(this.getBaseSettings().popConfig.strength),
+                                listeners : {
+                                    "select" : {
+                                        fn : function(elem, record) {
+                                            var customCmp = Ext.getCmp('spamassassin_pop3StrengthValue');
+                                            if (record.data.value == 0) {
+                                                customCmp.showContainer();
+                                            } else {
+                                                customCmp.hideContainer();
+                                                this.getBaseSettings().popConfig.strength = record.data.value;
+                                            }
+                                            customCmp.setValue(this.getBaseSettings().popConfig.strength);
+                                        }.createDelegate(this)
                                     }
-                                    customCmp.setValue(this.getBaseSettings().popConfig.strength);
-                                }.createDelegate(this)
-                            }
-                        }
-                    }, {
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Strength Value (100-30)'),
-                        name : 'POP3 Strength Value',
-                        id: 'spamassassin_pop3StrengthValue',
-                        value : this.getBaseSettings().popConfig.strength,
-                        width: 50,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        allowBlank : false,
-                        blankText : this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
-                        disabled : !this.isCustomStrength(this.getBaseSettings().popConfig.strength),
-                        validator : strengthValidator,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getBaseSettings().popConfig.strength = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                                }
+                            }]
+                        },{
+                            border: false,
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'numberfield',
+                                fieldLabel : this.i18n._('Strength Value'),
+                                name : 'POP3 Strength Value',
+                                id: 'spamassassin_pop3StrengthValue',
+                                value : this.getBaseSettings().popConfig.strength,
+                                width: 50,
+                                allowDecimals: false,
+                                allowBlank : false,
+                                blankText : this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
+                                listeners : {
+                                    "change" : {
+                                        fn : function(elem, newValue) {
+                                            this.getBaseSettings().popConfig.strength = newValue;
+                                        }.createDelegate(this)
+                                    }
+                                }
+                            }]
+                        }]
                     }, {
                         xtype : 'combo',
                         name : 'POP3 Action',
@@ -241,6 +261,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         valueField : 'key',
                         displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
+                        width : 200,
+                        labelStyle: "width:150px;",
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
@@ -257,10 +279,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     xtype : 'fieldset',
                     title : this.i18n._('IMAP'),
                     autoHeight : true,
-                    defaults : {
-                        width : 210,
-                        labelStyle: "width:160px;"
-                    },
                     items : [{
                         xtype : 'checkbox',
                         name : 'Scan IMAP',
@@ -276,49 +294,63 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     }, {
-                        xtype : 'combo',
-                        name : 'IMAP Strength',
-                        editable : false,
-                        store : this.strengthsData,
-                        fieldLabel : this.i18n._('Strength'),
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
-                        value : this.getStrengthSelectionValue(this.getBaseSettings().imapConfig.strength),
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    var customCmp = Ext.getCmp('spamassassin_imapStrengthValue');
-                                    if (newValue == 0) {
-                                        customCmp.enable();
-                                    } else {
-                                        customCmp.disable();
-                                        this.getBaseSettings().imapConfig.strength = newValue;
+                        border: false,
+                        layout:'column',
+                        autoWidth : true,
+                        items: [{
+                            border: false,
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'combo',
+                                name : 'IMAP Strength',
+                                editable : false,
+                                store : this.strengthsData,
+                                fieldLabel : this.i18n._('Strength'),
+                                width : 200,
+                                labelStyle: "width:150px;",
+                                mode : 'local',
+                                triggerAction : 'all',
+                                listClass : 'x-combo-list-small',
+                                value : this.getStrengthSelectionValue(this.getBaseSettings().imapConfig.strength),
+                                listeners : {
+                                    "select" : {
+                                        fn : function(elem, record) {
+                                            var customCmp = Ext.getCmp('spamassassin_imapStrengthValue');
+                                            if (record.data.value == 0) {
+                                                customCmp.showContainer();
+                                            } else {
+                                                customCmp.hideContainer();
+                                                this.getBaseSettings().imapConfig.strength = record.data.value;
+                                            }
+                                            customCmp.setValue(this.getBaseSettings().imapConfig.strength);
+                                        }.createDelegate(this)
                                     }
-                                    customCmp.setValue(this.getBaseSettings().imapConfig.strength);
-                                }.createDelegate(this)
-                            }
-                        }
-                    }, {
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Strength Value (100-30)'),
-                        name : 'IMAP Strength Value',
-                        id: 'spamassassin_imapStrengthValue',
-                        value : this.getBaseSettings().imapConfig.strength,
-                        width: 50,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        allowBlank : false,
-                        blankText : this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
-                        disabled : !this.isCustomStrength(this.getBaseSettings().imapConfig.strength),
-                        validator : strengthValidator,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getBaseSettings().imapConfig.strength = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
+                                }
+                            }]
+                        },{
+                            border: false,
+                            columnWidth:.5,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'numberfield',
+                                fieldLabel : this.i18n._('Strength Value'),
+                                name : 'IMAP Strength Value',
+                                id: 'spamassassin_imapStrengthValue',
+                                value : this.getBaseSettings().imapConfig.strength,
+                                width: 50,
+                                allowDecimals: false,
+                                allowBlank : false,
+                                blankText : this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
+                                listeners : {
+                                    "change" : {
+                                        fn : function(elem, newValue) {
+                                            this.getBaseSettings().imapConfig.strength = newValue;
+                                        }.createDelegate(this)
+                                    }
+                                }
+                            }]
+                        }]
                     }, {
                         xtype : 'combo',
                         name : 'IMAP Action',
@@ -330,6 +362,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         valueField : 'key',
                         displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
+                        width : 200,
+                        labelStyle: "width:150px;",
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
@@ -517,7 +551,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 (cmp = Ext.getCmp('spamassassin_pop3StrengthValue')).isValid() &&
                 (cmp = Ext.getCmp('spamassassin_imapStrengthValue')).isValid());
             if (!valid) {
-                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._('Strength Value must be a number in range 100-30. Smaller value is higher strength.'),
+                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
                     function () {
                         this.tabs.activate(this.emailPanel);
                         cmp.focus(true);
