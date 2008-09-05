@@ -151,7 +151,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 			   buttons: {ok:this.i18n._('More Info'), cancel:true},
 				fn: function(btn){
 					if(btn=='ok'){
-					    var app = Ung.AppItem.getAppForNode("untangle-node-policy");
+					    var app = Ung.AppItem.getApp("untangle-libitem-policy");
 					    if (app != null && app.libItem != null) {
 					    	app.linkToStoreFn();
 					    }
