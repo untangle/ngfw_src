@@ -117,7 +117,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     public MessageQueue getMessageQueue()
     {
-        return getMessageQueue((Long)null);
+        return getMessageQueue(null);
     }
 
     public MessageQueue getMessageQueue(Long key)
@@ -130,8 +130,9 @@ class MessageManagerImpl implements LocalMessageManager
         return new MessageQueue(messages, stats, systemStats);
     }
 
-    public MessageQueue getMessageQueue(Policy p)
+    public MessageQueue getMessageQueueZ(Policy p)
     {
+        System.out.println("HI");
         return getMessageQueue(null, p);
     }
 
@@ -284,6 +285,15 @@ class MessageManagerImpl implements LocalMessageManager
                 }
             }
 
+            // XXX remove when keyless queue not allowed
+            List<Message> l = messages.get(null);
+            if (null == l) {
+                l = new ArrayList<Message>();
+                messages.put(null, l);
+            }
+            l.add(m);
+            // XXX remove when keyless queue not allowed
+
             for (Long k : removals) {
                 messages.remove(k);
                 lastMessageAccess.remove(k);
@@ -347,6 +357,7 @@ class MessageManagerImpl implements LocalMessageManager
             }
         }
 
+        System.out.println("MESSAGES: " + l);
         return l;
     }
 
@@ -415,8 +426,6 @@ class MessageManagerImpl implements LocalMessageManager
         public void run()
         {
             Map<String, Object> m = new HashMap<String, Object>();
-
-        //System.out.println("Running SystemStatCollector");
 
             try {
                 readMeminfo(m);

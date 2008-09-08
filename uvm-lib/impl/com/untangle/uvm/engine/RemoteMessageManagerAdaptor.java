@@ -50,9 +50,9 @@ class RemoteMessageManagerAdaptor implements RemoteMessageManager
         return lbm.getMessageQueue(key);
     }
 
-    public MessageQueue getMessageQueue(Policy p)
+    public MessageQueue getMessageQueueZ(Policy p)
     {
-        return lbm.getMessageQueue(p);
+        return lbm.getMessageQueueZ(p);
     }
 
     public MessageQueue getMessageQueue(Long key, Policy p)
@@ -99,5 +99,4 @@ class RemoteMessageManagerAdaptor implements RemoteMessageManager
     {
         return lbm.getMessageKey();
     }
-
 }

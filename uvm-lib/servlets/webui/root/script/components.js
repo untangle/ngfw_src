@@ -105,8 +105,8 @@ Ung.Util= {
     },
     interfaceStore:null,
     getInterfaceStore : function() {
-    	if(this.interfaceStore==null) {
-    		this.interfaceStore=new Ext.data.SimpleStore({
+        if(this.interfaceStore==null) {
+            this.interfaceStore=new Ext.data.SimpleStore({
                 fields : ['key', 'name'],
                 data :[
                     ["any", i18n._("any")],
@@ -117,8 +117,8 @@ Ung.Util= {
                     ["less_trusted", i18n._("Less Trusted")]
                 ]
             });
-    	}
-    	return this.interfaceStore;
+        }
+        return this.interfaceStore;
     },
     protocolStore:null,
     getProtocolStore : function() {
@@ -144,7 +144,7 @@ Ung.Util= {
             return d.format("H:i");
         }
     },
-    
+
     // Test if there is data in the specified object
     hasData : function(obj) {
         var hasData = false;
@@ -154,7 +154,7 @@ Ung.Util= {
         }
         return hasData;
     },
-    
+
     // Get the save list from the changed data
     getSaveList : function(changedData, recordJavaClass) {
         var added = [];
@@ -196,7 +196,7 @@ Ung.Util= {
             grid.store.proxy.data = storeData;
         }
     }
-    
+
 };
 
 Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
@@ -556,11 +556,11 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         Ung.AppItem.superclass.constructor.apply(this, arguments);
     },
     onRender : function(container, position) {
-    	if(!this.isValid) {
-    		return;
-    	}
+        if(!this.isValid) {
+            return;
+        }
         Ung.AppItem.superclass.onRender.call(this, container, position);
-        
+
         if (this.name && this.getEl()) {
             this.getEl().set({
                 'name' : this.name
@@ -592,14 +592,14 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             waitDefault : function( updateText) {
                 if (!this.isWaiting()) {
                     this.wait({
-                    	text:  updateText,
+                        text:  updateText,
                         interval : 100,
                         increment : 15
                     });
                 }
             }
         });
-        
+
         this.buttonBuy = Ext.get("buttonBuy_" + this.getId());
         this.buttonBuy.setVisible(false);
         this.actionEl = Ext.get("action_" + this.getId());
@@ -607,7 +607,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.subCmps.push(this.progressBar);
         if(this.libItem!=null && this.node==null) { //libitem
             this.getEl().on("click", this.linkToStoreFn, this);
-        	//this.actionEl.on("click", this.linkToStoreFn, this);
+            //this.actionEl.on("click", this.linkToStoreFn, this);
             this.actionEl.insertHtml("afterBegin", i18n._("More Info"));
             this.actionEl.addClass("iconInfo");
         } else if(this.node!=null) { //node
@@ -693,12 +693,12 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     },
     // before Destroy
     beforeDestroy : function() {
-    	this.actionEl.removeAllListeners();
+        this.actionEl.removeAllListeners();
         this.buttonBuy.removeAllListeners();
         Ext.each(this.subCmps, Ext.destroy);
         Ung.AppItem.superclass.beforeDestroy.call(this);
     },
-    
+
     // display Buttons xor Progress barr
     displayButtonsOrProgress : function(displayButtons) {
         this.actionEl.setVisible(displayButtons);
@@ -715,9 +715,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     },
     // open store page in a new frame
     linkToStoreFn : function(e) {
-    	if (e!=null) {
-	        e.stopEvent();
-    	}
+        if (e!=null) {
+            e.stopEvent();
+        }
         if(!this.progressBar.hidden) {
             return;
         }
@@ -751,7 +751,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     installNodeFn : function(e) {
         e.preventDefault();
         if(!this.progressBar.hidden) {
-        	return;
+            return;
         }
         if (e.shiftKey) { // uninstall App
             main.unactivateNode(this.node);
@@ -1002,10 +1002,10 @@ Ung.Node = Ext.extend(Ext.Component, {
     updateBlingers : function() {
         if (this.powerOn && this.stats) {
             if(this.activityBlinger!=null) {
-            	this.activityBlinger.update(this.stats);
+                this.activityBlinger.update(this.stats);
             }
             if(this.systemBlinger!=null) {
-            	this.systemBlinger.update(this.stats);
+                this.systemBlinger.update(this.stats);
             }
         } else {
             this.resetBlingers();
@@ -1046,7 +1046,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     // on click help
     onHelpAction : function() {
-    	main.openHelp(this.md.displayName.toLowerCase().replace(/ /g,"_"));
+        main.openHelp(this.md.displayName.toLowerCase().replace(/ /g,"_"));
     },
     // on click settings
     onSettingsAction : function(fnCallback) {
@@ -1216,11 +1216,11 @@ Ung.MessageManager = {
         this.started = false;
     },
     run : function () {
-    	if (!this.cycleCompleted) {
+        if (!this.cycleCompleted) {
             return;
         }
         this.cycleCompleted = false;
-        rpc.messageManager.getMessageQueue(function(result, exception) {
+        rpc.messageManager.getMessageQueueZ(function(result, exception) {
            if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
                     this.cycleCompleted = true;
@@ -1248,16 +1248,16 @@ Ung.MessageManager = {
                             }.createDelegate(this),msg.mackageDesc.name, policy);
                             //Ung.MoveFromStoreToToolboxThread.process(msg.mackageDesc);
                         } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
-    
+
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
-                    		var node=main.getNode(msg.nodeDesc.mackageDesc.name)
+                            var node=main.getNode(msg.nodeDesc.mackageDesc.name)
                             if(!node) {
                                 hasNodeInstantiated=true;
                                 var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
                                 main.nodes.push(node);
                                 main.addNode(node, true);
-                            } 
-                        	main.startNode(Ung.Node.getCmp(node.tid));
+                            }
+                            main.startNode(Ung.Node.getCmp(node.tid));
                         } else  {
                         }
                     }
@@ -1276,10 +1276,10 @@ Ung.MessageManager = {
                 }
                 //aaa=messageQueue.stats.map["10"].activities.map //for test
             } catch (err) {
-            	Ext.MessageBox.alert("Exception in MessageManager", err.message);
+                Ext.MessageBox.alert("Exception in MessageManager", err.message);
             }
-           
-           
+
+
         }.createDelegate(this), rpc.currentPolicy);
     }
     /*,
@@ -1325,9 +1325,9 @@ Ung.MessageManager = {
     */
 };
 Ung.SystemStats = Ext.extend(Ext.Component, {
-	autoEl : 'div',
-	renderTo: "rack_list",
-	constructor : function(config) {
+    autoEl : 'div',
+    renderTo: "rack_list",
+    constructor : function(config) {
         this.id = "system_stats";
         Ung.SystemStats.superclass.constructor.apply(this, arguments);
     },
@@ -1345,7 +1345,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="disk"><div name="disk_value"></div></div>'
         ];
         this.getEl().insertHtml("afterBegin", contentSystemStatsArr.join(''));
-        
+
         //network tooltip
         var networkArr=[
             '<div class="title">'+i18n._("RX Speed:")+'</div>',
@@ -1399,7 +1399,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             }
         });
         this.cpuToolTip.render(Ext.getBody());
-        
+
         //memory tooltip
         var memoryArr=[
             '<div class="title">'+i18n._("Memory Usage:")+'</div>',
@@ -1428,7 +1428,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             }
         });
         this.memoryToolTip.render(Ext.getBody());
-        
+
         //disk tooltip
         var diskArr=[
             '<div class="title">'+i18n._("Total Disk Space:")+'</div>',
@@ -1473,7 +1473,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=data_received]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=data_sent]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=total_throughput]").dom.innerHTML="TODO";
-            
+
         }
         if(this.cpuToolTip.rendered) {
             var toolTipEl=this.cpuToolTip.getEl();
@@ -1519,16 +1519,16 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=disk_reads_out]").dom.innerHTML=stats.map.diskReads;
             toolTipEl.child("span[name=data_read]").dom.innerHTML=stats.map.diskReadsPerSecond;
             toolTipEl.child("span[name=data_write]").dom.innerHTML=stats.map.diskWritesPerSecond;
-            
+
         }
     },
     reset : function() {
-    }    
+    }
 });
 
 // Activity Blinger Class
 Ung.ActivityBlinger = Ext.extend(Ext.Component, {
-	autoEl: "div",
+    autoEl: "div",
     parentId : null,
     bars : null,
     lastValues : null,
@@ -1538,8 +1538,8 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
         Ung.ActivityBlinger.superclass.constructor.apply(this, arguments);
     },
     onRender : function(container, position) {
-    	Ung.ActivityBlinger.superclass.onRender.call(this, container, position);
-    	this.getEl().addClass("activityBlinger")
+        Ung.ActivityBlinger.superclass.onRender.call(this, container, position);
+        this.getEl().addClass("activityBlinger")
         var templateHTML = Ung.ActivityBlinger.template.applyTemplate({
             'id' : this.getId(),
             'blingerName' : i18n._("activity")
@@ -1604,7 +1604,7 @@ Ext.ComponentMgr.registerType('ungActivityBlinger', Ung.ActivityBlinger);
 
 // System Blinger Class
 Ung.SystemBlinger = Ext.extend(Ext.Component, {
-	autoEl:"div",
+    autoEl:"div",
     parentId : null,
     data : null,
     byteCountCurrent : null,
@@ -1636,24 +1636,24 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         var blingerBoxEl=Ext.get("blingerBox_" + this.getId());
         blingerBoxEl.insertHtml("afterBegin", out.join(""));
         this.buildActiveMetrics();
-        
+
         blingerBoxEl.on("click", this.showBlingerSettings , this);
-        
+
     },
     buildActiveMetrics : function () {
-    	var nodeCmp = Ext.getCmp(this.parentId);
-    	var activeMetrics=nodeCmp.blingers.activeMetrics.list;
-    	if(activeMetrics.length>4) {
-    		Ext.MessageBox.alert(i18n._("Failed"), String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
-    	}
-    	var metricsLen=Math.min(activeMetrics.length,4);
+        var nodeCmp = Ext.getCmp(this.parentId);
+        var activeMetrics=nodeCmp.blingers.activeMetrics.list;
+        if(activeMetrics.length>4) {
+            Ext.MessageBox.alert(i18n._("Failed"), String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
+        }
+        var metricsLen=Math.min(activeMetrics.length,4);
         for(var i=0; i<metricsLen;i++) {
-        	var activeMetric=activeMetrics[i];
+            var activeMetric=activeMetrics[i];
             for(var j=0;j<nodeCmp.blingers.metricDescs.list.length;j++) {
                 var metric=nodeCmp.blingers.metricDescs.list[j];
                 if(activeMetric.name==metric.name) {
-                	activeMetric.metricDesc=metric;
-                	activeMetric.index=i;
+                    activeMetric.metricDesc=metric;
+                    activeMetric.index=i;
                     var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
                     var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
                     nameDiv.innerHTML = i18n._(metric.displayName);
@@ -1664,14 +1664,14 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
             }
         }
         for(var i=activeMetrics.length; i<4;i++) {
-        	var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
+            var nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
             var valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
             nameDiv.innerHTML = "&nbsp;";
             nameDiv.style.display="none";
             valueDiv.innerHTML = "&nbsp;";
             valueDiv.style.display="none";
         }
-        
+
     },
     showBlingerSettings : function() {
         var nodeCmp = Ext.getCmp(this.parentId);
@@ -1705,7 +1705,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
                                 if(checked) {
                                     if(itemIndex==-1) {
                                         //add element
-                                        this.tempMetrics.push(elem.dataIndex); 
+                                        this.tempMetrics.push(elem.dataIndex);
                                     }
                                 } else {
                                     if(itemIndex!=-1) {
@@ -1713,7 +1713,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
                                         this.tempMetrics.splice(itemIndex,1);
                                     }
                                 }
-                                
+
                             }.createDelegate(this)
                         }
                     }
@@ -1727,7 +1727,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
                 items: configItems,
                 autoScroll : true,
                 draggable : true,
-                resizable : true,                   
+                resizable : true,
                 renderTo : 'container',
                 buttons: [{
                     name : 'Ok',
@@ -1752,10 +1752,10 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
                     if(sub>0) {
                         this.setPosition( pos[0],pos[1]-sub);
                     }
-                }              
+                }
             });
         }
-        
+
         var activeMetrics=nodeCmp.blingers.activeMetrics.list;
         for(var i=0;i<this.configWin.items.length;i++) {
             this.configWin.items.get(i).setValue(false);
@@ -1772,21 +1772,21 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         this.configWin.show();
     },
     updateActiveMetrics : function() {
-    	var activeMetrics=[];
-    	var nodeCmp = Ext.getCmp(this.parentId);
-    	for(var i=0; i<this.tempMetrics.length;i++) {
-    		for(var j=0;j<nodeCmp.blingers.metricDescs.list.length;j++) {
+        var activeMetrics=[];
+        var nodeCmp = Ext.getCmp(this.parentId);
+        for(var i=0; i<this.tempMetrics.length;i++) {
+            for(var j=0;j<nodeCmp.blingers.metricDescs.list.length;j++) {
                 var metric=nodeCmp.blingers.metricDescs.list[j];
                 if(this.tempMetrics[i]==metric.name) {
-                	activeMetrics.push({
-                	   javaClass : "com.untangle.uvm.message.ActiveStat",
-                	   name : metric.name,
-                	   interval: "SINCE_MIDNIGHT"
-                	});
+                    activeMetrics.push({
+                       javaClass : "com.untangle.uvm.message.ActiveStat",
+                       name : metric.name,
+                       interval: "SINCE_MIDNIGHT"
+                    });
                 }
-    		}
-    	}
-    	rpc.messageManager.setActiveMetrics(function(result, exception) {
+            }
+        }
+        rpc.messageManager.setActiveMetrics(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                 return;
@@ -1795,21 +1795,21 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
             nodeCmp.blingers.activeMetrics.list=activeMetrics;
             this.buildActiveMetrics();
         }.createDelegate(this),nodeCmp.Tid,{javaClass:"java.util.List", list:activeMetrics});
-    	
+
     },
     update : function(stats) {
         // UPDATE COUNTS
-    	var nodeCmp = Ext.getCmp(this.parentId);
-    	var activeMetrics=nodeCmp.blingers.activeMetrics.list;
+        var nodeCmp = Ext.getCmp(this.parentId);
+        var activeMetrics=nodeCmp.blingers.activeMetrics.list;
         for (var i = 0; i < activeMetrics.length; i++) {
-        	var activeMetric=activeMetrics[i];
-        	var newValue="&nbsp;"
-        	if(stats.metrics.map[activeMetric.name]!=null) {
-        		newValue=stats.metrics.map[activeMetric.name].count;
-        		if(activeMetric.metricDesc!=null && activeMetric.metricDesc.unit!=null) {
-        			newValue +=activeMetric.metricDesc.unit;
-        		}
-        	}
+            var activeMetric=activeMetrics[i];
+            var newValue="&nbsp;"
+            if(stats.metrics.map[activeMetric.name]!=null) {
+                newValue=stats.metrics.map[activeMetric.name].count;
+                if(activeMetric.metricDesc!=null && activeMetric.metricDesc.unit!=null) {
+                    newValue +=activeMetric.metricDesc.unit;
+                }
+            }
             var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + activeMetric.index);
             if(valueDiv!=null) {
                 valueDiv.innerHTML = newValue;
@@ -2086,7 +2086,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // called when the component is initialized
     initComponent : function() {
         this.rpc = {};
-        
+
         if (this.title == null) {
             this.title = i18n._('Event Log');
         }
@@ -2156,12 +2156,12 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                     var repList = this.rpc.repositoryDescs.list;
                     var displayStyle="";
                     if(repList.length==1) {
-                    	displayStyle="display:none;";
+                        displayStyle="display:none;";
                     }
                     var out = [];
                     out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.tid
                             + '" style="'+displayStyle+'">');
-                    
+
                     for (var i = 0; i < repList.length; i++) {
                         var repDesc = repList[i];
                         var selOpt = (i === 0) ? "selected" : "";
@@ -2317,7 +2317,7 @@ Ung.ButtonsWindow = Ext.extend(Ung.Window, {
     },
     // to override
     initButtons: function() {
-    	
+
     },
     // the cancel action
     // to override
@@ -2428,7 +2428,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
 //            })
 //        }
 //        this.i18n = Ung.i18nModuleInstances[config.name];
-    	// for config elements we have the untangle-libuvm translation map
+        // for config elements we have the untangle-libuvm translation map
         this.i18n = i18n;
         this.rpc = {};
         Ung.ConfigWin.superclass.constructor.apply(this, arguments);
@@ -2527,9 +2527,9 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
 // update window
 // has the content and 3 standard buttons: help, cancel, Update
 Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
-	hasHelp : false,
+    hasHelp : false,
     initButtons : function() {
-    	if (this.hasHelp) {
+        if (this.hasHelp) {
             this.subCmps.push(new Ext.Button({
                 name : 'Help',
                 renderTo : 'button_left_' + this.getId(),
@@ -2539,7 +2539,7 @@ Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
                     this.helpAction();
                 }.createDelegate(this)
             }));
-    	}
+        }
         this.subCmps.push(new Ext.Button({
             name : 'Cancel',
             renderTo : 'button_inner_right_' + this.getId(),
@@ -2667,7 +2667,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     },
     // populate is called whent a record is edited, tot populate the edit window
     populate : function(record, addMode) {
-    	this.addMode=addMode;
+        this.addMode=addMode;
         this.record = record;
         this.initialRecordData = Ext.encode(record.data);
         for (var i = 0; i < this.inputLines.length; i++) {
@@ -2703,7 +2703,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                     }
                 }
                 if(this.addMode) {
-                	    this.grid.getStore().insert(0, [this.record]);
+                        this.grid.getStore().insert(0, [this.record]);
                         this.grid.updateChangedData(this.record, "added");
                 }
             }
@@ -2760,8 +2760,8 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
             } else {
                 var args = [this.errorHandler.createDelegate(obj)].
                             concat(this.rpcFnArgs).
-                                concat([params.start ? params.start : 0, 
-                                    params.limit ? params.limit : this.totalRecords != null ? this.totalRecords : 2147483647, 
+                                concat([params.start ? params.start : 0,
+                                    params.limit ? params.limit : this.totalRecords != null ? this.totalRecords : 2147483647,
                                     sortColumns]);
                 this.rpcFn.apply(this, args);
             }
@@ -2945,7 +2945,7 @@ Ext.grid.EditColumn=Ext.extend(Ext.grid.IconColumn, {
         }
         Ext.grid.EditColumn.superclass.constructor.call(this);
     },
-	iconClass: 'iconEditRow',
+    iconClass: 'iconEditRow',
     handle : function(record) {
         this.grid.editHandler(record);
     }
@@ -3034,7 +3034,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     // force paginate, even if the totalRecords is smaller than minPaginateCount
     forcePaginate : false,
     // paginate the grid by default
-    paginated: true,    
+    paginated: true,
     // javaClass of the record, used in save function to create correct json-rpc
     // object
     recordJavaClass : null,
@@ -3050,16 +3050,16 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     addedId : 0,
     generatedId:1,
     loadMask: null,
-    
+
 
     initComponent : function() {
         this.changedData = {};
         if(this.loadMask===null) {
-           this.loadMask={msg: i18n._("Loading ...")} ;	
+           this.loadMask={msg: i18n._("Loading ...")} ;
         }
         if (this.hasReorder) {
-        	this.enableDragDrop = true;
-        	this.selModel= new Ext.grid.RowSelectionModel({singleSelect:true});
+            this.enableDragDrop = true;
+            this.selModel= new Ext.grid.RowSelectionModel({singleSelect:true});
             this.dropConfig= {
                 appendOnly:true
             };
@@ -3088,13 +3088,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.columns.push(deleteColumn);
         }
         if(this.autoGenerateId && this.fields!=null) {
-        	this.fields.push({
-        	    name: 'id',
-        	    mapping: null,
-        	    convert : function(val, rec) {
+            this.fields.push({
+                name: 'id',
+                mapping: null,
+                convert : function(val, rec) {
                     return this.generatedId++;
                 }.createDelegate(this)
-        	})
+            })
         }
         if (this.proxyRpcFn) {
             this.store = new Ext.data.Store({
@@ -3171,7 +3171,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             });
         }
         if(this.rowEditor!=null) {
-        	this.rowEditor.render('container');
+            this.rowEditor.render('container');
         }
         if (this.hasAdd) {
             this.tbar = [{
@@ -3225,14 +3225,14 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         return this.forcePaginate || (this.totalRecords != null && this.totalRecords >= this.minPaginateCount)
     },
     clearChangedData : function () {
-    	this.changedData = {};
+        this.changedData = {};
     },
     beforeDestroy : function() {
-    	if(this.rowEditor) {
+        if(this.rowEditor) {
             Ext.destroy(this.rowEditor);
-    	}
+        }
         Ung.EditorGrid.superclass.beforeDestroy.call(this);
-    },    
+    },
     afterRender : function() {
         Ung.EditorGrid.superclass.afterRender.call(this);
         if(this.hasReorder) {
@@ -3243,23 +3243,23 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     var sm = this.getSelectionModel();
                     var rows = sm.getSelections();
                     var cindex = dd.getDragData(e).rowIndex;    // Here is need
-        
+
                     var dsGrid = this.getStore();
-                    
+
                     for(i = 0; i < rows.length; i++) {
                         rowData = dsGrid.getById(rows[i].id);
                         dsGrid.remove(dsGrid.getById(rows[i].id));
                         dsGrid.insert(cindex, rowData);
                     };
-        
+
                     this.getView().refresh();
-        
+
                     // put the cursor focus on the row of the gridRules which we just draged
-                    this.getSelectionModel().selectRow(cindex); 
+                    this.getSelectionModel().selectRow(cindex);
                 }.createDelegate(this)
             });
         }
-        
+
         this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "Table"});
 
         this.getView().getRowClass = function(record, index, rowParams, store) {
@@ -3327,7 +3327,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     // Test if there are changed data
     hasChangedData : function() {
-    	return Ung.Util.hasData(this.changedData);
+        return Ung.Util.hasData(this.changedData);
     },
     // Update Changed data after an operation (modifyed, deleted, added)
     updateChangedData : function(record, currentOp) {
@@ -3435,7 +3435,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     // Get the save list from the changed data
     getSaveList : function() {
-    	return Ung.Util.getSaveList(this.changedData, this.recordJavaClass);
+        return Ung.Util.getSaveList(this.changedData, this.recordJavaClass);
     },
     // Get the entire list
     // for the unpaginated grids, that send all the records on save
@@ -3457,7 +3457,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }
             var recData=Ext.decode(Ext.encode(records[i].data));
             if(recData.id<0) {
-            	delete recData.id
+                delete recData.id
             }
             list.push(recData)
         }
@@ -3473,7 +3473,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 var d = this.changedData[id];
                 if (d) {
                     if (d.op == "deleted") {
-                    	if (this.recordJavaClass != null){
+                        if (this.recordJavaClass != null){
                             records[i].data["javaClass"] = this.recordJavaClass;
                         }
                         list.push(records[i].data);
@@ -3487,8 +3487,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 // Reads a list of strings form a json object
 // and creates a list of records
 Ung.JsonListReader = Ext.extend(Ext.data.JsonReader, {
-	autoGenerateId:true,
-	generatedId:1,
+    autoGenerateId:true,
+    generatedId:1,
     readRecords : function(o) {
         var sid = this.meta ? this.meta.id : null;
         var recordType = this.recordType, fields = recordType.prototype.fields;
@@ -3508,7 +3508,7 @@ Ung.JsonListReader = Ext.extend(Ext.data.JsonReader, {
             }
             var record = new recordType(values, id);
             record.json = n;
-            
+
             records[records.length] = record;
         }
         return {
@@ -3635,14 +3635,14 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.initSubComponents.defer(1, this);
     },
     initSubComponents : function(container, position) {
-    	var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectUser});
-    	this.usersGrid=new Ext.grid.GridPanel({
-    	   //title: i18n._('Users'),
-    	   height: 210,
-    	   width: 290,
+        var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectUser});
+        this.usersGrid=new Ext.grid.GridPanel({
+           //title: i18n._('Users'),
+           height: 210,
+           width: 290,
            enableHdMenu : false,
            enableColumnMove: false,
-    	   store: new Ext.data.Store({
+           store: new Ext.data.Store({
                 proxy : new Ung.MemoryProxy({
                     root : 'list'
                 }),
@@ -3664,15 +3664,15 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                             var repository=null;
                             if(rec.storedIn) {
                                 if(rec.storedIn=="MS_ACTIVE_DIRECTORY") {
-                                	repository=i18n._('Active Directory');
+                                    repository=i18n._('Active Directory');
                                 } else if(rec.storedIn=="LOCAL_DIRECTORY") {
-                                	repository=i18n._('Local');
+                                    repository=i18n._('Local');
                                 } else {
-                                	repository=i18n._('UNKNOWN');
+                                    repository=i18n._('UNKNOWN');
                                 }
                             }
                             if(repository) {
-                            	name+=" ("+repository+")";
+                                name+=" ("+repository+")";
                             }
                             return name;
                         }
@@ -3687,7 +3687,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 dataIndex : 'name'
             }],
             selModel : selModel
-    	});
+        });
         this.formPanel = new Ext.FormPanel({
             renderTo : this.getContentEl(),
             labelWidth : 75,
@@ -3704,7 +3704,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 title : this.singleSelectUser ? i18n._('Select User') : i18n._('Select Users'),
                 autoHeight : true,
                 items: [{
-                	bodyStyle : 'padding:0px 0px 5px 5px;',
+                    bodyStyle : 'padding:0px 0px 5px 5px;',
                     border : false,
                     html: this.singleSelectUser ? i18n._("You may choose user ID/Login that exists in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")
                                 : i18n._("You may choose user IDs/Logins that exist in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")
@@ -3719,7 +3719,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     autoHeight : true,
                     buttonAlign : 'left',
                     buttons:[{
-                    	xtype: "button",
+                        xtype: "button",
                         name : 'Open Local Directory',
                         text : i18n._("Open Local Directory"),
                         handler : function() {
@@ -3740,7 +3740,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                             if (node != null) {
                                 var nodeCmp = Ung.Node.getCmp(node.tid);
                                 if (nodeCmp != null) {
-                                	var fnCallback = function() {
+                                    var fnCallback = function() {
                                             this.populate(this.record,this.fnCallback)
                                         }.createDelegate(this);
                                     nodeCmp.onSettingsAction(fnCallback);
@@ -3755,7 +3755,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     },
     // populate is called whent a record is edited, tot populate the edit window
     populate : function(record,fnCallback) {
-    	this.fnCallback=fnCallback;
+        this.fnCallback=fnCallback;
         this.record = record;
         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
         this.usersGrid.getSelectionModel().clearSelections();
@@ -3775,10 +3775,10 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 }.createDelegate(this));
                 return;
             } else {
-            	this.userEntries=this.userEntries.concat(result.list);
+                this.userEntries=this.userEntries.concat(result.list);
             }
             this.populateCallback();
-        }.createDelegate(this),'MS_ACTIVE_DIRECTORY')    
+        }.createDelegate(this),'MS_ACTIVE_DIRECTORY')
         main.getAppAddressBook().getUserEntries(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."), function(){
@@ -3789,15 +3789,15 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 this.userEntries=this.userEntries.concat(result.list);
             }
             this.populateCallback();
-        }.createDelegate(this),'LOCAL_DIRECTORY')    
+        }.createDelegate(this),'LOCAL_DIRECTORY')
     },
     populateCallback : function () {
         this.populateSemaphore--;
         if (this.populateSemaphore == 0) {
             if (this.settingsCmp !== null) {
-            	var sm=this.usersGrid.getSelectionModel();
-            	sm.clearSelections()
-            	var store=this.usersGrid.getStore();
+                var sm=this.usersGrid.getSelectionModel();
+                sm.clearSelections()
+                var store=this.usersGrid.getStore();
                 store.proxy.data = {list:this.userEntries};
                 store.load({
                     params : {
@@ -3821,32 +3821,32 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     // check if the form is valid;
     // this is the default functionality which can be overwritten
     isFormValid : function() {
-    	if (this.singleSelectUser) {
-    		// one user must be selected
-    		return (this.usersGrid.getSelectionModel().getSelections().length == 1);
-    	}
+        if (this.singleSelectUser) {
+            // one user must be selected
+            return (this.usersGrid.getSelectionModel().getSelections().length == 1);
+        }
         return true;
     },
     // updateAction is called to update the record after the edit
     updateAction : function() {
         if (this.isFormValid()) {
             if (this.record !== null) {
-            	var sm=this.usersGrid.getSelectionModel();
-            	var users=[];
-            	var selRecs=sm.getSelections();
-            	for(var i=0;i<selRecs.length;i++) {
-            		var uid=selRecs[i].get("UID");
-            		if(uid=="[any]") {
-            			users=[uid];
-            			break;
-            		} else {
-            		  users.push(selRecs[i].get("UID"));
-            		}
-            	}
-            	this.record.set(this.userDataIndex,users.join(","));
-            	if(this.fnCallback) {
-            		this.fnCallback.call()
-            	}
+                var sm=this.usersGrid.getSelectionModel();
+                var users=[];
+                var selRecs=sm.getSelections();
+                for(var i=0;i<selRecs.length;i++) {
+                    var uid=selRecs[i].get("UID");
+                    if(uid=="[any]") {
+                        users=[uid];
+                        break;
+                    } else {
+                      users.push(selRecs[i].get("UID"));
+                    }
+                }
+                this.record.set(this.userDataIndex,users.join(","));
+                if(this.fnCallback) {
+                    this.fnCallback.call()
+                }
             }
             this.hide();
         } else {
