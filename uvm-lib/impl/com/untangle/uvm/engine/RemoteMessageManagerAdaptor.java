@@ -27,9 +27,9 @@ import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.message.StatDescs;
+import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.message.Stats;
 
 class RemoteMessageManagerAdaptor implements RemoteMessageManager
 {
@@ -45,9 +45,19 @@ class RemoteMessageManagerAdaptor implements RemoteMessageManager
         return lbm.getMessageQueue();
     }
 
+    public MessageQueue getMessageQueue(Long key)
+    {
+        return lbm.getMessageQueue(key);
+    }
+
     public MessageQueue getMessageQueue(Policy p)
     {
         return lbm.getMessageQueue(p);
+    }
+
+    public MessageQueue getMessageQueue(Long key, Policy p)
+    {
+        return lbm.getMessageQueue(key, p);
     }
 
     public StatDescs getStatDescs(Tid t)
@@ -75,9 +85,19 @@ class RemoteMessageManagerAdaptor implements RemoteMessageManager
         return lbm.getMessages();
     }
 
+    public List<Message> getMessages(Long key)
+    {
+        return lbm.getMessages(key);
+    }
+
     public Stats getStats(Tid t)
     {
         return lbm.getStats(t);
+    }
+
+    public Long getMessageKey()
+    {
+        return lbm.getMessageKey();
     }
 
 }
