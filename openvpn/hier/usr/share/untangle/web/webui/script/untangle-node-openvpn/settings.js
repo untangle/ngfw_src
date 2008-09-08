@@ -1401,7 +1401,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }]
                 },
                 onNext : function(handler) {
-                    this.handler();
+                    handler();
                 }
             };
             var downloadCard = {
@@ -1518,7 +1518,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                             listClass : 'x-combo-list-small',
                                             store : new Ext.data.SimpleStore({
                                                 fields : ['key', 'name'],
-                                                data : [["[No Configurations]", this.i18n._("[No Configurations]")],]
+                                                data : [["[No Configurations]", this.i18n._("[No Configurations]")]]
                                             }),
                                             displayField : 'name',
                                             valueField : 'key',
