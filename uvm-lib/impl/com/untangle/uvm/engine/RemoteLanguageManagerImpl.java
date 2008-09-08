@@ -140,11 +140,16 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
                         dir.mkdir();
                     }
                 } else {
-                    int count;
-                    byte data[] = new byte[BUFFER];
+                    File file = new File(LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName());
+                    File parentDir = file.getParentFile();
+                    if (parentDir!=null && !parentDir.exists()) {
+                        parentDir.mkdir();
+                    }
 
                     // write the files to the disk
-                    FileOutputStream fos = new FileOutputStream(LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName());
+                    int count;
+                    byte data[] = new byte[BUFFER];
+                    FileOutputStream fos = new FileOutputStream(file);
                     dest = new BufferedOutputStream(fos, BUFFER);
                     while ((count = zis.read(data, 0, BUFFER)) != -1) {
                         dest.write(data, 0, count);
@@ -251,7 +256,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             }
             in.close();
         } catch (IOException e) {
-            logger.warn(exn, exn)
+            logger.warn(e);
         }
 
         return languages;
