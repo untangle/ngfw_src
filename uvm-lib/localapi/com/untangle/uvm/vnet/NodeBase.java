@@ -89,14 +89,14 @@ public abstract class NodeBase implements Node
         tid = nodeContext.getTid();
 
         Counters c = uvm.localMessageManager().getCounters(tid);
-        c.addMetric("s2nChunks", "Server to Node Chunks", null);
-        c.addMetric("c2nChunks", "Client to Node Chunks", null);
-        c.addMetric("n2sChunks", "Node to Server Chunks", null);
-        c.addMetric("n2cChunks", "Server to Node Chunks", null);
-        c.addMetric("s2nBytes", "Server to Node Bytes", "byte");
-        c.addMetric("c2nBytes", "Client to Node Bytes", "byte");
-        c.addMetric("n2sBytes", "Node to Server Bytes", "byte");
-        c.addMetric("n2cBytes", "Node to Client Bytes", "byte");
+        c.addMetric("s2nChunks", "Server to Node Chunks", null, false);
+        c.addMetric("c2nChunks", "Client to Node Chunks", null, false);
+        c.addMetric("n2sChunks", "Node to Server Chunks", null, false);
+        c.addMetric("n2cChunks", "Server to Node Chunks", null, false);
+        c.addMetric("s2nBytes", "Server to Node Bytes", "byte", false);
+        c.addMetric("c2nBytes", "Client to Node Bytes", "byte", false);
+        c.addMetric("n2sBytes", "Node to Server Bytes", "byte", false);
+        c.addMetric("n2cBytes", "Node to Client Bytes", "byte", false);
 
         runState = NodeState.LOADED;
     }

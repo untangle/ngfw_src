@@ -41,13 +41,16 @@ public class StatDesc implements Serializable
     private final String displayName;
     private final String action;
     private final String unit;
+    private final boolean displayable;
 
-    public StatDesc(String name, String displayName, String action, String unit)
+    public StatDesc(String name, String displayName, String action, String unit,
+                    boolean displayable)
     {
         this.name = name;
         this.displayName = displayName;
         this.action = action;
         this.unit = unit;
+        this.displayable = displayable;
     }
 
     public String getName()
@@ -68,5 +71,10 @@ public class StatDesc implements Serializable
     public String getUnit()
     {
         return unit;
+    }
+
+    public boolean getDisplayable()
+    {
+        return displayable;
     }
 }

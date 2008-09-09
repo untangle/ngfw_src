@@ -77,9 +77,11 @@ public class Counters
         return b;
     }
 
-    public BlingBlinger addMetric(String name, String displayName, String unit)
+    public BlingBlinger addMetric(String name, String displayName, String unit,
+                                  boolean displayable)
     {
-        BlingBlinger b = new BlingBlinger(name, displayName, unit, null);
+        BlingBlinger b = new BlingBlinger(name, displayName, unit, null,
+                                          displayable);
 
         synchronized (metrics) {
             metrics.put(name, b);
@@ -88,10 +90,17 @@ public class Counters
         return b;
     }
 
-    public BlingBlinger addActivity(String name, String displayName,
-                                    String unit, String action)
+    public BlingBlinger addMetric(String name, String displayName, String unit)
     {
-        BlingBlinger b = new BlingBlinger(name, displayName, unit, action);
+        return addMetric(name, displayName, unit, true);
+    }
+
+    public BlingBlinger addActivity(String name, String displayName,
+                                    String unit, String action,
+                                    boolean displayable)
+    {
+        BlingBlinger b = new BlingBlinger(name, displayName, unit, action,
+                                          displayable);
 
         synchronized (metrics) {
             metrics.put(name, b);
@@ -102,6 +111,12 @@ public class Counters
         }
 
         return b;
+    }
+
+    public BlingBlinger addActivity(String name, String displayName,
+                                    String unit, String action)
+    {
+        return addActivity(name, displayName, unit, action, true);
     }
 
     public void addLoadMaster(String name, LoadMaster loadMaster)

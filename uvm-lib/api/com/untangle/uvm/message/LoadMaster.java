@@ -60,7 +60,7 @@ public class LoadMaster implements LoadStats
                       String displayName)
     {
         this.loadStrober = loadStrober;
-        this.statDesc = new StatDesc(name, displayName, null, null);
+        this.statDesc = new StatDesc(name, displayName, null, null, false);
     }
 
     // public methods ---------------------------------------------------------

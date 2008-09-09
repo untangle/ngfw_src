@@ -47,9 +47,10 @@ public class BlingBlinger implements CounterStats, Serializable
     private volatile int countSinceMidnight = 0;
 
     public BlingBlinger(String name, String displayName, String unit,
-                        String action)
+                        String action, boolean displayable)
     {
-        this.statDesc = new StatDesc(name, displayName, action, unit);
+        this.statDesc = new StatDesc(name, displayName, action, unit,
+                                     displayable);
     }
 
     // public methods ---------------------------------------------------------
@@ -97,7 +98,7 @@ public class BlingBlinger implements CounterStats, Serializable
 
     public Date getLastActivityDate()
     {
-	return now;
+    return now;
     }
 }
 
