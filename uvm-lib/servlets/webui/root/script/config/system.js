@@ -908,7 +908,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         success : function(form, action) {
                             languagesStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Language Pack Succeeded"));
+                            if (action.result && action.result.msg) {
+                                Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._("Language Pack Uploaded With Errors"));
+                            } else {
+                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Language Pack Succeeded"));
+                            }
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
@@ -917,12 +921,6 @@ if (!Ung.hasResource["Ung.System"]) {
                                 switch (action.result.msg) {
                                     case 'Invalid Language Pack' : 
                                         errorMsg = cmp.i18n._("Invalid Language Pack");
-                                    break;
-                                    case 'Error compiling to resource bundle' : 
-                                        errorMsg = cmp.i18n._("Error compiling to resource bundle");
-                                    break;
-                                    case 'Error compiling to mo file' : 
-                                        errorMsg = cmp.i18n._("Error compiling to mo file");
                                     break;
                                     default :
                                         errorMsg = cmp.i18n._("Upload Language Pack Failed");
