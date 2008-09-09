@@ -132,7 +132,6 @@ class MessageManagerImpl implements LocalMessageManager
 
     public MessageQueue getMessageQueueZ(Policy p)
     {
-        System.out.println("HI");
         return getMessageQueue(null, p);
     }
 
@@ -149,7 +148,8 @@ class MessageManagerImpl implements LocalMessageManager
     {
         Long id = t.getId();
         if (null != id) {
-            return getCounters(t).getStatDescs();
+            StatDescs sd = getCounters(t).getStatDescs();
+            return sd;
         } else {
             return null;
         }
@@ -357,7 +357,6 @@ class MessageManagerImpl implements LocalMessageManager
             }
         }
 
-        System.out.println("MESSAGES: " + l);
         return l;
     }
 
@@ -624,9 +623,6 @@ class MessageManagerImpl implements LocalMessageManager
                                       (system1 - system0) / (double)totalTime);
                             }
 
-                //System.out.println("userCpuUtilization: " + m.get("userCpuUtilization"));
-                //System.out.println("systemCpuUtilization: " + m.get("systemCpuUtilization"));
-
                             user0 = user1;
                             nice0 = nice1;
                             system0 = system1;
@@ -653,8 +649,6 @@ class MessageManagerImpl implements LocalMessageManager
             long txBytes0 = 0, txBytes1 = 0;
 
             long currentTime = System.currentTimeMillis();
-
-        //System.out.println("getNetDevUsage");
 
             BufferedReader br = null;
             try {
@@ -705,9 +699,6 @@ class MessageManagerImpl implements LocalMessageManager
                 m.put("txBps", (txBytes1 - txBytes0) / dt);
         }
             lastNetDevUpdate = currentTime;
-
-        //System.out.println("rxBps: " + m.get("rxBps"));
-        //System.out.println("txBps: " + m.get("txBps"));
         }
 
         private synchronized void getDiskUsage(Map<String, Object> m)
@@ -716,8 +707,6 @@ class MessageManagerImpl implements LocalMessageManager
             File root = new File("/");
             m.put("totalDiskSpace", root.getTotalSpace());
             m.put("freeDiskSpace", root.getFreeSpace());
-
-        //System.out.println("total/free Diskspace: " + m.get("totalDiskSpace") + "," + m.get("freeDiskSpace"));
 
             long diskReads0 = 0, diskReads1 = 0;
             long diskWrites0 = 0, diskWrites1 = 0;
@@ -762,8 +751,6 @@ class MessageManagerImpl implements LocalMessageManager
 
             m.put("diskReads", diskReads1);
             m.put("diskWrites", diskWrites1);
-
-        //System.out.println("disk Reads/Writes: " + m.get("diskReads") + "," + m.get("diskWrites"));
 
             double dt = (currentTime - lastDiskUpdate) / 1000.0;
         if (Math.abs(dt) < 5.0e-5) {
