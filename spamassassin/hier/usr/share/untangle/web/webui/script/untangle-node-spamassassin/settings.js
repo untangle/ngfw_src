@@ -380,7 +380,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     xtype : 'fieldset',
                     title : this.i18n._('Note'),
                     autoHeight : true,
-                    html : this.i18n._('Spam blocker was last updated')
+                    html : this.i18n._('Spam Blocker was last updated')
                             + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n
                                     ._("unknown"))
@@ -534,7 +534,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         return value == null ? "" : value.hostAddress;
                     }.createDelegate(this)
                 }, {
-                    header : this.i18n._("dnsbl server"),
+                    header : this.i18n._("DNSBL server"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'hostname',
