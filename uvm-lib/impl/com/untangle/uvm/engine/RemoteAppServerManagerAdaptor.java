@@ -62,4 +62,9 @@ class RemoteAppServerManagerAdaptor implements RemoteAppServerManager
     {
         return lasm.getCertInfo(certBytes);
     }
+    
+	public CertInfo getCurrentServerCertInfo() {
+		return lasm.getCurrentServerCertInfo();
+	}
+    
 }

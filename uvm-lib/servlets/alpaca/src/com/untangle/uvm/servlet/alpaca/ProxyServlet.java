@@ -18,23 +18,13 @@
 
 package com.untangle.uvm.servlet.alpaca;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,9 +33,7 @@ import javax.servlet.http.HttpSession;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import org.apache.commons.httpclient.Cookie;
+import com.untangle.uvm.util.I18nUtil;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -158,14 +146,18 @@ public class ProxyServlet extends HttpServlet
         } catch (UnknownHostException exn) {
             logger.warn("unknown host", exn);
             try {
-                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "could not resolve host");
+                LocalUvmContext uvm = LocalUvmContextFactory.context();
+                Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
+                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr("could not resolve host", i18n_map));
             } catch (IOException e) {
                 logger.warn("could not send error page", e);
             }
         } catch (IOException exn) {
             logger.warn("unknown host", exn);
             try {
-                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "request timed out");
+                LocalUvmContext uvm = LocalUvmContextFactory.context();
+                Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
+                resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr("request timed out", i18n_map));
             } catch (IOException e) {
                 logger.warn("could not send error page", e);
             }

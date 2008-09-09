@@ -34,12 +34,13 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  * Contains properties that a vendor may use to rebrand the product.
@@ -52,11 +53,9 @@ import javax.persistence.Transient;
 public class BrandingSettings implements Serializable
 {
     private Long id;
-    private String companyName = "Untangle";
-    private String companyUrl = "http://www.untangle.com";
     private byte[] logo = null;
-    private String contactName = "your network administrator";
-    private String contactEmail = null;
+    private BrandingBaseSettings baseSettings = new BrandingBaseSettings();
+    
 
     public BrandingSettings() { }
 
@@ -71,38 +70,6 @@ public class BrandingSettings implements Serializable
     void setId(Long id)
     {
         this.id = id;
-    }
-
-    /**
-     * Get the vendor name.
-     *
-     * @return vendor name.
-     */
-    @Column(name="company_name")
-    public String getCompanyName()
-    {
-        return null == companyName ? "Untangle" : companyName;
-    }
-
-    public void setCompanyName(String companyName)
-    {
-        this.companyName = companyName;
-    }
-
-    /**
-     * Get the vendor URL.
-     *
-     * @return vendor url
-     */
-    @Column(name="company_url")
-    public String getCompanyUrl()
-    {
-        return null == companyUrl ? "http://www.untangle.com" : companyUrl;
-    }
-
-    public void setCompanyUrl(String companyUrl)
-    {
-        this.companyUrl = companyUrl;
     }
 
     /**
@@ -121,55 +88,26 @@ public class BrandingSettings implements Serializable
         this.logo = logo;
     }
 
-    /**
-     * Get the vendor contact name.
-     *
-     * @return vendor contact name.
-     */
-    @Column(name="contact_name")
-    public String getContactName()
-    {
-        return null == contactName ? "your network administrator" : contactName;
-    }
-
-    public void setContactName(String name)
-    {
-        this.contactName = name;
-    }
-
-    /**
-     * Get the vendor contact email.
-     *
-     * @return vendor contact email.
-     */
-    @Column(name="contact_email")
-    public String getContactEmail()
-    {
-        return contactEmail;
-    }
-
-    public void setContactEmail(String contactEmail)
-    {
-        this.contactEmail = contactEmail;
-    }
-
-    @Transient
-    public String getContactHtml()
-    {
-        if (null != contactEmail && !contactEmail.trim().equals("")) {
-            return "<a href='mailto:" + contactEmail + "'>" + contactName
-                + "</a>";
-        } else {
-            return contactName;
+    @Embedded
+	public BrandingBaseSettings getBaseSettings() {
+        if (null != baseSettings) {
+            baseSettings.setDefaultLogo(null == logo);
         }
-    }
 
+        return baseSettings;
+	}
+
+	public void setBaseSettings(BrandingBaseSettings baseSettings) {
+		this.baseSettings = baseSettings;
+	}
+	
     public void copy(BrandingSettings settings)
     {
-        settings.setCompanyName(this.companyName);
-        settings.setCompanyUrl(this.companyUrl);
-        settings.setContactName(this.contactName);
         settings.setLogo(this.logo);
-        settings.setContactEmail(this.contactEmail);
+        settings.getBaseSettings().setCompanyName(this.baseSettings.getCompanyName());
+        settings.getBaseSettings().setCompanyUrl(this.baseSettings.getCompanyUrl());
+        settings.getBaseSettings().setContactName(this.baseSettings.getContactName());
+        settings.getBaseSettings().setContactEmail(this.baseSettings.getContactEmail());
     }
+
 }

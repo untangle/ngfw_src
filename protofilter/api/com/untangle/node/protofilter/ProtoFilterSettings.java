@@ -18,11 +18,11 @@
 
 package com.untangle.node.protofilter;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,10 +32,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.node.util.UvmUtil;
-import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
+
+import com.untangle.uvm.security.Tid;
 
 /**
  * Settings for the ProtoFilter node.
@@ -51,16 +50,20 @@ public class ProtoFilterSettings implements java.io.Serializable
 
     private Long id;
     private Tid tid;
+    
+    private ProtoFilterBaseSettings baseSettings = new ProtoFilterBaseSettings();
+    
     private int byteLimit  = 2048;
     private int chunkLimit = 10;
     private String unknownString = "[unknown]";
     private boolean stripZeros = true;
-    private List<ProtoFilterPattern> patterns = null;
+    
+    private Set<ProtoFilterPattern> patterns = null;
 
     /**
      * Hibernate constructor.
      */
-    private ProtoFilterSettings() {}
+    public ProtoFilterSettings() {}
 
     /**
      * Real constructor
@@ -68,7 +71,7 @@ public class ProtoFilterSettings implements java.io.Serializable
     public ProtoFilterSettings(Tid tid)
     {
         this.tid = tid;
-        this.patterns = new ArrayList<ProtoFilterPattern>();
+        this.patterns = new HashSet<ProtoFilterPattern>();
     }
 
     @Id
@@ -97,13 +100,28 @@ public class ProtoFilterSettings implements java.io.Serializable
     /**
      * Pattern rules.
      *
-     * @return the list of Patterns
+     * @return the set of Patterns
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
-    public List<ProtoFilterPattern> getPatterns() { return UvmUtil.eliminateNulls(patterns); }
-    public void setPatterns(List<ProtoFilterPattern> s) { this.patterns = s; }
+    public Set<ProtoFilterPattern> getPatterns() { return patterns; }
+    public void setPatterns(Set<ProtoFilterPattern> s) { this.patterns = s; }
+
+    @Embedded
+	public ProtoFilterBaseSettings getBaseSettings() {
+        if (null != baseSettings) {
+            baseSettings.setPatternsLength(null == patterns ? 0 : patterns.size());
+        }
+
+        return baseSettings;
+	}
+
+	public void setBaseSettings(ProtoFilterBaseSettings baseSettings) {
+		if (null == baseSettings) {
+			baseSettings = new ProtoFilterBaseSettings();
+		}
+		this.baseSettings = baseSettings;
+	}
 }

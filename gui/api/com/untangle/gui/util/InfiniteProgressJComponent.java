@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -195,15 +195,15 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
     public void stopLater(final long minRunTime){
         if( minRunTime > 0 ){
             try{
-		// Must account for possibility that clock changes in between start and end, thus the max.
+        // Must account for possibility that clock changes in between start and end, thus the max.
                 SwingUtilities.invokeAndWait(new Runnable(){ public void run(){
                     sleepTime = minRunTime - Math.max(0l, (System.currentTimeMillis()-startTime));
                 }});
             }
-            catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
+            catch(Exception e){ Util.handleExceptionNoRestart(Util.tr("Error sleeping"), e); }
             if( sleepTime > 0 ){
                 try{ Thread.currentThread().sleep(sleepTime); }
-                catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
+                catch(Exception e){ Util.handleExceptionNoRestart(Util.tr("Error sleeping"), e); }
             }
         }
         SwingUtilities.invokeLater(new Runnable(){ public void run(){

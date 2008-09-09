@@ -48,6 +48,19 @@ public interface QuarantineMaintenenceView
         throws QuarantineUserActionFailedException;
 
     /**
+     * Get the inboxes
+     */
+    public InboxArray getInboxArray( int start, int limit, String sortColumn, boolean isAscending )
+        throws QuarantineUserActionFailedException;
+
+    public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn,
+                                                 boolean isAscending )
+        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    
+    public InboxRecordArray getInboxRecordArray( String account)
+        throws NoSuchInboxException, QuarantineUserActionFailedException;
+
+    /**
      * Total size of the entire store
      * (in kilobytes (inMB = false) or megabytes (inMB = true))
      */
@@ -71,6 +84,12 @@ public interface QuarantineMaintenenceView
     public void deleteInbox(String account)
         throws NoSuchInboxException, QuarantineUserActionFailedException;
 
+    public void deleteInboxes(String[] accounts)
+        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    
     public void rescueInbox(String account)
+        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    
+    public void rescueInboxes(String[] accounts)
         throws NoSuchInboxException, QuarantineUserActionFailedException;
 }

@@ -1,0 +1,86 @@
+<html xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:uvm="http://java.untangle.com/jsp/uvm"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+  <jsp:output omit-xml-declaration="true"
+      doctype-root-element="html"      
+      doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+  
+  <jsp:directive.page contentType="text/html"/>
+
+  <head>
+    <title><c:out value="${pageTitle}"/></title>
+
+    <uvm:skin src="user.css" name="${ss.userPagesSkin}"/>
+    
+    <uvm:inlineScript>
+      <![CDATA[
+               var nonce = '${param.nonce}';
+               var tid = '${param.tid}';
+               var url = ${url};
+      ]]>
+    </uvm:inlineScript>
+    
+    <c:if test="${!empty javascript_file}">
+      <script type="text/javascript" src="${javascript_file}"></script>
+    </c:if>
+
+    <c:out escapeXml="false" value="${javascript}"/>
+  </head>
+  
+  <body id="simple" class="blockpage">
+    <div id="content">
+      <div id="header">
+        <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
+        <div class="title"><c:out value="${title}" escapeXml="false"/></div>
+      </div>
+      
+      <div id="main">
+        <p class="icon-block">
+            <br/>
+        </p>
+        <p class="description">
+          <span>${description}</span>
+        </p>
+        <div class="info-list">
+          <div><b><uvm:i18n>Host:</uvm:i18n></b> <c:out value="${bd.formattedHost}"/></div>
+          <div><b><uvm:i18n>URL:</uvm:i18n></b> <c:out value="${bd.formattedUrl}"/></div>
+          <c:if test="${!empty reason}">
+            <div><b><uvm:i18n>Reason:</uvm:i18n></b> <c:out value="${reason}"/></div>
+          </c:if>
+        </div>
+        
+        <c:if test="${showUnblockNow}">
+          <button id="unblockNowButton" type="button" onclick="unblockSite(false)">
+            <uvm:i18n>Unblock For Now</uvm:i18n>
+          </button>
+        </c:if>
+        
+        <c:if test="${showUnblockGlobal}">
+          <button id="unblockGlobalButton" type="button" onclick="unblockSite(true)">
+            <uvm:i18n>Unblock Permanently</uvm:i18n>
+          </button>
+        </c:if>
+
+        <p class="contact">
+          <span>${contact}</span>
+        </p>
+        
+      </div>
+
+      <div id="footer">
+        <p><span><c:out value="${footer}"/></span></p>
+      </div>
+
+      <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
+      <div id="extraDiv1"><span></span></div>
+      <div id="extraDiv2"><span></span></div>
+      <div id="extraDiv3"><span></span></div>
+      <div id="extraDiv4"><span></span></div>
+      <div id="extraDiv5"><span></span></div>
+      <div id="extraDiv6"><span></span></div>
+    </div>
+  </body>
+</html>

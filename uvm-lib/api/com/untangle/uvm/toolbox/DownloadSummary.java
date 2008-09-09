@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.toolbox;
 
-import java.io.Serializable;
+import com.untangle.uvm.message.Message;
 
 /**
  * Summary of pending downloads.
@@ -41,7 +41,7 @@ import java.io.Serializable;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class DownloadSummary implements InstallProgress, Serializable
+public class DownloadSummary extends Message
 {
     private static final long serialVersionUID = -6840052462738622245L;
 
@@ -62,12 +62,5 @@ public class DownloadSummary implements InstallProgress, Serializable
     public int getSize()
     {
         return size;
-    }
-
-    // InstallProgress methods ------------------------------------------------
-
-    public void accept(ProgressVisitor visitor)
-    {
-        visitor.visitDownloadSummary(this);
     }
 }

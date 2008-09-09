@@ -1,0 +1,220 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-09-01 11:34+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:46
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:48
+msgid "Mark"
+msgstr "Marcat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:46
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:48
+msgid "Pass"
+msgstr "Trece"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
+msgid "Block"
+msgstr "Blocat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
+msgid "Quarantine"
+msgstr "Carantină"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:50
+msgid "Email"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:57
+msgid "SMTP"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:64
+msgid "Scan SMTP"
+msgstr "Scanare SMTP"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:85
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:128
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:171
+msgid "Action"
+msgstr "Actiune"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:100
+msgid "POP3"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:107
+msgid "Scan POP3"
+msgstr "Scanare POP3"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:143
+msgid "IMAP"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:150
+msgid "Scan IMAP"
+msgstr "Scanare IMAP"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:186
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:221
+msgid "Note"
+msgstr "Nota"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:188
+msgid "Phish Blocker email signatures were last updated"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:191
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:226
+msgid "unknown"
+msgstr "necunoscut"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:198
+msgid "Web"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:207
+msgid "Enable Phish web filtering"
+msgstr "Activează hei"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:223
+msgid "Phish Blocker web signatures were last updated "
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:235
+msgid "Web Event Log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:248
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:320
+msgid "timestamp"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:256
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:360
+msgid "client"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:264
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:328
+msgid "action"
+msgstr "acţiune"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:271
+msgid "pass"
+msgstr "permis"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:274
+msgid "block"
+msgstr "blocat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:278
+msgid "request"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:286
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:384
+msgid "server"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:301
+msgid "Email Event Log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:337
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:346
+msgid "pass message"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:340
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:348
+msgid "mark infection"
+msgstr "marchează infecţie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:350
+msgid "block message"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:353
+msgid "quarantine message"
+msgstr "mesaj in carantină"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:369
+msgid "subject"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:374
+msgid "receiver"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:379
+msgid "sender"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:398
+msgid "Saving..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:398
+msgid "Please wait"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:402
+msgid "Failed"
+msgstr ""
+
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:78
+#, java-format
+msgid "{0} | Phish Blocker Warning"
+msgstr ""
+
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:89
+#, java-format
+msgid "{0}  Phish Blocker"
+msgstr ""
+
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:101
+#, java-format
+msgid ""
+"{0}This web page was blocked{1} because it may be designed to steal personal "
+"information."
+msgstr ""
+
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#, java-format
+msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+msgid "Host:"
+msgstr ""
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+msgid "URL:"
+msgstr ""
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+msgid "Reason:"
+msgstr ""
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+msgid "Unblock For Now"
+msgstr ""
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+msgid "Unblock Permanently"
+msgstr ""

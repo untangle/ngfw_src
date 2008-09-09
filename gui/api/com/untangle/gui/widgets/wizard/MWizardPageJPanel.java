@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,35 +33,15 @@
 
 package com.untangle.gui.widgets.wizard;
 
+import javax.swing.JPanel;
 
-import com.untangle.gui.node.*;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.widgets.coloredTable.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
-import com.untangle.uvm.security.PasswordUtil;
-import com.untangle.uvm.*;
-import com.untangle.uvm.node.*;
-
-import javax.swing.border.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.table.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
-import java.util.*;
-
-public class MWizardPageJPanel extends javax.swing.JPanel {
+public abstract class MWizardPageJPanel extends javax.swing.JPanel {
 
     protected boolean leavingForwards(){ return true; }
     protected boolean leavingBackwards(){ return true; }
     protected boolean enteringForwards(){ return true; }
     protected boolean enteringBackwards(){ return true; }
     protected void initialFocus(){}
-    
+
     protected void doSave(Object settings, boolean validateOnly) throws Exception {}
-    
 }

@@ -35,6 +35,7 @@ package com.untangle.node.mail.papi.quarantine;
 
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.Map;
 
 /* Class acts as a helper for sorting InboxRecords */
 public final class InboxRecordComparator {
@@ -46,7 +47,7 @@ public final class InboxRecordComparator {
         SENDER, /* 2 => Sort by the sender of the message */
         SUBJECT, /* 3 => Sort by the subject */
         DETAIL, /* 4 => Sort by the quarantine detail (score) */
-        ATTACHMENT_COUNT /* 5 => Sort by the attachment count */
+        ATTACHMENT_COUNT; /* 5 => Sort by the attachment count */
     };
 
     private static final EnumMap<SortBy, IRComp> m_fwdComparators;
@@ -61,7 +62,7 @@ public final class InboxRecordComparator {
 
         m_fwdComparators.put(SortBy.SIZE, new SizeComp().setReverse(false));
         m_bwdComparators.put(SortBy.SIZE, new SizeComp().setReverse(true));
-
+        
         m_fwdComparators.put(SortBy.SENDER, new SenderComp().setReverse(false));
         m_bwdComparators.put(SortBy.SENDER, new SenderComp().setReverse(true));
 

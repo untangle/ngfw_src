@@ -45,7 +45,6 @@ import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.NodeStats;
 import org.apache.log4j.Logger;
 
 
@@ -299,54 +298,55 @@ class OpenVpnMonitor implements Runnable
         }
     }
 
-    NodeStats updateStats( NodeStats stats )
-    {
-        BufferedReader in = null;
-        long rxBytes  = stats.t2sBytes();
-        long rxChunks = stats.t2sChunks();
-        long txBytes  = stats.s2tBytes();
-        long txChunks = stats.s2tChunks();
+    // XXX need counters
+//     Stats updateStats( Stats stats )
+//     {
+//         BufferedReader in = null;
+//         long rxBytes  = stats.getT2sBytes();
+//         long rxChunks = stats.getT2sChunks();
+//         long txBytes  = stats.getS2tBytes();
+//         long txChunks = stats.getS2tChunks();
 
-        try {
-            /* Read in the whole file */
-            in = new BufferedReader( new FileReader( PATH_PROCNET_DEV ));
+//         try {
+//             /* Read in the whole file */
+//             in = new BufferedReader( new FileReader( PATH_PROCNET_DEV ));
 
-            String line;
-            while(( line = in.readLine()) != null ) {
-                line = line.trim();
+//             String line;
+//             while(( line = in.readLine()) != null ) {
+//                 line = line.trim();
 
-                /* Parse the stats from the file */
-                if ( line.startsWith( TUN_DEV_PREFIX )) {
-                    String args[] = line.split( ":" );
-                    if ( args.length != 2 ) {
-                        logger.warn( "Invalid line: " + line );
-                        continue;
-                    }
-                    args = args[1].trim().split( "\\s+" );
-                    if ( args.length != PROCNET_STAT_COUNT ) {
-                        logger.warn( "Invalid line: " + line );
-                        continue;
-                    }
+//                 /* Parse the stats from the file */
+//                 if ( line.startsWith( TUN_DEV_PREFIX )) {
+//                     String args[] = line.split( ":" );
+//                     if ( args.length != 2 ) {
+//                         logger.warn( "Invalid line: " + line );
+//                         continue;
+//                     }
+//                     args = args[1].trim().split( "\\s+" );
+//                     if ( args.length != PROCNET_STAT_COUNT ) {
+//                         logger.warn( "Invalid line: " + line );
+//                         continue;
+//                     }
 
-                    rxBytes  = incrementCount( rxBytes,  Long.parseLong( args[PROCNET_STAT_RX_BYTES] ));
-                    rxChunks = incrementCount( rxChunks, Long.parseLong( args[PROCNET_STAT_RX_PACKETS] ));
-                    txBytes  = incrementCount( txBytes,  Long.parseLong( args[PROCNET_STAT_TX_BYTES] ));
-                    txChunks = incrementCount( txChunks, Long.parseLong( args[PROCNET_STAT_TX_PACKETS] ));
-                }
-            }
-        } catch ( Exception e ) {
-            logger.warn( "Exception updating stats" );
-        } finally {
-            if ( in != null ) try { in.close(); } catch ( Exception e ) { /* IGNORED */ }
-        }
+//                     rxBytes  = ( rxBytes,  Long.parseLong( args[PROCNET_STAT_RX_BYTES] ));
+//                     rxChunks = incrementCount( rxChunks, Long.parseLong( args[PROCNET_STAT_RX_PACKETS] ));
+//                     txBytes  = incrementCount( txBytes,  Long.parseLong( args[PROCNET_STAT_TX_BYTES] ));
+//                     txChunks = incrementCount( txChunks, Long.parseLong( args[PROCNET_STAT_TX_PACKETS] ));
+//                 }
+//             }
+//         } catch ( Exception e ) {
+//             logger.warn( "Exception updating stats" );
+//         } finally {
+//             if ( in != null ) try { in.close(); } catch ( Exception e ) { /* IGNORED */ }
+//         }
 
-        stats.t2sBytes(  rxBytes );  stats.c2tBytes(  rxBytes );
-        stats.t2sChunks( rxChunks ); stats.c2tChunks( rxChunks );
-        stats.t2cBytes(  txBytes );  stats.s2tBytes(  txBytes );
-        stats.t2cChunks( txChunks ); stats.s2tChunks( txChunks );
+//         stats.setT2sBytes(  rxBytes );  stats.setC2tBytes(  rxBytes );
+//         stats.setT2sChunks( rxChunks ); stats.setC2tChunks( rxChunks );
+//         stats.setT2cBytes(  txBytes );  stats.setS2tBytes(  txBytes );
+//         stats.setT2cChunks( txChunks ); stats.setS2tChunks( txChunks );
 
-        return stats;
-    }
+//         return stats;
+//     }
 
     private long incrementCount( long previousCount, long kernelCount )
     {
@@ -471,8 +471,7 @@ class OpenVpnMonitor implements Runnable
 
         for ( Stats stats : statusMap.values()) {
             if ( stats.isNew ) {
-                node.incrementCount( Constants.CONNECT_COUNTER );
-
+                node.incrementConnectCount();
                 stats.isNew = false;
             }
 

@@ -110,11 +110,11 @@ public class SnmpSettings implements Serializable {
     @Id
     @Column(name="snmp_settings_id")
     @GeneratedValue
-    private Long getId() {
+    public Long getId() {
         return m_id;
     }
 
-    private void setId(Long id) {
+    public void setId(Long id) {
         m_id = id;
     }
 

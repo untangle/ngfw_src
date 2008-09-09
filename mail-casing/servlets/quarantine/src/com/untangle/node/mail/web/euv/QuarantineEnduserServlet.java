@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,14 +23,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.client.RemoteUvmContext;
-import com.untangle.uvm.client.RemoteUvmContextFactory;
-import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.node.mail.papi.MailNode;
 import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.security.Tid;
 import org.apache.log4j.Logger;
 
 /**
@@ -57,7 +57,7 @@ public class QuarantineEnduserServlet
     protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
 
-        resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Not Found");
+        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
     /**
@@ -144,7 +144,7 @@ public class QuarantineEnduserServlet
      */
     private void initRemoteRefs() {
         try {
-            RemoteUvmContext ctx = RemoteUvmContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+            RemoteUvmContext ctx = RemoteUvmContextFactory.factory().uvmContext();
             Tid tid = ctx.nodeManager().nodeInstances("untangle-casing-mail").get(0);
             NodeContext tc = ctx.nodeManager().nodeContext(tid);
             MailNode mt = (MailNode) tc.node();

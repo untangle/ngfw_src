@@ -83,7 +83,7 @@ public class HostAddress implements Serializable
         /* lean towards the hostname */
         if ( this.hostName != null && !this.hostName.isEmpty()) return this.hostName.toString();
 
-        return this.ip.toString();
+        return (this.ip==null)?null:this.ip.toString();
     }
     
     /* Address is either a hostname or an ip address */

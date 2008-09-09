@@ -142,4 +142,20 @@ public class CertInfo implements java.io.Serializable {
         return sb.toString();
     }
 
+	public Date getNotBefore() {
+		return notBefore;
+	}
+
+	public Date getNotAfter() {
+		return notAfter;
+	}
+
+	public RFC2253Name getSubjectDN() {
+		return subjectDN;
+	}
+
+	public RFC2253Name getIssuerDN() {
+		return issuerDN;
+	}
+
 }

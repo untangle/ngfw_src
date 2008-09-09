@@ -80,12 +80,12 @@ public class HttpSettings implements Serializable
     @Id
     @Column(name="settings_id")
     @GeneratedValue
-    private Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    private void setId(Long id)
+    public void setId(Long id)
     {
         this.id = id;
     }

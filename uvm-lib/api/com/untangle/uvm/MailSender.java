@@ -126,6 +126,17 @@ public interface MailSender
     void sendMessage(String[] recipients, String subject, String bodyText);
 
     /**
+     * Sends an email message to the given recipients.
+     *
+     * @param recipients recipient email addresses.
+     * @param subject subject of the message.
+     * @param bodyHtml body of the message.
+     * 
+     * @return true if sent, false if an error.
+     */
+    boolean sendHtmlMessage(String[] recipients, String subject, String bodyHtml);
+    
+    /**
      * Sends a pre-formatted RFC822 (i.e. MIME) message.  The
      * <code>To</code>, <code>From</code>, etc... headers are lifted
      * from the MIME message.  All headers (<code>Date</code>,

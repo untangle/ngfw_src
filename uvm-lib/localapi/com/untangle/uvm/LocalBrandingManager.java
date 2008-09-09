@@ -44,18 +44,25 @@ import java.io.File;
 public interface LocalBrandingManager
 {
     /**
-     * Get the settings.
+     * Get the branding base settings.
      *
-     * @return the settings.
+     * @return the branding base settings.
      */
-    BrandingSettings getBrandingSettings();
+    BrandingBaseSettings getBaseSettings();
 
     /**
-     * Set the settings.
+     * Set the branding base settings.
      *
-     * @param bs the settings.
+     * @param bs the branding base settings.
      */
-    void setBrandingSettings(BrandingSettings bs);
+    void setBaseSettings(BrandingBaseSettings bs);
+    
+    /**
+     * Set the vendor logo to use, null means use the default Untangle logo.
+     *
+     * @param logo
+     */
+    void setLogo(byte[] logo);    
 
     /**
      * Retrieve the file that holds the logo.

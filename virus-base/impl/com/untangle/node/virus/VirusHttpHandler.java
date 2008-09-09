@@ -38,11 +38,10 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
@@ -70,10 +69,6 @@ class VirusHttpHandler extends HttpStateMachine
         + "<p>URI: %s</p>"
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
-
-    private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
-    private static final int BLOCK_COUNTER = Node.GENERIC_1_COUNTER;
-    private static final int PASS_COUNTER  = Node.GENERIC_2_COUNTER;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -229,7 +224,7 @@ class VirusHttpHandler extends HttpStateMachine
             if (logger.isDebugEnabled()) {
                 logger.debug("Scanning the file: " + scanfile);
             }
-            node.incrementCount(SCAN_COUNTER);
+            node.incrementScanCount();
             result = node.getScanner().scanFile(scanfile);
         } catch (Exception e) {
             // Should never happen
@@ -247,7 +242,7 @@ class VirusHttpHandler extends HttpStateMachine
         node.log(new VirusHttpEvent(requestLine, result,  vendor));
 
         if (result.isClean()) {
-            node.incrementCount(PASS_COUNTER, 1);
+            node.incrementPassCount();
 
             if (result.isVirusCleaned()) {
                 logger.info("Cleaned infected file");
@@ -264,10 +259,19 @@ class VirusHttpHandler extends HttpStateMachine
         } else {
             logger.info("Virus found, killing session");
             // Todo: Quarantine (for now, don't delete the file) XXX
-            node.incrementCount(BLOCK_COUNTER, 1);
+            node.incrementBlockCount();
 
             if (Mode.QUEUEING == getResponseMode()) {
-                blockResponse(blockMessage());
+                RequestLineToken rl = getResponseRequest();
+                String uri = null != rl ? rl.getRequestUri().toString() : "";
+                String host = getResponseHost();
+                VirusBlockDetails bd = new VirusBlockDetails(host,uri,null,this.vendor);
+                                                             
+                String nonce = node.generateNonce(bd);
+                boolean p = isRequestPersistent();
+                TCPSession sess = getSession();
+                Token[] response = node.generateResponse(nonce, sess, uri, p);
+                blockResponse(response);
             } else {
                 TCPSession s = getSession();
                 s.shutdownClient();
@@ -286,7 +290,7 @@ class VirusHttpHandler extends HttpStateMachine
         String host = getResponseHost();
 
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         String message = String.format(BLOCK_MESSAGE, host, uri, bs.getContactHtml());
 
         Header h = new Header();

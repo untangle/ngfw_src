@@ -33,18 +33,21 @@
 
 package com.untangle.node.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.naming.InvalidNameException;
 
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
-
 
 /**
  * Wrapper around the OpenSSL application.  Note that the features
@@ -260,7 +263,42 @@ public class OpenSSLWrapper {
         }
     }
 
+    public static String getCertFromPEM(String filename) {
+        return extractMatchFromFile(filename, "-----BEGIN CERTIFICATE-----.+-----END CERTIFICATE-----");
+    }
 
+    public static String getCertKeyFromPEM(String filename) {
+        return extractMatchFromFile(filename, "-----BEGIN .*? KEY-----.+-----END .*? KEY-----");
+    }
+
+    public static void generateSelfSignedCert(String alias, String filename)
+        throws IOException {
+        SimpleExec.SimpleExecResult result = SimpleExec.exec(
+                                                             "openssl",
+                                                             new String[] {
+                                                                 "-req",
+                                                                 "-batch",
+                                                                 "-subj",
+                                                                 "'/CN=" + alias + "'",
+                                                                 "-new",
+                                                                 "-x509",
+                                                                 "-nodes",
+                                                                 "-out",
+                                                                 filename,
+                                                                 "-keyout",
+                                                                 filename
+                                                             },
+                                                             null,
+                                                             null,
+                                                             true,
+                                                             false,
+                                                             1000*60);
+
+        if(result.exitCode==0) {
+            return;
+        }
+        throw new IOException("openssl exited with value " + result.exitCode);
+    }
 
     /**
      * Generates an RSA key of length 1024.
@@ -389,6 +427,28 @@ public class OpenSSLWrapper {
     //============
     // Helpers
     //============
+
+    private static String extractMatchFromFile(String filename, String stringPattern) {
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(filename));
+            String input;
+            String str = "";
+            //read file into a string
+            while ((input = in.readLine()) != null) {
+                str += input + "\n";
+            }
+            in.close();
+            Pattern pattern = Pattern.compile(stringPattern, Pattern.DOTALL);
+            Matcher matcher = pattern.matcher(str);
+            if(matcher.find()) {
+                return matcher.group(0);
+            } else {
+                return null;
+            }
+        } catch (Exception e) { // FIXME
+            return null;
+        }
+    }
 
     /**
      * Parses the output of a date from openssl.  I'm sure this format

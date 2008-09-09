@@ -20,6 +20,8 @@ package com.untangle.uvm.policy;
 
 import java.util.List;
 
+import com.untangle.uvm.node.Validator;
+
 /**
  * Adapts LocalPolicyManager to RemotePolicyManager.
  *
@@ -97,4 +99,8 @@ class RemotePolicyManagerAdaptor implements RemotePolicyManager
         pm.shutdownSessions(policy);
     }
 
+    public Validator getValidator() 
+    {
+        return pm.getValidator();
+    }
 }

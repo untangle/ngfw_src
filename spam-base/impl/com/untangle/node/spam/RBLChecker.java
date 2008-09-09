@@ -150,7 +150,7 @@ public class RBLChecker {
                 tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
 
                 /* Indicate that there was a block event */
-                this.m_spamImpl.incrementBlockCounter();
+                this.m_spamImpl.incrementBlockCount();
 
                 rblCnt++;
             }

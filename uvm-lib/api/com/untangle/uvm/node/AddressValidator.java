@@ -44,29 +44,50 @@ import org.apache.log4j.Logger;
  * It also validates that the networks do not overlap with the illegal/reserved
  * addresses listed in RFC 3330
  */
-public class AddressValidator
+public class AddressValidator implements Validator
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    public static final String ERR_CODE_OVERLAP = "ERR_OVERLAP";
+    
     private static final List<AddressRange> ILLEGAL_ADDRESS_LIST;
     private static final List<AddressRange> PRIVATE_ADDRESS_LIST;
 
     private static final AddressValidator INSTANCE = new AddressValidator();
 
-    AddressValidator()
-    {
-    }
+    public ValidationResult validate(Object data) {
 
-    public void validate( List<AddressRange> addressRangeList ) throws ValidateException
+        try {
+            if (data != null) {
+                List<AddressRange> checkList = new LinkedList<AddressRange>( (List<AddressRange>) data );
+
+                /* Make sure none of the addresses also overlap with the illegal ranges */
+                checkList.addAll( ILLEGAL_ADDRESS_LIST );
+
+                return checkOverlap( checkList );
+            }
+        } catch (Exception e) {
+            return new ValidationResult(false, e.getMessage(), e);
+        }
+
+        return new ValidationResult(true);
+    }
+    
+    public void validateOverlap( List<AddressRange> addressRangeList ) throws ValidateException
     {
         List<AddressRange> checkList = new LinkedList<AddressRange>( addressRangeList );
 
         /* Make sure none of the addresses also overlap with the illegal ranges */
         checkList.addAll( ILLEGAL_ADDRESS_LIST );
 
-        ValidateException e = checkOverlap( checkList );
+        ValidationResult result = checkOverlap( checkList );
 
-        if ( e != null ) throw e;
+        if ( !result.isValid() )  {
+            String[] data = (String[])result.getCause();
+            throw new ValidateException("The two networks: " + data[0] +
+                             " and " + data[1] + " cannot overlap" );
+            
+        }
     }
 
     public boolean isInPrivateNetwork( InetAddress address )
@@ -78,9 +99,7 @@ public class AddressValidator
 
         checkList.addAll( PRIVATE_ADDRESS_LIST );
 
-        if ( null != checkOverlap( checkList )) return true;
-
-        return false;
+        return checkOverlap( checkList ).isValid();
     }
 
     public boolean isIllegalAddress( InetAddress address )
@@ -92,12 +111,10 @@ public class AddressValidator
 
         checkList.addAll( ILLEGAL_ADDRESS_LIST );
 
-        if ( null != checkOverlap( checkList )) return true;
-
-        return false;
+        return checkOverlap( checkList ).isValid();
     }
 
-    private ValidateException checkOverlap( List<AddressRange> addressRangeList )
+    private ValidationResult checkOverlap( List<AddressRange> addressRangeList )
     {
         List<AddressRange> checkList = new LinkedList<AddressRange>( addressRangeList );
 
@@ -118,22 +135,16 @@ public class AddressValidator
                         logger.warn( "Overlapping in the list of illegal addresses: " +
                                      range.getDescription() + "," + previous.getDescription());
                     } else if ( range.getIsIllegal()) {
-                        return new
-                            ValidateException( "The network: " + previous.getDescription() +
-                                               " cannot overlap with the network " +
-                                               range.getDescription());
-
+                          return new ValidationResult(false,
+                                  ERR_CODE_OVERLAP, new String[]{previous.getDescription(), range.getDescription()});
                     } else if ( previous.getIsIllegal()) {
-                        return new
-                            ValidateException( "The network: " + range.getDescription() +
-                                               " cannot overlap with the network: " +
-                                               previous.getDescription());
-
+                        return new ValidationResult(false,
+                                ERR_CODE_OVERLAP, new String[]{range.getDescription(), previous.getDescription()});
+                        
                         /* They are both legal */
                     } else {
-                        return new
-                            ValidateException( "The two networks: " + range.getDescription() +
-                                               " and " + previous.getDescription() + " cannot overlap" );
+                        return new ValidationResult(false,
+                                ERR_CODE_OVERLAP, new String[]{range.getDescription(), previous.getDescription()});
                     }
                 }
             }
@@ -141,7 +152,7 @@ public class AddressValidator
             previous = range;
         }
 
-        return null;
+        return new ValidationResult(true);
     }
 
     public static AddressValidator getInstance()

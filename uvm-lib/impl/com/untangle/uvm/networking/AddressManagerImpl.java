@@ -99,6 +99,8 @@ class AddressManagerImpl implements LocalAddressManager
     /* @param updateSuffix Set to true to also update the search domain. */
     public void setSettings( AddressSettings settings, boolean forceSave, boolean updateSuffix )
     {
+        logger.debug( "Got the settings: " + settings.toString());
+
         /* should validate settings */
         if ( !forceSave && settings.isClean()) logger.debug( "settings are clean, leaving alone." );
         

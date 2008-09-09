@@ -97,7 +97,7 @@ public class Tid implements Principal, Serializable, Comparable
         return id;
     }
 
-    private void setId(Long id)
+    public void setId(Long id)
     {
         this.id = id;
     }

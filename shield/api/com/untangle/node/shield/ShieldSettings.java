@@ -19,10 +19,11 @@
 package com.untangle.node.shield;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,9 +33,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.security.Tid;
-import org.hibernate.annotations.IndexColumn;
 
 /**
  * Settings for the Shield Node.
@@ -51,7 +50,9 @@ public class ShieldSettings implements Serializable
     private Long id;
     private Tid tid;
 
-    private List<ShieldNodeRule> shieldNodeRuleList = new LinkedList<ShieldNodeRule>();
+    private ShieldBaseSettings baseSettings = new ShieldBaseSettings();
+
+    private Set<ShieldNodeRule> shieldNodeRules = new LinkedHashSet<ShieldNodeRule>();
 
     public ShieldSettings() { }
 
@@ -93,27 +94,42 @@ public class ShieldSettings implements Serializable
     /**
      * Shield node configuration rules.
      *
-     * @return the list of user settings
+     * @return the set of user settings
      */
     @OneToMany(targetEntity=ShieldNodeRule.class, cascade=CascadeType.ALL,
                fetch=FetchType.EAGER)
     @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
-    public List<ShieldNodeRule> getShieldNodeRuleList()
+    public Set<ShieldNodeRule> getShieldNodeRules()
     {
-        if (null == this.shieldNodeRuleList) {
-            this.shieldNodeRuleList = new LinkedList();
+        if (null == this.shieldNodeRules) {
+            this.shieldNodeRules = new LinkedHashSet<ShieldNodeRule>();
         }
 
-        return UvmUtil.eliminateNulls(this.shieldNodeRuleList);
+        return this.shieldNodeRules;
     }
 
-    public void setShieldNodeRuleList(List<ShieldNodeRule> shieldNodeRuleList)
+    public void setShieldNodeRules(Set<ShieldNodeRule> shieldNodeRules)
     {
-        if (null == shieldNodeRuleList) {
-            shieldNodeRuleList = new LinkedList<ShieldNodeRule>();
+        if (null == shieldNodeRules) {
+            shieldNodeRules = new LinkedHashSet<ShieldNodeRule>();
         }
 
-        this.shieldNodeRuleList = shieldNodeRuleList;
+        this.shieldNodeRules = shieldNodeRules;
+    }
+
+    @Embedded
+    public ShieldBaseSettings getBaseSettings() {
+        if (null != baseSettings) {
+            baseSettings.setShieldNodeRulesLength(null == shieldNodeRules ? 0 : shieldNodeRules.size());
+        }
+
+        return baseSettings;
+    }
+
+    public void setBaseSettings(ShieldBaseSettings baseSettings) {
+        if (null == baseSettings) {
+            baseSettings = new ShieldBaseSettings();
+        }
+        this.baseSettings = baseSettings;
     }
 }

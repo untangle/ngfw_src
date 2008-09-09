@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -38,16 +38,11 @@ import java.io.IOException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
- 
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-
-import org.apache.commons.httpclient.params.HttpMethodParams;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,7 +51,7 @@ public class JsonClient
 {
     public static final JsonClient INSTANCE = new JsonClient();
 
-    private final MultiThreadedHttpConnectionManager connectionManager = 
+    private final MultiThreadedHttpConnectionManager connectionManager =
         new MultiThreadedHttpConnectionManager();
 
     private JsonClient()
@@ -67,7 +62,7 @@ public class JsonClient
     public static void main(String[] args) throws Exception
     {
         JSONObject object = getInstance().call( args[0], new JSONObject( args[1] ));
-        
+
         System.out.println( "Returned: " + object.toString() + "\n" );
     }
 
@@ -80,22 +75,22 @@ public class JsonClient
     {
         // Create an instance of HttpClient.
         HttpClient client = new HttpClient( this.connectionManager );
-        
+
         // Create a method instance.
         PostMethod method = new PostMethod( url );
 
         Part parts[] = { new StringPart( param, object.toString()) };
         method.setRequestEntity(new MultipartRequestEntity( parts, method.getParams()));
-        
+
         try {
             // Execute the method.
             int statusCode = client.executeMethod(method);
-            
+
             if (statusCode != HttpStatus.SC_OK) throw new ConnectionException( "Server returned an error." );
-            
+
             // Read the response body.
             byte[] responseBody = method.getResponseBody();
-            
+
             // Deal with the response.
             // Use caution: ensure correct character encoding and is not binary data
             return new JSONObject( new String(responseBody));

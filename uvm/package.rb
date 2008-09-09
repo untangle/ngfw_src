@@ -21,7 +21,14 @@ BuildEnv::SRC.installTarget.register_dependency(uvm)
 
 ms = MoveSpec.new("./uvm/hier", FileList["./uvm/hier/**/*"], uvm.distDirectory)
 cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
+
 uvm.registerTarget('hier', cf)
+
+## This is for pycli
+ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/share/untangle/pycli/") ]
+
+cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
+uvm.registerTarget('python-jsonrpc', cf)
 
 # mo files
 MsgFmtTarget.new(uvm, './uvm/po')

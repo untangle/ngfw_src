@@ -81,6 +81,10 @@ public interface SafelistManipulation {
                                        String toRemove)
         throws NoSuchSafelistException, SafelistActionFailedException;
 
+    public String[] removeFromSafelists(String safelistOwnerAddress,
+            String[] toRemove)
+        throws NoSuchSafelistException, SafelistActionFailedException;
+    
     /**
      * Replace a safelist with a new list
      * <br><br>

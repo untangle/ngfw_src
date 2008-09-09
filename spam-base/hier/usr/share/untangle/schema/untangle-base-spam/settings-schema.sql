@@ -85,38 +85,6 @@ CREATE TABLE settings.n_spam_rbl (
     description text NULL,
     PRIMARY KEY (id));
 
--- com.untangle.tran.spam.SpamSettings.spamAssassinDefList (list construct)
-CREATE TABLE settings.n_spamassassin_def_list (
-    settings_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
-
--- com.untangle.tran.spam.SpamAssassinDef
-CREATE TABLE settings.n_spamassassin_def (
-    id int8 NOT NULL,
-    optname text NOT NULL,
-    optvalue text NULL,
-    active bool NOT NULL,
-    description text NULL,
-    PRIMARY KEY (id));
-
--- com.untangle.tran.spam.SpamSettings.spamAssassinLclList (list construct)
-CREATE TABLE settings.n_spamassassin_lcl_list (
-    settings_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (settings_id, position));
-
--- com.untangle.tran.spam.SpamAssassinLcl
-CREATE TABLE settings.n_spamassassin_lcl (
-    id int8 NOT NULL,
-    optname text NOT NULL,
-    optvalue text NULL,
-    active bool NOT NULL,
-    description text NULL,
-    PRIMARY KEY (id));
-
 ----------------
 -- constraints |
 ----------------

@@ -42,6 +42,7 @@ public interface MailNode
 {
     MailNodeSettings getMailNodeSettings();
     void setMailNodeSettings(MailNodeSettings settings);
+    void setMailNodeSettingsWithoutSafelists(MailNodeSettings settings);
 
     /**
      * Get the interface to the Quarantine used for end-user
@@ -92,4 +93,9 @@ public interface MailNode
      * -> in GB if inGB == true or in B if inGB == false
      */
     public long getMaxAllocatedStoreSize(boolean inGB);
+
+    /**
+     * Retrieve an authentication token for an email address.
+     */
+    public String createAuthToken(String account);
 }

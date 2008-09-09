@@ -17,12 +17,34 @@
  */
 package com.untangle.node.protofilter;
 
+import java.util.List;
+
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeException;
 
 public interface ProtoFilter extends Node
 {
-    ProtoFilterSettings getProtoFilterSettings();
-    void setProtoFilterSettings(ProtoFilterSettings settings);
+    ProtoFilterBaseSettings getBaseSettings();
+    void setBaseSettings(ProtoFilterBaseSettings baseSettings);
+
+    List<ProtoFilterPattern> getPatterns(int start, int limit, String... sortColumns);
+    void updatePatterns(List<ProtoFilterPattern> added, List<Long> deleted, List<ProtoFilterPattern> modified);
+    
+    /**
+     * Update all settings once
+     */
+    void updateAll(List[] patternsChanges);
+    
+    /**
+     * Reconfigure node. This method should be called after some settings are updated
+     * in order to reconfigure the node accordingly.
+     *
+     * @throws NodeException if an exception occurs when reconfiguring.
+     */
+	void reconfigure() throws NodeException;
+
+    
     EventManager<ProtoFilterLogEvent> getEventManager();
+    
 }

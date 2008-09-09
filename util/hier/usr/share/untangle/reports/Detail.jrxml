@@ -27,7 +27,7 @@
         <reportElement key="image" positionType="Float" mode="Opaque" x="0" y="0" width="150" height="96"/>
         <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
         <graphicElement/>
-        <imageExpression class="java.lang.String">"file:///usr/share/untangle/web/ROOT/images/BrandingLogo.gif"</imageExpression>
+        <imageExpression class="java.lang.String">"file:///var/www/images/BrandingLogo.gif"</imageExpression>
       </image>
 
       <textField pattern="">

@@ -1,15 +1,3 @@
-#! /bin/bash
+#! /bin/sh
 
-set -e
-
-source @PREFIX@/etc/default/untangle-vm
-
-CLASSPATH="@UVM_LIB@/untangle-libuvm-api/:@THIRDPARTY_UVM_LIB@/hibernate3.jar:@THIRDPARTY_UVM_LIB@/log4j-1.2.14.jar"
-for f in @THIRDPARTY_REPORTS_LIB@/*jar @UVM_LIB@/*-ext-api ; do
-    CLASSPATH="$CLASSPATH:$f"
-done
-
-for m in @UVM_TOOLBOX@/*; do CLASSPATH="$CLASSPATH:$m"; done
-
-export CLASSPATH
-exec ${JAVA_HOME}/bin/java com.untangle.uvm.client.RemoteClient "$@"
+exec python @UVM_HOME@/pycli/jscli.py "$@"

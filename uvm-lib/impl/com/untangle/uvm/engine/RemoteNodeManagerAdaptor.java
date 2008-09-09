@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.node.DeployException;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.policy.Policy;
@@ -59,9 +61,9 @@ class RemoteNodeManagerAdaptor implements RemoteNodeManager
         return nodeManager.nodeInstances(policy);
     }
 
-    public List<Tid> nodeInstancesVisible(Policy policy)
+    public List<NodeDesc> visibleNodes(Policy policy)
     {
-        return nodeManager.nodeInstancesVisible(policy);
+        return nodeManager.visibleNodes(policy);
     }
 
     public List<Tid> nodeInstances(String name, Policy policy)
@@ -69,23 +71,23 @@ class RemoteNodeManagerAdaptor implements RemoteNodeManager
         return nodeManager.nodeInstances(name, policy);
     }
 
-    public Tid instantiate(String name, Policy policy) throws DeployException
+    public NodeDesc instantiate(String name, Policy policy) throws DeployException
     {
         return nodeManager.instantiate(name, policy);
     }
 
-    public Tid instantiate(String name, Policy policy, String[] args)
+    public NodeDesc instantiate(String name, Policy policy, String[] args)
         throws DeployException
     {
         return nodeManager.instantiate(name, policy, args);
     }
 
-    public Tid instantiate(String name, String[] args) throws DeployException
+    public NodeDesc instantiate(String name, String[] args) throws DeployException
     {
         return nodeManager.instantiate(name, args);
     }
 
-    public Tid instantiate(String name) throws DeployException
+    public NodeDesc instantiate(String name) throws DeployException
     {
         return nodeManager.instantiate(name);
     }
@@ -100,8 +102,13 @@ class RemoteNodeManagerAdaptor implements RemoteNodeManager
         return nodeManager.nodeContext(tid);
     }
 
-    public Map<Tid, NodeStats> allNodeStats()
+    public Node node(String name)
     {
-        return nodeManager.allNodeStats();
+        return nodeManager.node(name);
+    }
+
+    public Map<Tid, NodeState> allNodeStates()
+    {
+        return nodeManager.allNodeStates();
     }
 }

@@ -94,11 +94,9 @@ include Debug
 
 # XXX make this class immutable
 class BuildEnv
-  JAVA_HOME = '/usr/lib/jvm/java-1.5.0-sun'
+  JAVA_HOME = '/usr/lib/jvm/java-6-sun'
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
-  # XXX XXX should these live here???
-  DOWNLOADS = ["#{SRC_HOME}/downloads/output", '/usr/share/java/uvm'].find { |d| File.exist?(d) }
   SERVLET_COMMON = "./servlet/common"
 
   attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget
@@ -137,6 +135,12 @@ class BuildEnv
     @installTarget = InstallTarget.new(self['install'], [], "#{name}-install")
   end
 
+  def BuildEnv::downloads
+    d = ["#{SRC_HOME}/downloads/output", '/usr/share/java/uvm'].find { |d| File.exist?(d) }
+
+    d
+  end
+
   def [](name)
     @mutex.synchronize do
       package = @cache[name]
@@ -149,12 +153,10 @@ class BuildEnv
   end
 
   def filterset
-    jvm5 = '/usr/lib/jvm/java-1.5.0-sun'
     jvm6 = '/usr/lib/jvm/java-6-sun'
 
     {
       /@PREFIX@/ => @prefix,
-      /@DEFAULT_JAVA5_HOME@/ => jvm5,
       /@DEFAULT_JAVA6_HOME@/ => jvm6,
       /@USR_BIN@/ => "#{@prefix}/usr/bin",
       /@UVM_HOME@/ => "#{@prefix}/usr/share/untangle",
@@ -205,7 +207,7 @@ class JavaCompiler
     info "javac -d #{dstdir}"
 
     raise "javac failed" unless
-      Kernel.system(JavacCommand, "-classpath", cp, "-d", dstdir, "@" + files.path)
+      Kernel.system(JavacCommand, "-g", "-classpath", cp, "-d", dstdir, "@" + files.path)
   end
 
   def JavaCompiler.jar(jarTarget)
@@ -272,7 +274,7 @@ class JavaCompiler
   end
 
   def JavaCompiler.selfSignedCert(keystore, aliaz, passwd)
-    puts "Dynamically generating keystore" 
+    puts "Dynamically generating keystore"
     raise "KeyTool failed" unless
       Kernel.system(KeyToolCommand, '-genkey', '-alias', aliaz,
                     '-keypass', passwd, '-storepass', passwd,

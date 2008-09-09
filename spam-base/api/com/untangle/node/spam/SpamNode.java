@@ -33,13 +33,20 @@
 
 package com.untangle.node.spam;
 
+import java.util.List;
+
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
 
 public interface SpamNode extends Node
 {
-    void setSpamSettings(SpamSettings spamSettings);
-    SpamSettings getSpamSettings();
+    SpamBaseSettings getBaseSettings();
+    void setBaseSettings(SpamBaseSettings baseSettings);
+
+    List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns );
+    void updateSpamRBLList( List<SpamRBL> added, List<Long> deleted, List<SpamRBL> modified );
+
+    void updateAll( SpamBaseSettings baseSettings, List[] rblRules );
 
     EventManager<SpamEvent> getEventManager();
     EventManager<SpamSMTPRBLEvent> getRBLEventManager();

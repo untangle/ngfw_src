@@ -33,8 +33,6 @@
 
 package com.untangle.uvm.vnet;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The <code>Protocol</code> interface represents an IP protocol.
@@ -42,26 +40,35 @@ import java.util.Map;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public class Protocol
+public enum Protocol
 {
-    private static final Map<String,Protocol> NAME_TO_PROTOCOL_MAP = new HashMap<String,Protocol>();
-    private static final Map<Integer,Protocol> ID_TO_PROTOCOL_MAP = new HashMap<Integer,Protocol>();
-
-    public static final Protocol TCP  = makeInstance("TCP", 6);
-    public static final Protocol UDP  = makeInstance("UDP", 17);
-    public static final Protocol ICMP = makeInstance("ICMP", 1);
+    TCP("TCP", 6),
+    UDP("UDP", 17),
+    ICMP("ICMP", 1);
 
     private final String name;
     private final int id;
 
     public static Protocol getInstance(String name)
     {
-        return NAME_TO_PROTOCOL_MAP.get(name);
+        Protocol[] values = values();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].getName().equals(name)){
+                return values[i];
+            }
+        }
+        return null;
     }
 
     public static Protocol getInstance(int id)
     {
-        return ID_TO_PROTOCOL_MAP.get(id);
+        Protocol[] values = values();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].getId() == id){
+                return values[i];
+            }
+        }
+        return null;
     }
 
     private Protocol(String name, int id)
@@ -70,46 +77,13 @@ public class Protocol
         this.id   = id;
     }
 
-    public String toString()
-    {
-        return name;
-    }
-
     public int getId()
     {
         return id;
     }
 
-    // Object methods ---------------------------------------------------------
-
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof Protocol)) {
-            return false;
-        } else {
-            Protocol p = (Protocol)o;
-            return id == p.id;
-        }
-    }
-
-    public int hashCode()
-    {
-        return ( 17 * 37 ) + id;
-    }
-
-    // serialization helpers --------------------------------------------------
-
-    Object readResolve()
-    {
-        return getInstance(name);
-    }
-
-    private static Protocol makeInstance( String name, int id )
-    {
-        Protocol protocol = new Protocol( name, id );
-        NAME_TO_PROTOCOL_MAP.put( name, protocol );
-        ID_TO_PROTOCOL_MAP.put( id, protocol );
-        return protocol;
+    public String getName() {
+        return name;
     }
                                           
 }

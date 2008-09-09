@@ -22,19 +22,24 @@
 class Jars
   ## Makes the target with the downloads path prepended
   def Jars.downloadTarget(path)
-    p =  "#{BuildEnv::DOWNLOADS}/#{path}"
+    p =  "#{BuildEnv::downloads}/#{path}"
     if File.exist?(p)
       ThirdpartyJar.get(p)
     else
       b = File.basename(path)
-      p = [ "/usr/share/java/uvm/#{b}",
-            "/usr/share/java/reports/#{b}",
-            "/usr/share/untangle/web/webstart/#{b}" ].find do |f|
+      paths = [ "/usr/share/java/uvm/#{b}",
+                "/usr/share/java/reports/#{b}",
+                "/usr/share/untangle/web/webstart/#{b}" ]
+      p = paths.find do |f|
         File.exist?(f)
       end
 
       if p.nil?
-        warn "Could not find #{path}"
+        h = ([ "#{BuildEnv::downloads}/#{path}" ] + paths).map do |p|
+          "#{p}: #{File.exist?(p)}"
+        end
+
+        warn "Could not find #{path} (#{h.join(',')})"
       else
         ThirdpartyJar.get(p)
       end
@@ -42,7 +47,7 @@ class Jars
   end
 
   def Jars.makeGroup(*jars)
-    [ jars ].flatten.uniq
+    [ jars ].flatten.compact.uniq
   end
 
   ## Named groups of jars
@@ -65,34 +70,43 @@ class Jars
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar') ]
   Ant        = [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ]
   JavaMailApi= [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ]
+  Jabsorb    = [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')]
+  Json       = [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')]
   GetText    = [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ]
+  Slf4j      = [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'),
+                 Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ]
 
-  TomcatEmb  = [ 'catalina-optional.jar',
-                 'catalina.jar',
-                 'commons-el.jar',
-                 'commons-logging.jar',
-                 'commons-modeler.jar',
-                 'jasper-compiler-jdt.jar',
-                 'jasper-compiler.jar',
-                 'jasper-runtime.jar',
-                 'jsp-api.jar',
-                 'naming-factory.jar',
-                 'naming-resources.jar',
-                 'servlet-api.jar',
-                 'servlets-default.jar',
-                 'tomcat-coyote.jar',
-                 'tomcat-http.jar',
-                 'tomcat-util.jar'
-               ].map do |n|
-    Jars.downloadTarget("apache-tomcat-5.5.17-embed/lib/#{n}")
+  TomcatCommon = [ 'commons-el.jar',
+                   'jasper-compiler.jar',
+                   'jasper-compiler-jdt.jar',
+                   'jasper-runtime.jar',
+                   'jsp-api.jar',
+                   'naming-factory.jar',
+                   'naming-resources.jar',
+                   'servlet-api.jar'
+                 ].map do |n|
+    Jars.downloadTarget("apache-tomcat-5.5.26/common/lib/#{n}")
   end
+
+  TomcatServer  = [ 'catalina-optional.jar',
+                    'catalina.jar',
+                    'commons-modeler-2.0.1.jar',
+                    'jsp-api.jar',
+                    'servlets-default.jar',
+                    'tomcat-coyote.jar',
+                    'tomcat-http.jar',
+                    'tomcat-util.jar',
+                    'tomcat-ajp.jar'
+                  ].map do |n|
+    Jars.downloadTarget("apache-tomcat-5.5.26/server/lib/#{n}")
+  end
+
+  TomcatEmb = TomcatCommon + TomcatServer + [Jars.downloadTarget("hibernate-3.2/lib/commons-logging-1.0.4.jar")]
 
   ## XmlRpc Jars
   XmlRpc     = [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
                  Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-common-3.1.jar'),
          Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ]
-  ## WBEM Jars
-  WBEM       = [ Jars.downloadTarget('wbemservices-1.0.2.src/dist/wbemservices/lib/wbem.jar') ]
 
   ## GUIJars
   Alloy      = [ Jars.downloadTarget('alloylnf-1_4_4-1/alloy.jar') ]
@@ -112,7 +126,8 @@ class Jars
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
   JRuby      = [ Jars.downloadTarget('jruby-complete/jruby-complete.jar') ]
-  Jabsorb    = [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar') ]
+  XStream    = [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xstream-1.3.jar'),
+                 Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xpp3_min-1.1.4c.jar')]
 
   # Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
   Jnlp       = [ Jars.downloadTarget('jnlp/jnlp.jar') ]
@@ -130,6 +145,10 @@ class Jars
                    commons-io-1.1/commons-io-1.1.jar
                  ).map { |n| Jars.downloadTarget(n) }
 
+  Jstl       = %w( Ajax/jars/jstl.jar
+                   Ajax/jars/standard.jar
+                 ).map { |f| Jars.downloadTarget(f) }
+
   HtmlParser = [ Jars.downloadTarget('htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar') ]
 
   VncViewer = [ Jars.downloadTarget('tightvnc-1.2.9/classes/VncViewer.jar') ]
@@ -138,8 +157,9 @@ class Jars
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
-                              GetText, JavaMail, TomcatEmb, Velocity, WBEM, JRuby,
-                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc)
+                              GetText, JavaMail, TomcatEmb, Velocity, JRuby,
+                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc, Jstl,
+                              XStream, Json, Jabsorb, Slf4j)
 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)

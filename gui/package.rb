@@ -38,18 +38,9 @@ jt = JarTarget.build_target(gui, deps, 'api', "./gui/api")
 BuildEnv::SRC.installTarget.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
 
-## Implementation
-deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [uvm_lib['api'], gui['api']]
-jt = JarTarget.build_target(gui, deps, 'impl', "./gui/impl")
-
 # XXX renaming because the package name is bad
 BuildEnv::SRC.installTarget.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.install_jars(jt, gui.getWebappDir('webstart'), nil, true)
-
-ServletBuilder.new(gui, 'com.untangle.gui.webstart.jsp',
-                   "./gui/servlets/webstart", [], [], [],
-                   [BuildEnv::SERVLET_COMMON],
-                   ['gui.jnlp', 'index.jsp'])
 
 BuildEnv::SRC.installTarget.install_jars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
 

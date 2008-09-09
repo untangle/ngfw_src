@@ -18,7 +18,7 @@
 --%>
 
 <%
-    BrandingSettings bs = LocalUvmContextFactory.context().brandingManager().getBrandingSettings();
+    BrandingBaseSettings bs = LocalUvmContextFactory.context().brandingManager().getBaseSettings();
     String company = bs.getCompanyName();
 	String companyUrl = bs.getCompanyUrl();
 

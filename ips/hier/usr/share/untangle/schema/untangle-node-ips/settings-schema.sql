@@ -1,6 +1,6 @@
 -- settings schema for release-5.0
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
+-- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
@@ -21,42 +21,36 @@
 -------------
 
 create table settings.n_ips_settings (
-    settings_id int8 not null,
-    max_chunks int8 not null,
-    tid int8 not null unique,
-    primary key (settings_id));
+    settings_id int8 NOT NULL,
+    max_chunks int8 NOT NULL,
+    tid int8 NOT NULL UNIQUE,
+    PRIMARY KEY (settings_id));
 
 create table settings.n_ips_variable (
-    VARIABLE_ID int8 not null,
-    VARIABLE text,
-    DEFINITION text,
-    DESCRIPTION text,
-    SETTINGS_ID int8,
-    POSITION int4,
-    PRIMARY KEY (VARIABLE_ID));
+    variable_id int8 NOT NULL,
+    variable text,
+    definition text,
+    description text,
+    settings_id int8,
+    PRIMARY KEY (variable_id));
 
 create table settings.n_ips_immutable_variables (
     setting_id int8 NOT NULL,
-    variable_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (setting_id, position));
+    variable_id int8 NOT NULL);
 
 create table settings.n_ips_mutable_variables (
     setting_id int8 NOT NULL,
-    variable_id int8 NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (setting_id, position));
+    variable_id int8 NOT NULL);
 
 create table settings.n_ips_rule (
-    RULE_ID int8 not null,
-    RULE text,
-    SID int4,
-    NAME text,
-    CATEGORY text,
-    DESCRIPTION text,
-    LIVE bool,
-    ALERT bool,
-    LOG bool,
-    SETTINGS_ID int8,
-    POSITION int4,
-    primary key (RULE_ID));
+    rule_id int8 NOT NULL,
+    rule text,
+    sid int4,
+    name text,
+    category text,
+    description text,
+    live bool,
+    alert bool,
+    log bool,
+    settings_id int8,
+    PRIMARY KEY (rule_id));

@@ -28,7 +28,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
+import javax.servlet.http.HttpServletRequest;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
@@ -52,6 +54,8 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogMailerImpl;
 import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.RemoteNetworkManagerAdaptor;
 import com.untangle.uvm.networking.ping.PingManagerImpl;
@@ -110,7 +114,6 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteAdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
     private RemoteIntfManagerImpl remoteIntfManager;
-    private HttpInvokerImpl httpInvoker;
     private RemoteLoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger eventLogger;
@@ -135,6 +138,11 @@ public class UvmContextImpl extends UvmContextBase
     private AddressBookFactory addressBookFactory;
     private RemoteBrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
+    private RemoteSkinManagerImpl skinManager;
+    private MessageManagerImpl localMessageManager;
+    private RemoteMessageManager messageManager;
+    private RemoteBrandingManager remoteMessageManager;
+    private RemoteLanguageManagerImpl languageManager;
     private PhoneBookFactory phoneBookFactory;
     private BasePortalManager portalManager;
     private LicenseManagerFactory licenseManagerFactory;
@@ -194,6 +202,26 @@ public class UvmContextImpl extends UvmContextBase
     public LocalBrandingManager localBrandingManager()
     {
         return localBrandingManager;
+    }
+
+    public RemoteSkinManagerImpl skinManager()
+    {
+        return skinManager;
+    }
+
+    public RemoteMessageManager messageManager()
+    {
+        return messageManager;
+    }
+
+    public LocalMessageManager localMessageManager()
+    {
+        return localMessageManager;
+    }
+
+    public RemoteLanguageManagerImpl languageManager()
+    {
+        return languageManager;
     }
 
     public RemotePhoneBook remotePhoneBook()
@@ -314,11 +342,6 @@ public class UvmContextImpl extends UvmContextBase
     public PipelineFoundryImpl pipelineFoundry()
     {
         return pipelineFoundry;
-    }
-
-    public UvmLoginImpl uvmLogin()
-    {
-        return adminManager.uvmLogin();
     }
 
     public void waitForStartup()
@@ -596,26 +619,26 @@ public class UvmContextImpl extends UvmContextBase
     }
 
     public boolean activate(String key, RegistrationInfo regInfo) {
-	if (key != null) {
-	    // Be nice to the poor user:
-	    if (key.length() == 16)
-		key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
-		    key.substring(8, 12) + "-" + key.substring(12,16);
-	    // Fix for bug 1310: Make sure all the hex chars are lower cased.
-	    key = key.toLowerCase();
-	    if (key.length() != 19) {
-		// Don't even bother if the key isn't the right length.
-		// Could do other sanity checking here as well. XX
-		logger.error("Unable to activate with wrong length key: " + key);
-		return false;
-	    }
-	}
+    if (key != null) {
+        // Be nice to the poor user:
+        if (key.length() == 16)
+        key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
+            key.substring(8, 12) + "-" + key.substring(12,16);
+        // Fix for bug 1310: Make sure all the hex chars are lower cased.
+        key = key.toLowerCase();
+        if (key.length() != 19) {
+        // Don't even bother if the key isn't the right length.
+        // Could do other sanity checking here as well. XX
+        logger.error("Unable to activate with wrong length key: " + key);
+        return false;
+        }
+    }
         try {
             Process p;
-	    if (key == null)
-		p = exec(new String[] { ACTIVATE_SCRIPT });
-	    else
-		p = exec(new String[] { ACTIVATE_SCRIPT, key });
+        if (key == null)
+        p = exec(new String[] { ACTIVATE_SCRIPT });
+        else
+        p = exec(new String[] { ACTIVATE_SCRIPT, key });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
@@ -633,14 +656,14 @@ public class UvmContextImpl extends UvmContextBase
             return false;
         }
 
-	// Only register if activation succeeded
-	try {
-	    adminManager.setRegistrationInfo(regInfo);	
-	} catch (Exception x) {
-	    // Shouldn't happen
-	    logger.error("unable to set reg info", x);
-	}
-	return true;
+    // Only register if activation succeeded
+    try {
+        adminManager.setRegistrationInfo(regInfo);
+    } catch (Exception x) {
+        // Shouldn't happen
+        logger.error("unable to set reg info", x);
+    }
+    return true;
     }
 
     public void doFullGC()
@@ -668,6 +691,11 @@ public class UvmContextImpl extends UvmContextBase
         return System.setProperty(key, value);
     }
 
+    public Map<String, String> getTranslations(String module)
+    {
+        return languageManager.getTranslations(module);
+    }
+
     // UvmContextBase methods --------------------------------------------------
 
     @Override
@@ -682,15 +710,16 @@ public class UvmContextImpl extends UvmContextBase
         loggingManager.start();
         eventLogger = EventLoggerFactory.factory().getEventLogger();
 
-        // Create the tomcat manager *before* the UVM, so we can
-        // "register" webapps to be started before Tomcat exists.
-        tomcatManager = new TomcatManager(this,
+        InheritableThreadLocal<HttpServletRequest> threadRequest
+            = new InheritableThreadLocal<HttpServletRequest>();
+
+        tomcatManager = new TomcatManager(this, threadRequest,
                                           System.getProperty("bunnicula.home"),
                                           System.getProperty("bunnicula.web.dir"),
                                           System.getProperty("bunnicula.log.dir"));
 
         // start services:
-        adminManager = new RemoteAdminManagerImpl(this);
+        adminManager = new RemoteAdminManagerImpl(this, threadRequest);
         mailSender = MailSenderImpl.mailSender();
 
         logMailer = new LogMailerImpl();
@@ -724,6 +753,10 @@ public class UvmContextImpl extends UvmContextBase
         localBrandingManager = new BrandingManagerImpl();
         brandingManager = new RemoteBrandingManagerAdaptor(localBrandingManager);
 
+        //Skins and Language managers
+        skinManager = new RemoteSkinManagerImpl(this);
+        languageManager = new RemoteLanguageManagerImpl(this);
+
         phoneBookFactory = PhoneBookFactory.makeInstance();
 
         loadPortalManager();
@@ -731,6 +764,10 @@ public class UvmContextImpl extends UvmContextBase
         // start nodes:
         nodeManager = new NodeManagerImpl(repositorySelector);
         remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
+
+        localMessageManager = new MessageManagerImpl();
+        localMessageManager.start();
+        messageManager = new RemoteMessageManagerAdaptor(localMessageManager);
 
         // Retrieve the reporting configuration manager
         reportingManager = RemoteReportingManagerImpl.reportingManager();
@@ -758,12 +795,10 @@ public class UvmContextImpl extends UvmContextBase
             this.heapMonitor.start();
         }
 
-    adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
+        adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
 
         /* initalize everything and start it up */
         phoneBookFactory.init();
-
-        httpInvoker = HttpInvokerImpl.invoker();
 
         remoteContext = new RemoteUvmContextAdaptor(this);
         state = UvmState.INITIALIZED;
@@ -780,8 +815,6 @@ public class UvmContextImpl extends UvmContextBase
         logger.debug("restarting nodes");
         nodeManager.init();
 
-        logger.debug("starting HttpInvoker");
-        httpInvoker.init();
         startCliServer();
         logger.debug("postInit complete");
         synchronized (startupWaitLock) {
@@ -791,7 +824,7 @@ public class UvmContextImpl extends UvmContextBase
 
         //Inform the AppServer manager that everything
         //else is started.
-        appServerManager.postInit(httpInvoker);
+        appServerManager.postInit();
     }
 
     @Override
@@ -799,14 +832,7 @@ public class UvmContextImpl extends UvmContextBase
     {
         state = UvmState.DESTROYED;
 
-        // stop remote services:
-        try {
-            if (httpInvoker != null)
-                httpInvoker.destroy();
-        } catch (Exception exn) {
-            logger.warn("could not destroy HttpInvoker", exn);
-        }
-        httpInvoker = null;
+        localMessageManager.stop();
 
         // stop cli server
         if (cliServerManager != null)
@@ -970,7 +996,7 @@ public class UvmContextImpl extends UvmContextBase
         return tomcatManager;
     }
 
-    RemoteUvmContext remoteContext()
+    public RemoteUvmContext remoteContext()
     {
         return remoteContext;
     }
@@ -1037,7 +1063,6 @@ public class UvmContextImpl extends UvmContextBase
             cliServerManager.init();
         }
     }
-
 
     // Uses reflection to allow easier optionality.
     private static class CliServerManager implements Runnable {

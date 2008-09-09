@@ -23,9 +23,9 @@ import com.untangle.uvm.vnet.event.*;
 
 public class EventHandler extends AbstractEventHandler {
 
-    private IPSDetectionEngine ipsEngine;
+    private IpsDetectionEngine ipsEngine;
 
-    public EventHandler(IPSNodeImpl node) {
+    public EventHandler(IpsNodeImpl node) {
         super(node);
         ipsEngine = node.getEngine();
     }

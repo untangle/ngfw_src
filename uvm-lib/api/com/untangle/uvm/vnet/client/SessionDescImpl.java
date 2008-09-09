@@ -35,6 +35,8 @@ package com.untangle.uvm.vnet.client;
 
 import java.io.Serializable;
 
+import org.json.JSONBean;
+
 import com.untangle.uvm.vnet.SessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 
@@ -44,7 +46,7 @@ import com.untangle.uvm.vnet.SessionStats;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-abstract class SessionDescImpl implements SessionDesc, Serializable {
+public abstract class SessionDescImpl implements SessionDesc, Serializable {
     private static final long serialVersionUID = 2962776047684793850L;
 
     protected int id;
@@ -59,16 +61,19 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
         this.stats = stats;
     }
 
+    @JSONBean.Getter
     public int id()
     {
         return id;
     }
 
+    @JSONBean.Getter
     public String user()
     {
         return user;
     }
 
+    @JSONBean.Getter
     public SessionStats stats()
     {
         return stats;
@@ -77,6 +82,7 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
     /**
      * Number of bytes received from the client.
      */
+    @JSONBean.Getter
     public long c2tBytes()
     {
         return this.stats.c2tBytes();
@@ -85,6 +91,7 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
     /**
      * Number of bytes transmitted to the server.
      */
+    @JSONBean.Getter
     public long t2sBytes()
     {
         return this.stats.t2sBytes();
@@ -93,6 +100,7 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
     /**
      * Number of bytes received from the server.
      */
+    @JSONBean.Getter
     public long s2tBytes()
     {
         return this.stats.s2tBytes();
@@ -101,6 +109,7 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
     /**
      * Number of bytes transmitted to the client.
      */
+    @JSONBean.Getter
     public long t2cBytes()
     {
         return this.stats.t2cBytes();
@@ -109,6 +118,7 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
     /**
      * Number of chunks received from the client.
      */
+    @JSONBean.Getter
     public long c2tChunks()
     {
         return this.stats.c2tChunks();
@@ -117,6 +127,7 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
     /**
      * Number of chunks transmitted to the server.
      */
+    @JSONBean.Getter
     public long t2sChunks()
     {
         return this.stats.t2sChunks();
@@ -125,6 +136,7 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
     /**
      * Number of chunks received from the server.
      */
+    @JSONBean.Getter
     public long s2tChunks()
     {
         return this.stats.s2tChunks();
@@ -133,6 +145,7 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
     /**
      * Number of chunks transmitted to the client.
      */
+    @JSONBean.Getter
     public long t2cChunks()
     {
         return this.stats.t2cChunks();

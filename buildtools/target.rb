@@ -255,7 +255,10 @@ class CopyFiles < Target
         if File.symlink?(src)
           deps << dest
 
-          file dest => src do
+          ## Handling symbolic links that don't resolve until in place.
+          file dest => src if File.exists?( src )
+
+          file dest do
             ensureDirectory(File.dirname(dest))
             File.symlink(File.readlink(src), dest) if !File.exist?(dest)
           end
@@ -304,7 +307,7 @@ end
 
 class ServletBuilder < Target
   JspcClassPath = ['apache-ant-1.6.5/lib/ant.jar'].map { |n|
-    "#{BuildEnv::DOWNLOADS}/#{n}"
+    "#{BuildEnv::downloads}/#{n}"
   } + ["#{BuildEnv::JAVA_HOME}/lib/tools.jar"];
 
   def initialize(package, pkgname, path, libdeps = [], nodedeps = [], ms = [],
@@ -323,6 +326,14 @@ class ServletBuilder < Target
 
     deps << CopyFiles.new(package, MoveSpec.new("#{path}/root/", "**/*",
                                                 @destRoot), "#{suffix}-root")
+
+    if File.exist? "#{path}/apache.conf"
+      deps << CopyFiles.new(package,
+                            MoveSpec.fileMove("#{path}/apache.conf",
+                                              "#{package.distDirectory}/usr/share/untangle/apache2/conf.d/",
+                                              "#{name}.conf"),
+                            "#{suffix}-apache")
+    end
 
     unless 0 == ms.length
       deps << CopyFiles.new(package, ms, "#{suffix}-ms", nil, @destRoot)
@@ -351,14 +362,14 @@ class ServletBuilder < Target
     jardeps << uvm_lib["api"] << uvm_lib["localapi"]
 
     @srcJar = JarTarget.build_target(package, jardeps, name, "#{path}/src",
-                                    false);
+                                     false)
     deps << @srcJar
 
     po_dir = "#{path}/po"
     if File.exist? po_dir
       JavaMsgFmtTarget.make_po_targets(package, po_dir,
-                                        @srcJar.javac_dir,
-                                        "#{pkgname}.Messages").each do |t|
+                                       @srcJar.javac_dir,
+                                       "#{pkgname}.Messages").each do |t|
         @srcJar.register_dependency(t)
       end
     end
@@ -382,14 +393,15 @@ class ServletBuilder < Target
     webfrag.close
 
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
-    cp = @nodedeps.map { |j| j.filename } +
-      JspcClassPath + Jars::Base.map { |j| j.filename } +
-      [uvm_lib["api"], uvm_lib["localapi"]].map { |t| t.filename } +
-      Jars::Base.map {|f| f.filename }
+    cp = @nodedeps.map { |j| j.filename }
+    cp += JspcClassPath
+    cp += Jars::Base.map { |j| j.filename }
+    cp += [uvm_lib["api"], uvm_lib["localapi"]].map { |t| t.filename }
+    cp += Jars::Base.map {|f| f.filename }
 
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
-      "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
-      "-target", "1.5", "-uriroot", @destRoot]
+            "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
+            "-target", "1.5", "-uriroot", @destRoot]
 
     Dir.chdir(@destRoot) do |d|
       Find.find('.') do |f|
@@ -404,6 +416,11 @@ class ServletBuilder < Target
     end
 
     args += @jsp_list.to_a
+
+    if @jsp_list.empty?
+      debug( "Empty JSP file list." )
+      return
+    end
 
     JavaCompiler.run(cp, "org.apache.jasper.JspC", *args)
 
@@ -617,7 +634,7 @@ class JarTarget < Target
   end
 
   def JarTarget.build_target(package, jars, suffix, basepaths,
-                            registerTarget = true)
+                             registerTarget = true)
     build_dir = "#{package.buildEnv.staging}/#{package.name}-#{suffix}"
 
     deps = []
@@ -647,7 +664,7 @@ class JarTarget < Target
     end
 
     deps += [jc, buildCopyFilesTargets(package, basepaths, suffix,
-                                                 build_dir)]
+                                       build_dir)]
 
     JarTarget.new(package, deps.flatten, suffix, build_dir, registerTarget)
   end

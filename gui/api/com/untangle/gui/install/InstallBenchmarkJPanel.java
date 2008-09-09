@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -38,41 +38,31 @@ import java.text.DecimalFormat;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
+import com.untangle.gui.util.Localizable;
+import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.wizard.*;
 
-public class InstallBenchmarkJPanel extends MWizardPageJPanel {
-
-    private static final String FAILURE_MESSAGE = "<html><font color=\"#FF0000\"><b>Warning!</b><br>"
-        + "Your hardware does not meet minimum requirements. This system may not function properly.<br>"
-        + "You may continue installation, but it is recommended that you upgrade your system hardware.<br><br>"
-        + "Press the Next button in the main window to continue.</font></html>";
-    private static final String WARNING_MESSAGE = "<html><font color=\"#FF9B00\"><b>Warning!</b><br>"
-        + "Your hardware meets minimum requirements, but performance may not be optimal.<br>"
-        + "Press the Next button in the main window to continue.</font></html>";
-    private static final String PASSED_MESSAGE = "<html><font color=\"#445BFF\"><b>Success!</b><br>"
-        + "Your hardware meets all requirements.<br>"
-        + "Press the Next button in the main window to continue.</font></html>";
+public class InstallBenchmarkJPanel
+    extends MWizardPageJPanel
+    implements Localizable
+{
 
     private static final int MEMORY_MIN_MEGS   = 475;
     private static final int MEMORY_GOOD_MEGS  = 1000;
     private static final int MEMORY_GREAT_MEGS = 2000;
-    private static final String MEMORY_REQUIRED = "("+MEMORY_MIN_MEGS+" MB required)";
 
     private static final int CPU_MIN_MHZ   = 750;
     private static final int CPU_GOOD_MHZ  = 1600;
     private static final int CPU_GREAT_MHZ = 3000;
-    private static final String CPU_REQUIRED = "("+CPU_MIN_MHZ+" MHz required)";
 
     private static final int DISK_MIN_GIGS   = 20;
     private static final int DISK_GOOD_GIGS  = 40;
     private static final int DISK_GREAT_GIGS = 80;
-    private static final String DISK_REQUIRED = "("+DISK_MIN_GIGS+" GB required)";
 
     private static final int NICS_MIN_COUNT   = 2;
     private static final int NICS_GOOD_COUNT  = 2;
     private static final int NICS_GREAT_COUNT = 3;
-    private static final String NICS_REQUIRED = "("+NICS_MIN_COUNT+" interfaces required)";
 
     private boolean testPassed = false;
     private InstallWizard installWizard;
@@ -80,6 +70,19 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     public InstallBenchmarkJPanel(InstallWizard installWizard) {
         this.installWizard = installWizard;
         initComponents();
+    }
+
+    public void reloadStrings()
+    {
+        jLabel1.setText(Util.tr("These tests show you if your computer meets minimum hardware requirements."));
+        memoryNameJLabel.setText(Util.tr("Main Memory:"));
+        memoryJProgressBar.setString(Util.tr("Memory Test"));
+        cpuNameJLabel.setText(Util.tr("CPU:"));
+        cpuJProgressBar.setString(Util.tr("CPU Test"));
+        diskNameJLabel.setText(Util.tr("Hard Disk:"));
+        diskJProgressBar.setString(Util.tr("Hard Disk Test"));
+        nicNameJLabel.setText(Util.tr("Network Interfaces:"));
+        nicJProgressBar.setString(Util.tr("Memory Test"));
     }
 
     protected void initialFocus(){
@@ -96,14 +99,14 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         public DetectThread(){
             setDaemon(true);
             installWizard.updateButtonState(true);
-            updateJProgressBar(memoryJProgressBar, "Checking...", true, 0, 68, 91, 255);
-            updateJProgressBar(cpuJProgressBar, "Checking...", true, 0, 68, 91, 255);
-            updateJProgressBar(diskJProgressBar, "Checking...", true, 0, 68, 91, 255);
-            updateJProgressBar(nicJProgressBar, "Checking...", true, 0, 68, 91, 255);
+            updateJProgressBar(memoryJProgressBar, Util.tr("Checking..."), true, 0, 68, 91, 255);
+            updateJProgressBar(cpuJProgressBar, Util.tr("Checking..."), true, 0, 68, 91, 255);
+            updateJProgressBar(diskJProgressBar, Util.tr("Checking..."), true, 0, 68, 91, 255);
+            updateJProgressBar(nicJProgressBar, Util.tr("Checking..."), true, 0, 68, 91, 255);
             memoryResultJLabel.setText("undetermined ");
-            cpuResultJLabel.setText("undetermined");
-            diskResultJLabel.setText("undetermined");
-            nicResultJLabel.setText("undetermined");
+            cpuResultJLabel.setText(Util.tr("undetermined"));
+            diskResultJLabel.setText(Util.tr("undetermined"));
+            nicResultJLabel.setText(Util.tr("undetermined"));
             resultJLabel.setText("");
             start();
         }
@@ -126,21 +129,25 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 final float disk   = SystemStats.getDiskGigs(InstallWizard.getTargetDisk());
                 final int nics     = SystemStats.getNumNICs();
                 // COMPUTE RESULTS
+                String memReq = Util.tr("({0} MB required)", MEMORY_MIN_MEGS);
                 final Object memoryResults[] = computeNormalResults((float)memory,
                                                                     MEMORY_MIN_MEGS,MEMORY_GOOD_MEGS,MEMORY_GREAT_MEGS,
-                                                                    MEMORY_REQUIRED);
+                                                                    memReq);
+                String cpuReq = Util.tr("({0} MHz required)", CPU_MIN_MHZ);
                 final Object cpuResults[]    = computeNormalResults((float)logicalCpuSpeed,
                                                                     CPU_MIN_MHZ,CPU_GOOD_MHZ,CPU_GREAT_MHZ,
-                                                                    CPU_REQUIRED);
+                                                                    cpuReq);
+
+                String diskReq = Util.tr("({0} GB required)", DISK_MIN_GIGS);
                 final Object diskResults[]   = computeNormalResults(disk,
                                                                     DISK_MIN_GIGS,DISK_GOOD_GIGS,DISK_GREAT_GIGS,
-                                                                    DISK_REQUIRED);
+                                                                    diskReq);
+                String nicsReq = Util.tr("(#{0} interfaces required)", NICS_MIN_COUNT);
                 final Object nicsResults[]   = computeNicResults((float)nics,
                                                                  NICS_MIN_COUNT,NICS_GOOD_COUNT,NICS_GREAT_COUNT,
-                                                                 NICS_REQUIRED);
+                                                                 nicsReq);
 
                 sleep(3000l);
-
 
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
                     installWizard.updateButtonState(false);
@@ -154,32 +161,29 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                                        (Integer)nicsResults[2], (Integer)nicsResults[3], (Integer)nicsResults[4]);
 
                     memoryResultJLabel.setText(memory + " MB");
-                    cpuResultJLabel.setText(cpuSpeed + " MHz" + " ("+cpuCount+" detected)"
-                                            + "  [approximated as a single " + logicalCpuSpeed + " MHz CPU]");
+                    cpuResultJLabel.setText(Util.tr("{0} MHz ({1} detected) [approximated as a single {2} MHz CPU]",
+                                                    cpuSpeed, cpuCount, logicalCpuSpeed));
                     DecimalFormat decimalFormat = new DecimalFormat("#####.##");
                     diskResultJLabel.setText(decimalFormat.format(disk) + " GB");
-                    nicResultJLabel.setText(nics + " interface" + (nics==1?"":"s"));
+                    nicResultJLabel.setText(Util.tr("{0} interface", nics));
                 }});
                 String resultMessage;
                 if(((Integer)memoryResults[1]<25) || ((Integer)cpuResults[1]<25)
                    || ((Integer)diskResults[1]<25) || ((Integer)nicsResults[1]<=25)){
-                    resultMessage = FAILURE_MESSAGE;
-                    //resultJLabel.setText(FAILURE_MESSAGE);
+                    resultMessage = Util.tr("<html><font color=\"#FF0000\"><b>Warning!</b><br>Your hardware does not meet minimum requirements. This system may not function properly.<br>You may continue installation, but it is recommended that you upgrade your system hardware.<br><br>Press the Next button in the main window to continue.</font></html>");
                     testPassed = true;
                 }
                 else if(((Integer)memoryResults[1]<50) || ((Integer)cpuResults[1]<50)
                         || ((Integer)diskResults[1]<50)){
-                    resultMessage = WARNING_MESSAGE;
-                    //resultJLabel.setText(WARNING_MESSAGE);
+                    resultMessage = Util.tr("<html><font color=\"#FF9B00\"><b>Warning!</b><br>Your hardware meets minimum requirements, but performance may not be optimal.<br>Press the Next button in the main window to continue.</font></html>");
                     testPassed = true;
                 }
                 else{
-                    resultMessage = PASSED_MESSAGE;
-                    //resultJLabel.setText(PASSED_MESSAGE);
+                    resultMessage = Util.tr("<html><font color=\"#445BFF\"><b>Success!</b><br>Your hardware meets all requirements.<br>Press the Next button in the main window to continue.</font></html>");
                     testPassed = true;
                 }
-                MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallBenchmarkJPanel.this.getTopLevelAncestor(), "Install Wizard", resultMessage,
-                                                                     "Install Wizard", "Result");
+                MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallBenchmarkJPanel.this.getTopLevelAncestor(), Util.tr("Install Wizard"), resultMessage,
+                                                                     Util.tr("Install Wizard"), Util.tr("Result"));
             }
             catch(Exception e){
                 e.printStackTrace();
@@ -199,32 +203,32 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         String resultString;
         Integer resultValue, resultR, resultG, resultB;
         if( score < min ){
-            resultString = "Failure " + failureString;
+            resultString = Util.tr("Failure: {0}", failureString);
             resultValue  = (int) (25f*(score/((float)min)));
             resultR = 255;
             resultG = resultB = 0;
         }
         else if(score < good ){
-            resultString = "Warning";
+            resultString = Util.tr("Warning");
             resultValue = 25 + (int) (25f*((score-(float)min)/((float)good-(float)min)));
             resultR = 255;
             resultG = 155;
             resultB = 0;
         }
         else if(score < great){
-            resultString = "Good";
+            resultString = Util.tr("Good");
             resultValue = 50 + (int) (25f*((score-(float)good)/((float)great-(float)good)));
             resultG = 255;
             resultR = resultB = 0;
         }
         else if(score == (float)great){
-            resultString = "Excellent";
+            resultString = Util.tr("Excellent");
             resultValue = 75;
             resultG = 255;
             resultR = resultB = 0;
         }
         else{
-            resultString = "Excellent";
+            resultString = Util.tr("Excellent");
             resultValue = 95;
             resultG = 255;
             resultR = resultB = 0;
@@ -236,32 +240,32 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         String resultString;
         Integer resultValue, resultR, resultG, resultB;
         if( score < min ){
-            resultString = "Failure " + failureString;
+            resultString = Util.tr("Failure {0}", failureString);
             resultValue  = 25;
             resultR = 255;
             resultG = resultB = 0;
         }
         else if(score < good ){
-            resultString = "Warning";
+            resultString = Util.tr("Warning");
             resultValue = 50;
             resultR = 255;
             resultG = 155;
             resultB = 0;
         }
         else if(score < great){
-            resultString = "Good";
+            resultString = Util.tr("Good");
             resultValue = 50;
             resultG = 255;
             resultR = resultB = 0;
         }
         else if(score == (float)great){
-            resultString = "Excellent";
+            resultString = Util.tr("Excellent");
             resultValue = 75;
             resultG = 255;
             resultR = resultB = 0;
         }
         else{
-            resultString = "Excellent";
+            resultString = Util.tr("Excellent");
             resultValue = 95;
             resultG = 255;
             resultR = resultB = 0;
@@ -269,7 +273,8 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         return new Object[]{resultString,resultValue,resultR,resultG,resultB};
     }
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         contentJPanel = new javax.swing.JPanel();
@@ -304,7 +309,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         contentJPanel.setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel1.setText("<html>These tests show you if your computer meets minimum hardware requirements.</html>");
+        jLabel1.setText(Util.tr("These tests show you if your computer meets minimum hardware requirements."));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -317,7 +322,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         memoryJPanel.setOpaque(false);
         memoryNameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        memoryNameJLabel.setText("Main Memory:");
+        memoryNameJLabel.setText(Util.tr("Main Memory:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -343,7 +348,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         memoryJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
         memoryJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
         memoryJProgressBar.setRequestFocusEnabled(false);
-        memoryJProgressBar.setString("Memory Test");
+        memoryJProgressBar.setString(Util.tr("Memory Test"));
         memoryJProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -370,7 +375,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         cpuJPanel.setOpaque(false);
         cpuNameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        cpuNameJLabel.setText("CPU:");
+        cpuNameJLabel.setText(Util.tr("CPU:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -396,7 +401,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         cpuJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
         cpuJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
         cpuJProgressBar.setRequestFocusEnabled(false);
-        cpuJProgressBar.setString("CPU Test");
+        cpuJProgressBar.setString(Util.tr("CPU Test"));
         cpuJProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -423,7 +428,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         diskJPanel.setOpaque(false);
         diskNameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        diskNameJLabel.setText("Hard Disk:");
+        diskNameJLabel.setText(Util.tr("Hard Disk:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -449,7 +454,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         diskJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
         diskJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
         diskJProgressBar.setRequestFocusEnabled(false);
-        diskJProgressBar.setString("Hard Disk Test");
+        diskJProgressBar.setString(Util.tr("Hard Disk Test"));
         diskJProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -476,7 +481,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         nicJPanel.setOpaque(false);
         nicNameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        nicNameJLabel.setText("Network Interfaces:");
+        nicNameJLabel.setText(Util.tr("Network Interfaces:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -486,7 +491,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
         nicResultJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         nicResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        nicResultJLabel.setText("3 Interfaces");
+        nicResultJLabel.setText("3");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -502,7 +507,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         nicJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
         nicJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
         nicJProgressBar.setRequestFocusEnabled(false);
-        nicJProgressBar.setString("Network Interface Test");
+        nicJProgressBar.setString(Util.tr("Memory Test"));
         nicJProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -552,7 +557,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
         gridBagConstraints.weightx = 1.0;
         add(backgroundJPabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -581,5 +586,4 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     private javax.swing.JLabel nicResultJLabel;
     private javax.swing.JLabel resultJLabel;
     // End of variables declaration//GEN-END:variables
-
 }

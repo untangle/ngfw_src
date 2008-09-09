@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,17 +18,18 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.node.ips.IPSRuleSignature;
 import org.apache.log4j.Logger;
 
-public class WithinOption extends IPSOption {
-
+public class WithinOption extends IpsOption {
     private final Logger logger = Logger.getLogger(getClass());
 
-    public WithinOption(IPSRuleSignature signature, String params) {
-        super(signature, params);
+    public WithinOption(OptionArg arg) {
+        super(arg);
+
+        String params = arg.getParams();
+
         int within = Integer.parseInt(params);
-        IPSOption option = signature.getOption("ContentOption",this);
+        IpsOption option = signature.getOption("ContentOption",this);
         if(option == null) {
             logger.warn("Unable to find content option to set within for sig: " + signature);
             return;

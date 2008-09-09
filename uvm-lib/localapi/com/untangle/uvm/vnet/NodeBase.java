@@ -38,9 +38,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -48,7 +50,6 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
@@ -79,13 +80,23 @@ public abstract class NodeBase implements Node
 
     private NodeState runState;
     private boolean wasStarted = false;
-    private NodeStats stats = new NodeStats();
 
     protected NodeBase()
     {
-        nodeManager = LocalUvmContextFactory.context().nodeManager();
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        nodeManager = uvm.nodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getTid();
+
+        Counters c = uvm.localMessageManager().getCounters(tid);
+        c.addMetric("s2nChunks", "Server to Node Chunks", null);
+        c.addMetric("c2nChunks", "Client to Node Chunks", null);
+        c.addMetric("n2sChunks", "Node to Server Chunks", null);
+        c.addMetric("n2cChunks", "Server to Node Chunks", null);
+        c.addMetric("s2nBytes", "Server to Node Bytes", "byte");
+        c.addMetric("c2nBytes", "Client to Node Bytes", "byte");
+        c.addMetric("n2sBytes", "Node to Server Bytes", "byte");
+        c.addMetric("n2cBytes", "Node to Client Bytes", "byte");
 
         runState = NodeState.LOADED;
     }
@@ -95,7 +106,7 @@ public abstract class NodeBase implements Node
     protected abstract void connectMPipe();
     protected abstract void disconnectMPipe();
 
-    // Node methods -------------------------------------------------------
+    // Node methods ------------------------------------------------------------
 
     public final NodeState getRunState()
     {
@@ -168,24 +179,17 @@ public abstract class NodeBase implements Node
         return nodeContext.getNodeDesc();
     }
 
-    public NodeStats getStats() throws IllegalStateException
-    {
-        if (NodeState.RUNNING != getRunState()) {
-            throw new IllegalStateException("Stats called in state: "
-                                            + getRunState());
-        }
-        return stats;
-    }
-
     // NodeBase methods ---------------------------------------------------
 
-    public void addNodeListener(NodeListener tl) {
+    public void addNodeListener(NodeListener tl)
+    {
         synchronized (nodeListeners) {
             nodeListeners.add(tl);
         }
     }
 
-    public void removeNodeListener(NodeListener tl) {
+    public void removeNodeListener(NodeListener tl)
+    {
         synchronized (nodeListeners) {
             nodeListeners.remove(tl);
         }
@@ -409,7 +413,6 @@ public abstract class NodeBase implements Node
     }
 
     // XXX i am worried about races in the lifecycle methods
-
     private void init(boolean syncState, String[] args)
         throws NodeException, IllegalStateException
     {
@@ -531,6 +534,7 @@ public abstract class NodeBase implements Node
             start();
         }
     }
+
     private void parentStop()
         throws NodeStopException, IllegalStateException
     {
@@ -567,15 +571,5 @@ public abstract class NodeBase implements Node
     {
         /* By default use the session matcher that doesn't match anything */
         return SessionMatcherFactory.getNullInstance();
-    }
-
-    public long incrementCount(int i)
-    {
-        return incrementCount(i, 1);
-    }
-
-    public long incrementCount(int i, long delta)
-    {
-        return stats.incrementCount(i, delta);
     }
 }

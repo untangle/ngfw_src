@@ -59,6 +59,9 @@ public interface SafelistAdminView
      */
     public void deleteSafelist(String safelistOwnerAddress)
         throws SafelistActionFailedException;
+    
+    public void deleteSafelists(String[] safelistOwnerAddresses)
+        throws SafelistActionFailedException;
 
     /**
      * To avoid any anoying concurrency issues, callers are
@@ -79,4 +82,14 @@ public interface SafelistAdminView
      */
     public boolean safelistExists(String safelistOwnerAddress)
         throws SafelistActionFailedException;
+
+    /**
+     * List the email addresses and counts of all users who
+     * have a safelist
+     *
+     * @return the list of all safelist owners counts.
+     */
+    public List<SafelistCount> getUserSafelistCounts()
+        throws NoSuchSafelistException, SafelistActionFailedException;
+
 }

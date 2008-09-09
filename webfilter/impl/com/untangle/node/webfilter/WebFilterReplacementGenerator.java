@@ -19,7 +19,7 @@
 package com.untangle.node.webfilter;
 
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
@@ -58,7 +58,7 @@ class WebFilterReplacementGenerator
     protected String getReplacement(WebFilterBlockDetails details)
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
 
         return String.format(BLOCK_TEMPLATE, details.getHeader(),
                              details.getHost(), details.getUri(),
@@ -69,7 +69,7 @@ class WebFilterReplacementGenerator
     @Override
     protected String getRedirectUrl(String nonce, String host, Tid tid)
     {
-        return "http://" + host + "/webfilter/blockpage.jsp?nonce=" + nonce
+        return "http://" + host + "/webfilter/blockpage?nonce=" + nonce
             + "&tid=" + tid;
     }
 }

@@ -21,42 +21,31 @@ package com.untangle.uvm.policy;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.license.ProductIdentifier;
-import com.untangle.uvm.localapi.LocalIntfManager;
-import com.untangle.uvm.localapi.SessionMatcherFactory;
-import com.untangle.uvm.ArgonManager;
-import com.untangle.uvm.node.InterfaceComparator;
-import com.untangle.uvm.node.LocalNodeManager;
-import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
-import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
-import com.untangle.uvm.node.firewall.port.PortDBMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
-import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.uvm.node.firewall.time.DayOfWeekDBMatcher;
-import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
-import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
-import com.untangle.uvm.node.firewall.user.UserDBMatcher;
-import com.untangle.uvm.node.firewall.user.UserMatcher;
-import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
-import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+
+import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.license.ProductIdentifier;
+import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
+import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
+import com.untangle.uvm.node.firewall.user.UserMatcher;
+import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
+import com.untangle.uvm.util.TransactionWork;
 
 class DefaultPolicyManager implements LocalPolicyManager
 {
@@ -336,5 +325,9 @@ class DefaultPolicyManager implements LocalPolicyManager
 
         this.userRules = userPolicyList.toArray(new UserPolicyRule[0]);
         this.cUserRules = completePolicyList.toArray(new UserPolicyRule[0]);
+    }
+
+    public Validator getValidator() {
+        return new PolicyValidator();
     }
 }

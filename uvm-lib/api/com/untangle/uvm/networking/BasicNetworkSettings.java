@@ -78,7 +78,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @return True iff DHCP is enabled.
      */
-    public boolean isDhcpEnabled()
+    public boolean getDhcpEnabled()
     {
         return this.isDhcpEnabled;
     }
@@ -88,7 +88,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @param newValue True iff DHCP is enabled.
      */
-    public void isDhcpEnabled( boolean newValue )
+    public void setDhcpEnabled( boolean newValue )
     {
         this.isDhcpEnabled = newValue;
     }
@@ -99,7 +99,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @return The primary address of the internet connection.
      */
-    public IPaddr host()
+    public IPaddr getHost()
     {
         if ( this.host == null ) this.host = NetworkUtil.EMPTY_IPADDR;
         return this.host;
@@ -110,7 +110,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @param newValue The primary address of the internet connection.
      */
-    public void host( IPaddr newValue )
+    public void setHost( IPaddr newValue )
     {
         if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
         this.host = newValue;
@@ -122,7 +122,7 @@ public class BasicNetworkSettings implements Serializable
      * @return The netmask of the primary address on the internet
      * connection.
      */
-    public IPaddr netmask()
+    public IPaddr getNetmask()
     {
         if ( this.netmask == null ) this.netmask = NetworkUtil.EMPTY_IPADDR;
         return this.netmask;
@@ -134,7 +134,7 @@ public class BasicNetworkSettings implements Serializable
      * @param newValue The new netmask of the primary address on the
      * internet connection.
      */
-    public void netmask( IPaddr newValue )
+    public void setNetmask( IPaddr newValue )
     {
         if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
         this.netmask = newValue;
@@ -145,7 +145,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @return The default gateway.
      */
-    public IPaddr gateway()
+    public IPaddr getGateway()
     {
         if ( this.gateway == null ) this.gateway = NetworkUtil.EMPTY_IPADDR;
         return this.gateway;
@@ -156,7 +156,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @param newValue The new default gateway.
      */
-    public void gateway( IPaddr newValue )
+    public void setGateway( IPaddr newValue )
     {
         if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
         this.gateway = newValue;
@@ -168,7 +168,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @return The primary dns server.
      */
-    public IPaddr dns1()
+    public IPaddr getDns1()
     {
         if ( this.dns1 == null ) this.dns1 = NetworkUtil.EMPTY_IPADDR;
         return this.dns1;
@@ -179,7 +179,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @param newValue The new primary dns server.
      */
-    public void dns1( IPaddr newValue )
+    public void setDns1( IPaddr newValue )
     {
         if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
         this.dns1 = newValue;
@@ -190,7 +190,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @return The secondary dns server.
      */
-    public IPaddr dns2()
+    public IPaddr getDns2()
     {
         if ( this.dns2 == null ) this.dns2 = NetworkUtil.EMPTY_IPADDR;
         return this.dns2;
@@ -201,7 +201,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @param newValue The new secondary dns server.
      */
-    public void dns2( IPaddr newValue )
+    public void setDns2( IPaddr newValue )
     {
         if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
         this.dns2 = newValue;
@@ -270,12 +270,12 @@ public class BasicNetworkSettings implements Serializable
     {
         StringBuilder sb = new StringBuilder();
         
-        sb.append( "dhcp:        "   + isDhcpEnabled());
-        sb.append( "\nhost:        " + host());
-        sb.append( "\nnetmask:     " + netmask());
-        sb.append( "\ngateway:     " + gateway());
-        sb.append( "\ndns 1:       " + dns1());
-        sb.append( "\ndns 2:       " + dns2());
+        sb.append( "dhcp:        "   + getDhcpEnabled());
+        sb.append( "\nhost:        " + getHost());
+        sb.append( "\nnetmask:     " + getNetmask());
+        sb.append( "\ngateway:     " + getGateway());
+        sb.append( "\ndns 1:       " + getDns1());
+        sb.append( "\ndns 2:       " + getDns2());
         for ( InterfaceAlias alias : getAliasList()) sb.append( "\n alias:    " + alias );
         sb.append( "\n pppoe:      " + getPPPoESettings());
         return sb.toString();

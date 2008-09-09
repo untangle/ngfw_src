@@ -179,4 +179,8 @@ class Attack < UVMFilterNode
         end
     end
    
+    def get_snmp_stat_map()
+      return {};
+    end
+
 end # Attack

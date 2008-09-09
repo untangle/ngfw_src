@@ -20,32 +20,53 @@ package com.untangle.node.openvpn;
 
 import com.untangle.uvm.security.Tid;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
+
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
+
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.LocalUvmContextFactory;
+
+import com.untangle.uvm.networking.IPNetwork;
+import com.untangle.uvm.networking.LocalNetworkManager;
+import com.untangle.uvm.networking.NetworkUtil;
+
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+
+
+import com.untangle.uvm.node.AddressRange;
+import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptException;
 
 
+
+
 /* XXX Probably want to make this an abstract class and make this a little more generic */
 class Sandbox
 {
-    private final Logger logger = Logger.getLogger( Sandbox.class );
+    private final Logger logger = Logger.getLogger( getClass());
     
     private static final int DEFAULT_MAX_CLIENTS = 500;
     private static final boolean DEFAULT_KEEP_ALIVE  = true;
@@ -56,6 +77,18 @@ class Sandbox
     private static final String CLIENT_LIST_FILE = Constants.MISC_DIR + "/client-list";
 
     private static final String OPENVPN_CLIENT_FILE = OpenVpnManager.OPENVPN_CONF_DIR + "/client.conf";
+
+    /* Trying a pretty strange collection, hopefully there is a match. */
+    private static final String[] AUTO_ADDRESS_POOLS_STRING = {
+        "172.16.0.0/24",   "172.16.1.0/24",   "172.16.2.0/24",   "172.16.3.0/24",
+        "172.16.4.0/24",   "172.16.5.0/24",   "172.16.6.0/24",   "172.16.7.0/24",
+        "192.168.16.0/24", "192.168.17.0/24", "192.168.18.0/24", "192.168.19.0/24",
+        "192.168.20.0/24", "192.168.21.0/24", "192.168.22.0/24", "192.168.23.0/24",
+        "10.254.16.0/24",  "10.254.17.0/24",  "10.254.18.0/24",  "10.254.19.0/24",
+        "10.254.20.0/24",  "10.254.21.0/24",  "10.254.22.0/24",  "10.254.23.0/24"
+
+    };
+    private static final Map<IPNetwork,AddressRange> AUTO_ADDRESS_POOLS;
 
     private HostAddress vpnServerAddress;
 
@@ -71,6 +104,11 @@ class Sandbox
     Sandbox( VpnNode.ConfigState configState )
     {
         this.configState = configState;
+        if(configState==VpnNode.ConfigState.SERVER_ROUTE) {
+            this.groupList= new GroupList();
+            this.clientList=new ClientList();
+            this.siteList=new SiteList();
+        }
     }
 
     List<String> getAvailableUsbList() throws NodeException
@@ -205,8 +243,8 @@ class Sandbox
         if ( this.groupList == null ) throw new ValidateException( "Groups haven't been created yet" );
         return this.groupList;
     }
-
-    void setGroupList( GroupList parameters ) throws Exception
+    
+    void setGroupList( GroupList parameters ) throws ValidateException
     {
         parameters.validate();
         
@@ -220,18 +258,114 @@ class Sandbox
                 /* This shouldn't happen because this is validated in parameters.validate */
                 throw new ValidateException( "Group name must be unique: '" + group.getName() + "'" );
             }
-
         }        
     }
 
-    void setExportList( ExportList parameters ) throws Exception
+    /* This will automatically pick a valid address group based on the
+     * network settings. */
+    void autoDetectAddressPool() throws ValidateException
+    {
+        /* Load the list of networks. */
+        LocalNetworkManager lnm = LocalUvmContextFactory.context().networkManager();
+        
+        List<AddressRange> currentNetwork = new LinkedList<AddressRange>();
+        for ( NetworkSpaceInternal space : lnm.getNetworkInternalSettings().getNetworkSpaceList()) {
+            for ( IPNetwork network : space.getNetworkList()) {
+                AddressRange range = AddressRange.makeNetwork( network.getNetwork().getAddr(), 
+                                                               network.getNetmask().getAddr());
+                currentNetwork.add( range );
+            }
+        }
+        
+        IPNetwork network = null;
+        
+        for ( Map.Entry<IPNetwork,AddressRange> e : AUTO_ADDRESS_POOLS.entrySet()) {
+            network = e.getKey();
+            for ( AddressRange range : currentNetwork ) {
+                if ( range.overlaps( e.getValue())) {
+                    network = null;
+                    break;
+                }
+            }
+
+            if ( network != null ) break;
+        }
+        
+        if ( network == null ) {
+            logger.warn( "Unable to auto detect a network for VPN." );
+            return;
+        }
+        
+        VpnGroup group = new VpnGroup();
+        group.setLive( true );
+        group.setUseDNS( false );
+        group.setAddress( network.getNetwork());
+        group.setNetmask( network.getNetmask());
+        /* i18n. */
+        group.setName( "[no name]" );
+        GroupList gl = new GroupList();
+        List<VpnGroup> list = new LinkedList<VpnGroup>();
+        list.add( group );
+        gl.setGroupList( list );
+        setGroupList( gl );
+    }
+
+    ExportList getExportList()
+    {
+        return this.exportList;
+    }
+    
+    void setExportList( ExportList parameters ) throws ValidateException
     {
         parameters.validate();
 
         this.exportList = parameters;
     }
 
-    void setClientList( ClientList parameters ) throws Exception
+    void autoDetectExportList() throws ValidateException
+    {
+        /* Load the list of networks. */
+        LocalNetworkManager lnm = LocalUvmContextFactory.context().networkManager();
+        
+        byte intf = IntfConstants.INTERNAL_INTF;
+        if ( lnm.isSingleNicModeEnabled()) intf = IntfConstants.EXTERNAL_INTF;
+        
+        NetworkSpaceInternal space = lnm.getNetworkInternalSettings().getNetworkSpace( intf );
+
+        if ( space == null ) {
+            logger.warn( "Unable to find the network space for the internal interface." );
+            return;
+        }
+        
+        List<ServerSiteNetwork> networkList = new LinkedList<ServerSiteNetwork>();
+        LinkedList<AddressRange> rangeList = new LinkedList<AddressRange>();
+        
+        AddressValidator av = AddressValidator.getInstance();
+        
+        for ( IPNetwork network : space.getNetworkList()) {
+            if ( NetworkUtil.getInstance().isBogus( network.getNetwork())) continue;
+
+            rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), 
+                                                          network.getNetmask().getAddr()));
+            
+            if ( !av.validate( rangeList ).isValid()) {
+                rangeList.removeFirst();
+                continue;
+            }
+
+            ServerSiteNetwork ssn = new ServerSiteNetwork();
+            ssn.setNetwork( network.getNetwork());
+            ssn.setNetmask( network.getNetmask());
+            ssn.setLive( true );
+            ssn.setName( "[no name]" );
+            networkList.add( ssn );
+        }
+
+        
+        setExportList( new ExportList( networkList ));
+    }
+
+    void setClientList( ClientList parameters ) throws ValidateException
     {
         parameters.validate();
         
@@ -239,7 +373,7 @@ class Sandbox
         this.clientList = parameters;
     }
 
-    void setSiteList( SiteList parameters ) throws Exception
+    void setSiteList( SiteList parameters ) throws ValidateException
     {
         /* Validate the site list against the client list */
         parameters.validate( clientList );
@@ -318,4 +452,23 @@ class Sandbox
         
         return settings;
     }
+    
+    static
+    {
+        Map<IPNetwork,AddressRange> map = new LinkedHashMap<IPNetwork,AddressRange>();
+
+        for ( String s : AUTO_ADDRESS_POOLS_STRING ) {
+            try {
+                IPNetwork network = IPNetwork.parse( s );
+                AddressRange range = AddressRange.makeNetwork( network.getNetwork().getAddr(),
+                                                               network.getNetmask().getAddr());
+                map.put( network, range );
+            } catch ( ParseException e ) {
+                System.err.println( "Unable to parse: " + s );
+            }
+        }
+
+        AUTO_ADDRESS_POOLS = Collections.unmodifiableMap( map );
+    }
+    
 }

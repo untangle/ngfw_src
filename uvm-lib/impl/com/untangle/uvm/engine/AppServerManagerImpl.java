@@ -21,6 +21,7 @@ package com.untangle.uvm.engine;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
+import javax.servlet.ServletContext;
 
 import com.untangle.node.util.OpenSSLWrapper;
 import com.untangle.node.util.UtKeyStore;
@@ -41,6 +42,8 @@ import org.apache.log4j.Logger;
  */
 class AppServerManagerImpl implements LocalAppServerManager
 {
+    private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
+
     private static final String KS_STORE_PASS = "changeit";
 
     private static final int DEFAULT_HTTP_PORT = 80;
@@ -106,7 +109,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         this.externalHttpsPort = p;
     }
 
-    public void postInit(HttpInvoker httpInvoker)
+    public void postInit()
     {
         String eHost = getFQDN();
 
@@ -149,7 +152,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         try {
             String disableTomcat = System.getProperty("bunnicula.devel.notomcat");
             if (null == disableTomcat || !Boolean.valueOf(disableTomcat)) {
-                tomcatManager.startTomcat(httpInvoker, DEFAULT_HTTP_PORT,
+                tomcatManager.startTomcat(DEFAULT_HTTP_PORT,
                                           DEFAULT_HTTPS_PORT,
                                           externalHttpsPort,
                                           NetworkUtil.INTERNAL_OPEN_HTTPS_PORT);
@@ -173,44 +176,46 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public void rebindExternalHttpsPort(int port) throws Exception
     {
-        tomcatManager.rebindExternalHttpsPort(port);
+        // XXX IMPLEMENT ME!!!
     }
 
-    public boolean loadSystemApp(String urlBase, String rootDir)
+    public ServletContext loadSystemApp(String urlBase, String rootDir)
     {
         return tomcatManager.loadSystemApp(urlBase, rootDir);
     }
 
-    public boolean loadSystemApp(String urlBase, String rootDir, Valve valve)
+    public ServletContext loadSystemApp(String urlBase, String rootDir,
+                                        Valve valve)
     {
         return tomcatManager.loadSystemApp(urlBase, rootDir, valve);
     }
 
-    public boolean loadGlobalApp(String urlBase, String rootDir)
+    public ServletContext loadGlobalApp(String urlBase, String rootDir)
     {
         return tomcatManager.loadGlobalApp(urlBase, rootDir);
     }
 
-    public boolean loadGlobalApp(String urlBase, String rootDir, Valve valve)
+    public ServletContext loadGlobalApp(String urlBase, String rootDir,
+                                        Valve valve)
     {
         return tomcatManager.loadGlobalApp(urlBase, rootDir, valve);
     }
 
-
-
-    public boolean loadInsecureApp(String urlBase, String rootDir)
+    public ServletContext loadInsecureApp(String urlBase, String rootDir)
     {
         return tomcatManager.loadInsecureApp(urlBase, rootDir);
     }
 
-    public boolean loadInsecureApp(String urlBase, String rootDir, Valve valve)
+    public ServletContext loadInsecureApp(String urlBase, String rootDir,
+                                          Valve valve)
     {
         return tomcatManager.loadInsecureApp(urlBase, rootDir, valve);
     }
 
-    public boolean loadQuarantineApp(String urlBase, String rootDir)
+    public ServletContext loadQuarantineApp(String urlBase, String rootDir)
     {
-        return tomcatManager.loadInsecureApp(urlBase, rootDir, new QuarantineOutsideAccessValve());
+        return tomcatManager.loadInsecureApp(urlBase, rootDir,
+                                             new QuarantineOutsideAccessValve());
     }
 
     public boolean unloadWebApp(String contextRoot)
@@ -239,26 +244,8 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public boolean regenCert(RFC2253Name dn, int durationInDays)
     {
-        String eHost = getFQDN();
-        String newName = "key" + Thread.currentThread().hashCode()
-            + "_" + System.currentTimeMillis() + "_"
-            + new java.util.Random().nextInt();
-
         try {
-            int index = dn.indexOf("CN");
-            if (index == -1) {
-                index = 0;
-            } else {
-                dn.remove(index);
-            }
-
-            dn.add("CN", eHost);
-
-            keyStore.generateKey(newName, dn, durationInDays);
-            keyStore.renameEntry(newName, eHost);
-
-            tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS,
-                                          eHost);
+        OpenSSLWrapper.generateSelfSignedCert(getFQDN(), APACHE_PEM_FILE);
             return true;
         } catch (Exception ex) {
             logger.error("Unable to regen cert", ex);
@@ -268,12 +255,15 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public boolean importServerCert(byte[] cert, byte[] caCert)
     {
+    // FIXME !!!
+
         CertInfo localCertInfo = null;
 
         try {
             localCertInfo = OpenSSLWrapper.getCertInfo(cert);
         } catch (Exception ex) {
             logger.error("Unable to get info from cert", ex);
+            return false;
         }
 
         // This is a hack, but if they don't have a CN what the heck
@@ -282,6 +272,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         if (null == cn) {
             logger.error("Received a cert without a CN? \"" +
                          new String(cert) + "\"");
+            return false;
         }
 
         String reason = "";
@@ -306,18 +297,24 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public byte[] getCurrentServerCert()
     {
-        String eHost = getFQDN();
+    // FIXME ? our apache cert only handles one hostname right now
+//         String eHost = getFQDN();
+
+//         try {
+//             if (!keyStore.containsAlias(eHost)) {
+//                 hostnameChanged(eHost);
+//             }
+//         } catch (Exception ex) {
+//             logger.error("Unable to list key store", ex);
+//         }
 
         try {
-            if (!keyStore.containsAlias(eHost)) {
-                hostnameChanged(eHost);
-            }
-        } catch (Exception ex) {
-            logger.error("Unable to list key store", ex);
-        }
-
-        try {
-            return keyStore.exportEntry(eHost);
+        // FIXME: not sure about getBytes; probably B. Scott intended to
+        // read the cert/key bytes without the header/footer lines, but
+        // his code didn't seem to do it: "keytool whatever", which he
+        // invokes, does returns the headers, and he doesn't seem to weed
+        // them out...
+            return OpenSSLWrapper.getCertFromPEM(APACHE_PEM_FILE).getBytes();
         } catch (Exception ex) {
             logger.error("Unable to retreive current cert", ex);
             return null;
@@ -329,7 +326,13 @@ class AppServerManagerImpl implements LocalAppServerManager
         String eHost = getFQDN();
 
         try {
-            return keyStore.createCSR(eHost);
+        return OpenSSLWrapper.createCSR(eHost,
+                        // get them from dn
+                        "FIXME org",
+                        "FIXME country",
+                        "FIXME state",
+                        "FIXME city",
+                        new File(APACHE_PEM_FILE));
         } catch (Exception ex) {
             logger.error("Exception generating a CSR", ex);
             return null;
@@ -338,6 +341,11 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public CertInfo getCertInfo(byte[] certBytes)
     {
+        if (certBytes == null) {
+            logger.warn("Can not get get info from a null cert");
+            return null;
+        }
+
         try {
             return OpenSSLWrapper.getCertInfo(certBytes);
         } catch (Exception ex) {
@@ -345,6 +353,10 @@ class AppServerManagerImpl implements LocalAppServerManager
                          new String(certBytes) + "\"", ex);
             return null;
         }
+    }
+
+    public CertInfo getCurrentServerCertInfo() {
+        return getCertInfo(getCurrentServerCert());
     }
 
     /**
@@ -361,12 +373,10 @@ class AppServerManagerImpl implements LocalAppServerManager
                 tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS,
                                               newHostName);
             } else {
-                reason = "Unable to get current cert alias";
-                String currentCertName = tomcatManager.getKeyAlias();
                 reason = "Unable to export current cert";
-                byte[] oldCert = keyStore.exportEntry(currentCertName);
+                byte[] oldCert = getCurrentServerCert();
                 reason = "Unable to get current cert info";
-                CertInfo ci = OpenSSLWrapper.getCertInfo(keyStore.exportEntry(currentCertName));
+                CertInfo ci = OpenSSLWrapper.getCertInfo(oldCert);
                 RFC2253Name oldDN = ci.subjectDN;
                 regenCert(oldDN, 365 * 5 +1);
             }

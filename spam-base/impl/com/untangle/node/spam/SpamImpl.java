@@ -18,10 +18,12 @@
 
 package com.untangle.node.spam;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.node.token.TokenAdaptor;
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -37,6 +39,11 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 
 import static com.untangle.node.util.Ascii.CRLF;
 
@@ -76,6 +83,8 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     private final RBLEventHandler rblHandler = new RBLEventHandler(this);
 
+    private final SpamRBLHandler spamRblHandler = new SpamRBLHandler();
+
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
     // Would want the RBL to get evaluated before the casing, this way if it blocks a session
@@ -92,7 +101,19 @@ public class SpamImpl extends AbstractNode implements SpamNode
     private final EventLogger<SpamEvent> eventLogger;
     private final EventLogger<SpamSMTPRBLEvent> rblEventLogger;
 
+    /* the signatures are updated at startup, so using new Date() is not that far off. */
+    private Date lastSignatureUpdate = new Date();
+    private String signatureVersion;
+
+    private final PartialListUtil listUtil = new PartialListUtil();
+
     private volatile SpamSettings spamSettings;
+
+    //private final BlingBlinger scanBlinger;
+    private final BlingBlinger passBlinger;
+    private final BlingBlinger blockBlinger;
+    private final BlingBlinger markBlinger;
+    private final BlingBlinger quarantineBlinger;
 
     // constructors -----------------------------------------------------------
 
@@ -126,6 +147,15 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
         ef = new RBLSkippedFilter();
         rblEventLogger.addSimpleEventFilter(ef);
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        //scanBlinger = c.addActivity("scan", "Scan Message", null, "SCAN");
+        passBlinger = c.addActivity("pass", "Pass Message", null, "PASS");
+        blockBlinger = c.addActivity("block", "Block Message", null, "BLOCK");
+        markBlinger = c.addActivity("mark", "Mark Message", null, "MARK");
+        quarantineBlinger = c.addActivity("quarantine", "Quarantine Message", null, "QUARANTINE");
+        lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
     }
 
     // Spam methods -----------------------------------------------------------
@@ -145,33 +175,36 @@ public class SpamImpl extends AbstractNode implements SpamNode
     /**
      * Increment the counter for messages scanned
      */
-    public void incrementScanCounter() {
-        //The scanning blingy-bringer has been disabled
-        //      incrementCount(Node.GENERIC_0_COUNTER);
-    }
+    //public void incrementScanCount() {
+	//scanBlinger.increment();
+    //}
+
     /**
      * Increment the counter for blocked (SMTP only).
      */
-    public void incrementBlockCounter() {
-        incrementCount(Node.GENERIC_1_COUNTER);
+    public void incrementBlockCount() {
+	blockBlinger.increment();
     }
+
     /**
      * Increment the counter for messages passed
      */
-    public void incrementPassCounter() {
-        incrementCount(Node.GENERIC_0_COUNTER);
+    public void incrementPassCount() {
+	passBlinger.increment();
     }
+
     /**
      * Increment the counter for messages marked
      */
-    public void incrementMarkCounter() {
-        incrementCount(Node.GENERIC_2_COUNTER);
+    public void incrementMarkCount() {
+	markBlinger.increment();
     }
+
     /**
      * Increment the count for messages quarantined.
      */
     public void incrementQuarantineCount() {
-        incrementCount(Node.GENERIC_3_COUNTER);
+	quarantineBlinger.increment();
     }
 
     /**
@@ -181,6 +214,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
     public String getDefaultSubjectWrapperTemplate() {
         return MOD_SUB_TEMPLATE;
     }
+
     /**
      * Method for subclass (currently - clamphish) to define
      * the default wrapping body template for POP/IMAP
@@ -188,6 +222,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
     public String getDefaultBodyWrapperTemplate() {
         return MOD_BODY_TEMPLATE;
     }
+
     /**
      * Method for subclass (currently - clamphish) to define
      * the default Subject template for SMTP wrapped messages
@@ -195,6 +230,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
     public String getDefaultSMTPSubjectWrapperTemplate() {
         return getDefaultSubjectWrapperTemplate();
     }
+
     /**
      * Method for subclass (currently - clamphish) to define
      * the default wrapping body template for SMTP
@@ -243,29 +279,40 @@ public class SpamImpl extends AbstractNode implements SpamNode
      * Once we move these to the database, this method is obsolete.
      */
     private void ensureTemplateSettings(SpamSettings ss) {
-        ss.getImapConfig().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate());
-        ss.getImapConfig().setBodyWrapperTemplate(getDefaultBodyWrapperTemplate());
-        ss.getImapConfig().setHeaderName(getDefaultIndicatorHeaderName());
-        ss.getImapConfig().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ss.getImapConfig().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
+        ensureTemplateSettings(ss.getBaseSettings());
+    }
 
-        ss.getPopConfig().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate());
-        ss.getPopConfig().setBodyWrapperTemplate(getDefaultBodyWrapperTemplate());
-        ss.getPopConfig().setHeaderName(getDefaultIndicatorHeaderName());
-        ss.getPopConfig().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ss.getPopConfig().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
+    private void ensureTemplateSettings(SpamBaseSettings sbs) {
+        SpamIMAPConfig ic = sbs.getImapConfig();
+        ic.setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate());
+        ic.setBodyWrapperTemplate(getDefaultBodyWrapperTemplate());
+        ic.setHeaderName(getDefaultIndicatorHeaderName());
+        ic.setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
+        ic.setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
 
-        ss.getSmtpConfig().setSubjectWrapperTemplate(getDefaultSMTPSubjectWrapperTemplate());
-        ss.getSmtpConfig().setBodyWrapperTemplate(getDefaultSMTPBodyWrapperTemplate());
-        ss.getSmtpConfig().setHeaderName(getDefaultIndicatorHeaderName());
-        ss.getSmtpConfig().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ss.getSmtpConfig().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-        ss.getSmtpConfig().setNotifySubjectTemplate(getDefaultNotifySubjectTemplate());
-        ss.getSmtpConfig().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate());
+        SpamPOPConfig pc = sbs.getPopConfig();
+        pc.setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate());
+        pc.setBodyWrapperTemplate(getDefaultBodyWrapperTemplate());
+        pc.setHeaderName(getDefaultIndicatorHeaderName());
+        pc.setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
+        pc.setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
+
+        SpamSMTPConfig sc = sbs.getSmtpConfig();
+        sc.setSubjectWrapperTemplate(getDefaultSMTPSubjectWrapperTemplate());
+        sc.setBodyWrapperTemplate(getDefaultSMTPBodyWrapperTemplate());
+        sc.setHeaderName(getDefaultIndicatorHeaderName());
+        sc.setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
+        sc.setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
+        sc.setNotifySubjectTemplate(getDefaultNotifySubjectTemplate());
+        sc.setNotifyBodyTemplate(getDefaultNotifyBodyTemplate());
     }
 
     protected void initSpamRBLList(SpamSettings tmpSpamSettings) {
-        List<SpamRBL> spamRBLList = tmpSpamSettings.getSpamRBLList();
+        initSpamRBLList(tmpSpamSettings.getSpamRBLList());
+    }
+
+    protected void initSpamRBLList(List<SpamRBL> spamRBLList) {
+
         if (( null == spamRBLList) || ( false == spamRBLList.isEmpty())) {
             // if already initialized,
             // use list as-is (e.g., database contains final word)
@@ -284,151 +331,13 @@ public class SpamImpl extends AbstractNode implements SpamNode
         return;
     }
 
-    protected void initSpamAssassinDefList(SpamSettings tmpSpamSettings) {
-        List<SpamAssassinDef> saDefList = tmpSpamSettings.getSpamAssassinDefList();
-        SpamAssassinDefFile saDefFile = new SpamAssassinDefFile();
-
-        if (false == saDefList.isEmpty()) {
-            // if already initialized,
-            // use list as-is (e.g., database contains final word)
-            //
-            // if need be, update existing list here
-            //
-            // write to file and on return, save to database
-            // Writing disabled for 4.2... jdi XXXXXXXXXXXXXXXX
-            // saDefFile.writeToFile(saDefList);
-            // note that we do not automatically restart spamd
-            // after every write to file because there may be no changes
-            // - someone needs to separately call restartSpamAssassinDaemon
-            //   if there are changes
-            return;
-        } // else initialize list now (e.g., upgrade has just occurred)
-
-        // to initialize, merge existing system def confs from file
-        // with required system def confs
-        saDefFile.readFromFile(saDefList);
-        initSpamAssassinDefList(saDefList);
-        // Writing disabled for 4.2... jdi XXXXXXXXXXXXXXXX
-        // saDefFile.writeToFile(saDefList);
-        // note that we automatically restart spamd
-        // after we've initialized because there may be changes
-        // Restarting disabled (not writing) for 4.2... jdi XXXXXXXXXXXXXXXX
-        // if (false == restartSpamAssassinDaemon())
-        //    logger.error("Could not restart SpamAssassin Mail Filter Daemon");
-
-        return;
-    }
-
-    // initialize system def conf settings
-    // - delete any dupls
-    // - swap required system def conf with its constant equivalent
-    //   (to ensure that its value is correctly set)
-    // - add any missing required system def conf with its constant equivalent
-    private void initSpamAssassinDefList(List<SpamAssassinDef> saDefList)
-    {
-        List<SpamAssassinDef> duplSADefList = new LinkedList<SpamAssassinDef>();
-        List<SpamAssassinDef> copySADefList = new LinkedList<SpamAssassinDef>(saDefList);
-
-        boolean isDup;
-
-        for (SpamAssassinDef saDef : saDefList) {
-            if (false == saDef.getActive())
-                continue;
-
-            isDup = false;
-            for (SpamAssassinDef copySADef : copySADefList) {
-                if (false == copySADef.getActive())
-                    continue;
-
-                if (true == saDef.equalsOptName(copySADef)) {
-                    if (true == isDup) {
-                        duplSADefList.add(copySADef); // mark dupl for removal
-                    } else {
-                        isDup = true; // keep 1st one
-                    }
-                }
-            }
-
-            if (true == isDup) {
-                copySADefList.removeAll(duplSADefList);
-                duplSADefList.clear();
-            }
-        }
-
-        saDefList.clear();
-        saDefList.addAll(copySADefList); // add whatever remains
-        copySADefList.clear();
-
-        boolean hasEnabled = false;
-        boolean hasOptions = false;
-
-        for (SpamAssassinDef saDef : saDefList) {
-            if (false == saDef.getActive()) {
-                copySADefList.add(saDef);
-            } else if (true == SpamAssassinDef.ENABLED_DEF.equalsOptName(saDef)){
-                copySADefList.add(SpamAssassinDef.ENABLED_DEF); // swap
-                hasEnabled = true;
-            } else if (true == SpamAssassinDef.OPTIONS_DEF.equalsOptName(saDef)) {
-                copySADefList.add(SpamAssassinDef.OPTIONS_DEF); // swap
-                hasOptions = true;
-            } else {
-                copySADefList.add(saDef);
-            }
-        }
-
-        saDefList.clear();
-        // add required comment to beginning
-        saDefList.add(SpamAssassinDef.DEF_COMMENT_DEF);
-        saDefList.add(SpamAssassinDef.EMPTY_DEF);
-        // add rest
-        if (false == hasEnabled) {
-            saDefList.add(SpamAssassinDef.ENABLED_DEF); // add missing
-        } else if (false == hasOptions) {
-            saDefList.add(SpamAssassinDef.OPTIONS_DEF); // add missing
-        }
-        saDefList.addAll(copySADefList);
-        copySADefList.clear();
-
-        return;
-    }
-
-    protected void initSpamAssassinLclList(SpamSettings tmpSpamSettings) {
-        List<SpamAssassinLcl> saLclList = tmpSpamSettings.getSpamAssassinLclList();
-        SpamAssassinLclFile saLclFile = new SpamAssassinLclFile();
-
-        if (false == saLclList.isEmpty()) {
-            // if already initialized,
-            // use list as-is (e.g., database contains final word)
-            //
-            // if need be, update existing list here
-            //
-            // write to file and on return, save to database
-            saLclFile.writeToFile(saLclList);
-            return;
-        } // else initialize list now (e.g., upgrade has just occurred)
-
-        // to initialize, define local def confs now
-        //
-        // add required comment and local def conf
-        saLclList.add(SpamAssassinLcl.LCL_COMMENT_LCL);
-        saLclList.add(SpamAssassinLcl.EMPTY_LCL);
-        saLclList.add(SpamAssassinLcl.SCORE_LCL);
-        saLclList.add(SpamAssassinLcl.LOCK_DB_FILES_LCL);
-        saLclList.add(SpamAssassinLcl.AUTO_WL_FACTOR_LCL);
-        saLclList.add(SpamAssassinLcl.PYZOR_TIMEOUT_LCL);
-        saLclList.add(SpamAssassinLcl.RESET_RPT_TEMPL_LCL);
-        saLclList.add(SpamAssassinLcl.RPT_LCL);
-        saLclFile.writeToFile(saLclList);
-
-        return;
-    }
-
     protected void configureSpamSettings(SpamSettings tmpSpamSettings) {
-        tmpSpamSettings.setSmtpConfig(new SpamSMTPConfig(true,
-                                                         SMTPSpamMessageAction.QUARANTINE,
-                                                         SpamSMTPNotifyAction.NEITHER,
-                                                         SpamProtoConfig.DEFAULT_STRENGTH,
-                                                         "Scan SMTP e-mail",
+        tmpSpamSettings.getBaseSettings().
+            setSmtpConfig(new SpamSMTPConfig(true,
+                                             SMTPSpamMessageAction.QUARANTINE,
+                                             SpamSMTPNotifyAction.NEITHER,
+                                             SpamProtoConfig.DEFAULT_STRENGTH,
+                                             "Scan SMTP e-mail",
                                                          getDefaultSubjectWrapperTemplate(),
                                                          getDefaultBodyWrapperTemplate(),
                                                          getDefaultIndicatorHeaderName(),
@@ -439,31 +348,37 @@ public class SpamImpl extends AbstractNode implements SpamNode
                                                          true,
                                                          15));
 
-        tmpSpamSettings.setPopConfig(new SpamPOPConfig(true,
-                                                       SpamMessageAction.MARK,
-                                                       SpamProtoConfig.DEFAULT_STRENGTH,
-                                                       "Scan POP e-mail",
-                                                       getDefaultSubjectWrapperTemplate(),
-                                                       getDefaultBodyWrapperTemplate(),
-                                                       getDefaultIndicatorHeaderName(),
-                                                       getDefaultIndicatorHeaderValue(true),
-                                                       getDefaultIndicatorHeaderValue(false) ));
+        tmpSpamSettings.getBaseSettings().
+            setPopConfig(new SpamPOPConfig(true,
+                                           SpamMessageAction.MARK,
+                                           SpamProtoConfig.DEFAULT_STRENGTH,
+                                           "Scan POP e-mail",
+                                           getDefaultSubjectWrapperTemplate(),
+                                           getDefaultBodyWrapperTemplate(),
+                                           getDefaultIndicatorHeaderName(),
+                                           getDefaultIndicatorHeaderValue(true),
+                                           getDefaultIndicatorHeaderValue(false) ));
 
-        tmpSpamSettings.setImapConfig(new SpamIMAPConfig(true,
-                                                         SpamMessageAction.MARK,
-                                                         SpamProtoConfig.DEFAULT_STRENGTH,
-                                                         "Scan IMAP e-mail",
-                                                         getDefaultSMTPSubjectWrapperTemplate(),
-                                                         getDefaultSMTPBodyWrapperTemplate(),
-                                                         getDefaultIndicatorHeaderName(),
-                                                         getDefaultIndicatorHeaderValue(true),
-                                                         getDefaultIndicatorHeaderValue(false) ));
+        tmpSpamSettings.getBaseSettings().
+            setImapConfig(new SpamIMAPConfig(true,
+                                             SpamMessageAction.MARK,
+                                             SpamProtoConfig.DEFAULT_STRENGTH,
+                                             "Scan IMAP e-mail",
+                                             getDefaultSMTPSubjectWrapperTemplate(),
+                                             getDefaultSMTPBodyWrapperTemplate(),
+                                             getDefaultIndicatorHeaderName(),
+                                             getDefaultIndicatorHeaderValue(true),
+                                             getDefaultIndicatorHeaderValue(false) ));
     }
 
     public SpamSettings getSpamSettings()
     {
-        if( this.spamSettings == null )
+        if( this.spamSettings == null ) {
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
+        } else {
+            spamSettings.getBaseSettings().setLastUpdate(this.lastSignatureUpdate);
+            spamSettings.getBaseSettings().setSignatureVersion(this.signatureVersion);
+        }
 
         return this.spamSettings;
     }
@@ -474,8 +389,6 @@ public class SpamImpl extends AbstractNode implements SpamNode
         ensureTemplateSettings(newSpamSettings);
         // set lists if not already set
         initSpamRBLList(newSpamSettings);
-        //initSpamAssassinLclList(newSpamSettings);
-        //initSpamAssassinDefList(newSpamSettings); // def must be last
 
         TransactionWork tw = new TransactionWork()
             {
@@ -492,6 +405,89 @@ public class SpamImpl extends AbstractNode implements SpamNode
         getNodeContext().runTransaction(tw);
 
         return;
+    }
+
+    public SpamBaseSettings getBaseSettings()
+    {
+        SpamBaseSettings baseSettings = spamSettings.getBaseSettings();
+
+        baseSettings.setLastUpdate(this.lastSignatureUpdate);
+        baseSettings.setSignatureVersion(this.signatureVersion);
+
+        /* XXXX Have to figure out how to calculate the version string. */
+
+        return baseSettings;
+    }
+
+    public void setBaseSettings(final SpamBaseSettings baseSettings)
+    {
+        //TEMP HACK, Until we move the templates to database
+        ensureTemplateSettings(baseSettings);
+
+        TransactionWork tw = new TransactionWork() {
+                public boolean doWork(Session s) {
+                    spamSettings.setBaseSettings(baseSettings);
+                    s.merge(spamSettings);
+                    return true;
+                }
+
+                public Object getResult() {
+                    return null;
+                }
+            };
+        getNodeContext().runTransaction(tw);
+    }
+
+    public List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns )
+    {
+        String query = "select s.spamRBLList from SpamSettings s where s.tid = :tid ";
+        return listUtil.getItems( query, getNodeContext(), getTid(), start, limit, sortColumns );
+    }
+
+    public void updateSpamRBLList( final List<SpamRBL> added, final List<Long> deleted,
+                                   final List<SpamRBL> modified )
+    {
+        TransactionWork<Void> tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    List<SpamRBL> rblList = getSpamSettings().getSpamRBLList();
+                    listUtil.updateCachedItems( rblList, spamRblHandler, added, deleted, modified);
+                    spamSettings = (SpamSettings)s.merge(spamSettings);
+
+                    return true;
+                }
+
+                public Void getResult() { return null; }
+            };
+
+        getNodeContext().runTransaction( tw );
+
+    }
+
+    public void updateAll( final SpamBaseSettings baseSettings, final List[] rblRules )
+    {
+        TransactionWork tw = new TransactionWork() {
+                public boolean doWork(Session s) {
+                    if (baseSettings != null) {
+                        spamSettings.setBaseSettings(baseSettings);
+                    }
+                    if (rblRules != null && rblRules.length >= 3) {
+                        List<SpamRBL> rblList = new LinkedList<SpamRBL>( getSpamSettings().getSpamRBLList());
+                        listUtil.updateCachedItems( rblList, spamRblHandler, rblRules );
+                        // spamSettings.setSpamRBLList( rblList );
+                    }
+
+                    spamSettings = (SpamSettings)s.merge(spamSettings);
+
+                    return true;
+                }
+
+                public Object getResult() {
+                    return null;
+                }
+            };
+        getNodeContext().runTransaction(tw);
     }
 
     public void initializeSettings()
@@ -518,68 +514,6 @@ public class SpamImpl extends AbstractNode implements SpamNode
         return saDaemon.restart();
     }
 
-    // convenience method for GUI
-    public List<String> getUnWhitelistFromList() {
-        return getSALclOptValueList(SpamAssassinLcl.UNWHITELIST_FROM_SETTING);
-    }
-
-    // convenience method for GUI
-    public void setUnWhitelistFromList(List<String> unWhitelistFromList) {
-        swapSALclOptValues(unWhitelistFromList, SpamAssassinLcl.UNWHITELIST_FROM_SETTING);
-        return;
-    }
-
-    // convenience method for GUI
-    public List<String> getUnWhitelistFromRcvdList() {
-        return getSALclOptValueList(SpamAssassinLcl.UNWHITELIST_FROM_RCVD_SETTING);
-    }
-
-    // convenience method for GUI
-    public void setUnWhitelistFromRcvdList(List<String> unWhitelistFromRcvdList) {
-        swapSALclOptValues(unWhitelistFromRcvdList, SpamAssassinLcl.UNWHITELIST_FROM_RCVD_SETTING);
-        return;
-    }
-
-    private List<String> getSALclOptValueList(String optName) {
-        List<String> optValueList = new LinkedList<String>();
-        List<SpamAssassinLcl> saLclList = getSALclList(optName);
-        for (SpamAssassinLcl saLcl : saLclList) {
-            optValueList.add(saLcl.getOptValue());
-        }
-
-        return optValueList;
-    }
-
-    private void swapSALclOptValues(List<String> newOptValueList, String optName) {
-        if (true == newOptValueList.isEmpty())
-            return;
-
-        // replace existing local def conf with new ones
-        List<SpamAssassinLcl> rmSALclList = getSALclList(optName);
-        List<SpamAssassinLcl> srcSALclList = spamSettings.getSpamAssassinLclList();
-        srcSALclList.removeAll(rmSALclList);
-        rmSALclList.clear();
-        for (String newOptValue : newOptValueList) {
-            srcSALclList.add(new SpamAssassinLcl(optName, newOptValue, null, true));
-        }
-
-        return;
-    }
-
-    private List<SpamAssassinLcl> getSALclList(String optName) {
-        List<SpamAssassinLcl> saLclList = new LinkedList<SpamAssassinLcl>();
-        List<SpamAssassinLcl> srcSALclList = spamSettings.getSpamAssassinLclList();
-        for (SpamAssassinLcl srcSALcl : srcSALclList) {
-            if (false == srcSALcl.getActive())
-                continue;
-
-            if (true == optName.equals(srcSALcl.getOptName()))
-                saLclList.add(srcSALcl);
-        }
-
-        return saLclList;
-    }
-
     // AbstractNode methods ----------------------------------------------
 
     @Override
@@ -602,8 +536,6 @@ public class SpamImpl extends AbstractNode implements SpamNode
                     ensureTemplateSettings(spamSettings);
                     // set lists if not already set
                     initSpamRBLList(spamSettings);
-                    //initSpamAssassinLclList(spamSettings);
-                    //initSpamAssassinDefList(spamSettings); // def must be last
 
                     return true;
                 }
@@ -636,6 +568,20 @@ public class SpamImpl extends AbstractNode implements SpamNode
         rblEventLogger.log(spamSmtpRBLEvent);
     }
 
+    private static class SpamRBLHandler implements PartialListUtil.Handler<SpamRBL>
+    {
+        public Long getId( SpamRBL rule )
+        {
+            return rule.getId();
+        }
+
+        public void update( SpamRBL current, SpamRBL newRule )
+        {
+            current.update( newRule );
+        }
+
+    }
+
     // XXX soon to be deprecated ----------------------------------------------
 
     public Object getSettings()
@@ -648,4 +594,5 @@ public class SpamImpl extends AbstractNode implements SpamNode
         setSpamSettings((SpamSettings)settings);
         return;
     }
+
 }

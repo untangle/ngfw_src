@@ -33,21 +33,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeInstantiated;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.policy.Policy;
@@ -193,15 +194,28 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         return l;
     }
 
-    public List<Tid> nodeInstancesVisible(Policy policy)
+    public List<NodeDesc> visibleNodes(Policy policy)
     {
-        List<Tid> nodeInstances = nodeInstances(policy);
-        Vector<Tid> visibleVector = new Vector<Tid>();
-        for( Tid tid : nodeInstances ){
-            if( nodeContext(tid).getMackageDesc().getViewPosition() >= 0 )
-                visibleVector.add(tid);
+        List<Tid> tids = nodeInstances();
+        List<NodeDesc> l = new ArrayList<NodeDesc>(tids.size());
+
+        for (Tid tid : tids) {
+            NodeContext nc = nodeContext(tid);
+            MackageDesc md = nc.getMackageDesc();
+            Policy p = tid.getPolicy();
+
+            MackageDesc.Type type = md.getType();
+            if (!md.isInvisible() && (MackageDesc.Type.NODE == type
+                                      || MackageDesc.Type.SERVICE == type)) {
+                if ((null == p ? p == policy : p.equals(policy))
+                    || MackageDesc.Type.SERVICE == type) {
+                    NodeDesc nd = nc.getNodeDesc();
+                    l.add(nd);
+                }
+            }
         }
-        return (List<Tid>) visibleVector;
+
+        return l;
     }
 
     public NodeContextImpl nodeContext(Tid tid)
@@ -209,31 +223,90 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         return tids.get(tid);
     }
 
-    public Tid instantiate(String nodeName)
+    public Node node(String name) {
+        Node node = null;
+        List<Tid> nodeInstances = nodeInstances(name);
+        if(nodeInstances.size()>0){
+            NodeContext nodeContext = nodeContext(nodeInstances.get(0));
+            node = nodeContext.node();
+        }
+        return node;
+    }
+
+    public NodeDesc instantiate(String nodeName)
         throws DeployException
     {
         Policy policy = getDefaultPolicyForNode(nodeName);
-        return instantiate(nodeName, newTid(null, nodeName), new String[0]);
+        return instantiate(nodeName, null, new String[0]);
     }
 
-    public Tid instantiate(String nodeName, String[] args)
+    public NodeDesc instantiate(String nodeName, String[] args)
         throws DeployException
     {
         Policy policy = getDefaultPolicyForNode(nodeName);
-        return instantiate(nodeName, newTid(policy, nodeName), args);
+        return instantiate(nodeName, policy, args);
     }
 
-    public Tid instantiate(String nodeName, Policy policy)
+    public NodeDesc instantiate(String nodeName, Policy policy)
         throws DeployException
     {
-        return instantiate(nodeName, newTid(policy, nodeName),
-                           new String[0]);
+        return instantiate(nodeName, policy, new String[0]);
     }
 
-    public Tid instantiate(String nodeName, Policy policy, String[] args)
+    public NodeDesc instantiate(String nodeName, Policy p, String[] args)
         throws DeployException
     {
-        return instantiate(nodeName, newTid(policy, nodeName), args);
+        UvmContextImpl mctx = UvmContextImpl.getInstance();
+
+        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)mctx.toolboxManager();
+
+        MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
+
+        if (MackageDesc.Type.SERVICE == mackageDesc.getType()) {
+            p = null;
+        }
+        //test if not duplicated
+        List<Tid> instancesList=this.nodeInstances(nodeName,p);
+        if(instancesList.size()>0) {
+            return null; //return if the node is already installed
+        }
+        Tid tid = newTid(p, nodeName);
+
+        URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
+
+        logger.info("initializing node desc for: " + nodeName);
+        NodeDesc tDesc = initNodeDesc(mackageDesc, resUrls, tid);
+
+
+        NodeContextImpl tc;
+        synchronized (this) {
+            if (!live) {
+                throw new DeployException("NodeManager is shut down");
+            }
+
+            tc = new NodeContextImpl
+                ((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), true);
+            tids.put(tid, tc);
+            try {
+                tc.init(args);
+            } finally {
+                if (null == tc.node()) {
+                    tids.remove(tid);
+                }
+            }
+        }
+
+        Node node = tc.node();
+        if (null != node) {
+            LocalMessageManager lmm = LocalUvmContextFactory.context()
+                .localMessageManager();
+            Counters c = lmm.getCounters(node.getTid());
+            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs());
+            LocalMessageManager mm = mctx.localMessageManager();
+            mm.submitMessage(ne);
+        }
+
+        return tDesc;
     }
 
     public void destroy(final Tid tid) throws UndeployException
@@ -254,15 +327,15 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         tc.destroyPersistentState();
     }
 
-    public Map<Tid, NodeStats> allNodeStats()
+    public Map<Tid, NodeState> allNodeStates()
     {
-        HashMap<Tid, NodeStats> result = new HashMap<Tid, NodeStats>();
+        HashMap<Tid, NodeState> result = new HashMap<Tid, NodeState>();
         for (Iterator<Tid> iter = tids.keySet().iterator(); iter.hasNext();) {
             Tid tid = iter.next();
             NodeContextImpl tci = tids.get(tid);
-            if (tci.getRunState() == NodeState.RUNNING)
-                result.put(tid, tci.getStats());
+            result.put(tid, tci.getRunState());
         }
+
         return result;
     }
 
@@ -406,7 +479,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             if (0 == l.size()) {
                 try {
                     logger.info("instantiating new: " + md.getName());
-                    t = instantiate(md.getName());
+                    t = instantiate(md.getName()).getTid();
                 } catch (DeployException exn) {
                     logger.warn("could not deploy: " + md.getName(), exn);
                     continue;
@@ -668,50 +741,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         return unloaded;
     }
 
-    private Tid instantiate(String nodeName, Tid tid, String[] args)
-        throws DeployException
-    {
-        UvmContextImpl mctx = UvmContextImpl.getInstance();
-
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)mctx.toolboxManager();
-
-        MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
-        URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
-
-        if ((mackageDesc.isService() || mackageDesc.isUtil() || mackageDesc.isCore())
-            && tid.getPolicy() != null) {
-            throw new DeployException("Cannot specify a policy for a service/util/core: "
-                                      + nodeName);
-        }
-
-        if (mackageDesc.isSecurity() && tid.getPolicy() == null) {
-            throw new DeployException("Cannot have null policy for a security: "
-                                      + nodeName);
-        }
-
-        logger.info("initializing node desc for: " + nodeName);
-        NodeDesc tDesc = initNodeDesc(mackageDesc, resUrls, tid);
-
-        synchronized (this) {
-            if (!live) {
-                throw new DeployException("NodeManager is shut down");
-            }
-
-            NodeContextImpl tc = new NodeContextImpl
-                ((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), true);
-            tids.put(tid, tc);
-            try {
-                tc.init(args);
-            } finally {
-                if (null == tc.node()) {
-                    tids.remove(tid);
-                }
-            }
-        }
-
-        return tid;
-    }
-
     /**
      * Initialize node from 'META-INF/uvm-node.xml' in one
      * of the urls.
@@ -728,7 +757,13 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         InputStream is = new URLClassLoader(urls)
             .getResourceAsStream(DESC_PATH);
         if (null == is) {
-            throw new DeployException(mackageDesc.getName() + " desc " + DESC_PATH + " not found");
+            List<URL> ul = new ArrayList<URL>(urls.length);
+            for (URL u : urls) {
+                ul.add(u);
+            }
+            throw new DeployException(mackageDesc.getName() + " desc "
+                                      + DESC_PATH + " not found in urls: "
+                                      + ul);
         }
 
         UvmNodeHandler mth = new UvmNodeHandler(mackageDesc);
@@ -756,10 +791,11 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if (mackageDesc == null)
             throw new DeployException("Node named " + nodeName + " not found");
-        if (!mackageDesc.isSecurity())
+        if (MackageDesc.Type.SERVICE != mackageDesc.getType()) {
             return null;
-        else
+        } else {
             return LocalUvmContextFactory.context().policyManager().getDefaultPolicy();
+        }
     }
 
     private Tid newTid(Policy policy, String nodeName)

@@ -62,7 +62,7 @@ class DevMkg
   end
 
   def installed()
-    devs = []  
+    devs = []
     each_pkg_list_line { |l|
       if /^Package: / =~ l
         pack = l.split[1]
@@ -108,6 +108,10 @@ class DevMkg
   end
 
   def remove(pkg)
+    0
+  end
+
+  def predictInstall(pkg)
     0
   end
 
@@ -216,6 +220,18 @@ class RealMkg
     0
   end
 
+  def predictInstall(pkg)
+    IO.popen("apt-get install -s #{pkg}") do |io|
+      io.each_line do |l|
+        if /^Inst ([^ ]+) / =~ l
+          puts $1
+        end
+      end
+    end
+
+    0
+  end
+
   private
 
   def get_recommends(pkg)
@@ -289,9 +305,9 @@ class RealMkg
           log "DOWNLOAD SUCCEEDED: #{p}"
         else
           log "DOWNLOAD FAILED: #{p}"
-	  return -1
+      return -1
         end
-        
+
       end
     ensure
       FileUtils.rm_rf(tmp)
@@ -341,4 +357,6 @@ exit case ARGV.shift
        else
          mkg.remove(ARGV.shift)
        end
+     when 'predictInstall'
+       mkg.predictInstall(ARGV.shift)
      end

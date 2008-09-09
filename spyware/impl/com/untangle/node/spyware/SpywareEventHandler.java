@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,8 +18,12 @@
 package com.untangle.node.spyware;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
+import com.untangle.node.util.IPSet;
+import com.untangle.node.util.IPSetTrie;
+import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.MPipeException;
@@ -30,10 +34,6 @@ import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
-import com.untangle.uvm.node.IPMaddr;
-import com.untangle.uvm.node.IPMaddrRule;
-import com.untangle.node.util.IPSet;
-import com.untangle.node.util.IPSetTrie;
 import org.apache.log4j.Logger;
 
 public class SpywareEventHandler extends AbstractEventHandler
@@ -51,7 +51,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void subnetList(List list)
+    public void subnetList(Set list)
     {
         if (null == list) {
             subnetSet = null;
@@ -133,7 +133,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             logger.debug("Subnet scan: " + ipm.toString() + " -> DETECTED.");
         }
 
-        node.incrementCount(Spyware.SCAN);
+        node.incrementSubnetScan();
 
         if (logger.isInfoEnabled()) {
             logger.info("-------------------- Detected Spyware --------------------");
@@ -147,20 +147,18 @@ public class SpywareEventHandler extends AbstractEventHandler
                 logger.info("Protocol      : UDP");
             logger.info("----------------------------------------------------------");
         }
-        
+
         ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
 
         if (ir.isLive()) {
-            node.incrementCount(Spyware.BLOCK); //XXX logged but not blocked (count as blocked anyway)???
-            if (ipr instanceof TCPNewSessionRequest)
+            node.incrementSubnetBlock();
+            if (ipr instanceof TCPNewSessionRequest) {
                 ((TCPNewSessionRequest)ipr).rejectReturnRst(true);
-            if (ipr instanceof UDPNewSessionRequest)
+            }
+            if (ipr instanceof UDPNewSessionRequest) {
                 ipr.rejectReturnUnreachable(IPNewSessionRequest.PROHIBITED,true);
+            }
             return;
-        }
-
-        if (ir.getAlert()) {
-            /* XXX alerts */
         }
 
         if (release) { ipr.release(true); }

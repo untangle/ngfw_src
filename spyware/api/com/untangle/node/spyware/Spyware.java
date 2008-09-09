@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,23 +18,52 @@
 
 package com.untangle.node.spyware;
 
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.node.Node;
+import java.util.List;
+
 import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.Validator;
 
 public interface Spyware extends Node
 {
-    static final int SCAN = Node.GENERIC_0_COUNTER;
-    static final int BLOCK = Node.GENERIC_1_COUNTER;
-    static final int PASS = Node.GENERIC_2_COUNTER;
+    List<StringRule> getActiveXRules(int start, int limit, String... sortColumns);
+    void updateActiveXRules(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
 
-    SpywareSettings getSpywareSettings();
-    void setSpywareSettings(SpywareSettings settings);
+    List<StringRule> getCookieRules(int start, int limit, String... sortColumns);
+    void updateCookieRules(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
 
+    List<IPMaddrRule> getSubnetRules(int start, int limit, String... sortColumns);
+    void updateSubnetRules(List<IPMaddrRule> added, List<Long> deleted, List<IPMaddrRule> modified);
+
+    List<StringRule> getDomainWhitelist(int start, int limit, String... sortColumns);
+    void updateDomainWhitelist(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+
+    SpywareBaseSettings getBaseSettings();
+    void setBaseSettings(SpywareBaseSettings baseSettings);
     SpywareBlockDetails getBlockDetails(String nonce);
     boolean unblockSite(String nonce, boolean global);
 
     UserWhitelistMode getUserWhitelistMode();
 
+    /**
+     * Update all settings once, in a single transaction
+     */
+    void updateAll(SpywareBaseSettings baseSettings,
+            List[] activeXRules, List[] cookieRules,
+            List[] subnetRules, List[] domainWhitelist);
+
+    /**
+     * Reconfigure node. This method should be called after some settings are updated
+     * in order to reconfigure the node accordingly.
+     */
+    void reconfigure();
+
     EventManager<SpywareEvent> getEventManager();
+
+    Validator getValidator();
+
+
 }

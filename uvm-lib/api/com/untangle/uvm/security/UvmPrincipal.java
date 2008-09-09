@@ -46,23 +46,16 @@ public final class UvmPrincipal implements Principal, Serializable
 {
     private static final long serialVersionUID = -3343175380349082197L;
 
-    private String loginName;
-    private boolean readOnly;
+    private final String loginName;
 
-    public UvmPrincipal(String loginName, boolean readOnly)
+    public UvmPrincipal(String loginName)
     {
         this.loginName = loginName;
-        this.readOnly = readOnly;
     }
 
     public String getName()
     {
         return loginName;
-    }
-
-    public boolean isReadOnly()
-    {
-        return readOnly;
     }
 
     public int hashCode()

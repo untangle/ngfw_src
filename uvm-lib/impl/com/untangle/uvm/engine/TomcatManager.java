@@ -18,17 +18,22 @@
 
 package com.untangle.uvm.engine;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.BindException;
 import java.net.InetAddress;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Properties;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import com.untangle.uvm.util.AdministrationOutsideAccessValve;
 import com.untangle.uvm.util.ReportingOutsideAccessValve;
 import org.apache.catalina.Container;
-import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
@@ -40,7 +45,6 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
-import org.apache.coyote.http11.Http11BaseProtocol;
 import org.apache.log4j.Logger;
 
 /**
@@ -50,8 +54,6 @@ class TomcatManager
 {
     private static final int NUM_TOMCAT_RETRIES = 15; //  5 minutes total
     private static final long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
-    private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
-    private static final int NUM_REBIND_RETRIES = 5; //  10 seconds
 
     // Connector threadpool parameters.  Set down from default to save
     // memory since we aren't primarily a web server.
@@ -59,75 +61,102 @@ class TomcatManager
     private static final String MAX_SPARE_THREADS = "3";
     private static final String MAX_THREADS = "100";
 
-    private static final String STANDARD_WELCOME = "webstart";
-
-    private final InetAddress bindAddress;
-    private final InetAddress localhost;
+    private static final String STANDARD_WELCOME = "/setup/welcome.do";
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final List<WebAppDescriptor> descriptors = new ArrayList<WebAppDescriptor>();
-
-    private Embedded emb = null;
-    private StandardHost baseHost;
-    private Object modifyExternalSynch = new Object();
-
+    private final Embedded emb;
+    private final StandardHost baseHost;
+    private final Object modifyExternalSynch = new Object();
     private final String webAppRoot;
-    private final String catalinaHome;
     private final String logDir;
-
     private final UvmContextImpl uvmContext;
-    private final NonceFactory nonceFactory = new NonceFactory();
-    private final UvmRealm uvmRealm = new UvmRealm( false, nonceFactory );
-    private final UvmRealm globalRealm = new UvmRealm( true, nonceFactory );
 
     private String keystoreFile = "conf/keystore";
     private String keystorePass = "changeit";
     private String keyAlias = "tomcat";
 
-    private Context rootContext;
     private String welcomeFile = STANDARD_WELCOME;
-
-    private Connector defaultHTTPConnector;
-    private Connector localHTTPConnector;
-    private Connector defaultHTTPSConnector;
-    private Connector localHTTPSConnector; /* https localhost on 443. */
-    private Connector internalOpenHTTPSConnector; /* Sessions on this port are unrestricted */
-    private Connector externalHTTPSConnector; /* This isn't used anymore now that we use a redirect */
 
     // constructors -----------------------------------------------------------
 
-    TomcatManager(UvmContextImpl uvmContext, String catalinaHome,
-                  String webAppRoot, String logDir)
+    TomcatManager(UvmContextImpl uvmContext,
+                  InheritableThreadLocal<HttpServletRequest> threadRequest,
+                  String catalinaHome, String webAppRoot, String logDir)
     {
         InetAddress l;
-        InetAddress b;
-
-        try {
-            b = InetAddress.getByName("192.0.2.42");
-            l = InetAddress.getByName("127.0.0.1");
-        } catch (Exception exn) { 
-            /* If it is null, it will just bind to 0.0.0.0 */
-            l = null;
-            b = null;
-            logger.warn("Unable to parse 192.0.2.42 or 127.0.0.1", exn);
-        }
-
-        this.bindAddress = b;
-        this.localhost = l;
 
         this.uvmContext = uvmContext;
-        this.catalinaHome = catalinaHome;
         this.webAppRoot = webAppRoot;
         this.logDir = logDir;
 
-        /* rbs: according to the javadoc, each valve object can only be assigned to one container,
-         * otherwise it is supposed to throw an IllegalStateException */
-        loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
-        loadSystemApp("/webstart", "webstart", new WebAppOptions(new AdministrationOutsideAccessValve()));
-        loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
-        loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
-        loadSystemApp("/library", "library", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
+        ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
+        ClassLoader tomcatParent = uvmCl;
+        try {
+            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Thread.currentThread().setContextClassLoader(tomcatParent);
+
+            // jdi 8/30/04 -- canonical host name depends on ordering of
+            // /etc/hosts
+            String hostname = "localhost";
+
+            emb = new Embedded();
+            emb.setCatalinaHome(catalinaHome);
+
+            // create an Engine
+            Engine baseEngine = emb.createEngine();
+
+            // set Engine properties
+            baseEngine.setName("tomcat");
+            baseEngine.setDefaultHost(hostname);
+
+            baseEngine.setParentClassLoader(tomcatParent);
+
+            // create Host
+            baseHost = (StandardHost)emb
+                .createHost(hostname, webAppRoot);
+            baseHost.setUnpackWARs(true);
+            baseHost.setDeployOnStartup(true);
+            baseHost.setAutoDeploy(true);
+            baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
+            OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
+
+            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "",
+                                                            "/reports", "/library" );
+
+            // ssoValve.setRequireReauthentication(true);
+            baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
+            baseHost.getPipeline().addValve(ssoValve);
+
+            // add host to Engine
+            baseEngine.addChild(baseHost);
+
+            // add new Engine to set of
+            // Engine for embedded server
+            emb.addEngine(baseEngine);
+
+            //loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
+            loadSystemApp("/blockpage", "blockpage");
+            loadSystemApp("/reports", "reports",
+                          new WebAppOptions(true,
+                                            new ReportingOutsideAccessValve()));
+            loadSystemApp("/alpaca", "alpaca",
+                          new WebAppOptions(true, new AdministrationOutsideAccessValve()));
+            ServletContext ctx = loadSystemApp("/webui", "webui",
+                                               new WebAppOptions(new AdministrationOutsideAccessValve()));
+            ctx.setAttribute("threadRequest", threadRequest);
+
+            ctx = loadSystemApp("/setup", "setup",
+                                new WebAppOptions(new AdministrationOutsideAccessValve()));
+            ctx.setAttribute("threadRequest", threadRequest);
+            loadSystemApp("/library", "library",
+                          new WebAppOptions(true,new AdministrationOutsideAccessValve()));
+        } finally {
+            Thread.currentThread().setContextClassLoader(uvmCl);
+            // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        }
+
+        resetRootWelcome();
     }
 
     // package protected methods ----------------------------------------------
@@ -162,95 +191,56 @@ class TomcatManager
         this.keystoreFile = ksFile;
         this.keystorePass = ksPass;
         this.keyAlias = ksAlias;
-
-        if (null != emb) {
-            // XXX Some validation of the new Keystore data, so we
-            // don't hose ourselves
-            int port = 0;
-            if (null != externalHTTPSConnector) {
-                port = externalHTTPSConnector.getPort();
-                destroyConnector(externalHTTPSConnector, "External HTTPS");
-                externalHTTPSConnector = createConnector(port, true);
-                startConnector(externalHTTPSConnector, "External HTTPS");
-            }
-
-            if (null != defaultHTTPSConnector) {
-                port = defaultHTTPSConnector.getPort();
-                destroyConnector(defaultHTTPSConnector, "Default HTTPS");
-                defaultHTTPSConnector = createConnector(port, true);
-                startConnector(defaultHTTPSConnector, "Default HTTPS");
-            }
-
-            if (null != internalOpenHTTPSConnector) {
-                port = internalOpenHTTPSConnector.getPort();
-                destroyConnector(internalOpenHTTPSConnector, "Internal HTTPS");
-                internalOpenHTTPSConnector = createConnector(port, true);
-                startConnector(internalOpenHTTPSConnector, "Internal HTTPS");
-            }
-
-            if (null != localHTTPSConnector) {
-                port = localHTTPSConnector.getPort();
-                destroyConnector(localHTTPSConnector, "Local HTTPS");
-                localHTTPSConnector = createConnector(port, true, this.localhost);
-                startConnector(localHTTPSConnector, "Local HTTPS");
-            }
-        }
     }
 
-    boolean loadPortalApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
+    ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm,
+                                 AuthenticatorBase auth)
     {
         // Need a large timeout since we handle that ourselves.
         WebAppOptions options = new WebAppOptions(false, 24*60);
         return loadWebApp(urlBase, rootDir, realm, auth, options);
     }
 
-    boolean loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
+    ServletContext loadSystemApp(String urlBase, String rootDir,
+                                 WebAppOptions options)
     {
-        /* tomcat cannot share the same authenticator across apps, you
-         * receive a LifecycleException: Security Interceptor has
-         * already been started exception. */
-        UvmAuthenticator uvmAuth = new UvmAuthenticator();
-        return loadWebApp(urlBase, rootDir, uvmRealm, uvmAuth, options);
+        return loadWebApp(urlBase, rootDir, null, null, options);
     }
 
-    boolean loadSystemApp(String urlBase, String rootDir, Valve valve)
+    ServletContext loadSystemApp(String urlBase, String rootDir, Valve valve)
     {
         return loadSystemApp(urlBase, rootDir, new WebAppOptions(true, valve));
     }
 
-    boolean loadSystemApp(String urlBase, String rootDir) {
+    ServletContext loadSystemApp(String urlBase, String rootDir) {
         return loadSystemApp(urlBase, rootDir, new WebAppOptions());
     }
 
-    boolean loadGlobalApp(String urlBase, String rootDir, WebAppOptions options)
+    ServletContext loadGlobalApp(String urlBase, String rootDir,
+                                 WebAppOptions options)
     {
-        /* tomcat cannot share the same authenticator across apps, you
-         * receive a LifecycleException: Security Interceptor has
-         * already been started exception. */
-        UvmAuthenticator uvmAuth = new UvmAuthenticator();
-        return loadWebApp(urlBase, rootDir, globalRealm, uvmAuth, options);
+        return loadWebApp(urlBase, rootDir, null, null, options);
     }
 
-    boolean loadGlobalApp(String urlBase, String rootDir, Valve valve)
+    ServletContext loadGlobalApp(String urlBase, String rootDir, Valve valve)
     {
         return loadGlobalApp(urlBase, rootDir, new WebAppOptions(true, valve));
     }
 
-    boolean loadGlobalApp(String urlBase, String rootDir)
+    ServletContext loadGlobalApp(String urlBase, String rootDir)
     {
         return loadGlobalApp(urlBase, rootDir, new WebAppOptions());
     }
 
-    boolean loadInsecureApp(String urlBase, String rootDir)
+    ServletContext loadInsecureApp(String urlBase, String rootDir)
     {
         return loadWebApp(urlBase, rootDir, null, null);
     }
 
-    boolean loadInsecureApp(String urlBase, String rootDir, Valve valve)
+    ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve)
     {
         return loadWebApp(urlBase, rootDir, null, null, valve);
     }
-
 
     boolean unloadWebApp(String contextRoot)
     {
@@ -276,17 +266,6 @@ class TomcatManager
         return false;
     }
 
-    void rebindExternalHttpsPort(int port)
-        throws Exception
-    {
-        /* We no longer need this port, the DNAT in the alpaca handles this redirect
-         * on, leaving it in just in case. */
-        /* Synchronize on the external thread */
-        synchronized(this.modifyExternalSynch) {
-            doRebindExternalHttpsPort(port);
-        }
-    }
-
     /**
      * Gives no exceptions, even if Tomcat was never started.
      */
@@ -302,8 +281,7 @@ class TomcatManager
     }
 
     // XXX exception handling
-    synchronized void startTomcat(HttpInvoker httpInvoker,
-                                  int internalHTTPPort,
+    synchronized void startTomcat(int internalHTTPPort,
                                   int internalHTTPSPort,
                                   int externalHTTPSPort,
                                   int internalOpenHTTPSPort)
@@ -312,101 +290,19 @@ class TomcatManager
         // Change for 4.0: Put the Tomcat class loader insdie the UVM
         // class loader.
         ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
-        ClassLoader tomcatParent = new TomClassLoader(uvmCl);
+        ClassLoader tomcatParent = uvmCl;
         try {
-            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(tomcatParent);
 
-            // jdi 8/30/04 -- canonical host name depends on ordering of
-            // /etc/hosts
-            String hostname = "localhost";
-
-            // set default logger and realm
-            // FileLogger fileLog = new FileLogger();
-            // fileLog.setDirectory(logDir);
-            // fileLog.setPrefix("tomcat");
-            // fileLog.setSuffix(".log");
-            // fileLog.setTimestamp(true);
-            // fileLog.setVerbosityLevel("DEBUG");
-
-            emb = new Embedded(/* fileLog, */ uvmRealm);
-            emb.setCatalinaHome(catalinaHome);
-
-            // create an Engine
-            Engine baseEngine = emb.createEngine();
-
-            // set Engine properties
-            baseEngine.setName("tomcat");
-            baseEngine.setDefaultHost(hostname);
-
-            baseEngine.setParentClassLoader(tomcatParent);
-
-            // create Host
-            baseHost = (StandardHost)emb
-                .createHost(hostname, webAppRoot);
-            baseHost.setUnpackWARs(true);
-            baseHost.setDeployOnStartup(true);
-            baseHost.setAutoDeploy(true);
-            baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
-            OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
-            /* XXXXX Hackstered to get single sign on to ignore certain contexts */
-            SingleSignOn ssoValve = new SpecialSingleSignOn( uvmContext, "/session-dumper", "/webstart", "",
-                                                             "/reports", "/library" );
-
-            // ssoValve.setRequireReauthentication(true);
-            baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
-            baseHost.getPipeline().addValve(ssoValve);
-
-            // add host to Engine
-            baseEngine.addChild(baseHost);
-
-            // create root Context
-            rootContext = emb.createContext("", webAppRoot + "/ROOT");
-            StandardManager mgr = new StandardManager();
-            mgr.setPathname(null); /* disable session persistence */
-            rootContext.setManager(mgr);
-            rootContext.setManager(new StandardManager());
-            setRootWelcome(welcomeFile);
-
-            // add context to host
-            baseHost.addChild(rootContext);
-
-            // create application Context
-            StandardContext ctx = (StandardContext)emb.createContext("/http-invoker", "http-invoker");
-            mgr = new StandardManager();
-            mgr.setPathname(null); /* disable session persistence */
-            ctx.setManager(mgr);
-
-            /* Add a valve to block outside access */
-            ctx.addValve(new AdministrationOutsideAccessValve());
-
-            /* Moved after adding the valve */
-            baseHost.addChild(ctx);
-            ctx.getServletContext().setAttribute("invoker", httpInvoker);
-
-            // Load the webapps which were requested before the
-            // system started-up.
-            for (WebAppDescriptor desc : descriptors) {
-                loadWebAppImpl(desc.urlBase, desc.relativeRoot, desc.realm,
-                               desc.auth, desc.options);
+            Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
+            jkConnector.setProperty("address", "127.0.0.1");
+            jkConnector.setProperty("tomcatAuthentication", "false");
+            String secret = getSecret();
+            if (null != secret) {
+                jkConnector.setProperty("request.secret", secret);
             }
-
-            // add new Engine to set of
-            // Engine for embedded server
-            emb.addEngine(baseEngine);
-
-            // create Connectors
-            defaultHTTPConnector = createConnector(internalHTTPPort, false);
-            localHTTPConnector = createConnector(internalHTTPPort, false,this.localhost);
-            defaultHTTPSConnector = createConnector(internalHTTPSPort, true);
-            localHTTPSConnector = createConnector(internalHTTPSPort, true, this.localhost);
-            internalOpenHTTPSConnector = createConnector(internalOpenHTTPSPort, true);
-
-
-            /* Start the outside https server */
-            if (externalHTTPSPort != internalHTTPSPort) {
-                externalHTTPSConnector = createConnector(externalHTTPSPort, true);
-            }
+            emb.addConnector(jkConnector);
 
             // start operation
             try {
@@ -459,22 +355,38 @@ class TomcatManager
             Thread.currentThread().setContextClassLoader(uvmCl);
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
-
-    }
-
-    String generateAuthNonce(InetAddress clientAddr, Principal user)
-    {
-        return uvmRealm.generateAuthNonce(clientAddr, user);
     }
 
     void resetRootWelcome()
     {
         setRootWelcome(STANDARD_WELCOME);
+        apacheReload();
     }
 
     synchronized void setRootWelcome(String welcomeFile)
     {
         this.welcomeFile = welcomeFile;
+
+        String bh = System.getProperty("bunnicula.home");
+        String p = bh + "/apache2/conf.d/homepage.conf";
+
+        FileWriter w = null;
+        try {
+            w = new FileWriter(p);
+            w.write("RedirectMatch 302 ^/index.html " + welcomeFile + "\n");
+        } catch (IOException exn) {
+            logger.warn("could not write homepage redirect", exn);
+        } finally {
+            if (null != w) {
+                try {
+                    w.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close FileWriter", exn);
+                }
+            }
+        }
+
+        apacheReload();
     }
 
     String getRootWelcome()
@@ -483,25 +395,6 @@ class TomcatManager
     }
 
     // private classes --------------------------------------------------------
-
-    private static class WebAppDescriptor
-    {
-        final String urlBase;
-        final String relativeRoot;
-        final Realm realm;
-        final AuthenticatorBase auth;
-        final WebAppOptions options;
-
-        WebAppDescriptor(String base, String rr, Realm realm,
-                         AuthenticatorBase auth, WebAppOptions options)
-        {
-            this.urlBase = base;
-            this.relativeRoot = rr;
-            this.realm = realm;
-            this.auth = auth;
-            this.options = options;
-        }
-    }
 
     private static class WebAppOptions
     {
@@ -539,12 +432,11 @@ class TomcatManager
         }
     }
 
-
     // private methods --------------------------------------------------------
 
     /**
-     * Loads the web application.  If Tomcat is not yet running, schedules it for
-     * later loading.
+     * Loads the web application.  If Tomcat is not yet running,
+     * schedules it for later loading.
      *
      * @param urlBase a <code>String</code> value
      * @param rootDir a <code>String</code> value
@@ -552,48 +444,44 @@ class TomcatManager
      * @param auth an <code>AuthenticatorBase</code> value
      * @return a <code>boolean</code> value
      */
-    private synchronized boolean loadWebApp(String urlBase,
-                                            String rootDir,
-                                            Realm realm,
-                                            AuthenticatorBase auth,
-                                            WebAppOptions options)
+    private synchronized ServletContext loadWebApp(String urlBase,
+                                                   String rootDir,
+                                                   Realm realm,
+                                                   AuthenticatorBase auth,
+                                                   WebAppOptions options)
     {
-        if (null == emb) {
-            // haven't started yet
-            WebAppDescriptor wad = new WebAppDescriptor(urlBase, rootDir,
-                                                        realm, auth, options);
-            descriptors.add(wad);
-            return true;
-        } else {
-            return loadWebAppImpl(urlBase, rootDir, realm, auth, options);
-        }
+        return loadWebAppImpl(urlBase, rootDir, realm, auth, options);
     }
 
-    private boolean loadWebApp(String urlBase,
-                               String rootDir,
-                               Realm realm,
-                               AuthenticatorBase auth) {
+    private ServletContext loadWebApp(String urlBase,
+                                      String rootDir,
+                                      Realm realm,
+                                      AuthenticatorBase auth) {
         return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions());
     }
 
-    private boolean loadWebApp(String urlBase,
-                               String rootDir,
-                               Realm realm,
-                               AuthenticatorBase auth,
-                               Valve valve) {
-        return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions(valve));
+    private ServletContext loadWebApp(String urlBase,
+                                      String rootDir,
+                                      Realm realm,
+                                      AuthenticatorBase auth,
+                                      Valve valve) {
+        return loadWebApp(urlBase, rootDir, realm, auth,
+                          new WebAppOptions(valve));
     }
 
-    private boolean loadWebAppImpl(String urlBase, String rootDir,
-                                   Realm realm, AuthenticatorBase auth, WebAppOptions options)
+    private ServletContext loadWebAppImpl(String urlBase, String rootDir,
+                                          Realm realm, AuthenticatorBase auth,
+                                          WebAppOptions options)
     {
         String fqRoot = webAppRoot + "/" + rootDir;
 
         logger.info("Adding web app " + fqRoot);
         try {
-            StandardContext ctx = (StandardContext) emb.createContext(urlBase, fqRoot);
+            StandardContext ctx = (StandardContext)emb
+                .createContext(urlBase, fqRoot);
             if (options.allowLinking)
                 ctx.setAllowLinking(true);
+            ctx.setCrossContext(true);
             ctx.setSessionTimeout(options.sessionTimeout);
             if (null != realm) {
                 ctx.setRealm(realm);
@@ -602,6 +490,8 @@ class TomcatManager
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
+
+            ctx.setResources(new StrongETagDirContext());
 
             /* This should be the first valve */
             if (null != options.valve) ctx.addValve(options.valve);
@@ -613,125 +503,12 @@ class TomcatManager
             }
             baseHost.addChild(ctx);
 
-            return true;
+            return ctx.getServletContext();
         } catch(Exception ex) {
             logger.error("Unable to deploy webapp \"" + urlBase
                          + "\" from directory \"" + fqRoot + "\"", ex);
-            return false;
+            return null;
         }
-    }
-
-    private void doRebindExternalHttpsPort(int port) throws Exception
-    {
-        logger.debug("Rebinding the HTTPS port");
-
-        if (port == 80 || port == 0 || port > 0xFFFF) {
-            throw new Exception("Cannot bind external to port 80");
-        }
-
-        /* This is kind of a questionable situation here, buecause it is not accessible here */
-        if (null != internalOpenHTTPSConnector
-            && internalOpenHTTPSConnector.getPort() == port) {
-            logger.info("External is already bound to port: " + port);
-            return;
-        }
-
-        /* If there was a failed attempt, retry, startExternal will
-         * only be null */
-        if (null != externalHTTPSConnector
-            && externalHTTPSConnector.getPort() == port) {
-            logger.info("External is already bound to port: " + port);
-            return;
-        }
-        destroyConnector(externalHTTPSConnector, "External HTTPS");
-        externalHTTPSConnector = null;
-
-        /* If it is not the default port, then rebind it */
-        if (null == defaultHTTPSConnector
-            || defaultHTTPSConnector.getPort() != port) {
-            logger.info("Rebinding external server to " + port);
-            externalHTTPSConnector = createConnector(port, true);
-            if (!startConnector(externalHTTPSConnector, "External HTTPS")) {
-                throw new Exception("Unable to bind to: " + port);
-            }
-        }
-    }
-
-    private Connector createConnector(int port, boolean secure)
-    {
-        return createConnector(port,secure,this.bindAddress);
-    }
-
-    /**
-     * Helper method - no synchronization
-     */
-    private Connector createConnector(int port, boolean secure, InetAddress address)
-    {
-        Connector ret = emb
-            .createConnector(address, port, secure);
-        ret.setProperty("minSpareThreads", MIN_SPARE_THREADS);
-        ret.setProperty("maxSpareThreads", MAX_SPARE_THREADS);
-        ret.setProperty("maxThreads", MAX_THREADS);
-
-        if (secure) {
-            Http11BaseProtocol ph = (Http11BaseProtocol)ret.getProtocolHandler();
-            ph.setKeystore(this.keystoreFile);
-            ph.setKeypass(this.keystorePass);
-            ph.setKeyAlias(this.keyAlias);
-        }
-
-        emb.addConnector(ret);
-        return ret;
-    }
-
-    private boolean destroyConnector(Connector connector,
-                                     String nameForLog)
-    {
-        /* Need to change the port */
-        if (null != connector) {
-            logger.info("Removing connector on port " + connector.getPort());
-            emb.removeConnector(connector);
-            try {
-                connector.stop();
-            } catch (Exception e) {
-                logger.error("Unable to stop externalConnector", e);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean startConnector(Connector connector, String logName)
-    {
-        for (int i = 0; i < NUM_REBIND_RETRIES; i++) {
-            try {
-                connector.start();
-                return true;
-            } catch (LifecycleException ex) {
-                if (i == NUM_REBIND_RETRIES) {
-                    logger.error("Exception starting connector \"" + logName
-                                 + "\" on port " + connector.getPort(), ex);
-                    return false;
-                }
-            } catch (Exception ex) {
-                logger.error("Exception starting connector \"" + logName
-                             + "\" on port " + connector.getPort(), ex);
-                return false;
-            }
-
-            try {
-                Thread.sleep(REBIND_SLEEP_TIME);
-            } catch (InterruptedException exn) {
-                // XXX exit mechanism
-                logger.warn("Interrupted, breaking");
-                return false;
-            }
-        }
-        logger.error("Unable to start connector \"" + logName + "\" on port "
-                     + connector.getPort() + " after " + NUM_REBIND_RETRIES
-                     + " attempts sleeping " + REBIND_SLEEP_TIME
-                     + " between start attempts");
-        return false;
     }
 
     private boolean isAIUExn(LifecycleException exn)
@@ -746,9 +523,82 @@ class TomcatManager
         return false;
     }
 
-    private static class TomClassLoader extends ClassLoader {
-        TomClassLoader(ClassLoader parent) {
-            super(parent);
+    private void writeIncludes()
+    {
+        String bh = System.getProperty("bunnicula.home");
+        if (null == bh) {
+            bh = "/usr/share/untangle";
         }
+
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter("/etc/apache2/untangle-conf.d");
+            fw.write("Include " + bh + "/apache2/conf.d/*.conf\n");
+        } catch (IOException exn) {
+            logger.warn("could not write includes: conf.d");
+        } finally {
+            if (null != fw) {
+                try {
+                    fw.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close file", exn);
+                }
+            }
+        }
+    }
+
+    private void apacheReload()
+    {
+        writeIncludes();
+
+        try {
+            logger.info("Reload Apache Config");
+            ProcessBuilder pb = new ProcessBuilder("/etc/init.d/apache2",
+                                                   "reload");
+
+            pb.redirectErrorStream(true);
+            Process p = pb.start();
+            InputStream is = p.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            for (String line = br.readLine(); null != line; line = br.readLine()) {
+                logger.info(line);
+            }
+
+            boolean done = false;
+            int tries = 5;
+
+            while (!done && 0 < tries) {
+                tries--;
+                try {
+                    p.waitFor();
+                    done = true;
+                } catch (InterruptedException exn) { }
+            }
+        } catch (IOException exn) {
+            logger.warn("Could not reload apache config", exn);
+        }
+    }
+
+    private String getSecret()
+    {
+        Properties p = new Properties();
+
+        FileReader r = null;
+        try {
+            r = new FileReader("/etc/apache2/workers.properties");
+            p.load(r);
+        } catch (IOException exn) {
+            logger.warn("could not read secret", exn);
+        } finally {
+            if (null != r) {
+                try {
+                    r.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close file", exn);
+                }
+            }
+        }
+
+        return p.getProperty("worker.uvmWorker.secret");
     }
 }

@@ -104,18 +104,28 @@ public class MimeTypeRule extends Rule
 
     // Object methods ---------------------------------------------------------
 
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof MimeTypeRule)) {
-            return false;
-        }
-
-        MimeTypeRule mtr = (MimeTypeRule)o;
-        return mimeType.equals(mtr.mimeType);
-    }
-
-    public int hashCode()
-    {
-        return mimeType.hashCode();
-    }
+//    public boolean equals(Object o)
+//    {
+//        if (!(o instanceof MimeTypeRule)) {
+//            return false;
+//        }
+//
+//        MimeTypeRule mtr = (MimeTypeRule)o;
+//        return mimeType.equals(mtr.mimeType);
+//    }
+//
+//    public int hashCode()
+//    {
+//        return mimeType.hashCode();
+//    }
+    
+    @Override
+    public void update(Rule rule) {
+    	super.update(rule);
+    	if (rule instanceof MimeTypeRule) {
+    		MimeTypeRule mimeTypeRule = (MimeTypeRule) rule;
+			this.mimeType = mimeTypeRule.mimeType;
+		}
+    }    
+    
 }

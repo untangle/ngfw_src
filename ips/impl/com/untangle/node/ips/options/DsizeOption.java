@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,19 +18,23 @@
 
 package com.untangle.node.ips.options;
 
+import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.uvm.vnet.event.*;
-import com.untangle.node.ips.IPSRuleSignature;
-import com.untangle.node.ips.IPSSessionInfo;
 import org.apache.log4j.Logger;
 
-public class DsizeOption extends IPSOption {
-
+public class DsizeOption extends IpsOption
+{
     private final Logger log = Logger.getLogger(getClass());
 
-    int min;
-    int max;
-    public DsizeOption(IPSRuleSignature signature, String params) {
-        super(signature, params);
+    private int min;
+    private int max;
+
+    public DsizeOption(OptionArg arg)
+    {
+        super(arg);
+
+        String params = arg.getParams();
+
         char ch = params.charAt(0);
         String range[] = params.split("<>");
         try {
@@ -56,16 +60,43 @@ public class DsizeOption extends IPSOption {
         }
     }
 
-    public boolean runnable() {
+    public boolean runnable()
+    {
         return true;
     }
 
     //XXX - check negation flag?
-    public boolean run(IPSSessionInfo sessionInfo) {
+    public boolean run(IpsSessionInfo sessionInfo)
+    {
         IPDataEvent event = sessionInfo.getEvent();
         int size = event.data().remaining();
         if(min <= size && max >= size)
             return true;
         return false;
+    }
+
+    public boolean optEquals(Object o)
+    {
+        if (!(o instanceof DsizeOption)) {
+            return false;
+        }
+
+        DsizeOption dso = (DsizeOption)o;
+
+        if (!super.optEquals(dso)) {
+            return false;
+        }
+
+        return min == dso.min
+            && max == dso.max;
+    }
+
+    public int optHashCode()
+    {
+        int result = 17;
+        result = result * 37 + super.optHashCode();
+        result = result * 37 + min;
+        result = result * 37 + max;
+        return result;
     }
 }

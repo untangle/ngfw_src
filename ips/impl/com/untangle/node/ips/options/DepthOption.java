@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,22 +18,23 @@
 
 package com.untangle.node.ips.options;
 
-import java.util.regex.*;
-
-import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.node.ips.IPSRuleSignature;
 import org.apache.log4j.Logger;
 
-public class DepthOption extends IPSOption {
-
+public class DepthOption extends IpsOption
+{
     private final Logger logger = Logger.getLogger(getClass());
 
-    public DepthOption(IPSRuleSignature signature, String params) throws ParseException {
-        super(signature, params);
-        ContentOption option = (ContentOption) signature.getOption("ContentOption",this);
-        if(option == null) {
-            logger.warn("Unable to find content option to set depth for sig: " + signature.rule().getText());
+    public DepthOption(OptionArg arg) throws ParseException
+    {
+        super(arg);
+
+        String params = arg.getParams();
+
+        ContentOption option = (ContentOption)signature.getOption("ContentOption",this);
+        if (option == null) {
+            logger.warn("Unable to find content option to set depth for sig: "
+                        + arg.getRule().getText());
             signature.remove(true);
             return;
         }

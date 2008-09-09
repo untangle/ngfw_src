@@ -27,6 +27,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
+import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -77,7 +78,7 @@ class BrandingManagerImpl implements LocalBrandingManager
 
         this.settings = tw.getResult();
         setBrandingProperties(settings);
-        setLogo(settings.getLogo());
+        setFileLogo(settings.getLogo());
     }
 
     // public methods ---------------------------------------------------------
@@ -95,54 +96,40 @@ class BrandingManagerImpl implements LocalBrandingManager
         saveSettings(copy);
         this.settings = copy;
         setBrandingProperties(this.settings);
-        setLogo(this.settings.getLogo());
+        setFileLogo(this.settings.getLogo());
     }
 
-    public File getLogoFile()
-    {
-        return BRANDING_LOGO;
+    public BrandingBaseSettings getBaseSettings() {
+        return settings.getBaseSettings();
     }
 
-    public String getLogoWebPath()
-    {
-        return BRANDING_LOGO_WEB_PATH;
-    }
-
-    // private methods --------------------------------------------------------
-
-    private void setBrandingProperties(BrandingSettings settings)
-    {
-        PrintWriter pr = null;
-        try {
-            OutputStream os = new FileOutputStream(BRANDING_PROPS);
-            pr = new PrintWriter(new OutputStreamWriter(os));
-            pr.print("uvm.branding.companyName=");
-            pr.println(settings.getCompanyName());
-            pr.print("uvm.branding.companyUrl=");
-            pr.println(settings.getCompanyUrl());
-            pr.print("uvm.branding.contactName=");
-            pr.println(settings.getContactName());
-            if (null != settings.getContactEmail()) {
-                pr.print("uvm.branding.contactEmail=");
-                pr.println(settings.getContactEmail());
-            }
-        } catch (IOException exn) {
-            logger.warn("could not save branding properties", exn);
-        } finally {
-            if (null != pr) {
-                pr.close();
-            }
+    public void setBaseSettings(BrandingBaseSettings bs) {
+        /* delete whatever is in the db, and just make a fresh settings object */
+        BrandingSettings copy = new BrandingSettings();
+        bs.copy(copy.getBaseSettings());
+        if (bs.isDefaultLogo()) {
+            copy.setLogo(null);
+        } else {
+            copy.setLogo(this.settings.getLogo());
         }
+        saveSettings(copy);
+        this.settings = copy;
+        setBrandingProperties(this.settings);
+        setFileLogo(this.settings.getLogo());
     }
 
-    private void saveSettings(BrandingSettings settings)
-    {
-        DeletingDataSaver<BrandingSettings> saver = 
-            new DeletingDataSaver<BrandingSettings>(LocalUvmContextFactory.context(),"BrandingSettings");
-        this.settings = saver.saveData(settings);
+    public void setLogo(byte[] logo) {
+        /* delete whatever is in the db, and just make a fresh settings object */
+        BrandingSettings copy = new BrandingSettings();
+        settings.copy(copy);
+        copy.setLogo(logo);
+        saveSettings(copy);
+        this.settings = copy;
+        setBrandingProperties(this.settings);
+        setFileLogo(this.settings.getLogo());
     }
 
-    private void setLogo(byte[] logo)
+    private void setFileLogo(byte[] logo)
     {
         FileInputStream fis = null;
         FileOutputStream fos = null;
@@ -181,13 +168,56 @@ class BrandingManagerImpl implements LocalBrandingManager
         }
     }
 
+    public File getLogoFile()
+    {
+        return BRANDING_LOGO;
+    }
+
+    public String getLogoWebPath()
+    {
+        return BRANDING_LOGO_WEB_PATH;
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void setBrandingProperties(BrandingSettings settings)
+    {
+        PrintWriter pr = null;
+        try {
+            OutputStream os = new FileOutputStream(BRANDING_PROPS);
+            pr = new PrintWriter(new OutputStreamWriter(os));
+            pr.print("uvm.branding.companyName=");
+            pr.println(settings.getBaseSettings().getCompanyName());
+            pr.print("uvm.branding.companyUrl=");
+            pr.println(settings.getBaseSettings().getCompanyUrl());
+            pr.print("uvm.branding.contactName=");
+            pr.println(settings.getBaseSettings().getContactName());
+            if (null != settings.getBaseSettings().getContactEmail()) {
+                pr.print("uvm.branding.contactEmail=");
+                pr.println(settings.getBaseSettings().getContactEmail());
+            }
+        } catch (IOException exn) {
+            logger.warn("could not save branding properties", exn);
+        } finally {
+            if (null != pr) {
+                pr.close();
+            }
+        }
+    }
+
+    private void saveSettings(BrandingSettings settings)
+    {
+        DeletingDataSaver<BrandingSettings> saver =
+            new DeletingDataSaver<BrandingSettings>(LocalUvmContextFactory.context(),"BrandingSettings");
+        this.settings = saver.saveData(settings);
+    }
+
     static {
-        String wd = System.getProperty("bunnicula.web.dir");
-        File id = new File(wd, "ROOT/images");
+        File id = new File("/var/www/images");
         DEFAULT_LOGO = new File(id, "Logo150x96.gif");
         BRANDING_LOGO = new File(id, "BrandingLogo.gif");
         BRANDING_LOGO_WEB_PATH = "images/BrandingLogo.gif";
-        wd = System.getProperty("bunnicula.conf.dir");
+        String wd = System.getProperty("bunnicula.conf.dir");
         id = new File(wd);
         BRANDING_PROPS = new File(id, "branding.properties");
     }

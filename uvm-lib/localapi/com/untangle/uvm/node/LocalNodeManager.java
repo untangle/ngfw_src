@@ -74,9 +74,9 @@ public interface LocalNodeManager
      * Node instances by policy, the visible ones only, for the GUI.
      *
      * @param policy policy of node.
-     * @return tids of corresponding nodes.
+     * @return <code>NodeDesc</code>s of corresponding nodes.
      */
-    List<Tid> nodeInstancesVisible(Policy policy);
+    List<NodeDesc> visibleNodes(Policy policy);
 
     /**
      * Node instances by name policy.
@@ -97,7 +97,7 @@ public interface LocalNodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name, Policy policy) throws DeployException;
+    NodeDesc instantiate(String name, Policy policy) throws DeployException;
 
     /**
      * Create a new node instance under the given policy.  Note
@@ -110,7 +110,7 @@ public interface LocalNodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name, Policy policy, String[] args)
+    NodeDesc instantiate(String name, Policy policy, String[] args)
         throws DeployException;
 
     /**
@@ -122,7 +122,7 @@ public interface LocalNodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name, String[] args) throws DeployException;
+    NodeDesc instantiate(String name, String[] args) throws DeployException;
 
     /**
      * Create a new node instance under the default policy, or in
@@ -132,7 +132,7 @@ public interface LocalNodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    Tid instantiate(String name) throws DeployException;
+    NodeDesc instantiate(String name) throws DeployException;
 
     /**
      * Remove node instance from the pipeline.
@@ -151,12 +151,21 @@ public interface LocalNodeManager
     NodeContext nodeContext(Tid tid);
 
     /**
-     * Get the statistics and counts for all nodes in one call.
+     * Get the <code>Node</code> for a node instance;
+     * if the are more than a node instance for the provided name,
+     * the first node instance is returned.
      *
-     * @return a <code>Map</code> from Tid to NodeStats for all
-     * nodes in RUNNING state.
+     * @param name of the node.
+     * @return the instance's <code>Node</code>.
      */
-    Map<Tid, NodeStats> allNodeStats();
+    public Node node(String name);
+
+    /**
+     * Get the runtime state for all nodes in one call.
+     *
+     * @return a <code>Map</code> from Tid to NodeState for all nodes
+     */
+    Map<Tid, NodeState> allNodeStates();
 
     /**
      * Return the NodeContext for the thread.

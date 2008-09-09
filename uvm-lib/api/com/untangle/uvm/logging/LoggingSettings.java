@@ -78,12 +78,12 @@ public class LoggingSettings implements Serializable
     @Id
     @Column(name="settings_id")
     @GeneratedValue
-    private Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    private void setId(Long id)
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -159,7 +159,7 @@ public class LoggingSettings implements Serializable
      * @return a <code>SyslogPriority</code> value
      */
     @Column(name="syslog_threshold")
-    @Type(type="com.untangle.uvm.type.SyslogPriorityUserType")
+    @Type(type="com.untangle.uvm.logging.SyslogPriorityUserType")
     public SyslogPriority getSyslogThreshold()
     {
         return syslogThreshold;

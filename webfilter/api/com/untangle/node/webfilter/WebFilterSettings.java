@@ -19,14 +19,12 @@
 package com.untangle.node.webfilter;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import javax.persistence.CascadeType;
+import java.util.Set;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,14 +34,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.node.http.UserWhitelistMode;
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
 
 /**
  * WebFilter settings.
@@ -59,21 +54,16 @@ public class WebFilterSettings implements Serializable
 
     private Long id;
     private Tid tid;
-    private UserWhitelistMode userWhitelistMode = UserWhitelistMode.NONE;
 
-    private BlockTemplate blockTemplate = new BlockTemplate();
+    private WebFilterBaseSettings baseSettings = new WebFilterBaseSettings();
 
-    private boolean blockAllIpHosts = false;
+    private Set<IPMaddrRule> passedClients = new HashSet<IPMaddrRule>();
+    private Set<StringRule> passedUrls = new HashSet<StringRule>();
 
-    private boolean fascistMode = false;
-
-    private List<IPMaddrRule> passedClients = new ArrayList<IPMaddrRule>();
-    private List<StringRule> passedUrls = new ArrayList<StringRule>();
-
-    private List<StringRule> blockedUrls = new ArrayList<StringRule>();
-    private List<MimeTypeRule> blockedMimeTypes = new ArrayList<MimeTypeRule>();
-    private List<StringRule> blockedExtensions = new ArrayList<StringRule>();
-    private List<BlacklistCategory> blacklistCategories = new ArrayList<BlacklistCategory>();
+    private Set<StringRule> blockedUrls = new HashSet<StringRule>();
+    private Set<MimeTypeRule> blockedMimeTypes = new HashSet<MimeTypeRule>();
+    private Set<StringRule> blockedExtensions = new HashSet<StringRule>();
+    private Set<BlacklistCategory> blacklistCategories = new HashSet<BlacklistCategory>();
 
     // constructors -----------------------------------------------------------
 
@@ -136,58 +126,9 @@ public class WebFilterSettings implements Serializable
     }
 
     /**
-     * Template for block messages.
-     *
-     * @return the block message.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="template", nullable=false)
-    public BlockTemplate getBlockTemplate()
-    {
-        return blockTemplate;
-    }
-
-    public void setBlockTemplate(BlockTemplate blockTemplate)
-    {
-        this.blockTemplate = blockTemplate;
-    }
-
-    /**
-     * Block all requests to hosts identified only by an IP address.
-     *
-     * @return true when IP requests are blocked.
-     */
-    @Column(name="block_all_ip_hosts", nullable=false)
-    public boolean getBlockAllIpHosts()
-    {
-        return blockAllIpHosts;
-    }
-
-    public void setBlockAllIpHosts(boolean blockAllIpHosts)
-    {
-        this.blockAllIpHosts = blockAllIpHosts;
-    }
-
-    /**
-     * If true, block everything that is not whitelisted.
-     *
-     * @return true to block.
-     */
-    @Column(name="fascist_mode", nullable=false)
-    public boolean getFascistMode()
-    {
-        return fascistMode;
-    }
-
-    public void setFascistMode(boolean fascistMode)
-    {
-        this.fascistMode = fascistMode;
-    }
-
-    /**
      * Clients not subject to blacklisting.
      *
-     * @return the list of passed clients.
+     * @return the set of passed clients.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -195,13 +136,12 @@ public class WebFilterSettings implements Serializable
     @JoinTable(name="n_webfilter_passed_clients",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<IPMaddrRule> getPassedClients()
+    public Set<IPMaddrRule> getPassedClients()
     {
-        return UvmUtil.eliminateNulls(passedClients);
+        return passedClients;
     }
 
-    public void setPassedClients(List<IPMaddrRule> passedClients)
+    public void setPassedClients(Set<IPMaddrRule> passedClients)
     {
         this.passedClients = passedClients;
     }
@@ -209,7 +149,7 @@ public class WebFilterSettings implements Serializable
     /**
      * URLs not subject to blacklist checking.
      *
-     * @return the list of passed URLs.
+     * @return the set of passed URLs.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -217,13 +157,12 @@ public class WebFilterSettings implements Serializable
     @JoinTable(name="n_webfilter_passed_urls",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<StringRule> getPassedUrls()
+    public Set<StringRule> getPassedUrls()
     {
-        return UvmUtil.eliminateNulls(passedUrls);
+        return passedUrls;
     }
 
-    public void setPassedUrls(List<StringRule> passedUrls)
+    public void setPassedUrls(Set<StringRule> passedUrls)
     {
         this.passedUrls = passedUrls;
     }
@@ -231,7 +170,7 @@ public class WebFilterSettings implements Serializable
     /**
      * URLs not subject to blacklist checking.
      *
-     * @return the list of blocked URLs.
+     * @return the set of blocked URLs.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -239,13 +178,12 @@ public class WebFilterSettings implements Serializable
     @JoinTable(name="n_webfilter_blocked_urls",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<StringRule> getBlockedUrls()
+    public Set<StringRule> getBlockedUrls()
     {
-        return UvmUtil.eliminateNulls(blockedUrls);
+        return blockedUrls;
     }
 
-    public void setBlockedUrls(List<StringRule> blockedUrls)
+    public void setBlockedUrls(Set<StringRule> blockedUrls)
     {
         this.blockedUrls = blockedUrls;
     }
@@ -253,7 +191,7 @@ public class WebFilterSettings implements Serializable
     /**
      * Mime-Types to be blocked.
      *
-     * @return the list of blocked MIME types.
+     * @return the set of blocked MIME types.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -261,13 +199,12 @@ public class WebFilterSettings implements Serializable
     @JoinTable(name="n_webfilter_mime_types",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<MimeTypeRule> getBlockedMimeTypes()
+    public Set<MimeTypeRule> getBlockedMimeTypes()
     {
-        return UvmUtil.eliminateNulls(blockedMimeTypes);
+        return blockedMimeTypes;
     }
 
-    public void setBlockedMimeTypes(List<MimeTypeRule> blockedMimeTypes)
+    public void setBlockedMimeTypes(Set<MimeTypeRule> blockedMimeTypes)
     {
         this.blockedMimeTypes = blockedMimeTypes;
     }
@@ -275,7 +212,7 @@ public class WebFilterSettings implements Serializable
     /**
      * Extensions to be blocked.
      *
-     * @return the list of blocked extensions.
+     * @return the set of blocked extensions.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -283,13 +220,12 @@ public class WebFilterSettings implements Serializable
     @JoinTable(name="n_webfilter_extensions",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
-    public List<StringRule> getBlockedExtensions()
+    public Set<StringRule> getBlockedExtensions()
     {
-        return UvmUtil.eliminateNulls(blockedExtensions);
+        return blockedExtensions;
     }
 
-    public void setBlockedExtensions(List<StringRule> blockedExtensions)
+    public void setBlockedExtensions(Set<StringRule> blockedExtensions)
     {
         this.blockedExtensions = blockedExtensions;
     }
@@ -297,32 +233,37 @@ public class WebFilterSettings implements Serializable
     /**
      * Blacklist blocking options.
      *
-     * @return the list of blacklist categories.
+     * @return the set of blacklist categories.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="setting_id")
-    @IndexColumn(name="position")
-    public List<BlacklistCategory> getBlacklistCategories()
+    public Set<BlacklistCategory> getBlacklistCategories()
     {
-        return UvmUtil.eliminateNulls(blacklistCategories);
+        return blacklistCategories;
     }
 
-    public void setBlacklistCategories(List<BlacklistCategory> blacklistCategories)
+    public void setBlacklistCategories(Set<BlacklistCategory> blacklistCategories)
     {
         this.blacklistCategories = blacklistCategories;
     }
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="user_whitelist_mode", nullable=false)
-    public UserWhitelistMode getUserWhitelistMode()
-    {
-        return userWhitelistMode;
+    @Embedded
+    public WebFilterBaseSettings getBaseSettings() {
+        if (null != baseSettings) {
+            baseSettings.setPassedClientsLength(null == passedClients ? 0 : passedClients.size());
+            baseSettings.setPassedUrlsLength(null == passedUrls ? 0 : passedUrls.size());
+            baseSettings.setBlockedUrlsLength(null == blockedUrls ? 0 : blockedUrls.size());
+            baseSettings.setBlockedMimeTypesLength(null == blockedMimeTypes ? 0 : blockedMimeTypes.size());
+            baseSettings.setBlockedExtensionsLength(null == blockedExtensions ? 0 : blockedExtensions.size());
+            baseSettings.setBlacklistCategoriesLength(null == blacklistCategories ? 0 : blacklistCategories.size());
+        }
+
+        return baseSettings;
     }
 
-    public void setUserWhitelistMode(UserWhitelistMode userWhitelistMode)
-    {
-        this.userWhitelistMode = userWhitelistMode;
+    public void setBaseSettings(WebFilterBaseSettings baseSettings) {
+        this.baseSettings = baseSettings;
     }
 }

@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.node;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -86,18 +85,27 @@ public class IPMaddrRule extends Rule
 
     // Object methods ---------------------------------------------------------
 
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof IPMaddrRule)) {
-            return false;
-        }
-
-        IPMaddrRule ir = (IPMaddrRule)o;
-        return ipMaddr.equals(ir.ipMaddr);
-    }
-
-    public int hashCode()
-    {
-        return ipMaddr.hashCode();
-    }
+//    public boolean equals(Object o)
+//    {
+//        if (!(o instanceof IPMaddrRule)) {
+//            return false;
+//        }
+//
+//        IPMaddrRule ir = (IPMaddrRule)o;
+//        return ipMaddr.equals(ir.ipMaddr);
+//    }
+//
+//    public int hashCode()
+//    {
+//        return ipMaddr.hashCode();
+//    }
+    
+    @Override
+    public void update(Rule rule) {
+    	super.update(rule);
+    	if (rule instanceof IPMaddrRule) {
+    		IPMaddrRule ipMaddrRule = (IPMaddrRule) rule;
+			this.ipMaddr = ipMaddrRule.ipMaddr;
+		}
+    }    
 }

@@ -1,0 +1,98 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-07-24 19:04+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:22
+msgid "block"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:28
+msgid "log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:40
+msgid "[no category]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:41
+msgid "[no protocol]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:44
+msgid "[no description]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
+msgid "[no signature]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:47
+msgid "Protocol List"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:85
+msgid "category"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
+msgid "protocol"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:102
+msgid "description"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:110
+msgid "signature"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
+msgid "Category"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:130
+msgid "Protocol"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:136
+msgid "Block"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:140
+msgid "Log"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
+msgid "Description"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:150
+msgid "Signature"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:167
+msgid "Saving..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:167
+msgid "Please wait"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:171
+msgid "Failed"
+msgstr ""

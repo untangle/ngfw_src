@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,10 +33,12 @@
 
 package com.untangle.gui.widgets;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import javax.swing.*;
-
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 public class MTiledIconLabel extends JLabel {
 
@@ -97,33 +99,5 @@ public class MTiledIconLabel extends JLabel {
                 g.drawImage(icon.getImage(), x, y, this);
             }
         }
-
-
-        /*
-        // CREATE MASK/GRADIENT
-        BufferedImage gradient = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = gradient.createGraphics();
-        GradientPaint gradientPaint = new GradientPaint(0,0,startColor,getWidth()/2,0,endColor,true);
-        g2d.setPaint(gradientPaint);
-        g2d.fill(new Rectangle(getWidth(),getHeight()));
-        g2d.dispose();
-        gradient.flush();
-
-        // CREATE BACKGROUND
-        BufferedImage background = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);
-        Graphics2D backG2D = background.createGraphics();
-        for(int x=0; x <= getWidth(); x+=iconWidth){
-        for(int y=0; y<= getHeight(); y+=iconHeight){
-        backG2D.drawImage(icon.getImage(),x,y,this);
-        }
-        }
-        backG2D.setComposite(AlphaComposite.SrcOver);
-        backG2D.drawImage(gradient,0,0,this);
-        backG2D.dispose();
-        background.flush();
-
-        // PAINT BACKGROUND
-        g.drawImage(background,0,0,this);
-        **/
     }
 }

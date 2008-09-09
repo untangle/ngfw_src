@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,13 +21,13 @@ package com.untangle.node.ips;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-
 
 class FileLoader {
     public static final String SNORT_RULES_HOME = "/usr/share/untangle-snort-rules";
@@ -38,7 +38,7 @@ class FileLoader {
 
     public static final Pattern[] IGNORED_RULE_PATTERNS = {
         Pattern.compile("clsid", Pattern.CASE_INSENSITIVE) };
-    
+
 
     // This should be elsewhere.  XXX
     public static final int[] VERY_SLOW_RULES = {
@@ -102,15 +102,17 @@ class FileLoader {
         return result;
     }
 
-    static List<IPSRule> loadAllRuleFiles(IPSRuleManager manager)
+    static Set<IpsRule> loadAllRuleFiles(IpsRuleManager manager)
     {
-        List<IPSRule> ruleList = new ArrayList<IPSRule>();
+        Set<IpsRule> ruleSet = new HashSet<IpsRule>();
         File file = new File(SNORT_RULES_HOME + "/rules");
-        loadRuleFiles(manager, file, ruleList);
-        return ruleList;
+        loadRuleFiles(manager, file, ruleSet);
+        return ruleSet;
     }
 
-    private static void loadRuleFiles(IPSRuleManager manager, File file, List<IPSRule> result) {
+    private static void loadRuleFiles(IpsRuleManager manager, File file,
+                                      Set<IpsRule> result)
+    {
         if (file.isDirectory()) {
             String[] children = file.list();
             Arrays.sort(children);
@@ -129,7 +131,8 @@ class FileLoader {
 
     /** Temp subroutines for loading local snort rules.
      */
-    private static void processRuleFile(IPSRuleManager manager, File file, List<IPSRule> result) {
+    private static void processRuleFile(IpsRuleManager manager, File file,
+                                        Set<IpsRule> result) {
         try {
             String category = file.getName().replaceAll(".rules",""); //Should move this to script land
             category = category.replace("bleeding-",""); //Should move this to script land
@@ -146,7 +149,7 @@ class FileLoader {
                         continue lineloop;
                     }
                 }
-                IPSRule rule = manager.createRule(str.trim(), category);
+                IpsRule rule = manager.createRule(str.trim(), category);
                 if (rule != null) {
                     int sid = rule.getSid();
                     for (int slowRule : VERY_SLOW_RULES) {

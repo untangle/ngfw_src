@@ -36,17 +36,12 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
-
-    /* no block counter */
-    private final static int PASS_COUNTER = Node.GENERIC_0_COUNTER;
-    private final static int MARK_COUNTER = Node.GENERIC_2_COUNTER;
 
     private final SpamImpl zNode;
     private final SpamScanner zScanner;
@@ -63,7 +58,8 @@ public class SpamPopHandler extends PopStateMachine
 
     // constructors -----------------------------------------------------------
 
-    protected SpamPopHandler(TCPSession session, SpamImpl node, MailExport zMExport)
+    protected SpamPopHandler(TCPSession session, SpamImpl node,
+                             MailExport zMExport)
     {
         super(session);
 
@@ -75,7 +71,7 @@ public class SpamPopHandler extends PopStateMachine
 
         MailNodeSettings zMTSettings = zMExport.getExportSettings();
 
-        zConfig = node.getSpamSettings().getPopConfig();
+        zConfig = node.getSpamSettings().getBaseSettings().getPopConfig();
         lTimeout = zMTSettings.getPopTimeout();
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
@@ -94,16 +90,16 @@ public class SpamPopHandler extends PopStateMachine
         logger.debug("SCAN MESSAGE!");
         if (giveUpSize < zMsgFile.length()) {
             postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
-            zNode.incrementCount(PASS_COUNTER);
+            zNode.incrementPassCount();
         } else if (true == zSLNodeView.isSafelisted(null, zMMessage.getMMHeaders().getFrom(), null)) {
             postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.SAFELIST);
-            zNode.incrementCount(PASS_COUNTER);
+            zNode.incrementPassCount();
         } else if (true == bScan) {
             SpamReport zReport;
 
             if (null != (zReport = scanFile(zMsgFile)) &&
                 SpamMessageAction.MARK == zMsgAction) {
-                zNode.incrementCount(MARK_COUNTER);
+                zNode.incrementMarkCount();
 
                 /* wrap spam message and rebuild message token */
                 MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zReport);
@@ -122,7 +118,7 @@ public class SpamPopHandler extends PopStateMachine
                     throw new TokenException("cannot create wrapped message file after marking message as spam: " + exn);
                 }
             } else {
-                zNode.incrementCount(PASS_COUNTER);
+                zNode.incrementPassCount();
             }
         } else {
             if (logger.isDebugEnabled()) {

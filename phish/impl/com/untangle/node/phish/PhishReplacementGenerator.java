@@ -19,6 +19,7 @@
 package com.untangle.node.phish;
 
 import com.untangle.node.http.ReplacementGenerator;
+import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -52,7 +53,7 @@ class PhishReplacementGenerator
     protected String getReplacement(PhishBlockDetails details)
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
+        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
 
         return String.format(BLOCK_TEMPLATE, details.getHost(),
                              details.getUri(), bs.getContactHtml());
@@ -61,7 +62,7 @@ class PhishReplacementGenerator
     @Override
     protected String getRedirectUrl(String nonce, String host, Tid tid)
     {
-        return "http://" + host + "/idblocker/blockpage.jsp?nonce=" + nonce
+        return "http://" + host + "/idblocker/blockpage?nonce=" + nonce
             + "&tid=" + tid;
     }
 }

@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.toolbox;
 
-import java.io.Serializable;
+import com.untangle.uvm.message.Message;
 
 /**
  * Signals that download is complete.
@@ -41,7 +41,7 @@ import java.io.Serializable;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class DownloadComplete implements InstallProgress, Serializable
+public class DownloadComplete extends Message
 {
     private static final long serialVersionUID = 9186336172977874700L;
 
@@ -57,12 +57,5 @@ public class DownloadComplete implements InstallProgress, Serializable
     public boolean getSuccess()
     {
         return success;
-    }
-
-    // InstallProgress methods ------------------------------------------------
-
-    public void accept(ProgressVisitor visitor)
-    {
-        visitor.visitDownloadComplete(this);
     }
 }

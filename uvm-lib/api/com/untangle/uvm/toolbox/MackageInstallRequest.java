@@ -33,6 +33,8 @@
 
 package com.untangle.uvm.toolbox;
 
+import com.untangle.uvm.message.Message;
+
 /**
  * Signals a request for the Swing GUI to initiate installation of a
  * Debian package.
@@ -40,7 +42,7 @@ package com.untangle.uvm.toolbox;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MackageInstallRequest extends ToolboxMessage
+public class MackageInstallRequest extends Message
 {
     private final MackageDesc mackageDesc;
     private final boolean isInstalled;
@@ -59,12 +61,5 @@ public class MackageInstallRequest extends ToolboxMessage
     public boolean isInstalled()
     {
         return this.isInstalled;
-    }
-
-    // ToolboxMessage methods -------------------------------------------------
-
-    public void accept(ToolboxMessageVisitor v)
-    {
-        v.visitMackageInstallRequest(this);
     }
 }

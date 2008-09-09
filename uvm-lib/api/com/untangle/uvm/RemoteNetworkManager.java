@@ -33,15 +33,14 @@
 
 package com.untangle.uvm;
 
-import java.net.InetAddress;
+import java.util.List;
 
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.BasicNetworkSettings;
-import com.untangle.uvm.networking.DynamicDNSSettings;
+import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.networking.MiscSettings;
 import com.untangle.uvm.networking.NetworkException;
-import com.untangle.uvm.networking.NetworkSpacesSettings;
 import com.untangle.uvm.networking.NetworkSpacesSettingsImpl;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -56,6 +55,11 @@ public interface RemoteNetworkManager
 
     /* Save the basic network settings during the wizard */
     void setSetupSettings(AddressSettings address, BasicNetworkSettings basic)
+        throws NetworkException, ValidateException;
+
+    /* Save the basic network settings during the wizard.
+     * This can double for refresh because it returns the new, populated network settings.*/
+    BasicNetworkSettings setSetupSettings(BasicNetworkSettings basic)
         throws NetworkException, ValidateException;
 
     /**
@@ -85,6 +89,19 @@ public interface RemoteNetworkManager
      * Retrieve the current network configuration
      */
     NetworkSpacesSettingsImpl getNetworkSettings();
+
+    /**
+     * Retrieve the list of interfaces
+     * @param updateStatus True if you want to update the interface status.
+     */
+    List<Interface> getInterfaceList( boolean updateStatus );
+
+    /**
+     * Remap the interfaces
+     * @param osArray Array of os names (eth0, eth1, etc)
+     * @param userArray Array of system names (External, Internal, etc);
+     */
+    void remapInterfaces( String[] osArray, String[] userArray ) throws NetworkException;
 
     /* Set the access and address settings, used by the Remote Panel */
     void setSettings( AccessSettings access, AddressSettings address )

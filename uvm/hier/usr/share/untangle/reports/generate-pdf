@@ -347,10 +347,10 @@ ${OUTPUT_FILE}
 EOF
 
     ## Find all of the images that are for the email
-    find "${DIRECTORY_IMAGES}/images" -type f -exec basename \{\} \; \
-        | grep 'BrandingLogo.gif' \
-        | sed "s|\(.*\)|images/\1|" \
-        >> ${t_arguments}
+#    find "${DIRECTORY_IMAGES}/images" -type f -exec basename \{\} \; \
+#        | grep 'BrandingLogo.gif' \
+#        | sed "s|\(.*\)|images/\1|" \
+#        >> ${t_arguments}
 }
 
 ####################### START OF SCRIPT

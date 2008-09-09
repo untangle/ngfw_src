@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,8 +33,8 @@
 
 package com.untangle.uvm.vnet;
 
-import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.vnet.event.*;
 
 
 /**
@@ -56,16 +56,6 @@ public abstract class AbstractEventHandler implements SessionEventListener {
 
     public void handleTimer(IPSessionEvent event)
     {
-    }
-
-    protected long incrementCount(int i)
-    {
-        return xform.incrementCount(i, 1);
-    }
-
-    protected long incrementCount(int i, long delta)
-    {
-        return xform.incrementCount(i, delta);
     }
 
     /*
@@ -223,9 +213,10 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public void handleUDPClientExpired(UDPSessionEvent event)
         throws MPipeException
     {
-        // Current assumption: A single expire will be generated on one side of the pipeline,
-        // which will travel across it.  Another possibility would be to hit them all at once.
-        // Just go ahead and expire the other side.  The node will override
+        // Current assumption: A single expire will be generated on
+        // one side of the pipeline, which will travel across it.
+        // Another possibility would be to hit them all at once.  Just
+        // go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
         UDPSession sess = event.session();
         sess.expireServer();
@@ -234,9 +225,10 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public void handleUDPServerExpired(UDPSessionEvent event)
         throws MPipeException
     {
-        // Current assumption: A single expire will be generated on one side of the pipeline,
-        // which will travel across it.  Another possibility would be to hit them all at once.
-        // Just go ahead and expire the other side.  The node will override
+        // Current assumption: A single expire will be generated on
+        // one side of the pipeline, which will travel across it.
+        // Another possibility would be to hit them all at once.  Just
+        // go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
         UDPSession sess = event.session();
         sess.expireClient();

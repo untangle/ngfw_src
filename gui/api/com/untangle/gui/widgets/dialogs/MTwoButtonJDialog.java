@@ -103,7 +103,8 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
             dispose();
         }
     }
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         iconJLabel = new javax.swing.JLabel();
@@ -119,7 +120,7 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Confirm Upgrade...");
+        setTitle(Util.tr("Confirm Install..."));
         setModal(true);
         setResizable(false);
         iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDialogAttention_96x96.png")));
@@ -131,7 +132,7 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
         getContentPane().add(iconJLabel, gridBagConstraints);
 
-        dividerJPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(154, 154, 154)));
+        dividerJPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(154, 154, 154)));
         dividerJPanel.setMaximumSize(new java.awt.Dimension(1, 1600));
         dividerJPanel.setMinimumSize(new java.awt.Dimension(1, 10));
         dividerJPanel.setOpaque(false);
@@ -179,14 +180,14 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         jPanel2.setOpaque(false);
         cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
         cancelJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
-        cancelJButton.setText("Cancel");
+        cancelJButton.setText(Util.tr("Cancel"));
         cancelJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         cancelJButton.setOpaque(false);
         cancelJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    cancelJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -198,14 +199,14 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
 
         proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
         proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
-        proceedJButton.setText("Continue");
+        proceedJButton.setText(Util.tr("Continue"));
         proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         proceedJButton.setOpaque(false);
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    proceedJButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                proceedJButtonActionPerformed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -246,7 +247,7 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
         isProceeding = true;

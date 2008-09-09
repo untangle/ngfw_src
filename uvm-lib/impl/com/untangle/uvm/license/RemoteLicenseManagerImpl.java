@@ -17,9 +17,11 @@
  */
 package com.untangle.uvm.license;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
-import java.util.List;
-import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
@@ -72,5 +74,18 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
         }
         
         return this.licenseManager.hasPremiumLicense();
+    }
+
+    /**
+     * Return the content of the license agreement.
+     */
+    public String getLicenseAgreement()
+    {     
+        if ( this.licenseManager == null ) {
+            /* can only have a premium license if they have the full license manager */
+            return null;
+        }
+        
+        return this.licenseManager.getLicenseAgreement();
     }
 }

@@ -17,10 +17,13 @@
  */
 package com.untangle.node.firewall;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
@@ -31,6 +34,7 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
@@ -42,9 +46,11 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 
 public class FirewallImpl extends AbstractNode implements Firewall
 {
@@ -59,6 +65,9 @@ public class FirewallImpl extends AbstractNode implements Firewall
     private FirewallSettings settings = null;
     final FirewallStatisticManager statisticManager;
 
+    private final BlingBlinger passBlinger;
+    private final BlingBlinger blockBlinger;
+
     public FirewallImpl()
     {
         this.handler = new EventHandler(this);
@@ -66,9 +75,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
-        this.pipeSpec = new SoloPipeSpec
-            ("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT,
-             SoloPipeSpec.MAX_STRENGTH - 3);
+        this.pipeSpec = new SoloPipeSpec("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 3);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
         NodeContext tctx = getNodeContext();
@@ -78,63 +85,86 @@ public class FirewallImpl extends AbstractNode implements Firewall
         eventLogger.addSimpleEventFilter(ef);
         ef = new FirewallBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        blockBlinger = c.addActivity("block", "Block Request", null, "BLOCK");
+        passBlinger = c.addActivity("pass", "Pass Request", null, "PASS");
+        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger);
     }
 
-    // Firewall methods -------------------------------------------------------
-
-    public FirewallSettings getFirewallSettings()
-    {
-        if(settings == null) {
-            logger.error("Settings not yet initialized. State: "
-                         + getNodeContext().getRunState());
-        } else {
-            List<FirewallRule> l = settings.getFirewallRuleList();
-            for (Iterator<FirewallRule> i = l.iterator(); i.hasNext();) {
-                FirewallRule r = i.next();
-                if (null == r) {
-                    logger.warn("Removing null from list");
-                    i.remove();
-                }
-            }
-        }
-
-        return settings;
-    }
-
-    public void setFirewallSettings(final FirewallSettings settings)
-    {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    FirewallImpl.this.settings = (FirewallSettings)s.merge(settings);
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
-        try {
-            reconfigure();
-        }
-        catch (NodeException exn) {
-            logger.error("Could not save Firewall settings", exn);
-        }
-    }
+    // Firewall methods --------------------------------------------------------
 
     public EventManager<FirewallEvent> getEventManager()
     {
         return eventLogger;
     }
 
-    // AbstractNode methods ----------------------------------------------
-
-    @Override
-    protected PipeSpec[] getPipeSpecs()
+    public FirewallBaseSettings getBaseSettings()
     {
-        return pipeSpecs;
+        return settings.getBaseSettings();
     }
+
+    public void setBaseSettings(final FirewallBaseSettings baseSettings)
+    {
+        TransactionWork tw = new TransactionWork() {
+            public boolean doWork(Session s) {
+                settings.setBaseSettings(baseSettings);
+                settings = (FirewallSettings)s.merge(settings);
+                return true;
+            }
+
+            public Object getResult() {
+                return null;
+            }
+        };
+        getNodeContext().runTransaction(tw);
+    }
+
+    public List<FirewallRule> getFirewallRuleList()
+    {
+        return settings.getFirewallRuleList();
+    }
+
+    public void setFirewallRuleList(final List<FirewallRule> rules)
+    {
+        TransactionWork tw = new TransactionWork() {
+            public boolean doWork(Session s) {
+                settings.setFirewallRuleList(rules);
+                settings = (FirewallSettings)s.merge(settings);
+                return true;
+            }
+
+            public Object getResult() {
+                return null;
+            }
+        };
+        getNodeContext().runTransaction(tw);
+    }
+    
+    public void updateAll(final FirewallBaseSettings baseSettings,
+    		final List<FirewallRule> rules)
+    {
+        TransactionWork tw = new TransactionWork() {
+            public boolean doWork(Session s) {
+                settings.setBaseSettings(baseSettings);
+                settings.setFirewallRuleList(rules);
+                settings = (FirewallSettings)s.merge(settings);
+                return true;
+            }
+
+            public Object getResult() {
+                return null;
+            }
+        };
+        getNodeContext().runTransaction(tw);
+    }
+
+    public Validator getValidator() {
+        return new FirewallValidator();
+    }
+
+    // AbstractNode methods ----------------------------------------------------
 
     public void initializeSettings()
     {
@@ -147,24 +177,18 @@ public class FirewallImpl extends AbstractNode implements Firewall
         statisticManager.stop();
     }
 
-    protected void postInit(String[] args)
+    // protected methods -------------------------------------------------------
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
     {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from FirewallSettings hbs where hbs.tid = :tid");
-                    q.setParameter("tid", getTid());
-                    FirewallImpl.this.settings = (FirewallSettings)q.uniqueResult();
+        return pipeSpecs;
+    }
 
-                    updateToCurrent(FirewallImpl.this.settings);
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+    /* Kill all sessions when starting or stopping this node */
+    protected SessionMatcher sessionMatcher()
+    {
+        return SessionMatcherFactory.makePolicyInstance(getPolicy());
     }
 
     protected void preStart() throws NodeStartException
@@ -192,29 +216,27 @@ public class FirewallImpl extends AbstractNode implements Firewall
         statisticManager.stop();
     }
 
-    private void reconfigure() throws NodeException
+    protected void postInit(String[] args)
     {
-        FirewallSettings settings = getFirewallSettings();
-        ArrayList enabledPatternsList = new ArrayList();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from FirewallSettings hbs where hbs.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    FirewallImpl.this.settings = (FirewallSettings)q.uniqueResult();
 
-        logger.info("Reconfigure()");
+                    updateToCurrent(FirewallImpl.this.settings);
 
-        if (settings == null) {
-            throw new NodeException("Failed to get Firewall settings: " + settings);
-        }
+                    return true;
+                }
 
-        handler.configure(settings);
+                public Object getResult() { return null; }
+            };
+        getNodeContext().runTransaction(tw);
     }
 
-    private   void updateToCurrent(FirewallSettings settings)
-    {
-        if (settings == null) {
-            logger.error("NULL Firewall Settings");
-            return;
-        }
-
-        logger.info("Update Settings Complete");
-    }
+    // package protected methods -----------------------------------------------
 
     void log(FirewallEvent logEvent)
     {
@@ -233,9 +255,9 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
 
             /* A few sample settings */
-            settings.setQuickExit(true);
-            settings.setRejectSilently(true);
-            settings.setDefaultAccept(true);
+            settings.getBaseSettings().setQuickExit(true);
+            settings.getBaseSettings().setRejectSilently(true);
+            settings.getBaseSettings().setDefaultAccept(true);
 
             List<FirewallRule> firewallList = new LinkedList<FirewallRule>();
 
@@ -290,21 +312,59 @@ public class FirewallImpl extends AbstractNode implements Firewall
         return settings;
     }
 
-    /* Kill all sessions when starting or stopping this node */
-    protected SessionMatcher sessionMatcher()
+    // private methods ---------------------------------------------------------
+
+    private void reconfigure() throws NodeException
     {
-        return SessionMatcherFactory.makePolicyInstance(getPolicy());
+        logger.info("Reconfigure()");
+
+        if (settings == null) {
+            throw new NodeException("Failed to get Firewall settings: " + settings);
+        }
+
+        handler.configure(settings);
     }
 
-    // XXX soon to be deprecated ----------------------------------------------
-
-    public Object getSettings()
+    private void updateToCurrent(FirewallSettings settings)
     {
-        return getFirewallSettings();
+        if (settings == null) {
+            logger.error("NULL Firewall Settings");
+            return;
+        }
+
+        logger.info("Update Settings Complete");
     }
 
-    public void setSettings(Object settings)
+    private void setFirewallSettings(final FirewallSettings settings)
     {
-        setFirewallSettings((FirewallSettings)settings);
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    FirewallImpl.this.settings = (FirewallSettings)s.merge(settings);
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+
+        getNodeContext().runTransaction(tw);
+        
+        try {
+            reconfigure();
+        } catch (NodeException exn) {
+            logger.error("Could not save Firewall settings", exn);
+        }
     }
+
+    public void incrementBlockCount() 
+    {
+	blockBlinger.increment();
+    }
+
+    public void incrementPassCount() 
+    {
+	passBlinger.increment();
+    }
+
 }

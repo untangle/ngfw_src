@@ -26,7 +26,10 @@ import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
-import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.*;
@@ -52,6 +55,15 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected boolean[] lineBuffering = new boolean[] { false, false };
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
+    private final BlingBlinger s2nChunks;
+    private final BlingBlinger c2nChunks;
+    private final BlingBlinger n2sChunks;
+    private final BlingBlinger n2cChunks;
+    private final BlingBlinger s2nBytes;
+    private final BlingBlinger c2nBytes;
+    private final BlingBlinger n2sBytes;
+    private final BlingBlinger n2cBytes;
+
     protected TCPSessionImpl(Dispatcher disp,
                              com.untangle.uvm.argon.TCPSession pSession,
                              PipelineEndpoints pe,
@@ -68,12 +80,28 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             throw new IllegalArgumentException("Illegal maximum server read bufferSize: " + serverReadBufferSize);
         this.readBufferSize = new int[] { clientReadBufferSize, serverReadBufferSize };
         this.readLimit = new int[] { clientReadBufferSize, serverReadBufferSize };
-        logger = disp.mPipe().sessionLoggerTCP();
+
+        MPipeImpl mPipe = disp.mPipe();
+
+        logger = mPipe.sessionLoggerTCP();
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        Counters c = lmm.getCounters(mPipe.node().getTid());
+        s2nChunks = c.getBlingBlinger("s2nChunks");
+        c2nChunks = c.getBlingBlinger("c2nChunks");
+        n2sChunks = c.getBlingBlinger("n2sChunks");
+        n2cChunks = c.getBlingBlinger("n2cChunks");
+        s2nBytes = c.getBlingBlinger("s2nBytes");
+        c2nBytes = c.getBlingBlinger("c2nBytes");
+        n2sBytes = c.getBlingBlinger("n2sBytes");
+        n2cBytes = c.getBlingBlinger("n2cBytes");
     }
 
     public int serverReadBufferSize() {
         return readBufferSize[SERVER];
     }
+
     public void serverReadBufferSize(int numBytes) {
         if (numBytes < 2 || numBytes > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum read bufferSize: " + numBytes);
@@ -320,7 +348,15 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             }
             mPipe.lastSessionWriteFailed(false);
             stats.wroteData(side, numWritten);
-            MutateTStats.wroteData(side, this, numWritten);
+
+            if (CLIENT == side) {
+                n2sChunks.increment();
+                n2sBytes.increment(numWritten);
+            } else {
+                n2cChunks.increment();
+                n2cBytes.increment(numWritten);
+            }
+
             if (logger.isDebugEnabled())
                 debug("wrote " + numWritten + " to " + sideName);
         }
@@ -582,7 +618,14 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         dispatcher.lastSessionNumRead(numRead);
 
         stats.readData(side, numRead);
-        MutateTStats.readData(side, this, numRead);
+
+        if (CLIENT == side) {
+            c2nChunks.increment();
+            c2nBytes.increment(numRead);
+        } else {
+            s2nChunks.increment();
+            s2nBytes.increment(numRead);
+        }
 
         // We have received bytes.  Give them to the user.
 
@@ -642,7 +685,6 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
         readBuf[CLIENT] = null;
         readBuf[SERVER] = null;
-        MutateTStats.removeTCPSession(mPipe);
         super.closeFinal();
     }
 
@@ -653,6 +695,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         pSession.killSession();
     }
 
-    // Don't need equal or hashcode since we can only have one of these objects per
-    // session (so the memory address is ok for equals/hashcode).
+    // Don't need equal or hashcode since we can only have one of
+    // these objects per session (so the memory address is ok for
+    // equals/hashcode).
 }

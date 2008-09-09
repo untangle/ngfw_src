@@ -32,7 +32,6 @@
  */
 package com.untangle.uvm.license;
 
-import java.util.Date;
 
 public interface RemoteLicenseManager
 {
@@ -50,4 +49,9 @@ public interface RemoteLicenseManager
      * Return true if the user has any premium products.
      */
     public boolean hasPremiumLicense();
+
+    /**
+     * Return the content of the license agreement.
+     */
+    public String getLicenseAgreement();
 }

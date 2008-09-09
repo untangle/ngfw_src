@@ -66,7 +66,7 @@ public class SmtpSessionHandler
                                                  SmtpTransaction tx,
                                                  MessageInfo msgInfo) {
         m_logger.debug("[handleMessageCanBlock] called");
-        m_virusImpl.incrementScanCounter();
+        m_virusImpl.incrementScanCount();
 
         MIMEPart[] candidateParts = MIMEUtil.getCandidateParts(msg);
         if (m_logger.isDebugEnabled()) {
@@ -162,20 +162,20 @@ public class SmtpSessionHandler
 
             if(action == SMTPVirusMessageAction.BLOCK) {
                 m_logger.debug("Returning BLOCK as-per policy");
-                m_virusImpl.incrementBlockCounter();
+                m_virusImpl.incrementBlockCount();
                 return BLOCK_MESSAGE;
             }
             else if(action == SMTPVirusMessageAction.REMOVE) {
                 m_logger.debug("REMOVE (wrap) message");
                 MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, tx, scanResultForWrap);
-                m_virusImpl.incrementRemoveCounter();
+                m_virusImpl.incrementRemoveCount();
                 return new BPMEvaluationResult(wrappedMsg);
             }
             else {
                 m_logger.debug("Passing infected message (as-per policy)");
             }
         }
-        m_virusImpl.incrementPassCounter();
+        m_virusImpl.incrementPassCount();
         return PASS_MESSAGE;
     }
 
@@ -185,7 +185,7 @@ public class SmtpSessionHandler
                                          SmtpTransaction tx,
                                          MessageInfo msgInfo) {
         m_logger.debug("[handleMessageCanNotBlock]");
-        m_virusImpl.incrementScanCounter();
+        m_virusImpl.incrementScanCount();
 
         //TODO bscott There has to be a way to share more code
         //     with the "blockPassOrModify" method
@@ -265,11 +265,11 @@ public class SmtpSessionHandler
             }
             if(action == SMTPVirusMessageAction.BLOCK) {
                 m_logger.debug("Blocking mail as-per policy");
-                m_virusImpl.incrementBlockCounter();
+                m_virusImpl.incrementBlockCount();
                 return BlockOrPassResult.BLOCK;
             }
         }
-        m_virusImpl.incrementPassCounter();
+        m_virusImpl.incrementPassCount();
         return BlockOrPassResult.PASS;
     }
 

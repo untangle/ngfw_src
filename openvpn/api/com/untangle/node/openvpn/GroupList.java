@@ -83,6 +83,6 @@ public class GroupList implements Serializable, Validatable
         }
 
         /* Determine if all of the addresses are unique */
-        AddressValidator.getInstance().validate( buildAddressRange());
+        AddressValidator.getInstance().validateOverlap( buildAddressRange());
     }
 }

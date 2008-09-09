@@ -19,6 +19,7 @@ package com.untangle.node.reporting;
 
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -120,6 +121,10 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         setReportingSettings(initSettings());
     }
 
+    public Validator getValidator() {
+        return new ReportingValidator();
+    }
+    
     // XXX soon to be deprecated ----------------------------------------------
 
     public Object getSettings()

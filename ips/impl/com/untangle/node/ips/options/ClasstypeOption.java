@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,14 +18,15 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.uvm.vnet.event.*;
-import com.untangle.node.ips.IPSDetectionEngine;
-import com.untangle.node.ips.IPSRule;
-import com.untangle.node.ips.IPSRuleSignature;
+import com.untangle.node.ips.IpsDetectionEngine;
+import com.untangle.node.ips.IpsRule;
+import com.untangle.node.ips.IpsRuleSignatureImpl;
 import com.untangle.node.ips.RuleClassification;
+import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
 
-public class ClasstypeOption extends IPSOption {
+class ClasstypeOption extends IpsOption
+{
     private static final int HIGH_PRIORITY = 1;
     private static final int MEDIUM_PRIORITY = 2;
     private static final int LOW_PRIORITY = 3;
@@ -33,8 +34,13 @@ public class ClasstypeOption extends IPSOption {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public ClasstypeOption(IPSDetectionEngine engine, IPSRuleSignature signature, String params, boolean initializeSettingsTime) {
-        super(signature, params);
+    public ClasstypeOption(OptionArg arg)
+    {
+        super(arg);
+
+        IpsDetectionEngine engine = arg.getEngine();
+        String params = arg.getParams();
+        IpsRuleSignatureImpl sig = arg.getSignature();
 
         RuleClassification rc = null;
         if (engine != null)
@@ -46,8 +52,8 @@ public class ClasstypeOption extends IPSOption {
         } else {
             signature.setClassification(rc.getDescription());
 
-            if (true == initializeSettingsTime) {
-                IPSRule rule = signature.rule();
+            if (true == arg.getInitializeSettingsTime()) {
+                IpsRule rule = arg.getRule();
                 int priority = rc.getPriority();
                 // logger.debug("Rule Priority for " + rule.getDescription() + " is " + priority);
                 switch (priority) {

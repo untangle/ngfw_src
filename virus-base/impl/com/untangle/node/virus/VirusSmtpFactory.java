@@ -41,7 +41,7 @@ public class VirusSmtpFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
 
-        VirusSMTPConfig virusConfig = m_virusImpl.getVirusSettings().getSmtpConfig();
+        VirusSMTPConfig virusConfig = m_virusImpl.getVirusSettings().getBaseSettings().getSmtpConfig();
 
         if(!virusConfig.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");

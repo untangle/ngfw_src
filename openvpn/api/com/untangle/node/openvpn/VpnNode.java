@@ -21,6 +21,7 @@ package com.untangle.node.openvpn;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.Validator;
 
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.ValidateException;
@@ -62,6 +63,7 @@ public interface VpnNode extends Node
     public void generateCertificate( CertificateParameters parameters ) throws Exception;
     public GroupList getAddressGroups() throws Exception;
     public void setAddressGroups( GroupList parameters ) throws Exception;
+    public ExportList getExportedAddressList();
     public void setExportedAddressList( ExportList parameters ) throws Exception;
     public void setClients( ClientList parameters ) throws Exception;
     public void setSites( SiteList parameters ) throws Exception;
@@ -78,4 +80,5 @@ public interface VpnNode extends Node
      * Access the EventManager for ClientDistributionEvents
      */    
     public EventManager<ClientDistributionEvent> getClientDistributionEventManager();
+    public Validator getValidator();
 }

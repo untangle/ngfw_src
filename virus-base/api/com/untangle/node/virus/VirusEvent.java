@@ -74,11 +74,6 @@ public abstract class VirusEvent extends LogEvent
         return "(" + getType() + ") " + getLocation();
     }
 
-    public String getReason()
-    {
-        return isInfected() ? "virus found" : "no virus found";
-    }
-
     // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)

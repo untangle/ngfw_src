@@ -99,12 +99,12 @@ public class AddressSettings implements Serializable, Validatable
     @Id
     @Column(name="settings_id")
     @GeneratedValue
-    Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    void setId( Long id )
+    public void setId( Long id )
     {
         this.id = id;
     }
@@ -202,6 +202,10 @@ public class AddressSettings implements Serializable, Validatable
      */
     public void setPublicAddress( String newValue ) throws ParseException
     {
+        /* This is the to fix fabsorb which serializes everything, even methods marked transient */
+        if ( newValue == null ) return;
+        if ( newValue.length() == 0 ) return;
+
         try {
             IPaddr address;
             String valueArray[] = newValue.split( ":" );
@@ -220,7 +224,7 @@ public class AddressSettings implements Serializable, Validatable
                 break;
 
             default:
-                /* just throw an expception to get out of dodge */
+                /* just throw an exception to get out of dodge */
                 throw new Exception();
             }
         } catch ( Exception e ) {

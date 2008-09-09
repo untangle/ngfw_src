@@ -98,7 +98,6 @@ class AuthTokenManager {
             System.arraycopy(OUTER_MAGIC, 0, toEncode, 0, OUTER_MAGIC.length);
             System.arraycopy(encrypted, 0, toEncode, OUTER_MAGIC.length, encrypted.length);
 
-            //Encode
             return new BASE64Encoder().encode(toEncode);
         }
         catch(Exception ex) {

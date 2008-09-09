@@ -41,9 +41,6 @@ import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
 {
-    private static final int BLOCK_COUNTER = Node.GENERIC_0_COUNTER;
-    private static final int PASS_COUNTER  = Node.GENERIC_1_COUNTER;
-
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
     private List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
@@ -134,7 +131,7 @@ class EventHandler extends AbstractEventHandler
             }
 
             /* Increment the block counter */
-            node.incrementCount(BLOCK_COUNTER); // BLOCK COUNTER
+            node.incrementBlockCount(); 
 
             /* If necessary log the event */
             if (log) {
@@ -150,7 +147,7 @@ class EventHandler extends AbstractEventHandler
             request.release(log);
 
             /* Increment the pass counter */
-            node.incrementCount(PASS_COUNTER); // PASS COUNTER
+            node.incrementPassCount();
 
             /* If necessary log the event */
             if (log) {
@@ -186,11 +183,12 @@ class EventHandler extends AbstractEventHandler
 
     void configure(FirewallSettings settings)
     {
-        this.isQuickExit = settings.isQuickExit();
-        this.rejectSilently = settings.isRejectSilently();
-        this.isDefaultAccept = settings.isDefaultAccept();
+        this.isQuickExit = settings.getBaseSettings().isQuickExit();
+        this.rejectSilently = settings.getBaseSettings().isRejectSilently();
+        this.isDefaultAccept = settings.getBaseSettings().isDefaultAccept();
 
-        /* Create a new list in tmp to avoid sessions that are iterating the current list */
+        /* Create a new list in tmp to avoid sessions that are
+         * iterating the current list */
         List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
 
         List<FirewallRule> list = (List<FirewallRule>)settings.getFirewallRuleList();

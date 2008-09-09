@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.toolbox;
 
-import java.io.Serializable;
+import com.untangle.uvm.message.Message;
 
 /**
  * Signals that an install has timed out.
@@ -41,7 +41,7 @@ import java.io.Serializable;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class InstallTimeout implements InstallProgress, Serializable
+public class InstallTimeout extends Message
 {
     private static final long serialVersionUID = -7760003444590856198L;
 
@@ -57,12 +57,5 @@ public class InstallTimeout implements InstallProgress, Serializable
     public long getTime()
     {
         return time;
-    }
-
-    // InstallProgress methods ------------------------------------------------
-
-    public void accept(ProgressVisitor visitor)
-    {
-        visitor.visitInstallTimeout(this);
     }
 }

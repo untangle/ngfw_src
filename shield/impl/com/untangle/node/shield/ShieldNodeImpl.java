@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -22,24 +22,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.AbstractNode;
-import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.shield.ShieldRejectionEvent;
 import com.untangle.uvm.shield.ShieldStatisticEvent;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.PipeSpec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -66,8 +66,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     private ShieldSettings settings;
 
-    // We keep a stats around so we don't have to create one each time.
-    private NodeStats fakeStats;
+    private final PartialListUtil listUtil = new PartialListUtil();
 
     private final ShieldManager shieldManager;
 
@@ -77,7 +76,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         EventLogger<ShieldStatisticEvent> sse = EventLoggerFactory.factory().getEventLogger(tctx);
         EventLogger<ShieldRejectionEvent> sre = EventLoggerFactory.factory().getEventLogger(tctx);
 
-        
+
         this.shieldManager = new ShieldManager( sse, sre );
     }
 
@@ -87,8 +86,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(settings);
-                    ShieldNodeImpl.this.settings = settings;
+                    ShieldNodeImpl.this.settings = (ShieldSettings)s.merge(settings);
                     return true;
                 }
 
@@ -145,12 +143,6 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         getNodeContext().runTransaction(tw);
     }
 
-    public NodeStats getStats() throws IllegalStateException
-    {
-        FakeNodeStats.update(fakeStats);
-        return fakeStats;
-    }
-
     public List<ShieldRejectionLogEntry> getLogs( final int limit )
     {
         final List<ShieldRejectionLogEntry> l = new ArrayList<ShieldRejectionLogEntry>(limit);
@@ -198,8 +190,6 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
     protected void preStart()
     {
         validateSettings();
-
-        fakeStats = new NodeStats();
     }
 
     protected void postStart() throws NodeStartException
@@ -234,15 +224,68 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         }
     }
 
-    // XXX soon to be deprecated ----------------------------------------------
-
-    public Object getSettings()
-    {
-        return getShieldSettings();
+    public ShieldBaseSettings getBaseSettings() {
+        return settings.getBaseSettings();
     }
 
-    public void setSettings(Object settings)
-    {
-        setShieldSettings((ShieldSettings)settings);
+    public void setBaseSettings(final ShieldBaseSettings baseSettings) {
+        TransactionWork tw = new TransactionWork() {
+            public boolean doWork(Session s) {
+                settings.setBaseSettings(baseSettings);
+                s.merge(settings);
+                return true;
+            }
+
+            public Object getResult() {
+                return null;
+            }
+        };
+        getNodeContext().runTransaction(tw);
     }
+
+    public List<ShieldNodeRule> getShieldNodeRules(int start, int limit,
+            String... sortColumns) {
+        return listUtil.getItems(
+                "select ts.shieldNodeRules from ShieldSettings ts where ts.tid = :tid ",
+                getNodeContext(), getTid(), start, limit, sortColumns);
+    }
+
+    public void updateShieldNodeRules(List<ShieldNodeRule> added,
+            List<Long> deleted, List<ShieldNodeRule> modified) {
+
+        updateRules(getShieldSettings().getShieldNodeRules(), added, deleted,
+                modified);
+
+    }
+
+    /*
+     * For this node, updateAll means update only the rules
+     * @see com.untangle.node.shield.ShieldNode#updateAll(java.util.List[])
+     */
+    public void updateAll(List[] shieldNodeRulesChanges) {
+        if (shieldNodeRulesChanges != null && shieldNodeRulesChanges.length >= 3) {
+            updateShieldNodeRules(shieldNodeRulesChanges[0], shieldNodeRulesChanges[1], shieldNodeRulesChanges[2]);
+        }
+    }
+
+    private void updateRules(final Set<ShieldNodeRule> rules,
+            final List<ShieldNodeRule> added, final List<Long> deleted,
+            final List<ShieldNodeRule> modified) {
+
+        TransactionWork tw = new TransactionWork() {
+            public boolean doWork(Session s) {
+                listUtil.updateCachedItems( rules, added, deleted, modified );
+
+                settings = (ShieldSettings)s.merge(settings);
+
+                return true;
+            }
+
+            public Object getResult() {
+                return null;
+            }
+        };
+        getNodeContext().runTransaction(tw);
+    }
+
 }

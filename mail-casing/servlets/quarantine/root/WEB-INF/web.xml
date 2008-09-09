@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
@@ -16,11 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 -->
-<!DOCTYPE web-app
-PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-"http://java.sun.com/dtd/web-app_2_3.dtd">
 
-<web-app>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
 
   <display-name>Quarantine Web App</display-name>
 
@@ -28,7 +28,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     <servlet-name>QuarantineMain</servlet-name>
     <servlet-class>com.untangle.node.mail.web.euv.QuarantineEnduserServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
- </servlet>
+  </servlet>
 
   <servlet>
     <servlet-name>InboxMaintenenceControler</servlet-name>
@@ -37,28 +37,19 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   </servlet>
 
   <servlet>
-    <servlet-name>RequestDigestControler</servlet-name>
-    <servlet-class>com.untangle.node.mail.web.euv.RequestDigestControler</servlet-class>
-    <load-on-startup>2</load-on-startup>
+    <servlet-name>JSONRPCServlet</servlet-name>
+    <servlet-class>com.untangle.node.mail.web.euv.UtJsonRpcServlet</servlet-class>
+    <init-param>
+      <param-name>gzip_threshold</param-name>
+      <param-value>200</param-value>
+    </init-param>
   </servlet>
-
+  
   <servlet>
-    <servlet-name>SafelistMaintenenceControler</servlet-name>
-    <servlet-class>com.untangle.node.mail.web.euv.SafelistMaintenenceControler</servlet-class>
-    <load-on-startup>2</load-on-startup>
+    <servlet-name>I18NServlet</servlet-name>
+    <servlet-class>com.untangle.node.mail.web.euv.I18NServlet</servlet-class>
   </servlet>
-
-  <servlet>
-    <servlet-name>UnremapperControler</servlet-name>
-    <servlet-class>com.untangle.node.mail.web.euv.UnremapperControler</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>RemapperControler</servlet-name>
-    <servlet-class>com.untangle.node.mail.web.euv.RemapperControler</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
+  
 
   @JSP_PRE_COMPILED_SERVLETS@
 
@@ -67,36 +58,18 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     <url-pattern>/manageuser</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
-    <servlet-name>RequestDigestControler</servlet-name>
-    <url-pattern>/requestdigest</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>SafelistMaintenenceControler</servlet-name>
-    <url-pattern>/safelist</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>UnremapperControler</servlet-name>
-    <url-pattern>/unmp</url-pattern>
-  </servlet-mapping>
-
-
-  <servlet-mapping>
-    <servlet-name>RemapperControler</servlet-name>
-    <url-pattern>/mp</url-pattern>
-  </servlet-mapping>
-
   <welcome-file-list>
-    <welcome-file>/index.jsp</welcome-file>
+    <welcome-file>/request.jspx</welcome-file>
   </welcome-file-list>
 
-  <!--
-      <servlet-mapping>
-      <servlet-name>RequestDigestControler</servlet-name>
-      <url-pattern>/</url-pattern>
-      </servlet-mapping>
-  -->
-
+  <servlet-mapping>
+    <servlet-name>JSONRPCServlet</servlet-name>
+    <url-pattern>/JSON-RPC</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>I18NServlet</servlet-name>
+    <url-pattern>/i18n</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

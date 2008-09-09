@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,27 +18,33 @@
 
 package com.untangle.node.protofilter;
 
-import java.nio.*;
-import java.util.ArrayList;
+import java.nio.ByteBuffer;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.*;
-import com.untangle.uvm.vnet.event.*;
-import com.untangle.uvm.node.Node;
 import com.untangle.node.util.AsciiCharBuffer;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.event.IPDataEvent;
+import com.untangle.uvm.vnet.event.IPDataResult;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.event.TCPSessionEvent;
+import com.untangle.uvm.vnet.event.UDPPacketEvent;
+import com.untangle.uvm.vnet.event.UDPSessionEvent;
 import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
-    static final int SCAN_COUNTER   = Node.GENERIC_0_COUNTER;
-    static final int DETECT_COUNTER = Node.GENERIC_1_COUNTER;
-    static final int BLOCK_COUNTER  = Node.GENERIC_2_COUNTER;
-
     // These are all set at preStart() time by reconfigure()
-    private ArrayList  _patternList;
+    private Set        _patternSet;
     private int        _byteLimit;
     private int        _chunkLimit;
     private String     _unknownString;
@@ -123,9 +129,9 @@ public class EventHandler extends AbstractEventHandler
         sess.sendClientPacket(packet, e.header());
     }
 
-    public void patternList (ArrayList patternList)
+    public void patternSet (Set patternSet)
     {
-        _patternList = patternList;
+        _patternSet = patternSet;
     }
 
     public void chunkLimit (int chunkLimit)
@@ -224,7 +230,7 @@ public class EventHandler extends AbstractEventHandler
         }
 
         ProtoFilterPattern elem = _findMatch(sessInfo, sess, server);
-        node.incrementCount( SCAN_COUNTER );
+        node.incrementScanCount();
         if (elem != null) {
             sessInfo.protocol = elem.getProtocol();
             sessInfo.identified = true;
@@ -244,14 +250,14 @@ public class EventHandler extends AbstractEventHandler
                 }
             }
 
-            node.incrementCount( DETECT_COUNTER );
+            node.incrementDetectCount();
 
             if(elem.getAlert()) {
                 /* XXX Do alert here */
             }
 
             if (elem.isBlocked()) {
-                node.incrementCount( BLOCK_COUNTER );
+                node.incrementBlockCount();
 
                 if (logger.isInfoEnabled()) {
                     logger.info(" ----------------BLOCKED: " + sessInfo.protocol + " traffic----------------");
@@ -296,8 +302,8 @@ public class EventHandler extends AbstractEventHandler
         AsciiCharBuffer toScan = buffer.asReadOnlyBuffer();
         toScan.flip();
 
-        for (int i = 0; i < _patternList.size(); i++) {
-            ProtoFilterPattern elem = (ProtoFilterPattern)_patternList.get(i);
+        for (Iterator iterator = _patternSet.iterator(); iterator.hasNext();) {
+            ProtoFilterPattern elem = (ProtoFilterPattern) iterator.next();
             Pattern pat = PatternFactory.createRegExPattern(elem.getDefinition());
             if (pat != null && pat.matcher(toScan).find())
                 return elem; /* XXX - can match multiple patterns */

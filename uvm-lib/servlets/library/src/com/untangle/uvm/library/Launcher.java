@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,17 +23,15 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Version;
+import org.apache.log4j.Logger;
 
 /* This is used to guarantee that the client is authenticated when
  * they retrieve the final install image. */
@@ -44,10 +42,12 @@ public class Launcher extends HttpServlet
     private static final String FIELD_PROTOCOL = "protocol";
     private static final String FIELD_HOST = "host";
     private static final String FIELD_PORT = "port";
+    private static final String FIELD_SOURCE = "source";
 
     private static final String ACTION_MY_ACCOUNT = "my_account";
     private static final String ACTION_BROWSE = "browse";
     private static final String ACTION_WIZARD = "wizard";
+    private static final String ACTION_HELP = "help";
 
     private static final String HTTP_USER_AGENT = "User-Agent";
     private static final String HTTP_CONTENT_TYPE = "Content-Type";
@@ -59,10 +59,10 @@ public class Launcher extends HttpServlet
     {
         try {
 
-	    // Special workaround for Java6 JNLP showDocument() bug.  Our bug 4419.
-	    String userAgent = request.getHeader(HTTP_USER_AGENT);
-	    if (userAgent != null && userAgent.startsWith("JNLP"))
-		response.setHeader(HTTP_CONTENT_TYPE, "text/html");
+        // Special workaround for Java6 JNLP showDocument() bug.  Our bug 4419.
+        String userAgent = request.getHeader(HTTP_USER_AGENT);
+        if (userAgent != null && userAgent.startsWith("JNLP"))
+        response.setHeader(HTTP_CONTENT_TYPE, "text/html");
 
             URL redirect;
             String action = request.getParameter( FIELD_ACTION );
@@ -75,12 +75,15 @@ public class Launcher extends HttpServlet
                 String libitem = request.getParameter( FIELD_LIBITEM );
                 if ( libitem == null ) redirect = getMyAccountURL( request );
                 else redirect = getLibraryURL( request, libitem );
+            } else if ( ACTION_HELP.equals( action )) {
+                String source = request.getParameter( FIELD_SOURCE );
+                redirect = getHelpURL( request, source );
             } else if ( ACTION_WIZARD.equals( action )) {
                 redirect = getWizardURL( request );
             } else {
                 redirect = getMyAccountURL( request );
             }
-                
+
             response.sendRedirect( redirect.toString());
         } catch (  MalformedURLException e ) {
             throw new ServletException( "Error building redirect string.", e );
@@ -93,7 +96,7 @@ public class Launcher extends HttpServlet
     }
 
     private URL getWizardURL( HttpServletRequest request ) throws MalformedURLException
-        
+
     {
         return getActionURL( request, "wizard", null );
     }
@@ -108,12 +111,24 @@ public class Launcher extends HttpServlet
     {
         LocalUvmContext context = LocalUvmContextFactory.context();
         String host = context.toolboxManager().getLibraryHost();
-        
+
         String query = getLibraryQuery( request, action );
         if ( mackageName != null ) query += "&name=" + URLEncoder.encode( mackageName );
-        
+
         /* Open is a universal redirector which uses action to determine how it should redirect */
         return new URL( "https" + "://" + host + "/open.php?" + query );
+    }
+
+    private URL getHelpURL( HttpServletRequest request, String source)
+        throws MalformedURLException
+     {
+         LocalUvmContext context = LocalUvmContextFactory.context();
+         String lang = context.languageManager().getLanguageSettings().getLanguage();
+
+         return new URL("http://www.untangle.com/docs/get.php?"
+                        + "version=" + Version.getVersion()
+                        + "&source=" + source
+                        + "&lang=" + lang);
     }
 
     private String getLibraryQuery( HttpServletRequest request, String action )
@@ -122,7 +137,7 @@ public class Launcher extends HttpServlet
 
         String protocol = request.getParameter( FIELD_PROTOCOL );
         String host = request.getParameter( FIELD_HOST );
-        
+
         Integer port = null;
 
         /* It is better to use the information from the client,
@@ -137,8 +152,7 @@ public class Launcher extends HttpServlet
             logger.warn( "Request is missing the host, using the request[" + port + "]" );
         }
 
-
-        if ( protocol == null ) {            
+        if ( protocol == null ) {
             protocol = request.getScheme();
             logger.warn( "Request is missing the protocol, using the request[" + protocol + "]" );
         }
@@ -159,7 +173,8 @@ public class Launcher extends HttpServlet
         if ( port != null ) query += "&port=" + port;
         query += "&protocol=" + URLEncoder.encode( protocol );
         query += "&action=" + URLEncoder.encode( action );
-        
+        query += "&webui=" + URLEncoder.encode( String.valueOf( true ));
+
         return query;
     }
 }

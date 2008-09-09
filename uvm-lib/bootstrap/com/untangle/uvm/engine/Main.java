@@ -24,6 +24,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import org.apache.log4j.LogManager;
@@ -44,14 +45,18 @@ import org.apache.log4j.Logger;
  * <li>bunnicula.web.dir - servlet directories.</li>
  * <li>bunnicula.conf.dir - configuration files, added to classpath.</li>
  * <li>bunnicula.tmp.dir - temporary files.</li>
+ * <li>bunnicula.skins.dir - skins files.</li>
+ * <li>bunnicula.lang.dir - languages resources files.</li>
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public class Main
 {
-    private static String UVM_LOCAL_CONTEXT_CLASSNAME
+    private static final String UVM_LOCAL_CONTEXT_CLASSNAME
         = "com.untangle.uvm.engine.UvmContextImpl";
+
+    private static Main MAIN;
 
     private final SchemaUtil schemaUtil = new SchemaUtil();
 
@@ -61,7 +66,7 @@ public class Main
     private Class uvmPrivClass;
     private UvmContextBase uvmContext;
 
-    // constructor ------------------------------------------------------------
+    // constructor -------------------------------------------------------------
 
     private Main()
     {
@@ -70,17 +75,27 @@ public class Main
                                          new Object());
     }
 
-    // public static methods --------------------------------------------------
+    // public static methods ---------------------------------------------------
 
     /**
      * The fun starts here.
      */
     public static final void main(String[] args) throws Exception
     {
-        new Main().init();
+        synchronized (Main.class) {
+            if (null == MAIN) {
+                MAIN = new Main();
+                MAIN.init();
+            }
+        }
     }
 
-    // public methods ---------------------------------------------------------
+    public static Main getMain()
+    {
+        return MAIN;
+    }
+
+    // public methods ----------------------------------------------------------
 
     /**
      * @see UvmClassLoader.refreshToolbox()
@@ -136,7 +151,12 @@ public class Main
         return mcl.loadUvmResource(name);
     }
 
-    // private methods --------------------------------------------------------
+    public Map<String, String> getTranslations(String module)
+    {
+        return uvmContext.getTranslations(module);
+    }
+
+    // private methods ---------------------------------------------------------
 
     private void init() throws Exception
     {
@@ -195,6 +215,10 @@ public class Main
         System.setProperty("bunnicula.conf.dir", bunniculaConf);
         String bunniculaTmp = bunniculaHome + "/tmp";
         System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
+        String bunniculaSkins = "/var/www/skins";
+        System.setProperty("bunnicula.skins.dir", bunniculaSkins);
+        String bunniculaLang = bunniculaHome + "/lang";
+        System.setProperty("bunnicula.lang.dir", bunniculaLang);
 
         logger.info("bunnicula.home        " + bunniculaHome);
         logger.info("bunnicula.lib.dir     " + bunniculaLib);
@@ -205,6 +229,7 @@ public class Main
         logger.info("bunnicula.web.dir     " + bunniculaWeb);
         logger.info("bunnicula.conf.dir    " + bunniculaConf);
         logger.info("bunnicula.tmp.dir     " + bunniculaTmp);
+        logger.info("bunnicula.skins.dir     " + bunniculaSkins);
 
         File f = new File(bunniculaConf + "/uvm.properties");
         if (f.exists()) {
@@ -215,7 +240,6 @@ public class Main
         }
     }
 
-    // XXX get rid of all these throws
     private void startUvm() throws Exception
     {
         List<URL> urls = new ArrayList();
@@ -226,6 +250,8 @@ public class Main
         urls.add(new URL("file://" + bunniculaLib + "/untangle-libuvm-reporting/"));
         urls.add(new URL("file://" + bunniculaLib + "/jvector-impl/"));
         urls.add(new URL("file://" + bunniculaLib + "/jnetcap-impl/"));
+        String bunniculaLang = System.getProperty("bunnicula.lang.dir");
+        urls.add(new URL("file://" + bunniculaLang + "/"));
 
         String bunniculaToolbox = System.getProperty("bunnicula.toolbox.dir");
         mcl = new UvmClassLoader(urls.toArray(new URL[urls.size()]),

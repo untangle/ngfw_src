@@ -38,7 +38,6 @@ import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.token.TokenStreamerAdaptor;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
@@ -52,12 +51,6 @@ import org.apache.log4j.Logger;
  */
 class VirusFtpHandler extends FtpStateMachine
 {
-    /* XXX Should be from the same place as the HTTP constants */
-    private static final int SCAN_COUNTER  = Node.GENERIC_0_COUNTER;
-    private static final int BLOCK_COUNTER = Node.GENERIC_1_COUNTER;
-    private static final int PASS_COUNTER  = Node.GENERIC_2_COUNTER;
-
-
     private final VirusNodeImpl node;
     private final boolean scan;
 
@@ -77,9 +70,9 @@ class VirusFtpHandler extends FtpStateMachine
 
         this.node = node;
 
-        VirusSettings vs = node.getVirusSettings();
+        VirusBaseSettings vbs = node.getVirusSettings().getBaseSettings();
 
-        scan = vs.getFtpConfig().getScan();
+        scan = vbs.getFtpConfig().getScan();
 
         m_fileFactory = new TempFileFactory(getPipeline());
     }
@@ -218,7 +211,7 @@ class VirusFtpHandler extends FtpStateMachine
         VirusScannerResult result;
 
         try {
-            node.incrementCount(SCAN_COUNTER);
+            node.incrementScanCount();
             result = node.getScanner().scanFile(file);
         } catch (Exception exn) {
             // Should never happen
@@ -230,13 +223,13 @@ class VirusFtpHandler extends FtpStateMachine
         node.log(new VirusLogEvent(getSession().pipelineEndpoints(), result, node.getScanner().getVendorName()));
 
         if (result.isClean()) {
-            node.incrementCount(PASS_COUNTER);
+            node.incrementPassCount();
             Pipeline p = getPipeline();
             TokenStreamer tokSt = new FileChunkStreamer
                 (file, inChannel, null, EndMarker.MARKER, true);
             return new TokenStreamerAdaptor(p, tokSt);
         } else {
-            node.incrementCount(BLOCK_COUNTER);
+            node.incrementBlockCount();
             // Todo: Quarantine (for now, don't delete the file) XXX
             TCPSession s = getSession();
             s.shutdownClient();

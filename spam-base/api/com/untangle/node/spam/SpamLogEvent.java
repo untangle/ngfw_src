@@ -99,9 +99,9 @@ import org.hibernate.annotations.Type;
         public String getActionName()
         {
             if (null == action) {
-                return SpamMessageAction.PASS.toString();
+                return SpamMessageAction.PASS.getName();
             } else {
-                return action.toString();
+                return action.getName();
             }
         }
 

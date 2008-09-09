@@ -34,18 +34,12 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 public class VirusPopHandler extends PopStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
-
-    /* no block counter */
-    private final static int SCAN_COUNTER = Node.GENERIC_0_COUNTER;
-    private final static int PASS_COUNTER = Node.GENERIC_2_COUNTER;
-    private final static int REMOVE_COUNTER = Node.GENERIC_3_COUNTER;
 
     private final VirusNodeImpl zNode;
     private final VirusScanner zScanner;
@@ -70,7 +64,7 @@ public class VirusPopHandler extends PopStateMachine
         VirusPOPConfig zConfig;
         WrappedMessageGenerator zWMGenerator;
 
-        zConfig = node.getVirusSettings().getPopConfig();
+        zConfig = node.getVirusSettings().getBaseSettings().getPopConfig();
         zWMGenerator = zConfig.getMessageGenerator();
         lTimeout = zMTSettings.getPopTimeout();
 
@@ -87,7 +81,7 @@ public class VirusPopHandler extends PopStateMachine
 
         if (true == bScan &&
             MIMEUtil.EMPTY_MIME_PARTS != (azMPart = MIMEUtil.getCandidateParts(zMMessage))) {
-            zNode.incrementCount(SCAN_COUNTER);
+            zNode.incrementScanCount();
 
             TempFileFactory zTFFactory = new TempFileFactory(getPipeline());
             VirusScannerResult zFirstResult = null;
@@ -123,7 +117,7 @@ public class VirusPopHandler extends PopStateMachine
             }
 
             if (null != zFirstResult) {
-                zNode.incrementCount(REMOVE_COUNTER);
+                zNode.incrementRemoveCount();
 
                 /* wrap infected message and rebuild message token */
                 MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zFirstResult);
@@ -142,7 +136,7 @@ public class VirusPopHandler extends PopStateMachine
                     throw new TokenException("cannot create wrapped message file after removing virus: " + exn);
                 }
             } else {
-                zNode.incrementCount(PASS_COUNTER);
+                zNode.incrementPassCount();
             }
         } //else {
         //logger.debug("scan is not enabled or message contains no MIME parts");

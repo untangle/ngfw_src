@@ -48,7 +48,7 @@ public class PhishImapFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
 
-        SpamIMAPConfig config = m_node.getSpamSettings().getImapConfig();
+        SpamIMAPConfig config = m_node.getSpamSettings().getBaseSettings().getImapConfig();
 
         if(!config.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");

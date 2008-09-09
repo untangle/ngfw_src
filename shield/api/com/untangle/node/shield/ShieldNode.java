@@ -24,8 +24,16 @@ import com.untangle.uvm.node.Node;
 
 public interface ShieldNode extends Node
 {
-    public void setShieldSettings(ShieldSettings settings);
-    public ShieldSettings getShieldSettings();
-
+    void setBaseSettings(ShieldBaseSettings baseSettings);
+    ShieldBaseSettings getBaseSettings();
+    
+    List<ShieldNodeRule> getShieldNodeRules(int start, int limit, String... sortColumns);
+    void updateShieldNodeRules(List<ShieldNodeRule> added, List<Long> deleted, List<ShieldNodeRule> modified);
+    
+    /**
+     * Update all settings once
+     */
+    void updateAll(List[] shieldNodeRulesChanges);
+    
     List<ShieldRejectionLogEntry> getLogs( int limit );
 }

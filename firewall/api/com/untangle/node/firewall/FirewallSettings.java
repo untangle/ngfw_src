@@ -19,11 +19,11 @@
 package com.untangle.node.firewall;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -34,8 +34,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.untangle.node.util.UvmUtil;
-import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
@@ -48,19 +46,17 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @Table(name="n_firewall_settings", schema="settings")
-public class FirewallSettings implements Serializable, Validatable
+public class FirewallSettings implements Serializable
 {
-    private Long id;
-    private Tid tid;
-
     /* XXX Must be updated */
     private static final long serialVersionUID = 1629094295874759581L;
 
-    private List<FirewallRule> firewallRuleList = null;
+    private Long id;
+    private Tid tid;
 
-    private boolean quickExit = true;
-    private boolean rejectSilently = true;
-    private boolean isDefaultAccept = true;
+    private FirewallBaseSettings baseSettings = new FirewallBaseSettings();
+
+    private List<FirewallRule> firewallRuleList = null;
 
     private FirewallSettings() {}
 
@@ -68,14 +64,6 @@ public class FirewallSettings implements Serializable, Validatable
     {
         this.tid = tid;
         this.firewallRuleList = new LinkedList();
-    }
-
-    /* Validation method */
-    public void validate() throws ParseException
-    {
-        for ( Iterator iter = this.firewallRuleList.iterator(); iter.hasNext() ; ) {
-            ((FirewallRule)iter.next()).fixPing();
-        }
     }
 
     @Id
@@ -108,48 +96,22 @@ public class FirewallSettings implements Serializable, Validatable
         this.tid = tid;
     }
 
-    /**
-     * If true, exit on the first positive or negative match.  Otherwise, exit
-     * on the first negative match.
-     */
-    @Column(name="is_quickexit", nullable=false)
-    public boolean isQuickExit()
+    @Embedded
+    public FirewallBaseSettings getBaseSettings()
     {
-        return this.quickExit;
+        if (null != baseSettings) {
+            baseSettings.setFirewallRulesLengh(null == firewallRuleList ? 0 : firewallRuleList.size());
+        }
+
+        return baseSettings;
     }
 
-    public void setQuickExit( boolean b )
+    public void setBaseSettings(FirewallBaseSettings baseSettings)
     {
-        this.quickExit = b;
-    }
-
-    /**
-     *  If true, the session is rejected quietly (default), otherwise the connection
-     *  is rejected silently.
-     */
-    @Column(name="is_reject_silent", nullable=false)
-    public boolean isRejectSilently()
-    {
-        return this.rejectSilently;
-    }
-
-    public void setRejectSilently( boolean b )
-    {
-        this.rejectSilently = b;
-    }
-
-    /**
-     *  If true, the session is accepted if it doesn't match any other rules.
-     */
-    @Column(name="is_default_accept", nullable=false)
-    public boolean isDefaultAccept()
-    {
-        return this.isDefaultAccept;
-    }
-
-    public void setDefaultAccept( boolean b )
-    {
-        this.isDefaultAccept = b;
+        if (null == baseSettings) {
+            baseSettings = new FirewallBaseSettings();
+        }
+        this.baseSettings = baseSettings;
     }
 
     /**

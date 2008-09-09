@@ -33,11 +33,9 @@
 
 package com.untangle.uvm.toolbox;
 
-import java.net.URL;
-import java.util.List;
 
-import com.untangle.uvm.alerts.MessageQueue;
 import com.untangle.uvm.node.DeployException;
+import com.untangle.uvm.policy.Policy;
 
 /**
  * Manager for the Toolbox, which holds Mackages. A Mackage is all
@@ -49,6 +47,14 @@ import com.untangle.uvm.node.DeployException;
  */
 public interface RemoteToolboxManager
 {
+    /**
+     * Get the view of the rack for a policy.
+     *
+     * @param p policy.
+     * @return visible nodes for this policy.
+     */
+    RackView getRackView(Policy p);
+
     /**
      * All known mackages.
      *
@@ -108,37 +114,16 @@ public interface RemoteToolboxManager
     MackageDesc mackageDesc(String name);
 
     /**
-     * Returns install or upgrade events. When install or upgrade is
-     * called, a key is returned that allows the client to get a list
-     * of events since the client last called getProgress(). The end
-     * of events is signaled by an element of type
-     * <code>InstallComplete</code>. A call to this method after such
-     * an element is returned will result in a
-     * <code>RuntimeException</code>.
-     *
-     * @param key returned from the install or upgrade method.
-     * @return list of events since the last call to getProgress().
-     */
-    List<InstallProgress> getProgress(long key);
-
-    /**
      * Install a Mackage in the Toolbox.
      *
      * @param name the name of the Mackage.
      * @exception MackageInstallException when <code>name</code> cannot
      *     be installed.
      */
-    long install(String name) throws MackageInstallException;
+    void install(String name) throws MackageInstallException;
 
-    /**
-     * Install a Mackage in the Toolbox, returning only after it is
-     * completely installed..
-     *
-     * @param name the name of the Mackage.
-     * @exception MackageInstallException when <code>name</code> cannot
-     *     be installed.
-     */
-    void installSynchronously(String name) throws MackageInstallException;
+    void installAndInstantiate(String name, Policy p)
+        throws MackageInstallException, DeployException;
 
     /**
      * Remove a Mackage from the toolbox.
@@ -163,8 +148,6 @@ public interface RemoteToolboxManager
 
     void requestInstall(String mackageName);
 
-    MessageQueue<ToolboxMessage> subscribe();
-
     /**
      * Register the deployment of a Mackage at a particular URL.
      *
@@ -184,8 +167,6 @@ public interface RemoteToolboxManager
     void setUpgradeSettings(UpgradeSettings u);
 
     UpgradeSettings getUpgradeSettings();
-
-    List<String> getWebstartResources();
 
     boolean hasPremiumSubscription();
 

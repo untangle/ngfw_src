@@ -42,7 +42,6 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodePreferences;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.TooManyInstancesException;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.policy.Policy;
@@ -83,7 +82,7 @@ class NodeContextImpl implements NodeContext
     private final RemoteToolboxManagerImpl toolboxManager;
 
     NodeContextImpl(URLClassLoader classLoader, NodeDesc tDesc,
-                         String mackageName, boolean isNew)
+                    String mackageName, boolean isNew)
         throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
@@ -233,7 +232,6 @@ class NodeContextImpl implements NodeContext
                     };
                 mctx.runTransaction(tw);
             }
-
         }
     }
 
@@ -277,11 +275,6 @@ class NodeContextImpl implements NodeContext
             : node.getRunState();
     }
 
-    public NodeStats getStats()
-    {
-        return node.getStats();
-    }
-
     // XXX should be LocalNodeContext ------------------------------------
 
     // XXX remove this method...
@@ -303,13 +296,14 @@ class NodeContextImpl implements NodeContext
         return getResourceAsStreamInt(res, getMackageDesc(), baseNodeName);
     }
 
-    private boolean resourceExistsInt(String res, MackageDesc mackageDesc, String baseNodeName)
+    private boolean resourceExistsInt(String res, MackageDesc mackageDesc,
+                                      String baseNodeName)
     {
-	boolean exists;
+        boolean exists;
         try {
             URL url = new URL(toolboxManager.getResourceDir(mackageDesc), res);
             File f = new File(url.toURI());
-	    exists = f.exists();
+            exists = f.exists();
         } catch (MalformedURLException exn) {
             logger.info("resource not found, malformed url: " + res, exn);
             return false;
@@ -318,9 +312,9 @@ class NodeContextImpl implements NodeContext
             return false;
         }
 
-	if (exists)
-	    return true;
-	else {
+        if (exists)
+            return true;
+        else {
             // bug3699: Try the base, if any.
             if (baseNodeName != null) {
                 MackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
@@ -334,7 +328,9 @@ class NodeContextImpl implements NodeContext
         }
     }
 
-    private InputStream getResourceAsStreamInt(String res, MackageDesc mackageDesc, String baseNodeName)
+    private InputStream getResourceAsStreamInt(String res,
+                                               MackageDesc mackageDesc,
+                                               String baseNodeName)
     {
         try {
             URL url = new URL(toolboxManager.getResourceDir(mackageDesc), res);
@@ -513,7 +509,7 @@ class NodeContextImpl implements NodeContext
             throw new DeployException("could not create parent: " + parent);
         }
 
-        if (md.isService()) {
+        if (MackageDesc.Type.SERVICE == md.getType()) {
             policy = null;
         }
 
@@ -525,7 +521,7 @@ class NodeContextImpl implements NodeContext
             logger.debug("Parent does not exist, instantiating");
 
             try {
-                Tid parentTid = nodeManager.instantiate(parent, policy);
+                Tid parentTid = nodeManager.instantiate(parent, policy).getTid();
                 pctx = nodeManager.nodeContext(parentTid);
             } catch (TooManyInstancesException exn) {
                 pctx = getParentContext(parent);

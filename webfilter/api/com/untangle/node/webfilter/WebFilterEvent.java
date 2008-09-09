@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -26,10 +26,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.node.http.RequestLine;
 import org.hibernate.annotations.Type;
 
 /**
@@ -39,7 +39,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@org.hibernate.annotations.Entity(mutable=false)
+    @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_webfilter_evt_blk", schema="events")
     public class WebFilterEvent extends LogEvent
     {
@@ -52,16 +52,16 @@ import org.hibernate.annotations.Type;
         private Reason reason;
         private String category;
 
-        // non-persistent fields --------------------------------------------------
+        // non-persistent fields -----------------------------------------------
 
         private boolean nonEvent = false;
 
-        // constructors -----------------------------------------------------------
+        // constructors --------------------------------------------------------
 
         public WebFilterEvent() { }
 
         public WebFilterEvent(RequestLine requestLine, Action action,
-                                Reason reason, String category, boolean nonEvent)
+                              Reason reason, String category, boolean nonEvent)
         {
             this.requestLine = requestLine;
             this.action = action;
@@ -76,7 +76,7 @@ import org.hibernate.annotations.Type;
         }
 
         public WebFilterEvent(RequestLine requestLine, Action action,
-                                Reason reason, String category)
+                              Reason reason, String category)
         {
             this.requestLine = requestLine;
             this.action = action;
@@ -84,15 +84,15 @@ import org.hibernate.annotations.Type;
             this.category = category;
         }
 
-        // public methods ---------------------------------------------------------
+        // public methods ------------------------------------------------------
 
         @Transient
-        public boolean isNonEvent()
+            public boolean isNonEvent()
         {
             return nonEvent;
         }
 
-        // accessors --------------------------------------------------------------
+        // accessors -----------------------------------------------------------
 
         /**
          * Request line for this HTTP response pair.
@@ -100,8 +100,8 @@ import org.hibernate.annotations.Type;
          * @return the request line.
          */
         @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-        @JoinColumn(name="request_id")
-        public RequestLine getRequestLine()
+            @JoinColumn(name="request_id")
+            public RequestLine getRequestLine()
         {
             return requestLine;
         }
@@ -117,7 +117,7 @@ import org.hibernate.annotations.Type;
          * @return the action.
          */
         @Type(type="com.untangle.node.webfilter.ActionUserType")
-        public Action getAction()
+            public Action getAction()
         {
             return action;
         }
@@ -133,7 +133,7 @@ import org.hibernate.annotations.Type;
          * @return the reason.
          */
         @Type(type="com.untangle.node.webfilter.ReasonUserType")
-        public Reason getReason()
+            public Reason getReason()
         {
             return reason;
         }
@@ -156,10 +156,10 @@ import org.hibernate.annotations.Type;
             this.category = category;
         }
 
-        // WebFilterEvent methods -----------------------------------------------
+        // WebFilterEvent methods ----------------------------------------------
 
         @Transient
-        private int getActionType()
+            public int getActionType()
         {
             if (null == action ||
                 Action.PASS_KEY == action.getKey()) {
@@ -169,15 +169,15 @@ import org.hibernate.annotations.Type;
             }
         }
 
-        // LogEvent methods -------------------------------------------------------
+        // LogEvent methods ----------------------------------------------------
 
         @Transient
-        public boolean isPersistent()
+            public boolean isPersistent()
         {
             return !nonEvent;
         }
 
-        // Syslog methods ---------------------------------------------------------
+        // Syslog methods ------------------------------------------------------
 
         public void appendSyslog(SyslogBuilder sb)
         {
@@ -185,19 +185,19 @@ import org.hibernate.annotations.Type;
 
             sb.startSection("info");
             sb.addField("url", requestLine.getUrl().toString());
-            sb.addField("action", null == action ? "none" : action.toString());
+            sb.addField("action", null == action ? "none" : action.getName());
             sb.addField("reason", null == reason ? "none" : reason.toString());
             sb.addField("category", null == category ? "none" : category);
         }
 
         @Transient
-        public String getSyslogId()
+            public String getSyslogId()
         {
             return "Block";
         }
 
         @Transient
-        public SyslogPriority getSyslogPriority()
+            public SyslogPriority getSyslogPriority()
         {
             switch(getActionType())
                 {
@@ -211,7 +211,7 @@ import org.hibernate.annotations.Type;
                 }
         }
 
-        // Object methods ---------------------------------------------------------
+        // Object methods ------------------------------------------------------
 
         public String toString()
         {

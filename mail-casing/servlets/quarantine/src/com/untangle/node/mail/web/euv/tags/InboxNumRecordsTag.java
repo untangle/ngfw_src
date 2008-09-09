@@ -27,7 +27,7 @@ import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 public final class InboxNumRecordsTag extends SingleValueTag {
     @Override
     protected String getValue() {
-        InboxRecordCursor iCursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+        InboxRecordCursor iCursor = QuarantineFunctions.getCurrentIndex(pageContext.getRequest());
         try {
             return Long.toString(iCursor == null ? 0 : iCursor.inboxCount()) + " mails";
         }

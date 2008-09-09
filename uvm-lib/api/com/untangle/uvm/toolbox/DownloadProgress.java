@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.toolbox;
 
-import java.io.Serializable;
+import com.untangle.uvm.message.Message;
 
 /**
  * Update on the status of a download.
@@ -41,7 +41,7 @@ import java.io.Serializable;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class DownloadProgress implements InstallProgress, Serializable
+public class DownloadProgress extends Message
 {
     private static final long serialVersionUID = -4416392955752833104L;
 
@@ -79,13 +79,6 @@ public class DownloadProgress implements InstallProgress, Serializable
     public String getSpeed()
     {
         return speed;
-    }
-
-    // InstallProgress methods ------------------------------------------------
-
-    public void accept(ProgressVisitor visitor)
-    {
-        visitor.visitDownloadProgress(this);
     }
 
     // Object methods ---------------------------------------------------------

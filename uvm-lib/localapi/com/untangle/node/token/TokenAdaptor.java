@@ -40,7 +40,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.MPipeException;
@@ -76,12 +78,26 @@ public class TokenAdaptor extends AbstractEventHandler
 
     private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context()
         .pipelineFoundry();
+
+    private final BlingBlinger s2nBytes;
+    private final BlingBlinger c2nBytes;
+    private final BlingBlinger n2sBytes;
+    private final BlingBlinger n2cBytes;
+
     private final Logger logger = Logger.getLogger(TokenAdaptor.class);
 
     public TokenAdaptor(Node node, TokenHandlerFactory thf)
     {
         super(node);
         this.handlerFactory = thf;
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        Counters c = lmm.getCounters(node.getTid());
+        s2nBytes = c.getBlingBlinger("s2nBytes");
+        c2nBytes = c.getBlingBlinger("c2nBytes");
+        n2sBytes = c.getBlingBlinger("n2sBytes");
+        n2cBytes = c.getBlingBlinger("n2cBytes");
     }
 
     @Override
@@ -301,11 +317,12 @@ public class TokenAdaptor extends AbstractEventHandler
 
         TCPSession session = e.session();
 
-        int d = s2c ? MutateTStats.SERVER_TO_CLIENT
-            : MutateTStats.CLIENT_TO_SERVER;
         try {
-            MutateTStats.rereadData(d, session,
-                                    token.getEstimatedSize() - TOKEN_SIZE);
+            if (s2c) {
+                s2nBytes.increment(token.getEstimatedSize() - TOKEN_SIZE);
+            } else {
+                c2nBytes.increment(token.getEstimatedSize() - TOKEN_SIZE);
+            }
         } catch (Exception exn) {
             logger.warn("could not get estimated size", exn);
         }
@@ -326,16 +343,14 @@ public class TokenAdaptor extends AbstractEventHandler
                 logger.debug("beginning client stream");
                 TokenStreamer tokSt = tr.s2cStreamer();
                 TokenStreamerWrapper wrapper
-                    = new TokenStreamerWrapper(tokSt, session,
-                                               MutateTStats.SERVER_TO_CLIENT);
+                    = new TokenStreamerWrapper(tokSt, session, true);
                 TCPStreamer ts = new TokenStreamerAdaptor(pipeline, wrapper);
                 session.beginClientStream(ts);
             } else {
                 logger.debug("beginning server stream");
                 TokenStreamer tokSt = tr.c2sStreamer();
                 TokenStreamerWrapper wrapper
-                    = new TokenStreamerWrapper(tokSt, session,
-                                               MutateTStats.CLIENT_TO_SERVER);
+                    = new TokenStreamerWrapper(tokSt, session, false);
                 TCPStreamer ts = new TokenStreamerAdaptor(pipeline, wrapper);
                 session.beginServerStream(ts);
             }
@@ -426,11 +441,12 @@ public class TokenAdaptor extends AbstractEventHandler
         for (Token tok : results) {
             if (null == tok) { continue; }
 
-            int d = s2c ? MutateTStats.SERVER_TO_CLIENT
-                : MutateTStats.CLIENT_TO_SERVER;
             try {
-                MutateTStats.rewroteData(d, session,
-                                         tok.getEstimatedSize() - TOKEN_SIZE);
+                if (s2c) {
+                    n2cBytes.increment(tok.getEstimatedSize() - TOKEN_SIZE);
+                } else {
+                    n2sBytes.increment(tok.getEstimatedSize() - TOKEN_SIZE);
+                }
             } catch (Exception exn) {
                 logger.warn("could not estimate size", exn);
             }

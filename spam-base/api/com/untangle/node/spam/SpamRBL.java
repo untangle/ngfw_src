@@ -48,7 +48,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_spam_rbl", schema="settings")
-public class SpamRBL implements Serializable
+    public class SpamRBL implements Serializable
 {
     private static final long serialVersionUID = -7246008133224041234L;
 
@@ -83,7 +83,7 @@ public class SpamRBL implements Serializable
     @Id
     @Column(name="id")
     @GeneratedValue
-    private Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -134,5 +134,12 @@ public class SpamRBL implements Serializable
     public void setActive(boolean active) {
         this.active = active;
         return;
+    }
+
+    public void update( SpamRBL newRule )
+    {
+        this.hostname = newRule.hostname;
+        this.description = newRule.description;
+        this.active = newRule.active;
     }
 }

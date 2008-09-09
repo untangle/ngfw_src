@@ -215,4 +215,8 @@ class Ips < UVMFilterNode
     get_node(tid).getIPSSettings.getVariables
   end
 
+  def get_snmp_stat_map()
+      return {7 => "scan"};
+  end
+
 end

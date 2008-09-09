@@ -1,6 +1,6 @@
 # -*-ruby-*-
 # $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc. 
+# Copyright (c) 2003-2007 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2,
@@ -21,9 +21,9 @@ http = BuildEnv::SRC['untangle-casing-http']
 webfilter = BuildEnv::SRC['untangle-node-webfilter']
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-webfilter', 'webfilter',
-                     [http['localapi']], [http['gui']])
+                     [http['localapi']])
 
-deps = [webfilter['gui'], http['gui']]
+deps = [webfilter['impl'], http['localapi']]
 
 ServletBuilder.new(webfilter, 'com.untangle.node.webfilter.jsp',
                    "./webfilter/servlets/webfilter", [],

@@ -1,0 +1,240 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-07-24 19:04+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:22
+msgid "block"
+msgstr "blocat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:28
+msgid "log"
+msgstr "log"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:40
+msgid "[no category]"
+msgstr "[fără categorie]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:41
+msgid "[no protocol]"
+msgstr "[fără protocol]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:44
+msgid "[no description]"
+msgstr "[fără descriere]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
+msgid "[no signature]"
+msgstr "[fără signatură]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:47
+msgid "Protocol List"
+msgstr "Listă Protocoale"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:85
+msgid "category"
+msgstr "categorie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
+msgid "protocol"
+msgstr "protocol"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:102
+msgid "description"
+msgstr "descriere"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:110
+msgid "signature"
+msgstr "signatură"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
+msgid "Category"
+msgstr "Categorie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:130
+msgid "Protocol"
+msgstr "Protocol"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:136
+msgid "Block"
+msgstr "Blocat"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:140
+msgid "Log"
+msgstr "Log"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
+msgid "Description"
+msgstr "Descriere"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:150
+msgid "Signature"
+msgstr "Signatură"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:167
+msgid "Saving..."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:167
+msgid "Please wait"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:171
+msgid "Failed"
+msgstr "Eşuat"
+
+#~ msgid "   A popular computer game."
+#~ msgstr "Un joc de calculator popular."
+
+#~ msgid "   Internet Message Access Protocol (A common e-mail protocol)"
+#~ msgstr " Internet Message Access Protocol (Un protocol e-mail frecvent)"
+
+#~ msgid " (Simple) Network Time Protocol - RFCs 1305 and 2030"
+#~ msgstr " (Simple) Network Time Protocol - RFCs 1305 and 2030"
+
+#~ msgid " 2D asteroids-style   space game - http://sscentral.com"
+#~ msgstr "2D asteroids-style   joc spaţial - http://sscentral.com"
+
+#~ msgid " 2D asteroids-style space game - http://sscentral.com"
+#~ msgstr "2D asteroids-style   joc spaţial - http://sscentral.com"
+
+#~ msgid " A Korean P2P filesharing program/protocol - http://www.soribada.com"
+#~ msgstr ""
+#~ "Un program/protocol P2P Corean de sharing de fisiere - http://www."
+#~ "soribada.com"
+
+#~ msgid " A legal music distribution site - http://pressplay  .com"
+#~ msgstr "Site legal de distribuite muzica - http://pressplay  .com"
+
+#~ msgid " A legal music distribution site - http://pressplay.com"
+#~ msgstr "Site legal de distribuite muzica - http://pressplay.com"
+
+#~ msgid " A popular computer game."
+#~ msgstr "Un joc de calculator popular."
+
+#~ msgid " A precursor to HTTP - RFC 1436"
+#~ msgstr "Un precursor al HTTP - RFC 1436"
+
+#~ msgid " AOL instant messenger (OSCAR and TOC)"
+#~ msgstr " AOL instant messenger (OSCAR şi TOC)"
+
+#~ msgid " An EA game"
+#~ msgstr "Un joc EA"
+
+#~ msgid " An EA game."
+#~ msgstr "Un joc EA."
+
+#~ msgid " An Internet radio site - http://live365.com"
+#~ msgstr "Un site de radio-internet - http://live365.com"
+
+#~ msgid " An old P2P filesharing protocol"
+#~ msgstr "Un protocol vechi de sharing de fişiere."
+
+#~ msgid " Anonymous information   retrieval - http://freenetproject.org"
+#~ msgstr "Obţinere de informaţie anonimă - http://freenetproject.org"
+
+#~ msgid " Anonymous information retrieval - http://freenetproject.org"
+#~ msgstr "Obţinere de informaţie anonimă - http://freenetproject.org"
+
+#~ msgid " Border Gateway Protocol - RFC 1771"
+#~ msgstr "Border Gateway Protocol - RFC 1771"
+
+#~ msgid " Voice over IP."
+#~ msgstr "Voce peste IP"
+
+#~ msgid " network game"
+#~ msgstr "Retelistica"
+
+#~ msgid " streaming   audio"
+#~ msgstr "(ro)Streaming Video"
+
+#~ msgid " streaming audio"
+#~ msgstr "(ro)Streaming Video"
+
+#~ msgid "Email"
+#~ msgstr "Posta electronica"
+
+#~ msgid "File Transfer"
+#~ msgstr "Transfer de fisiere"
+
+#~ msgid "Instant   Messenger"
+#~ msgstr "Mesaje instant"
+
+#~ msgid "Instant Messenger"
+#~ msgstr "Mesaje instant"
+
+#~ msgid "Internet News"
+#~ msgstr "Stiri online"
+
+#~ msgid "Music"
+#~ msgstr "Muzica"
+
+#~ msgid "Networking"
+#~ msgstr "Retelistica"
+
+#~ msgid "Peer   to Peer"
+#~ msgstr "P2P"
+
+#~ msgid "Peer to   Peer"
+#~ msgstr "P2P"
+
+#~ msgid "Peer to Peer"
+#~ msgstr "P2P"
+
+#~ msgid "Printing"
+#~ msgstr "P2P"
+
+#~ msgid "Remote Deskop"
+#~ msgstr "(ro)Remote Deskop"
+
+#~ msgid "Remote Desktop"
+#~ msgstr "(ro)Remote Deskop"
+
+#~ msgid "Software   Development"
+#~ msgstr "Dezvolare de soft"
+
+#~ msgid "Software Development"
+#~ msgstr "Dezvolare de soft"
+
+#~ msgid "Streaming   Video"
+#~ msgstr "(ro)Streaming Video"
+
+#~ msgid "Streaming Video"
+#~ msgstr "(ro)Streaming Video"
+
+#~ msgid "System Administration"
+#~ msgstr "Administrare de sistem"
+
+#~ msgid "Video   Game"
+#~ msgstr "Joc video"
+
+#~ msgid "Video Game"
+#~ msgstr "Joc video"
+
+#~ msgid "Voice over IP"
+#~ msgstr "Voce peste IP"
+
+#~ msgid "Web"
+#~ msgstr "Web"
+
+#~ msgid "Worm"
+#~ msgstr "Vierme"
+
+#~ msgid "Protocol Events"
+#~ msgstr "Evenimente Protocoale"
+
+#~ msgid "Blocked Protocol Events"
+#~ msgstr "Evenimente Protocoale Blocate"

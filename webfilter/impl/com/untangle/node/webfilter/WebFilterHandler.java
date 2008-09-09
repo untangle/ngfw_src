@@ -24,7 +24,6 @@ import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
@@ -36,10 +35,6 @@ import org.apache.log4j.Logger;
  */
 public class WebFilterHandler extends HttpStateMachine
 {
-    private static final int SCAN = Node.GENERIC_0_COUNTER;
-    private static final int BLOCK = Node.GENERIC_1_COUNTER;
-    private static final int PASS = Node.GENERIC_2_COUNTER;
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private final WebFilterImpl node;
@@ -64,7 +59,7 @@ public class WebFilterHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        node.incrementCount(SCAN, 1);
+        node.incrementScanCount();
 
         TCPSession sess = getSession();
 
@@ -78,7 +73,7 @@ public class WebFilterHandler extends HttpStateMachine
         if (null == nonce) {
             releaseRequest();
         } else {
-            node.incrementCount(BLOCK, 1);
+            node.incrementBlockCount();
             boolean p = isRequestPersistent();
             String uri = getRequestLine().getRequestUri().toString();
             Token[] response = node.generateResponse(nonce, sess, uri,
@@ -121,11 +116,11 @@ public class WebFilterHandler extends HttpStateMachine
             }
 
             if (null == nonce) {
-                node.incrementCount(PASS, 1);
+                node.incrementPassCount();
 
                 releaseResponse();
             } else {
-                node.incrementCount(BLOCK, 1);
+                node.incrementBlockCount();
                 boolean p = isResponsePersistent();
                 Token[] response = node.generateResponse(nonce, sess, p);
                 blockResponse(response);

@@ -19,10 +19,11 @@
 # Robert Scott <rbscott@untangle.com>
 # Aaron Read <amread@untangle.com>
 
-# Certified Filthy2007
-ENV["JAVA_HOME"] = "/usr/lib/jvm/java-1.5.0-sun"
+# Certified Filthy2008
+ENV["JAVA_HOME"] = "/usr/lib/jvm/java-6-sun"
 
 SRC_HOME = [ ENV['SRC_HOME'], '../../work/src' ].compact.find do |d|
+
   File.exist?(d)
 end
 
@@ -67,18 +68,11 @@ if SRC_HOME.nil?
     InstalledJar.get(buildutil, "/usr/share/untangle/lib/untangle-buildutil-#{n}.jar")
   end
 
-  gui = BuildEnv::SRC['untangle-client']
-  ['api'] .each do |n|
-    InstalledJar.get(gui, "/usr/share/untangle/web/webstart/untangle-client-#{n}.jar")
-  end
-
   [ 'mail', 'ftp', 'http' ].each do |c|
     p =  BuildEnv::SRC["untangle-casing-#{c}"]
     ['localapi'].each do |n|
       InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-casing-#{c}-#{n}.jar")
     end
-
-    InstalledJar.get(p, "/usr/share/untangle/web/webstart/untangle-casing-#{c}-gui.jar")
   end
 
   [ 'virus' ].each do |c|
@@ -86,8 +80,6 @@ if SRC_HOME.nil?
     ['impl'].each do |n|
       InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-base-#{c}-#{n}/")
     end
-
-    InstalledJar.get(p, "/usr/share/untangle/web/webstart/untangle-base-#{c}-gui.jar")
   end
 else
   require "./buildtools/untangle-core.rb"

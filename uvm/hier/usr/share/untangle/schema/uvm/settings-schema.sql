@@ -1,3 +1,4 @@
+
 -- settings schema for release-5.0
 -- $HeadURL$
 -- Copyright (c) 2003-2007 Untangle, Inc.
@@ -57,6 +58,19 @@ CREATE TABLE settings.uvm_branding_settings (
     contact_name text,
     contact_email text,
     PRIMARY KEY (settings_id));
+
+-- com.untangle.uvm.SkinSettings
+CREATE TABLE settings.u_skin_settings (
+    skin_settings_id int8 NOT NULL,
+    admin_skin text,
+    user_skin text,
+    PRIMARY KEY (skin_settings_id));
+
+-- com.untangle.uvm.LanguageSettings
+CREATE TABLE settings.u_language_settings (
+    language_settings_id int8 NOT NULL,
+    language text,
+    PRIMARY KEY (language_settings_id));
 
 -- com.untangle.uvm.MailSettings
 CREATE TABLE settings.u_mail_settings (
@@ -510,6 +524,19 @@ CREATE TABLE settings.u_wmi_settings (
     password          TEXT,
     PRIMARY KEY       (settings_id));
 
+CREATE TABLE settings.u_stat_settings (
+    settings_id       int8 NOT NULL,
+    tid               int8 UNIQUE,
+    PRIMARY KEY       (settings_id));
+
+CREATE TABLE settings.u_active_stat (
+    id                   int8 NOT NULL,
+    settings_id          int8,
+    position             int4,
+    name                 text NOT NULL,
+    interval             text NOT NULL,
+    PRIMARY KEY (id));
+
 ----------------
 -- constraints |
 ----------------
@@ -576,4 +603,3 @@ ALTER TABLE u_dns_host_list
 ALTER TABLE u_dns_host_list
       ADD CONSTRAINT fk_uvm_dns_dns
       FOREIGN KEY (rule_id) REFERENCES u_dns_static_host_rule;
-

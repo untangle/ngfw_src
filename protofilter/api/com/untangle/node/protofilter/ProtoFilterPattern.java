@@ -84,8 +84,8 @@ public class ProtoFilterPattern implements Serializable
     @Id
     @Column(name="rule_id")
     @GeneratedValue
-    protected Long getId() { return id; }
-    protected void setId(Long id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     /**
      *
@@ -165,5 +165,17 @@ public class ProtoFilterPattern implements Serializable
     public void setLog(boolean log)
     {
         this.log = log;
+    }
+
+    public void updateRule(ProtoFilterPattern pattern) {
+        this.mvid = pattern.mvid;
+        this.protocol = pattern.protocol;
+        this.category = pattern.category;
+        this.description = pattern.description;
+        this.definition = pattern.definition;
+        this.quality = pattern.quality;
+        this.blocked = pattern.blocked;
+        this.alert = pattern.alert;
+        this.log = pattern.log;
     }
 }

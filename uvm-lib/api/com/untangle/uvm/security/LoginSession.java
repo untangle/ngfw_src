@@ -49,17 +49,23 @@ public class LoginSession implements Serializable
     public enum LoginType { INTERACTIVE, SYSTEM };
 
     private final UvmPrincipal uvmPrincipal;
-    private final int sessionId;
+    private final String sessionId;
     private final InetAddress clientAddr;
     private final LoginType loginType;
 
-    public LoginSession(UvmPrincipal mp, int sessionId,
-                        InetAddress clientAddr, LoginType loginType)
+    public LoginSession(UvmPrincipal mp, String sessionId,
+                        InetAddress clientAddr)
     {
         this.uvmPrincipal =  mp;
         this.sessionId = sessionId;
         this.clientAddr = clientAddr;
-        this.loginType = loginType;
+
+        if (null != mp && null != mp.getName()
+            && mp.getName().equals("localadmin")) {
+            loginType = LoginType.SYSTEM;
+        } else {
+            loginType = LoginType.INTERACTIVE;
+        }
     }
 
     public UvmPrincipal getUvmPrincipal()
@@ -67,7 +73,12 @@ public class LoginSession implements Serializable
         return uvmPrincipal;
     }
 
-    public int getSessionId()
+    public String getName()
+    {
+        return null == uvmPrincipal ? null : uvmPrincipal.getName();
+    }
+
+    public String getSessionId()
     {
         return sessionId;
     }
@@ -108,7 +119,7 @@ public class LoginSession implements Serializable
         int result = 17;
         result = 37 * result
             + (null == uvmPrincipal ? 0 : uvmPrincipal.hashCode());
-        result = 37 * result + sessionId;
+        result = 37 * result + sessionId.hashCode();
         result = 37 * result
             + (null == clientAddr ? 0 : clientAddr.hashCode());
 
@@ -126,7 +137,8 @@ public class LoginSession implements Serializable
 
         return null == uvmPrincipal ? null == ls.uvmPrincipal
             : uvmPrincipal.equals(ls.uvmPrincipal)
-            && sessionId == ls.sessionId
+            && null == sessionId ? null == ls.sessionId
+            : sessionId.equals(ls.sessionId)
             && null == clientAddr ? null == ls.clientAddr
             : clientAddr.equals(ls.clientAddr)
             && loginType == ls.loginType;

@@ -166,7 +166,7 @@ import org.hibernate.annotations.Type;
 
             sb.startSection("info");
             sb.addField("url", requestLine.getUrl().toString());
-            sb.addField("action", null == action ? "none" : action.toString());
+            sb.addField("action", null == action ? "none" : action.getName());
             sb.addField("category", null == category ? "none" : category);
         }
 

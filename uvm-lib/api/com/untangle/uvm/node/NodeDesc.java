@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.MackageDesc;
 
 /**
  * Node settings and properties.
@@ -52,31 +53,29 @@ public class NodeDesc implements Serializable
 
     private final Tid tid;
 
-    private final String name;
+    private final MackageDesc mackageDesc;
 
     private final String className;
     private final String guiClassName;
     private final String nodeBase;
+    private final String syslogName;
 
     private final List<String> exports;
     private final List<String> parents;
     private final List<String> uvmResources;
     private final boolean singleInstance;
 
-    private final String displayName;
-    private final String syslogName;
-
     private final int tcpClientReadBufferSize = 8192;
     private final int tcpServerReadBufferSize = 8192;
     private final int udpMaxPacketSize = 16384;
 
-    public NodeDesc(Tid tid, String name, String className,
-                         String guiClassName, String nodeBase,
-                         List<String> exports, List<String> parents, List<String> uvmResources, 
-                         boolean singleInstance, String displayName)
+    public NodeDesc(Tid tid, MackageDesc mackageDesc, String className,
+                    String guiClassName, String nodeBase,
+                    List<String> exports, List<String> parents,
+                    List<String> uvmResources, boolean singleInstance)
     {
         this.tid = tid;
-        this.name = name;
+        this.mackageDesc = mackageDesc;
         this.className = className;
         this.guiClassName = guiClassName;
         this.nodeBase = nodeBase;
@@ -87,8 +86,8 @@ public class NodeDesc implements Serializable
         l = null == uvmResources ? new LinkedList<String>() : uvmResources;
         this.uvmResources = Collections.unmodifiableList(l);
         this.singleInstance = singleInstance;
-        this.displayName = displayName;
-        syslogName = displayName.replaceAll("\\p{Space}", "_");
+        String n = mackageDesc.getDisplayName();
+        this.syslogName = null == n ? null : n.replaceAll("\\p{Space}", "_");
     }
 
     // accessors --------------------------------------------------------------
@@ -103,6 +102,11 @@ public class NodeDesc implements Serializable
         return tid;
     }
 
+    public MackageDesc getMackageDesc()
+    {
+        return mackageDesc;
+    }
+
     /**
      * Internal name of the node.
      *
@@ -110,7 +114,7 @@ public class NodeDesc implements Serializable
      */
     public String getName()
     {
-        return name;
+        return mackageDesc.getName();
     }
 
     /**
@@ -200,7 +204,7 @@ public class NodeDesc implements Serializable
      */
     public String getDisplayName()
     {
-        return displayName;
+        return mackageDesc.getDisplayName();
     }
 
     /**
@@ -251,5 +255,11 @@ public class NodeDesc implements Serializable
         NodeDesc td = (NodeDesc)o;
 
         return tid.equals(td.getTid());
+    }
+
+    @Override
+    public String toString()
+    {
+        return "[NodeDesc name:" + getName() + "]";
     }
 }

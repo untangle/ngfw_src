@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,28 +19,32 @@
 package com.untangle.node.ips.options;
 
 import java.nio.ByteBuffer;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
-import com.untangle.node.ips.IPSRuleSignature;
-import com.untangle.node.ips.IPSSessionInfo;
+import com.untangle.node.ips.IpsRule;
+import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
-public class PcreOption extends IPSOption {
-
+public class PcreOption extends IpsOption
+{
     private final Logger logger = Logger.getLogger(getClass());
 
     private Pattern pcrePattern;
 
-    public PcreOption(IPSRuleSignature signature, String params) {
-        super(signature, params);
+    public PcreOption(OptionArg arg)
+    {
+        super(arg);
+
+        String params = arg.getParams();
+        IpsRule rule = arg.getRule();
 
         int beginIndex = params.indexOf("/");
         int endIndex = params.lastIndexOf("/");
 
         if (endIndex < 0 || beginIndex < 0 || endIndex == beginIndex) {
             logger.warn("Malformed pcre: " + params + ", ignoring rule: " +
-                        signature.rule().getText());
+                        rule.getText());
             signature.remove(true);
         } else {
             try {
@@ -63,26 +67,29 @@ public class PcreOption extends IPSOption {
                         flag = flag | Pattern.COMMENTS;
                         break;
                     default:
-                        logger.info("Unable to handle pcre option: " + c + ", ignoring rule: " +
-                                    signature.rule().getText());
+                        logger.info("Unable to handle pcre option: "
+                                    + c + ", ignoring rule: " + rule.getText());
                         signature.remove(true);
                         break;
                     }
                 }
                 pcrePattern = Pattern.compile(pattern, flag);
             } catch(Exception e) {
-                logger.warn("Unable to parse pcre: " + params + " (" + e.getMessage() + "), ignoring rule: " +
-                            signature.rule().getText());
+                logger.warn("Unable to parse pcre: " + params + " ("
+                            + e.getMessage() + "), ignoring rule: "
+                            + rule.getText());
                 signature.remove(true);
             }
         }
     }
 
-    public boolean runnable() {
+    public boolean runnable()
+    {
         return true;
     }
 
-    public boolean run(IPSSessionInfo sessionInfo) {
+    public boolean run(IpsSessionInfo sessionInfo)
+    {
         ByteBuffer eventData = sessionInfo.getEvent().data();
 
         //  if(pcrePattern == null) {
@@ -99,5 +106,32 @@ public class PcreOption extends IPSOption {
         // }
 
         return negationFlag ^ patMatch;
+    }
+
+    public boolean optEquals(Object o)
+    {
+        if (!(o instanceof PcreOption)) {
+            return false;
+        }
+
+        PcreOption po = (PcreOption)o;
+
+        if (!super.optEquals(po)) {
+            return false;
+        }
+
+        if (null == pcrePattern || null == po.pcrePattern) {
+            return pcrePattern == po.pcrePattern;
+        } else {
+            return pcrePattern.pattern().equals(po.pcrePattern.pattern());
+        }
+    }
+
+    public int optHashCode()
+    {
+        int result = 17;
+        result = result * 37 + super.optHashCode();
+        result = result * 37 + (null == pcrePattern ? 0 : pcrePattern.pattern().hashCode());
+        return result;
     }
 }

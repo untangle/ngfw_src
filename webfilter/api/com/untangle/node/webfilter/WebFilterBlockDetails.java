@@ -50,7 +50,7 @@ public class WebFilterBlockDetails extends BlockDetails
 
     public String getHeader()
     {
-        return settings.getBlockTemplate().getHeader();
+        return settings.getBaseSettings().getBlockTemplate().getHeader();
     }
 
     public String getReason()

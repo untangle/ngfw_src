@@ -19,22 +19,21 @@
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -44,27 +43,26 @@ import java.util.concurrent.TimeoutException;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
-import com.untangle.uvm.alerts.MessageQueue;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.StatDescs;
+import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.security.LoginSession;
+import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.toolbox.DownloadComplete;
-import com.untangle.uvm.toolbox.DownloadProgress;
-import com.untangle.uvm.toolbox.DownloadSummary;
-import com.untangle.uvm.toolbox.InstallComplete;
-import com.untangle.uvm.toolbox.InstallProgress;
-import com.untangle.uvm.toolbox.InstallTimeout;
+import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.MackageDesc.Type;
 import com.untangle.uvm.toolbox.MackageException;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.MackageUninstallException;
 import com.untangle.uvm.toolbox.MackageUpdateExtraName;
-import com.untangle.uvm.toolbox.ProgressVisitor;
+import com.untangle.uvm.toolbox.RackView;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
-import com.untangle.uvm.toolbox.ToolboxMessage;
 import com.untangle.uvm.toolbox.UpgradeSettings;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.TransactionWork;
@@ -105,8 +103,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private CronJob cronJob;
     private final UpdateTask updateTask = new UpdateTask();
     private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
-    private final Map<LoginSession, MessageQueueImpl<ToolboxMessage>> messageQueues
-        = new WeakHashMap<LoginSession, MessageQueueImpl<ToolboxMessage>>();
 
     private volatile Map<String, MackageDesc> packageMap;
     private volatile MackageDesc[] available;
@@ -145,11 +141,87 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     void destroy()
     {
         logger.info("RemoteToolboxManager destroyed");
-        if (cronJob != null)
+        if (cronJob != null) {
             cronJob.cancel();
+        }
     }
 
     // RemoteToolboxManager implementation ------------------------------------
+
+    public RackView getRackView(Policy p)
+    {
+        MackageDesc[] available = this.available;
+        MackageDesc[] installed = this.installed;
+
+        Map<String, MackageDesc> nodes = new HashMap<String, MackageDesc>();
+        Map<String, MackageDesc> trials = new HashMap<String, MackageDesc>();
+        Map<String, MackageDesc> libitems = new HashMap<String, MackageDesc>();
+        Set<String> displayNames = new HashSet<String>();
+        for (MackageDesc md : available) {
+            String dn = md.getDisplayName();
+            MackageDesc.Type type = md.getType();
+            if (type == MackageDesc.Type.LIB_ITEM) {
+                displayNames.add(dn);
+                libitems.put(dn, md);
+            } else if (type == MackageDesc.Type.TRIAL) {
+                //Workaround for Trial display names. better solution is welcome.
+                String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
+                displayNames.add(realDn);
+                trials.put(realDn, md);
+            }
+        }
+
+        for (MackageDesc md : installed) {
+            String dn = md.getDisplayName();
+            MackageDesc.Type type = md.getType();
+            if (type == MackageDesc.Type.LIB_ITEM) {
+                libitems.remove(dn);
+                trials.remove(dn);
+            } else if (type == MackageDesc.Type.TRIAL) {
+                //Workaround for Trial display names. better solution is welcome.
+                String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
+                trials.remove(realDn);
+            } else if (!md.isInvisible()
+                       && (type == MackageDesc.Type.NODE
+                           || type == MackageDesc.Type.SERVICE)) {
+                displayNames.add(dn);
+                nodes.put(dn, md);
+            }
+        }
+
+        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
+            .context().nodeManager();
+        List<NodeDesc> instances = tm.visibleNodes(p);
+
+        Map<Tid, StatDescs> statDescs = new HashMap<Tid, StatDescs>(instances.size());
+        for (NodeDesc nd : instances) {
+            Tid t = nd.getTid();
+            LocalMessageManager lmm = LocalUvmContextFactory.context()
+                .localMessageManager();
+            Counters c = lmm.getCounters(t);
+            StatDescs sd = c.getStatDescs();
+            statDescs.put(t, sd);
+            nodes.remove(nd.getDisplayName());
+        }
+
+        displayNames.remove(null);
+
+        List<Application> apps = new ArrayList<Application>(displayNames.size());
+        for (String dn : displayNames) {
+            MackageDesc l = libitems.get(dn);
+            MackageDesc t = trials.get(dn);
+            MackageDesc n = nodes.get(dn);
+
+            if (l != null || t != null || n != null) {
+                Application a = new Application(l, t, n);
+                apps.add(a);
+            }
+        }
+
+        Collections.sort(apps);
+
+        return new RackView(apps, instances, statDescs);
+    }
 
     // all known mackages
     public MackageDesc[] available()
@@ -175,7 +247,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -219,70 +291,37 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return packageMap.get(name);
     }
 
-    public List<InstallProgress> getProgress(long key)
+    public void install(String name)
     {
-        logger.debug("getProgress(" + key + ")");
-        AptLogTail alt;
-        logger.debug("getting alt");
-        synchronized (tails) {
-            alt = tails.get(key);
-        }
-        logger.debug("got alt");
-
-        if (null == alt) {
-            logger.warn("no such progress key: " + key);
-            throw new RuntimeException("no such key: " + key);
-        }
-
-        logger.debug("getting events");
-        List<InstallProgress> l = alt.getEvents();
-        logger.debug("seeing if isDead");
-        if (alt.isDead()) {
-            synchronized (tails) {
-                logger.debug("removing dead alt");
-                tails.remove(key);
-            }
-        }
-
-        return l;
+        install(name, true);
     }
 
-    public long install(final String name)
+    public void installAndInstantiate(final String name, final Policy p)
+        throws MackageInstallException
     {
-        final AptLogTail alt;
-
-        synchronized (tails) {
-            long i = ++lastTailKey;
-            alt = new AptLogTail(i);
-            tails.put(i, alt);
-        }
-
-        LocalUvmContextFactory.context().newThread(alt).start();
-
-        LocalUvmContextFactory.context().newThread(new Runnable() {
+        Runnable r =new Runnable()
+            {
                 public void run()
                 {
-                    try {
-                        execMkg("install " + name, alt.getKey());
-                    } catch (MackageException exn) {
-                        logger.warn("install failed", exn);
+                    List<String> nodes = predictNodeInstall(name);
+                    install(name, false);
+                    NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
+                        .context().nodeManager();
+                    for (String nn : nodes) {
+                        try {
+                            register(nn);
+                            tm.instantiate(nn, p);
+                        } catch (DeployException exn) {
+                            // XXX send out error message
+                            logger.warn("could not deploy", exn);
+                        } catch (MackageInstallException e) {
+                            // TODO Auto-generated catch block
+                            logger.warn("could not register", e);
+                        }
                     }
                 }
-            }).start();
-
-        return alt.getKey();
-    }
-
-    public void installSynchronously(String name) throws MackageInstallException
-    {
-        long k = install(name);
-
-        InstallVisitor v = new InstallVisitor();
-        while (!v.isDone()) {
-            for (InstallProgress p : getProgress(k)) {
-                p.accept(v);
-            }
-        }
+            };
+        LocalUvmContextFactory.context().newThread(r).start();
     }
 
     public void uninstall(String name) throws MackageUninstallException
@@ -425,12 +464,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         MackageUpdateExtraName mue = new MackageUpdateExtraName(mackageName,extraName);
 
-        synchronized (messageQueues) {
-            logger.info("updateExtraName: " + mackageName + " new extraname: " + extraName);
-            for (MessageQueueImpl<ToolboxMessage> mq : messageQueues.values()) {
-                mq.enqueue(mue);
-            }
-        }
+        LocalMessageManager mm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        mm.submitMessage(mue);
     }
 
     public void requestInstall(String mackageName)
@@ -440,31 +476,13 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             logger.warn("Could not find package for: " + mackageName);
             return;
         }
-        
+
         MackageInstallRequest mir = new MackageInstallRequest(md,isInstalled(mackageName));
 
-        synchronized (messageQueues) {
-            logger.info("requestInstall: " + mackageName);
-            for (MessageQueueImpl<ToolboxMessage> mq : messageQueues.values()) {
-                mq.enqueue(mir);
-            }
-        }
-    }
-
-    public MessageQueue<ToolboxMessage> subscribe()
-    {
-        LoginSession s = HttpInvokerImpl.invoker().getActiveLogin();
-
-        MessageQueueImpl mq;
-        synchronized (messageQueues) {
-            mq = messageQueues.get(s);
-            if (null == mq) {
-                mq = new MessageQueueImpl<ToolboxMessage>();
-                messageQueues.put(s, mq);
-            }
-        }
-
-        return mq;
+        logger.info("requestInstall: " + mackageName);
+        LocalMessageManager mm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        mm.submitMessage(mir);
     }
 
     // RemoteToolboxManagerPriv implementation --------------------------------
@@ -534,7 +552,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         Random rand = new Random();
                         Period period = new Period(23, rand.nextInt(60), true);
                         us = new UpgradeSettings(period);
-			// only turn on auto-upgrade for full ISO install
+            // only turn on auto-upgrade for full ISO install
                         UpstreamService upgradeSvc =
                             LocalUvmContextFactory.context().upstreamManager().getService(RemoteUpstreamManager.AUTO_UPGRADE_SERVICE_NAME);
                         if (upgradeSvc != null)
@@ -549,21 +567,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         LocalUvmContextFactory.context().runTransaction(tw);
 
         return tw.getResult();
-    }
-
-    public List<String> getWebstartResources()
-    {
-        List<String> resources = new ArrayList<String>();
-
-        String d = System.getProperty("bunnicula.web.dir") + "/webstart";
-        for (File f : new File(d).listFiles()) {
-            String s = f.getName();
-            if (s.endsWith(".jar")) {
-                resources.add(s);
-            }
-        }
-
-        return resources;
     }
 
     public boolean hasPremiumSubscription()
@@ -586,10 +589,40 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     // package private methods ------------------------------------------------
 
+    private void install(final String name, boolean async)
+    {
+        final AptLogTail alt;
+
+        synchronized (tails) {
+            long i = ++lastTailKey;
+            alt = new AptLogTail(i);
+            tails.put(i, alt);
+        }
+
+        LocalUvmContextFactory.context().newThread(alt).start();
+
+        Runnable r = new Runnable() {
+                public void run()
+                {
+                    try {
+                        execMkg("install " + name, alt.getKey());
+                    } catch (MackageException exn) {
+                        logger.warn("install failed", exn);
+                    }
+                }
+            };
+
+        if (async) {
+            LocalUvmContextFactory.context().newThread(r).start();
+        } else {
+            r.run();
+        }
+    }
+
     URL getResourceDir(MackageDesc md)
     {
         try {
-            return new URL(TOOLBOX_URL, md.getJarPrefix() + "-impl/");
+            return new URL(TOOLBOX_URL, md.getName() + "-impl/");
         } catch (MalformedURLException exn) {
             logger.warn(exn); /* should never happen */
             return null;
@@ -636,40 +669,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     logger.warn("could not upgrade", exn);
                 }
             }
-        }
-    }
-
-    private static class InstallVisitor implements ProgressVisitor
-    {
-        private final Logger logger = Logger.getLogger(getClass());
-
-        private boolean done = false;
-
-        // ProgressVisitor methods --------------------------------------------
-
-        public void visitDownloadSummary(DownloadSummary ds) { }
-
-        public void visitDownloadProgress(DownloadProgress dp) { }
-
-        public void visitDownloadComplete(DownloadComplete dc) { }
-
-        public void visitInstallComplete(InstallComplete ic)
-        {
-            logger.info("install complete, success: " + ic.getSuccess());
-            done = true;
-        }
-
-        public void visitInstallTimeout(InstallTimeout it)
-        {
-            logger.info("install timed out");
-            done = true;
-        }
-
-        // package protected methods ------------------------------------------
-
-        boolean isDone()
-        {
-            return done;
         }
     }
 
@@ -923,5 +922,28 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private void execMkg(String command) throws MackageException
     {
         execMkg(command, -1);
+    }
+
+    private List<String> predictNodeInstall(String mkg)
+    {
+        List<String> l = new ArrayList<String>();
+
+        String cmd = System.getProperty("bunnicula.bin.dir")
+            + "/mkg predictInstall " + mkg;
+        try {
+            Process p = LocalUvmContextFactory.context().exec(cmd);
+            InputStream is = p.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while (null != (line = br.readLine())) {
+                if (line.contains("-node-")) {
+                    l.add(line);
+                }
+            }
+        } catch (IOException exn) {
+            logger.warn("could not predict node install: " + mkg, exn);
+        }
+
+        return l;
     }
 }

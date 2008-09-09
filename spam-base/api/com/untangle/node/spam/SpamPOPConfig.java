@@ -37,13 +37,7 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -127,16 +121,4 @@ public class SpamPOPConfig extends SpamProtoConfig
         return;
     }
 
-    /* for GUI */
-    @Transient
-    public String[] getMsgActionEnumeration()
-    {
-        SpamMessageAction[] azMsgAction = SpamMessageAction.getValues();
-        String[] azStr = new String[azMsgAction.length];
-
-        for (int i = 0; i < azMsgAction.length; i++)
-            azStr[i] = azMsgAction[i].toString();
-
-        return azStr;
-    }
 }

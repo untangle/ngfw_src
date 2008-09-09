@@ -65,7 +65,7 @@ public abstract class Rule implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    public Rule() { }
+	public Rule() { }
 
     public Rule(boolean live)
     {
@@ -106,17 +106,18 @@ public abstract class Rule implements Serializable
         this.live = live;
     }
 
+    
     // accessors --------------------------------------------------------------
 
     @Id
     @Column(name="rule_id")
     @GeneratedValue
-    protected Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    protected void setId(Long id)
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -210,5 +211,15 @@ public abstract class Rule implements Serializable
     {
         this.log = log;
     }
+
+    
+    public void update(Rule rule) {
+		this.name = rule.name;
+		this.category = rule.category;
+		this.description = rule.description;
+		this.live = rule.live;
+		this.alert = rule.alert;
+		this.log = rule.log;
+	}
 
 }

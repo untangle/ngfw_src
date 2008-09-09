@@ -116,28 +116,28 @@ public class SmtpSessionHandler
 
         //I'm incrementing the count, even if the message is too big
         //or cannot be converted to file
-        m_spamImpl.incrementScanCounter();
+        //m_spamImpl.incrementScanCount();
 
         //Scan the message
         File f = messageToFile(msg, tx);
         if(f == null) {
             m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return PASS_MESSAGE;
         }
 
         if(f.length() > getGiveupSz()) {
             m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.OVERSIZE);
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return PASS_MESSAGE;
         }
 
         if(m_safelist.isSafelisted(tx.getFrom(), msg.getMMHeaders().getFrom(), tx.getRecipients(false))) {
             m_logger.debug("Message sender safelisted");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.SAFELIST);
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return PASS_MESSAGE;
         }
 
@@ -145,7 +145,7 @@ public class SmtpSessionHandler
         if(report == null) { //Handle error case
             m_logger.error("Error scanning message.  Assume pass");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return PASS_MESSAGE;
         }
 
@@ -181,14 +181,14 @@ public class SmtpSessionHandler
                 m_logger.debug("Although SPAM detected, pass message as-per policy");
                 markHeaders(msg, report);
                 postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
-                m_spamImpl.incrementPassCounter();
+                m_spamImpl.incrementPassCount();
                 return PASS_MESSAGE;
             }
             else if(action == SMTPSpamMessageAction.MARK) {
                 m_logger.debug("Marking message as-per policy");
                 postSpamEvent(msgInfo, report, SMTPSpamMessageAction.MARK);
                 markHeaders(msg, report);
-                m_spamImpl.incrementMarkCounter();
+                m_spamImpl.incrementMarkCount();
                 MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, tx, report);
                 return new BPMEvaluationResult(wrappedMsg);
             }
@@ -201,7 +201,7 @@ public class SmtpSessionHandler
                 }
                 else {
                     m_logger.debug("Quarantine failed.  Fall back to mark");
-                    m_spamImpl.incrementMarkCounter();
+                    m_spamImpl.incrementMarkCount();
                     postSpamEvent(msgInfo, report, SMTPSpamMessageAction.MARK);
                     markHeaders(msg, report);
                     MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, tx, report);
@@ -211,7 +211,7 @@ public class SmtpSessionHandler
             else {//BLOCK
                 m_logger.debug("Blocking SPAM message as-per policy");
                 postSpamEvent(msgInfo, report, SMTPSpamMessageAction.BLOCK);
-                m_spamImpl.incrementBlockCounter();
+                m_spamImpl.incrementBlockCount();
                 return BLOCK_MESSAGE;
             }
         }//ENDOF SPAM
@@ -219,7 +219,7 @@ public class SmtpSessionHandler
             markHeaders(msg, report);
             postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
             m_logger.debug("Not spam");
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return PASS_MESSAGE;
         }//ENDOF HAM
     }
@@ -243,28 +243,28 @@ public class SmtpSessionHandler
 
         m_logger.debug("[handleMessageCanNotBlock]");
 
-        m_spamImpl.incrementScanCounter();
+        //m_spamImpl.incrementScanCount();
 
         //Scan the message
         File f = messageToFile(msg, tx);
         if(f == null) {
             m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return BlockOrPassResult.PASS;
         }
 
         if(f.length() > getGiveupSz()) {
             m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.OVERSIZE);
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return BlockOrPassResult.PASS;
         }
 
         if(m_safelist.isSafelisted(tx.getFrom(), msg.getMMHeaders().getFrom(), tx.getRecipients(false))) {
             m_logger.debug("Message sender safelisted");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.SAFELIST);
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return BlockOrPassResult.PASS;
         }
 
@@ -272,7 +272,7 @@ public class SmtpSessionHandler
         if(report == null) { //Handle error case
             m_logger.error("Error scanning message.  Assume pass");
             postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return BlockOrPassResult.PASS;
         }
 
@@ -303,13 +303,13 @@ public class SmtpSessionHandler
             if(action == SMTPSpamMessageAction.PASS) {
                 m_logger.debug("Although SPAM detected, pass message as-per policy");
                 postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
-                m_spamImpl.incrementPassCounter();
+                m_spamImpl.incrementPassCount();
                 return BlockOrPassResult.PASS;
             }
             else if(action == SMTPSpamMessageAction.MARK) {
                 m_logger.debug("Cannot mark at this time.  Simply pass");
                 postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
-                m_spamImpl.incrementPassCounter();
+                m_spamImpl.incrementPassCount();
                 return BlockOrPassResult.PASS;
             }
             else if(action == SMTPSpamMessageAction.QUARANTINE) {
@@ -323,21 +323,21 @@ public class SmtpSessionHandler
                 else {
                     m_logger.debug("Quarantine failed.  Fall back to pass");
                     postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
-                    m_spamImpl.incrementPassCounter();
+                    m_spamImpl.incrementPassCount();
                     return BlockOrPassResult.PASS;
                 }
             }
             else {//BLOCK
                 m_logger.debug("Blocking SPAM message as-per policy");
                 postSpamEvent(msgInfo, report, SMTPSpamMessageAction.BLOCK);
-                m_spamImpl.incrementBlockCounter();
+                m_spamImpl.incrementBlockCount();
                 return BlockOrPassResult.BLOCK;
             }
         }
         else {
             m_logger.debug("Not Spam");
             postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
-            m_spamImpl.incrementPassCounter();
+            m_spamImpl.incrementPassCount();
             return BlockOrPassResult.PASS;
         }
     }

@@ -64,7 +64,7 @@ public class VirusImapHandler
                                           MessageInfo msgInfo) {
         m_logger.debug("[handleMessage]");
 
-        m_virusImpl.incrementScanCounter();
+        m_virusImpl.incrementScanCount();
 
         MIMEPart[] candidateParts = MIMEUtil.getCandidateParts(msg);
         if (m_logger.isDebugEnabled()) {
@@ -140,14 +140,14 @@ public class VirusImapHandler
             if(action == VirusMessageAction.REMOVE) {
                 m_logger.debug("REMOVE (wrap) message");
                 MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, scanResultForWrap);
-                m_virusImpl.incrementRemoveCounter();
+                m_virusImpl.incrementRemoveCount();
                 return HandleMailResult.forReplaceMessage(wrappedMsg);
             }
             else {
                 m_logger.debug("Passing infected message (as-per policy)");
             }
         }
-        m_virusImpl.incrementPassCounter();
+        m_virusImpl.incrementPassCount();
         return HandleMailResult.forPassMessage();
     }
 

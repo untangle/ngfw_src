@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,14 +23,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
@@ -105,7 +105,7 @@ class EventHandler extends AbstractEventHandler
 
         /* Clients pass all traffic */
         if ( this.isUntanglePlatformClient ) {
-            node.incrementCount( Constants.PASS_COUNTER );
+            node.incrementPassCount();
             request.release();
 
             return;
@@ -148,7 +148,7 @@ class EventHandler extends AbstractEventHandler
         if ( logger.isDebugEnabled()) {
             logger.debug( "Accepted VPN session: [" + request.id() + "]" );
         }
-        node.incrementCount( Constants.PASS_COUNTER );
+        node.incrementPassCount();
         request.release();
 
         /* XXX Probably want to create an event */
@@ -160,7 +160,7 @@ class EventHandler extends AbstractEventHandler
         /* XXX Should this always reject silently */
         request.rejectSilently();
 
-        node.incrementCount( Constants.BLOCK_COUNTER );
+        node.incrementBlockCount();
 
         /* XXX Probably want to create an event */
         if ( logger.isDebugEnabled()) {

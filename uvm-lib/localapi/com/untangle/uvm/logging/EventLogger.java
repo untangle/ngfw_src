@@ -50,6 +50,7 @@ public abstract class EventLogger<E extends LogEvent>
     public abstract List<RepositoryDesc> getRepositoryDescs();
     public abstract EventRepository<E> getRepository(String repositoryName);
     public abstract List<EventRepository<E>> getRepositories();
+    public abstract void log(E e);
 
     // public methods --------------------------------------------------------
 
@@ -57,5 +58,4 @@ public abstract class EventLogger<E extends LogEvent>
     public abstract EventRepository<E> addListEventFilter(ListEventFilter<E> listFilter);
     public abstract EventRepository<E> addEventRepository(EventRepository<E> ec);
 
-    public abstract void log(E e);
 }

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+patch_file=`pwd`/python-jsonrpc-r19.patch
+
+cd $1/python-jsonrpc-r19 && {
+    cat ${patch_file} | patch -p1
+}
+
+
+
+
+

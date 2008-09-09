@@ -33,10 +33,13 @@
 
 package com.untangle.uvm.security;
 
+import javax.persistence.Transient;
+
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * The registration info for the Untangle customer
@@ -59,6 +62,7 @@ public class RegistrationInfo implements Serializable
     private String emailAddr;
     private String phone;
     private int numSeats;
+    private Map<String,String> misc;
 
     public RegistrationInfo() { }
 
@@ -78,6 +82,7 @@ public class RegistrationInfo implements Serializable
         this.lastName = lastName;
         this.emailAddr = emailAddr;
         this.numSeats = numSeats;
+        this.misc = new Hashtable<String,String>();
     }
 
     /**
@@ -87,50 +92,34 @@ public class RegistrationInfo implements Serializable
      */
     public RegistrationInfo(Hashtable entries)
     {
-        String[] sa;
-
-        sa = (String[]) entries.get("companyName");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            companyName = sa[0];
-        sa = (String[]) entries.get("firstName");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            firstName = sa[0];
-        sa = (String[]) entries.get("lastName");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            lastName = sa[0];
-        sa = (String[]) entries.get("address1");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            address1 = sa[0];
-        sa = (String[]) entries.get("address2");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            address2 = sa[0];
-        sa = (String[]) entries.get("city");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            city = sa[0];
-        sa = (String[]) entries.get("state");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            state = sa[0];
-        sa = (String[]) entries.get("zipcode");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            zipcode = sa[0];
-        sa = (String[]) entries.get("emailAddr");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            emailAddr = sa[0];
-        sa = (String[]) entries.get("phone");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            phone = sa[0];
-        sa = (String[]) entries.get("state");
-        if (sa != null && sa.length > 0 && sa[0].length() > 0)
-            state = sa[0];
+        /* This way it can strip out the values that have been used */
+        entries = new Hashtable( entries );
+        companyName = parseEntry(entries,"companyName",companyName);
+        firstName = parseEntry(entries,"firstName",firstName);
+        lastName = parseEntry(entries,"lastName",lastName);
+        address1 = parseEntry(entries,"address1",address1);
+        address2 = parseEntry(entries,"address2",address2);
+        city = parseEntry(entries,"city",city);
+        state = parseEntry(entries,"state",state);
+        zipcode = parseEntry(entries,"zipcode",zipcode);
+        emailAddr = parseEntry(entries,"emailAddr",emailAddr);
+        phone = parseEntry(entries,"phone",phone);
 
         numSeats = -1;
-        sa = (String[]) entries.get("numSeats");
+        String[] sa = (String[]) entries.get("numSeats");
         if (sa != null && sa.length > 0 && sa[0].length() > 0) {
             try {
                 numSeats = Integer.parseInt(sa[0]);
             } catch (NumberFormatException x) {
                 throw new IllegalArgumentException("Bad number of seats: " + sa[0]);
             }
+        }
+
+        /* Put any remaining values into misc */
+        misc = new Hashtable<String,String>( entries.size());
+        for(Object key : entries.keySet()) {
+            sa = (String[])entries.get( key );
+            if (sa != null && sa.length > 0 && sa[0].length() > 0) misc.put( (String)key, sa[0] );
         }
     }
 
@@ -299,49 +288,40 @@ public class RegistrationInfo implements Serializable
         this.numSeats = numSeats;
     }
 
+    public Map<String,String> getMisc()
+    {
+        return misc;
+    }
+
+    public void setMisc(Map<String,String> newValue)
+    {
+        this.misc = newValue;
+    }
+
+
+    @Transient
     public String toForm()
     {
         StringBuilder result = new StringBuilder();
         try {
-            result.append("companyName=");
-            result.append(URLEncoder.encode(companyName, "UTF-8"));
-            result.append("&firstName=");
-            result.append(URLEncoder.encode(firstName, "UTF-8"));
-            result.append("&lastName=");
-            result.append(URLEncoder.encode(lastName, "UTF-8"));
-            if (address1 != null) {
-                result.append("&address1=");
-                result.append(URLEncoder.encode(address1, "UTF-8"));
+            appendToForm(result, "companyName", companyName);
+            appendToForm(result, "firstName", firstName );
+            appendToForm(result, "lastName", lastName );
+            appendToForm(result, "address1", address1 );
+            appendToForm(result, "address2", address2 );
+            appendToForm(result, "city", city );
+            appendToForm(result, "state", state );
+            appendToForm(result, "zipcode", zipcode );
+            appendToForm(result, "emailAddr", emailAddr );
+            appendToForm(result, "phone", phone );
+            appendToForm(result, "numSeats", String.valueOf( numSeats));
+            for ( Map.Entry<String,String> entry : misc.entrySet()) {
+                appendToForm(result, entry.getKey(), entry.getValue());
             }
-            if (address2 != null) {
-                result.append("&address2=");
-                result.append(URLEncoder.encode(address2, "UTF-8"));
-            }
-            if (city != null) {
-                result.append("&city=");
-                result.append(URLEncoder.encode(city, "UTF-8"));
-            }
-            if (state != null) {
-                result.append("&state=");
-                result.append(URLEncoder.encode(state, "UTF-8"));
-            }
-            if (zipcode != null) {
-                result.append("&zipcode=");
-                result.append(URLEncoder.encode(zipcode, "UTF-8"));
-            }
-            result.append("&emailAddr=");
-            result.append(URLEncoder.encode(emailAddr, "UTF-8"));
-            if (phone != null) {
-                result.append("&phone=");
-                result.append(URLEncoder.encode(phone, "UTF-8"));
-            }
-            result.append("&numSeats=");
-            result.append(numSeats);
         } catch (UnsupportedEncodingException x) {
             // Can't happen.
         }
         return result.toString();
-
     }
 
     // Object methods ---------------------------------------------------------
@@ -366,7 +346,28 @@ public class RegistrationInfo implements Serializable
             r.append(", zipcode = ").append(state);
         if (phone != null)
             r.append(", phone = ").append(state);
+        for ( Map.Entry<String,String> entry : misc.entrySet()) {
+            r.append(", " ).append( entry.getKey()).append( " = " ).append( entry.getValue());
+        }
         r.append(" ]");
         return r.toString();
+    }
+
+    @Transient
+    private String parseEntry(Hashtable entries,String name,String currentValue)
+    {
+        String[] sa = (String[]) entries.remove(name);
+        if (sa != null && sa.length > 0 && sa[0].length() > 0) return sa[0];
+        return currentValue;
+    }
+
+    @Transient
+    private void appendToForm(StringBuilder result, String type, String value)
+        throws UnsupportedEncodingException
+    {
+        if (value == null) return;
+        if (result.length() > 0) result.append( "&" );
+        result.append(type + "=");
+        result.append(URLEncoder.encode(value, "UTF-8"));
     }
 }

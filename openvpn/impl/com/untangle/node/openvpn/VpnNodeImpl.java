@@ -20,26 +20,35 @@ package com.untangle.node.openvpn;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
-import com.untangle.uvm.ArgonException;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStats;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.node.UnconfiguredException;
 import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.XMLRPCUtil;
@@ -48,9 +57,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
+
 
 public class VpnNodeImpl extends AbstractNode
     implements VpnNode
@@ -58,8 +65,6 @@ public class VpnNodeImpl extends AbstractNode
     private static final String TRAN_NAME    = "openvpn";
     private static final String WEB_APP      = TRAN_NAME;
     private static final String WEB_APP_PATH = "/" + WEB_APP;
-    private static final String MAIL_IMAGE_DIR_PREFIX = "images";
-    private static final String MAIL_IMAGE_DIR = Constants.DATA_DIR + "/images";
 
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
 
@@ -89,7 +94,12 @@ public class VpnNodeImpl extends AbstractNode
 
     private Sandbox sandbox = null;
 
+    private final BlingBlinger passBlinger;
+    private final BlingBlinger blockBlinger;
+    private final BlingBlinger connectBlinger;
+
     // constructor ------------------------------------------------------------
+
 
     public VpnNodeImpl()
     {
@@ -103,6 +113,14 @@ public class VpnNodeImpl extends AbstractNode
             ( TRAN_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT,
               SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
+
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        blockBlinger = c.addActivity("block", "Block Connection", null, "BLOCK");
+        passBlinger = c.addActivity("pass", "Pass Connection", null, "PASS");
+        connectBlinger = c.addActivity("connect", "Connect", null, "CONNECT");
+        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger, connectBlinger);
     }
 
     @Override public void initializeSettings()
@@ -120,7 +138,7 @@ public class VpnNodeImpl extends AbstractNode
     // VpnNode methods --------------------------------------------------
     public void setVpnSettings( final VpnSettings newSettings )
     {
-        final VpnSettings oldSettings = this.settings;
+        fixGroups(newSettings);
 
         /* Attempt to assign all of the clients addresses only if in server mode */
         try {
@@ -159,8 +177,7 @@ public class VpnNodeImpl extends AbstractNode
                     for ( Object o : q.list()) s.delete((VpnSettings)o );
 
                     /* Save the new settings */
-                    s.saveOrUpdate( newSettings );
-                    VpnNodeImpl.this.settings = newSettings;
+                    VpnNodeImpl.this.settings = (VpnSettings)s.merge( newSettings );
                     return true;
                 }
             };
@@ -197,6 +214,27 @@ public class VpnNodeImpl extends AbstractNode
             logger.error( "Could not save VPN settings", exn );
         }
     }
+    
+    private void fixGroups(VpnSettings newSettings) {
+        Map<Long,VpnGroup> resolveGroupMap = new HashMap<Long,VpnGroup>();
+        for ( VpnGroup group : newSettings.getGroupList()) {
+            resolveGroupMap.put( group.getId(), group );
+        }
+        
+        fixGroups(newSettings.getClientList(), resolveGroupMap);
+        fixGroups(newSettings.getSiteList(), resolveGroupMap);
+    }
+    
+    private void fixGroups(List newClientList, Map<Long,VpnGroup> resolveGroupMap) {
+        for (VpnClientBase client : (List<VpnClientBase>) newClientList) {
+            Long id = client.getGroup().getId();
+            VpnGroup newGroup = resolveGroupMap.get(id);
+            if (newGroup != null) {
+                client.setGroup(newGroup);
+            }
+        }
+    }
+    
 
     public VpnSettings getVpnSettings()
     {
@@ -316,28 +354,7 @@ public class VpnNodeImpl extends AbstractNode
     {
         try {
             String subject = "OpenVPN Client";
-            File imageDirectory = new File( MAIL_IMAGE_DIR );
-            List<File> extraList = new LinkedList<File>();
-            List<String> locationList = new LinkedList<String>();
-
-            if ( imageDirectory.exists() && imageDirectory.isDirectory()) {
-                for ( File image : imageDirectory.listFiles()) {
-                    extraList.add( image );
-                    locationList.add( MAIL_IMAGE_DIR_PREFIX + "/" + image.getName());
-                }
-            }
-
-            /* Add the file for the logo */
             LocalUvmContext uvm = LocalUvmContextFactory.context();
-
-            File logo = uvm.localBrandingManager().getLogoFile();
-            if ( logo.exists()) {
-                locationList.add( uvm.localBrandingManager().getLogoWebPath() );
-                extraList.add( logo );
-            } else {
-                logger.warn( "The logo: " + logo + " doesn't exist." );
-            }
-
             MailSender mailSender = uvm.mailSender();
 
             /* Read in the contents of the file */
@@ -356,8 +373,7 @@ public class VpnNodeImpl extends AbstractNode
 
             String recipients[] = { email };
 
-            mailSender.sendMessageWithAttachments( recipients, subject, sb.toString(),
-                                                   locationList, extraList );
+            mailSender.sendHtmlMessage( recipients, subject, sb.toString());
         } catch ( Exception e ) {
             logger.warn( "Error distributing client key", e );
             throw new NodeException( e );
@@ -418,7 +434,7 @@ public class VpnNodeImpl extends AbstractNode
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if ( LocalUvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP )) {
+            if (null != LocalUvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP)) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );
@@ -604,14 +620,6 @@ public class VpnNodeImpl extends AbstractNode
         }
     }
 
-    @Override public NodeStats getStats()
-    {
-        /* Track the session info separately */
-        NodeStats stats = super.getStats();
-        return this.openVpnMonitor.updateStats( stats );
-    }
-
-
     // private methods -------------------------------------------------------
 
     // XXX soon to be deprecated ----------------------------------------------
@@ -660,6 +668,11 @@ public class VpnNodeImpl extends AbstractNode
         }
 
         this.sandbox = new Sandbox( state );
+
+        if ( state == ConfigState.SERVER_ROUTE ) {
+            this.sandbox.autoDetectAddressPool();
+            this.sandbox.autoDetectExportList();
+        }
     }
 
     public void completeConfig() throws Exception
@@ -721,10 +734,14 @@ public class VpnNodeImpl extends AbstractNode
         this.sandbox.setGroupList( parameters );
     }
 
+    public ExportList getExportedAddressList()
+    {
+        return this.sandbox.getExportList();
+    }
+
     public void setExportedAddressList( ExportList parameters ) throws Exception
     {
         this.sandbox.setExportList( parameters );
-
     }
 
     public void setClients( ClientList parameters) throws Exception
@@ -752,4 +769,23 @@ public class VpnNodeImpl extends AbstractNode
         return this.openVpnMonitor.getClientDistLogger();
     }
 
+    public void incrementBlockCount()
+    {
+        blockBlinger.increment();
+    }
+
+    public void incrementPassCount()
+    {
+        passBlinger.increment();
+    }
+
+    public void incrementConnectCount()
+    {
+        connectBlinger.increment();
+    }
+
+    public Validator getValidator()
+    {
+        return new OpenVpnValidator();
+    }
 }

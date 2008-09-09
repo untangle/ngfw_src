@@ -72,6 +72,6 @@ public class ExportList implements Serializable, Validatable
         for ( ServerSiteNetwork export : this.exportList ) export.validate();
         
         /* Determine if all of the addresses are unique */
-        AddressValidator.getInstance().validate( buildAddressRange());
+        AddressValidator.getInstance().validateOverlap( buildAddressRange());
     }
 }

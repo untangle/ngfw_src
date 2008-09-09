@@ -33,9 +33,6 @@
 
 package com.untangle.uvm.logging;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents syslog priority levels.
@@ -43,31 +40,16 @@ import java.util.List;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class SyslogPriority implements Serializable
+public enum SyslogPriority
 {
-    public static final SyslogPriority EMERGENCY;
-    public static final SyslogPriority ALERT;
-    public static final SyslogPriority CRITICAL;
-    public static final SyslogPriority ERROR;
-    public static final SyslogPriority WARNING;
-    public static final SyslogPriority NOTICE;
-    public static final SyslogPriority INFORMATIONAL;
-    public static final SyslogPriority DEBUG;
-
-    private static final SyslogPriority[] priorities;
-
-    static {
-        priorities = new SyslogPriority[8];
-
-        EMERGENCY = new SyslogPriority(0, "emergency");
-        ALERT = new SyslogPriority(1, "alert");
-        CRITICAL = new SyslogPriority(2, "critical");
-        ERROR = new SyslogPriority(3, "error");
-        WARNING = new SyslogPriority(4, "warning");
-        NOTICE = new SyslogPriority(5, "notice");
-        INFORMATIONAL = new SyslogPriority(6, "informational");
-        DEBUG = new SyslogPriority(7, "debug");
-    }
+    EMERGENCY(0, "emergency"),
+    ALERT(1, "alert"),
+    CRITICAL(2, "critical"),
+    ERROR(3, "error"),
+    WARNING(4, "warning"),
+    NOTICE(5, "notice"),
+    INFORMATIONAL(6, "informational"),
+    DEBUG(7, "debug");
 
     private final int priorityCode;
     private final String name;
@@ -78,34 +60,30 @@ public class SyslogPriority implements Serializable
     {
         this.priorityCode = priorityCode;
         this.name = name;
-
-        priorities[priorityCode] = this;
     }
 
     // static methods ---------------------------------------------------------
 
     public static SyslogPriority getPriority(int priorityCode)
     {
-        return priorities[priorityCode];
+    	SyslogPriority[] values = values();
+    	for (int i = 0; i < values.length; i++) {
+    		if (values[i].getPriorityValue() == priorityCode){
+    			return values[i];
+    		}
+		}
+    	return null;
     }
 
     public static SyslogPriority getPriority(String name)
     {
-        for( SyslogPriority sp : priorities ){ // XXX linear, not fast but works for now
-            if( sp.getName().equals(name) )
-                return sp;
-        }
-        return null;
-    }
-
-    public static List<SyslogPriority> values()
-    {
-        List<SyslogPriority> l = new ArrayList<SyslogPriority>(priorities.length);
-        for (SyslogPriority sp : priorities) {
-            l.add(sp);
-        }
-
-        return l;
+    	SyslogPriority[] values = values();
+    	for (int i = 0; i < values.length; i++) {
+    		if (values[i].getName().equals(name)){
+    			return values[i];
+    		}
+		}
+    	return null;
     }
 
     // business methods -------------------------------------------------------
@@ -132,10 +110,4 @@ public class SyslogPriority implements Serializable
         return name;
     }
 
-    // serialization methods --------------------------------------------------
-
-    Object readResolve()
-    {
-        return priorities[priorityCode];
-    }
 }

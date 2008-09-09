@@ -38,12 +38,15 @@ import java.io.IOException;
 
 import com.sleepycat.je.Environment;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
+import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
+import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.LocalNodeManager;
@@ -174,6 +177,24 @@ public interface LocalUvmContext
      * @return the LocalBrandingManager.
      */
     LocalBrandingManager localBrandingManager();
+
+    /**
+     * Get the <code>RemoteSkinManager</code> singleton.
+     *
+     * @return the RemoteSkinManager.
+     */
+    RemoteSkinManager skinManager();
+
+    /**
+     * Get the <code>RemoteLanguageManager</code> singleton.
+     *
+     * @return the RemoteLanguageManager.
+     */
+    RemoteLanguageManager languageManager();
+    
+    RemoteMessageManager messageManager();
+
+    LocalMessageManager localMessageManager();
 
     /**
      * Get the phonebook singleton
@@ -309,6 +330,12 @@ public interface LocalUvmContext
 
     void waitForStartup();
 
+    /**
+     * Get the remote context.
+     *
+     * @return the RemoteUvmContext.
+     */
+    RemoteUvmContext remoteContext();
 
     /**
      * Get the ADPhoneBookAssistant singleton for this instance

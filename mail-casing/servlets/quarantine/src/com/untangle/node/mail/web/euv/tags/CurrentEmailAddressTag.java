@@ -28,6 +28,7 @@ public final class CurrentEmailAddressTag
     extends SingleValueTag {
 
     private static final String ADDRESS_KEY = "untangle.email_address";
+    private static final String EL_ADDRESS_KEY = "currentAddress";
 
     @Override
     protected String getValue() {
@@ -37,9 +38,11 @@ public final class CurrentEmailAddressTag
     public static final void setCurrent(ServletRequest request,
                                         String address) {
         request.setAttribute(ADDRESS_KEY, address);
+        request.setAttribute(EL_ADDRESS_KEY, address);
     }
-    public static final void clearCurret(ServletRequest request) {
+    public static final void clearCurrent(ServletRequest request) {
         request.removeAttribute(ADDRESS_KEY);
+        request.removeAttribute(EL_ADDRESS_KEY);
     }
 
     /**

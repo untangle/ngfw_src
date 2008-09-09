@@ -40,10 +40,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -181,19 +177,6 @@ public class SpamSMTPConfig extends SpamProtoConfig
         return;
     }
 
-    /** for GUI */
-    @Transient
-    public String[] getMsgActionEnumeration()
-    {
-        SMTPSpamMessageAction[] azMsgAction = SMTPSpamMessageAction.getValues();
-        String[] azStr = new String[azMsgAction.length];
-
-        for (int i = 0; i < azMsgAction.length; i++)
-            azStr[i] = azMsgAction[i].toString();
-
-        return azStr;
-    }
-
     /**
      * notifyAction: a string specifying a response to events if a
      * message containing spam (defaults to NEITHER) one of SENDER,
@@ -213,19 +196,6 @@ public class SpamSMTPConfig extends SpamProtoConfig
         // Guard XXX
         this.zNotifyAction = zNotifyAction;
         return;
-    }
-
-    /* for GUI */
-    @Transient
-    public String[] getNotifyActionEnumeration()
-    {
-        SpamSMTPNotifyAction[] azNotifyAction = SpamSMTPNotifyAction.getValues();
-        String[] azStr = new String[azNotifyAction.length];
-
-        for (int i = 0; i < azNotifyAction.length; i++)
-            azStr[i] = azNotifyAction[i].toString();
-
-        return azStr;
     }
 
     /**

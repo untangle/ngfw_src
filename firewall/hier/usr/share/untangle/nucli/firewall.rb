@@ -259,4 +259,8 @@ class Firewall < UVMFilterNode
         end
     end
 
+    def get_snmp_stat_map()
+      return {7 => "block", 8 => "pass"};
+    end
+
 end # Firewall

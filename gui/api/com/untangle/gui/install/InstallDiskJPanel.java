@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -44,11 +44,15 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.table.*;
 
+import com.untangle.gui.util.Localizable;
 import com.untangle.gui.util.Util;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.widgets.wizard.*;
+import com.untangle.gui.widgets.dialogs.MOneButtonJDialog;
+import com.untangle.gui.widgets.wizard.MWizardPageJPanel;
 
-public class InstallDiskJPanel extends MWizardPageJPanel {
+public class InstallDiskJPanel
+    extends MWizardPageJPanel
+    implements Localizable
+{
 
     private DiskListCompoundSettings diskListCompoundSettings;
     private InstallWizard installWizard;
@@ -59,13 +63,17 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
         diskListCompoundSettings = new DiskListCompoundSettings();
     }
 
+    public void reloadStrings()
+    {
+        jLabel1.setText(Util.tr("<html>This list shows the boot disks that were found.  <font color='#FF0000'>Please choose a disk for the Untangle Platform installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>"));
+    }
 
     public boolean enteringForwards(){
         try{
             diskListCompoundSettings.refresh();
         }
         catch(Exception e){
-            Util.handleExceptionNoRestart("Error scanning disks", e);
+            Util.handleExceptionNoRestart(Util.tr("Error scanning disks"), e);
         }
         doRefresh(diskListCompoundSettings);
         return true;
@@ -102,9 +110,9 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
             return true;
         }
         else{
-            MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallDiskJPanel.this.getTopLevelAncestor(), "Install Wizard",
-                                                                 "You must select a boot disk which you would like to install Untangle onto.",
-                                                                 "Install Wizard Message", "Message");
+            MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallDiskJPanel.this.getTopLevelAncestor(), Util.tr("Install Wizard"),
+                                                                 Util.tr("You must select a boot disk which you would like to install Untangle onto."),
+                                                                 Util.tr("Install Wizard Message"), Util.tr("Message"));
             return false;
         }
     }
@@ -145,7 +153,8 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
     }
 
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         contentJPanel = new javax.swing.JPanel();
@@ -161,7 +170,7 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
 
         contentJPanel.setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel1.setText("<html>This list shows the boot disks that were found.<br><font color=\"#FF0000\">Please choose a disk for the Untangle Platform installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>");
+        jLabel1.setText(Util.tr("<html>This list shows the boot disks that were found.  <font color='#FF0000'>Please choose a disk for the Untangle Platform installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -202,7 +211,7 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
         gridBagConstraints.weightx = 1.0;
         add(backgroundJPabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -212,5 +221,4 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
     private javax.swing.JScrollPane diskJScrollPane;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
-
 }

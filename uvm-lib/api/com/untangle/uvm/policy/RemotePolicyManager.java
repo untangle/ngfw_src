@@ -36,6 +36,7 @@ package com.untangle.uvm.policy;
 import  java.util.List;
 
 import com.untangle.uvm.license.LicensedProduct;
+import com.untangle.uvm.node.Validator;
 
 public interface RemotePolicyManager extends LicensedProduct
 {
@@ -128,4 +129,10 @@ public interface RemotePolicyManager extends LicensedProduct
      * @param rules an <code>List</code> of <code>UserPolicyRule</code> values
      */
     void shutdownSessions(Policy policy);
+    
+    /** Gets the validator for IP and ports. used to validate UserPolicyRules
+     * @return Validator
+     */
+    public Validator getValidator();
+
 }

@@ -18,6 +18,8 @@
 
 package com.untangle.uvm.networking;
 
+import java.util.List;
+
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -45,6 +47,12 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         throws NetworkException, ValidateException
     {
         this.lnm.setSetupSettings( address, basic );
+    }
+
+    public BasicNetworkSettings setSetupSettings( BasicNetworkSettings basic )
+        throws NetworkException, ValidateException
+    {
+        return this.lnm.setSetupSettings( basic );
     }
 
     /* Set the access and address settings, used by the Remote Panel */
@@ -109,6 +117,16 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         return lnm.getNetworkSettings();
     }
 
+    public List<Interface> getInterfaceList( boolean updateStatus )
+    {
+        return lnm.getInterfaceList( updateStatus );
+    }
+
+    public void remapInterfaces( String[] osArray, String[] userArray ) throws NetworkException
+    {
+        lnm.remapInterfaces( osArray, userArray );
+    }
+        
     /** Update the internal representation of the address */
     public void updateAddress() throws NetworkException
     {

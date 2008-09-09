@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+         http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" >
+
+  <servlet>
+    <servlet-name>SetupServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.setup.servlet.SetupServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>SetupServlet</servlet-name>
+    <url-pattern>/index.do</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>LanguageServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.setup.servlet.Language</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>LanguageServlet</servlet-name>
+    <url-pattern>/language.do</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>WelcomeServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.setup.servlet.Welcome</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>WelcomeServlet</servlet-name>
+    <url-pattern>/welcome.do</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>JSONRPCServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.setup.jabsorb.UtJsonRpcServlet</servlet-class>
+    <init-param>
+      <param-name>gzip_threshold</param-name>
+      <param-value>200</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>JSONRPCServlet</servlet-name>
+    <url-pattern>/JSON-RPC</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>
+      index.do
+    </welcome-file>
+  </welcome-file-list>
+</web-app>

@@ -61,10 +61,6 @@ public interface RemoteAdminManager
     // See MailSender for documentation.
     boolean sendTestMessage(String recipient);
 
-    LoginSession[] loggedInUsers();
-
-    void logout();
-
     LoginSession whoAmI();
 
     /**
@@ -114,30 +110,7 @@ public interface RemoteAdminManager
      */
     SnmpManager getSnmpManager();
 
-    /**
-     * Returns a nonce to be added to the URL when you want to
-     * auto-login to a Tomcat servlet as the current UI user.  The
-     * String returned is of the form: 'nonce=resultofthisfunction'
-     * and should be stuck into the URL's querstring.
-     *
-     * Note that this is a single use nonce.
-     *
-     * @return the nonce to be added to the query string
-     */
-    String generateAuthNonce();
-
-    /**
-     * Returns a nonce to be added to the URL when you want to
-     * auto-login to a Tomcat servlet as the current UI user.  The
-     * String returned is of the form: 'nonce=resultofthisfunction'
-     * and should be stuck into the URL's querstring.
-     *
-     * Note that this is a single use nonce.  This is a special nonce that
-     * can be used globally across all servlets.
-     *
-     * @return the nonce to be added to the query string
-     */
-    String generateGlobalAuthNonce();
-
     String getAlpacaNonce();
+
+    SystemInfo getSystemInfo();
 }

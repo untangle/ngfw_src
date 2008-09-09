@@ -1,0 +1,15 @@
+database:
+  name: uvm
+  username: postgres
+  host: localhost
+  password: ""
+  
+table:
+- name: n_protofilter_pattern
+  column:
+  - description
+  - category
+- name: n_protofilter_pattern_1
+  column:
+  - description_1
+  - category_1

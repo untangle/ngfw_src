@@ -93,6 +93,8 @@ public class NetworkUtil
     /* This is the address to use during setup */
     public static final IPaddr SETUP_ADDRESS;
 
+    public static final IPaddr BOGUS_ADDRESS;
+
     /* ??? which one */
     public static final HostName DEFAULT_HOSTNAME;
 
@@ -435,6 +437,13 @@ public class NetworkUtil
         return AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr());
     }
 
+    public boolean isBogus( IPaddr address )
+    {
+        if ( BOGUS_ADDRESS == null ) return false;
+
+        return BOGUS_ADDRESS.equals( address );
+    }
+
     /**
      * Determine if a hostname is most likely resolvable by an
      * external DNS server.
@@ -461,27 +470,29 @@ public class NetworkUtil
 
     static
     {
-        IPaddr emptyAddr      = null;
-        IPaddr outsideNetwork = null;
-        IPaddr outsideNetmask = null;
-        IPaddr bogusAddress   = null;
-        IPaddr bogusNetmask   = null;
-        IPaddr dhcpStart      = null;
-        IPaddr dhcpEnd        = null;
+        IPaddr emptyAddr        = null;
+        IPaddr outsideNetwork   = null;
+        IPaddr outsideNetmask   = null;
+        IPaddr bogusDHCPAddress = null;
+        IPaddr bogusDHCPNetmask = null;
+        IPaddr dhcpStart        = null;
+        IPaddr dhcpEnd          = null;
+        IPaddr bogusAddress     = null;
 
-        IPaddr natAddress     = null;
-        IPaddr natNetmask     = null;
+        IPaddr natAddress       = null;
+        IPaddr natNetmask       = null;
 
-        IPaddr setupAddress = null;
+        IPaddr setupAddress     = null;
 
         HostName h, l;
 
         try {
-            emptyAddr      = IPaddr.parse( "0.0.0.0" );
-            outsideNetwork = IPaddr.parse( "1.2.3.4" );
-            outsideNetmask = IPaddr.parse( "255.255.255.0" );
-            bogusAddress   = IPaddr.parse( "169.254.210.50" );
-            bogusNetmask   = IPaddr.parse( "255.255.255.0" );
+            emptyAddr        = IPaddr.parse( "0.0.0.0" );
+            outsideNetwork   = IPaddr.parse( "1.2.3.4" );
+            outsideNetmask   = IPaddr.parse( "255.255.255.0" );
+            bogusDHCPAddress = IPaddr.parse( "169.254.210.50" );
+            bogusDHCPNetmask = IPaddr.parse( "255.255.255.0" );
+            bogusAddress     = IPaddr.parse( "192.0.2.1" );
 
             dhcpStart      = IPaddr.parse( "192.168.2.100" );
             dhcpEnd        = IPaddr.parse( "192.168.2.200" );
@@ -494,7 +505,7 @@ public class NetworkUtil
             System.err.println( "this should never happen: " + e );
             emptyAddr = null;
             dhcpStart = dhcpEnd = null;
-            bogusAddress = bogusNetmask = null;
+            bogusDHCPAddress = bogusDHCPNetmask = null;
             natAddress = natNetmask = null;
             /* THIS SHOULD NEVER HAPPEN */
         }
@@ -515,8 +526,10 @@ public class NetworkUtil
         DEFAULT_DHCP_START  = dhcpStart;
         DEFAULT_DHCP_END    = dhcpEnd;
 
-        BOGUS_DHCP_ADDRESS  = bogusAddress;
-        BOGUS_DHCP_NETMASK  = bogusNetmask;
+        BOGUS_DHCP_ADDRESS  = bogusDHCPAddress;
+        BOGUS_DHCP_NETMASK  = bogusDHCPNetmask;
+
+        BOGUS_ADDRESS = bogusAddress;
 
         DEFAULT_NAT_ADDRESS = natAddress;
         DEFAULT_NAT_NETMASK = natNetmask;

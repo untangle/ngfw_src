@@ -30,7 +30,9 @@ import com.untangle.node.mail.papi.*;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.Inbox;
 import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
+import com.untangle.node.mail.papi.quarantine.InboxArray;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.InboxRecordArray;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.node.mail.papi.quarantine.QuarantineMaintenenceView;
@@ -41,6 +43,7 @@ import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
 import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 import com.untangle.node.mail.papi.safelist.SafelistAdminView;
+import com.untangle.node.mail.papi.safelist.SafelistCount;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.papi.safelist.SafelistManipulation;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
@@ -123,7 +126,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void deployWebAppIfRequired(Logger logger) {
         if(!s_deployedWebApp) {
-            if(LocalUvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
+            if (null != LocalUvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             }
             else {
@@ -135,7 +138,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
         if(!s_unDeployedWebApp) {
-            if(LocalUvmContextFactory.context().appServerManager().unloadWebApp("/quarantine")) {
+            if (LocalUvmContextFactory.context().appServerManager().unloadWebApp("/quarantine")) {
                 logger.debug("Unloaded Quarantine web app");
             }
             else {
@@ -164,7 +167,7 @@ public class MailNodeImpl extends AbstractNode
     }
 
 
-    // MailNode methods --------------------------------------------------
+    // MailNode methods --------------------------------------------------------
 
     public MailNodeSettings getMailNodeSettings()
     {
@@ -191,6 +194,13 @@ public class MailNodeImpl extends AbstractNode
         s_safelistMngr.setSettings(this, settings);
     }
 
+    public void setMailNodeSettingsWithoutSafelists(final MailNodeSettings settings)
+    {
+        //get initial safelists
+        settings.setSafelistSettings(this.settings.getSafelistSettings());
+        setMailNodeSettings(settings);
+    }
+    
     public QuarantineUserView getQuarantineUserView() {
         return m_quv;
     }
@@ -224,6 +234,11 @@ public class MailNodeImpl extends AbstractNode
         return 30 * (ONE_GB / ONE_GB);
     }
 
+    public String createAuthToken(String account)
+    {
+        return m_qtv.createAuthToken(account);
+    }
+
     // MailExport methods -----------------------------------------------------
 
     public MailNodeSettings getExportSettings()
@@ -252,7 +267,7 @@ public class MailNodeImpl extends AbstractNode
         POP_PIPE_SPEC.setReleaseParseExceptions(true);
     }
 
-    // Node methods ------------------------------------------------------
+    // Node methods -----------------------------------------------------------
 
     @Override
     protected void preDestroy() throws NodeException {
@@ -340,7 +355,7 @@ public class MailNodeImpl extends AbstractNode
         registerApps();
     }
 
-    // AbstractNode methods ----------------------------------------------
+    // AbstractNode methods ---------------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -432,6 +447,24 @@ public class MailNodeImpl extends AbstractNode
             return s_quarantine.getInboxesTotalSize();
         }
 
+        public InboxArray getInboxArray( int start, int limit, String sortColumn, boolean isAscending )
+            throws QuarantineUserActionFailedException
+        {
+            return s_quarantine.getInboxArray( start, limit, sortColumn, isAscending );
+        }
+
+        public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn,
+                                                     boolean isAscending )
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
+            return s_quarantine.getInboxRecordArray( account, start, limit, sortColumn, isAscending );
+        }
+
+        public InboxRecordArray getInboxRecordArray( String account)
+        throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
+        return s_quarantine.getInboxRecordArray( account );
+}
         public String getFormattedInboxesTotalSize(boolean inMB) {
             return s_quarantine.getFormattedInboxesTotalSize(inMB);
         }
@@ -445,10 +478,20 @@ public class MailNodeImpl extends AbstractNode
             throws NoSuchInboxException, QuarantineUserActionFailedException {
             s_quarantine.deleteInbox(account);
         }
+        
+        public void deleteInboxes(String[] accounts)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            s_quarantine.deleteInboxes(accounts);
+        }
 
         public void rescueInbox(String account)
             throws NoSuchInboxException, QuarantineUserActionFailedException {
             s_quarantine.rescueInbox(account);
+        }
+        
+        public void rescueInboxes(String[] accounts)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            s_quarantine.rescueInboxes(accounts);
         }
     }
 
@@ -458,6 +501,11 @@ public class MailNodeImpl extends AbstractNode
                                       MailSummary summary,
                                       EmailAddress...recipients) {
             return s_quarantine.quarantineMail(file, summary, recipients);
+        }
+
+        public String createAuthToken(String account)
+        {
+            return s_quarantine.createAuthToken(account);
         }
     }
 
@@ -483,6 +531,12 @@ public class MailNodeImpl extends AbstractNode
                                            String toRemove)
             throws NoSuchSafelistException, SafelistActionFailedException {
             return s_safelistMngr.removeFromSafelist(safelistOwnerAddress, toRemove);
+        }
+        
+        public String[] removeFromSafelists(String safelistOwnerAddress,
+                            String[] toRemove)
+            throws NoSuchSafelistException, SafelistActionFailedException {
+            return s_safelistMngr.removeFromSafelists(safelistOwnerAddress, toRemove);
         }
 
         public String[] replaceSafelist(String safelistOwnerAddress,
@@ -527,6 +581,11 @@ public class MailNodeImpl extends AbstractNode
             throws SafelistActionFailedException {
             s_safelistMngr.deleteSafelist(safelistOwnerAddress);
         }
+        
+        public void deleteSafelists(String[] safelistOwnerAddresses)
+            throws SafelistActionFailedException {
+            s_safelistMngr.deleteSafelists(safelistOwnerAddresses);
+        }
 
         public void createSafelist(String newListOwnerAddress)
             throws SafelistActionFailedException {
@@ -536,6 +595,11 @@ public class MailNodeImpl extends AbstractNode
         public boolean safelistExists(String safelistOwnerAddress)
             throws SafelistActionFailedException {
             return s_safelistMngr.safelistExists(safelistOwnerAddress);
+        }
+
+        public List<SafelistCount> getUserSafelistCounts()
+            throws NoSuchSafelistException, SafelistActionFailedException {
+            return s_safelistMngr.getUserSafelistCounts();
         }
     }
 }

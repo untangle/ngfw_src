@@ -34,71 +34,56 @@
 package com.untangle.gui.util;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.lang.reflect.Constructor;
-import java.net.*;
-import java.text.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
-import javax.jnlp.*;
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JProgressBar;
+import javax.swing.JSpinner;
+import javax.swing.JSpinner.DefaultEditor;
+import javax.swing.JTextArea;
+import javax.swing.LookAndFeel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
-import com.untangle.gui.login.*;
-import com.untangle.gui.main.MMainJFrame;
-import com.untangle.gui.main.PolicyStateMachine;
-import com.untangle.gui.node.CompoundSettings;
-import com.untangle.gui.node.SettingsChangedListener;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.gui.pipeline.MRackJPanel;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.uvm.*;
-import com.untangle.uvm.addrbook.*;
-import com.untangle.uvm.client.*;
-import com.untangle.uvm.license.RemoteLicenseManager;
-import com.untangle.uvm.license.LicenseStatus;
-import com.untangle.uvm.logging.*;
-import com.untangle.uvm.networking.ping.RemotePingManager;
-import com.untangle.uvm.node.*;
-import com.untangle.uvm.policy.*;
-import com.untangle.uvm.security.*;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import com.untangle.uvm.user.RemotePhoneBook;
 import org.apache.log4j.Logger;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
+import java.text.MessageFormat;
 
 public class Util {
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
-    public static final String EXCEPTION_PORT_RANGE = "The port must be an integer number between 1 and 65535.";
+    private static final String BASENAME_COMMUNITY_PREFIX = "i18n.community";
+    private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
 
     private static final Logger logger = Logger.getLogger(Util.class);
+
+    private static final List<Localizable> localizable = new ArrayList<Localizable>();
 
     private Util(){}
 
     public static void initialize(){
-        shutdownableMap = new HashMap<String,Shutdownable>();
-        statsCache = new StatsCache();
         logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         iconOnState = new ImageIcon( classLoader.getResource("com/untangle/gui/node/IconOnState28x28.png") );
@@ -138,101 +123,26 @@ public class Util {
     // BRANDING ///////////////////
     public static final String getCompanyName(){ return "Untangle"; }
 
-    // LOGOUT /////////////////////
-    private static volatile boolean shutdownInitiated = false;
-    public static boolean getShutdownInitiated(){ return shutdownInitiated; }
-    public static void setShutdownInitiated(boolean x){ shutdownInitiated = x; }
-
     // LOOK AND FEEL //////////////
     private static LookAndFeel lookAndFeel;
     public static LookAndFeel getLookAndFeel(){ return lookAndFeel; }
     public static void setLookAndFeel(LookAndFeel x){ lookAndFeel = x; }
 
-    // LOGIN //////////////////////
-    public static final int LOGIN_RETRY_COUNT = 6;
-    public static final long LOGIN_RETRY_SLEEP = 3000l;
-    ///////////////////////////////
-
     // NETWORKING ////////////////
     public static final int RECONFIGURE_NETWORK_TIMEOUT_MILLIS = 60*1000;
     public static final int DISCONNECT_NETWORK_TIMEOUT_MILLIS = 15*1000;
-    //////////////////////////////
-
-    // SERVER PROXIES ///////////////
-    private static RemoteUvmContext uvmContext;
-    private static RemoteToolboxManager toolboxManager;
-    private static RemoteNodeManager nodeManager;
-    private static RemoteAdminManager adminManager;
-    private static StatsCache statsCache;
-    private static RemoteNetworkManager networkManager;
-    // DO NOT CACHE THIS private static PolicyManager policyManager;
-    private static RemoteLoggingManager loggingManager;
-    private static RemoteAppServerManager appServerManager;
-    // DO NOT CACHE THIS private static AddressBook addressBook;
-    // DO NOT CACHE THIS private static RemotePhoneBook phoneBook;
-    private static RemoteIntfManager remoteIntfManager;
-    private static RemotePingManager pingManager;
-    private static RemoteBrandingManager brandingManager;
-
-    public static void setUvmContext(RemoteUvmContext uvmContextX){
-        uvmContext = uvmContextX;
-        if( uvmContext != null ){
-            toolboxManager = uvmContext.toolboxManager();
-            nodeManager = uvmContext.nodeManager();
-            adminManager = uvmContext.adminManager();
-            networkManager = uvmContext.networkManager();
-            // DO NOT CACHE THIS policyManager = uvmContext.policyManager();
-            loggingManager = uvmContext.loggingManager();
-            appServerManager = uvmContext.appServerManager();
-            // DO NOT CACHE THIS addressBook = uvmContext.appAddressBook();
-            // DO NOT CACHE THIS phoneBook = uvmContext.phoneBook();
-            remoteIntfManager = uvmContext.intfManager();
-            pingManager = uvmContext.pingManager();
-            brandingManager = uvmContext.brandingManager();
-        }
-        else{
-            toolboxManager = null;
-            nodeManager = null;
-            adminManager = null;
-            networkManager = null;
-            // DO NOT CACHE THIS policyManager = null;
-            loggingManager = null;
-            appServerManager = null;
-            // DO NOT CACHE THIS addressBook = null;
-            // DO NOT CACHE THIS phoneBook = null;
-            remoteIntfManager = null;
-            pingManager = null;
-            brandingManager = null;
-        }
-    }
-
-    public static RemoteUvmContext getUvmContext(){ return uvmContext; }
-    public static RemoteToolboxManager getRemoteToolboxManager(){ return toolboxManager; }
-    public static RemoteNodeManager getNodeManager(){ return nodeManager; }
-    public static RemoteAdminManager getRemoteAdminManager(){ return adminManager; }
-    public static StatsCache getStatsCache(){ return statsCache; }
-    public static RemoteIntfManager getIntfManager(){ return remoteIntfManager; }
-    public static RemoteNetworkManager getNetworkManager(){ return networkManager; }
-    public static RemotePolicyManager getPolicyManager(){ return uvmContext.policyManager(); }
-    public static RemoteLoggingManager getRemoteLoggingManager(){ return loggingManager; }
-    public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }
-    public static RemoteAddressBook getAddressBook(){ return uvmContext.appAddressBook(); }
-    public static RemotePhoneBook getPhoneBook(){ return uvmContext.phoneBook(); }
-    public static RemotePingManager getRemotePingManager(){ return pingManager; }
-    public static RemoteBrandingManager getBrandingManager(){ return brandingManager; }
-    public static RemoteLicenseManager getLicenseManager(){ return uvmContext.licenseManager(); }
-    ///////////////////////////////////
-
 
     // BUTTON DECALS /////////////////
 
     public static ImageIcon[] getImageIcons(String[] imagePaths){
         ImageIcon[] imageIcons = new ImageIcon[imagePaths.length];
         for( int i=0; i<imagePaths.length; i++){
-            imageIcons[i] = new javax.swing.ImageIcon( Util.getClassLoader().getResource(imagePaths[i]) );
+            imageIcons[i] = new javax.swing.ImageIcon( Util.class.getClassLoader().getResource(imagePaths[i]) );
         }
         return imageIcons;
     }
+
+    private static Map<String, String> i18nMap = new HashMap<String, String>();
 
     private static ImageIcon iconOnState;
     private static ImageIcon iconOffState;
@@ -319,59 +229,6 @@ public class Util {
     public static boolean isInsideVM(){ return isInsideVM; }
     //////////////////////////////
 
-
-    // PREMIUM //////////////////////
-    public static boolean getIsPremium(String identifier){
-        return !getLicenseStatus(identifier).isExpired();
-    }
-
-    public static LicenseStatus getLicenseStatus(String identifier){
-        return getLicenseManager().getLicenseStatus(identifier);
-    }
-
-    public static boolean getIsPremium(){
-        return getLicenseManager().hasPremiumLicense();
-    }
-
-    //////////////////////////////
-
-
-    // CODEBASE /////////////////
-    private static URL serverCodeBase;
-
-    public static URL getServerCodeBase(){
-        if(serverCodeBase != null)
-            return serverCodeBase;
-        else{
-            try{
-                BasicService basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
-                serverCodeBase = basicService.getCodeBase();
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error (setting code base to http://127.0.0.1/webstart):", e);
-                serverCodeBase = new URL("http://127.0.0.1/webstart");
-            }
-            finally{
-                return serverCodeBase;
-            }
-        }
-    }
-
-    public static boolean isSecureViaHttps(){
-        try{
-            String protocol = getServerCodeBase().getProtocol();
-            if( protocol.equals("https") )
-                return true;
-            else
-                return false;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-    /////////////////////////////////
-
-
     // UPGRADE /////////////////////
     public static final int UPGRADE_THREAD_SLEEP_MILLIS = 60 * (60 * 1000); // X * (minutes * Y)
     public static final long UPGRADE_STORE_CHECK_FRESH_MILLIS = 60l * (60l * 1000l); // X * (minutes * Y)
@@ -414,51 +271,17 @@ public class Util {
 
     // GUI COMPONENTS AND FUNCTIONALITY //////////
     private static ClassLoader initClassLoader;
-    private static MURLClassLoader mURLClassLoader;
     private static JProgressBar statusJProgressBar;
     private static boolean isDemo;
-    private static MPipelineJPanel mPipelineJPanel;
-    private static MRackJPanel mRackJPanel;
-    private static MLoginJFrame mLoginJFrame;
-    private static MMainJFrame mMainJFrame;
-    private static PolicyStateMachine policyStateMachine;
 
     public static ClassLoader getInitClassLoader(){ return initClassLoader; }
     public static void setInitClassLoader(ClassLoader initClassLoaderX){ initClassLoader = initClassLoaderX;}
-    public static MURLClassLoader getClassLoader(){ return mURLClassLoader; }
-    public static void setClassLoader(MURLClassLoader mURLClassLoaderX){ mURLClassLoader = mURLClassLoaderX;}
     public static JProgressBar getStatusJProgressBar(){ return statusJProgressBar; }
     public static void setStatusJProgressBar(JProgressBar statusJProgressBarX){ statusJProgressBar = statusJProgressBarX; }
     public static boolean getIsDemo(){ return isDemo; }
     public static void setIsDemo(boolean isDemoX){ isDemo = isDemoX; }
-    public static MPipelineJPanel getMPipelineJPanel(){ return mPipelineJPanel; }
-    public static void setMPipelineJPanel(MPipelineJPanel mPipelineJPanelX){ mPipelineJPanel = mPipelineJPanelX; }
-    public static MRackJPanel getMRackJPanel(){ return mRackJPanel; }
-    public static void setMRackJPanel(MRackJPanel mRackJPanelX){ mRackJPanel = mRackJPanelX; }
-    public static void setMLoginJFrame(MLoginJFrame mLoginJFrameX){ mLoginJFrame = mLoginJFrameX; }
-    public static JFrame getMLoginJFrame(){ return mLoginJFrame; }
-    public static void setMMainJFrame(MMainJFrame mMainJFrameX){ mMainJFrame = mMainJFrameX; }
-    public static MMainJFrame getMMainJFrame(){ return mMainJFrame; }
-    public static void setPolicyStateMachine(PolicyStateMachine xPolicyStateMachine){ policyStateMachine = xPolicyStateMachine; }
-    public static PolicyStateMachine getPolicyStateMachine(){ return policyStateMachine; }
     ////////////////////////////////////////////
 
-    // EXITING AND SHUTDOWN ///////////////////
-    private static Map<String,Shutdownable> shutdownableMap;
-    public static void exit(int i){
-        System.exit(i);
-    }
-    public static void addShutdownable(String name, Shutdownable shutdownable){
-        shutdownableMap.put(name, shutdownable);
-    }
-    private static void doShutdown(){
-        Util.printMessage("Shutdown initiated by: " + Thread.currentThread().getName() );
-        for( Map.Entry<String,Shutdownable> shutdownableEntry : shutdownableMap.entrySet() ){
-            logger.info("Shutting down: " + shutdownableEntry.getKey());
-            shutdownableEntry.getValue().doShutdown();
-        }
-        shutdownableMap.clear();
-    }
     ////////////////////////////////////////////
     public static boolean isDevel() {
         return Boolean.getBoolean(PROPERTY_IS_DEVEL);
@@ -507,137 +330,7 @@ public class Util {
         return childBounds;
     }
 
-    public static int determineMinHeight(int attemptedMinHeight){
-        GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
-        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
-        int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
-        //logger.debug("Screen height: " + graphicsConfiguration.getBounds().height);
-        //logger.debug("Screen width: " + graphicsConfiguration.getBounds().width);
-        //logger.debug("Top insets: " + screenInsets.top);
-        //logger.debug("Bottom insets: " + screenInsets.bottom);
-        //logger.debug("Right insets: " + screenInsets.right);
-        //logger.debug("Left insets: " + screenInsets.left);
-        //  logger.debug("Determined screen height to be: " + screenHeight);
-        if( screenHeight < attemptedMinHeight)
-            return screenHeight;
-        else
-            return attemptedMinHeight;
-    }
-
-    public static void resizeCheck(final Component resizableComponent, Dimension minSize, Dimension maxSize){
-
-        final int currentWidth = resizableComponent.getWidth();
-        final int currentHeight = resizableComponent.getHeight();
-        int newWidth = currentWidth;
-        int newHeight = currentHeight;
-        /*
-          logger.debug("----------------------");
-          logger.debug("| Initial size: " + currentSize);
-          logger.debug("| Min size: " + minSize);
-          logger.debug("| Max size: " + maxSize);
-          logger.debug("----------------------");
-        */
-        boolean resetSize = false;
-        if(currentWidth < minSize.width){
-            newWidth = minSize.width;
-            resetSize = true;
-        }
-        else if(currentWidth > maxSize.width){
-            newWidth = maxSize.width;
-            resetSize = true;
-        }
-        if(currentHeight < minSize.height){
-            newHeight = minSize.height;
-            resetSize = true;
-        }
-        else if(currentHeight > maxSize.height){
-            newHeight = maxSize.height;
-            resetSize = true;
-        }
-        if(resetSize){
-            resizableComponent.setSize( newWidth, newHeight );
-        }
-    }
     //////////////////////////////////////////////////////
-
-
-    public static void addSettingChangeListener(final SettingsChangedListener s,
-                                                final Object source,
-                                                final JComponent c){
-        if(s==null)
-            return;
-        if(c instanceof JComboBox){
-            JComboBox cb = (JComboBox) c;
-            for( ActionListener a : cb.getActionListeners() ){
-                if(a instanceof SettingChangeListener )
-                    cb.removeActionListener(a);
-            }
-            cb.addActionListener(new SettingChangeListener(s, source, cb.getSelectedItem()));
-        }
-        else if(c instanceof JTextComponent){
-            JTextComponent tc = (JTextComponent) c;
-            for( CaretListener cl : tc.getCaretListeners() ){
-                if(cl instanceof SettingChangeListener )
-                    tc.removeCaretListener(cl);
-            }
-            tc.addCaretListener(new SettingChangeListener(s, source, tc.getText()));
-        }
-        else if(c instanceof AbstractButton){
-            AbstractButton ab = (AbstractButton) c;
-            for( ActionListener a : ab.getActionListeners() ){
-                if(a instanceof SettingChangeListener )
-                    ab.removeActionListener(a);
-            }
-            ab.addActionListener(new SettingChangeListener(s, source, ab.isSelected()));
-        }
-        else if(c instanceof JSpinner){
-            JSpinner js = (JSpinner) c;
-            for( ChangeListener cl : js.getChangeListeners() ){
-                if(cl instanceof SettingChangeListener )
-                    js.removeChangeListener(cl);
-            }
-            js.addChangeListener(new SettingChangeListener(s, source, js.getValue()));
-        }
-    }
-
-    private static class SettingChangeListener implements ActionListener, CaretListener, ChangeListener {
-        private Object source;
-        private SettingsChangedListener s;
-        private Object setting;
-        public SettingChangeListener(SettingsChangedListener s, Object source, Object setting){
-            this.s = s;
-            this.source = source;
-            this.setting = setting;
-        }
-        public void stateChanged(ChangeEvent e){
-            Object source = e.getSource();
-            if(source instanceof JSpinner){
-                JSpinner js = (JSpinner) source;
-                if( !js.getValue().equals(setting) )
-                    s.settingsChanged(source);
-            }
-        }
-        public void caretUpdate(CaretEvent e){
-            Object source = e.getSource();
-            if(source instanceof JTextComponent){
-                JTextComponent tc = (JTextComponent) source;
-                String lastSetting = (String) setting;
-                if( !tc.getText().trim().equals(lastSetting.trim())  )
-                    s.settingsChanged(source);
-            }
-        }
-        public void actionPerformed(ActionEvent e){
-            Object source = e.getSource();
-            if(source instanceof JComboBox){
-                if( !((JComboBox)source).getSelectedItem().equals(setting) )
-                    s.settingsChanged(source);
-            }
-            else if(source instanceof AbstractButton){
-                if( ! (((AbstractButton)source).isSelected() == (Boolean)setting) )
-                    s.settingsChanged(source);
-            }
-        }
-    }
 
     // FOCUS //
     public static void addPanelFocus(final JComponent source, final JComponent target){
@@ -685,103 +378,12 @@ public class Util {
         }
     }
 
-    public static String getSelectedTabTitle(JTabbedPane jTabbedPane){
-
-        String focus;
-        int focusIndex = jTabbedPane.getSelectedIndex();
-        if(focusIndex < 0){
-            return "null";
-        }
-        else{
-            Component focusComponent = jTabbedPane.getComponentAt(focusIndex);
-            if(focusComponent instanceof JTabbedPane)
-                return jTabbedPane.getTitleAt(focusIndex) + "+" + getSelectedTabTitle((JTabbedPane)focusComponent);
-            else if( (focusComponent instanceof Container)
-                     && (((Container)focusComponent).getComponentCount()>0)
-                     && (((Container)focusComponent).getComponent(0) instanceof JTabbedPane) ){
-                return jTabbedPane.getTitleAt(focusIndex) + "+"
-                    + getSelectedTabTitle((JTabbedPane)((Container)focusComponent).getComponent(0));
-            }
-            else
-                return jTabbedPane.getTitleAt(focusIndex);
-        }
-
-    }
     //////////////////////////////////////////////////////
 
     // EXCEPTION HANDLING AND MESSAGE PRINTING ////////////
     public synchronized static void handleExceptionNoRestart(String output, Exception e){
         logger.debug(output,e);
     }
-
-    public synchronized static void handleExceptionWithRestart(String output, Exception e) throws Exception {
-        Throwable throwableRef = e;
-
-        while( throwableRef != null){
-            if( throwableRef instanceof InvocationConnectionException ){
-                logger.info(output,e);
-                if( !Util.getShutdownInitiated() ){
-                    Util.setShutdownInitiated(true);
-                    doShutdown();
-                    mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
-                    mLoginJFrame.reshowLogin();
-                    RemoteUvmContextFactory.factory().logout();
-                }
-                return;
-            }
-            else if( throwableRef instanceof InvocationTargetExpiredException ){
-                logger.info(output,e);
-                if( !Util.getShutdownInitiated() ){
-                    Util.setShutdownInitiated(true);
-                    doShutdown();
-                    mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
-                    mLoginJFrame.reshowLogin();
-                    RemoteUvmContextFactory.factory().logout();
-                }
-                return;
-            }
-            else if( throwableRef instanceof com.untangle.uvm.client.LoginExpiredException ){
-                logger.info(output,e);
-                if( !Util.getShutdownInitiated() ){
-                    Util.setShutdownInitiated(true);
-                    doShutdown();
-                    mLoginJFrame.resetLogin("Login expired.  Re-login.");
-                    mLoginJFrame.reshowLogin();
-                    RemoteUvmContextFactory.factory().logout();
-                }
-                return;
-            }
-            else if(    (throwableRef instanceof ConnectException)
-                        || (throwableRef instanceof SocketException)
-                        || (throwableRef instanceof SocketTimeoutException) ){
-                logger.info(output,e);
-                if( !Util.getShutdownInitiated() ){
-                    Util.setShutdownInitiated(true);
-                    doShutdown();
-                    mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
-                    mLoginJFrame.reshowLogin();
-                    RemoteUvmContextFactory.factory().logout();
-                }
-                return;
-            }
-            else if( throwableRef instanceof LoginStolenException ){
-                if( !Util.getShutdownInitiated() ){
-                    String loginName = ((LoginStolenException)throwableRef).getThief().getUvmPrincipal().getName();
-                    String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
-                    new LoginStolenJDialog(loginName, loginAddress);
-                    Util.setShutdownInitiated(true);
-                    doShutdown();
-                    mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
-                    mLoginJFrame.reshowLogin();
-                    RemoteUvmContextFactory.factory().logout();
-                }
-                return;
-            }
-            throwableRef = throwableRef.getCause();
-        }
-        throw e;
-    }
-
 
     public static void printMessage(String message){
         logger.info(message);
@@ -861,37 +463,78 @@ public class Util {
         }
         return stringBuffer.toString();
     }
-    ///////////////////////////////////////////
 
-    // NODE LOADING //////////////////////
-    public static Node getNode(String nodeName) throws Exception {
-        Node node = null;
-        List<Tid> nodeInstances = Util.getNodeManager().nodeInstances(nodeName);
-        if(nodeInstances.size()>0){
-            NodeContext nodeContext = Util.getNodeManager().nodeContext(nodeInstances.get(0));
-            node = nodeContext.node();
+    public static void addLocalizable(Localizable l)
+    {
+        localizable.add(l);
+    }
+
+    public static void setLocale(Locale l)
+    {
+        i18nMap = getTranslations(l);
+        for (Localizable lable : localizable) {
+            lable.reloadStrings();
         }
-        return node;
     }
 
-    public static Object getRemoteObject(String className, String nodeName) throws Exception {
-        Node node = getNode(nodeName);
-        if( node != null){
-            NodeDesc nodeDesc = node.getNodeDesc();
-            Class nodeClass = Util.getClassLoader().mLoadClass(className);
-            Constructor nodeConstructor = nodeClass.getConstructor(new Class[]{});
-            return nodeConstructor.newInstance();
+    public static String marktr(String value)
+    {
+        return value;
+    }
+
+    public static String tr(String value)
+    {
+        String tr = i18nMap.get(value);
+        if (tr == null) {
+            tr = value;
         }
-        else
-            return null;
+        return tr;
     }
 
-    public static CompoundSettings getCompoundSettings(String className, String nodeName) throws Exception {
-        return (CompoundSettings) getRemoteObject(className, nodeName);
+    public static String tr(String value, Object... objects)
+    {
+        return MessageFormat.format(tr(value), objects);
     }
 
-    public static Component getSettingsComponent(String className, String nodeName) throws Exception {
-        return (Component) getRemoteObject(className, nodeName);
+    private static Map<String, String> getTranslations(Locale locale)
+    {
+        String module = "untangle-install-wizard";
+        
+        Map<String, String> map = new HashMap<String, String>();
+        String i18nModule = module.replaceAll("-", "_");
+        try {
+            I18n i18n = null;
+            ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
+            try {
+                i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule, Thread
+                        .currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
+            } catch (MissingResourceException e) {
+                // fall back to official translations
+                i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule, Thread
+                        .currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
+            }
+
+            if (i18n != null) {
+                for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration
+                        .hasMoreElements();) {
+                    String key = enumeration.nextElement();
+                    map.put(key, i18n.tr(key));
+                }
+            }
+        } catch (MissingResourceException e) {
+            // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
+            // is done in client side
+        }
+
+        return map;
     }
-    //////////////////////////////////////////
+
+    private static Class loadResourceBundleClass(String name) {
+        Class clazz = null;
+        try {
+            clazz =Thread.currentThread().getContextClassLoader().loadClass(name);
+        } catch (ClassNotFoundException e1) {
+        }
+        return clazz;
+    }
 }

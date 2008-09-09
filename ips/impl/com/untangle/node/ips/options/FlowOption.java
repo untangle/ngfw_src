@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,19 +20,17 @@ package com.untangle.node.ips.options;
 
 import java.util.regex.*;
 
+import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.uvm.vnet.event.*;
-import com.untangle.node.ips.IPSRuleSignature;
-import com.untangle.node.ips.IPSSessionInfo;
 
-public class FlowOption extends IPSOption {
-
+public class FlowOption extends IpsOption
+{
     /**
      * The options "only_stream" and "established" would  have *no* effect.
      * So I ignore them.
      */
-
-    private static Pattern noStream = Pattern.compile("no_stream",Pattern.CASE_INSENSITIVE);
-    private static Pattern[] validParams = {
+    private static final Pattern noStream = Pattern.compile("no_stream",Pattern.CASE_INSENSITIVE);
+    private static final Pattern[] validParams = {
         Pattern.compile("from_server", Pattern.CASE_INSENSITIVE),
         Pattern.compile("from_client", Pattern.CASE_INSENSITIVE),
         Pattern.compile("to_client", Pattern.CASE_INSENSITIVE),
@@ -41,8 +39,12 @@ public class FlowOption extends IPSOption {
 
     private boolean matchFromServer = false;
 
-    public FlowOption(IPSRuleSignature signature, String params) {
-        super(signature, params);
+    public FlowOption(OptionArg arg)
+    {
+        super(arg);
+
+        String params = arg.getParams();
+
         if(noStream.matcher(params).find()) {
             signature.remove(true);
         }
@@ -53,13 +55,38 @@ public class FlowOption extends IPSOption {
         }
     }
 
-    public boolean runnable() {
+    public boolean runnable()
+    {
         return true;
     }
 
-    public boolean run(IPSSessionInfo sessionInfo) {
+    public boolean run(IpsSessionInfo sessionInfo)
+    {
         boolean fromServer = sessionInfo.isServer();
         boolean returnValue = !(fromServer ^ matchFromServer);
         return (negationFlag ^ returnValue);
+    }
+
+    public boolean optEquals(Object o)
+    {
+        if (!(o instanceof FlowOption)) {
+            return false;
+        }
+
+        FlowOption fo = (FlowOption)o;
+
+        if (!super.optEquals(fo)) {
+            return false;
+        }
+
+        return matchFromServer == fo.matchFromServer;
+    }
+
+    public int optHashCode()
+    {
+        int result = 17;
+        result = result * 37 + super.optHashCode();
+        result = result * 37 + (matchFromServer ? 1 : 0);
+        return result;
     }
 }

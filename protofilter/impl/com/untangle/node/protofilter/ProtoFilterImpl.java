@@ -17,28 +17,37 @@
  */
 package com.untangle.node.protofilter;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
+import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
-import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
+
 
 public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 {
@@ -55,6 +64,13 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     private ProtoFilterSettings cachedSettings = null;
 
+    private final PartialListUtil listUtil = new PartialListUtil();
+    private final ProtoFilterPatternHandler patternHandler = new ProtoFilterPatternHandler();
+
+    private final BlingBlinger scanBlinger;
+    private final BlingBlinger detectBlinger;
+    private final BlingBlinger blockBlinger;
+
     // constructors -----------------------------------------------------------
 
     public ProtoFilterImpl()
@@ -66,6 +82,13 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         eventLogger.addSimpleEventFilter(ef);
         ef = new ProtoFilterBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        scanBlinger = c.addActivity("scan", "Scan Protocol", null, "SCAN");
+        blockBlinger = c.addActivity("block", "Block Protocol", null, "BLOCK");
+        detectBlinger = c.addActivity("detect", "Detect Protocol", null, "DETECT");
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, detectBlinger);
     }
 
     // ProtoFilter methods ----------------------------------------------------
@@ -83,8 +106,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(settings);
-                    ProtoFilterImpl.this.cachedSettings = settings;
+                	ProtoFilterImpl.this.cachedSettings = (ProtoFilterSettings)s.merge(settings);
                     return true;
                 }
 
@@ -99,7 +121,56 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
             logger.error("Could not save ProtoFilter settings", exn);
         }
     }
+    
+    public ProtoFilterBaseSettings getBaseSettings() {
+        return cachedSettings.getBaseSettings();
+    }
 
+    public void setBaseSettings(final ProtoFilterBaseSettings baseSettings) {
+        TransactionWork tw = new TransactionWork() {
+                public boolean doWork(Session s) {
+                    cachedSettings.setBaseSettings(baseSettings);
+                    s.merge(cachedSettings);
+                    return true;
+                }
+                
+                public Object getResult() {
+				return null;
+                }
+            };
+        getNodeContext().runTransaction(tw);
+    }
+    
+    public List<ProtoFilterPattern> getPatterns(final int start,
+                                                final int limit, final String... sortColumns) {
+        return listUtil.getItems( "select hbs.patterns from ProtoFilterSettings hbs where hbs.tid = :tid ",
+                                  getNodeContext(), getTid(), start, limit, sortColumns );
+    }
+    
+    public void updatePatterns(List<ProtoFilterPattern> added,
+                               List<Long> deleted, List<ProtoFilterPattern> modified) {
+        
+        updatePatterns(getProtoFilterSettings().getPatterns(), added, deleted,
+                       modified);
+    }
+
+	/*
+	 * For this node, updateAll means update only the patterns and then reconfigure the node
+	 * @see com.untangle.node.protofilter.ProtoFilter#updateAll(java.util.List[])
+	 */
+    public void updateAll(List[] patternsChanges) {
+    	if (patternsChanges != null && patternsChanges.length >= 3) {
+            updatePatterns(patternsChanges[0], patternsChanges[1], patternsChanges[2]);
+    	}
+        
+        try {
+            reconfigure();
+        }
+        catch (NodeException exn) {
+            logger.error("Could not update ProtoFilter changes", exn);
+        }
+    }
+    
     public EventManager<ProtoFilterLogEvent> getEventManager()
     {
         return eventLogger;
@@ -124,7 +195,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         logger.info("INIT: Importing patterns...");
         TreeMap factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
         // Turn on the Instant Messenger ones so it does something by default:
-        ArrayList pats = new ArrayList(factoryPatterns.values());
+        Set pats = new HashSet(factoryPatterns.values());
         for (Object pat : pats) {
             ProtoFilterPattern pfp = (ProtoFilterPattern)pat;
             if (pfp.getCategory().equalsIgnoreCase("Instant Messenger"))
@@ -163,9 +234,9 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         }
     }
 
-    private void reconfigure() throws NodeException
+    public void reconfigure() throws NodeException
     {
-        ArrayList enabledPatternsList = new ArrayList();
+        Set enabledPatternsSet = new HashSet();
 
         logger.info("Reconfigure()");
 
@@ -173,7 +244,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
             throw new NodeException("Failed to get ProtoFilter settings: " + cachedSettings);
         }
 
-        List curPatterns = cachedSettings.getPatterns();
+        Set curPatterns = cachedSettings.getPatterns();
         if (curPatterns == null)
             logger.error("NULL pattern list. Continuing anyway...");
         else {
@@ -182,12 +253,12 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
                 if ( pat.getLog() || pat.getAlert() || pat.isBlocked() ) {
                     logger.info("Matching on pattern \"" + pat.getProtocol() + "\"");
-                    enabledPatternsList.add(pat);
+                    enabledPatternsSet.add(pat);
                 }
             }
         }
 
-        handler.patternList(enabledPatternsList);
+        handler.patternSet(enabledPatternsSet);
         handler.byteLimit(cachedSettings.getByteLimit());
         handler.chunkLimit(cachedSettings.getChunkLimit());
         handler.unknownString(cachedSettings.getUnknownString());
@@ -204,7 +275,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
         boolean    madeChange = false;
         TreeMap    factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
-        List       curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
+        Set        curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
 
         /*
          * Look for updates
@@ -303,12 +374,12 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                 if (!added)
                     allPatterns.add(factoryPat);
             }
-            curPatterns = new ArrayList(allPatterns);
+            curPatterns = new HashSet(allPatterns);
         }
 
         if (madeChange) {
             logger.info("UPDATE: Saving new patterns list, size " + curPatterns.size());
-            cachedSettings.setPatterns(new ArrayList(curPatterns));
+            cachedSettings.setPatterns(curPatterns);
             setProtoFilterSettings(cachedSettings);
         }
 
@@ -320,15 +391,50 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         eventLogger.log(se);
     }
 
-    // XXX soon to be deprecated ----------------------------------------------
-
-    public Object getSettings()
+    private void updatePatterns(final Set<ProtoFilterPattern> patterns, final List<ProtoFilterPattern> added,
+                             final List<Long> deleted, final List<ProtoFilterPattern> modified)
     {
-        return getProtoFilterSettings();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    listUtil.updateCachedItems( patterns, patternHandler, added, deleted, modified );
+
+                    cachedSettings = (ProtoFilterSettings)s.merge(cachedSettings);
+
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getNodeContext().runTransaction(tw);
+    }
+    
+    private static class ProtoFilterPatternHandler implements PartialListUtil.Handler<ProtoFilterPattern>
+    {
+        public Long getId( ProtoFilterPattern rule )
+        {
+            return rule.getId();
+        }
+
+        public void update( ProtoFilterPattern current, ProtoFilterPattern newRule )
+        {
+            current.updateRule( newRule );
+        }
     }
 
-    public void setSettings(Object settings)
+    void incrementScanCount()
     {
-        setProtoFilterSettings((ProtoFilterSettings)settings);
+        scanBlinger.increment();
+    }
+
+    void incrementBlockCount()
+    {
+        blockBlinger.increment();
+    }
+
+    void incrementDetectCount()
+    {
+        detectBlinger.increment();
     }
 }

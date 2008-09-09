@@ -26,18 +26,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
-import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LoadCounter;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.util.SessionUtil;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
@@ -83,13 +90,19 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     static final String SESSION_ID_MDC_KEY = "SessionID";
 
-
     private Logger logger;
 
     private final MPipeImpl mPipe;
     private final Node node;
     private final NodeContext nodeContext;
     private final NodeManagerImpl nodeManager;
+
+    private final LoadCounter udpLiveSessionCounter;
+    private final LoadCounter tcpLiveSessionCounter;
+    private final BlingBlinger udpTotalSessionCounter;
+    private final BlingBlinger tcpTotalSessionCounter;
+    private final BlingBlinger udpTotalSessionRequestCounter;
+    private final BlingBlinger tcpTotalSessionRequestCounter;
 
     /**
      * <code>mainThread</code> is the master thread started by
@@ -138,8 +151,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private long soonestTimerTime; // Ignored if soonestTimeredSession is null
 
     /**
-     * SessionHandler & friends let us know to update the selection keys for these
-     * session here.
+     * SessionHandler & friends let us know to update the selection
+     * keys for these session here.
      */
     // private LinkedQueue dirtySessions;
 
@@ -238,6 +251,24 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         // mainThread = ThreadPool.pool().allocate(this, threadNameBase + "disp");
         // mainThread = new Thread(this, threadNameBase + "mainDisp");
         liveSessions = new ConcurrentHashMap();
+
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
+        Counters c = lmm.getCounters(node.getTid());
+        udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter",
+                                                  "UDP Sessions");
+        tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter",
+                                                  "TCP Sessions");
+        udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter",
+                                             "UDP Sessions", null);
+        tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter",
+                                             "TCP Sessions", null);
+        udpTotalSessionRequestCounter = c
+            .addMetric("udpTotalSessionRequestCounter", "UDP Session Requests",
+                       null);
+        tcpTotalSessionRequestCounter = c
+            .addMetric("tcpTotalSessionRequestCounter", "TCP Session Requests",
+                       null);
     }
 
     /*
@@ -255,7 +286,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     void addSession(TCPSession sess)
         throws InterruptedException
     {
-        MutateTStats.addTCPSession(mPipe);
+        tcpLiveSessionCounter.increment();
+        tcpTotalSessionCounter.increment();
         // liveSessions.add(new WeakReference(ss));
         liveSessions.put(sess, sess);
     }
@@ -263,7 +295,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     // Called by the new session handler thread.
     void addSession(UDPSession sess) throws InterruptedException
     {
-        MutateTStats.addUDPSession(mPipe);
+        udpLiveSessionCounter.increment();
+        udpTotalSessionCounter.increment();
         // liveSessions.add(new WeakReference(ss));
         liveSessions.put(sess, sess);
     }
@@ -273,10 +306,17 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         liveSessions.remove(sess);
         ArgonAgent agent = ((MPipeImpl)mPipe).getArgonAgent();
-        if (agent == null)
+        if (agent == null) {
             logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
-        else
+        } else {
             agent.removeSession(sess.pSession);
+        }
+
+        if (sess instanceof UDPSession) {
+            udpLiveSessionCounter.decrement();
+        } else if (sess instanceof TCPSession) {
+            tcpLiveSessionCounter.decrement();
+        }
     }
 
     public com.untangle.uvm.argon.TCPSession newSession(com.untangle.uvm.argon.TCPNewSessionRequest request)
@@ -322,7 +362,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
-            MutateTStats.requestTCPSession(mPipe);
+            tcpTotalSessionRequestCounter.increment();
 
             // Give the request event to the user, to give them a
             // chance to reject the session.
@@ -445,7 +485,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
-            MutateTStats.requestUDPSession(mPipe);
+            udpTotalSessionRequestCounter.increment();
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending UDP new session request event");

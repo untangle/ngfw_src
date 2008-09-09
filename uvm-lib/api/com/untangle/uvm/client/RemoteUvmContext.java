@@ -39,10 +39,13 @@ import com.untangle.uvm.MailSender;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteConnectivityTester;
+import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.RemoteReportingManager;
+import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.RemoteLicenseManager;
+import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
@@ -170,6 +173,22 @@ public interface RemoteUvmContext
      * @return the BrandingManager.
      */
     RemoteBrandingManager brandingManager();
+
+    /**
+     * Get the <code>RemoteSkinManager</code> singleton.
+     *
+     * @return the RemoteSkinManager.
+     */
+    RemoteSkinManager skinManager();
+
+    RemoteMessageManager messageManager();
+
+    /**
+     * Get the <code>RemoteLanguageManager</code> singleton.
+     *
+     * @return the RemoteLanguageManager.
+     */
+    RemoteLanguageManager languageManager();
 
     /**
      * The license manager.

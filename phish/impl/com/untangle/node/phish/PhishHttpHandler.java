@@ -59,7 +59,7 @@ public class PhishHttpHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        node.incrementScanCounter();
+        //node.incrementScanCount();
         
         RequestLineToken rlToken = getRequestLine();
         URI uri = rlToken.getRequestUri();
@@ -86,7 +86,7 @@ public class PhishHttpHandler extends HttpStateMachine
 
         if (null != result) {
             if (result.blacklisted()) {
-                node.incrementBlockCounter();
+                node.incrementBlockCount();
                 
                 // XXX change this category value
                 node.logHttp(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
@@ -104,7 +104,7 @@ public class PhishHttpHandler extends HttpStateMachine
             }
         }
         
-        node.incrementPassCounter();
+        node.incrementPassCount();
         
         releaseRequest();
         return requestHeader;
