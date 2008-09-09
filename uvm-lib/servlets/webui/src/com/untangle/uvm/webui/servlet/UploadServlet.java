@@ -61,7 +61,10 @@ public class UploadServlet extends HttpServlet
                         skinManager.uploadSkin(item);
                     } else if ("language".equals(uploadType)) {
                         RemoteLanguageManager languageManager = uvm.languageManager();
-                        languageManager.uploadLanguagePack(item);
+                        boolean success = languageManager.uploadLanguagePack(item);
+                        if (!success) {
+                            msg = "Language Pack Uploaded With Errors";
+                        }
                     } else if ("logo".equals(uploadType)) {
                         byte[] logo=item.get();
                         RemoteBrandingManager brandingManager = uvm.brandingManager();

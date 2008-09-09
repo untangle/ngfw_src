@@ -62,8 +62,10 @@ public interface RemoteLanguageManager
     
     /**
      * Upload New Language Pack
+     * 
+     * @return true if the uploaded language pack was processed with no errors; otherwise returns false 
      */
-    void uploadLanguagePack(FileItem item) throws UvmException;
+    boolean uploadLanguagePack(FileItem item) throws UvmException;
     
     
     /**

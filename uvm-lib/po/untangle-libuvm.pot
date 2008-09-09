@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-08 18:29+0300\n"
+"POT-Creation-Date: 2008-09-09 19:09+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 
 #: ../servlets/webui/root/script/main.js:163
 #: ../servlets/webui/root/script/components.js:977
-#: ../servlets/webui/root/script/components.js:2360
-#: ../servlets/webui/root/script/components.js:2419
+#: ../servlets/webui/root/script/components.js:2478
+#: ../servlets/webui/root/script/components.js:2537
 #: ../servlets/webui/root/script/config/email.js:1239
 msgid "Help"
 msgstr ""
@@ -47,10 +47,10 @@ msgid "Invalid IP Address."
 msgstr ""
 
 #: ../servlets/webui/root/script/main.js:277
-#: ../servlets/webui/root/script/config/administration.js:1790
-#: ../servlets/webui/root/script/config/administration.js:1845
-#: ../servlets/webui/root/script/config/administration.js:1904
-#: ../servlets/webui/root/script/config/administration.js:1947
+#: ../servlets/webui/root/script/config/administration.js:1802
+#: ../servlets/webui/root/script/config/administration.js:1857
+#: ../servlets/webui/root/script/config/administration.js:1916
+#: ../servlets/webui/root/script/config/administration.js:1959
 #: ../servlets/webui/root/script/config/email.js:1080
 msgid "The port must be an integer number between {0} and {1}."
 msgstr ""
@@ -91,30 +91,30 @@ msgstr ""
 #: ../servlets/webui/root/script/components.js:1225
 #: ../servlets/webui/root/script/components.js:1245
 #: ../servlets/webui/root/script/components.js:1303
-#: ../servlets/webui/root/script/components.js:1529
-#: ../servlets/webui/root/script/components.js:1576
-#: ../servlets/webui/root/script/components.js:1673
-#: ../servlets/webui/root/script/components.js:2033
-#: ../servlets/webui/root/script/components.js:2073
-#: ../servlets/webui/root/script/components.js:2661
-#: ../servlets/webui/root/script/components.js:3655
-#: ../servlets/webui/root/script/components.js:3666
+#: ../servlets/webui/root/script/components.js:1647
+#: ../servlets/webui/root/script/components.js:1694
+#: ../servlets/webui/root/script/components.js:1791
+#: ../servlets/webui/root/script/components.js:2151
+#: ../servlets/webui/root/script/components.js:2191
+#: ../servlets/webui/root/script/components.js:2779
+#: ../servlets/webui/root/script/components.js:3773
+#: ../servlets/webui/root/script/components.js:3784
 #: ../servlets/webui/root/script/config/administration.js:779
 #: ../servlets/webui/root/script/config/administration.js:796
 #: ../servlets/webui/root/script/config/administration.js:834
 #: ../servlets/webui/root/script/config/administration.js:847
 #: ../servlets/webui/root/script/config/administration.js:889
 #: ../servlets/webui/root/script/config/administration.js:906
-#: ../servlets/webui/root/script/config/administration.js:1526
-#: ../servlets/webui/root/script/config/administration.js:1699
-#: ../servlets/webui/root/script/config/administration.js:1712
-#: ../servlets/webui/root/script/config/administration.js:1980
-#: ../servlets/webui/root/script/config/administration.js:1988
-#: ../servlets/webui/root/script/config/administration.js:1997
-#: ../servlets/webui/root/script/config/administration.js:2005
-#: ../servlets/webui/root/script/config/administration.js:2013
-#: ../servlets/webui/root/script/config/administration.js:2021
-#: ../servlets/webui/root/script/config/administration.js:2032
+#: ../servlets/webui/root/script/config/administration.js:1531
+#: ../servlets/webui/root/script/config/administration.js:1707
+#: ../servlets/webui/root/script/config/administration.js:1724
+#: ../servlets/webui/root/script/config/administration.js:1992
+#: ../servlets/webui/root/script/config/administration.js:2000
+#: ../servlets/webui/root/script/config/administration.js:2009
+#: ../servlets/webui/root/script/config/administration.js:2017
+#: ../servlets/webui/root/script/config/administration.js:2025
+#: ../servlets/webui/root/script/config/administration.js:2033
+#: ../servlets/webui/root/script/config/administration.js:2044
 #: ../servlets/webui/root/script/config/email.js:117
 #: ../servlets/webui/root/script/config/email.js:169
 #: ../servlets/webui/root/script/config/email.js:450
@@ -135,14 +135,14 @@ msgstr ""
 #: ../servlets/webui/root/script/config/policyManager.js:872
 #: ../servlets/webui/root/script/config/policyManager.js:886
 #: ../servlets/webui/root/script/config/system.js:303
-#: ../servlets/webui/root/script/config/system.js:340
-#: ../servlets/webui/root/script/config/system.js:931
-#: ../servlets/webui/root/script/config/system.js:1028
-#: ../servlets/webui/root/script/config/system.js:1037
-#: ../servlets/webui/root/script/config/system.js:1047
-#: ../servlets/webui/root/script/config/system.js:1060
-#: ../servlets/webui/root/script/config/system.js:1073
-#: ../servlets/webui/root/script/config/system.js:1085
+#: ../servlets/webui/root/script/config/system.js:341
+#: ../servlets/webui/root/script/config/system.js:936
+#: ../servlets/webui/root/script/config/system.js:1033
+#: ../servlets/webui/root/script/config/system.js:1042
+#: ../servlets/webui/root/script/config/system.js:1052
+#: ../servlets/webui/root/script/config/system.js:1065
+#: ../servlets/webui/root/script/config/system.js:1078
+#: ../servlets/webui/root/script/config/system.js:1090
 #: ../servlets/webui/root/script/config/systemInfo.js:289
 #: ../servlets/webui/root/script/config/upgrade.js:42
 #: ../servlets/webui/root/script/config/upgrade.js:181
@@ -152,23 +152,23 @@ msgid "Failed"
 msgstr ""
 
 #: ../servlets/webui/root/script/main.js:348
-#: ../servlets/webui/root/script/components.js:2594
-#: ../servlets/webui/root/script/components.js:3735
-#: ../servlets/webui/root/script/config/administration.js:1722
-#: ../servlets/webui/root/script/config/administration.js:1748
-#: ../servlets/webui/root/script/config/administration.js:1765
-#: ../servlets/webui/root/script/config/administration.js:1775
-#: ../servlets/webui/root/script/config/administration.js:1790
-#: ../servlets/webui/root/script/config/administration.js:1803
-#: ../servlets/webui/root/script/config/administration.js:1813
-#: ../servlets/webui/root/script/config/administration.js:1835
-#: ../servlets/webui/root/script/config/administration.js:1845
-#: ../servlets/webui/root/script/config/administration.js:1867
-#: ../servlets/webui/root/script/config/administration.js:1882
-#: ../servlets/webui/root/script/config/administration.js:1893
-#: ../servlets/webui/root/script/config/administration.js:1904
-#: ../servlets/webui/root/script/config/administration.js:1937
-#: ../servlets/webui/root/script/config/administration.js:1947
+#: ../servlets/webui/root/script/components.js:2712
+#: ../servlets/webui/root/script/components.js:3853
+#: ../servlets/webui/root/script/config/administration.js:1734
+#: ../servlets/webui/root/script/config/administration.js:1760
+#: ../servlets/webui/root/script/config/administration.js:1777
+#: ../servlets/webui/root/script/config/administration.js:1787
+#: ../servlets/webui/root/script/config/administration.js:1802
+#: ../servlets/webui/root/script/config/administration.js:1815
+#: ../servlets/webui/root/script/config/administration.js:1825
+#: ../servlets/webui/root/script/config/administration.js:1847
+#: ../servlets/webui/root/script/config/administration.js:1857
+#: ../servlets/webui/root/script/config/administration.js:1879
+#: ../servlets/webui/root/script/config/administration.js:1894
+#: ../servlets/webui/root/script/config/administration.js:1905
+#: ../servlets/webui/root/script/config/administration.js:1916
+#: ../servlets/webui/root/script/config/administration.js:1949
+#: ../servlets/webui/root/script/config/administration.js:1959
 #: ../servlets/webui/root/script/config/email.js:1080
 #: ../servlets/webui/root/script/config/email.js:1091
 #: ../servlets/webui/root/script/config/email.js:1100
@@ -180,11 +180,12 @@ msgstr ""
 #: ../servlets/webui/root/script/config/localDirectory.js:204
 #: ../servlets/webui/root/script/config/localDirectory.js:213
 #: ../servlets/webui/root/script/config/policyManager.js:546
-#: ../servlets/webui/root/script/config/system.js:951
-#: ../servlets/webui/root/script/config/system.js:966
-#: ../servlets/webui/root/script/config/system.js:981
-#: ../servlets/webui/root/script/config/system.js:996
-#: ../servlets/webui/root/script/config/system.js:1011
+#: ../servlets/webui/root/script/config/system.js:915
+#: ../servlets/webui/root/script/config/system.js:956
+#: ../servlets/webui/root/script/config/system.js:971
+#: ../servlets/webui/root/script/config/system.js:986
+#: ../servlets/webui/root/script/config/system.js:1001
+#: ../servlets/webui/root/script/config/system.js:1016
 #: ../servlets/webui/root/script/config/systemInfo.js:209
 #: ../servlets/webui/root/script/config/systemInfo.js:221
 #: ../servlets/webui/root/script/config/systemInfo.js:233
@@ -460,300 +461,368 @@ msgstr ""
 msgid "U:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1349
-msgid "Memory Usage:"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1350
-#: ../servlets/webui/root/script/components.js:1361
-msgid "used"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1350
-#: ../servlets/webui/root/script/components.js:1353
-msgid "free"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1350
-msgid "total"
-msgstr ""
-
 #: ../servlets/webui/root/script/components.js:1351
-msgid "Memory Pages:"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1352
-msgid "active"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1352
-msgid "wired"
+msgid "RX Speed:"
 msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1353
-msgid "inactive"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1354
-msgid "VM Statistics:"
+msgid "TX Speed:"
 msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1355
-msgid "pageins"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1355
-msgid "pageouts"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1356
-msgid "cache lookups"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1356
-msgid "cache hits"
+msgid "Data received (since last start):"
 msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1357
-msgid "page faults"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1357
-msgid "copy-on-writes"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1358
-msgid "Swap Files:"
+msgid "Data sent (since last start):"
 msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1359
+msgid "Total Throughput:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1377
+msgid "Number of Processors / Type / Speed:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1379
+msgid "Uptime:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1381
+msgid "Tasks (Processes) /Threads:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1383
+msgid "CPU Utilization by User:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1385
+msgid "CPU Utilization by System:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1387
+msgid "Load average (1 min / 5 min / 15 min):"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1405
+msgid "Memory Usage:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1406
+#: ../servlets/webui/root/script/components.js:1417
+msgid "used"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1406
+#: ../servlets/webui/root/script/components.js:1409
+msgid "free"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1406
+msgid "total"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1407
+msgid "Memory Pages:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1408
+msgid "active"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1408
+msgid "wired"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1409
+msgid "inactive"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1410
+msgid "VM Statistics:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1411
+msgid "pageins"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1411
+msgid "pageouts"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1412
+msgid "cache lookups"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1412
+msgid "cache hits"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1413
+msgid "page faults"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1413
+msgid "copy-on-writes"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1414
+msgid "Swap Files:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1415
 msgid "encrypted swap files present in"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1360
+#: ../servlets/webui/root/script/components.js:1416
 msgid "swap files at peak usage"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1361
+#: ../servlets/webui/root/script/components.js:1417
 msgid "total swap space"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1427
+#: ../servlets/webui/root/script/components.js:1434
+msgid "Total Disk Space:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1436
+msgid "Free Disk Space:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1438
+msgid "Disk Reads In:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1440
+msgid "Disk Reads Out:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1442
+msgid "Data read:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1444
+msgid "Data write:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1545
 msgid "activity"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1508
+#: ../servlets/webui/root/script/components.js:1626
 msgid "system"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1529
+#: ../servlets/webui/root/script/components.js:1647
 msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1576
+#: ../servlets/webui/root/script/components.js:1694
 msgid "Please set up to four items."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1616
+#: ../servlets/webui/root/script/components.js:1734
 msgid "Ok"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1623
-#: ../servlets/webui/root/script/components.js:2264
-#: ../servlets/webui/root/script/components.js:2370
-#: ../servlets/webui/root/script/components.js:2429
-#: ../servlets/webui/root/script/config/administration.js:2075
+#: ../servlets/webui/root/script/components.js:1741
+#: ../servlets/webui/root/script/components.js:2382
+#: ../servlets/webui/root/script/components.js:2488
+#: ../servlets/webui/root/script/components.js:2547
+#: ../servlets/webui/root/script/config/administration.js:2087
 #: ../servlets/webui/root/script/config/email.js:1230
 msgid "Cancel"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1919
+#: ../servlets/webui/root/script/components.js:2037
 #, fuzzy
 msgid "timestamp"
 msgstr "Y-m-d g:i:s a"
 
-#: ../servlets/webui/root/script/components.js:1927
+#: ../servlets/webui/root/script/components.js:2045
 msgid "action"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1932
+#: ../servlets/webui/root/script/components.js:2050
 msgid "blocked"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1932
+#: ../servlets/webui/root/script/components.js:2050
 msgid "passed"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1935
+#: ../servlets/webui/root/script/components.js:2053
 msgid "client"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1943
+#: ../servlets/webui/root/script/components.js:2061
 msgid "request"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1948
+#: ../servlets/webui/root/script/components.js:2066
 msgid "reason for action"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1953
+#: ../servlets/webui/root/script/components.js:2071
 msgid "blocked in block list"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1953
+#: ../servlets/webui/root/script/components.js:2071
 msgid "not blocked in block list"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1956
+#: ../servlets/webui/root/script/components.js:2074
 msgid "server"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1973
+#: ../servlets/webui/root/script/components.js:2091
 msgid "Event Log"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2010
-#: ../servlets/webui/root/script/components.js:2012
+#: ../servlets/webui/root/script/components.js:2128
+#: ../servlets/webui/root/script/components.js:2130
 #: ../servlets/setup/root/script/setup.js:472
 #: ../servlets/setup/root/script/setup.js:723
 #: ../servlets/setup/root/script/setup.js:845
 msgid "Refresh"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2254
+#: ../servlets/webui/root/script/components.js:2372
 msgid "Remove"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2274
-#: ../servlets/webui/root/script/components.js:2380
+#: ../servlets/webui/root/script/components.js:2392
+#: ../servlets/webui/root/script/components.js:2498
 msgid "Save"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2438
+#: ../servlets/webui/root/script/components.js:2556
 msgid "Update"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2511
-#: ../servlets/webui/root/script/components.js:2823
+#: ../servlets/webui/root/script/components.js:2629
+#: ../servlets/webui/root/script/components.js:2941
 msgid "Edit"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2594
+#: ../servlets/webui/root/script/components.js:2712
 #: ../servlets/webui/root/script/config/policyManager.js:546
 msgid "The form is not valid!"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2839
+#: ../servlets/webui/root/script/components.js:2957
 msgid "Delete"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2858
+#: ../servlets/webui/root/script/components.js:2976
 msgid "Reorder"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2940
+#: ../servlets/webui/root/script/components.js:3058
 msgid "Loading ..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3045
+#: ../servlets/webui/root/script/components.js:3163
 msgid "Displaying topics {0} - {1} of {2}"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3046
+#: ../servlets/webui/root/script/components.js:3164
 msgid "No topics to display"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3060
+#: ../servlets/webui/root/script/components.js:3178
 msgid "Add"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3061
+#: ../servlets/webui/root/script/components.js:3179
 msgid "Add New Row"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3511
+#: ../servlets/webui/root/script/components.js:3629
 msgid "Portal Question"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3522
+#: ../servlets/webui/root/script/components.js:3640
 #: ../servlets/webui/root/script/config/policyManager.js:636
 #: ../servlets/webui/root/script/config/policyManager.js:647
 msgid "Users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3549
+#: ../servlets/webui/root/script/components.js:3667
 msgid "Active Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3551
+#: ../servlets/webui/root/script/components.js:3669
 msgid "Local"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3553
+#: ../servlets/webui/root/script/components.js:3671
 msgid "UNKNOWN"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3565
+#: ../servlets/webui/root/script/components.js:3683
 #: ../servlets/webui/root/script/config/administration.js:1306
 #: ../servlets/webui/root/script/config/policyManager.js:190
 msgid "user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3586
+#: ../servlets/webui/root/script/components.js:3704
 msgid "Select User"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3586
+#: ../servlets/webui/root/script/components.js:3704
 msgid "Select Users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3591
+#: ../servlets/webui/root/script/components.js:3709
 msgid ""
 "You may choose user ID/Login that exists in the User Directory (either local "
 "or remote Active Directory), or you can add a new user to the User "
 "Directory, and then choose that user."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3592
+#: ../servlets/webui/root/script/components.js:3710
 msgid ""
 "You may choose user IDs/Logins that exist in the User Directory (either "
 "local or remote Active Directory), or you can add a new user to the User "
 "Directory, and then choose that user."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3595
+#: ../servlets/webui/root/script/components.js:3713
 msgid "Select an existing user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3595
+#: ../servlets/webui/root/script/components.js:3713
 msgid "Select an existing user or users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3600
+#: ../servlets/webui/root/script/components.js:3718
 msgid "Add a new user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3606
+#: ../servlets/webui/root/script/components.js:3724
 msgid "Open Local Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3618
+#: ../servlets/webui/root/script/components.js:3736
 msgid "Open Active Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3642
+#: ../servlets/webui/root/script/components.js:3760
 #: ../servlets/webui/root/script/config/email.js:112
 #: ../servlets/webui/root/script/config/email.js:496
 msgid "Loading..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3642
+#: ../servlets/webui/root/script/components.js:3760
 #: ../servlets/setup/root/script/setup.js:996
 #: ../servlets/setup/root/script/setup.js:1007
 #: ../servlets/webui/root/script/config/administration.js:751
 #: ../servlets/webui/root/script/config/administration.js:829
 #: ../servlets/webui/root/script/config/administration.js:880
-#: ../servlets/webui/root/script/config/administration.js:1970
+#: ../servlets/webui/root/script/config/administration.js:1982
 #: ../servlets/webui/root/script/config/email.js:112
 #: ../servlets/webui/root/script/config/email.js:447
 #: ../servlets/webui/root/script/config/email.js:496
@@ -767,26 +836,26 @@ msgstr ""
 #: ../servlets/webui/root/script/config/policyManager.js:883
 #: ../servlets/webui/root/script/config/system.js:202
 #: ../servlets/webui/root/script/config/system.js:213
-#: ../servlets/webui/root/script/config/system.js:1023
+#: ../servlets/webui/root/script/config/system.js:1028
 #: ../servlets/webui/root/script/config/systemInfo.js:285
 #: ../servlets/webui/root/script/config/upgrade.js:178
 #: ../servlets/webui/root/script/config/upgrade.js:375
 msgid "Please wait"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3655
+#: ../servlets/webui/root/script/components.js:3773
 msgid ""
 "There was a problem refreshing Active Directory users.  Please check your "
 "Active Directory settings and then try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3666
+#: ../servlets/webui/root/script/components.js:3784
 msgid ""
 "There was a problem refreshing Local Directory users.  Please check your "
 "Local Directory settings and try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3735
+#: ../servlets/webui/root/script/components.js:3853
 msgid "Please choose a user id/login or press Cancel!"
 msgstr ""
 
@@ -1063,7 +1132,7 @@ msgid "Confirm Email"
 msgstr ""
 
 #: ../servlets/setup/root/script/setup.js:338
-#: ../servlets/webui/root/script/config/administration.js:1641
+#: ../servlets/webui/root/script/config/administration.js:1649
 #: ../servlets/webui/root/script/config/systemInfo.js:121
 msgid "Company Name"
 msgstr ""
@@ -1598,7 +1667,7 @@ msgid ""
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:565
-#: ../servlets/webui/root/script/config/administration.js:1835
+#: ../servlets/webui/root/script/config/administration.js:1847
 msgid "You must provide a valid IP Address."
 msgstr ""
 
@@ -1710,9 +1779,9 @@ msgstr ""
 #: ../servlets/webui/root/script/config/administration.js:789
 #: ../servlets/webui/root/script/config/administration.js:840
 #: ../servlets/webui/root/script/config/administration.js:899
-#: ../servlets/webui/root/script/config/administration.js:1506
-#: ../servlets/webui/root/script/config/administration.js:1708
-#: ../servlets/webui/root/script/config/system.js:911
+#: ../servlets/webui/root/script/config/administration.js:1507
+#: ../servlets/webui/root/script/config/administration.js:1716
+#: ../servlets/webui/root/script/config/system.js:917
 msgid "Succeeded"
 msgstr ""
 
@@ -1840,7 +1909,7 @@ msgid "Community"
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1151
-#: ../servlets/webui/root/script/config/administration.js:1867
+#: ../servlets/webui/root/script/config/administration.js:1879
 msgid "An SNMP \"Community\" must be specified."
 msgstr ""
 
@@ -1863,7 +1932,7 @@ msgid "{0}Enable Traps{1} so trap events are sent when they are generated."
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1211
-#: ../servlets/webui/root/script/config/administration.js:1882
+#: ../servlets/webui/root/script/config/administration.js:1894
 msgid "An Trap \"Community\" must be specified."
 msgstr ""
 
@@ -1873,7 +1942,7 @@ msgid "Host"
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1219
-#: ../servlets/webui/root/script/config/administration.js:1893
+#: ../servlets/webui/root/script/config/administration.js:1905
 msgid "An Trap \"Host\" must be specified."
 msgstr ""
 
@@ -1890,7 +1959,7 @@ msgid "{0}Enable{1} Syslog Monitoring."
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1280
-#: ../servlets/webui/root/script/config/administration.js:1937
+#: ../servlets/webui/root/script/config/administration.js:1949
 msgid "A \"Host\" must be specified."
 msgstr ""
 
@@ -2039,14 +2108,15 @@ msgid "This skin will used in the administration client"
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1433
-#: ../servlets/webui/root/script/config/system.js:852
+#: ../servlets/webui/root/script/config/administration.js:1590
+#: ../servlets/webui/root/script/config/system.js:854
 msgid "Info"
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1434
 msgid ""
-"Please note that you have to relogin after saving for the new skin to take "
-"effect."
+"Please note that you have to refresh the application after saving for the "
+"new skin to take effect."
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1440
@@ -2061,114 +2131,120 @@ msgstr ""
 msgid "Upload New Skin"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1488
-#: ../servlets/webui/root/script/config/administration.js:1626
-#: ../servlets/webui/root/script/config/system.js:893
+#: ../servlets/webui/root/script/config/administration.js:1489
+#: ../servlets/webui/root/script/config/administration.js:1634
+#: ../servlets/webui/root/script/config/system.js:896
 msgid "Upload"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1501
+#: ../servlets/webui/root/script/config/administration.js:1502
 msgid "Please wait while your skin is uploaded..."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1506
+#: ../servlets/webui/root/script/config/administration.js:1507
 msgid "Upload Skin Succeeded"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1510
-#: ../servlets/webui/root/script/config/administration.js:1523
+#: ../servlets/webui/root/script/config/administration.js:1515
+#: ../servlets/webui/root/script/config/administration.js:1528
 msgid "Upload Skin Failed"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1514
+#: ../servlets/webui/root/script/config/administration.js:1519
 msgid "Invalid Skin"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1517
+#: ../servlets/webui/root/script/config/administration.js:1522
 msgid "The default skin can not be overwritten"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1520
+#: ../servlets/webui/root/script/config/administration.js:1525
 msgid "Error creating skin folder"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1539
+#: ../servlets/webui/root/script/config/administration.js:1544
 msgid "Branding"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1567
+#: ../servlets/webui/root/script/config/administration.js:1572
 msgid ""
 "The Branding Settings are used to set the logo and contact information that "
 "will be seen by users (e.g. reports)."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1570
+#: ../servlets/webui/root/script/config/administration.js:1575
 msgid "Logo"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1635
+#: ../servlets/webui/root/script/config/administration.js:1591
+msgid ""
+"Please note that you have to refresh the application after saving for the "
+"new logo to take effect."
+msgstr ""
+
+#: ../servlets/webui/root/script/config/administration.js:1643
 msgid "Contact Information"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1654
+#: ../servlets/webui/root/script/config/administration.js:1662
 msgid "Company URL"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1667
+#: ../servlets/webui/root/script/config/administration.js:1675
 msgid "Contact Name"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1680
+#: ../servlets/webui/root/script/config/administration.js:1688
 msgid "Contact Email"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1699
+#: ../servlets/webui/root/script/config/administration.js:1707
 msgid "Please select an image to upload."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1705
+#: ../servlets/webui/root/script/config/administration.js:1713
 msgid "Please wait while your logo image is uploaded..."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1708
+#: ../servlets/webui/root/script/config/administration.js:1716
 msgid "Upload Logo Succeeded"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1712
+#: ../servlets/webui/root/script/config/administration.js:1724
 msgid "Upload Logo Failed"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1748
+#: ../servlets/webui/root/script/config/administration.js:1760
 msgid "The login name: \"{0}\" in row: {1}  already exists."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1765
+#: ../servlets/webui/root/script/config/administration.js:1777
 msgid "There must always be at least one valid account."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1775
+#: ../servlets/webui/root/script/config/administration.js:1787
 msgid "There must always be at least one non-read-only (writable) account."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1803
+#: ../servlets/webui/root/script/config/administration.js:1815
 msgid "Invalid External Remote Administration \"IP Address\" specified."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1813
+#: ../servlets/webui/root/script/config/administration.js:1825
 msgid "Invalid External Remote Administration \"Netmask\" specified."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:1970
+#: ../servlets/webui/root/script/config/administration.js:1982
 #: ../servlets/webui/root/script/config/email.js:1151
 #: ../servlets/webui/root/script/config/localDirectory.js:230
 #: ../servlets/webui/root/script/config/policyManager.js:883
-#: ../servlets/webui/root/script/config/system.js:1023
+#: ../servlets/webui/root/script/config/system.js:1028
 #: ../servlets/webui/root/script/config/systemInfo.js:285
 #: ../servlets/webui/root/script/config/upgrade.js:375
 msgid "Saving..."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/administration.js:2084
+#: ../servlets/webui/root/script/config/administration.js:2096
 #: ../servlets/webui/root/script/config/email.js:144
 #: ../servlets/webui/root/script/config/email.js:156
 #: ../servlets/webui/root/script/config/email.js:179
@@ -2934,287 +3010,283 @@ msgstr ""
 msgid "Success:  The Local File restore procedure completed."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:313
+#: ../servlets/webui/root/script/config/system.js:314
 msgid "Attention"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:314
+#: ../servlets/webui/root/script/config/system.js:315
 msgid "You must now exit this program."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:315
+#: ../servlets/webui/root/script/config/system.js:316
 msgid "You can log in again after a brief period."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:316
+#: ../servlets/webui/root/script/config/system.js:317
 msgid ""
 "DO NOT MANUALLY SHUTDOWN OR RESTART THE UNTANGLE SERVER WHILE IT IS "
 "UPGRADING!"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:321
-#: ../servlets/webui/root/script/config/system.js:337
+#: ../servlets/webui/root/script/config/system.js:322
+#: ../servlets/webui/root/script/config/system.js:338
 msgid "The Local File restore procedure failed."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:325
+#: ../servlets/webui/root/script/config/system.js:326
 msgid "File does not seem to be valid Untangle backup"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:328
+#: ../servlets/webui/root/script/config/system.js:329
 msgid "Error in processing restore itself (yet file seems valid)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:331
+#: ../servlets/webui/root/script/config/system.js:332
 msgid "File is from an older version of Untangle and cannot be used"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:334
+#: ../servlets/webui/root/script/config/system.js:335
 msgid "Unknown error in local processing"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:350
+#: ../servlets/webui/root/script/config/system.js:351
 msgid "From File"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:356
+#: ../servlets/webui/root/script/config/system.js:357
 msgid ""
 "You can restore a previous system configuration from a backup file on your "
 "local computer.  The backup file name ends with \".backup\""
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:376
+#: ../servlets/webui/root/script/config/system.js:378
 msgid "Restore from File"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:383
+#: ../servlets/webui/root/script/config/system.js:385
 msgid "From Hard Disk and USB Key"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:389
+#: ../servlets/webui/root/script/config/system.js:391
 msgid ""
 "After backing up your system configuration, you can restore that "
 "configuration through the {0}Recovery Utilities{1} on your server once it is "
 "done booting."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:391
+#: ../servlets/webui/root/script/config/system.js:393
 msgid ""
 "To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard "
 "physically plugged into your server, and then click on the Recovery "
 "Utilities toolbar button when it is done booting."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:402
+#: ../servlets/webui/root/script/config/system.js:404
 msgid ""
 "Warning: These settings should not be changed unless instructed to do so by "
 "support."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:407
+#: ../servlets/webui/root/script/config/system.js:409
 msgid "HTTP"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:414
+#: ../servlets/webui/root/script/config/system.js:416
 msgid "Web Override"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:417
+#: ../servlets/webui/root/script/config/system.js:419
 msgid "{0}Enable Processing{1} of web traffic.  (This is the default setting)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:430
+#: ../servlets/webui/root/script/config/system.js:432
 msgid "{0}Disable Processing{1} of web traffic."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:443
+#: ../servlets/webui/root/script/config/system.js:445
 msgid "Long URIs"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:446
+#: ../servlets/webui/root/script/config/system.js:448
 msgid ""
 "{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http"
 "\".  (This is the default setting)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:459
+#: ../servlets/webui/root/script/config/system.js:461
 msgid "{0}Disable Processing{1} of long URIs."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:472
+#: ../servlets/webui/root/script/config/system.js:474
 msgid "Max URI Length (characters)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:491
+#: ../servlets/webui/root/script/config/system.js:493
 msgid "Long Headers"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:494
+#: ../servlets/webui/root/script/config/system.js:496
 msgid ""
 "{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-"
 "Http\".  (This is the default setting)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:507
+#: ../servlets/webui/root/script/config/system.js:509
 msgid "{0}Disable Processing{1} of long headers."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:520
+#: ../servlets/webui/root/script/config/system.js:522
 msgid "Max Header Length (characters)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:539
+#: ../servlets/webui/root/script/config/system.js:541
 msgid "Non-Http Blocking"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:542
+#: ../servlets/webui/root/script/config/system.js:544
 msgid ""
 "{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default "
 "setting)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:555
+#: ../servlets/webui/root/script/config/system.js:557
 msgid "{0}Stop{1} non-Http traffic to travel over port 80."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:573
+#: ../servlets/webui/root/script/config/system.js:575
 msgid "FTP"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:577
+#: ../servlets/webui/root/script/config/system.js:579
 msgid ""
 "{0}Enable Processing{1} of File Transfer traffic.  (This is the default "
 "setting)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:590
+#: ../servlets/webui/root/script/config/system.js:592
 msgid "{0}Disable Processing{1} of File Transfer traffic."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:607
+#: ../servlets/webui/root/script/config/system.js:609
 msgid "SMTP"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:611
+#: ../servlets/webui/root/script/config/system.js:613
 msgid "{0}Enable SMTP{1} email processing.  (This is the default setting)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:624
+#: ../servlets/webui/root/script/config/system.js:626
 msgid "{0}Disable SMTP{1} email processing."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:637
+#: ../servlets/webui/root/script/config/system.js:639
 msgid "SMTP timeout (seconds)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:657
+#: ../servlets/webui/root/script/config/system.js:659
 msgid "POP3"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:661
+#: ../servlets/webui/root/script/config/system.js:663
 msgid "{0}Enable POP3{1} email processing.  (This is the default setting)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:674
+#: ../servlets/webui/root/script/config/system.js:676
 msgid "{0}Disable POP3{1} email processing."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:687
+#: ../servlets/webui/root/script/config/system.js:689
 msgid "POP3 timeout (seconds)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:707
+#: ../servlets/webui/root/script/config/system.js:709
 msgid "IMAP"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:711
+#: ../servlets/webui/root/script/config/system.js:713
 msgid "{0}Enable IMAP{1} email processing.  (This is the default setting)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:724
+#: ../servlets/webui/root/script/config/system.js:726
 msgid "{0}Disable IMAP{1} email processing."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:737
+#: ../servlets/webui/root/script/config/system.js:739
 msgid "IMAP timeout (seconds)"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:763
+#: ../servlets/webui/root/script/config/system.js:765
 msgid "Protocol Settings"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:791
+#: ../servlets/webui/root/script/config/system.js:793
 msgid "Regional Settings"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:801
+#: ../servlets/webui/root/script/config/system.js:803
 msgid "Current Time"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:807
+#: ../servlets/webui/root/script/config/system.js:809
 msgid "time is automatically synced via NTP"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:812
+#: ../servlets/webui/root/script/config/system.js:814
 msgid "Timezone"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:833
+#: ../servlets/webui/root/script/config/system.js:835
 msgid "Language"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:853
+#: ../servlets/webui/root/script/config/system.js:855
 msgid ""
-"Please note that you have to relogin after saving for the new language to "
-"take effect."
+"Please note that you have to refresh the application after saving for the "
+"new language to take effect."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:873
+#: ../servlets/webui/root/script/config/system.js:875
 msgid "Upload New Language Pack"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:907
+#: ../servlets/webui/root/script/config/system.js:910
 msgid "Please wait while your language pack is uploaded..."
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:911
+#: ../servlets/webui/root/script/config/system.js:915
+msgid "Language Pack Uploaded With Errors"
+msgstr ""
+
+#: ../servlets/webui/root/script/config/system.js:917
 msgid "Upload Language Pack Succeeded"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:915
-#: ../servlets/webui/root/script/config/system.js:928
+#: ../servlets/webui/root/script/config/system.js:926
+#: ../servlets/webui/root/script/config/system.js:933
 msgid "Upload Language Pack Failed"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:919
+#: ../servlets/webui/root/script/config/system.js:930
 msgid "Invalid Language Pack"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:922
-msgid "Error compiling to resource bundle"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/system.js:925
-msgid "Error compiling to mo file"
-msgstr ""
-
-#: ../servlets/webui/root/script/config/system.js:951
+#: ../servlets/webui/root/script/config/system.js:956
 msgid "Max URI Length should be between 1024 and 4096!"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:966
+#: ../servlets/webui/root/script/config/system.js:971
 msgid "Max Header Length should be between 1024 and 8192!"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:981
+#: ../servlets/webui/root/script/config/system.js:986
 msgid "SMTP timeout should be between 0 and 86400!"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:996
+#: ../servlets/webui/root/script/config/system.js:1001
 msgid "POP timeout should be between 0 and 86400!"
 msgstr ""
 
-#: ../servlets/webui/root/script/config/system.js:1011
+#: ../servlets/webui/root/script/config/system.js:1016
 msgid "IMAP timeout should be between 0 and 86400!"
 msgstr ""
 

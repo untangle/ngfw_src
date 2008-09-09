@@ -617,7 +617,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     sortable : true,
                     dataIndex : 'traffic'
                 }, {
-                    header : this.i18n._("reason for") + "<br>" + this.i18n._("action"),
+                    header : this.i18n._("reason for action"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'infected',

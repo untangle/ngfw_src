@@ -258,7 +258,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         return value === null ? "" : value.CClientAddr.hostAddress + ":" + value.CClientPort;
                     }
                 }, {
-                    header : String.format(this.i18n._('reason for{0}action'),'<br>'),
+                    header : this.i18n._('reason for action'),
                     width : 150,
                     sortable : true,
                     dataIndex : 'ruleIndex',

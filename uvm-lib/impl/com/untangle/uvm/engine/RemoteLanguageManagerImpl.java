@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -75,6 +76,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
     private final UvmContextImpl uvmContext;
     private LanguageSettings settings;
+    private List<LanguageInfo> allLanguages;
 
     static {
         LANGUAGES_DIR = System.getProperty("bunnicula.lang.dir"); // place for languages resources files
@@ -103,6 +105,9 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             }
         };
         uvmContext.runTransaction(tw);
+        
+        allLanguages = loadAllLanguagesList();
+        
     }
 
     // public methods ---------------------------------------------------------
@@ -120,7 +125,8 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         this.settings = copy;
     }
 
-    public void uploadLanguagePack(FileItem item) throws UvmException {
+    public boolean uploadLanguagePack(FileItem item) throws UvmException {
+        boolean success = true;
         try {
             BufferedOutputStream dest = null;
             ZipEntry entry = null;
@@ -134,6 +140,10 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             InputStream uploadedStream = item.getInputStream();
             ZipInputStream zis = new ZipInputStream(uploadedStream);
             while ((entry = zis.getNextEntry()) != null) {
+                if (!isValid(entry)){
+                    success = false;
+                    continue;
+                }
                 if (entry.isDirectory()) {
                     File dir = new File(LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName());
                     if (!dir.exists()) {
@@ -159,11 +169,11 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
                     // compile to .mo file and install it in the
                     // appropriate place (LOCALE_DIR)
-                    compileMoFile(entry);
+                    success =  compileMoFile(entry) && success;
 
                     // compile the java properties version & install
                     // it in the classpath (LANGUAGES_DIR)
-                    compileResourceBundle(entry);
+                    success = compileResourceBundle(entry) && success;
                 }
             }
             zis.close();
@@ -173,10 +183,31 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             logger.error("upload failed", e);
             throw new UvmException("Upload Language Pack Failed");
         }
+        return success;
+    }
+    
+    /*
+     * Check if a language pack entry conform to the correct naming: <lang_code>/<module_name>.po 
+     */
+    private boolean isValid(ZipEntry entry) {
+        String tokens[] = entry.getName().split(File.separator);
+        if (entry.isDirectory()) {
+            // in order to be a valid entry, the folder name should be a valid language code
+            if (tokens.length != 1 || !isValidLanguageCode(tokens[0])) {
+                logger.warn("The folder " + entry.getName() + " does not correspond to a valid language code");
+                return false;
+            }
+        } else {
+            // in order to be a valid entry, it should be in the following format: <lang_code>/<package_name>.po
+            if (tokens.length != 2 || !isValidLanguageCode(tokens[0]) || !entry.getName().endsWith(".po")) {
+                logger.warn("The entry " + entry.getName() + " does not conform to the correct naming: <lang_code>/<module_name>.po ");
+                return false;
+            }
+        }
+        return true;
     }
 
-    private void compileResourceBundle(ZipEntry entry) throws IOException,
-            UvmException {
+    private boolean compileResourceBundle(ZipEntry entry) {
         boolean success = true;
         try {
             String tokens[] = entry.getName().split(File.separator);
@@ -192,20 +223,19 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             p.waitFor();
             if (p.exitValue() != 0) {
                 success = false;
+                logProcessError(p, "Error compiling to resource bundle");                
             }
 
-        } catch (Exception err) {
+        } catch (Exception e) {
             success = false;
+            logger.error("Error compiling to resource bundle", e);
         }
-        if (!success) {
-            throw new UvmException("Error compiling to resource bundle");
-        }
+        return success;
     }
 
-    private void compileMoFile(ZipEntry entry) throws IOException, UvmException {
+    private boolean compileMoFile(ZipEntry entry) {
         boolean success = true;
         try {
-            System.out.println("NAME: " + entry.getName());
             String tokens[] = entry.getName().split(File.separator);
             String lang = tokens[0];
             String moduleName = tokens[1].substring(0, tokens[1].lastIndexOf("."));
@@ -217,14 +247,27 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             p.waitFor();
             if (p.exitValue() != 0) {
                 success = false;
+                logProcessError(p, "Error compiling to mo file");                
             }
 
-        } catch (InterruptedException err) {
+        } catch (Exception e) {
             success = false;
+            logger.error("Error compiling to mo file", e);
         }
-        if (!success) {
-            throw new UvmException("Error compiling to mo file");
+        return success;
+    }
+    
+    private void logProcessError(Process p, String errorMsg) throws IOException {
+        InputStream stderr = p.getErrorStream ();
+        BufferedReader br = new BufferedReader(new InputStreamReader(stderr));
+        String line = null;
+        StringBuffer errorBuffer = new StringBuffer(errorMsg);
+        while ((line = br.readLine()) != null) {
+            errorBuffer.append("\n");
+            errorBuffer.append(line);
         }
+        br.close();
+        logger.error(errorBuffer);
     }
 
     public List<LanguageInfo> getLanguagesList() {
@@ -236,29 +279,15 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         // get available community languages
         Collections.addAll(availableLanguages, (new File(LANGUAGES_COMMUNITY_DIR)).list());
 
-        // Reading all languages from config file and keep only the
+        // From all languages from config file, keep only the
         // one which we have translations for
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + LANGUAGES_CFG));
-            String s = new String();
-            while((s = in.readLine())!= null) {
-                if (s.trim().length() > 0){
-                    String[] tokens = s.split("\\s");
-                    if (tokens.length >= 2) {
-                        String langCode = tokens[0];
-                        String langName = tokens[1];
-                        if (DEFAULT_LANGUAGE.equals(langCode) ||
-                                availableLanguages.contains(langCode)){
-                            languages.add(new LanguageInfo(tokens[0], tokens[1]));
-                        }
-                    }
-                }
+        for (LanguageInfo languageInfo : allLanguages) {
+            if (DEFAULT_LANGUAGE.equals(languageInfo.getCode()) ||
+                    availableLanguages.contains(languageInfo.getCode())){
+                languages.add(new LanguageInfo(languageInfo.getCode(), languageInfo.getName()));
             }
-            in.close();
-        } catch (IOException e) {
-            logger.warn(e);
         }
-
+        
         return languages;
     }
 
@@ -300,4 +329,39 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             new DeletingDataSaver<LanguageSettings>(uvmContext,"LanguageSettings");
         this.settings = saver.saveData(settings);
     }
+    
+    private List<LanguageInfo> loadAllLanguagesList() {
+        List<LanguageInfo> languages = new ArrayList<LanguageInfo>();
+
+        // Reading all languages from config file
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + LANGUAGES_CFG));
+            String s = new String();
+            while((s = in.readLine())!= null) {
+                if (s.trim().length() > 0){
+                    String[] tokens = s.split("\\s");
+                    if (tokens.length >= 2) {
+                        String langCode = tokens[0];
+                        String langName = tokens[1];
+                        languages.add(new LanguageInfo(tokens[0], tokens[1]));
+                    }
+                }
+            }
+            in.close();
+        } catch (IOException e) {
+            logger.warn("Failed getting all languages!", e);
+        }
+
+        return languages;
+    }
+    
+    private boolean isValidLanguageCode(String code) {
+        for (LanguageInfo languageInfo : allLanguages) {
+            if (languageInfo.getCode().equals(code)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 }
