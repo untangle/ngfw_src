@@ -239,57 +239,18 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
 Ung.SetupWizard.Registration = Ext.extend( Object, {
     constructor : function( config )
     {
-        this.employeeStore =  [
-                              [ 5, i18n._( "1-5" )],
-                              [ 10, i18n._( "5-10" )],
-                              [ 50, i18n._( "10-50" )],
-                              [ 100, i18n._( "50-100" )],
-                              [ 250, i18n._( "100-250" )],
-                              [ 500, i18n._( "250-500" )],
-                              [ 1000, i18n._( "500-1000" )],
-                              [ 2500, i18n._( "> 1000 " )]];
-
-
-        this.findUntangleStore = [
-            i18n._( "Google / search engine" ),
-            i18n._( "Online Review" ),
-            i18n._( "Blog" ),
-            i18n._( "Friend" ),
-            i18n._( "Contacted by sales person" ),
-            i18n._( "My IT consultant or VAR" ),
-            i18n._( "Trade Show" ),
-            i18n._( "Other (for example, an online forum or software directory)" ) ];
-
-        this.industryStore = [
-            i18n._( "Accounting" ),
-            i18n._( "Aerospace/Defense" ),
-            i18n._( "Auto" ),
-            i18n._( "Biotechnology" ),
-            i18n._( "Broadcasting" ),
-            i18n._( "Business Services" ),
-            i18n._( "Construction" ),
-            i18n._( "Consumer Goods" ),
-            i18n._( "Consumer Services" ),
-            i18n._( "Education" ),
-            i18n._( "Entertainment" ),
-            i18n._( "Financial Services" ),
-            i18n._( "Government / Public Sector" ),
-            i18n._( "Healthcare" ),
-            i18n._( "High Technology / IT / Software" ),
-            i18n._( "Home / Personal Use" ),
-            i18n._( "Hospitality / Food Services" ),
-            i18n._( "Industrial / Manufacturing" ),
-            i18n._( "Legal" ),
-            i18n._( "Life Sciences" ),
-            i18n._( "Marketing Services" ),
-            i18n._( "Oil & Gas" ),
-            i18n._( "Processed & Packaged Goods" ),
-            i18n._( "Professional Services" ),
-            i18n._( "Publishing" ),
-            i18n._( "Telecommunications" ),
-            i18n._( "Utilities" ),
-            i18n._( "Other" ) ];
+        this.countryStore = [];
         
+        for ( var i = 0 ; i < Ung.CountryData.length ; i++ ) {
+            this.countryStore.push([ Ung.CountryData[i][0], i18n._( Ung.CountryData[i][1] )]);
+        }
+        
+        this.environmentStore = [
+            i18n._( "My Business" ),
+            i18n._( "A Client's Business" ),
+            i18n._( "School" ),
+            i18n._( "Home" )];
+
         this.form = new Ext.FormPanel({
             defaultType : 'fieldset',
             defaults : { 
@@ -325,30 +286,22 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     width : 200,
 					allowBlank : false,					
 					ctCls : 'smallTopMargin',
-					vtype : 'emailAddressCheck',					
-					
+					vtype : 'emailAddressCheck'
                 },{
                     fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Confirm Email'),
                     name : 'confirmEmail',
-					allowBlank : false,										
+					allowBlank : false,
 					compareEmailField : 'registration_email',
 					vtype : 'emailAddressMatchCheck',
                     width : 200
                 },{
-                    fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Company Name'),
-                    name : 'companyName',
-					allowBlank : false,
-					blankText : i18n._('Company name is required')										
-                },{
-                    fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Name'),
+                    fieldLabel : i18n._('Name'),
                     name : 'name',
-					allowBlank : false,
-					blankText : i18n._('Name is required')					
                 },{
                     xtype : 'numberfield',
                     minValue : 0,
                     allowDecimals : false,
-                    fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Number of personal computers behind Untangle Server'),
+                    fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Number of PCs on your network'),
                     name : 'numSeats',
 					allowBlank : false	
                 }]
@@ -359,42 +312,28 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     html : '<b>'+i18n._( 'Answering these questions will help us build a better product - for you!' )+'</b>',
                     border : false
                 },{
-                    fieldLabel : i18n._('How did you find Untangle'),
-                    name : "findUntangle",
+                    fieldLabel : i18n._('Where will you be using Untangle'),
+                    name : "envrionment",
                     xtype : 'combo',
                     width : 200,
                     listWidth : 205,
-                    store : this.findUntangleStore,
+                    store : this.environmentStore,
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-					ctCls : 'smallTopMargin'					
-                },{
-                    fieldLabel : i18n._('State/Province'),
-                    name : "state"
+					ctCls : 'smallTopMargin'
                 },{
                     fieldLabel : i18n._('Country'),
-                    name : "country"
-                },{
+                    name : "country",
                     xtype : 'combo',
                     width : 200,
                     listWidth : 205,
-                    store : this.industryStore,
+                    store : this.countryStore,
+                    value : "US",
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-                    fieldLabel : i18n._('What industry is your company in'),
-                    name : "industry"
-                },{
-                    xtype : 'combo',
-                    width : 70,
-                    listWidth : 75,
-                    mode : 'local',
-                    triggerAction : 'all',
-                    store : this.employeeStore,
-                    listClass : 'x-combo-list-small',
-                    fieldLabel : i18n._('Number of employees'),
-                    name : "numEmployees"
+					ctCls : 'smallTopMargin'
                 }]
             }]
         });
@@ -416,16 +355,12 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
     {
         var info = Ung.SetupWizard.CurrentValues.registrationInfo;
         var misc = {};
-        this.setRegistrationValue( "name", misc, true );
+        this.setRegistrationValue( "name", misc, false );
         this.setRegistrationValue( "email", info, true, "emailAddr" );
-        this.setRegistrationValue( "companyName", info, true );
         this.setRegistrationValue( "numSeats", info, true );
 
-        this.setRegistrationValue( "findUntangle", misc, false );
-        this.setRegistrationValue( "state", misc, false );
+        this.setRegistrationValue( "environment", misc, false );
         this.setRegistrationValue( "country", misc, false );
-        this.setRegistrationValue( "industry", misc, false );
-        this.setRegistrationValue( "numEmployees", misc, false );
 
         info.misc.map = misc;
 
