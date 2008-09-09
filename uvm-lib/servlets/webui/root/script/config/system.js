@@ -310,6 +310,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
                             Ext.MessageBox.alert(cmp.i18n._("Restore Success"), cmp.i18n._("Success:  The Local File restore procedure completed."), function(btn, text){
+                                Ext.getCmp('upload_restore_file_textfield').reset();
                                 Ext.MessageBox.alert(cmp.i18n._("Attention"),
                                     cmp.i18n._("You must now exit this program.")+"<br>"+
                                     cmp.i18n._("You can log in again after a brief period.")+"<br><b>"+
@@ -363,6 +364,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         items : [{
                             fieldLabel : 'File',
                             name : 'file',
+                            id : 'upload_restore_file_textfield',
                             inputType : 'file',
                             xtype : 'textfield',
                             allowBlank : false
@@ -846,11 +848,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         selectOnFocus : true,
                         hideLabel : true,
                         listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getLanguageSettings().language = newValue;
+                            "select" : {
+                                fn : function(elem, record) {
+                                    this.getLanguageSettings().language = record.data.code;
                                     Ext.MessageBox.alert(this.i18n._("Info"), this.i18n
-                                            ._("Please note that you have to relogin after saving for the new language to take effect."));
+                                            ._("Please note that you have to refresh the application after saving for the new language to take effect."));
                                 }.createDelegate(this)
                             },
                             "render" : {
@@ -880,6 +882,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         items : [{
                             fieldLabel : 'File',
                             name : 'file',
+                            id : 'upload_language_file_textfield',
                             inputType : 'file',
                             xtype : 'textfield',
                             allowBlank : false
@@ -911,7 +914,11 @@ if (!Ung.hasResource["Ung.System"]) {
                             if (action.result && action.result.msg) {
                                 Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._("Language Pack Uploaded With Errors"));
                             } else {
-                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Language Pack Succeeded"));
+                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Language Pack Succeeded"), 
+                                    function() {
+                                    	Ext.getCmp('upload_language_file_textfield').reset();
+                                    } 
+                                );
                             }
                         },
                         failure : function(form, action) {

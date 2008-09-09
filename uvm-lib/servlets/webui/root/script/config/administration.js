@@ -1427,11 +1427,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         selectOnFocus : true,
                         hideLabel : true,
                         listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSkinSettings().administrationClientSkin = newValue;
+                            "select" : {
+                                fn : function(elem, record) {
+                                    this.getSkinSettings().administrationClientSkin = record.data.name;
                                     Ext.MessageBox.alert(this.i18n._("Info"), this.i18n
-                                            ._("Please note that you have to relogin after saving for the new skin to take effect."));
+                                            ._("Please note that you have to refresh the application after saving for the new skin to take effect."));
                                 }.createDelegate(this)
                             }
                         }
@@ -1475,6 +1475,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         items : [{
                             fieldLabel : 'File',
                             name : 'file',
+                            id : 'upload_skin_file_textfield',
                             inputType : 'file',
                             xtype : 'textfield',
                             allowBlank : false
@@ -1503,7 +1504,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             adminSkinsStore.load();
                             userFacingSkinsStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Skin Succeeded"));
+                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Skin Succeeded"),
+                                function() {
+                                    Ext.getCmp('upload_skin_file_textfield').reset();
+                                } 
+                            );
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
@@ -1613,6 +1618,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         items : [{
                             fieldLabel : 'File',
                             name : 'File',
+                            id : 'upload_logo_file_textfield',
                             inputType : 'file',
                             xtype : 'textfield',
                             disabled : brandingBaseSettings.defaultLogo,
@@ -1705,7 +1711,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         waitMsg : cmp.i18n._('Please wait while your logo image is uploaded...'),
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Logo Succeeded"));
+                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Logo Succeeded"), 
+                                function() {
+                                    Ext.getCmp('upload_logo_file_textfield').reset();
+                                } 
+                            );
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
