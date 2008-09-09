@@ -1204,7 +1204,7 @@ Ung.MessageManager = {
     started : false,
     intervalId : null,
     cycleCompleted : true,
-    //messageHistory:[], //for debug info
+    messageHistory:[], //for debug info
     start : function() {
         this.stop();
         this.intervalId = window.setInterval("Ung.MessageManager.run()", this.updateTime);
@@ -1223,7 +1223,7 @@ Ung.MessageManager = {
             return;
         }
         this.cycleCompleted = false;
-        rpc.messageManager.getMessageQueueZ(function(result, exception) {
+        rpc.messageManager.getMessageQueue(function(result, exception) {
            if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
                     this.cycleCompleted = true;
@@ -1235,7 +1235,7 @@ Ung.MessageManager = {
                var messageQueue=result;
                if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
                    var hasNodeInstantiated=false;
-                   //Ung.MessageManager.messageHistory.push(messageQueue.messages.list); //for debug info
+                   Ung.MessageManager.messageHistory.push(messageQueue.messages.list); //for debug info
                    for(var i=0;i<messageQueue.messages.list.length;i++) {
                        var msg=messageQueue.messages.list[i];
                         if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
