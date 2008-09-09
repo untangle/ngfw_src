@@ -195,6 +195,9 @@ Ung.Util= {
         } else {
             grid.store.proxy.data = storeData;
         }
+    },
+    bytesToMBs : function(value) {
+    	return Math.round(value/100000)/10;
     }
 
 };
@@ -1385,7 +1388,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("CPU Utilization by System:")+'</div>',
             '<div class="values"><span name="cpu_utilization_system"></span> %</div>',
             '<div class="title">'+i18n._("Load average (1 min / 5 min / 15 min):")+'</div>',
-            '<div class="values"><span name="load_average_1_min"></span>, <span name="load_average_5_min"></span>, <span name="load_average_15_min"></span></div>'
+            '<div class="values"><span name="load_average_1_min"></span> %, <span name="load_average_5_min"></span> %, <span name="load_average_15_min"></span> %</div>'
         ];
         this.cpuToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=cpu]"),
@@ -1402,19 +1405,23 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
         //memory tooltip
         var memoryArr=[
-            '<div class="title">'+i18n._("Memory Usage:")+'</div>',
-            '<div class="values"><span name="memory_used"></span> '+i18n._("used")+', <span name="memory_free"></span> '+i18n._("free")+', <span name="memory_total"></span> '+i18n._("total")+'</div>',
+         
+            '<div class="title">'+i18n._("Total Memory:")+'</div>',
+            '<div class="values"><span name="memory_total"></span> MBs</div>',
+            '<div class="title">'+i18n._("Memory Used:")+'</div>',
+            '<div class="values"><span name="memory_used"></span> MBs, <span name="memory_used_percent"></span> %</div>',
+            '<div class="title">'+i18n._("Memory Free:")+'</div>',
+            '<div class="values"><span name="memory_free"></span> MBs, <span name="memory_free_percent"></span> %</div>',
             '<div class="title">'+i18n._("Memory Pages:")+'</div>',
-            '<div class="values"><span name="memory_pages_active"></span> '+i18n._("active")+', <span name="memory_pages_wired"></span> '+i18n._("wired")+'</div>',
-            '<div class="values"><span name="memory_pages_inactive"></span> '+i18n._("inactive")+', <span name="memory_pages_free"></span> '+i18n._("free")+'</div>',
+            '<div class="values"><span name="memory_pages_active"></span> MBs '+i18n._("active")+', <span name="memory_pages_wired"></span> MBs '+i18n._("wired")+'</div>',
+            '<div class="values"><span name="memory_pages_inactive"></span> MBs '+i18n._("inactive")+', <span name="memory_pages_free"></span> MBs '+i18n._("free")+'</div>',
+            '<div class="values"><span name="memory_pages_cached"></span> MBs '+i18n._("cached")+', <span name="memory_pages_buffers"></span> MBs '+i18n._("buffers")+'</div>',
             '<div class="title">'+i18n._("VM Statistics:")+'</div>',
             '<div class="values"><span name="vm_pageins"></span> '+i18n._("pageins")+', <span name="vm_pageouts"></span> '+i18n._("pageouts")+'</div>',
-            '<div class="values"><span name="vm_cache_lookups"></span> '+i18n._("cache lookups")+', <span name="vm_cache_hits"></span> '+i18n._("cache hits")+' (<span name="vm_cache_hits_percent"></span>)</div>',
-            '<div class="values"><span name="vm_page_faults"></span> '+i18n._("page faults")+', <span name="vm_copy_on_writes"></span> '+i18n._("copy-on-writes")+'</div>',
+            '<div class="values"><span name="vm_page_faults"></span> '+i18n._("page faults")+'</div>',
             '<div class="title">'+i18n._("Swap Files:")+'</div>',
-            '<div class="values"><span name="swap_files_encrypted"></span> '+i18n._("encrypted swap files present in")+' <span name="swap_folder"></span> </div>',
             '<div class="values"><span name="swap_files_peak"></span> '+i18n._("swap files at peak usage")+'</div>',
-            '<div class="values"><span name="swap_total"></span> '+i18n._("total swap space")+' (<span name="swap_used"></span> '+i18n._("used")+')</div>'
+            '<div class="values"><span name="swap_total"></span> MBs '+i18n._("total swap space")+' (<span name="swap_used"></span> MBs '+i18n._("used")+')</div>'
         ];
         this.memoryToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=memory]"),
@@ -1459,17 +1466,21 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
     },
     update : function(stats) {
-        this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round(stats.map.oneMinuteLoadAvg*100)+"%";
-        this.getEl().child("div[class=tx_value]").dom.innerHTML=Math.round(stats.map.txBps);
-        this.getEl().child("div[class=rx_value]").dom.innerHTML=Math.round(stats.map.rxBps);
-        this.getEl().child("div[class=free_value]").dom.innerHTML=stats.map.MemFree;
-        this.getEl().child("div[class=used_value]").dom.innerHTML=stats.map.MemTotal-stats.map.MemFree;
+        this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round(stats.map.oneMinuteLoadAvg/stats.map.numProcs*100)+"%";
+        var txSpeed=Math.round(stats.map.txBps/100)/10;
+        var rxSpeed=Math.round(stats.map.rxBps/100)/10;
+        this.getEl().child("div[class=tx_value]").dom.innerHTML=txSpeed+"KB/sec";
+        this.getEl().child("div[class=rx_value]").dom.innerHTML=rxSpeed+"KB/sec";
+        var memoryFree=Ung.Util.bytesToMBs(stats.map.MemFree)
+        var memoryUsed=Ung.Util.bytesToMBs(stats.map.MemTotal-stats.map.MemFree);
+        this.getEl().child("div[class=free_value]").dom.innerHTML=memoryFree+" MBs";
+        this.getEl().child("div[class=used_value]").dom.innerHTML=memoryUsed+" MBs";
         var diskPercent=Math.round((1-stats.map.freeDiskSpace/stats.map.totalDiskSpace)*20 )*5;
         this.getEl().child("div[name=disk_value]").dom.className="disk"+diskPercent;
         if(this.networkToolTip.rendered) {
             var toolTipEl=this.networkToolTip.getEl();
-            toolTipEl.child("span[name=rx_speed]").dom.innerHTML=stats.map.rxBps;
-            toolTipEl.child("span[name=tx_speed]").dom.innerHTML=stats.map.txBps;
+            toolTipEl.child("span[name=tx_speed]").dom.innerHTML=txSpeed;
+            toolTipEl.child("span[name=rx_speed]").dom.innerHTML=rxSpeed;
             toolTipEl.child("span[name=data_received]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=data_sent]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=total_throughput]").dom.innerHTML="TODO";
@@ -1481,44 +1492,43 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=cpu_model]").dom.innerHTML=stats.map.cpuModel;
             toolTipEl.child("span[name=cpu_speed]").dom.innerHTML=stats.map.cpuSpeed;
             toolTipEl.child("span[name=uptime]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=tasks]").dom.innerHTML="TODO";
+            toolTipEl.child("span[name=tasks]").dom.innerHTML=stats.map.numProcs;
             toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=cpu_utilization_user]").dom.innerHTML=stats.map.userCpuUtilization;
-            toolTipEl.child("span[name=cpu_utilization_system]").dom.innerHTML=stats.map.systemCpuUtilization;
-            toolTipEl.child("span[name=load_average_1_min]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
-            toolTipEl.child("span[name=load_average_5_min]").dom.innerHTML=stats.map.fiveMinuteLoadAvg;
-            toolTipEl.child("span[name=load_average_15_min]").dom.innerHTML=stats.map.fifteenMinuteLoadAvg;
+            toolTipEl.child("span[name=cpu_utilization_user]").dom.innerHTML=Math.round(stats.map.userCpuUtilization*100.0/stats.map.numProcs);
+            toolTipEl.child("span[name=cpu_utilization_system]").dom.innerHTML=Math.round(stats.map.systemCpuUtilization*100.0/stats.map.numProcs);
+            toolTipEl.child("span[name=load_average_1_min]").dom.innerHTML=Math.round(stats.map.oneMinuteLoadAvg*100.0/stats.map.numProcs);
+            toolTipEl.child("span[name=load_average_5_min]").dom.innerHTML=Math.round(stats.map.fiveMinuteLoadAvg*100.0/stats.map.numProcs*100);
+            toolTipEl.child("span[name=load_average_15_min]").dom.innerHTML=Math.round(stats.map.fifteenMinuteLoadAvg*100.0/stats.map.numProcs*100);
         }
         if(this.memoryToolTip.rendered) {
             var toolTipEl=this.memoryToolTip.getEl();
-            toolTipEl.child("span[name=memory_used]").dom.innerHTML=stats.map.MemTotal-stats.map.MemFree;
-            toolTipEl.child("span[name=memory_free]").dom.innerHTML=stats.map.MemFree;
-            toolTipEl.child("span[name=memory_total]").dom.innerHTML=stats.map.MemTotal;
-            toolTipEl.child("span[name=memory_pages_active]").dom.innerHTML=stats.map.Active;
+            toolTipEl.child("span[name=memory_used]").dom.innerHTML=memoryUsed;
+            toolTipEl.child("span[name=memory_free]").dom.innerHTML=memoryFree;
+            toolTipEl.child("span[name=memory_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.MemTotal);
+            toolTipEl.child("span[name=memory_used_percent]").dom.innerHTML=Math.round((stats.map.MemTotal-stats.map.MemFree)/stats.map.MemTotal*100);
+            toolTipEl.child("span[name=memory_free_percent]").dom.innerHTML=Math.round(stats.map.MemFree/stats.map.MemTotal*100);
+            toolTipEl.child("span[name=memory_pages_active]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Active);
             toolTipEl.child("span[name=memory_pages_wired]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=memory_pages_inactive]").dom.innerHTML=stats.map.Inactive;
+            toolTipEl.child("span[name=memory_pages_inactive]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Inactive);
             toolTipEl.child("span[name=memory_pages_free]").dom.innerHTML="TODO";
+            toolTipEl.child("span[name=memory_pages_cached]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Cached);
+            toolTipEl.child("span[name=memory_pages_buffers]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Buffers);
+            
             toolTipEl.child("span[name=vm_pageins]").dom.innerHTML=stats.map.pgpgin;
             toolTipEl.child("span[name=vm_pageouts]").dom.innerHTML=stats.map.pgpgout;
-            toolTipEl.child("span[name=vm_cache_lookups]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=vm_cache_hits]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=vm_cache_hits_percent]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=vm_page_faults]").dom.innerHTML=stats.map.pgfault;
-            toolTipEl.child("span[name=vm_copy_on_writes]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=swap_files_encrypted]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=swap_folder]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=swap_files_peak]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=swap_total]").dom.innerHTML=stats.map.SwapTotal;
-            toolTipEl.child("span[name=swap_used]").dom.innerHTML=stats.map.SwapTotal-stats.map.SwapFree;
+            toolTipEl.child("span[name=swap_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal);
+            toolTipEl.child("span[name=swap_used]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal-stats.map.SwapFree);
         }
         if(this.diskToolTip.rendered) {
             var toolTipEl=this.diskToolTip.getEl();
-            toolTipEl.child("span[name=total_disk_space]").dom.innerHTML=stats.map.totalDiskSpace;
-            toolTipEl.child("span[name=free_disk_space]").dom.innerHTML=stats.map.freeDiskSpace;
-            toolTipEl.child("span[name=disk_reads_in]").dom.innerHTML=stats.map.diskWrites;
-            toolTipEl.child("span[name=disk_reads_out]").dom.innerHTML=stats.map.diskReads;
-            toolTipEl.child("span[name=data_read]").dom.innerHTML=stats.map.diskReadsPerSecond;
-            toolTipEl.child("span[name=data_write]").dom.innerHTML=stats.map.diskWritesPerSecond;
+            toolTipEl.child("span[name=total_disk_space]").dom.innerHTML=Math.round(stats.map.totalDiskSpace/100000000)/10;
+            toolTipEl.child("span[name=free_disk_space]").dom.innerHTML=Math.round(stats.map.freeDiskSpace/100000000)/10;
+            toolTipEl.child("span[name=disk_reads_in]").dom.innerHTML="TODO";
+            toolTipEl.child("span[name=disk_reads_out]").dom.innerHTML="TODO";
+            toolTipEl.child("span[name=data_read]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.diskReadsPerSecond);
+            toolTipEl.child("span[name=data_write]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.diskWritesPerSecond);
 
         }
     },
