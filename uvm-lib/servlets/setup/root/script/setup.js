@@ -329,7 +329,6 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     width : 200,
                     listWidth : 205,
                     store : this.countryStore,
-                    value : "US",
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
