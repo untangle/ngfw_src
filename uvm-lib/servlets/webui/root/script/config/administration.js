@@ -1587,6 +1587,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         this.getBrandingBaseSettings().defaultLogo = true;
                                         this.panelBranding.enableFileUpload(false);
                                     }
+                                    Ext.MessageBox.alert(this.i18n._("Info"), this.i18n
+                                            ._("Please note that you have to refresh the application after saving for the new logo to take effect."));
                                 }.createDelegate(this)
                             }
                         }
