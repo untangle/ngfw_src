@@ -197,7 +197,7 @@ Ung.Util= {
         }
     },
     bytesToMBs : function(value) {
-    	return Math.round(value/100000)/10;
+        return Math.round(value/100000)/10;
     }
 
 };
@@ -1223,7 +1223,7 @@ Ung.MessageManager = {
             return;
         }
         this.cycleCompleted = false;
-        rpc.messageManager.getMessageQueue(function(result, exception) {
+        rpc.messageManager.getMessageQueueZ(function(result, exception) {
            if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
                     this.cycleCompleted = true;
@@ -1405,7 +1405,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
         //memory tooltip
         var memoryArr=[
-         
+
             '<div class="title">'+i18n._("Total Memory:")+'</div>',
             '<div class="values"><span name="memory_total"></span> MBs</div>',
             '<div class="title">'+i18n._("Memory Used:")+'</div>',
@@ -1513,7 +1513,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=memory_pages_free]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=memory_pages_cached]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Cached);
             toolTipEl.child("span[name=memory_pages_buffers]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Buffers);
-            
+
             toolTipEl.child("span[name=vm_pageins]").dom.innerHTML=stats.map.pgpgin;
             toolTipEl.child("span[name=vm_pageouts]").dom.innerHTML=stats.map.pgpgout;
             toolTipEl.child("span[name=vm_page_faults]").dom.innerHTML=stats.map.pgfault;
