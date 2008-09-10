@@ -13,6 +13,64 @@ Ung.SetupWizard.LabelWidth2 = 214;
 Ung.SetupWizard.LabelWidth3 = 70;
 Ung.SetupWizard.LabelWidth4 = 100;
 
+Ung.SetupWizard.EmailTester = Ext.extend( Object,
+{
+    constructor : function( config )
+    {
+        if ( config == null ) config = {};
+
+        this.emailTestMessage = "<center>" + 
+        i18n._( "Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct." ) + 
+        "</center>";
+
+        this.emailAddress = config.emailAddress;
+    },
+
+    testMessageHandler : function( result, exception )
+    {
+        if ( exception ) {
+            Ext.MessageBox.alert( i18n._( "Failed" ), exception.message );
+            return;
+        }
+        
+        var message = i18n._( 'Test email sent.' );
+        if ( result != true ) message = i18n._( 'Warning!  Test failed.  Check your settings.' );
+
+        this.showTester( { progressText : message } );
+    },
+
+    buttonHandler : function( button, emailAddress )
+    {
+        this.emailAddress = emailAddress;
+
+        if ( button == 'ok' ) {
+            this.showTester( { progressText : i18n._( 'Sending...' ) } );
+            rpc.adminManager.sendTestMessage( this.testMessageHandler.createDelegate( this ), this.emailAddress );
+        }
+    },
+
+    showTester : function( config )
+    {
+        if ( config == null ) config = {};
+
+        Ext.MessageBox.show({
+            title : i18n._('Email Test'),
+            buttons : { 
+                cancel : i18n._('Close'), 
+                ok : i18n._('Proceed') 
+            },
+            width : 450,
+            msg : this.emailTestMessage,
+            modal : true,
+            prompt : true,
+            progress : true,
+            progressText : config.progressText,
+            value : this.emailAddress,
+            fn : this.buttonHandler.createDelegate( this )
+        });
+    }
+});
+
 Ext.apply( Ext.form.VTypes, {
     ipCheck : function( val, field )
     {
@@ -230,7 +288,7 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
             rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
             this.handler();
         } else {
-            Ext.MessageBox.alert("Unable to save password.",exception.message); 
+            Ext.MessageBox.alert( i18n._( "Unable to save password." ));
         }
     }
 });
@@ -1132,7 +1190,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
         handler();
     }
 });
-
+            
 Ung.SetupWizard.Email = Ext.extend( Object, {
     constructor : function( config )
     {
@@ -1140,13 +1198,12 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             defaultType : 'textfield',
             defaults : {
                 autoHeight : true,
-				cls : 'noborder',
+                cls : 'noborder',
                 labelWidth : Ung.SetupWizard.LabelWidth4,
             },
             items : [{
-					xtype : 'label',
-					html : '<h2 class="wizardTitle">'+i18n._( "Email Configuration" )+'</h2>',
-				
+				xtype : 'label',
+				html : '<h2 class="wizardTitle">'+i18n._( "Email Configuration" )+'</h2>'
 			},
 			{
 				xtype : 'label',
@@ -1174,7 +1231,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             },{
                 name : 'from-address',
                 xtype : "fieldset",
-		defaults : {
+                defaults : {
                     validationEvent : 'blur',
                     msgTarget : 'side'
                 },
@@ -1298,6 +1355,8 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         this.onSetMode( false );
         this.onSetSendDirectly( true );
 
+        this.emailTester = new Ung.SetupWizard.EmailTester();
+
         this.card = {
             title : i18n._( "Email" ),
             cardTitle : i18n._( "Email Configuration" ),
@@ -1308,13 +1367,18 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
     },
     emailTest : function()
     {
+        if ( !this.validateEmailConfiguration()) return;
+
+        this.saveSettings( this.emailTester.showTester.createDelegate( this.emailTester ));
     },
-    validateEmailConfiguration : function(){
+        
+    validateEmailConfiguration : function()
+    {
 		var rv = true;
 		if(this.panel.find('name','advanced')[0].getValue()){//advanced email config checked
-			if(!_validate(this.panel.find('name','from-address')[0].items.items)){
-				rv = !rv
-			}
+			if(!_validate(this.panel.find('name','from-address')[0].items.items)) {
+                rv = !rv;
+            }
 			if(this.panel.find('name','smtp-send-directly')[1].getValue()){
 				if(!_validate(this.directlyArray) && rv){
 					rv = !rv;
@@ -1435,7 +1499,9 @@ Ung.Setup = {
     {
         if ( this.isInitialized == true ) return;
         this.isInitialized = true;
-        
+
+        Ext.WindowMgr.zseed = 20000;
+
         rpc = {};
 
         /* Initialize the timezone data */
@@ -1478,7 +1544,8 @@ Ung.Setup = {
         });
 
         this.wizard.render();
-		Ext.QuickTips.init();
+        Ext.QuickTips.init();
+
         this.wizard.goToPage( 0 );
 	}
 };
