@@ -25,10 +25,10 @@ class ToolboxManager(Manager):
         self.doAptTailLog( key )
 
     def api_extraname(self, mackageName, extraName):
-        self.__toolbox.extraName( mackage, extraName)
+        self.__toolbox.extraName( mackageName, extraName )
 
     def api_requestinstall(self, mackageName):
-        self.__toolbox.requestInstall( mackage)
+        self.__toolbox.requestInstall( mackage )
 
     def api_available(self):
         self.__print_mackages( self.__toolbox.available())
@@ -65,6 +65,6 @@ class ToolboxManager(Manager):
 
     def __print_mackages(self,mackages):
         for mackage in mackages:
-            print "extraName: %s\tinstalled: %s\tavailable: %s" % ( mackage["name"], mackage["installedVersion"], mackage["availableVersion"])
+            print "%-30sextraName: %-25sinstalled: %-40savailable: %s" % ( mackage["name"], mackage["extraName"], mackage["installedVersion"], mackage["availableVersion"])
 
 Manager.managers.append( ToolboxManager )
