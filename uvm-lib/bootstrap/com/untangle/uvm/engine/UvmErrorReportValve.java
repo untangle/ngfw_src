@@ -20,6 +20,7 @@ package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.MessageFormat;
 import java.util.Map;
 
 import org.apache.catalina.connector.Request;
@@ -92,11 +93,13 @@ public class UvmErrorReportValve extends ErrorReportValve
                              String errorMessage)
         throws IOException
     {
+        String companyName = Main.getMain().getCompanyName();
+        
         w.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
         w.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
         w.write("<head>\n");
         w.write("<title>");
-        w.write(tr("Untangle Server", i18nMap));
+        w.write(tr("{0} Server", companyName, i18nMap));
         w.write("</title>\n");
         w.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=iso-8859-1\" />\n");
         w.write("<style type=\"text/css\">\n");
@@ -111,7 +114,7 @@ public class UvmErrorReportValve extends ErrorReportValve
         w.write("<center>");
         w.write("<img alt=\"\" src=\"/images/BrandingLogo.gif\" /><br /><br />\n");
         w.write("<b>");
-        w.write(tr("Untangle Server", i18nMap));
+        w.write(tr("{0} Server", companyName, i18nMap));
         w.write("</b><br /><br />\n");
         w.write("<em>");  w.write(errorMessage);  w.write("</em>\n");
         w.write("</center><br /><br />\n");
@@ -130,6 +133,16 @@ public class UvmErrorReportValve extends ErrorReportValve
     {
         String tr = i18nMap.get(value);
         return null == tr ? value : tr;
+    }
+    
+    private String tr(String value, Object[] objects, Map<String, String> i18nMap)
+    {
+        return MessageFormat.format( tr(value,i18nMap), objects);
+    }
+
+    private String tr(String value, Object o1, Map<String, String> i18nMap)
+    {
+        return tr(value, new Object[]{ o1 }, i18nMap);
     }
 
     private String getError(Map<String, String> i18nMap, int errorCode)

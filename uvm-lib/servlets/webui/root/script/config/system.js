@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.System"]) {
     Ung.hasResource["Ung.System"] = true;
 
     Ung.System = Ext.extend(Ung.ConfigWin, {
-        panelUntangleSupport : null,
+        panelSupport : null,
         panelBackup : null,
         panelRestore : null,
         panelProtocolSettings : null,
@@ -26,15 +26,15 @@ if (!Ung.hasResource["Ung.System"]) {
             // builds the 5 tabs
         },
         initSubCmps : function() {
-            this.buildUntangleSupport();
+            this.buildSupport();
             this.buildBackup();
             this.buildRestore();
             this.buildProtocolSettings();
             this.buildRegionalSettings();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelUntangleSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings,
+            this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings,
                     this.panelRegionalSettings]);
-            this.tabs.activate(this.panelUntangleSupport);
+            this.tabs.activate(this.panelSupport);
             if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ){
                 this.panelProtocolSettings.disable();
             }
@@ -110,12 +110,19 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             return this.rpc.timeZone;
         },
-        buildUntangleSupport : function() {
-            this.panelUntangleSupport = new Ext.Panel({
+        // get branding settings
+        getBrandingBaseSettings : function(forceReload) {
+            if (forceReload || this.rpc.brandingBaseSettings === undefined) {
+                this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
+            }
+            return this.rpc.brandingBaseSettings;
+        },        
+        buildSupport : function() {
+            this.panelSupport = new Ext.Panel({
                 // private fields
-                name : 'Untangle Support',
+                name : 'Support',
                 parentId : this.getId(),
-                title : this.i18n._('Untangle Support'),
+                title : this.i18n._('Support'),
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
@@ -314,7 +321,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                 Ext.MessageBox.alert(cmp.i18n._("Attention"),
                                     cmp.i18n._("You must now exit this program.")+"<br>"+
                                     cmp.i18n._("You can log in again after a brief period.")+"<br><b>"+
-                                    cmp.i18n._("DO NOT MANUALLY SHUTDOWN OR RESTART THE UNTANGLE SERVER WHILE IT IS UPGRADING!")+"</b>");
+                                    String.format(cmp.i18n._("Do not manually shutdown or restart the {0} Server while it is upgrading!"),cmp.getBrandingBaseSettings().companyName).toUpperCase()+"</b>");
                             });
                         },
                         failure : function(form, action) {
@@ -323,13 +330,13 @@ if (!Ung.hasResource["Ung.System"]) {
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
                                     case 'File does not seem to be valid Untangle backup' : 
-                                        errorMsg = cmp.i18n._("File does not seem to be valid Untangle backup");
+                                        errorMsg = String.format(cmp.i18n._("File does not seem to be valid {0} backup"), cmp.getBrandingBaseSettings().companyName);
                                     break;
                                     case 'Error in processing restore itself (yet file seems valid)' : 
                                         errorMsg = cmp.i18n._("Error in processing restore itself (yet file seems valid)");
                                     break;
                                     case 'File is from an older version of Untangle and cannot be used' : 
-                                        errorMsg = cmp.i18n._("File is from an older version of Untangle and cannot be used");
+                                        errorMsg = String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), cmp.getBrandingBaseSettings().companyName);
                                     break;
                                     case 'Unknown error in local processing' : 
                                         errorMsg = cmp.i18n._("Unknown error in local processing");
@@ -912,9 +919,9 @@ if (!Ung.hasResource["Ung.System"]) {
                             languagesStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
                             if (action.result && action.result.msg) {
-                                Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._("Language Pack Uploaded With Errors"));
+                                Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._("Language pack uploaded with errors"));
                             } else {
-                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Language Pack Succeeded"), 
+                                Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"), 
                                     function() {
                                     	Ext.getCmp('upload_language_file_textfield').reset();
                                     } 
@@ -923,14 +930,14 @@ if (!Ung.hasResource["Ung.System"]) {
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
-                            var errorMsg = cmp.i18n._("Upload Language Pack Failed");
+                            var errorMsg = cmp.i18n._("Upload language pack failed");
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
                                     case 'Invalid Language Pack' : 
-                                        errorMsg = cmp.i18n._("Invalid Language Pack");
+                                        errorMsg = cmp.i18n._("Invalid language pack; not a zip file");
                                     break;
                                     default :
-                                        errorMsg = cmp.i18n._("Upload Language Pack Failed");
+                                        errorMsg = cmp.i18n._("Upload language pack failed");
                                 }
                             }
                             Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);

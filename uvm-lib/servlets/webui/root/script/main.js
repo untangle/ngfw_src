@@ -346,7 +346,7 @@ Ung.Main.prototype = {
                 var tids=result;
                 if(tids.length>0) {
                     Ext.MessageBox.alert(this.name+" "+i18n._("Warning"),
-                    String.format(i18n._("{0} cannot be removed from the toolbox because it is being used by the following policy rack:{1}You must remove the product from all policy racks first."), this.displayName,"<br><b>"+tids[0].policy.name+"</b><br><br>"));
+                    String.format(i18n._("{0} cannot be removed because it is being used by the following rack:{1}You must remove the product from all racks first."), this.displayName,"<br><b>"+tids[0].policy.name+"</b><br><br>"));
                     return;
                 } else {
                     Ung.AppItem.updateStateForNode(this.name,"unactivating");

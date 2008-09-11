@@ -91,6 +91,13 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
             return this.rpc.mailNodeSettings;
         },
+        // get branding settings
+        getBrandingBaseSettings : function(forceReload) {
+            if (forceReload || this.rpc.brandingBaseSettings === undefined) {
+                this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
+            }
+            return this.rpc.brandingBaseSettings;
+        },
         getSafelistAdminView : function(forceReload) {
             if (forceReload || this.rpc.safelistAdminView === undefined) {
                 this.rpc.safelistAdminView = this.getMailNode().getSafelistAdminView();
@@ -206,8 +213,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items : [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
-                        html : this.i18n
-                                ._("The Outgoing Email Server settings determine how the Untangle Server sends emails such as reports, quarantine digests, etc. In most cases the default setting should work, but if not, you should specify an SMTP server that will relay mail for the  Untangle Server.")
+                        html : String.format(this.i18n
+                                ._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. In most cases the default setting should work, but if not, you should specify an SMTP server that will relay mail for the {0} Server."),
+                                this.getBrandingBaseSettings().companyName)
                     }, {
                         xtype : 'radio',
                         id : 'email_smtpDisabled',
@@ -307,7 +315,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items : [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
-                    	html : this.i18n._("The Untangle Server will send email from this address.")
+                    	html : String.format(this.i18n._("The {0} Server will send email from this address."),
+                                    this.getBrandingBaseSettings().companyName)
                     }, {
                         xtype : 'textfield',
                         name : 'Email From Address',
@@ -776,14 +785,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items: [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
-                        html : this.i18n._('This list is a list of all addresses that will have quarantines automatically created. An email address that does not have a quarantinable address will have their mail marked instead.')
+                        html : this.i18n._('Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined.')
                     },  this.quarantinableAddressesGrid = new Ung.EditorGrid({
                         name : 'Quarantinable Addresses',
                         settingsCmp : this,
                         height : 250,
                         paginated : false,
                         emptyRow : {
-                            "address" : this.i18n._("quarantineme@example.com"),
+                            "address" : "email@example.com",
                             "category" : this.i18n._("[no category]"),
                             "description" : this.i18n._("[no description]"),
                             "javaClass" : "com.untangle.node.mail.papi.EmailAddressRule"
@@ -844,7 +853,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items: [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
-                        html : this.i18n._('This is a list of email addresses whose quarantine digest get forward to another account. This is common for distribution lists where the whole list should not receive the digest.')
+                        html : this.i18n._('This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest.')
                     }, this.quarantineForwardsGrid = new Ung.EditorGrid({
                         name : 'Quarantine Forwards',
                         settingsCmp : this,

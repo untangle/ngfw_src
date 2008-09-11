@@ -695,6 +695,10 @@ public class UvmContextImpl extends UvmContextBase
     {
         return languageManager.getTranslations(module);
     }
+    
+    public String getCompanyName(){
+        return brandingManager.getBaseSettings().getCompanyName();
+    }
 
     // UvmContextBase methods --------------------------------------------------
 

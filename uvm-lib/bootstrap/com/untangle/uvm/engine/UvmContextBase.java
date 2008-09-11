@@ -34,7 +34,7 @@ public abstract class UvmContextBase
     // public methods ---------------------------------------------------------
 
     public abstract Map<String, String> getTranslations(String module);
-
+    public abstract String getCompanyName();
     // abstract methods -------------------------------------------------------
 
     /**

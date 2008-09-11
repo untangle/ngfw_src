@@ -17,6 +17,13 @@ if (!Ung.hasResource["Ung.Ips"]) {
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
         },
+        // get branding settings
+        getBrandingBaseSettings : function(forceReload) {
+            if (forceReload || this.rpc.brandingBaseSettings === undefined) {
+                this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
+            }
+            return this.rpc.brandingBaseSettings;
+        },
         // Status Panel
         buildStatus : function() {
             this.panelStatus = new Ext.Panel({
@@ -55,7 +62,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     }]
                 }, {
                     title : this.i18n._('Note'),
-                    html : this.i18n._("Untangle, Inc. continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.")
+                    html : String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."),
+                                this.getBrandingBaseSettings().companyName)
                 }]
             });
         },

@@ -111,14 +111,16 @@ Ung.SetupWizard.Welcome = Ext.extend(Object,
             items : [
 				{
 					xtype : 'label',
-					html : '<h2 class="wizardTitle">'+i18n._( "Thanks for using Untangle" )+'</h2>',
+					html : '<h2 class="wizardTitle">'+i18n._( "Thanks for using Untangle" )+'</h2>'
 				
 				},
 				{
                 xtype : 'label',
 				cls : 'noborder',
-                html : i18n._( 'This wizard will guide you through the inital setup and configuration of your Untangle Server. <br/><br/>Click <b>Next</b> to get started.' )
-                    }],
+                html : i18n._( 'This wizard will guide you through the initial setup and configuration of your Untangle Server.') +
+                         '<br/><br/>'+
+                         String.format(i18n._('Click {0}Next{1} to get started.'),'<b>','</b>')
+                    }]
 				
                 });
         
@@ -142,7 +144,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
             items : [
 				{
 					xtype : 'label',
-					html : '<h2 class="wizardTitle">'+i18n._( "Configure your Server" )+'</h2>',
+					html : '<h2 class="wizardTitle">'+i18n._( "Configure your Server" )+'</h2>'
 				
 				},
 				{
@@ -318,7 +320,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
             },
             items : [{
 					xtype : 'label',
-					html : '<h2 class="wizardTitle">'+i18n._( "Registration" )+'</h2>',
+					html : '<h2 class="wizardTitle">'+i18n._( "Registration" )+'</h2>'
 				
 				},{
                 defaultType : 'textfield',
@@ -354,7 +356,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     width : 200
                 },{
                     fieldLabel : i18n._('Name'),
-                    name : 'name',
+                    name : 'name'
                 },{
                     xtype : 'numberfield',
                     minValue : 0,
@@ -494,7 +496,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                    return value[0] + " : " + value[1];
                },
                width : 400
-            }]),
+            }])
         });
     
         var panel = new Ext.Panel({
@@ -691,7 +693,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 defaultType : 'textfield',
                 defaults : {
 					readOnly : true,
-					fieldClass : 'noborder',
+					fieldClass : 'noborder'
                 },
                 autoHeight : true,
                 items : [
@@ -740,7 +742,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     disabled : false,
 					msgTarget : 'side',
 					maskRe : /(\d+|\.)/,
-					vtype : 'ipCheck',					
+					vtype : 'ipCheck'					
                 },
                 autoHeight : true,
 				items : [
@@ -857,7 +859,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             activePanel : 0,
             defaults : { 
                 autoHeight : true,
-                border : false,
+                border : false
             }
         });
 
@@ -1063,11 +1065,11 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             defaultType : 'fieldset',
             defaults : {
                 autoHeight : true,
-				labelWidth : Ung.SetupWizard.LabelWidth3,			
+				labelWidth : Ung.SetupWizard.LabelWidth3			
             },
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizardTitle">'+i18n._( "Configure your Internal Network Interface" )+'</h2>',
+                html : '<h2 class="wizardTitle">'+i18n._( "Configure your Internal Network Interface" )+'</h2>'
             },{
                 //title : i18n._( 'Transparent Bridge' ),
                 cls : 'noborder',
@@ -1199,7 +1201,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             defaults : {
                 autoHeight : true,
                 cls : 'noborder',
-                labelWidth : Ung.SetupWizard.LabelWidth4,
+                labelWidth : Ung.SetupWizard.LabelWidth4
             },
             items : [{
 				xtype : 'label',
@@ -1475,7 +1477,7 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
         var panel = new Ext.FormPanel({
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizardTitle">'+i18n._( "Congrats!" )+'</h2>',
+                html : '<h2 class="wizardTitle">'+i18n._( "Congrats!" )+'</h2>'
              },{
                 xtype : 'label',
 		        html : i18n._( '<b>Your Untangle Server is now configured.</b><br/><br/>You are now ready to login and download some applications.' ),

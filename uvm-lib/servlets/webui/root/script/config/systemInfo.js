@@ -60,6 +60,13 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }
             return this.rpc.getLicenseAgreement;
         },
+        // get branding settings
+        getBrandingBaseSettings : function(forceReload) {
+            if (forceReload || this.rpc.brandingBaseSettings === undefined) {
+                this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
+            }
+            return this.rpc.brandingBaseSettings;
+        },        
         buildVersion : function() {
             this.panelVersion = new Ext.Panel({
                 name : 'Version',
@@ -174,7 +181,8 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         }), new Ext.form.TextField({
                             name : "Number of computers protected by Untangle",
                             id : 'numSeats',
-                            fieldLabel : String.format(this.i18n._('Number of computers{0}protected by Untangle'),'<br>'),
+                            fieldLabel : String.format(this.i18n._('Number of computers{0}protected by {1}'),
+                                            '<br>',this.getBrandingBaseSettings().companyName),
                             allowBlank : false,
                             value : this.getRegistrationInfo().numSeats
                         })]
@@ -254,7 +262,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
 
             var numSeatsCmp = Ext.getCmp('numSeats');
             if (!numSeatsCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out the number of computers protected by Untangle.'),
+                Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('You must fill out the number of computers protected by {0}.'), this.getBrandingBaseSettings().companyName),
                     function () {
                         this.tabs.activate(this.panelRegistration);
                         numSeatsCmp.focus(true);

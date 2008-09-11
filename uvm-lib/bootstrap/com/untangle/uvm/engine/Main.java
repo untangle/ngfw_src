@@ -155,6 +155,11 @@ public class Main
     {
         return uvmContext.getTranslations(module);
     }
+    
+    public String getCompanyName()
+    {
+        return uvmContext.getCompanyName();
+    }
 
     // private methods ---------------------------------------------------------
 
