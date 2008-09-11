@@ -102,17 +102,44 @@ module Untangle
       end
 
       result = response["result"]
+      ## Handle callable references
       if ( result.is_a? Hash and ( result['JSONRPCType'] == "CallableReference" ))
         object_id = result["objectID"]
         return ServiceProxy.new( @service_url, ".obj##{object_id}", @handler ) unless object_id.nil?
       end
 
+      ## Handle fixups.
+      ServiceProxy.handle_fixups( result, response["fixups"] )
+
       return ResultHandler.fix_result( result )
     end
-    
+
     def ServiceProxy.get_request_id()
       @@request_id += 1
       @@request_id
+    end
+
+    def ServiceProxy.handle_fixups( result, fixups )
+      return if fixups.nil?
+      
+      return unless fixups.is_a? Array
+      
+      ## fixups are of the form [ path_a, path_b ], where path_a defines the item to fix, and path_b
+      ## defines where to copy it.
+      fixups.each do |destination,source|
+        original = ServiceProxy.find_object( result, source )
+        next if original.nil?
+
+        copy = ServiceProxy.find_object( result, destination[0,destination.length - 1])
+        next if copy.nil?
+        copy[destination[-1]] = original
+      end
+    end
+
+    def ServiceProxy.find_object( base, path )
+      object = base
+      path.each { |key| object = object[key] }
+      return object
     end
   end
 

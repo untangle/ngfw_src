@@ -1,6 +1,6 @@
 diff -Naur python-jsonrpc-r19/jsonrpc/__init__.py python-jsonrpc-r19.patched/jsonrpc/__init__.py
---- python-jsonrpc-r19/jsonrpc/__init__.py	2007-04-29 08:08:53.568589000 -0700
-+++ python-jsonrpc-r19.patched/jsonrpc/__init__.py	2008-08-03 11:32:31.000000000 -0700
+--- python-jsonrpc-r19/jsonrpc/__init__.py	2007-04-29 08:08:53.000000000 -0700
++++ python-jsonrpc-r19.patched/jsonrpc/__init__.py	2008-09-09 23:49:47.000000000 -0700
 @@ -21,6 +21,3 @@
  
  from jsonrpc.json import loads, dumps, JSONEncodeException, JSONDecodeException
@@ -10,7 +10,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/__init__.py python-jsonrpc-r19.patched/jso
 -from jsonrpc.modpywrapper import handler
 \ No newline at end of file
 diff -Naur python-jsonrpc-r19/jsonrpc/_tests/__init__.py python-jsonrpc-r19.patched/jsonrpc/_tests/__init__.py
---- python-jsonrpc-r19/jsonrpc/_tests/__init__.py	2007-04-22 11:50:20.987019000 -0700
+--- python-jsonrpc-r19/jsonrpc/_tests/__init__.py	2007-04-22 11:50:20.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/_tests/__init__.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,20 +0,0 @@
 -
@@ -34,7 +34,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/_tests/__init__.py python-jsonrpc-r19.patc
 -  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -"""
 diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_cgiwrapper.py python-jsonrpc-r19.patched/jsonrpc/_tests/test_cgiwrapper.py
---- python-jsonrpc-r19/jsonrpc/_tests/test_cgiwrapper.py	2007-04-23 12:40:50.922443000 -0700
+--- python-jsonrpc-r19/jsonrpc/_tests/test_cgiwrapper.py	2007-04-23 12:40:50.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/_tests/test_cgiwrapper.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,55 +0,0 @@
 -
@@ -93,7 +93,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_cgiwrapper.py python-jsonrpc-r
 -        self.assertEquals(jsonrpc.loads(data), {"result":"foobar", "error":None, "id":""})
 -
 diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_json.py python-jsonrpc-r19.patched/jsonrpc/_tests/test_json.py
---- python-jsonrpc-r19/jsonrpc/_tests/test_json.py	2007-07-25 12:24:19.141892000 -0700
+--- python-jsonrpc-r19/jsonrpc/_tests/test_json.py	2007-07-25 12:24:19.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/_tests/test_json.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,184 +0,0 @@
 -
@@ -281,7 +281,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_json.py python-jsonrpc-r19.pat
 -                                            'negInt':-1234, 'None':None,'True':True, 'False':False,
 -                                            'list':[1,2,4,{}], 'dict':{'a':'b'}})
 diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_modpywrapper.py python-jsonrpc-r19.patched/jsonrpc/_tests/test_modpywrapper.py
---- python-jsonrpc-r19/jsonrpc/_tests/test_modpywrapper.py	2007-04-29 09:22:41.983686000 -0700
+--- python-jsonrpc-r19/jsonrpc/_tests/test_modpywrapper.py	2007-04-29 09:22:41.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/_tests/test_modpywrapper.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,98 +0,0 @@
 -
@@ -383,7 +383,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_modpywrapper.py python-jsonrpc
 -        
 -
 diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_proxy.py python-jsonrpc-r19.patched/jsonrpc/_tests/test_proxy.py
---- python-jsonrpc-r19/jsonrpc/_tests/test_proxy.py	2007-04-29 09:55:19.467608000 -0700
+--- python-jsonrpc-r19/jsonrpc/_tests/test_proxy.py	2007-04-29 09:55:19.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/_tests/test_proxy.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,61 +0,0 @@
 -
@@ -449,7 +449,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_proxy.py python-jsonrpc-r19.pa
 -            
 \ No newline at end of file
 diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_serviceHandler.py python-jsonrpc-r19.patched/jsonrpc/_tests/test_serviceHandler.py
---- python-jsonrpc-r19/jsonrpc/_tests/test_serviceHandler.py	2007-04-22 11:50:20.987019000 -0700
+--- python-jsonrpc-r19/jsonrpc/_tests/test_serviceHandler.py	2007-04-22 11:50:20.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/_tests/test_serviceHandler.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,153 +0,0 @@
 -
@@ -606,7 +606,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/_tests/test_serviceHandler.py python-jsonr
 -        result = handler.handleRequest(json)
 -        self.assertEquals(jsonrpc.loads(result), {"result":None, "error":{"name":"BadServiceRequest", "message":json}, "id":""})
 diff -Naur python-jsonrpc-r19/jsonrpc/cgiwrapper.py python-jsonrpc-r19.patched/jsonrpc/cgiwrapper.py
---- python-jsonrpc-r19/jsonrpc/cgiwrapper.py	2007-04-23 12:40:50.922443000 -0700
+--- python-jsonrpc-r19/jsonrpc/cgiwrapper.py	2007-04-23 12:40:50.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/cgiwrapper.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,45 +0,0 @@
 -import sys, os
@@ -656,7 +656,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/cgiwrapper.py python-jsonrpc-r19.patched/j
 -    CGIServiceHandler(service).handleRequest(fin, fout, env)
 \ No newline at end of file
 diff -Naur python-jsonrpc-r19/jsonrpc/modpywrapper.py python-jsonrpc-r19.patched/jsonrpc/modpywrapper.py
---- python-jsonrpc-r19/jsonrpc/modpywrapper.py	2007-04-29 08:08:53.568589000 -0700
+--- python-jsonrpc-r19/jsonrpc/modpywrapper.py	2007-04-29 08:08:53.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/modpywrapper.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,52 +0,0 @@
 -import sys, os
@@ -712,18 +712,9 @@ diff -Naur python-jsonrpc-r19/jsonrpc/modpywrapper.py python-jsonrpc-r19.patched
 -    
 -
 diff -Naur python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.patched/jsonrpc/proxy.py
---- python-jsonrpc-r19/jsonrpc/proxy.py	2007-06-03 15:08:20.912229000 -0700
-+++ python-jsonrpc-r19.patched/jsonrpc/proxy.py	2008-08-03 12:39:07.000000000 -0700
-@@ -11,7 +11,7 @@
- 
-   This software is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
- 
-   You should have received a copy of the GNU Lesser General Public License
-@@ -19,31 +19,56 @@
+--- python-jsonrpc-r19/jsonrpc/proxy.py	2007-06-03 15:08:20.000000000 -0700
++++ python-jsonrpc-r19.patched/jsonrpc/proxy.py	2008-09-11 12:31:34.000000000 -0700
+@@ -19,31 +19,84 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  """
  
@@ -787,12 +778,40 @@ diff -Naur python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.patched/jsonrp
 +        result = resp['result']
 +        if ( type( result ) is types.DictType ) and result.has_key( 'JSONRPCType' ) and ( result['JSONRPCType'] == "CallableReference" ) and result.has_key( 'objectID' ):
 +            return ServiceProxy(self.__serviceURL, ".obj#%s" % result['objectID'], self.__handler)
++
++        if resp.has_key( 'fixups' ) and type( resp['fixups'] ) is types.ListType:
++            self.__handle_fixups__( result, resp['fixups'] )
++        
 +        return result
++
++    def __handle_fixups__( self, result, fixups ):
++        ## Iterate all of the fixups, 
++        for fixup in fixups:
++            ## Each fixup is of the form (path_destination, path_source)
++            ## Just iterate through and copy source to destination.
++            destination = fixup[0]
++            source = fixup[1]
++            
++            original = self.__find_object__( result, source )
++            if original == None: continue
++
++            copy = self.__find_object__( result, destination[0:len(destination) -1] )
++            if copy == None: continue
++
++            copy[destination[-1]] = original
++
++    def __find_object__( self, base, path ):
++        for key in path:
++            base = base[key]
++
++        return base
++
++        
 +
  
 + 
 diff -Naur python-jsonrpc-r19/jsonrpc/serviceHandler.py python-jsonrpc-r19.patched/jsonrpc/serviceHandler.py
---- python-jsonrpc-r19/jsonrpc/serviceHandler.py	2007-04-22 11:50:20.987019000 -0700
+--- python-jsonrpc-r19/jsonrpc/serviceHandler.py	2007-04-22 11:50:20.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/serviceHandler.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,113 +0,0 @@
 -
@@ -910,7 +929,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/serviceHandler.py python-jsonrpc-r19.patch
 -        return data
 \ No newline at end of file
 diff -Naur python-jsonrpc-r19/run-tests.py python-jsonrpc-r19.patched/run-tests.py
---- python-jsonrpc-r19/run-tests.py	2007-04-22 11:50:20.987019000 -0700
+--- python-jsonrpc-r19/run-tests.py	2007-04-22 11:50:20.000000000 -0700
 +++ python-jsonrpc-r19.patched/run-tests.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,41 +0,0 @@
 -#!/usr/bin/env python
@@ -955,7 +974,7 @@ diff -Naur python-jsonrpc-r19/run-tests.py python-jsonrpc-r19.patched/run-tests.
 -    unittest.TextTestRunner(verbosity=5).run(suite)
 -    
 diff -Naur python-jsonrpc-r19/setup.py python-jsonrpc-r19.patched/setup.py
---- python-jsonrpc-r19/setup.py	2007-04-23 12:40:50.922443000 -0700
+--- python-jsonrpc-r19/setup.py	2007-04-23 12:40:50.000000000 -0700
 +++ python-jsonrpc-r19.patched/setup.py	1969-12-31 16:00:00.000000000 -0800
 @@ -1,14 +0,0 @@
 -#!/usr/bin/env python

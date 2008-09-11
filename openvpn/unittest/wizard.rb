@@ -20,5 +20,3 @@ exportList = openvpn.getExportedAddressList()
 exportList["exportList"]["list"].each do |export|
   puts "  export : #{export["name"]}, #{export["network"]}/#{export["netmask"]}"
 end
-
-puts exportList
