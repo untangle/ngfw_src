@@ -30,6 +30,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -151,10 +152,10 @@ public class SpamImpl extends AbstractNode implements SpamNode
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
         //scanBlinger = c.addActivity("scan", "Scan Message", null, "SCAN");
-        passBlinger = c.addActivity("pass", "Pass Message", null, "PASS");
-        blockBlinger = c.addActivity("block", "Block Message", null, "BLOCK");
-        markBlinger = c.addActivity("mark", "Mark Message", null, "MARK");
-        quarantineBlinger = c.addActivity("quarantine", "Quarantine Message", null, "QUARANTINE");
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Message"), null, I18nUtil.marktr("PASS"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Message"), null, I18nUtil.marktr("BLOCK"));
+        markBlinger = c.addActivity("mark", I18nUtil.marktr("Mark Message"), null, I18nUtil.marktr("MARK"));
+        quarantineBlinger = c.addActivity("quarantine", I18nUtil.marktr("Quarantine Message"), null, I18nUtil.marktr("QUARANTINE"));
         lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
     }
 

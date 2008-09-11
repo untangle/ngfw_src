@@ -36,6 +36,7 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -85,9 +86,9 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        scanBlinger = c.addActivity("scan", "Scan Protocol", null, "SCAN");
-        blockBlinger = c.addActivity("block", "Block Protocol", null, "BLOCK");
-        detectBlinger = c.addActivity("detect", "Detect Protocol", null, "DETECT");
+        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Scan Protocol"), null, I18nUtil.marktr("SCAN"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Protocol"), null, I18nUtil.marktr("BLOCK"));
+        detectBlinger = c.addActivity("detect", I18nUtil.marktr("Detect Protocol"), null, I18nUtil.marktr("DETECT"));
         lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, detectBlinger);
     }
 

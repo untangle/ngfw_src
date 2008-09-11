@@ -40,6 +40,7 @@ import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -88,8 +89,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        blockBlinger = c.addActivity("block", "Block Request", null, "BLOCK");
-        passBlinger = c.addActivity("pass", "Pass Request", null, "PASS");
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Request"), null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Request"), null, I18nUtil.marktr("PASS"));
         lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger);
     }
 

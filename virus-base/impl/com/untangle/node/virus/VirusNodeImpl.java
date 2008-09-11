@@ -46,6 +46,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -218,10 +219,10 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        scanBlinger = c.addActivity("scan", "Scan Message", null, "SCAN");
-        blockBlinger = c.addActivity("block", "Block Message", null, "BLOCK");
-        passBlinger = c.addActivity("pass", "Pass Message", null, "PASS");
-        removeBlinger = c.addActivity("remove", "Remove Message", null, "REMOVE");
+        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Scan Message"), null, I18nUtil.marktr("SCAN"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Message"), null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Message"), null, I18nUtil.marktr("PASS"));
+        removeBlinger = c.addActivity("remove", I18nUtil.marktr("Remove Message"), null, I18nUtil.marktr("REMOVE"));
         lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
     }
 

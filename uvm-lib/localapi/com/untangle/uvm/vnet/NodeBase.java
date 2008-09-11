@@ -53,6 +53,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -89,14 +90,14 @@ public abstract class NodeBase implements Node
         tid = nodeContext.getTid();
 
         Counters c = uvm.localMessageManager().getCounters(tid);
-        c.addMetric("s2nChunks", "Server to Node Chunks", null, false);
-        c.addMetric("c2nChunks", "Client to Node Chunks", null, false);
-        c.addMetric("n2sChunks", "Node to Server Chunks", null, false);
-        c.addMetric("n2cChunks", "Server to Node Chunks", null, false);
-        c.addMetric("s2nBytes", "Server to Node Bytes", "byte", false);
-        c.addMetric("c2nBytes", "Client to Node Bytes", "byte", false);
-        c.addMetric("n2sBytes", "Node to Server Bytes", "byte", false);
-        c.addMetric("n2cBytes", "Node to Client Bytes", "byte", false);
+        c.addMetric("s2nChunks", I18nUtil.marktr("Server to Node Chunks"), null, false);
+        c.addMetric("c2nChunks", I18nUtil.marktr("Client to Node Chunks"), null, false);
+        c.addMetric("n2sChunks", I18nUtil.marktr("Node to Server Chunks"), null, false);
+        c.addMetric("n2cChunks", I18nUtil.marktr("Server to Node Chunks"), null, false);
+        c.addMetric("s2nBytes", I18nUtil.marktr("Server to Node Bytes"), "byte", false);
+        c.addMetric("c2nBytes", I18nUtil.marktr("Client to Node Bytes"), "byte", false);
+        c.addMetric("n2sBytes", I18nUtil.marktr("Node to Server Bytes"), "byte", false);
+        c.addMetric("n2cBytes", I18nUtil.marktr("Node to Client Bytes"), "byte", false);
 
         runState = NodeState.LOADED;
     }

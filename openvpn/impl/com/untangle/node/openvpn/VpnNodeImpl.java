@@ -50,6 +50,7 @@ import com.untangle.uvm.node.UnconfiguredException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -117,9 +118,9 @@ public class VpnNodeImpl extends AbstractNode
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        blockBlinger = c.addActivity("block", "Block Connection", null, "BLOCK");
-        passBlinger = c.addActivity("pass", "Pass Connection", null, "PASS");
-        connectBlinger = c.addActivity("connect", "Connect", null, "CONNECT");
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Connection"), null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Connection"), null, I18nUtil.marktr("PASS"));
+        connectBlinger = c.addActivity("connect", I18nUtil.marktr("Connect"), null, I18nUtil.marktr("CONNECT"));
         lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger, connectBlinger);
     }
 

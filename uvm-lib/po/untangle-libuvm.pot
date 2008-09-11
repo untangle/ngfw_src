@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-11 12:53+0300\n"
+"POT-Creation-Date: 2008-09-11 16:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3367,6 +3367,166 @@ msgstr ""
 
 #: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:224
 msgid "Error"
+msgstr ""
+
+#: ../impl/com/untangle/uvm/engine/Dispatcher.java:264
+msgid "UDP Sessions"
+msgstr ""
+
+#: ../impl/com/untangle/uvm/engine/Dispatcher.java:266
+msgid "TCP Sessions"
+msgstr ""
+
+#: ../impl/com/untangle/uvm/engine/Dispatcher.java:268
+msgid "UDP Session Requests"
+msgstr ""
+
+#: ../impl/com/untangle/uvm/engine/Dispatcher.java:271
+msgid "TCP Session Requests"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:93
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:96
+msgid "Server to Node Chunks"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:94
+msgid "Client to Node Chunks"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:95
+msgid "Node to Server Chunks"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:97
+msgid "Server to Node Bytes"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:98
+msgid "Client to Node Bytes"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:99
+msgid "Node to Server Bytes"
+msgstr ""
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:100
+msgid "Node to Client Bytes"
+msgstr ""
+
+#: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:92
+msgid "Block Request"
+msgstr ""
+
+#: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:92
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:121
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:223
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:116
+msgid "BLOCK"
+msgstr ""
+
+#: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:93
+msgid "Pass Request"
+msgstr ""
+
+#: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:93
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:122
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:224
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:117
+msgid "PASS"
+msgstr ""
+
+#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:95
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:212
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:115
+msgid "Scan Connection"
+msgstr ""
+
+#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:95
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:89
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:212
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:222
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:115
+msgid "SCAN"
+msgstr ""
+
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:121
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:116
+msgid "Block Connection"
+msgstr ""
+
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:122
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:117
+msgid "Pass Connection"
+msgstr ""
+
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:123
+msgid "Connect"
+msgstr ""
+
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:123
+msgid "CONNECT"
+msgstr ""
+
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:89
+msgid "Scan Protocol"
+msgstr ""
+
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+msgid "Block Protocol"
+msgstr ""
+
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "Detect Protocol"
+msgstr ""
+
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "DETECT"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:224
+msgid "Pass Message"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:223
+msgid "Block Message"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+msgid "Mark Message"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+msgid "MARK"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+msgid "Quarantine Message"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+msgid "QUARANTINE"
+msgstr ""
+
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:222
+msgid "Scan Message"
+msgstr ""
+
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:225
+msgid "Remove Message"
+msgstr ""
+
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:225
+msgid "REMOVE"
 msgstr ""
 
 msgid "decimal_sep"

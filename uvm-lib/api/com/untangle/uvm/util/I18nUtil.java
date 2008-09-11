@@ -92,4 +92,9 @@ public class I18nUtil
     {
         return tr(value, new Object[]{ o1 }, i18nMap);
     }
+    
+    public static String marktr(String value)
+    {
+        return value;
+    }    
 }

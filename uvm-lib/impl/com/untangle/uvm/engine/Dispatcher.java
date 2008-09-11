@@ -35,6 +35,7 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.util.SessionUtil;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
@@ -260,14 +261,14 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter",
                                                   "TCP Sessions");
         udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter",
-                                             "UDP Sessions", null);
+                                             I18nUtil.marktr("UDP Sessions"), null);
         tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter",
-                                             "TCP Sessions", null);
+                                        I18nUtil.marktr("TCP Sessions"), null);
         udpTotalSessionRequestCounter = c
-            .addMetric("udpTotalSessionRequestCounter", "UDP Session Requests",
+            .addMetric("udpTotalSessionRequestCounter", I18nUtil.marktr("UDP Session Requests"),
                        null);
         tcpTotalSessionRequestCounter = c
-            .addMetric("tcpTotalSessionRequestCounter", "TCP Session Requests",
+            .addMetric("tcpTotalSessionRequestCounter", I18nUtil.marktr("TCP Session Requests"),
                        null);
     }
 
