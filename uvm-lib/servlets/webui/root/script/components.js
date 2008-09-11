@@ -933,8 +933,14 @@ Ung.Node = Ext.extend(Ext.Component, {
         var trialDays = "";
         if (this.md.extraName != null && this.md.extraName.indexOf("Trial") != -1) {
             trialFlag = i18n._("Trial");
-            var daysRemain = parseInt(this.md.extraName.replace("Trial (", ""))
-            trialDays = String.format(i18n._("{0} days remain"), daysRemain);
+            if (this.md.extraName.indexOf("expired") != -1) {
+            	trialDays = i18n._("Trial expired");
+            } else {
+                var daysRemain = parseInt(this.md.extraName.replace("Trial (", ""))
+                if (!isNaN(daysRemain)) {
+                    trialDays = String.format(i18n._("{0} days remain"), daysRemain);
+                }
+            }
         }
         var templateHTML = Ung.Node.template.applyTemplate({
             'id' : this.getId(),
