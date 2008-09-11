@@ -92,6 +92,14 @@ Ung.Main.prototype = {
         rpc.jsonrpc.RemoteUvmContext.messageManager(function (result, exception) {
             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
             rpc.messageManager=result;
+            // get translations for main module
+            rpc.messageManager.getMessageKey(function (result, exception) {
+                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+                    i18n =new Ung.I18N({"map":result.map});
+                    rpc.messageKey=result;
+                    this.postinit();// 9
+                }.createDelegate(this));
+            
             this.postinit();// 9
         }.createDelegate(this));
 
@@ -573,6 +581,7 @@ Ung.Main.prototype = {
         var out=[];
         for(var i=0;i<this.config.length;i++) {
             var item=this.config[i];
+            /*
             var buttonCmp=new Ung.Button({
                 id: "configItem_"+item.name,
                 name: "configItem_"+item.name,
@@ -583,6 +592,9 @@ Ung.Main.prototype = {
                 text: item.displayName,
                 handler: function() {main.clickConfig(main.config[this.configIndex]);},
                 iconCls: item.iconClass
+            });*/
+            var appItemCmp=new Ung.ConfigItem({
+            	item:item
             });
         }
     },

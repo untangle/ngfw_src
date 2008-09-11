@@ -524,6 +524,30 @@ Ung.MessageClientThread = {
     }
 };
 */
+Ung.ConfigItem = Ext.extend(Ext.Component, {
+	item: null,
+	renderTo : 'configItems',
+    autoEl : 'div',
+    onRender : function(container, position) {
+    	Ung.ConfigItem.superclass.onRender.call(this, container, position);
+    	var html = Ung.ConfigItem.template.applyTemplate({
+            'iconCls' : this.item.iconClass,
+            'text' : this.item.displayName
+        });
+        this.getEl().insertHtml("afterBegin", html);
+    	this.getEl().addClass("appItem");
+    	this.getEl().on("click", this.onClick, this);
+    },
+    onClick: function(e) {
+        if (e!=null) {
+            e.stopEvent();
+        }
+    	main.clickConfig(this.item);
+    }
+});
+Ung.ConfigItem.template = new Ext.Template(
+    '<div class="icon"><div class="{iconCls}"></div></div>', '<div class="text textCenter">{text}</div>');
+
 Ung.AppItem = Ext.extend(Ext.Component, {
     libItem: null,
     node : null,
@@ -933,14 +957,8 @@ Ung.Node = Ext.extend(Ext.Component, {
         var trialDays = "";
         if (this.md.extraName != null && this.md.extraName.indexOf("Trial") != -1) {
             trialFlag = i18n._("Trial");
-            if (this.md.extraName.indexOf("expired") != -1) {
-            	trialDays = i18n._("Trial expired");
-            } else {
-                var daysRemain = parseInt(this.md.extraName.replace("Trial (", ""))
-                if (!isNaN(daysRemain)) {
-                    trialDays = String.format(i18n._("{0} days remain"), daysRemain);
-                }
-            }
+            var daysRemain = parseInt(this.md.extraName.replace("Trial (", ""))
+            trialDays = String.format(i18n._("{0} days remain"), daysRemain);
         }
         var templateHTML = Ung.Node.template.applyTemplate({
             'id' : this.getId(),
@@ -1161,10 +1179,19 @@ Ung.Node = Ext.extend(Ext.Component, {
                 this.activityBlinger.render('nodeBlingers_' + this.getId());
                 this.subCmps.push(this.activityBlinger);
             }
-            if(this.blingers.metricDescs!=null && this.blingers.metricDescs.list.length>0) {
+            var dispMetricDescs=[];
+            if(this.blingers.metricDescs!=null) {
+            	for(var i=0;i<this.blingers.metricDescs.list.length;i++) {
+            		if(this.blingers.metricDescs.list[i].displayable) {
+            			dispMetricDescs.push(this.blingers.metricDescs.list[i])
+            		}
+            	}
+            }
+            this.blingers.dispMetricDescs=dispMetricDescs;
+            if(this.blingers.dispMetricDescs.length>0) {
                 this.systemBlinger=new Ung.SystemBlinger({
                    parentId : this.getId(),
-                   metric: this.blingers.metricDescs.list
+                   metric: this.blingers.dispMetricDescs
                 });
                 this.systemBlinger.render('nodeBlingers_' + this.getId());
                 this.subCmps.push(this.systemBlinger);
@@ -1211,6 +1238,7 @@ Ung.MessageManager = {
     intervalId : null,
     cycleCompleted : true,
     messageHistory:[], //for debug info
+    mesageKey: null,
     start : function() {
         this.stop();
         this.intervalId = window.setInterval("Ung.MessageManager.run()", this.updateTime);
@@ -1223,13 +1251,14 @@ Ung.MessageManager = {
         }
         this.cycleCompleted = true;
         this.started = false;
+        this.mesageKey=null;
     },
     run : function () {
         if (!this.cycleCompleted) {
             return;
         }
         this.cycleCompleted = false;
-        rpc.messageManager.getMessageQueueZ(function(result, exception) {
+        rpc.messageManager.getMessageQueue(function(result, exception) {
            if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
                     this.cycleCompleted = true;
@@ -1289,49 +1318,8 @@ Ung.MessageManager = {
             }
 
 
-        }.createDelegate(this), rpc.currentPolicy);
+        }.createDelegate(this), rpc.mesageKey, rpc.currentPolicy);
     }
-    /*,
-    hasActiveNodes : function() {
-        for (var i = 0; i < main.nodes.length; i++) {
-            var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
-            if (nodeCmp && nodeCmp.isRunning()) {
-                return true;
-            }
-        }
-        return false;
-    },
-    getNodesStats : function() {
-        if (!this.cycleCompleted) {
-            return;
-        }
-        if (this.hasActiveNodes()) {
-            this.cycleCompleted = false;
-            rpc.nodeManager.allNodeStats(function(result, exception) {
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
-                        this.cycleCompleted = true;
-                    });
-                    return;
-                }
-                try {
-                    var allNodeStats = result;
-                    for (var i = 0; i < main.nodes.length; i++) {
-                        var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
-                        if (nodeCmp && nodeCmp.isRunning()) {
-                            nodeCmp.stats = allNodeStats.map[main.nodes[i].tid];
-                            nodeCmp.updateBlingers();
-                        }
-                    }
-                    this.cycleCompleted = true;
-                } catch (err) {
-                    this.cycleCompleted = true;
-                    throw err;
-                }
-            }.createDelegate(this));
-        }
-    }
-    */
 };
 Ung.SystemStats = Ext.extend(Ext.Component, {
     autoEl : 'div',
@@ -1665,8 +1653,8 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         var metricsLen=Math.min(activeMetrics.length,4);
         for(var i=0; i<metricsLen;i++) {
             var activeMetric=activeMetrics[i];
-            for(var j=0;j<nodeCmp.blingers.metricDescs.list.length;j++) {
-                var metric=nodeCmp.blingers.metricDescs.list[j];
+            for(var j=0;j<nodeCmp.blingers.dispMetricDescs.length;j++) {
+                var metric=nodeCmp.blingers.dispMetricDescs[j];
                 if(activeMetric.name==metric.name) {
                     activeMetric.metricDesc=metric;
                     activeMetric.index=i;
@@ -1694,8 +1682,8 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         this.tempMetrics=[];
         if(this.configWin==null) {
             var configItems=[];
-            for(var i=0;i<nodeCmp.blingers.metricDescs.list.length;i++) {
-                var metric=nodeCmp.blingers.metricDescs.list[i];
+            for(var i=0;i<nodeCmp.blingers.dispMetricDescs.length;i++) {
+                var metric=nodeCmp.blingers.dispMetricDescs[i];
                 configItems.push({
                     xtype : 'checkbox',
                     boxLabel : i18n._(metric.displayName),
@@ -1791,8 +1779,8 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         var activeMetrics=[];
         var nodeCmp = Ext.getCmp(this.parentId);
         for(var i=0; i<this.tempMetrics.length;i++) {
-            for(var j=0;j<nodeCmp.blingers.metricDescs.list.length;j++) {
-                var metric=nodeCmp.blingers.metricDescs.list[j];
+            for(var j=0;j<nodeCmp.blingers.dispMetricDescs.length;j++) {
+                var metric=nodeCmp.blingers.dispMetricDescs[j];
                 if(this.tempMetrics[i]==metric.name) {
                     activeMetrics.push({
                        javaClass : "com.untangle.uvm.message.ActiveStat",

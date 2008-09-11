@@ -232,7 +232,7 @@ class MessageManagerImpl implements LocalMessageManager
         synchronized (messages) {
             do {
                 key = random.nextLong();
-            } while (!messages.keySet().contains(key));
+            } while (messages.keySet().contains(key));
 
             lastMessageAccess.put(key, System.currentTimeMillis());
         }
