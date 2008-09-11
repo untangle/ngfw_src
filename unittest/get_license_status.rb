@@ -7,11 +7,9 @@ identifiers = [
                "untangle-dual-virus-blocker-kav",
                "untangle-remote-access-portal",
                "untangle-configuration-backup", 
-               "untangle-pcremote",
                "untangle-user-directory-integration", 
                "untangle-user-directory-management", 
                "untangle-policy-manager", 
-               "untangle-license-manager", 
                "untangle-branding-manager", 
                "untangle-pcremote"
               ]
