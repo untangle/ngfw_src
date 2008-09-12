@@ -250,6 +250,8 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 fields : [{
                     name : 'id'
                 }, {
+                    name : 'name'
+                }, {
                     name : 'displayName'
                 }, {
                     name : 'blockDomains'

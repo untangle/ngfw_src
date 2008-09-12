@@ -703,7 +703,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         }
 
         for (BlacklistCategory bc : curCategories) {
-            if (bc.getName().equals("proxy")) {
+            if ("proxy".equals(bc.getName())) {
                 bc.setDisplayName("Proxy Sites");
                 bc.setDescription("Proxy Sites");
             }
