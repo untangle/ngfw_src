@@ -1,6 +1,8 @@
 package com.untangle.uvm.webui.jabsorb.serializer;
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 
 import org.jabsorb.serializer.AbstractSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -8,13 +10,12 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.IPaddr;
-
-public class Inet4AddressSerializer extends AbstractSerializer {
+public class InetAddressSerializer extends AbstractSerializer {
     /**
      * Classes that this can serialise.
      */
-    private static Class[] _serializableClasses = new Class[] { Inet4Address.class };
+    private static Class[] _serializableClasses = new Class[] { InetAddress.class, 
+            Inet4Address.class, Inet6Address.class };
 
     /**
      * Classes that this can serialise to.
@@ -40,8 +41,8 @@ public class Inet4AddressSerializer extends AbstractSerializer {
 		
         if( o == null ) {
             return "";
-        } else if (o instanceof Inet4Address) {
-            return ((Inet4Address)o).getHostAddress();
+        } else if (o instanceof InetAddress) {
+            return ((InetAddress)o).getHostAddress();
         }
         
         return null;
@@ -71,9 +72,9 @@ public class Inet4AddressSerializer extends AbstractSerializer {
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            returnValue = IPaddr.parse(val).getAddr();
+            returnValue = InetAddress.getByName(val);
         } catch (Exception e) {
-            throw new UnmarshallException("Invalid \"Inet4Address\" specified:"
+            throw new UnmarshallException("Invalid \"InetAddress\" specified:"
                                           + val);
         }
 		

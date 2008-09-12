@@ -281,7 +281,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                },],
+                }],
                 sortField : 'displayName',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
@@ -397,7 +397,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                },],
+                }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
@@ -483,7 +483,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                },],
+                }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'name',
@@ -567,7 +567,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                },],
+                }],
                 sortField : 'mimeType',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'name',
@@ -756,7 +756,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                },],
+                }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
@@ -830,7 +830,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                },],
+                }],
                 sortField : 'ipMaddr',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
@@ -895,7 +895,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     sortable : true,
                     dataIndex : 'requestLine',
                     renderer : function(value) {
-                        return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.CClientAddr.hostAddress + ":" + value.pipelineEndpoints.CClientPort;
+                        return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.CClientAddr + ":" + value.pipelineEndpoints.CClientPort;
                     }
                 }, {
                     header : i18n._("request"),
@@ -939,7 +939,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     sortable : true,
                     dataIndex : 'requestLine',
                     renderer : function(value) {
-                        return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.SServerAddr.hostAddress + ":" + value.pipelineEndpoints.SServerPort;
+                        return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.SServerAddr + ":" + value.pipelineEndpoints.SServerPort;
                     }
                 }]
                 

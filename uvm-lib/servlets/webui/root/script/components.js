@@ -1352,7 +1352,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("Data sent (since last start):")+'</div>',
             '<div class="values"><span name="data_sent"></span> MBs</div>',
             '<div class="title">'+i18n._("Total Throughput:")+'</div>',
-            '<div class="values"><span name="total_throughput"></span> MBs</div>',
+            '<div class="values"><span name="total_throughput"></span> MBs</div>'
         ];
         this.networkToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=network]"),
@@ -1441,7 +1441,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("Data read:")+'</div>',
             '<div class="values"><span name="data_read"></span> </div>',
             '<div class="title">'+i18n._("Data write:")+'</div>',
-            '<div class="values"><span name="data_write"></span> </div>',
+            '<div class="values"><span name="data_write"></span> </div>'
         ];
         this.diskToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=disk]"),
@@ -2002,89 +2002,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     columns : null,
     enableHdMenu : false,
     enableColumnMove: false,
-    // Predefined event log type. means the fileds and columns are predefined.
-    // This was introduced for the speed of development.
-    // TYPE1: timeStamp, blocked, pipelineEndpoints, protocol, blocked, server
-    predefinedType : null,
     // for internal use
     rpc : null,
-    // get the fields for a predefined type
-    getPredefinedFields : function(type) {
-        var fields = null;
-        switch (type) {
-            case "TYPE1" :
-                fields = [{
-                    name : 'timeStamp'
-                }, {
-                    name : 'blocked'
-                }, {
-                    name : 'pipelineEndpoints'
-                }, {
-                    name : 'protocol'
-                }, {
-                    name : 'blocked'
-                }, {
-                    name : 'server'
-                }];
-                break;
-        }
-        return fields;
-    },
-    // get the columns for a predefined type
-    getPredefinedColumns : function(type) {
-        var columns = null;
-        switch (type) {
-            case "TYPE1" :
-                columns = [{
-                    header : i18n._("timestamp"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'timeStamp',
-                    renderer : function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header : i18n._("action"),
-                    width : 70,
-                    sortable : true,
-                    dataIndex : 'blocked',
-                    renderer : function(value) {
-                        return value ? i18n._("blocked") : i18n._("passed");
-                    }.createDelegate(this)
-                }, {
-                    header : i18n._("client"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.CClientAddr.hostAddress + ":" + value.CClientPort;
-                    }
-                }, {
-                    header : i18n._("request"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'protocol'
-                }, {
-                    header : i18n._("reason for action"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'blocked',
-                    renderer : function(value) {
-                        return value ? i18n._("blocked in block list") : i18n._("not blocked in block list");
-                    }.createDelegate(this)
-                }, {
-                    header : i18n._("server"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.SServerAddr.hostAddress + ":" + value.SServerPort;
-                    }
-                }];
-                break;
-        }
-        return columns;
-    },
     // called when the component is initialized
     initComponent : function() {
         this.rpc = {};
@@ -2097,10 +2016,6 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         }
         if (this.name == null) {
             this.name = "Event Log";
-        }
-        if (this.predefinedType != null) {
-            this.fields = this.getPredefinedFields(this.predefinedType);
-            this.columns = this.getPredefinedColumns(this.predefinedType);
         }
         if (this.eventManagerFn == null && this.hasRepositories == true) {
             this.eventManagerFn = this.settingsCmp.getEventManager();

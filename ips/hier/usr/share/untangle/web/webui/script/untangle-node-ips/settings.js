@@ -332,7 +332,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     sortable : true,
                     dataIndex : 'pipelineEndpoints',
                     renderer : function(value) {
-                        return value === null ? "" : value.CClientAddr.hostAddress + ":" + value.CClientPort;
+                        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
                     }
                 }, {
                     header : this.i18n._('reason for action'),
@@ -348,7 +348,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     sortable : true,
                     dataIndex : 'pipelineEndpoints',
                     renderer : function(value) {
-                        return value === null ? "" : value.SServerAddr.hostAddress + ":" + value.SServerPort;
+                        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
                     }
                 }]
                 

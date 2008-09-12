@@ -233,7 +233,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header : i18n._("end time"),
                     width : 70,
                     sortable : true,
-                    dataIndex : 'actionType',
+                    dataIndex : 'end',
                     renderer : function(value) {
                         return i18n.dateFormat(value);
                     }

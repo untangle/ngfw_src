@@ -393,13 +393,19 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 settingsCmp : this,
                 // the list of fields
                 fields : [{
-                    name : 'createDate'
+                    name : 'timeStamp'
                 }, {
                     name : 'type'
                 }, {
                     name : 'actionType'
                 }, {
-                    name : 'messageInfo'
+                    name : 'clientAddr'
+                }, {
+                    name : 'clientPort'
+                }, {
+                    name : 'serverAddr'
+                }, {
+                    name : 'serverPort'
                 }, {
                     name : 'subject'
                 }, {
@@ -414,7 +420,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : i18n._("timestamp"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'createDate',
+                    dataIndex : 'timeStamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -454,10 +460,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'messageInfo',
-                    renderer : function(value) {
-                        return value === null || value.pipelineEndpoints == null ? "" : value.pipelineEndpoints.CClientAddr.hostAddress
-                                + ":" + value.pipelineEndpoints.CClientPort;
+                    dataIndex : 'clientAddr',
+                    renderer : function(value, metadata, record ) {
+                        return value === null ? "" : record.data.clientAddr + ":" + record.data.clientPort;
                     }
                 }, {
                     header : this.i18n._("subject"),
@@ -483,10 +488,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'messageInfo',
-                    renderer : function(value) {
-                        return value === null || value.pipelineEndpoints == null ? "" : value.pipelineEndpoints.SServerAddr.hostAddress
-                                + ":" + value.pipelineEndpoints.SServerPort;
+                    dataIndex : 'serverAddr',
+                    renderer : function(value, metadata, record ) {
+                        return value === null ? "" : record.data.serverAddr + ":" + record.data.serverPort;
                     }
                 }]
             });
@@ -500,7 +504,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 title : this.i18n._("Tarpit Event Log"),
                 // the list of fields
                 fields : [{
-                    name : 'createDate'
+                    name : 'timeStamp'
                 }, {
                     name : 'skipped'
                 }, {
@@ -513,7 +517,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : i18n._("timestamp"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'createDate',
+                    dataIndex : 'timeStamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -531,16 +535,13 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     sortable : true,
                     dataIndex : 'IPAddr',
                     renderer : function(value) {
-                        return value == null ? "" : value.hostAddress;
-                    }.createDelegate(this)
+                        return value == null ? "" : value;
+                    }
                 }, {
                     header : this.i18n._("DNSBL server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'hostname',
-                    renderer : function(value) {
-                        return value.hostName;
-                    }
+                    dataIndex : 'hostname'
                 }]
             });
         },

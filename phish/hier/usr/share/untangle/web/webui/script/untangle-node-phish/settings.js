@@ -233,13 +233,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 name : 'Web Event Log',
                 settingsCmp : this,
                 title : this.i18n._("Web Event Log"),
+                eventManagerFn : this.getRpcNode().getPhishHttpEventManager(),
                 // the list of fields
                 fields : [{
-                    name : 'createDate'
+                    name : 'timeStamp'
                 }, {
                     name : 'actionType'
-                }, {
-                    name : 'pipelineEndpoints'
                 }, {
                     name : 'requestLine'
                 }],
@@ -248,17 +247,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : i18n._("timestamp"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'createDate',
+                    dataIndex : 'timeStamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header : i18n._("client"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.CClientAddr.hostAddress + ":" + value.CClientPort;
                     }
                 }, {
                     header : i18n._("action"),
@@ -275,6 +266,15 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         }
                     }.createDelegate(this)
                 }, {
+                    header : i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'requestLine',
+                    renderer : function(value) {
+                    	var pe = (value == null ? null : value.pipelineEndpoints);
+                        return pe === null ? "" : pe.CClientAddr + ":" + pe.CClientPort;
+                    }
+                }, {
                     header : this.i18n._("request"),
                     width : 120,
                     sortable : true,
@@ -286,9 +286,10 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
+                    dataIndex : 'requestLine',
                     renderer : function(value) {
-                        return value === null ? "" : value.SServerAddr.hostAddress + ":" + value.SServerPort;
+                        var pe = (value == null ? null : value.pipelineEndpoints);
+                        return pe === null ? "" : pe.SServerAddr + ":" + pe.SServerPort;
                     }
                 }]
             });
@@ -301,13 +302,19 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 title : this.i18n._("Email Event Log"),
                 // the list of fields
                 fields : [{
-                    name : 'createDate'
+                    name : 'timeStamp'
                 }, {
                     name : 'type'
                 }, {
                     name : 'actionType'
                 }, {
-                    name : 'messageInfo'
+                    name : 'clientAddr'
+                }, {
+                    name : 'clientPort'
+                }, {
+                    name : 'serverAddr'
+                }, {
+                    name : 'serverPort'
                 }, {
                     name : 'subject'
                 }, {
@@ -320,7 +327,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : i18n._("timestamp"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'createDate',
+                    dataIndex : 'timeStamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -360,10 +367,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'messageInfo',
-                    renderer : function(value) {
-                        return value === null || value.pipelineEndpoints == null ? "" : value.pipelineEndpoints.CClientAddr.hostAddress
-                                + ":" + value.pipelineEndpoints.CClientPort;
+                    dataIndex : 'clientAddr',
+                    renderer : function(value, metadata, record ) {
+                        return value === null ? "" : record.data.clientAddr + ":" + record.data.clientPort;
                     }
                 }, {
                     header : this.i18n._("subject"),
@@ -384,10 +390,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'messageInfo',
-                    renderer : function(value) {
-                        return value === null || value.pipelineEndpoints == null ? "" : value.pipelineEndpoints.SServerAddr.hostAddress
-                                + ":" + value.pipelineEndpoints.SServerPort;
+                    dataIndex : 'serverAddr',
+                    renderer : function(value, metadata, record ) {
+                        return value === null ? "" : record.data.serverAddr + ":" + record.data.serverPort;
                     }
                 }]
             });

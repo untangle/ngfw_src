@@ -212,7 +212,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                },],
+                }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'name',
@@ -284,7 +284,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                },],
+                }],
                 sortField : 'mimeType',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'name',
@@ -609,7 +609,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     sortable : true,
                     dataIndex : 'pipelineEndpoints',
                     renderer : function(value) {
-                        return value === null ? "" : value.CClientAddr.hostAddress + ":" + value.CClientPort;
+                        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
                     }
                 }, {
                     header : this.i18n._("traffic"),
@@ -630,7 +630,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     sortable : true,
                     dataIndex : 'pipelineEndpoints',
                     renderer : function(value) {
-                        return value === null ? "" : value.SServerAddr.hostAddress + ":" + value.SServerPort;
+                        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
                     }
                 }]
             });

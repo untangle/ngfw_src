@@ -541,9 +541,85 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                // This is a predefined event log, so there is no need to
-                // specify the fields and columns
-                predefinedType : "TYPE1"
+                fields : [{
+                    name : 'timeStamp'
+                }, {
+                    name : 'blocked'
+                }, {
+                    name : 'pipelineEndpoints'
+                }, {
+                    name : 'location'
+                }, {
+                    name : 'identification'
+                }, {
+                    name : 'reason'
+                }, {
+                    name : 'type'
+                }],
+                columns : [{
+                    header : this.i18n._("timestamp"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : this.i18n._("action"),
+                    width : 70,
+                    sortable : true,
+                    dataIndex : 'blocked',
+                    renderer : function(value) {
+                        return value ? this.i18n._("block") : this.i18n._("pass");
+                    }.createDelegate(this)
+                }, {
+                    header : this.i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'pipelineEndpoints',
+                    renderer : function(value) {
+                        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
+                    }
+                }, {
+                    header : this.i18n._("request"),
+                    width : 200,
+                    sortable : true,
+                    dataIndex : 'location',
+                    renderer : function(value, metadata, record ) {
+                    	return record.data.location + " : " + record.data.identification
+                    }
+                }, {
+                    header : this.i18n._("reason for action"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'reason',
+                    renderer : function(value, metadata, record ) {
+                    	var displayValue = value;
+                        switch (record.data.type) {
+                            case 'Access' :
+                                displayValue = this.i18n._("in Subnet List");
+                                break;
+                            case 'ActiveX' :
+                                displayValue = this.i18n._("in ActiveX List");
+                                break;
+                            case 'Blacklist' :
+                                displayValue = this.i18n._("in URL List");
+                                break;
+                            case 'Cookie' :
+                                displayValue = this.i18n._("in Cookie List");
+                                break;
+                        }
+                        return displayValue;
+                    }.createDelegate(this)
+                }, {
+                    header : this.i18n._("server"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'pipelineEndpoints',
+                    renderer : function(value) {
+                        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
+                    }
+                }]
             });
         },
 

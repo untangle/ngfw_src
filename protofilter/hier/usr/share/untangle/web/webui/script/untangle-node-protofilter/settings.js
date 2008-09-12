@@ -157,9 +157,61 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                // This is a predefined event log, so there is no need to
-                // specify the fields and columns
-                predefinedType : "TYPE1"
+                fields : [{
+                    name : 'timeStamp'
+                }, {
+                    name : 'blocked'
+                }, {
+                    name : 'pipelineEndpoints'
+                }, {
+                    name : 'protocol'
+                }],
+                columns : [{
+                    header : this.i18n._("timestamp"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : this.i18n._("action"),
+                    width : 70,
+                    sortable : true,
+                    dataIndex : 'blocked',
+                    renderer : function(value) {
+                        return value ? this.i18n._("blocked") : this.i18n._("passed");
+                    }.createDelegate(this)
+                }, {
+                    header : this.i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'pipelineEndpoints',
+                    renderer : function(value) {
+                        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
+                    }
+                }, {
+                    header : this.i18n._("request"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'protocol'
+                }, {
+                    header : this.i18n._("reason for action"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'blocked',
+                    renderer : function(value) {
+                        return value ? this.i18n._("blocked in block list") : this.i18n._("not blocked in block list");
+                    }.createDelegate(this)
+                }, {
+                    header : this.i18n._("server"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'pipelineEndpoints',
+                    renderer : function(value) {
+                        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
+                    }
+                }]
             });
         },
         // save function
