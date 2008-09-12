@@ -39,16 +39,16 @@ import com.untangle.uvm.security.Tid;
 public interface LocalMessageManager
 {
     MessageQueue getMessageQueue();
-    MessageQueue getMessageQueue(Long key);
-    MessageQueue getMessageQueue(Long key, Policy p);
+    MessageQueue getMessageQueue(Integer key);
+    MessageQueue getMessageQueue(Integer key, Policy p);
     StatDescs getStatDescs(Tid t);
     Stats getStats(Tid t);
     Map<String, Object> getSystemStats();
     List<ActiveStat> getActiveMetrics(Tid tid);
     void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);
     List<Message> getMessages();
-    List<Message> getMessages(Long key);
-    Long getMessageKey();
+    List<Message> getMessages(Integer key);
+    Integer getMessageKey();
 
     Counters getUvmCounters();
     Counters getCounters(Tid t);

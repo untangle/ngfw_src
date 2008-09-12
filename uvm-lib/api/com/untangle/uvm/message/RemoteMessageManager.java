@@ -42,8 +42,8 @@ import com.untangle.uvm.security.Tid;
 public interface RemoteMessageManager
 {
     MessageQueue getMessageQueue();
-    MessageQueue getMessageQueue(Long key);
-    MessageQueue getMessageQueue(Long key, Policy p);
+    MessageQueue getMessageQueue(Integer key);
+    MessageQueue getMessageQueue(Integer key, Policy p);
     StatDescs getStatDescs(Tid t);
     Stats getStats(Tid t);
     Map<String, Object> getSystemStats();
@@ -51,5 +51,5 @@ public interface RemoteMessageManager
     void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);
     List<Message> getMessages();
 
-    Long getMessageKey();
+    Integer getMessageKey();
 }

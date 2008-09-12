@@ -81,8 +81,8 @@ class MessageManagerImpl implements LocalMessageManager
 
     private final Random random = new Random();
     // XXX this needs to be per client session
-    private final Map<Long, List<Message>> messages = new HashMap<Long, List<Message>>();
-    private final Map<Long, Long> lastMessageAccess = new HashMap<Long, Long>();
+    private final Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();
+    private final Map<Integer, Long> lastMessageAccess = new HashMap<Integer, Long>();
 
     private final Pulse updatePulse = new Pulse("system-stat-collector",
                                                 true,
@@ -120,7 +120,7 @@ class MessageManagerImpl implements LocalMessageManager
         return getMessageQueue(null);
     }
 
-    public MessageQueue getMessageQueue(Long key)
+    public MessageQueue getMessageQueue(Integer key)
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances();
@@ -130,7 +130,7 @@ class MessageManagerImpl implements LocalMessageManager
         return new MessageQueue(messages, stats, systemStats);
     }
 
-    public MessageQueue getMessageQueue(Long key, Policy p)
+    public MessageQueue getMessageQueue(Integer key, Policy p)
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances(p);
@@ -221,13 +221,13 @@ class MessageManagerImpl implements LocalMessageManager
         UvmContextImpl.getInstance().runTransaction(tw);
     }
 
-    public Long getMessageKey()
+    public Integer getMessageKey()
     {
-        long key;
+        int key;
 
         synchronized (messages) {
             do {
-                key = random.nextLong();
+                key = random.nextInt();
             } while (messages.keySet().contains(key));
 
             messages.put(key, new ArrayList<Message>());
@@ -262,10 +262,10 @@ class MessageManagerImpl implements LocalMessageManager
     {
         long now = System.currentTimeMillis();
 
-        List<Long> removals = new ArrayList<Long>(messages.keySet().size());
+        List<Integer> removals = new ArrayList<Integer>(messages.keySet().size());
 
         synchronized (messages) {
-            for (Long k : messages.keySet()) {
+            for (Integer k : messages.keySet()) {
                 Long d = lastMessageAccess.get(k);
                 if (null == d) {
                     removals.add(k);
@@ -282,7 +282,7 @@ class MessageManagerImpl implements LocalMessageManager
                 }
             }
 
-            for (Long k : removals) {
+            for (Integer k : removals) {
                 messages.remove(k);
                 lastMessageAccess.remove(k);
             }
@@ -332,7 +332,7 @@ class MessageManagerImpl implements LocalMessageManager
         return c.getAllStats(as);
     }
 
-    public List<Message> getMessages(Long key)
+    public List<Message> getMessages(Integer key)
     {
         List<Message> l = new ArrayList<Message>();
 
@@ -353,7 +353,7 @@ class MessageManagerImpl implements LocalMessageManager
         return getMessages(null);
     }
 
-    // private methods ---------------------------------------------------------
+    // private methods --------------------------------------------------------
 
     private Map<Tid, Stats> getStats(LocalNodeManager lm, List<Tid> tids)
     {
