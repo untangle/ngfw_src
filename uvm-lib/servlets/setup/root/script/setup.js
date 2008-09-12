@@ -373,7 +373,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     border : false
                 },{
                     fieldLabel : i18n._('Where will you be using Untangle'),
-                    name : "envrionment",
+                    name : "environment",
                     xtype : 'combo',
                     width : 200,
                     listWidth : 205,
