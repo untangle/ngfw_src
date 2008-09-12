@@ -56,8 +56,8 @@ public class IpsVariable implements Serializable {
     @Id
     @Column(name="variable_id")
     @GeneratedValue
-    protected Long getId() { return id; }
-    protected void setId(Long id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     @Column(length=512)
     public String getVariable() { return this.variable; }
