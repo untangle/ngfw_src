@@ -130,17 +130,13 @@ class MessageManagerImpl implements LocalMessageManager
         return new MessageQueue(messages, stats, systemStats);
     }
 
-    public MessageQueue getMessageQueueZ(Policy p)
-    {
-        return getMessageQueue(null, p);
-    }
-
     public MessageQueue getMessageQueue(Long key, Policy p)
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances(p);
         Map<Tid, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages(key);
+
         return new MessageQueue(messages, stats, systemStats);
     }
 
@@ -234,6 +230,7 @@ class MessageManagerImpl implements LocalMessageManager
                 key = random.nextLong();
             } while (messages.keySet().contains(key));
 
+            messages.put(key, new ArrayList<Message>());
             lastMessageAccess.put(key, System.currentTimeMillis());
         }
 
@@ -284,15 +281,6 @@ class MessageManagerImpl implements LocalMessageManager
                     l.add(m);
                 }
             }
-
-            // XXX remove when keyless queue not allowed
-            List<Message> l = messages.get(null);
-            if (null == l) {
-                l = new ArrayList<Message>();
-                messages.put(null, l);
-            }
-            l.add(m);
-            // XXX remove when keyless queue not allowed
 
             for (Long k : removals) {
                 messages.remove(k);

@@ -525,24 +525,24 @@ Ung.MessageClientThread = {
 };
 */
 Ung.ConfigItem = Ext.extend(Ext.Component, {
-	item: null,
-	renderTo : 'configItems',
+    item: null,
+    renderTo : 'configItems',
     autoEl : 'div',
     onRender : function(container, position) {
-    	Ung.ConfigItem.superclass.onRender.call(this, container, position);
-    	var html = Ung.ConfigItem.template.applyTemplate({
+        Ung.ConfigItem.superclass.onRender.call(this, container, position);
+        var html = Ung.ConfigItem.template.applyTemplate({
             'iconCls' : this.item.iconClass,
             'text' : this.item.displayName
         });
         this.getEl().insertHtml("afterBegin", html);
-    	this.getEl().addClass("appItem");
-    	this.getEl().on("click", this.onClick, this);
+        this.getEl().addClass("appItem");
+        this.getEl().on("click", this.onClick, this);
     },
     onClick: function(e) {
         if (e!=null) {
             e.stopEvent();
         }
-    	main.clickConfig(this.item);
+        main.clickConfig(this.item);
     }
 });
 Ung.ConfigItem.template = new Ext.Template(
@@ -1181,11 +1181,11 @@ Ung.Node = Ext.extend(Ext.Component, {
             }
             var dispMetricDescs=[];
             if(this.blingers.metricDescs!=null) {
-            	for(var i=0;i<this.blingers.metricDescs.list.length;i++) {
-            		if(this.blingers.metricDescs.list[i].displayable) {
-            			dispMetricDescs.push(this.blingers.metricDescs.list[i])
-            		}
-            	}
+                for(var i=0;i<this.blingers.metricDescs.list.length;i++) {
+                    if(this.blingers.metricDescs.list[i].displayable) {
+                        dispMetricDescs.push(this.blingers.metricDescs.list[i])
+                    }
+                }
             }
             this.blingers.dispMetricDescs=dispMetricDescs;
             if(this.blingers.dispMetricDescs.length>0) {
@@ -1258,7 +1258,7 @@ Ung.MessageManager = {
             return;
         }
         this.cycleCompleted = false;
-        rpc.messageManager.getMessageQueueZ(function(result, exception) {
+        rpc.messageManager.getMessageQueue(function(result, exception) {
            if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
                     this.cycleCompleted = true;

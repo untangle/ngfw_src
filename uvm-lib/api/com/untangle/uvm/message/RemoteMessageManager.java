@@ -43,7 +43,6 @@ public interface RemoteMessageManager
 {
     MessageQueue getMessageQueue();
     MessageQueue getMessageQueue(Long key);
-    MessageQueue getMessageQueueZ(Policy p);
     MessageQueue getMessageQueue(Long key, Policy p);
     StatDescs getStatDescs(Tid t);
     Stats getStats(Tid t);
