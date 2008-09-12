@@ -190,6 +190,12 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 
         },
         buildSetup : function() {
+        	var upgradeTime=new Date();
+        	upgradeTime.setTime(0);
+        	upgradeTime.setHours(this.getUpgradeSettings().period.hour);
+        	upgradeTime.setMinutes(this.getUpgradeSettings().period.minute);
+        	
+        	this.getUpgradeSettings().period.hour + ":" + this.getUpgradeSettings().period.minute
             this.panelSetup = new Ext.Panel({
                 // private fields
                 name : 'Upgrade Setup',
@@ -350,7 +356,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         width : 90,
                         hideLabel : true,
                         // format : "H:i",
-                        value : this.getUpgradeSettings().period.hour + ":" + this.getUpgradeSettings().period.minute,
+                        value : upgradeTime,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
