@@ -442,7 +442,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         // Pass List
         buildPassList : function() {
             var urlValidator = function(fieldValue) {
-                if (fieldValue.indexOf("https") == 0) {
+                if (fieldValue.indexOf("https://") == 0) {
                     return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
                 }
                 if (fieldValue.indexOf("http://") == 0) {

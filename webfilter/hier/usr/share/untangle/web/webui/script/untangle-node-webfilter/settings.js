@@ -326,7 +326,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         // Block Sites
         buildBlockedUrls : function() {
             var urlValidator = function(fieldValue) {
-                if (fieldValue.indexOf("https") == 0) {
+                if (fieldValue.indexOf("https://") == 0) {
                     return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
                 }
                 if (fieldValue.indexOf("http://") == 0) {
@@ -692,7 +692,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         // Passed Sites
         buildPassedUrls : function() {
             var urlValidator = function(fieldValue) {
-                if (fieldValue.indexOf("https") == 0) {
+                if (fieldValue.indexOf("https://") == 0) {
                     return this.i18n._("\"URL\" specified cannot be passed because it uses secure http (https)");
                 }
                 if (fieldValue.indexOf("http://") == 0) {
