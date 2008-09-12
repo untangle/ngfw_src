@@ -170,7 +170,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    editor : null,
 		                    sortable : false,
 		                    renderer : function(value) {
-		                        return (value == null || value.length == 0) ? "no info" : "<a href=" + value + ">info</a>";
+		                        return (value == null || value.length == 0) ? "no info" : "<a href='" + value + "' target='_blank'>info</a>";
 		                    }
 		                }],
 		                sortField : 'category',
