@@ -1238,7 +1238,6 @@ Ung.MessageManager = {
     intervalId : null,
     cycleCompleted : true,
     messageHistory:[], //for debug info
-    mesageKey: null,
     start : function() {
         this.stop();
         this.intervalId = window.setInterval("Ung.MessageManager.run()", this.updateTime);
@@ -1251,7 +1250,6 @@ Ung.MessageManager = {
         }
         this.cycleCompleted = true;
         this.started = false;
-        this.mesageKey=null;
     },
     run : function () {
         if (!this.cycleCompleted) {
@@ -1318,7 +1316,7 @@ Ung.MessageManager = {
             }
 
 
-        }.createDelegate(this), rpc.mesageKey, rpc.currentPolicy);
+        }.createDelegate(this), rpc.messageKey, rpc.currentPolicy);
     }
 };
 Ung.SystemStats = Ext.extend(Ext.Component, {
