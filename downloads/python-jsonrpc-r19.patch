@@ -1,6 +1,6 @@
 diff -Naur python-jsonrpc-r19/jsonrpc/__init__.py python-jsonrpc-r19.patched/jsonrpc/__init__.py
 --- python-jsonrpc-r19/jsonrpc/__init__.py	2007-04-29 08:08:53.000000000 -0700
-+++ python-jsonrpc-r19.patched/jsonrpc/__init__.py	2008-09-09 23:49:47.000000000 -0700
++++ python-jsonrpc-r19.patched/jsonrpc/__init__.py	2008-09-11 12:33:39.000000000 -0700
 @@ -21,6 +21,3 @@
  
  from jsonrpc.json import loads, dumps, JSONEncodeException, JSONDecodeException
@@ -655,6 +655,27 @@ diff -Naur python-jsonrpc-r19/jsonrpc/cgiwrapper.py python-jsonrpc-r19.patched/j
 -def handleCGI(service=None, fin=None, fout=None, env=None):
 -    CGIServiceHandler(service).handleRequest(fin, fout, env)
 \ No newline at end of file
+diff -Naur python-jsonrpc-r19/jsonrpc/json.py python-jsonrpc-r19.patched/jsonrpc/json.py
+--- python-jsonrpc-r19/jsonrpc/json.py	2007-07-25 12:24:19.000000000 -0700
++++ python-jsonrpc-r19.patched/jsonrpc/json.py	2008-09-12 13:28:31.000000000 -0700
+@@ -135,7 +135,7 @@
+                 c = chars.next()
+             currCharIsNext=False
+             if c=='"':
+-                value = ''
++                value = u''
+                 try:
+                     c=chars.next()
+                     while c != '"':
+@@ -150,7 +150,7 @@
+                                 else:
+                                     raise JSONDecodeException("Bad Escape Sequence Found")
+                         else:
+-                            value+=c
++                            value += unichr( ord( c ))
+                         c=chars.next()
+                 except StopIteration:
+                     raise JSONDecodeException("Expected end of String")
 diff -Naur python-jsonrpc-r19/jsonrpc/modpywrapper.py python-jsonrpc-r19.patched/jsonrpc/modpywrapper.py
 --- python-jsonrpc-r19/jsonrpc/modpywrapper.py	2007-04-29 08:08:53.000000000 -0700
 +++ python-jsonrpc-r19.patched/jsonrpc/modpywrapper.py	1969-12-31 16:00:00.000000000 -0800
@@ -713,7 +734,7 @@ diff -Naur python-jsonrpc-r19/jsonrpc/modpywrapper.py python-jsonrpc-r19.patched
 -
 diff -Naur python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.patched/jsonrpc/proxy.py
 --- python-jsonrpc-r19/jsonrpc/proxy.py	2007-06-03 15:08:20.000000000 -0700
-+++ python-jsonrpc-r19.patched/jsonrpc/proxy.py	2008-09-11 12:31:34.000000000 -0700
++++ python-jsonrpc-r19.patched/jsonrpc/proxy.py	2008-09-11 12:33:39.000000000 -0700
 @@ -19,31 +19,84 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  """
