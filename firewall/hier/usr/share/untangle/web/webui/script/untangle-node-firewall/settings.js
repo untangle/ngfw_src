@@ -186,11 +186,11 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             boxLabel : this.i18n._('Block'), 
                             hideLabel : true,
 	                        name : 'isDefaultAccept',
-	                        checked : !this.getBaseSettings().isDefaultAccept,
+	                        checked : !this.getBaseSettings().defaultAccept,
 	                        listeners : {
 	                            "check" : {
 	                                fn : function(elem, checked) {
-	                                    this.getBaseSettings().isDefaultAccept = !checked;
+	                                    this.getBaseSettings().defaultAccept = !checked;
 	                                }.createDelegate(this)
 	                            }
 	                        }
@@ -199,11 +199,11 @@ if (!Ung.hasResource["Ung.Firewall"]) {
 	                        boxLabel : this.i18n._('Pass'), 
 	                        hideLabel : true,
 	                        name : 'isDefaultAccept',
-	                        checked : this.getBaseSettings().isDefaultAccept,
+	                        checked : this.getBaseSettings().defaultAccept,
 	                        listeners : {
 	                            "check" : {
 	                                fn : function(elem, checked) {
-	                                    this.getBaseSettings().isDefaultAccept = checked;
+	                                    this.getBaseSettings().defaultAccept = checked;
 	                                }.createDelegate(this)
 	                            }
 	                        }

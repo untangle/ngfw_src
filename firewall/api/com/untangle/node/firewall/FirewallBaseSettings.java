@@ -18,12 +18,14 @@
 
 package com.untangle.node.firewall;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
 @Embeddable
-public class FirewallBaseSettings
+public class FirewallBaseSettings implements Serializable
 {
     private boolean quickExit = true;
     private boolean rejectSilently = true;
