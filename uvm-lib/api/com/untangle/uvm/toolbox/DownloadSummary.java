@@ -47,13 +47,13 @@ public class DownloadSummary extends Message
 
     private final int count;
     private final int size;
-    private final boolean upgrade;
+    private final MackageDesc requestingMackage;
 
-    public DownloadSummary(int count, int size, boolean upgrade)
+    public DownloadSummary(int count, int size, MackageDesc requestingMackage)
     {
         this.count = count;
         this.size = size;
-        this.upgrade = upgrade;
+        this.requestingMackage = requestingMackage;
     }
 
     public int getCount()
@@ -66,8 +66,13 @@ public class DownloadSummary extends Message
         return size;
     }
 
+    public MackageDesc getRequestingMackage()
+    {
+        return requestingMackage;
+    }
+
     public boolean isUpgrade()
     {
-        return upgrade;
+        return null == requestingMackage;
     }
 }

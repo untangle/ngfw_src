@@ -46,12 +46,12 @@ public class DownloadComplete extends Message
     private static final long serialVersionUID = 9186336172977874700L;
 
     private final boolean success;
-    private final boolean upgrade;
+    private final MackageDesc requestingMackage;
 
-    public DownloadComplete(boolean success, boolean upgrade)
+    public DownloadComplete(boolean success, MackageDesc requestingMackage)
     {
         this.success = success;
-        this.upgrade = upgrade;
+        this.requestingMackage = requestingMackage;
     }
 
     // accessors --------------------------------------------------------------
@@ -61,8 +61,13 @@ public class DownloadComplete extends Message
         return success;
     }
 
+    public MackageDesc getRequestingMackage()
+    {
+        return requestingMackage;
+    }
+
     public boolean isUpgrade()
     {
-        return upgrade;
+        return null == requestingMackage;
     }
 }

@@ -161,8 +161,8 @@ class AptLogTail implements Runnable
             }
         }
 
-        mm.submitMessage(new DownloadSummary(downloadQueue.size(),
-                                             totalSize, upgrade));
+        mm.submitMessage(new DownloadSummary(upgrade ? 1 : downloadQueue.size(),
+                                             totalSize, requestingMackage));
 
         for (PackageInfo pi : downloadQueue) {
             logger.debug("downloading: " + pi);
@@ -171,11 +171,11 @@ class AptLogTail implements Runnable
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
                 if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
                     logger.debug("download succeeded");
-                    mm.submitMessage(new DownloadComplete(true, upgrade));
+                    mm.submitMessage(new DownloadComplete(true, requestingMackage));
                     break;
                 } else if (line.startsWith("DOWNLOAD FAILED: " )) {
                     logger.debug("download failed");
-                    mm.submitMessage(new DownloadComplete(false, upgrade));
+                    mm.submitMessage(new DownloadComplete(false, requestingMackage));
                     break;
                 } else if (m.matches()) {
                     int bytesDownloaded = Integer.parseInt(m.group(1)) * 1000;
@@ -183,8 +183,21 @@ class AptLogTail implements Runnable
                     String speed = m.group(3);
 
                     // enqueue event
-                    DownloadProgress dpe = new DownloadProgress
-                        (pi.file, bytesDownloaded, pi.size, speed, upgrade);
+                    DownloadProgress dpe;
+                    if (null == requestingMackage) {
+                        dpe = new DownloadProgress
+                            (pi.file, bytesDownloaded, pi.size, speed, null);
+                    } else {
+                        pi.bytesDownloaded = bytesDownloaded;
+
+                        int soFar = 0;
+                        for (PackageInfo ppi : downloadQueue) {
+                            soFar += ppi.bytesDownloaded;
+                        }
+
+                        dpe = new DownloadProgress(pi.file, soFar, totalSize,
+                                                   speed, requestingMackage);
+                    }
                     logger.debug("Adding event: " + dpe);
 
                     mm.submitMessage(dpe);
@@ -195,7 +208,7 @@ class AptLogTail implements Runnable
         }
 
         logger.debug("installation complete");
-        mm.submitMessage(new InstallComplete(true, upgrade));
+        mm.submitMessage(new InstallComplete(true, requestingMackage));
         live = false;
     }
 
@@ -217,7 +230,7 @@ class AptLogTail implements Runnable
                             // just end the thread adding TimeoutEvent
                             logger.warn("AptLogTail timing out: "
                                         + (t - lastActivity));
-                            mm.submitMessage(new InstallTimeout(t, upgrade));
+                            mm.submitMessage(new InstallTimeout(t, requestingMackage));
                             throw new RuntimeException("timing out: "
                                                        + (t - lastActivity));
                         } else {
@@ -245,6 +258,8 @@ class AptLogTail implements Runnable
         final String file;
         final int size;
         final String hash;
+
+        int bytesDownloaded = 0;
 
         // constructors -------------------------------------------------------
 

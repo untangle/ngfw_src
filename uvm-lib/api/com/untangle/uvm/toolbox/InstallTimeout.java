@@ -46,12 +46,12 @@ public class InstallTimeout extends Message
     private static final long serialVersionUID = -7760003444590856198L;
 
     private final long time;
-    private final boolean upgrade;
+    private final MackageDesc requestingMackage;
 
-    public InstallTimeout(long time, boolean upgrade)
+    public InstallTimeout(long time, MackageDesc requestingMackage)
     {
         this.time = time;
-        this.upgrade = upgrade;
+        this.requestingMackage = requestingMackage;
     }
 
     // accessors --------------------------------------------------------------
@@ -61,8 +61,13 @@ public class InstallTimeout extends Message
         return time;
     }
 
+    public MackageDesc getRequestingMackage()
+    {
+        return requestingMackage;
+    }
+
     public boolean isUpgrade()
     {
-        return upgrade;
+        return null == requestingMackage;
     }
 }
