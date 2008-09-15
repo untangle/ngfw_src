@@ -142,21 +142,6 @@ public class IpsDetectionEngine
     public void processNewSessionRequest(IPNewSessionRequest request,
                                          Protocol protocol)
     {
-        // Special case for dumping performance profile
-        if (request.serverPort() == 7) {
-            try {
-                InetAddress release_metavize_com = InetAddress.getByName("64.2.3.42");
-                if (release_metavize_com.equals(request.serverAddr())) {
-                    dumpProfile();
-                    // Ensure it gets malied to us:
-                    log.error("Ips Rule Profile dumped at user request");
-                }
-            } catch (Exception x) {
-                log.warn("Unable to dump profile", x);
-            }
-        }
-
-
         //Get Mapped list
         List<IpsRuleHeader> c2sList = portC2SMap.get(request.serverPort());
         List<IpsRuleHeader> s2cList = portS2CMap.get(request.serverPort());
