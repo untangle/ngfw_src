@@ -380,7 +380,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         synchronized (tails) {
             long i = ++lastTailKey;
-            alt = new AptLogTail(i, true);
+            alt = new AptLogTail(i, null);
             tails.put(i, alt);
         }
 
@@ -591,11 +591,16 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     private void install(final String name, boolean async)
     {
+        MackageDesc req = mackageDesc(name);
+        if (null == req) {
+            logger.warn("No such mackage: " + name);
+        }
+
         final AptLogTail alt;
 
         synchronized (tails) {
             long i = ++lastTailKey;
-            alt = new AptLogTail(i, false);
+            alt = new AptLogTail(i, req);
             tails.put(i, alt);
         }
 

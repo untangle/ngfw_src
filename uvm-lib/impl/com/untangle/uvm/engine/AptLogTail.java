@@ -34,6 +34,7 @@ import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
 import com.untangle.uvm.toolbox.InstallComplete;
 import com.untangle.uvm.toolbox.InstallTimeout;
+import com.untangle.uvm.toolbox.MackageDesc;
 import org.apache.log4j.Logger;
 
 /**
@@ -60,6 +61,7 @@ class AptLogTail implements Runnable
 
     private final long key;
     private final boolean upgrade;
+    private final MackageDesc requestingMackage;
 
     private final RandomAccessFile raf;
 
@@ -70,12 +72,13 @@ class AptLogTail implements Runnable
 
     // constructor ------------------------------------------------------------
 
-    AptLogTail(long key, boolean upgrade)
+    AptLogTail(long key, MackageDesc requestingMackage)
     {
         logger.debug("new AptLogTail: " + key);
 
         this.key = key;
-        this.upgrade = upgrade;
+        this.requestingMackage = requestingMackage;
+        this.upgrade = null == requestingMackage;
 
         File f = new File(APT_LOG);
         if (!f.exists()) {
