@@ -140,6 +140,8 @@ end
 def getVersion
   if !getPackageVersion('untangle-windows-installer').nil? 
     :windows
+  elsif !getPackageVersion('untangle').nil? 
+    :ubuntu
   elsif getPackageVersion('untangle-gateway').nil?
     :lite
   elsif getPackageVersion('untangle-hardware-support').nil?
