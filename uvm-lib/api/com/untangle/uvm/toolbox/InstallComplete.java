@@ -46,10 +46,12 @@ public class InstallComplete extends Message
     private static final long serialVersionUID = 1562132446777632430L;
 
     private final boolean success;
+    private final boolean upgrade;
 
-    public InstallComplete(boolean success)
+    public InstallComplete(boolean success, boolean upgrade)
     {
         this.success = success;
+        this.upgrade = upgrade;
     }
 
     // accessors --------------------------------------------------------------
@@ -57,5 +59,10 @@ public class InstallComplete extends Message
     public boolean getSuccess()
     {
         return success;
+    }
+
+    public boolean isUpgrade()
+    {
+        return upgrade;
     }
 }

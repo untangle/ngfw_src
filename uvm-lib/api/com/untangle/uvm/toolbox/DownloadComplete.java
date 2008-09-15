@@ -46,10 +46,12 @@ public class DownloadComplete extends Message
     private static final long serialVersionUID = 9186336172977874700L;
 
     private final boolean success;
+    private final boolean upgrade;
 
-    public DownloadComplete(boolean success)
+    public DownloadComplete(boolean success, boolean upgrade)
     {
         this.success = success;
+        this.upgrade = upgrade;
     }
 
     // accessors --------------------------------------------------------------
@@ -57,5 +59,10 @@ public class DownloadComplete extends Message
     public boolean getSuccess()
     {
         return success;
+    }
+
+    public boolean isUpgrade()
+    {
+        return upgrade;
     }
 }

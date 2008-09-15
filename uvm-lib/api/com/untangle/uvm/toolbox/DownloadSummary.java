@@ -47,11 +47,13 @@ public class DownloadSummary extends Message
 
     private final int count;
     private final int size;
+    private final boolean upgrade;
 
-    public DownloadSummary(int count, int size)
+    public DownloadSummary(int count, int size, boolean upgrade)
     {
         this.count = count;
         this.size = size;
+        this.upgrade = upgrade;
     }
 
     public int getCount()
@@ -62,5 +64,10 @@ public class DownloadSummary extends Message
     public int getSize()
     {
         return size;
+    }
+
+    public boolean isUpgrade()
+    {
+        return upgrade;
     }
 }

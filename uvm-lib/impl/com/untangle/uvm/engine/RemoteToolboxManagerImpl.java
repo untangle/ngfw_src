@@ -380,7 +380,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         synchronized (tails) {
             long i = ++lastTailKey;
-            alt = new AptLogTail(i);
+            alt = new AptLogTail(i, true);
             tails.put(i, alt);
         }
 
@@ -595,7 +595,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         synchronized (tails) {
             long i = ++lastTailKey;
-            alt = new AptLogTail(i);
+            alt = new AptLogTail(i, false);
             tails.put(i, alt);
         }
 

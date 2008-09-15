@@ -46,10 +46,12 @@ public class InstallTimeout extends Message
     private static final long serialVersionUID = -7760003444590856198L;
 
     private final long time;
+    private final boolean upgrade;
 
-    public InstallTimeout(long time)
+    public InstallTimeout(long time, boolean upgrade)
     {
         this.time = time;
+        this.upgrade = upgrade;
     }
 
     // accessors --------------------------------------------------------------
@@ -57,5 +59,10 @@ public class InstallTimeout extends Message
     public long getTime()
     {
         return time;
+    }
+
+    public boolean isUpgrade()
+    {
+        return upgrade;
     }
 }

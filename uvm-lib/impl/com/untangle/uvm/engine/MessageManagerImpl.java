@@ -237,7 +237,7 @@ class MessageManagerImpl implements LocalMessageManager
         return key;
     }
 
-    // LocalMessageManager methods ---------------------------------------------
+    // LocalMessageManager methods --------------------------------------------
 
     public Counters getUvmCounters()
     {

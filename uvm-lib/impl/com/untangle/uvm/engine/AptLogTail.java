@@ -59,6 +59,7 @@ class AptLogTail implements Runnable
     }
 
     private final long key;
+    private final boolean upgrade;
 
     private final RandomAccessFile raf;
 
@@ -69,11 +70,12 @@ class AptLogTail implements Runnable
 
     // constructor ------------------------------------------------------------
 
-    AptLogTail(long key)
+    AptLogTail(long key, boolean upgrade)
     {
         logger.debug("new AptLogTail: " + key);
 
         this.key = key;
+        this.upgrade = upgrade;
 
         File f = new File(APT_LOG);
         if (!f.exists()) {
@@ -157,7 +159,7 @@ class AptLogTail implements Runnable
         }
 
         mm.submitMessage(new DownloadSummary(downloadQueue.size(),
-                                             totalSize));
+                                             totalSize, upgrade));
 
         for (PackageInfo pi : downloadQueue) {
             logger.debug("downloading: " + pi);
@@ -166,11 +168,11 @@ class AptLogTail implements Runnable
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
                 if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
                     logger.debug("download succeeded");
-                    mm.submitMessage(new DownloadComplete(true));
+                    mm.submitMessage(new DownloadComplete(true, upgrade));
                     break;
                 } else if (line.startsWith("DOWNLOAD FAILED: " )) {
                     logger.debug("download failed");
-                    mm.submitMessage(new DownloadComplete(false));
+                    mm.submitMessage(new DownloadComplete(false, upgrade));
                     break;
                 } else if (m.matches()) {
                     int bytesDownloaded = Integer.parseInt(m.group(1)) * 1000;
@@ -179,7 +181,7 @@ class AptLogTail implements Runnable
 
                     // enqueue event
                     DownloadProgress dpe = new DownloadProgress
-                        (pi.file, bytesDownloaded, pi.size, speed);
+                        (pi.file, bytesDownloaded, pi.size, speed, upgrade);
                     logger.debug("Adding event: " + dpe);
 
                     mm.submitMessage(dpe);
@@ -190,7 +192,7 @@ class AptLogTail implements Runnable
         }
 
         logger.debug("installation complete");
-        mm.submitMessage(new InstallComplete(true));
+        mm.submitMessage(new InstallComplete(true, upgrade));
         live = false;
     }
 
@@ -212,7 +214,7 @@ class AptLogTail implements Runnable
                             // just end the thread adding TimeoutEvent
                             logger.warn("AptLogTail timing out: "
                                         + (t - lastActivity));
-                            mm.submitMessage(new InstallTimeout(t));
+                            mm.submitMessage(new InstallTimeout(t, upgrade));
                             throw new RuntimeException("timing out: "
                                                        + (t - lastActivity));
                         } else {
@@ -258,11 +260,5 @@ class AptLogTail implements Runnable
             return "PackageInfo url: " + url + " file: " + file
                 + " size: " + size + " hash: " + hash;
         }
-    }
-
-    // main -------------------------------------------------------------------
-
-    public static void main(String args[]) {
-        new AptLogTail(1).run();
     }
 }

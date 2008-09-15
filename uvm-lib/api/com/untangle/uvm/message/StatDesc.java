@@ -43,8 +43,8 @@ public class StatDesc implements Serializable
     private final String unit;
     private final boolean displayable;
 
-    public StatDesc(String name, String displayName, String action, String unit,
-                    boolean displayable)
+    public StatDesc(String name, String displayName, String action,
+                    String unit, boolean displayable)
     {
         this.name = name;
         this.displayName = displayName;

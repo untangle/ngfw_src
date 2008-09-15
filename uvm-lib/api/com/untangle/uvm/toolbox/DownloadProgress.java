@@ -49,14 +49,16 @@ public class DownloadProgress extends Message
     private final int bytesDownloaded;
     private final int size;
     private final String speed;
+    private final boolean upgrade;
 
     public DownloadProgress(String name, int bytesDownloaded, int size,
-                            String speed)
+                            String speed, boolean upgrade)
     {
         this.name = name;
         this.bytesDownloaded = bytesDownloaded;
         this.size = size;
         this.speed = speed;
+        this.upgrade = upgrade;
     }
 
     // accessors --------------------------------------------------------------
@@ -79,6 +81,11 @@ public class DownloadProgress extends Message
     public String getSpeed()
     {
         return speed;
+    }
+
+    public boolean isUpgrade()
+    {
+        return upgrade;
     }
 
     // Object methods ---------------------------------------------------------
