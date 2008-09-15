@@ -3126,11 +3126,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         }
     },
     editHandler : function(record) {
+    	this.stopEditing();
         // populate row editor
         this.rowEditor.populate(record);
         this.rowEditor.show();
     },
     deleteHandler : function(record) {
+    	this.stopEditing();
         this.updateChangedData(record, "deleted");
     },
     getPageStart : function() {
