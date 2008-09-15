@@ -140,6 +140,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     name : "Signature",
                     dataIndex : "definition",
                     fieldLabel : this.i18n._("Signature"),
+                    allowBlank : false,
                     width : 200,
                     height : 60
                 })]
