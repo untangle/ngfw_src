@@ -754,7 +754,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 return;
             }
             var upgradeList=result;
-            if(upgradeList.length>0 && false) { //do not test upgrade list yet
+            if(upgradeList.length>0) { //&&false do not test upgrade list yet
                 //main.setUpgrade(true)
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
             } else {
@@ -1047,29 +1047,38 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
     },
     onPowerClick : function() {
-        this.loadNodeContext();
-        this.setPowerOn(!this.powerOn);
-        this.setState("Attention");
-        if (this.powerOn) {
-            this.nodeContext.rpcNode.start(function(result, exception) {
-                this.runState = "RUNNING";
-                this.setState("On");
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
-            }.createDelegate(this));
+        if (!this.powerOn) {
+        	this.start();
         } else {
-            this.nodeContext.rpcNode.stop(function(result, exception) {
-                this.runState = "INITIALIZED";
-                this.setState("Off");
-                this.resetBlingers();
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
-            }.createDelegate(this));
+            this.stop();
         }
+    },
+    start : function () {
+    	this.loadNodeContext();
+        this.setPowerOn(true);
+        this.setState("Attention");
+        this.nodeContext.rpcNode.start(function(result, exception) {
+            this.runState = "RUNNING";
+            this.setState("On");
+            if (exception) {
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                return;
+            }
+        }.createDelegate(this));
+    },
+    stop : function () {
+        this.loadNodeContext();
+        this.setPowerOn(false);
+        this.setState("Attention");
+        this.nodeContext.rpcNode.stop(function(result, exception) {
+            this.runState = "INITIALIZED";
+            this.setState("Off");
+            this.resetBlingers();
+            if (exception) {
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                return;
+            }
+        }.createDelegate(this));
     },
     // on click help
     onHelpAction : function() {
@@ -1314,8 +1323,6 @@ Ung.MessageManager = {
             } catch (err) {
                 Ext.MessageBox.alert("Exception in MessageManager", err.message);
             }
-
-
         }.createDelegate(this), rpc.messageKey, rpc.currentPolicy);
     }
 };

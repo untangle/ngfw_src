@@ -685,8 +685,8 @@ Ung.Main.prototype = {
         }
     },
     startNode : function(nodeWidget) {
-        if(!nodeWidget.isRunning() && nodeWidget.name!="untangle-node-openvpn") {
-            nodeWidget.onPowerClick();
+        if(nodeWidget.name!="untangle-node-openvpn") {
+            nodeWidget.start();
         }
     },
     getNode : function(nodeName) {
