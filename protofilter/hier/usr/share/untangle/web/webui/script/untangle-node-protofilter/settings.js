@@ -105,14 +105,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, {
-                    id : 'definition',
-                    header : this.i18n._("signature"),
-                    width : 200,
-                    dataIndex : 'definition',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
                 }],
                 sortField : 'category',
                 columnsDefaultSortable : true,
