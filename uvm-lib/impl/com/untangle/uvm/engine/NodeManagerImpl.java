@@ -265,21 +265,23 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         if (MackageDesc.Type.SERVICE == mackageDesc.getType()) {
             p = null;
         }
-        //test if not duplicated
-        List<Tid> instancesList = this.nodeInstances(nodeName,p);
-        if(instancesList.size()>0) {
-            return null; //return if the node is already installed
-        }
-        Tid tid = newTid(p, nodeName);
-
-        URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
-
-        logger.info("initializing node desc for: " + nodeName);
-        NodeDesc tDesc = initNodeDesc(mackageDesc, resUrls, tid);
-
-
+        
         NodeContextImpl tc;
+        NodeDesc tDesc;
         synchronized (this) {
+            //test if not duplicated
+            List<Tid> instancesList=this.nodeInstances(nodeName,p);
+            if(instancesList.size()>0) {
+                logger.warn("A node instance already exists for " + nodeName + " under " + p + " policy; will not instantiate another one.");
+                return null; //return if the node is already installed
+            }
+            Tid tid = newTid(p, nodeName);
+    
+            URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
+    
+            logger.info("initializing node desc for: " + nodeName);
+            tDesc = initNodeDesc(mackageDesc, resUrls, tid);
+
             if (!live) {
                 throw new DeployException("NodeManager is shut down");
             }
