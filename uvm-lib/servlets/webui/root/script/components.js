@@ -456,29 +456,37 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         if(!this.progressBar.hidden) {
             return;
         }
-        rpc.toolboxManager.upgradable(function(result, exception) {
+        Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
+        rpc.toolboxManager.update(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                 return;
             }
-            var upgradeList=result;
-            if(upgradeList.length>0) { //&&false do not test upgrade list yet
-                //main.setUpgrade(true)
-                Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
-            } else {
-                var currentLocation = window.location;
-                var query = "&host=" + currentLocation.hostname;
-                query += "&port=" + currentLocation.port;
-                query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-                query += "&action=browse";
-                query += "&libitem=" + this.libItem.name;
-
-                var url = "../library/launcher?" + query;
-                var iframeWin = main.getIframeWin();
-                iframeWin.show();
-                iframeWin.setTitle("");
-                window.frames["iframeWin_iframe"].location.href = url;
-            }
+            rpc.toolboxManager.upgradable(function(result, exception) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    return;
+                }
+                var upgradeList=result;
+                if(upgradeList.length>0) { //&&false do not test upgrade list yet
+                    //main.setUpgrade(true)
+                    Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
+                } else {
+                    var currentLocation = window.location;
+                    var query = "&host=" + currentLocation.hostname;
+                    query += "&port=" + currentLocation.port;
+                    query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+                    query += "&action=browse";
+                    query += "&libitem=" + this.libItem.name;
+        
+                    var url = "../library/launcher?" + query;
+                    var iframeWin = main.getIframeWin();
+                    iframeWin.show();
+                    iframeWin.setTitle("");
+                    window.frames["iframeWin_iframe"].location.href = url;
+                    Ext.MessageBox.hide();
+                }
+            }.createDelegate(this));
         }.createDelegate(this));
 
     },
@@ -1040,11 +1048,13 @@ Ung.MessageManager = {
                                 	Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
                                 	this.upgradeSummary=msg;
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                	var msg=String.format(i18n._("Downloading {0}. <br/>Downloaded: {1}/{2}. Speed: {3}."),msg.name, msg.bytesDownloaded, msg.size, msg.speed);
+                                	var msg=String.format(i18n._("Downloading {0}. <br/>Status: {1} kb/{2} kb downloaded. <br/>Speed: {3}."),msg.name, msg.bytesDownloaded/1024, msg.size/1024, msg.speed);
                                 	if(this.upgradeSummary) {
-                                		msg+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete, this.upgradeSummary.count);
+                                		msg+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
                                 	}
-                                	Ext.MessageBox.wait(msg, i18n._("Please wait"));
+                                	var currentPercentComplete = parseFloat(msg.bytesDownloaded) / parseFloat(msg.size != 0 ? msg.size : 1);
+                                    var progressIndex = parseFloat(1 * currentPercentComplete);
+                                	Ext.MessageBox.updateProgress(progressIndex, "", i18n._("Please wait"));
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                 	this.upgradesComplete++;
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {

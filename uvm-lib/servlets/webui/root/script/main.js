@@ -27,7 +27,18 @@ Ung.Main.prototype = {
         rpc = {};
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-
+        // get language manager
+        rpc.jsonrpc.RemoteUvmContext.languageManager(function (result, exception) {
+            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            rpc.languageManager=result;
+            // get translations for main module
+            rpc.languageManager.getTranslations(function (result, exception) {
+                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+                    i18n=new Ung.I18N({"map":result.map});
+                    Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"));
+                    this.postinit();// 1
+                }.createDelegate(this),"untangle-libuvm");
+        }.createDelegate(this));
         // get skin manager
         rpc.jsonrpc.RemoteUvmContext.skinManager(function (result, exception) {
             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
@@ -38,21 +49,9 @@ Ung.Main.prototype = {
                 var skinSettings=result;
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
-                this.postinit();// 1
+                this.postinit();// 2
             }.createDelegate(this));
         }.createDelegate(this));
-        // get language manager
-        rpc.jsonrpc.RemoteUvmContext.languageManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-            rpc.languageManager=result;
-            // get translations for main module
-            rpc.languageManager.getTranslations(function (result, exception) {
-                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-                    i18n =new Ung.I18N({"map":result.map});
-                    this.postinit();// 2
-                }.createDelegate(this),"untangle-libuvm");
-        }.createDelegate(this));
-
         // get node manager
         rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
@@ -109,6 +108,31 @@ Ung.Main.prototype = {
         if(this.initSemaphore!==0) {
             return;
         }
+    	
+    	//check for upgrades
+    	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
+        rpc.toolboxManager.update(function(result, exception) {
+            if (exception) {
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                return;
+            }
+            rpc.toolboxManager.upgradable(function(result, exception) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    return;
+                }
+                var upgradeList=result;
+                if(upgradeList.length>0) {
+                    this.upgrade();
+                } else {
+                    this.startApplication();
+                }
+            }.createDelegate(this));
+        }.createDelegate(this));
+
+    },
+    startApplication: function() {
+    	Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
 
         this.initExtI18n();
         this.initExtGlobal();
@@ -302,7 +326,17 @@ Ung.Main.prototype = {
 
           passwordText: i18n._('Passwords do not match')
         });
-      },
+    },
+    upgrade : function () {
+        Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
+        Ung.MessageManager.startUpgradeMode();
+        rpc.toolboxManager.upgrade(function(result, exception) {
+            if (exception) {
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                return;
+            }
+        }.createDelegate(this));
+    },
     getLoggingManager : function(forceReload) {
         if (forceReload || rpc.loggingManager === undefined) {
             rpc.loggingManager = rpc.jsonrpc.RemoteUvmContext.loggingManager()
@@ -484,6 +518,7 @@ Ung.Main.prototype = {
     },
     // load the rack view for current policy
     loadRackView: function() {
+    	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
         rpc.toolboxManager.getRackView(function (result, exception) {
             if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
                 return;
@@ -518,6 +553,7 @@ Ung.Main.prototype = {
             if(!main.disableThreads) {
                 Ung.MessageManager.start();
             }
+            Ext.MessageBox.hide();
         }.createDelegate(this));
     },
 
