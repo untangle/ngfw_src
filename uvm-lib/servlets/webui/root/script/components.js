@@ -1040,9 +1040,9 @@ Ung.MessageManager = {
                                 	Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
                                 	this.upgradeSummary=msg;
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                	var msg=String.format(i18n._("Downloading {0}. \nDownloaded: {1}/{2}. Speed: {3}."),msg.name, msg.bytesDownloaded, msg.size, msg.speed);
+                                	var msg=String.format(i18n._("Downloading {0}. <br/>Downloaded: {1}/{2}. Speed: {3}."),msg.name, msg.bytesDownloaded, msg.size, msg.speed);
                                 	if(this.upgradeSummary) {
-                                		msg+=String.format(i18n._("\nPackage {0}/{1}."),this.upgradesComplete, this.upgradeSummary.count);
+                                		msg+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete, this.upgradeSummary.count);
                                 	}
                                 	Ext.MessageBox.wait(msg, i18n._("Please wait"));
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
@@ -1050,15 +1050,17 @@ Ung.MessageManager = {
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                 	Ext.MessageBox.alert(
                                 	   i18n._("Upgrade Successfull"),
-                                	   i18n_("The Upgrade succeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                	   i18n._("The Upgrade succeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
                                 	   function() {
+                                	   	   Ext.MessageBox.wait(i18n._("Redirecting to the start page"), i18n._("Please wait"));
                                 	       window.location.href="/webui";
                                 	});
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
                                     Ext.MessageBox.alert(
                                        i18n._("Upgrade Timeout"),
-                                       i18n_("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                       i18n._("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
                                        function() {
+                                           Ext.MessageBox.wait(i18n._("Redirecting to the start page"), i18n._("Please wait"));
                                            window.location.href="/webui";
                                     });
                                 }
