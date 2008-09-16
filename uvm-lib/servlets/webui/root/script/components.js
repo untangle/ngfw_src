@@ -1048,13 +1048,21 @@ Ung.MessageManager = {
                                 	Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
                                 	this.upgradeSummary=msg;
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                	var msg=String.format(i18n._("Downloading {0}. <br/>Status: {1} kb/{2} kb downloaded. <br/>Speed: {3}."),msg.name, msg.bytesDownloaded/1024, msg.size/1024, msg.speed);
+                                	var msg=String.format(i18n._("Downloading {0}. <br/>Status: {1} kb/{2} kb downloaded. <br/>Speed: {3}."),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
                                 	if(this.upgradeSummary) {
                                 		msg+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
                                 	}
-                                	var currentPercentComplete = parseFloat(msg.bytesDownloaded) / parseFloat(msg.size != 0 ? msg.size : 1);
-                                    var progressIndex = parseFloat(1 * currentPercentComplete);
-                                	Ext.MessageBox.updateProgress(progressIndex, "", i18n._("Please wait"));
+                                	var currentPercentComplete = msg.bytesDownloaded/ msg.size != 0 ? msg.size : 1;
+                                    var progressIndex = parseFloat(currentPercentComplete);
+                                    Ext.MessageBox.show({
+                                               title : i18n._("Please wait"),
+                                               msg : msg,
+                                               closable: true, 
+                                               modal : true,
+                                               progress: true,
+                                               progressText : ""
+                                            });
+                                    Ext.MessageBox.updateProgress(progressIndex, "");
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                 	this.upgradesComplete++;
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
