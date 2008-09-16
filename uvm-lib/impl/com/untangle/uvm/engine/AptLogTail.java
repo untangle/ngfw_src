@@ -161,7 +161,7 @@ class AptLogTail implements Runnable
             }
         }
 
-        mm.submitMessage(new DownloadSummary(upgrade ? 1 : downloadQueue.size(),
+        mm.submitMessage(new DownloadSummary(downloadQueue.size(),
                                              totalSize, requestingMackage));
 
         for (PackageInfo pi : downloadQueue) {
