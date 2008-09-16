@@ -172,20 +172,15 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     });
                 },
                 upgrade : function() {
-                    if (Ung.Upgrade.PerformUpgradeThread.started) {
-                        return;
-                    }
                     Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
+                    Ung.MessageManager.startUpgradeMode();
                     rpc.toolboxManager.upgrade(function(result, exception) {
                         if (exception) {
                             Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                             return;
                         }
-                        var key = result;
-                        
                     }.createDelegate(this));
                 }
-
             });
 
         },
@@ -400,57 +395,4 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
         }
 
     });
-    Ung.Upgrade.PerformUpgradeThread = {
-        // update interval in millisecond
-        updateTime : 1000,
-        key : null,
-        started : false,
-        intervalId : null,
-        cycleCompleted : true,
-
-        start : function(key) {
-            this.stop();
-            this.key = key;
-            this.intervalId = window.setInterval("Ung.Upgrade.PerformUpgradeThread.run()", this.updateTime);
-            this.started = true;
-        },
-
-        stop : function() {
-            if (this.intervalId !== null) {
-                window.clearInterval(this.intervalId);
-            }
-            this.cycleCompleted = true;
-            this.started = false;
-        },
-        run : function() {
-            if (!this.cycleCompleted) {
-                return;
-            }
-            //TODO: getProgress is no longer available, what is the alternative?
-            rpc.toolboxManager.getProgress(function(result, exception) {
-               if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
-                        this.cycleCompleted = true;
-                    }.createDelegate(this));
-                    return;
-               }
-               this.cycleCompleted = true;
-               try {
-                   var ipList=result;
-                   if(ipList.list!=null && ipList.list.length>0) {
-                       var hasNodeInstantiated=false;
-                       for(var i=0;i<ipList.length;i++) {
-                           var msg=ipList.list[i];
-                            if (msg.javaClass.indexOf("DownloadComplete") != -1) {
-                            } else if (msg.javaClass.indexOf("DownloadProgress") != -1) {
-                            } 
-                        }
-                    }
-                } catch (err) {
-                    Ext.MessageBox.alert("Exception in PerformUpgradeThread", err.message);
-                }
-            }.createDelegate(this), this.key);
-        }
-    };
-
 }
