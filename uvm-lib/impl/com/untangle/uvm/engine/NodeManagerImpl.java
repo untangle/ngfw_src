@@ -266,7 +266,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             p = null;
         }
         //test if not duplicated
-        List<Tid> instancesList=this.nodeInstances(nodeName,p);
+        List<Tid> instancesList = this.nodeInstances(nodeName,p);
         if(instancesList.size()>0) {
             return null; //return if the node is already installed
         }
