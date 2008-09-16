@@ -299,7 +299,10 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
 
         Node node = tc.node();
-        if (null != node) {
+        MackageDesc.Type type = mackageDesc.getType();
+        if (null != node 
+                && !mackageDesc.isInvisible() 
+                && (MackageDesc.Type.NODE == type || MackageDesc.Type.SERVICE == type)) {
             LocalMessageManager lmm = LocalUvmContextFactory.context()
                 .localMessageManager();
             Counters c = lmm.getCounters(node.getTid());
@@ -827,7 +830,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         return tid;
     }
-
+    
     // private static classes -------------------------------------------------
 
     private static class NodeManagerLoggingContext
