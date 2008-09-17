@@ -29,7 +29,11 @@ fi
 
 updateStatus() {
     echo -ne $1
-    if [ -d `dirname $UVM_STATUS_FILE` ] ; then echo "$2" > $UVM_STATUS_FILE ; fi
+    
+    if [ -d `dirname $UVM_STATUS_FILE` ] ; then 
+        [ -f "${UVM_STATUS_FILE}" ] && grep -qi Installing ${UVM_STATUS_FILE} && return
+        echo "$2" > $UVM_STATUS_FILE
+    fi
 }
 
 updateStatusExit() {
