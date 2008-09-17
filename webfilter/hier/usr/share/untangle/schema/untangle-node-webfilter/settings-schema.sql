@@ -64,10 +64,8 @@ CREATE TABLE settings.n_webfilter_blcat (
     name varchar(255),
     display_name varchar(255),
     description varchar(255),
-    block_domains bool NOT NULL,
-    block_urls bool NOT NULL,
-    block_expressions bool NOT NULL,
-    log_only bool NOT NULL,
+    block bool NOT NULL,
+    log bool NOT NULL,
     setting_id int8);
 
 ----------------

@@ -16,6 +16,11 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
+ALTER TABLE settings.n_webfilter_blcat RENAME COLUMN log_only TO log;
+ALTER TABLE settings.n_webfilter_blcat RENAME COLUMN block_domains TO block;
+ALTER TABLE settings.n_webfilter_blcat DROP COLUMN block_expressions;
+ALTER TABLE settings.n_webfilter_blcat DROP COLUMN block_urls;
+
 ALTER TABLE settings.n_webfilter_passed_urls DROP CONSTRAINT n_webfilter_passed_urls_pkey;
 ALTER TABLE settings.n_webfilter_passed_urls DROP COLUMN position;
 

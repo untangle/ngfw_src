@@ -115,7 +115,7 @@ class Blacklist
 
         for (BlacklistCategory cat : settings.getBlacklistCategories()) {
             String catName = cat.getName();
-            if (cat.getBlockUrls()) {
+            if (cat.getBlock()) {
                 String dbName = "ubl-" + catName + "-url";
                 try {
                     UrlList ul = new PrefixUrlList(BLACKLIST_HOME, "webfilter",
@@ -372,7 +372,7 @@ class Blacklist
             BlacklistCategory bc = settings.getBlacklistCategory(category);
 
             if (null != bc) {
-                Action a = bc.getLogOnly() ? Action.PASS : Action.BLOCK;
+                Action a = bc.getBlock() ? Action.BLOCK : Action.PASS;
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), a, reason, bc.getDisplayName());
                 node.log(hbe);
@@ -384,23 +384,25 @@ class Blacklist
 
             if (null == bc && null != stringRule && !stringRule.isLive()) {
                 return null;
-            } else if (null != bc && bc.getLogOnly()) {
-                return null;
-            } else {
+            } else if (null != bc && bc.getBlock()) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri, null == bc ? category : bc.getDisplayName(), clientIp);
                 return node.generateNonce(bd);
+            } else {
+                return null;
             }
         }
 
         return null;
     }
 
-    private String mostSpecificCategory(List<String> dbNames) {
-        String category = null;
-        if (dbNames != null)
-            for (String dbName : dbNames) {
-                String cat = dbName;
+    // protected methods -------------------------------------------------------
+
+    protected String mostSpecificCategory(List<String> catNames)
+    {
+        if (catNames != null) {
+            for (String dbName : catNames) {
+                String catName = dbName;
 
                 int i = dbName.indexOf('-');
                 if (0 < i) {
@@ -408,23 +410,19 @@ class Blacklist
                     if (dbName.length() > i) {
                         int j = dbName.indexOf('-', i);
                         if (i < j) {
-                            cat = dbName.substring(i, j);
+                            catName = dbName.substring(i, j);
                         }
                     }
                 }
 
-                BlacklistCategory bc = settings.getBlacklistCategory(cat);
-
-                if (category == null) {
-                    category = cat;
-                } else {
-                    if (null == bc || bc.getLogOnly()) {
-                        continue;
-                    }
-                    category = cat;
+                BlacklistCategory bc = settings.getBlacklistCategory(catName);
+                if (null != bc && bc.getBlock()) {
+                    return catName;
                 }
-            }
-        return category;
+             }
+        }
+
+        return null;
     }
 
     private StringRule findCategory(CharSequence[] strs, String val,

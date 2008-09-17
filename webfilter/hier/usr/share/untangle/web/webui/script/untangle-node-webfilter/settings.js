@@ -220,21 +220,19 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
         buildBlacklistCategories : function() {
             var liveColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("block"),
-                dataIndex : 'blockDomains',
+                dataIndex : 'block',
                 fixed : true,
                 changeRecord : function(record) {
                     Ext.grid.CheckColumn.prototype.changeRecord.call(this, record);
                     var blocked = record.get(this.dataIndex);
                     if (blocked) {
-                        record.set('logOnly', true);
+                        record.set('log', true);
                     }
-                    record.set('blockUrls', blocked);
-                    record.set('blockExpressions', blocked);
                 }
             });
             var logColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("log"),
-                dataIndex : 'logOnly',
+                dataIndex : 'log',
                 fixed : true
             });
 
@@ -254,13 +252,9 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     name : 'displayName'
                 }, {
-                    name : 'blockDomains'
+                    name : 'block'
                 }, {
-                    name : 'blockUrls'
-                }, {
-                    name : 'blockExpressions'
-                }, {
-                    name : 'logOnly'
+                    name : 'log'
                 }, {
                     name : 'description',
                     convert : function(v) {
@@ -296,7 +290,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     width : 200
                 }), new Ext.form.Checkbox({
                     name : "Block",
-                    dataIndex : "blockDomains",
+                    dataIndex : "block",
                     fieldLabel : this.i18n._("Block"),
                     listeners : {
                         "check" : {
@@ -305,14 +299,12 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                                 if (checked) {
                                     rowEditor.inputLines[2].setValue(true);
                                 }
-                                rowEditor.record.data['blockUrls'] = checked;
-                                rowEditor.record.data['blockExpressions'] = checked;
                             }.createDelegate(this)
                         }
                     }
                 }), new Ext.form.Checkbox({
                     name : "Log",
-                    dataIndex : "logOnly",
+                    dataIndex : "log",
                     fieldLabel : this.i18n._("Log")
                 }), new Ext.form.TextArea({
                     name : "Description",
@@ -640,7 +632,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildPassedUrls();
                         this.winPassedUrls = new Ung.ManageListWindow({
-                        	breadcrumbs : [{
+                            breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
                                     this.panelPassLists.winPassedUrls.cancelAction();
@@ -664,7 +656,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                         var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildPassedClients();
                         this.winPassedClients = new Ung.ManageListWindow({
-                        	breadcrumbs : [{
+                            breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
                                     this.panelPassLists.winPassedClients.cancelAction();
@@ -916,21 +908,21 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                     dataIndex : 'reason',
                     renderer : function(value) {
                         switch (value) {
-                            case 'BLOCK_CATEGORY' : 
+                            case 'BLOCK_CATEGORY' :
                                 return this.i18n._("in Categories Block list");
-                            case 'BLOCK_URL' : 
+                            case 'BLOCK_URL' :
                                 return this.i18n._("in URLs Block list");
-                            case 'BLOCK_EXTENSION' : 
+                            case 'BLOCK_EXTENSION' :
                                 return this.i18n._("in File Extensions Block list");
-                            case 'BLOCK_MIME' : 
+                            case 'BLOCK_MIME' :
                                 return this.i18n._("in MIME Types Block list");
-                            case 'BLOCK_ALL' : 
+                            case 'BLOCK_ALL' :
                                 return this.i18n._("blocking all traffic");
-                            case 'BLOCK_IP_HOST' : 
+                            case 'BLOCK_IP_HOST' :
                                 return this.i18n._("hostname is an IP address");
-                            case 'PASS_URL' : 
+                            case 'PASS_URL' :
                                 return this.i18n._("in URLs Pass list");
-                            case 'PASS_CLIENT' : 
+                            case 'PASS_CLIENT' :
                                 return this.i18n._("in Clients Pass list");
                             default :
                             case 'DEFAULT' :
@@ -946,7 +938,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                         return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.SServerAddr + ":" + value.pipelineEndpoints.SServerPort;
                     }
                 }]
-                
+
             });
         },
         // validation functions
@@ -1008,13 +1000,13 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                         if (!result.valid) {
                             var errorMsg = "";
                             switch (result.errorCode) {
-                                case 'INVALID_IPMADDR' : 
+                                case 'INVALID_IPMADDR' :
                                     errorMsg = this.i18n._("Invalid subnet specified") + ": " + result.cause;
                                 break;
                                 default :
                                     errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
                             }
-                            
+
                             this.panelPassLists.onManagePassedClients();
                             this.gridPassedClients.focusFirstChangedDataByFieldValue("ipMaddr", result.cause);
                             Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);

@@ -113,7 +113,7 @@ class MessageManagerImpl implements LocalMessageManager
         updatePulse.stop();
     }
 
-    // RemoteMessageManager methods --------------------------------------------
+    // RemoteMessageManager methods -------------------------------------------
 
     public MessageQueue getMessageQueue()
     {

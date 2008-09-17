@@ -41,10 +41,8 @@ public class BlacklistCategory implements Serializable
     private String name;
     private String displayName;
     private String description;
-    private boolean blockDomains = false;
-    private boolean blockUrls = false;
-    private boolean blockExpressions = false;
-    private boolean logOnly = false;
+    private boolean block = false;
+    private boolean log = false;
 
     public BlacklistCategory() { }
 
@@ -118,76 +116,42 @@ public class BlacklistCategory implements Serializable
     }
 
     /**
-     * Domain block rules are used when blockDomains is true.
+     * Block rules are used when block is true.
      *
      * @return true if domain block rules are used.
      */
-    @Column(name="block_domains", nullable=false)
-    public boolean getBlockDomains()
+    @Column(name="block", nullable=false)
+    public boolean getBlock()
     {
-        return blockDomains;
+        return block;
     }
 
-    public void setBlockDomains(boolean blockDomains)
+    public void setBlock(boolean block)
     {
-        this.blockDomains = blockDomains;
-    }
-
-    /**
-     * URL block rules are used when blockUrls is true.
-     *
-     * @return true when URL rules are used.
-     */
-    @Column(name="block_urls", nullable=false)
-    public boolean getBlockUrls()
-    {
-        return blockUrls;
-    }
-
-    public void setBlockUrls(boolean blockUrls)
-    {
-        this.blockUrls = blockUrls;
+        this.block = block;
     }
 
     /**
-     * Expressions are used for blocking when blockExpressions is true.
+     * Should items be logged.
      *
-     * @return a <code>boolean</code> value
+     * @return true of logged
      */
-    @Column(name="block_expressions", nullable=false)
-    public boolean getBlockExpressions()
+    @Column(name="log", nullable=false)
+    public boolean getLog()
     {
-        return blockExpressions;
+        return log;
     }
 
-    public void setBlockExpressions(boolean blockExpressions)
+    public void setLog(boolean log)
     {
-        this.blockExpressions = blockExpressions;
-    }
-
-    /**
-     * Should items be logged only.
-     *
-     * @return true of logged only
-     */
-    @Column(name="log_only", nullable=false)
-    public boolean getLogOnly()
-    {
-        return logOnly;
-    }
-
-    public void setLogOnly(boolean logOnly)
-    {
-        this.logOnly = logOnly;
+        this.log = log;
     }
 
     public void update(BlacklistCategory blacklistCategory) {
         this.name = blacklistCategory.name;
         this.displayName = blacklistCategory.displayName;
         this.description = blacklistCategory.description;
-        this.blockDomains = blacklistCategory.blockDomains;
-        this.blockUrls = blacklistCategory.blockUrls;
-        this.blockExpressions = blacklistCategory.blockExpressions;
-        this.logOnly = blacklistCategory.logOnly;
+        this.block = blacklistCategory.block;
+        this.log = blacklistCategory.log;
     }
 }
