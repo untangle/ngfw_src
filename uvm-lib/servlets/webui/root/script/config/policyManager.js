@@ -416,8 +416,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         allowBlank : false
                     })
                 }, {
-                    header : this.i18n._("dayOfWeek"),
-                    width : 65,
+                    header : this.i18n._("day of week"),
+                    width : 70,
                     sortable : true,
                     dataIndex : 'dayOfWeek',
                     renderer : function(value, metadata, record) {
