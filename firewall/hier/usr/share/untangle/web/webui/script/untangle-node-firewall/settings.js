@@ -99,8 +99,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             width : 200,
                             dataIndex : 'description'
                         }],
-                        sortField : 'description',
-                        columnsDefaultSortable : true,
+                        columnsDefaultSortable : false,
                         autoExpandColumn : 'description',
                         plugins : [liveColumn],
                         rowEditorInputLines : [new Ext.form.Checkbox({
