@@ -723,6 +723,8 @@ Ung.Main.prototype = {
     startNode : function(nodeWidget) {
         if(nodeWidget.name!="untangle-node-openvpn") {
             nodeWidget.start();
+        } else {
+        	Ext.MessageBox.alert(i18n._("OpenVPN warning"), i18n._("OpenVPN can not be automatically turned on.<br>Please configure its settings first."));
         }
     },
     getNode : function(nodeName) {
