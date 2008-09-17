@@ -1048,24 +1048,29 @@ Ung.MessageManager = {
                                 	Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
                                 	this.upgradeSummary=msg;
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                	var msg=String.format(i18n._("Downloading {0}. <br/>Status: {1} kb/{2} kb downloaded. <br/>Speed: {3}."),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
+                                	var text=String.format(i18n._("Downloading {0}. <br/>Status: {1} kb/{2} kb downloaded. <br/>Speed: {3}."),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
                                 	if(this.upgradeSummary) {
-                                		msg+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
+                                		text+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
                                 	}
-                                	var currentPercentComplete = msg.bytesDownloaded/ msg.size != 0 ? msg.size : 1;
-                                    var progressIndex = parseFloat(currentPercentComplete);
+                                	
                                     Ext.MessageBox.show({
                                                title : i18n._("Please wait"),
-                                               msg : msg,
+                                               msg : text,
                                                closable: true, 
                                                modal : true,
                                                progress: true,
+                                               wait: msg.size==0,
                                                progressText : ""
                                             });
-                                    Ext.MessageBox.updateProgress(progressIndex, "");
+                                    if(msg.size!=0) {
+                                        var currentPercentComplete = msg.bytesDownloaded/ msg.size;
+                                        var progressIndex = parseFloat(currentPercentComplete);
+                                        Ext.MessageBox.updateProgress(progressIndex, "");
+                                    }
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                 	this.upgradesComplete++;
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
+                                	this.stop();
                                 	Ext.MessageBox.alert(
                                 	   i18n._("Upgrade Successfull"),
                                 	   i18n._("The Upgrade succeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
@@ -1074,6 +1079,7 @@ Ung.MessageManager = {
                                 	       window.location.href="/webui";
                                 	});
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
+                                	this.stop();
                                     Ext.MessageBox.alert(
                                        i18n._("Upgrade Timeout"),
                                        i18n._("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),

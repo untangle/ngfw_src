@@ -108,10 +108,9 @@ Ung.Main.prototype = {
         if(this.initSemaphore!==0) {
             return;
         }
-    	//check for upgrades
-    	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
-    	//this.startApplication();
-    	//return;
+    	//this.startApplication();return; //just for test
+        //check for upgrades
+        Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
         rpc.toolboxManager.update(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
