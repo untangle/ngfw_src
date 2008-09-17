@@ -1746,8 +1746,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }, {
                             xtype : "textfield",
                             id : 'openvpn_server_wizard_state',
-                            name : "State",
-                            fieldLabel : this.i18n._("State"),
+                            name : "State/Province",
+                            fieldLabel : this.i18n._("State/Province"),
                             allowBlank : false,
                             value: state,
                             width : 200
