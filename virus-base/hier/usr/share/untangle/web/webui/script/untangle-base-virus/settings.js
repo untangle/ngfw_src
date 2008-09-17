@@ -51,7 +51,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     }]
                 }, {
                 	title: this.i18n._('Advanced Settings'),
-                	checkboxToggle:true,
+                    collapsible: true,
                 	collapsed: true,
                 	labelWidth: 150,
                     items : [{
@@ -341,7 +341,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     }]
                 }, {
                     title: this.i18n._('Advanced Settings'),
-                    checkboxToggle:true,
+                    collapsible: true,
                     collapsed: true,
                     labelWidth: 150,
                     items : [{
