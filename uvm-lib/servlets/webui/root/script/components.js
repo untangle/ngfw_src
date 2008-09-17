@@ -1112,7 +1112,6 @@ Ung.MessageManager = {
                         }
                     }
                 }
-                //aaa=messageQueue.stats.map["10"].activities.map //for test
             } catch (err) {
                 Ext.MessageBox.alert("Exception in MessageManager", err.message);
             }
@@ -1802,6 +1801,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     columns : null,
     enableHdMenu : false,
     enableColumnMove: false,
+    autoEncode:true,
     // for internal use
     rpc : null,
     // called when the component is initialized
@@ -2767,6 +2767,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     addedId : 0,
     generatedId:1,
     loadMask: null,
+    autoEncode:true,  
 
 
     initComponent : function() {

@@ -869,6 +869,7 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                 }, {
                     name : 'reason'
                 }],
+                autoExpandColumn: 'requestLine',
                 columns : [{
                     header : i18n._("timestamp"),
                     width : 120,
@@ -900,8 +901,9 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                         return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.CClientAddr + ":" + value.pipelineEndpoints.CClientPort;
                     }
                 }, {
+                    id: 'requestLine',
                     header : i18n._("request"),
-                    width : 120,
+                    width : 200,
                     sortable : true,
                     dataIndex : 'requestLine',
                     renderer : function(value) {

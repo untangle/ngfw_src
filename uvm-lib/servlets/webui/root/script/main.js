@@ -617,18 +617,6 @@ Ung.Main.prototype = {
         var out=[];
         for(var i=0;i<this.config.length;i++) {
             var item=this.config[i];
-            /*
-            var buttonCmp=new Ung.Button({
-                id: "configItem_"+item.name,
-                name: "configItem_"+item.name,
-                configIndex: i,
-                height: '42px',
-                renderTo: 'configItems',
-                cls:'toolboxButton',
-                text: item.displayName,
-                handler: function() {main.clickConfig(main.config[this.configIndex]);},
-                iconCls: item.iconClass
-            });*/
             var appItemCmp=new Ung.ConfigItem({
             	item:item
             });
