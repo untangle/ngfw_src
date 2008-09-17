@@ -7,13 +7,47 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         gridRacks : null,
         gridRules : null,
         policyStore : null,
+        node:null,
         initComponent : function() {
             this.breadcrumbs = [{
                 title : this.i18n._('Policy Manager')
             }];
+            if(this.node!=null) {
+            	this.initButtons=function() {
+                    this.subCmps.push(new Ext.Button({
+                        name : "Remove",
+                        id : this.getId() + "_removeBtn",
+                        iconCls : 'nodeRemoveIcon',
+                        renderTo : 'button_left_' + this.getId(),
+                        text : i18n._('Remove'),
+                        handler : function() {
+                            this.node.settingsWin.removeAction();
+                        }.createDelegate(this)
+                    }));
+                    this.subCmps.push(new Ext.Button({
+                        name : "Cancel",
+                        id : this.getId() + "_cancelBtn",
+                        iconCls : 'cancelIcon',
+                        renderTo : 'button_inner_right_' + this.getId(),
+                        text : i18n._('Cancel'),
+                        handler : function() {
+                            this.cancelAction();
+                        }.createDelegate(this)
+                    }));
+                    this.subCmps.push(new Ext.Button({
+                        name : "Save",
+                        id : this.getId() + "_saveBtn",
+                        iconCls : 'saveIcon',
+                        renderTo : 'button_margin_right_' + this.getId(),
+                        text : i18n._('Save'),
+                        handler : function() {
+                            this.saveAction();
+                        }.createDelegate(this)
+                    }));
+            	}
+            }
             Ung.LocalDirectory.superclass.initComponent.call(this);
         },
-        
         onRender : function(container, position) {
             // call superclass renderer first
             Ung.PolicyManager.superclass.onRender.call(this, container, position);

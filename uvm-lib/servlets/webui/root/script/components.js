@@ -1054,7 +1054,7 @@ Ung.MessageManager = {
                                 	}
                                 	
                                     Ext.MessageBox.show({
-                                               title : i18n._("Please wait"),
+                                               title : i18n._("Updating... Please wait"),
                                                msg : text,
                                                closable: true, 
                                                modal : true,
