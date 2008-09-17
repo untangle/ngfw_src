@@ -419,6 +419,7 @@ class MessageManagerImpl implements LocalMessageManager
                 readVmstat(m);
                 readCpuinfo(m);
                 readLoadAverage(m);
+                readUptime(m);
                 getNumProcs(m);
                 getCpuUsage(m);
                 getNetDevUsage(m);
@@ -517,7 +518,7 @@ class MessageManagerImpl implements LocalMessageManager
         {
             BufferedReader br = null;
             try {
-                br = new BufferedReader(new FileReader("/proc/cpuinfo"));
+                br = new BufferedReader(new FileReader("/proc/uptime"));
 
                 String l = br.readLine();
                 if (null != l) {
