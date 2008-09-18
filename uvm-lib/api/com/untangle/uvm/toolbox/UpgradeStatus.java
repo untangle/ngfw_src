@@ -33,7 +33,9 @@
 
 package com.untangle.uvm.toolbox;
 
-public class UpgradeStatus
+import java.io.Serializable;
+
+public class UpgradeStatus implements Serializable
 {
     private final boolean upgradesAvailable;
     private volatile boolean updating = false;
