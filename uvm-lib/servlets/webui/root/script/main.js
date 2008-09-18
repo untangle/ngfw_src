@@ -111,25 +111,18 @@ Ung.Main.prototype = {
     	//this.startApplication();return; //just for test
         //check for upgrades
         Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
-        rpc.toolboxManager.update(function(result, exception) {
+        rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                 return;
             }
-            rpc.toolboxManager.upgradable(function(result, exception) {
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
-                var upgradeList=result;
-                if(upgradeList.length>0) {
-                    this.upgrade();
-                } else {
-                    this.startApplication();
-                }
-            }.createDelegate(this));
-        }.createDelegate(this));
-
+            var upgradeStatus=result;
+            if(!upgradeStatus.upgrading && upgradeStatus.upgradesAvailable) {
+                this.upgrade();
+            } else {
+                this.startApplication();
+            }
+        }.createDelegate(this),true);
     },
     startApplication: function() {
     	Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));

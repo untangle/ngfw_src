@@ -80,6 +80,8 @@ import org.hibernate.Session;
  */
 class RemoteToolboxManagerImpl implements RemoteToolboxManager
 {
+    private static final int UPDATE_TIMEOUT = 120000;
+
     static final URL TOOLBOX_URL;
 
     private static final String DEFAULT_LIBRARY_HOST = "library.untangle.com";
@@ -229,8 +231,18 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return new RackView(apps, instances, statDescs);
     }
 
-    public UpgradeStatus getUpgradeStatus()
+    public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException
     {
+        if(!upgrading && doUpdate) {
+            if(!updating) {
+                update();
+            } else {
+                int maxTries=240;
+                while(updating && maxTries-- > 0) {
+                    Thread.sleep(UPDATE_TIMEOUT/maxTries*2);
+                }
+            }
+        }
         return new UpgradeStatus(updating, upgrading, installing, removing,
                                  upgradable.length > 0);
     }
@@ -351,7 +363,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     public void update() throws MackageException
     {
-        update(120000);
+        update(UPDATE_TIMEOUT);
     }
 
     public void update(long millis) throws MackageException
@@ -419,7 +431,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         return alt.getKey();
     }
-
     public void enable(String mackageName) throws MackageException
     {
         MackageState ms = mackageState.get(mackageName);

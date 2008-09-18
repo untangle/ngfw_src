@@ -457,37 +457,32 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             return;
         }
         Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
-        rpc.toolboxManager.update(function(result, exception) {
+        rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                 return;
             }
-            rpc.toolboxManager.upgradable(function(result, exception) {
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
-                var upgradeList=result;
-                if(upgradeList.length>0) { //&&false do not test upgrade list yet
-                    //main.setUpgrade(true)
-                    Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
-                } else {
-                    var currentLocation = window.location;
-                    var query = "&host=" + currentLocation.hostname;
-                    query += "&port=" + currentLocation.port;
-                    query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-                    query += "&action=browse";
-                    query += "&libitem=" + this.libItem.name;
-        
-                    var url = "../library/launcher?" + query;
-                    var iframeWin = main.getIframeWin();
-                    iframeWin.show();
-                    iframeWin.setTitle("");
-                    window.frames["iframeWin_iframe"].location.href = url;
-                    Ext.MessageBox.hide();
-                }
-            }.createDelegate(this));
-        }.createDelegate(this));
+            var upgradeStatus=result;
+            if(upgradeStatus.upgrading) {
+            	Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
+            } else if(upgradeStatus.upgradesAvailable){
+                Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
+            } else {
+                var currentLocation = window.location;
+                var query = "&host=" + currentLocation.hostname;
+                query += "&port=" + currentLocation.port;
+                query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+                query += "&action=browse";
+                query += "&libitem=" + this.libItem.name;
+    
+                var url = "../library/launcher?" + query;
+                var iframeWin = main.getIframeWin();
+                iframeWin.show();
+                iframeWin.setTitle("");
+                window.frames["iframeWin_iframe"].location.href = url;
+                Ext.MessageBox.hide();
+            }
+        }.createDelegate(this), true);
 
     },
     // install node / uninstall App
