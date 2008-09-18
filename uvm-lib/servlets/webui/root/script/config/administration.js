@@ -1376,7 +1376,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }]                    
                 })
             });
-            adminSkinsStore.load();
             
             var userFacingSkinsStore = new Ext.data.Store({
                 proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [false, true], false),
@@ -1392,7 +1391,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }]                    
                 })
             });
-            userFacingSkinsStore.load();
             
             this.panelSkins = new Ext.Panel({
                 name : "panelSkins",
@@ -1416,13 +1414,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }, {
                         xtype : 'combo',
                         name : "administrationClientSkin",
+                        id : "administration_admin_client_skin_combo",
                         store : adminSkinsStore,
                         displayField : 'displayName',
                         valueField : 'name',
                         forceSelection : true,
-                        value : this.getSkinSettings().administrationClientSkin,
                         typeAhead : true,
-                        mode : 'remote',
+                        mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
                         selectOnFocus : true,
@@ -1446,13 +1444,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }, {
                         xtype : 'combo',
                         name : "userPagesSkin",
+                        id : "administration_user_pages_skin_combo",
                         store : userFacingSkinsStore,
                         displayField : 'displayName',
                         valueField : 'name',
                         forceSelection : true,
-                        value : this.getSkinSettings().userPagesSkin,
                         typeAhead : true,
-                        mode : 'remote',
+                        mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
                         selectOnFocus : true,
@@ -1502,14 +1500,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         parentId : cmp.getId(),
                         waitMsg : cmp.i18n._('Please wait while your skin is uploaded...'),
                         success : function(form, action) {
-                            adminSkinsStore.load();
-                            userFacingSkinsStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Skin Succeeded"),
-                                function() {
-                                    Ext.getCmp('upload_skin_file_textfield').reset();
-                                } 
-                            );
+                        	cmp.storeSemaphore = 2;
+                        	var handler = function() {
+                                this.storeSemaphore--;
+                        		if (this.storeSemaphore == 0) {
+                                    Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Upload Skin Succeeded"),
+                                        function() {
+                                            Ext.getCmp('upload_skin_file_textfield').reset();
+                                        } 
+                                    );
+                        		}
+                        	}.createDelegate(cmp)
+                            adminSkinsStore.load({callback:handler});
+                            userFacingSkinsStore.load({callback:handler});
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
@@ -1533,6 +1537,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     });
                 }
+            });
+            adminSkinsStore.load({
+            	callback : function() {
+            		Ext.getCmp('administration_admin_client_skin_combo').setValue(this.getSkinSettings().administrationClientSkin)
+            	}.createDelegate(this)
+            });
+            userFacingSkinsStore.load({
+                callback : function() {
+                    Ext.getCmp('administration_user_pages_skin_combo').setValue(this.getSkinSettings().userPagesSkin)
+                }.createDelegate(this)
             });
         },
 
