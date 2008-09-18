@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.toolbox;
 
-
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.policy.Policy;
 
@@ -54,6 +53,8 @@ public interface RemoteToolboxManager
      * @return visible nodes for this policy.
      */
     RackView getRackView(Policy p);
+
+    UpgradeStatus getUpgradeStatus();
 
     /**
      * All known mackages.

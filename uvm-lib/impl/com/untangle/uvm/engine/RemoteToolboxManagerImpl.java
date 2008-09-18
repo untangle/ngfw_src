@@ -64,6 +64,7 @@ import com.untangle.uvm.toolbox.RackView;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.toolbox.UpgradeSettings;
+import com.untangle.uvm.toolbox.UpgradeStatus;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
@@ -110,6 +111,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private volatile MackageDesc[] uninstalled;
     private volatile MackageDesc[] upgradable;
     private volatile MackageDesc[] upToDate;
+
+    private volatile boolean updating = false;
+    private volatile boolean upgrading = false;
+    private volatile boolean installing = false;
+    private volatile boolean removing = false;
 
     private long lastTailKey = System.currentTimeMillis();
 
@@ -223,6 +229,12 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return new RackView(apps, instances, statDescs);
     }
 
+    public UpgradeStatus getUpgradeStatus()
+    {
+        return new UpgradeStatus(updating, upgrading, installing, removing,
+                                 upgradable.length > 0);
+    }
+
     // all known mackages
     public MackageDesc[] available()
     {
@@ -327,9 +339,12 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     public void uninstall(String name) throws MackageUninstallException
     {
         try {
+            removing = true;
             execMkg("remove " + name);
         } catch (MackageException exn) {
             throw new MackageUninstallException(exn);
+        } finally {
+            removing = false;
         }
 
     }
@@ -345,7 +360,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             {
                 public Object call() throws Exception
                 {
+                    updating = true;
                     execMkg("update");
+                    updating = false;
 
                     return this;
                 }
@@ -390,9 +407,12 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 public void run()
                 {
                     try {
+                        upgrading = true;
                         execMkg("upgrade", alt.getKey());
                     } catch (MackageException exn) {
                         logger.warn("could not upgrade", exn);
+                    } finally {
+                        upgrading = false;
                     }
                 }
             }).start();
@@ -610,9 +630,12 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 public void run()
                 {
                     try {
+                        installing = true;
                         execMkg("install " + name, alt.getKey());
                     } catch (MackageException exn) {
                         logger.warn("install failed", exn);
+                    } finally {
+                        installing = false;
                     }
                 }
             };
