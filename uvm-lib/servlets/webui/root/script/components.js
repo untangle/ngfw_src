@@ -963,8 +963,11 @@ Ung.MessageManager = {
     upgradeSummary: null, 
     upgradesComplete: 0,
     messageHistory:[], //for debug info
-    start : function() {
+    start : function(now) {
         this.stop();
+        if(now) {
+        	Ung.MessageManager.run();
+        }
         this.intervalId = window.setInterval("Ung.MessageManager.run()", this.updateTime);
         this.started = true;
     },

@@ -544,7 +544,7 @@ Ung.Main.prototype = {
                 }
             }
             if(!main.disableThreads) {
-                Ung.MessageManager.start();
+                Ung.MessageManager.start(true);
             }
             Ext.MessageBox.hide();
         }.createDelegate(this));
