@@ -1169,9 +1169,13 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("Number of Processors / Type / Speed:")+'</div>',
             '<div class="values"><span name="num_cpus"></span>, <span name="cpu_model"></span>, <span name="cpu_speed"></span></div>',
             '<div class="title">'+i18n._("Uptime:")+'</div>',
-            '<div class="values"><span name="uptime"></span></div>',
-            '<div class="title">'+i18n._("Tasks (Processes) /Threads:")+'</div>',
-            '<div class="values"><span name="tasks"></span>, <span name="threads"></span></div>',
+            '<div class="values"><span name="uptime"></span> sec</div>',
+            '<div class="title">'+i18n._("Tasks (Processes)")+
+            //"/"+i18n._("Threads")+
+            '</div>',
+            '<div class="values"><span name="tasks"></span>'+
+            //', <span name="threads"></span>'+
+            '</div>',
             '<div class="title">'+i18n._("CPU Utilization by User:")+'</div>',
             '<div class="values"><span name="cpu_utilization_user"></span>  %</div>',
             '<div class="title">'+i18n._("CPU Utilization by System:")+'</div>',
@@ -1202,14 +1206,13 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("Memory Free:")+'</div>',
             '<div class="values"><span name="memory_free"></span> MBs, <span name="memory_free_percent"></span> %</div>',
             '<div class="title">'+i18n._("Memory Pages:")+'</div>',
-            '<div class="values"><span name="memory_pages_active"></span> MBs '+i18n._("active")+', <span name="memory_pages_wired"></span> MBs '+i18n._("wired")+'</div>',
-            '<div class="values"><span name="memory_pages_inactive"></span> MBs '+i18n._("inactive")+', <span name="memory_pages_free"></span> MBs '+i18n._("free")+'</div>',
+            '<div class="values"><span name="memory_pages_active"></span> MBs '+i18n._("active")+'</div>',
+            '<div class="values"><span name="memory_pages_inactive"></span> MBs '+i18n._("inactive")+'</div>',
             '<div class="values"><span name="memory_pages_cached"></span> MBs '+i18n._("cached")+', <span name="memory_pages_buffers"></span> MBs '+i18n._("buffers")+'</div>',
             '<div class="title">'+i18n._("VM Statistics:")+'</div>',
             '<div class="values"><span name="vm_pageins"></span> '+i18n._("pageins")+', <span name="vm_pageouts"></span> '+i18n._("pageouts")+'</div>',
             '<div class="values"><span name="vm_page_faults"></span> '+i18n._("page faults")+'</div>',
             '<div class="title">'+i18n._("Swap Files:")+'</div>',
-            '<div class="values"><span name="swap_files_peak"></span> '+i18n._("swap files at peak usage")+'</div>',
             '<div class="values"><span name="swap_total"></span> MBs '+i18n._("total swap space")+' (<span name="swap_used"></span> MBs '+i18n._("used")+')</div>'
         ];
         this.memoryToolTip= new Ext.ToolTip({
@@ -1231,14 +1234,10 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="values"><span name="total_disk_space"></span> GBs</div>',
             '<div class="title">'+i18n._("Free Disk Space:")+'</div>',
             '<div class="values"><span name="free_disk_space"></span> GBs</div>',
-            '<div class="title">'+i18n._("Disk Reads In:")+'</div>',
-            '<div class="values"><span name="disk_reads_in"></span> MBs</div>',
-            '<div class="title">'+i18n._("Disk Reads Out:")+'</div>',
-            '<div class="values"><span name="disk_reads_out"></span> MBs</div>',
             '<div class="title">'+i18n._("Data read:")+'</div>',
-            '<div class="values"><span name="data_read"></span> </div>',
+            '<div class="values"><span name="disk_reads"></span> KB, '+i18n._("Per second:")+' <span name="disk_reads_per_second"></span> b/sec</div>',
             '<div class="title">'+i18n._("Data write:")+'</div>',
-            '<div class="values"><span name="data_write"></span> </div>'
+            '<div class="values"><span name="disk_writes"></span> KB, '+i18n._("Per second:")+' <span name="disk_writes_per_second"></span> b/sec</div>'
         ];
         this.diskToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=disk]"),
@@ -1280,14 +1279,14 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=num_cpus]").dom.innerHTML=stats.map.numCpus;
             toolTipEl.child("span[name=cpu_model]").dom.innerHTML=stats.map.cpuModel;
             toolTipEl.child("span[name=cpu_speed]").dom.innerHTML=stats.map.cpuSpeed;
-            toolTipEl.child("span[name=uptime]").dom.innerHTML="TODO";
+            toolTipEl.child("span[name=uptime]").dom.innerHTML=Math.round(stats.map.uptime);
             toolTipEl.child("span[name=tasks]").dom.innerHTML=stats.map.numProcs;
-            toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
+            //toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=cpu_utilization_user]").dom.innerHTML=Math.round(stats.map.userCpuUtilization*100.0/stats.map.numProcs);
             toolTipEl.child("span[name=cpu_utilization_system]").dom.innerHTML=Math.round(stats.map.systemCpuUtilization*100.0/stats.map.numProcs);
             toolTipEl.child("span[name=load_average_1_min]").dom.innerHTML=Math.round(stats.map.oneMinuteLoadAvg*100.0/stats.map.numProcs);
-            toolTipEl.child("span[name=load_average_5_min]").dom.innerHTML=Math.round(stats.map.fiveMinuteLoadAvg*100.0/stats.map.numProcs*100);
-            toolTipEl.child("span[name=load_average_15_min]").dom.innerHTML=Math.round(stats.map.fifteenMinuteLoadAvg*100.0/stats.map.numProcs*100);
+            toolTipEl.child("span[name=load_average_5_min]").dom.innerHTML=Math.round(stats.map.fiveMinuteLoadAvg*100.0/stats.map.numProcs);
+            toolTipEl.child("span[name=load_average_15_min]").dom.innerHTML=Math.round(stats.map.fifteenMinuteLoadAvg*100.0/stats.map.numProcs);
         }
         if(this.memoryToolTip.rendered) {
             var toolTipEl=this.memoryToolTip.getEl();
@@ -1297,16 +1296,13 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=memory_used_percent]").dom.innerHTML=Math.round((stats.map.MemTotal-stats.map.MemFree)/stats.map.MemTotal*100);
             toolTipEl.child("span[name=memory_free_percent]").dom.innerHTML=Math.round(stats.map.MemFree/stats.map.MemTotal*100);
             toolTipEl.child("span[name=memory_pages_active]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Active);
-            toolTipEl.child("span[name=memory_pages_wired]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=memory_pages_inactive]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Inactive);
-            toolTipEl.child("span[name=memory_pages_free]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=memory_pages_cached]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Cached);
             toolTipEl.child("span[name=memory_pages_buffers]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Buffers);
 
             toolTipEl.child("span[name=vm_pageins]").dom.innerHTML=stats.map.pgpgin;
             toolTipEl.child("span[name=vm_pageouts]").dom.innerHTML=stats.map.pgpgout;
             toolTipEl.child("span[name=vm_page_faults]").dom.innerHTML=stats.map.pgfault;
-            toolTipEl.child("span[name=swap_files_peak]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=swap_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal);
             toolTipEl.child("span[name=swap_used]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal-stats.map.SwapFree);
         }
@@ -1314,11 +1310,10 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             var toolTipEl=this.diskToolTip.getEl();
             toolTipEl.child("span[name=total_disk_space]").dom.innerHTML=Math.round(stats.map.totalDiskSpace/100000000)/10;
             toolTipEl.child("span[name=free_disk_space]").dom.innerHTML=Math.round(stats.map.freeDiskSpace/100000000)/10;
-            toolTipEl.child("span[name=disk_reads_in]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=disk_reads_out]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=data_read]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.diskReadsPerSecond);
-            toolTipEl.child("span[name=data_write]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.diskWritesPerSecond);
-
+            toolTipEl.child("span[name=disk_reads]").dom.innerHTML=Math.round(stats.map.diskReads/10)/100;
+            toolTipEl.child("span[name=disk_reads_per_second]").dom.innerHTML=Math.round(stats.map.diskReadsPerSecond*100)/100;
+            toolTipEl.child("span[name=disk_writes]").dom.innerHTML=Math.round(stats.map.diskWrites/10)/100;
+            toolTipEl.child("span[name=disk_writes_per_second]").dom.innerHTML=Math.round(stats.map.diskWritesPerSecond*100)/100;
         }
     },
     reset : function() {
