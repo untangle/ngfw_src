@@ -201,18 +201,33 @@ Ung.Main.prototype = {
                 this.getEl().alignTo("contentright","c-c");
             }, 
             handler: function() {
-                var currentLocation = window.location;
-                var query = "host=" + currentLocation.hostname;
-                query += "&port=" + currentLocation.port;
-                query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-                query += "&action=wizard";
-
-                var url = "../library/launcher?" + query;
-                var iframeWin = main.getIframeWin();
-                iframeWin.show();
-                iframeWin.setTitle("");
-                window.frames["iframeWin_iframe"].location.href = url;
-            }
+                Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
+                rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        return;
+                    }
+                    var upgradeStatus=result;
+                    if(upgradeStatus.upgrading) {
+                        Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
+                    } else if(upgradeStatus.upgradesAvailable){
+                        Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
+                    } else {
+                        var currentLocation = window.location;
+                        var query = "host=" + currentLocation.hostname;
+                        query += "&port=" + currentLocation.port;
+                        query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+                        query += "&action=wizard";
+        
+                        var url = "../library/launcher?" + query;
+                        var iframeWin = main.getIframeWin();
+                        iframeWin.show();
+                        iframeWin.setTitle("");
+                        window.frames["iframeWin_iframe"].location.href = url;
+                        Ext.MessageBox.hide();
+                    }
+                }.createDelegate(this), true);
+            }.createDelegate(this)
         });
         buttonCmp.hide();
         buttonCmp=new Ext.Button({
