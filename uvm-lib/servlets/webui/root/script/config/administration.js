@@ -396,7 +396,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 value : this.getAccessSettings().outsideNetwork,
                                 allowBlank : false,
                                 blankText : this.i18n._("A \"IP Address\" must be specified."),
-                                vtype : 'ipAddress'
+                                vtype : 'ipAddress',
+                                disabled : !this.getAccessSettings().isOutsideAccessRestricted
                             }]
                     	},{
                             border: false,
@@ -411,7 +412,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 value : this.getAccessSettings().outsideNetmask,
                                 allowBlank : false,
                                 blankText : this.i18n._("A \"Netmask\" must be specified."),
-                                vtype : 'ipAddress'
+                                vtype : 'ipAddress',
+                                disabled : !this.getAccessSettings().isOutsideAccessRestricted                                
                             }]
                     	}]
                 	}] 
@@ -564,7 +566,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             value : this.getAddressSettings().publicIPaddr,
                             allowBlank : false,
                             blankText : this.i18n._("You must provide a valid IP Address."),
-                            vtype : 'ipAddress'
+                            vtype : 'ipAddress',
+                            disabled : !this.getAddressSettings().isPublicAddressEnabled
                         },{
                             xtype : 'numberfield',
                             fieldLabel : this.i18n._('Port'),
@@ -576,7 +579,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             allowNegative: false,
                             allowBlank : false,
                             blankText : this.i18n._("You must provide a valid port."),
-                            vtype : 'port'
+                            vtype : 'port',
+                            disabled : !this.getAddressSettings().isPublicAddressEnabled
                         }]
                     }]
                 }
@@ -1148,20 +1152,23 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         id: 'administration_snmp_communityString',
                         value : this.getSnmpSettings().communityString,
                         allowBlank : false,
-                        blankText : this.i18n._("An SNMP \"Community\" must be specified.")                        
+                        blankText : this.i18n._("An SNMP \"Community\" must be specified."),
+                        disabled : !this.getSnmpSettings().enabled
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('System Contact'),
                         name : 'sysContact',
                         id: 'administration_snmp_sysContact',
-                        value : this.getSnmpSettings().sysContact
+                        value : this.getSnmpSettings().sysContact,
+                        disabled : !this.getSnmpSettings().enabled                        
                         //vtype : 'email'
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('System Location'),
                         name : 'sysLocation',
                         id: 'administration_snmp_sysLocation',
-                        value : this.getSnmpSettings().sysLocation
+                        value : this.getSnmpSettings().sysLocation,
+                        disabled : !this.getSnmpSettings().enabled                        
                     },{
                         border: false,
                         html : '<hr>'
@@ -1172,6 +1179,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'sendTraps',
                         id: 'administration_snmp_sendTraps_disable',                        
                         checked : !this.getSnmpSettings().sendTraps,
+                        disabled : !this.getSnmpSettings().enabled,                        
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
@@ -1190,6 +1198,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'sendTraps',
                         id: 'administration_snmp_sendTraps_enable',
                         checked : this.getSnmpSettings().sendTraps,
+                        disabled : !this.getSnmpSettings().enabled,                        
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
@@ -1208,7 +1217,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         id: 'administration_snmp_trapCommunity',
                         value : this.getSnmpSettings().trapCommunity,
                         allowBlank : false,
-                        blankText : this.i18n._("An Trap \"Community\" must be specified.")                        
+                        blankText : this.i18n._("An Trap \"Community\" must be specified."),
+                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Host'),
@@ -1216,7 +1226,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         id: 'administration_snmp_trapHost',
                         value : this.getSnmpSettings().trapHost,
                         allowBlank : false,
-                        blankText : this.i18n._("An Trap \"Host\" must be specified.")                        
+                        blankText : this.i18n._("An Trap \"Host\" must be specified."),                        
+                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Port'),
@@ -1228,7 +1239,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         allowNegative: false,
                         allowBlank : false,
                         blankText : this.i18n._("You must provide a valid port."),
-                        vtype : 'port'
+                        vtype : 'port',
+                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
                     }]
                 }, {
                     title: this.i18n._('Syslog'),
@@ -1277,7 +1289,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         id : 'administration_syslog_host',
                         value : this.getLoggingSettings().syslogHost,
                         allowBlank : false,
-                        blankText : this.i18n._("A \"Host\" must be specified.")
+                        blankText : this.i18n._("A \"Host\" must be specified."),
+                        disabled : !this.getLoggingSettings().syslogEnabled
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Port'),
@@ -1289,7 +1302,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         allowNegative: false,
                         allowBlank : false,
                         blankText : this.i18n._("You must provide a valid port."),
-                        vtype : 'port'
+                        vtype : 'port',
+                        disabled : !this.getLoggingSettings().syslogEnabled                        
                     },{
                         xtype : 'combo',
                         name : 'syslogFacility',
@@ -1330,7 +1344,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }),
                         displayField : 'name',
                         valueField : 'key',
-                        value : this.getLoggingSettings().syslogFacility
+                        value : this.getLoggingSettings().syslogFacility,
+                        disabled : !this.getLoggingSettings().syslogEnabled                        
                     },{
                         xtype : 'combo',
                         name : 'syslogThreshold',
@@ -1355,7 +1370,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }),
                         displayField : 'name',
                         valueField : 'key',
-                        value : this.getLoggingSettings().syslogThreshold
+                        value : this.getLoggingSettings().syslogThreshold,
+                        disabled : !this.getLoggingSettings().syslogEnabled                        
                     }]
                 }]
             });
