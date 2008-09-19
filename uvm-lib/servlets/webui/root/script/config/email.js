@@ -318,15 +318,27 @@ if (!Ung.hasResource["Ung.Email"]) {
                     	html : String.format(this.i18n._("The {0} Server will send email from this address."),
                                     this.getBrandingBaseSettings().companyName)
                     }, {
-                        xtype : 'textfield',
-                        name : 'Email From Address',
-                        id : 'email_fromAddress',
-                        style : 'margin-left: 50px;',
-                        vtype : 'email',
-                        hideLabel : true,
-                        allowBlank : false,
-                        width : 200,
-                        value : this.getMailSettings().fromAddress
+                        border: false,
+                        layout:'column',
+                        items: [{
+                            border: false,
+                            width: 50,
+                            html : '&nbsp;'
+                        },{
+                            border: false,
+                            columnWidth:1,
+                            layout: 'form',
+                            items: [{
+                                xtype : 'textfield',
+                                name : 'Email From Address',
+                                id : 'email_fromAddress',
+                                vtype : 'email',
+                                hideLabel : true,
+                                allowBlank : false,
+                                width : 200,
+                                value : this.getMailSettings().fromAddress
+                            }]
+                        }]
                     }]
                 }, {
                     title : this.i18n._('Email Test'),
@@ -348,12 +360,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             });
         },
         buildFromSafeList : function() {
-//            var valuesGlobal = this.getSafelistAdminView().getSafelistContents('GLOBAL');
-//            var storeDataGlobal = [];
-//            for(var i=0; i<valuesGlobal.length; i++) {
-//                storeDataGlobal.push({id:i, emailAddress: valuesGlobal[i]});
-//            }
-            
             var smUserSafelist = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
             var showDetailColumn = new Ext.grid.IconColumn({
                 header : this.i18n._("Show Detail"),
