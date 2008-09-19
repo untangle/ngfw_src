@@ -390,6 +390,8 @@ Ung.Main.prototype = {
                             Ext.MessageBox.alert(i18n._("Failed"),exception.message);
                             return;
                         }
+                        main.loadApps();
+                        /*
                         rpc.toolboxManager.unregister(function (result, exception) {
                             if(exception) {
                                 Ext.MessageBox.alert(i18n._("Failed"),exception.message);
@@ -397,6 +399,7 @@ Ung.Main.prototype = {
                             }
                             main.loadApps();
                         }.createDelegate(this), this.name);
+                        */
                     }.createDelegate(this), this.name);
                 }
         }.createDelegate(mackageDesc), mackageDesc.name);

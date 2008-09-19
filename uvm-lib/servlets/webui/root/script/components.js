@@ -197,7 +197,7 @@ Ung.Util= {
         }
     },
     bytesToMBs : function(value) {
-        return Math.round(value/100000)/10;
+        return Math.round(value/10000)/100;
     }
 
 };
@@ -765,25 +765,30 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
     },
     start : function () {
+        if(this.state=="Attention") {
+            return
+        }
     	this.loadNodeContext();
         this.setPowerOn(true);
         this.setState("Attention");
         this.nodeContext.rpcNode.start(function(result, exception) {
-            this.runState = "RUNNING";
-            this.setState("On");
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                this.updateRunState("INITIALIZED");
                 return;
             }
+            this.updateRunState("RUNNING");
         }.createDelegate(this));
     },
     stop : function () {
+        if(this.state=="Attention") {
+            return
+        }
         this.loadNodeContext();
         this.setPowerOn(false);
         this.setState("Attention");
         this.nodeContext.rpcNode.stop(function(result, exception) {
-            this.runState = "INITIALIZED";
-            this.setState("Off");
+            this.updateRunState("INITIALIZED");
             this.resetBlingers();
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
@@ -1143,13 +1148,13 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("RX Speed:")+'</div>',
             '<div class="values"><span name="rx_speed"></span> KB/sec</div>',
             '<div class="title">'+i18n._("TX Speed:")+'</div>',
-            '<div class="values"><span name="tx_speed"></span> KB/sec</div>',
+            '<div class="values"><span name="tx_speed"></span> KB/sec</div>'/*,
             '<div class="title">'+i18n._("Data received (since last start):")+'</div>',
             '<div class="values"><span name="data_received"></span> MBs</div>',
             '<div class="title">'+i18n._("Data sent (since last start):")+'</div>',
             '<div class="values"><span name="data_sent"></span> MBs</div>',
             '<div class="title">'+i18n._("Total Throughput:")+'</div>',
-            '<div class="values"><span name="total_throughput"></span> MBs</div>'
+            '<div class="values"><span name="total_throughput"></span> MBs</div>'*/
         ];
         this.networkToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=network]"),
@@ -1181,7 +1186,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("CPU Utilization by System:")+'</div>',
             '<div class="values"><span name="cpu_utilization_system"></span> %</div>',
             '<div class="title">'+i18n._("Load average (1 min / 5 min / 15 min):")+'</div>',
-            '<div class="values"><span name="load_average_1_min"></span> %, <span name="load_average_5_min"></span> %, <span name="load_average_15_min"></span> %</div>'
+            '<div class="values"><span name="load_average_1_min"></span>, <span name="load_average_5_min"></span>, <span name="load_average_15_min"></span></div>'
         ];
         this.cpuToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=cpu]"),
@@ -1235,9 +1240,9 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("Free Disk Space:")+'</div>',
             '<div class="values"><span name="free_disk_space"></span> GBs</div>',
             '<div class="title">'+i18n._("Data read:")+'</div>',
-            '<div class="values"><span name="disk_reads"></span> KB, '+i18n._("Per second:")+' <span name="disk_reads_per_second"></span> b/sec</div>',
+            '<div class="values"><span name="disk_reads"></span> MB, <span name="disk_reads_per_second"></span> b/sec</div>',
             '<div class="title">'+i18n._("Data write:")+'</div>',
-            '<div class="values"><span name="disk_writes"></span> KB, '+i18n._("Per second:")+' <span name="disk_writes_per_second"></span> b/sec</div>'
+            '<div class="values"><span name="disk_writes"></span> MB, <span name="disk_writes_per_second"></span> b/sec</div>'
         ];
         this.diskToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=disk]"),
@@ -1254,9 +1259,9 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
     },
     update : function(stats) {
-        this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round(stats.map.oneMinuteLoadAvg/stats.map.numProcs*100)+"%";
-        var txSpeed=Math.round(stats.map.txBps/100)/10;
-        var rxSpeed=Math.round(stats.map.rxBps/100)/10;
+        this.getEl().child("div[class=cpu]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
+        var txSpeed=Math.round(stats.map.txBps/10)/100;
+        var rxSpeed=Math.round(stats.map.rxBps/10)/100;
         this.getEl().child("div[class=tx_value]").dom.innerHTML=txSpeed+"KB/sec";
         this.getEl().child("div[class=rx_value]").dom.innerHTML=rxSpeed+"KB/sec";
         var memoryFree=Ung.Util.bytesToMBs(stats.map.MemFree)
@@ -1269,10 +1274,11 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             var toolTipEl=this.networkToolTip.getEl();
             toolTipEl.child("span[name=tx_speed]").dom.innerHTML=txSpeed;
             toolTipEl.child("span[name=rx_speed]").dom.innerHTML=rxSpeed;
+            /*
             toolTipEl.child("span[name=data_received]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=data_sent]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=total_throughput]").dom.innerHTML="TODO";
-
+            */
         }
         if(this.cpuToolTip.rendered) {
             var toolTipEl=this.cpuToolTip.getEl();
@@ -1284,9 +1290,9 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             //toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=cpu_utilization_user]").dom.innerHTML=Math.round(stats.map.userCpuUtilization*100.0/stats.map.numProcs);
             toolTipEl.child("span[name=cpu_utilization_system]").dom.innerHTML=Math.round(stats.map.systemCpuUtilization*100.0/stats.map.numProcs);
-            toolTipEl.child("span[name=load_average_1_min]").dom.innerHTML=Math.round(stats.map.oneMinuteLoadAvg*100.0/stats.map.numProcs);
-            toolTipEl.child("span[name=load_average_5_min]").dom.innerHTML=Math.round(stats.map.fiveMinuteLoadAvg*100.0/stats.map.numProcs);
-            toolTipEl.child("span[name=load_average_15_min]").dom.innerHTML=Math.round(stats.map.fifteenMinuteLoadAvg*100.0/stats.map.numProcs);
+            toolTipEl.child("span[name=load_average_1_min]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
+            toolTipEl.child("span[name=load_average_5_min]").dom.innerHTML=stats.map.fiveMinuteLoadAvg;
+            toolTipEl.child("span[name=load_average_15_min]").dom.innerHTML=stats.map.fifteenMinuteLoadAvg;
         }
         if(this.memoryToolTip.rendered) {
             var toolTipEl=this.memoryToolTip.getEl();
@@ -1308,11 +1314,11 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         }
         if(this.diskToolTip.rendered) {
             var toolTipEl=this.diskToolTip.getEl();
-            toolTipEl.child("span[name=total_disk_space]").dom.innerHTML=Math.round(stats.map.totalDiskSpace/100000000)/10;
-            toolTipEl.child("span[name=free_disk_space]").dom.innerHTML=Math.round(stats.map.freeDiskSpace/100000000)/10;
-            toolTipEl.child("span[name=disk_reads]").dom.innerHTML=Math.round(stats.map.diskReads/10)/100;
+            toolTipEl.child("span[name=total_disk_space]").dom.innerHTML=Math.round(stats.map.totalDiskSpace/10000000)/100;
+            toolTipEl.child("span[name=free_disk_space]").dom.innerHTML=Math.round(stats.map.freeDiskSpace/10000000)/100;
+            toolTipEl.child("span[name=disk_reads]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.diskReads);
             toolTipEl.child("span[name=disk_reads_per_second]").dom.innerHTML=Math.round(stats.map.diskReadsPerSecond*100)/100;
-            toolTipEl.child("span[name=disk_writes]").dom.innerHTML=Math.round(stats.map.diskWrites/10)/100;
+            toolTipEl.child("span[name=disk_writes]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.diskWrites);
             toolTipEl.child("span[name=disk_writes_per_second]").dom.innerHTML=Math.round(stats.map.diskWritesPerSecond*100)/100;
         }
     },
