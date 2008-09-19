@@ -4,9 +4,10 @@ require 'gpgme'
 require 'optparse'
 
 # The format of a popid is:
-#   xxxx-xxxx-xxxx-xPVx-xxxxxxx-xxxxxxx-xxxxPVx
+#   xxxx-xxxx-xxxx-xxPV-xxxxxxx-xxxxxxx-xxxxPVx
 #   P = platform bit
 #   V = version bit
+#   x = uuid bit
 # see VERSIONS and PLATFORMS below for the actual meaning of those
 # bits
 
@@ -14,18 +15,18 @@ require 'optparse'
 # constants
 
 # bits
-VERSIONS = { :hardware => 1,
-             :cd       => 2,
-             :lite     => 3,
-             :windows  => 4,
-             :ubuntu   => 9 }
-
 PLATFORMS = { :sarge    => 0,
               :etch     => 1,
               :sid      => 2,
               :feisty   => 3,
               :gutsy    => 4,
               :hardy    => 5 }
+
+VERSIONS = { :hardware => 1,
+             :cd       => 2,
+             :lite     => 3,
+             :windows  => 4,
+             :ubuntu   => 9 }
 
 # workaround for <1.0 gpgme
 OLDGPGME = !defined?(GPGME::Ctx)
