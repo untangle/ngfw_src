@@ -491,7 +491,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getAddressSettings().isPublicAddressEnabled = !checked;
                                     if (checked) {
                                         Ext.getCmp('administration_publicIPaddr').disable();
                                         Ext.getCmp('administration_publicPort').disable();
