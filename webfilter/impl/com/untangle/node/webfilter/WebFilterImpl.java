@@ -122,8 +122,8 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
 
     public WebFilterSettings getWebFilterSettings()
     {
-        if( settings == null )
-            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
+        if (settings == null)
+            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState());
         return settings;
     }
 
@@ -353,7 +353,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         getNodeContext().runTransaction(tw);
 
 
-
+        blacklist.configure(settings);
         reconfigure();
     }
 
@@ -388,7 +388,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         s.add(new StringRule("bin", "executable", "an executable file format", false));
         s.add(new StringRule("com", "executable", "an executable file format", false));
         s.add(new StringRule("jpg", "image", "an image file format", false));
-        s.add(new StringRule("png", "image", "an image file format", false ));
+        s.add(new StringRule("png", "image", "an image file format", false));
         s.add(new StringRule("gif", "image", "an image file format", false));
         s.add(new StringRule("jar", "java", "a Java file format", false));
         s.add(new StringRule("class", "java", "a Java file format", false));
@@ -755,7 +755,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
                              final List<Long> deleted, final List modified) {
         TransactionWork tw = new TransactionWork() {
             public boolean doWork(Session s) {
-                listUtil.updateCachedItems( rules, added, deleted, modified );
+                listUtil.updateCachedItems(rules, added, deleted, modified);
 
                 settings = (WebFilterSettings)s.merge(settings);
 
@@ -767,13 +767,15 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
             }
         };
         getNodeContext().runTransaction(tw);
+
+        blacklist.configure(settings);
     }
 
     private void updateCategories(final Set categories, final List added,
             final List<Long> deleted, final List modified) {
         TransactionWork tw = new TransactionWork() {
             public boolean doWork(Session s) {
-                listUtil.updateCachedItems( categories, categoryHandler, added, deleted, modified );
+                listUtil.updateCachedItems(categories, categoryHandler, added, deleted, modified);
 
                 settings = (WebFilterSettings)s.merge(settings);
 
@@ -785,18 +787,20 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
             }
         };
         getNodeContext().runTransaction(tw);
+
+        blacklist.configure(settings);
     }
 
     private static class BlacklistCategoryHandler implements PartialListUtil.Handler<BlacklistCategory>
     {
-        public Long getId( BlacklistCategory rule )
+        public Long getId(BlacklistCategory rule)
         {
             return rule.getId();
         }
 
-        public void update( BlacklistCategory current, BlacklistCategory newRule )
+        public void update(BlacklistCategory current, BlacklistCategory newRule)
         {
-            current.update( newRule );
+            current.update(newRule);
         }
     }
 }
