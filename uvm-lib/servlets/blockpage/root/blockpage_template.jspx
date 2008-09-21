@@ -24,7 +24,7 @@
     </uvm:inlineScript>
     
     <c:if test="${!empty javascript_file}">
-      <script type="text/javascript" src="${javascript_file}"></script>
+      <script type="text/javascript" src="${javascript_file}"><!-- --></script>
     </c:if>
 
     <c:out escapeXml="false" value="${javascript}"/>
