@@ -2,7 +2,7 @@ Ext.namespace('Ung');
 Ext.namespace('Ung.SetupWizard');
 
 // The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = 'ext/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 // the main internationalization object
 var i18n=null;
 // the main json rpc object
@@ -1079,7 +1079,8 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     inputValue : 'bridge',
                     boxLabel : i18n._('Transparent Bridge'),
                     ctCls : 'largeOption',					
-                    hideLabel : 'true'
+                    hideLabel : 'true',
+                    checked : true
                 },{
                     xtype : 'label',
                     html : '<div class="wizardlabelmargin1">'+i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.')+'</div>'
@@ -1113,20 +1114,22 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     name : 'network',
                     xtype : 'textfield',
                     fieldLabel : i18n._('Network'),
-                                        vText : i18n._('Please enter a valid Network  Address'),
-                                        vtype : 'ipCheck',
-                                        allowBlank : false,
-                                        msgTarget : 'side',
-                                        maskRe : /(\d+|\.)/					
+                    vText : i18n._('Please enter a valid Network  Address'),
+                    vtype : 'ipCheck',
+                    allowBlank : false,
+                    msgTarget : 'side',
+                    maskRe : /(\d+|\.)/,					
+                    disabled : true
                 },{
                     name : 'netmask',
                     xtype : 'textfield',
                     fieldLabel : i18n._('Netmask'),
-                                        vText : i18n._('Please enter a valid Netmask Value'),
-                                        vtype : 'ipCheck',
-                                        allowBlank : false,
-                                        msgTarget : 'side',
-                                        maskRe : /(\d+|\.)/					
+                    vText : i18n._('Please enter a valid Netmask Value'),
+                    vtype : 'ipCheck',
+                    allowBlank : false,
+                    msgTarget : 'side',
+                    maskRe : /(\d+|\.)/,
+                    disabled : true
                 }]
            }]
         });
