@@ -154,6 +154,64 @@ Ung.Util= {
         }
         return hasData;
     },
+    
+    // Check if two object are equal
+    equals : function(obj1, obj2) {
+    	// the two objects have different types
+    	if (typeof obj1 !== typeof obj2) {
+    		return false;
+    	}
+        // check null objects
+    	if (obj1 === null || obj2 === null) {
+    		return obj1 === null && obj2 === null;
+    	}
+    	var count = 0;
+        for (prop in obj1) {
+            // the two properties have different types
+        	if (typeof obj1[prop] !== typeof obj1[prop]) {
+        		return false;
+        	}
+        	
+            switch (typeof obj1[prop]) {
+              case 'number':
+              case 'string':
+              case 'boolean':
+                if (obj1[prop] !== obj2[prop]) {
+                	return false;
+                }
+                break;
+              case 'undefined':
+                break;
+              case 'object':
+                if (!Ung.Util.equals(obj1[prop], obj2[prop])){
+                	return false;
+                }
+                break;
+            }
+        	count++;
+        }
+        
+        // check that the two objects have the same number of properties
+        for (prop in obj2) {
+        	count--;
+        }
+        if (count != 0) {
+            return false
+        }
+        return true;
+    },
+    
+    // Clone object
+    clone : function (obj){
+        if(obj == null || typeof(obj) != 'object')
+            return obj;
+    
+        var temp = new obj.constructor();
+        for(var key in obj)
+            temp[key] = Ung.Util.clone(obj[key]);
+    
+        return temp;
+    },    
 
     // Get the save list from the changed data
     getSaveList : function(changedData, recordJavaClass) {
