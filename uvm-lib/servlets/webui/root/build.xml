@@ -95,6 +95,12 @@
             <include name="**/*.*"/>
           </fileset>
         </copy>
+    	
+        <copy todir="${deploy.path}/../setup/script" preservelastmodified="true" verbose="true" failonerror="false">
+            <fileset dir="./../../setup/root/script/">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
     </target>
 	
 
