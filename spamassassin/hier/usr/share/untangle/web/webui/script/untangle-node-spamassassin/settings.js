@@ -136,11 +136,13 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 name : 'SMTP Strength Value',
                                 id: 'spamassassin_smtpStrengthValue',
                                 value : this.getBaseSettings().smtpConfig.strength,
-                                width : 50,
+                                width : 100,
                                 //labelStyle: "width:150px;",
                                 allowDecimals: false,
                                 allowBlank : false,
                                 blankText : this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
+                                minValue : -2147483648,
+                                maxValue : 2147483647,
                                 listeners : {
                                     "change" : {
                                         fn : function(elem, newValue) {
@@ -237,10 +239,12 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 name : 'POP3 Strength Value',
                                 id: 'spamassassin_pop3StrengthValue',
                                 value : this.getBaseSettings().popConfig.strength,
-                                width: 50,
+                                width: 100,
                                 allowDecimals: false,
                                 allowBlank : false,
                                 blankText : this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
+                                minValue : -2147483648,
+                                maxValue : 2147483647,
                                 listeners : {
                                     "change" : {
                                         fn : function(elem, newValue) {
@@ -338,10 +342,12 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 name : 'IMAP Strength Value',
                                 id: 'spamassassin_imapStrengthValue',
                                 value : this.getBaseSettings().imapConfig.strength,
-                                width: 50,
+                                width: 100,
                                 allowDecimals: false,
                                 allowBlank : false,
                                 blankText : this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
+                                minValue : -2147483648,
+                                maxValue : 2147483647,
                                 listeners : {
                                     "change" : {
                                         fn : function(elem, newValue) {
