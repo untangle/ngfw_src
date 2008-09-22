@@ -1259,7 +1259,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
     },
     update : function(stats) {
-        this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numProcs)+"%";
+        this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numCpus)+"%";
         var txSpeed=Math.round(stats.map.txBps/10)/100;
         var rxSpeed=Math.round(stats.map.rxBps/10)/100;
         this.getEl().child("div[class=tx_value]").dom.innerHTML=txSpeed+"KB/sec";
@@ -1288,8 +1288,8 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=uptime]").dom.innerHTML=Math.round(stats.map.uptime);
             toolTipEl.child("span[name=tasks]").dom.innerHTML=stats.map.numProcs;
             //toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=cpu_utilization_user]").dom.innerHTML=Math.round(stats.map.userCpuUtilization*100.0/stats.map.numProcs);
-            toolTipEl.child("span[name=cpu_utilization_system]").dom.innerHTML=Math.round(stats.map.systemCpuUtilization*100.0/stats.map.numProcs);
+            toolTipEl.child("span[name=cpu_utilization_user]").dom.innerHTML=Math.round(stats.map.userCpuUtilization*100.0/stats.map.numCpus);
+            toolTipEl.child("span[name=cpu_utilization_system]").dom.innerHTML=Math.round(stats.map.systemCpuUtilization*100.0/stats.map.numCpus);
             toolTipEl.child("span[name=load_average_1_min]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
             toolTipEl.child("span[name=load_average_5_min]").dom.innerHTML=stats.map.fiveMinuteLoadAvg;
             toolTipEl.child("span[name=load_average_15_min]").dom.innerHTML=stats.map.fifteenMinuteLoadAvg;
