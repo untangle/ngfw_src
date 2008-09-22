@@ -1259,7 +1259,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
     },
     update : function(stats) {
-        this.getEl().child("div[class=cpu]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
+        this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numProcs)+"%";
         var txSpeed=Math.round(stats.map.txBps/10)/100;
         var rxSpeed=Math.round(stats.map.rxBps/10)/100;
         this.getEl().child("div[class=tx_value]").dom.innerHTML=txSpeed+"KB/sec";
@@ -2107,7 +2107,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             renderTo : 'button_margin_right_' + this.getId(),
             text : i18n._('Save'),
             handler : function() {
-                this.saveAction();
+                this.saveAction.defer(1, this);
             }.createDelegate(this)
         }));
     },
@@ -2213,7 +2213,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             renderTo : 'button_margin_right_' + this.getId(),
             text : i18n._('Save'),
             handler : function() {
-                this.saveAction();
+                this.saveAction.defer(1, this);;
             }.createDelegate(this)
         }));
     },

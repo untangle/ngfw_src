@@ -1398,7 +1398,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         border : false
                     }, {
                         html : this.i18n
-                                ._('Warning:  Finishing this wizard will cause any previous OpenVPN settings you had to be lost, and overwritten by new settings.  Only finish this wizard if you would like completely new settings.'),
+                                ._('Warning: Completing this wizard will overwrite any previous OpenVPN settings with new settings. All previous settings will be lost!'),
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         cls: 'warning', 
                         border : false
@@ -1490,14 +1490,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                             style : "padding-left: 30px;",
                                             disabled : true,
                                             handler : function() {
-                                                // getAvailableUsbList
+                                            	Ext.MessageBox.wait(i18n._("Reading USB Key..."), i18n._("Please wait"));
                                                 this.getRpcNode().getAvailableUsbList(function(result, exception) {
                                                     if (exception) {
-                                                        Ext.MessageBox
-                                                                .alert(
-                                                                        i18n._("OpenVPN Setup Wizard Warning"),
-                                                                        this.i18n
-                                                                                ._("The USB Key could not be read.  Please make sure the key is properly inserted, and try again."));
+                                                        Ext.MessageBox.alert(i18n._("OpenVPN Setup Wizard Warning"),this.i18n._("The USB Key could not be read.  Please make sure the key is properly inserted, and try again."));
+                                                        return;
+                                                    }
+                                                    if(result.list.length==0) {
+                                                        Ext.MessageBox.alert(i18n._("OpenVPN Setup Wizard Warning"),this.i18n._("No configuration found."));
                                                         return;
                                                     }
                                                     var configurationsCmp = Ext.getCmp("openvpn_client_configurations");
@@ -1506,6 +1506,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                                         storeData.push([result.list[i], result.list[i]])
                                                     }
                                                     configurationsCmp.store.loadData(storeData);
+                                                    Ext.MessageBox.hide();
                                                 }.createDelegate(this))
                                             }.createDelegate(this)
                                         }]
@@ -1620,12 +1621,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }.createDelegate(this)
             };
             var congratulationsCard = {
-                title : this.i18n._("Congratulations"),
+                title : this.i18n._("Finished!"),
                 panel : {
                     xtype : 'form',
                     items : [{
                         xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Congratulations! OpenVPN is configured as a VPN Client.")+'</h2>'
+                        html : '<h2 class="wizardTitle">'+i18n._("Finished!")+'</h2>'
+                    }, {
+                        html : this.i18n._('Congratulations! OpenVPN is configured as a VPN Client.'),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
                     }, {
                         html : this.i18n
                                 ._('If necessary, you can change the configuration of OpenVPN by launching the Setup Wizard again.'),
@@ -1709,7 +1714,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         border : false
                     }, {
                         html : this.i18n
-                                ._('Warning:  Finishing this wizard will cause any previous OpenVPN settings you had to be lost, and overwritten by new settings.  Only finish this wizard if you would like completely new settings.'),
+                                ._('Warning: Completing this wizard will overwrite any previous OpenVPN settings with new settings. All previous settings will be lost!'),
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         cls: 'warning',
                         border : false
@@ -1740,15 +1745,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             	
             }
             var certificateCard = {
-                title : this.i18n._("Generate Certificate"),
+                title : this.i18n._("Step 1 - Certificate"),
                 panel : {
                     xtype : 'form',
                     items : [{
                         xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Generate Certificate")+'</h2>'
+                        html : '<h2 class="wizardTitle">'+i18n._("Step 1 - Certificate")+'</h2>'
                     }, {
                         html : this.i18n
-                                ._('Please take a moment to specify some information about your location, to be used to generate a secure digital certificate.'),
+                                ._('Please specify some information about your location. This information will be used to generate a secure digital certificate.'),
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }, {
@@ -1841,12 +1846,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             };
             var gridExports = this.generateGridExports(true);
             var exportsCard = {
-                title : this.i18n._("Add Exports"),
+                title : this.i18n._("Step 2 - Exports"),
                 panel : {
                     xtype : 'form',
                     items : [{
                         xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Add Exports")+'</h2>'
+                        html : '<h2 class="wizardTitle">'+i18n._("Step 2 - Exports")+'</h2>'
                     }, {
                         html : this.i18n._('Please complete the list of exports. This is a list of hosts and networks which remote VPN users and networks will be able to contact.'),
                         bodyStyle : 'padding:10px 10px 10px 10px;',
@@ -1889,15 +1894,23 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }.createDelegate(this)
             };
             var congratulationsCard = {
-                title : this.i18n._("Congratulations"),
+                title : this.i18n._("Finished!"),
                 panel : {
                     xtype : 'form',
                     items : [{
                         xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Congratulations! OpenVPN is configured as a VPN Routing Server.")+'</h2>'
+                        html : '<h2 class="wizardTitle">'+i18n._("Finished!")+'</h2>'
+                    }, {
+                        html : this.i18n._('Congratulations!'),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
+                    }, {
+                        html : this.i18n._('You are now ready to begin adding remote clients and sites you wish to have access to your VPN.'),
+                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        border : false
                     }, {
                         html : this.i18n
-                                ._('If necessary, you can change the configuration of OpenVPN by launching the Setup Wizard again.'),
+                                ._('To add remote users, click on the Clients tab and add to the VPN Clients table.<br/>To add remote networks, click on the Clients tab and add to the VPN Sites table.'),
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }]
