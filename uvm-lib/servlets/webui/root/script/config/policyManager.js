@@ -922,6 +922,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }
                     Ext.MessageBox.hide();
                 	this.cancelAction();
+                	main.loadPolicies.defer(1,main);
                 }.createDelegate(this), this.getPolicyConfiguration());
             }
         },

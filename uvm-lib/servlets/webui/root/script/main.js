@@ -141,7 +141,7 @@ Ung.Main.prototype = {
         var contentRightArr=[
             '<div id="contentright">',
                 '<div id="racks" style="display:none;">',
-                    '<div id="rack_list">',
+                    '<div id="rack_list"><div id="rack_select_container"></div>',
                     '</div>',
                     '<div id="rack_nodes">',
                         '<div id="security_nodes"></div>',
@@ -457,6 +457,7 @@ Ung.Main.prototype = {
 
     // load policies list
     loadPolicies: function() {
+    	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
         rpc.policyManager.getPolicies( function (result, exception) {
             if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return; }
             rpc.policies=result;
@@ -773,11 +774,11 @@ Ung.Main.prototype = {
             if(rpc.policies[i]["default"]===true) {
                 rpc.currentPolicy=rpc.policies[i];
             }
-            out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+i18n._(rpc.policies[i].name)+'<\/option>');
+            out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+i18n._(rpc.policies[i].name)+'</option>');
         }
-        out.push('<option value="SHOW_POLICY_MANAGER" class="ungButton">Policy Manager<\/option>');
-        out.push('<\/select>');
-        Ext.get("rack_list").insertHtml("afterBegin", out.join(''));
+        out.push('<option value="SHOW_POLICY_MANAGER" class="ungButton">Policy Manager</option>');
+        out.push('</select>');
+        Ext.get("rack_select_container").dom.innerHTML=out.join('');
         this.loadRackView();
     },
     // change current policy
