@@ -46,7 +46,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }));
             	}
             }
-            Ung.LocalDirectory.superclass.initComponent.call(this);
+            Ung.PolicyManager.superclass.initComponent.call(this);
         },
         onRender : function(container, position) {
             // call superclass renderer first

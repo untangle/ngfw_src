@@ -71,7 +71,7 @@ Ung.Util= {
         document.getElementsByTagName("head")[0].appendChild(fileref);
     },
     // Load script file Dynamically
-    loadScript: function(sScriptSrc, fnCallback) {
+    loadScript: function(sScriptSrc, handler) {
         var error=null;
         try {
             if(window.XMLHttpRequest)
@@ -87,18 +87,39 @@ Ung.Util= {
         } catch (e) {
             error=e;
         }
-        if(fnCallback) {
-            fnCallback.call(this);
+        if(handler) {
+            handler.call(this);
         }
         return error;
     },
     // Load a resource if not loaded and execute a callback function
-    loadResourceAndExecute: function(resource,sScriptSrc, fnCallback) {
+    loadResourceAndExecute: function(resource,sScriptSrc, handler) {
         if(Ung.hasResource[resource]) {
-            fnCallback.call(this);
+            handler.call(this);
         } else {
-            Ung.Util.loadScript(sScriptSrc, fnCallback);
+            Ung.Util.loadScript(sScriptSrc, handler);
         }
+    },
+    loadModuleTranslations : function(moduleName, dependencyMap, handler) {
+    	if(!Ung.i18nModuleInstances[moduleName]) {
+            rpc.languageManager.getTranslations(function(result, exception, opt, moduleName, dependencyMap, handler) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    return;
+                }
+                var moduleMap=result.map;
+                if(dependencyMap!=null) {
+                	Ext.applyIf(moduleMap, dependencyMap)
+                }
+                Ung.i18nModuleInstances[moduleName] = new Ung.ModuleI18N({
+                        "map" : i18n.map,
+                        "moduleMap" : moduleMap
+                });
+                handler.call(this);
+            }.createDelegate(this,[moduleName, dependencyMap, handler],true), moduleName);
+    	} else {
+    		handler.call(this);
+    	}
     },
     todo: function() {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
@@ -257,6 +278,7 @@ Ung.Util= {
     bytesToMBs : function(value) {
         return Math.round(value/10000)/100;
     }
+    
 
 };
 
@@ -826,32 +848,34 @@ Ung.Node = Ext.extend(Ext.Component, {
         if(this.state=="Attention") {
             return
         }
-    	this.loadNodeContext();
-        this.setPowerOn(true);
-        this.setState("Attention");
-        this.nodeContext.rpcNode.start(function(result, exception) {
-            if (exception) {
-                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                this.updateRunState("INITIALIZED");
-                return;
-            }
-            this.updateRunState("RUNNING");
-        }.createDelegate(this));
+    	this.loadNodeContext(function() {
+            this.setPowerOn(true);
+            this.setState("Attention");
+            this.nodeContext.rpcNode.start(function(result, exception) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    this.updateRunState("INITIALIZED");
+                    return;
+                }
+                this.updateRunState("RUNNING");
+            }.createDelegate(this));
+    	}.createDelegate(this));
     },
     stop : function () {
         if(this.state=="Attention") {
             return
         }
-        this.loadNodeContext();
-        this.setPowerOn(false);
-        this.setState("Attention");
-        this.nodeContext.rpcNode.stop(function(result, exception) {
-            this.updateRunState("INITIALIZED");
-            this.resetBlingers();
-            if (exception) {
-                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                return;
-            }
+        this.loadNodeContext(function() {
+            this.setPowerOn(false);
+            this.setState("Attention");
+            this.nodeContext.rpcNode.stop(function(result, exception) {
+                this.updateRunState("INITIALIZED");
+                this.resetBlingers();
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    return;
+                }
+            }.createDelegate(this));
         }.createDelegate(this));
     },
     // on click help
@@ -859,20 +883,66 @@ Ung.Node = Ext.extend(Ext.Component, {
         main.openHelp(this.md.displayName.toLowerCase().replace(/ /g,"_"));
     },
     // on click settings
-    onSettingsAction : function(fnCallback) {
+    onSettingsAction : function(handler) {
         if (!this.settingsWin) {
             this.settingsWin = new Ung.NodeSettingsWin({
                 nodeCmp : this
             });
         }
         this.settingsWin.show();
-        this.loadSettings();
-        if (fnCallback) {
-            this.settings.fnCallback = fnCallback;
+        Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
+        this.loadSettings(handler);
+    },
+    getNodeContext: function(handler) {
+        if(handler==null) {handler=Ext.emptyFn;}
+        if (this.nodeContext === undefined) {
+            rpc.nodeManager.nodeContext(function(result, exception) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    return;
+                }
+                this.nodeContext = result;
+            }.createSequence(handler).createDelegate(this), this.Tid);
+            
+        } else {
+        	handler.call(this);
+        }
+    },
+    getRpcNode: function(handler) {
+        if(handler==null) {handler=Ext.emptyFn;}
+        if (this.nodeContext.rpcNode === undefined) {
+            this.nodeContext.node(function(result, exception) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    return;
+                }
+                this.nodeContext.rpcNode = result;
+            }.createSequence(handler).createDelegate(this));
+        } else {
+        	handler.call(this);
+        }
+    },
+    getNodeDesc: function(handler) {
+        if(handler==null) {handler=Ext.emptyFn;}
+        if (this.nodeContext.nodeDesc === undefined) {
+            this.nodeContext.getNodeDesc(function(result, exception) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    return;
+                }
+                this.nodeContext.nodeDesc = result;
+            }.createSequence(handler).createDelegate(this));
+        } else {
+        	handler.call(this);
         }
     },
     // load Node Context
-    loadNodeContext : function() {
+    loadNodeContext : function(handler) {
+        if(handler==null) {handler=Ext.emptyFn;}
+        this.getNodeContext.createDelegate(this,[this.getRpcNode.createDelegate(this,[this.getNodeDesc.createDelegate(this,[handler])])]).call(this);
+    },
+    // load Node Context
+    loadNodeContext_old : function(handler) {
         if (this.nodeContext === undefined) {
             this.nodeContext = rpc.nodeManager.nodeContext(this.Tid);
         }
@@ -883,7 +953,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             this.nodeContext.nodeDesc = this.nodeContext.getNodeDesc();
         }
     },
-    loadSettings : function() {
+    loadSettings : function(handler) {
         if (this.settings) {
             this.settings.destroy();
             this.settings = null;
@@ -891,19 +961,27 @@ Ung.Node = Ext.extend(Ext.Component, {
         this.settingsClassName = Ung.Settings.getClassName(this.name);
         if (!this.settingsClassName) {
             // Dynamically load node javaScript
-            Ung.Settings.loadNodeScript(this.name, this.getId(), function(cmpId) {
-                var cmp = Ext.getCmp(cmpId);
-                cmp.settingsClassName = Ung.Settings.getClassName(cmp.name);
-                cmp.initSettings();
-            });
+            Ung.Settings.loadNodeScript(this, function() {
+                this.settingsClassName = Ung.Settings.getClassName(this.name);
+                this.initSettings(handler);
+            }.createDelegate(this));
         } else {
-            this.initSettings();
+            this.initSettings(handler);
         }
     },
     // init settings
-    initSettings : function() {
-        this.loadNodeContext();
-        this.renderSettings();
+    initSettings : function(handler) {
+    	this.loadNodeContext.createDelegate(this,[this.loadSettingsTranslations.createDelegate(this,[this.renderSettings.createDelegate(this,[handler])])]).call(this);
+    },
+    loadSettingsTranslations : function(handler) {
+        if(Ung.Settings.dependency[this.name]) {
+            var dependencyName=Ung.Settings.dependency[this.name].name;
+            Ung.Util.loadModuleTranslations.call(this, dependencyName, null, function(nodeName,dependencyName) {
+                Ung.Util.loadModuleTranslations.call(this,nodeName, Ung.i18nModuleInstances[dependencyName].moduleMap,handler);
+            }.createDelegate(this,[this.name, dependencyName]));
+        } else {
+        	Ung.Util.loadModuleTranslations.call(this, this.name, null, handler);
+        }
     },
     // render settings component
     renderSettings : function() {
@@ -914,6 +992,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         } else {
             settingsContentEl.innerHTML = "Error: There is no settings class for the node '" + this.name + "'.";
         }
+        Ext.MessageBox.hide();
     },
 
     // remove node
@@ -1701,29 +1780,6 @@ Ung.Settings = Ext.extend(Ext.Component, {
     constructor : function(config) {
         var nodeName=config.node.name;
         this.id = "settings_" + nodeName + "_" + rpc.currentPolicy;
-        if (!Ung.i18nModuleInstances[nodeName]) {
-            if(Ung.Settings.dependency[nodeName]) {
-                var dependencyName=Ung.Settings.dependency[nodeName].name;
-                if (!Ung.i18nModuleInstances[dependencyName]) {
-                    var dependencyTranslations = rpc.languageManager.getTranslations(dependencyName); // convention
-                    Ung.i18nModuleInstances[dependencyName] = new Ung.ModuleI18N({
-                        "map" : i18n.map,
-                        "moduleMap" : dependencyTranslations.map
-                    })
-                }
-            }
-
-            var moduleTranslations=rpc.languageManager.getTranslations(nodeName); // convention
-            var moduleMap=moduleTranslations.map;
-            if(Ung.Settings.dependency[nodeName]) {
-                var dependencyMap=Ung.i18nModuleInstances[Ung.Settings.dependency[nodeName].name].map;
-                Ext.applyIf(moduleMap, dependencyMap);
-            }
-            Ung.i18nModuleInstances[nodeName] = new Ung.ModuleI18N({
-                    "map" : i18n.map,
-                    "moduleMap" : moduleMap
-            });
-        }
         Ung.Settings.superclass.constructor.apply(this, arguments);
     },
     // called when the component is initialized
@@ -1807,26 +1863,24 @@ Ung.Settings = Ext.extend(Ext.Component, {
 Ung.Settings._nodeScripts = {};
 
 // Dynamically loads javascript file for a node
-Ung.Settings.loadNodeScript = function(nodeName, cmpId, callbackFn) {
-    Ung.Util.loadScript('script/' + nodeName + '/settings.js', function() {
-        var cmp = Ext.getCmp(cmpId);
-        cmp.settingsClassName = Ung.Settings.getClassName(cmp.name);
-
-        if(!Ung.Settings.dependency[cmp.name]) {
-            callbackFn(cmpId);
+Ung.Settings.loadNodeScript = function(settingsCmp, handler) {
+    Ung.Util.loadScript('script/' + settingsCmp.name + '/settings.js', function() {
+        this.settingsClassName = Ung.Settings.getClassName(this.name);
+        if(!Ung.Settings.dependency[this.name]) {
+            handler.call(this);
         } else {
-            var dependencyClassName=Ung.Settings.getClassName(Ung.Settings.dependency[cmp.name].name);
+            var dependencyClassName=Ung.Settings.getClassName(Ung.Settings.dependency[this.name].name);
             if(!dependencyClassName) {
-                Ung.Util.loadScript('script/' + Ung.Settings.dependency[cmp.name].name + '/settings.js', function() {
-                    Ung.Settings.dependency[cmp.name].fn.call(this);
-                    callbackFn(cmpId);
-                });
+                Ung.Util.loadScript('script/' + Ung.Settings.dependency[this.name].name + '/settings.js', function() {
+                    Ung.Settings.dependency[this.name].fn.call(this);
+                    handler.call(this);
+                }.createDelegate(this));
             } else {
-                Ung.Settings.dependency[cmp.name].fn.call(this);
-                callbackFn(cmpId);
+                Ung.Settings.dependency[this.name].fn.call(this);
+                handler.call(this);
             }
         }
-    });
+    }.createDelegate(settingsCmp));
 };
 
 Ung.Settings.classNames = {};
@@ -2193,15 +2247,6 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     tabs : null,
     // class constructor
     constructor : function(config) {
-//        if (!Ung.i18nModuleInstances[config.name]) {
-//            // TODO make this asynchronous
-//            var moduleTranslations = rpc.languageManager.getTranslations(config.name); // convention
-//            Ung.i18nModuleInstances[config.name] = new Ung.ModuleI18N({
-//                "map" : i18n.map,
-//                "moduleMap" : moduleTranslations.map
-//            })
-//        }
-//        this.i18n = Ung.i18nModuleInstances[config.name];
         // for config elements we have the untangle-libuvm translation map
         this.i18n = i18n;
         this.rpc = {};
@@ -3517,10 +3562,9 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                             if (node != null) {
                                 var nodeCmp = Ung.Node.getCmp(node.tid);
                                 if (nodeCmp != null) {
-                                    var fnCallback = function() {
-                                            this.populate(this.record,this.fnCallback)
-                                        }.createDelegate(this);
-                                    nodeCmp.onSettingsAction(fnCallback);
+                                    nodeCmp.onSettingsAction(function() {
+                                        this.populate(this.record,this.fnCallback)
+                                    }.createDelegate(this));
                                 }
                             }
                         }.createDelegate(this)
