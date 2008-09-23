@@ -131,6 +131,11 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                                     this.panelBlockLists.winBlacklistCategories.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
+                                title : settingsCmp.i18n._("Block Lists"),
+                                action : function() {
+                                    this.panelBlockLists.winBlacklistCategories.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
                                 title : settingsCmp.i18n._("Categories")
                             }],
                             grid : settingsCmp.gridBlacklistCategories
@@ -151,6 +156,11 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelBlockLists.winBlockedUrls.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("Block Lists"),
                                 action : function() {
                                     this.panelBlockLists.winBlockedUrls.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -179,6 +189,11 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                                     this.panelBlockLists.winBlockedExtensions.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
+                                title : settingsCmp.i18n._("Block Lists"),
+                                action : function() {
+                                    this.panelBlockLists.winBlockedExtensions.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
                                 title : settingsCmp.i18n._("File Types")
                             }],
                             grid : settingsCmp.gridBlockedExtensions
@@ -199,6 +214,11 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelBlockLists.winBlockedMimeTypes.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("Block Lists"),
                                 action : function() {
                                     this.panelBlockLists.winBlockedMimeTypes.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -644,6 +664,11 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                                     this.panelPassLists.winPassedUrls.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
+                                title : settingsCmp.i18n._("Pass Lists"),
+                                action : function() {
+                                    this.panelPassLists.winPassedUrls.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
                                 title : settingsCmp.i18n._("Sites")
                             }],
                             grid : settingsCmp.gridPassedUrls
@@ -664,6 +689,11 @@ if (!Ung.hasResource["Ung.WebFilter"]) {
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelPassLists.winPassedClients.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("Pass Lists"),
                                 action : function() {
                                     this.panelPassLists.winPassedClients.cancelAction();
                                 }.createDelegate(settingsCmp)

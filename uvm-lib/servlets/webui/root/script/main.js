@@ -598,6 +598,9 @@ Ung.Main.prototype = {
                 closeActionFn: function() {
                     this.hide();
                     window.frames["iframeWin_iframe"].location.href="about:blank";
+                    if (this.breadcrumbs){
+                        Ext.destroy(this.breadcrumbs);
+                    }
                 }
 
             });
@@ -608,7 +611,15 @@ Ung.Main.prototype = {
     openInRightFrame : function(title, url) {
         var iframeWin=main.getIframeWin();
         iframeWin.show();
-        iframeWin.setTitle(title);
+        if (typeof title == 'string') {
+            iframeWin.setTitle(title);
+        } else { // the title represents breadcrumbs
+            iframeWin.setTitle('<span id="title_' + iframeWin.getId() + '"></span>');
+            iframeWin.breadcrumbs = new Ung.Breadcrumbs({
+				renderTo : 'title_' + iframeWin.getId(),
+				elements : title
+			})            
+        }
         window.frames["iframeWin_iframe"].location.href=url;
     },
     // load Config
@@ -638,7 +649,16 @@ Ung.Main.prototype = {
         switch(configItem.name){
             case "networking":
                 var alpacaUrl = "/alpaca/";
-                main.openInRightFrame(i18n._("Networking"), alpacaUrl);
+                var breadcrumbs = [{
+                    title : i18n._("Configuration"),
+                    action : function() {
+                        main.iframeWin.closeActionFn();
+                    }.createDelegate(this)
+                }, {
+                    title : i18n._('Networking')
+                }];
+                
+                main.openInRightFrame(breadcrumbs, alpacaUrl);
                 break;
             case "administration":
                 Ung.Util.loadResourceAndExecute("Ung.Administration","script/config/administration.js", function() {

@@ -55,7 +55,21 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             iconCls : 'actionIcon',
                             handler : function() {
                                 var viewReportsUrl = "../reports/";
-                                main.openInRightFrame(i18n._("View Reports"), viewReportsUrl);
+                                var breadcrumbs = [{
+                                    title : i18n._(rpc.currentPolicy.name),
+                                    action : function() {
+                                        main.iframeWin.closeActionFn();
+                                        this.cancelAction();
+                                    }.createDelegate(this)
+                                }, {
+                                    title : this.node.md.displayName,
+                                    action : function() {
+                                        main.iframeWin.closeActionFn();
+                                    }.createDelegate(this)
+                                }, {
+                                    title : this.i18n._('View Reports')
+                                }];
+                                main.openInRightFrame(breadcrumbs, viewReportsUrl);
                             }.createDelegate(this)
                         }]
                     }, {
@@ -69,7 +83,21 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             iconCls : 'actionIcon',
                             handler : function() {
                                 var viewReportsUrl = "../reports/archive";
-                                main.openInRightFrame(i18n._("Archived Reports"), viewReportsUrl);
+                                var breadcrumbs = [{
+                                    title : i18n._(rpc.currentPolicy.name),
+                                    action : function() {
+                                        main.iframeWin.closeActionFn();
+                                        this.cancelAction();
+                                    }.createDelegate(this)
+                                }, {
+                                    title : this.node.md.displayName,
+                                    action : function() {
+                                        main.iframeWin.closeActionFn();
+                                    }.createDelegate(this)
+                                }, {
+                                    title : this.i18n._('Archived Reports')
+                                }];
+                                main.openInRightFrame(breadcrumbs, viewReportsUrl);
                             }.createDelegate(this)
                         }]
                     }]

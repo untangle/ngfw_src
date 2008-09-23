@@ -749,6 +749,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                     this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
+                                title : i18n._('Certificates'),
+                                action : function() {
+                                    this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
                                 title : settingsCmp.i18n._("Generate a Self-Signed Certificate")
                             }],
                             certPanel : settingsCmp.panelGenerateSelfSignedCertificate,
@@ -827,6 +832,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                     this.panelCertificates.winGenerateCertGenTrusted.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
+                                title : i18n._('Certificates'),
+                                action : function() {
+                                    this.panelCertificates.winGenerateCertGenTrusted.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
                                 title : settingsCmp.i18n._("Generate a Certificate Signature Request")
                             }],
                             certPanel : settingsCmp.panelGenerateCertGenTrusted,
@@ -874,6 +884,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : i18n._('Administration'),
+                                action : function() {
+                                    this.panelCertificates.winCertImportTrusted.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : i18n._('Certificates'),
                                 action : function() {
                                     this.panelCertificates.winCertImportTrusted.cancelAction();
                                 }.createDelegate(settingsCmp)

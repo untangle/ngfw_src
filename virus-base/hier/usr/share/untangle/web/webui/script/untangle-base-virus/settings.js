@@ -127,6 +127,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                     this.panelWeb.winExtensions.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
+                                title : settingsCmp.i18n._("Web"),
+                                action : function() {
+                                    this.panelWeb.winExtensions.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
                                 title : settingsCmp.i18n._("File Extensions")
                             }],
                             grid : settingsCmp.gridExtensions
@@ -147,6 +152,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelWeb.winMimeTypes.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("Web"),
                                 action : function() {
                                     this.panelWeb.winMimeTypes.cancelAction();
                                 }.createDelegate(settingsCmp)

@@ -184,6 +184,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                     this.panelBlockLists.winCookiesList.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
+                                title : settingsCmp.i18n._("Block Lists"),
+                                action : function() {
+                                    this.panelBlockLists.winCookiesList.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
                                 title : settingsCmp.i18n._("Cookies List")
                             }],
                             grid : settingsCmp.gridCookiesList
@@ -208,6 +213,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                     this.panelBlockLists.winActiveXList.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
+                                title : settingsCmp.i18n._("Block Lists"),
+                                action : function() {
+                                    this.panelBlockLists.winActiveXList.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
                                 title : settingsCmp.i18n._("ActiveX List")
                             }],
                             grid : settingsCmp.gridActiveXList
@@ -228,6 +238,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
+                                action : function() {
+                                    this.panelBlockLists.winSubnetList.cancelAction();
+                                }.createDelegate(settingsCmp)
+                            }, {
+                                title : settingsCmp.i18n._("Block Lists"),
                                 action : function() {
                                     this.panelBlockLists.winSubnetList.cancelAction();
                                 }.createDelegate(settingsCmp)
