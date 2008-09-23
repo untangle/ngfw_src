@@ -327,6 +327,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             xtype : 'fieldset',
                             title :  i18n._('Question:'),
                             autoHeight : true,
+                            labelWidth: 150,
                             items: [{
                                 bodyStyle : 'padding:0px 0px 5px 5px;',
                                 border : false,
@@ -360,7 +361,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 fieldLabel : this.settingsCmp.i18n._('Email Address'),
                                 name : 'outsideNetwork',
                                 id : 'openvpn_distributeWindow_email_address',
-                                labelStyle: "width:150px;padding-left:20px;",
+                                labelStyle: "padding-left:20px;",
                                 width: 200,
                                 allowBlank : false,
                                 blankText : this.settingsCmp.i18n._("You must specify an email address to send the key to."),
@@ -980,9 +981,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     xtype : 'fieldset',
                     autoHeight : true,
-                    defaults : {
-                        labelStyle : "width:160px;"
-                    },
+                    labelWidth: 160,
                     items : [{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Server Port (UDP)'),
@@ -1068,9 +1067,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype : 'fieldset',
                         autoHeight : true,
                         style : 'margin:0px 0px 0px 160px;',
-                        defaults : {
-                            labelStyle : "width:160px;"
-                        },
+                        labelWidth: 160,
                         border : false,
                         items : [{
                             xtype : 'textfield',
@@ -1424,6 +1421,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype : 'fieldset',
                         autoHeight : true,
                         buttonAlign : 'left',
+                        labelWidth: 150,
+                        labelAlign: 'right',                        
                         items : [{
                             xtype : "radio",
                             boxLabel : this.i18n._('Download from Server'),
@@ -1452,7 +1451,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             xtype : "textfield",
                             id : 'openvpn_client_wizard_server_ip',
                             name : "Server IP Address",
-                            labelStyle : 'text-align: right;  width: 150px;',
                             fieldLabel : this.i18n._("Server IP Address"),
                             allowBlank : false,
                             width : 200
@@ -1461,7 +1459,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                     xtype : "textfield",
                                     id : 'openvpn_client_wizard_password',
                                     name : "Password",
-                                    labelStyle : 'text-align: right; width: 150px;',
                                     fieldLabel : this.i18n._("Password"),
                                     width : 200,
                                     inputType : 'password'

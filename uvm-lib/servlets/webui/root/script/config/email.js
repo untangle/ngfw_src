@@ -258,12 +258,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                         xtype : 'fieldset',
                         height : 150,
                         style : "margin-left: 75px;",
+                        labelWidth: 200,
+                        labelAlign: 'right',                        
                         items : [{
                             xtype : 'textfield',
                             name : 'Server Address or Hostname',
                             id : 'email_smtpHost',
                             fieldLabel : this.i18n._('Server Address or Hostname'),
-                            labelStyle : 'text-align: right; width: 200px;',
                             width : 200,
                             value : this.getMailSettings().smtpHost
                         }, {
@@ -271,7 +272,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                             name : 'Server Port',
                             id : 'email_smtpPort',
                             fieldLabel : this.i18n._('Server Port'),
-                            labelStyle : 'text-align: right; width: 200px;',
                             width : 50,
                             value : this.getMailSettings().smtpPort,
                             vtype : "port"
@@ -296,7 +296,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                             name : 'Login',
                             id : 'email_smtpLogin',
                             fieldLabel : this.i18n._('Login'),
-                            labelStyle : 'text-align: right; width: 200px;',
                             width : 175,
                             value : this.getMailSettings().authUser
                         }, {
@@ -305,7 +304,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                             id : 'email_smtpPassword',
                             inputType: 'password',
                             fieldLabel : this.i18n._('Password'),
-                            labelStyle : 'text-align: right; width: 200px;',
                             width : 175,
                             value : this.getMailSettings().authPass
                         }]
@@ -418,7 +416,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                             name : "Email Address",
                             dataIndex: "emailAddress",
                             fieldLabel : this.i18n._("Email Address"),
-                            labelStyle : 'width: 80px;',
                             allowBlank : false,
                             width : 200
                         })],
@@ -611,14 +608,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                 defaults : {
                     xtype : 'fieldset',
                     autoHeight : true,
-                    buttonAlign : 'left'
+                    buttonAlign : 'left',
+                    labelWidth: 230
                 },
                 items : [{
                 	items: [{
                         xtype : 'textfield',
                         name : 'Maximum Holding Time (days) (max 36)',
                         fieldLabel : this.i18n._('Maximum Holding Time (days) (max 36)'),
-                        labelStyle : 'width: 230px;',
                         allowBlank : false,
                         value : this.getMailNodeSettings().quarantineSettings.maxMailIntern/(1440*60*1000),
                         regex : /^([0-9]|[0-2][0-9]|3[0-6])$/,
@@ -636,7 +633,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                         xtype : 'timefield',
                         name : 'Digest Sending Time',
                         fieldLabel : this.i18n._('Digest Sending Time'),
-                        labelStyle : 'width: 230px;',
                         allowBlank : false,
                         format : "H:i",
 					    minValue: '00:00',

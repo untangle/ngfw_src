@@ -42,9 +42,9 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 items : [{
                     title : this.i18n._('Statistics'),
 				    layout:'form',
+                    labelWidth: 175,
                     defaults: {
                     	xtype: "textfield",
-                    	labelStyle: 'width:175px;',
                     	disabled: true
 					},
                     items: [{

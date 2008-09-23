@@ -239,13 +239,13 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }]
                 },{
                 	title : this.i18n._("Daily Reports"),
+                    labelWidth: 150,
                 	items : [{
                 		border : false,
                 		html : this.i18n._('Daily Reports are generated at midnight and covers events from the previous 24 hours, up to, but not including the day of generation.')
                 	},  {
                         xtype : 'checkbox',
                         name : 'Generate Daily Reports',
-                        labelStyle: 'width:150px;',
                         fieldLabel : this.i18n._('Generate Daily Reports'),
                         boxLabel : this.i18n._('Every Day'),
                         checked : this.getReportingSettings().schedule.daily,
@@ -259,6 +259,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 	}]
                 },{
                     title : this.i18n._("Weekly Reports"),
+                    labelWidth: 150,
                     items : [{
                         border : false,
                         html : this.i18n._('Weekly Reports are generated at midnight and covers events from the previous 7 days, up to, but not including the day of generation.')
@@ -266,7 +267,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype : 'checkbox',
                         name : 'Sunday',
                         id : 'reporting_weeklySunday', 
-                        labelStyle: 'width:150px;',
                         fieldLabel : this.i18n._('Generate Weekly Reports'),
                         boxLabel : this.i18n._('Sunday'),
                         checked : weeklySundayCurrent
@@ -274,7 +274,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype : 'checkbox',
                         name : 'Monday',
                         id : 'reporting_weeklyMonday', 
-                        labelStyle: 'width:150px;',
                         boxLabel : this.i18n._('Monday'),
                         hasLabel : false,
                         labelSeparator : '',
@@ -283,7 +282,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype : 'checkbox',
                         name : 'Tuesday',
                         id : 'reporting_weeklyTuesday', 
-                        labelStyle: 'width:150px;',
                         boxLabel : this.i18n._('Tuesday'),
                         hasLabel : false,
                         labelSeparator : '',
@@ -292,7 +290,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype : 'checkbox',
                         name : 'Wednesday',
                         id : 'reporting_weeklyWednesday', 
-                        labelStyle: 'width:150px;',
                         boxLabel : this.i18n._('Wednesday'),
                         hasLabel : false,
                         labelSeparator : '',
@@ -301,7 +298,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype : 'checkbox',
                         name : 'Thursday',
                         id : 'reporting_weeklyThursday', 
-                        labelStyle: 'width:150px;',
                         boxLabel : this.i18n._('Thursday'),
                         hasLabel : false,
                         labelSeparator : '',
@@ -310,7 +306,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype : 'checkbox',
                         name : 'Friday',
                         id : 'reporting_weeklyFriday', 
-                        labelStyle: 'width:150px;',
                         boxLabel : this.i18n._('Friday'),
                         hasLabel : false,
                         labelSeparator : '',
@@ -319,7 +314,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype : 'checkbox',
                         name : 'Saturday',
                         id : 'reporting_weeklySaturday', 
-                        labelStyle: 'width:150px;',
                         boxLabel : this.i18n._('Saturday'),
                         hasLabel : false,
                         labelSeparator : '',
@@ -327,6 +321,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }]
                 },{
                     title : this.i18n._("Monthly Reports"),
+                    labelWidth: 150,
                     items : [{
                         border : false,
                         html : this.i18n._('Monthly Reports are generated at midnight and covers events from the previous 30 days, up to, but not including the day of generation.')
@@ -334,7 +329,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype : 'radiogroup',
                         name : 'Generate Monthly Reports',
                         fieldLabel : 'Generate Monthly Reports',
-                        labelStyle: 'width:150px;',
                         itemCls: 'x-check-group-alt',
                         columns: 1,
                         items : [{
@@ -371,7 +365,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         mode : 'local',
                         fieldLabel : '',
                         labelSeparator : '',
-                        labelStyle: 'width:150px;',
                         name : "Once Per Week combo",
                         id : 'reporting_monthlyOnceCombo', 
                         store : new Ext.data.SimpleStore({
@@ -393,13 +386,13 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }]
                 },{
                     title : this.i18n._("Data Retention"),
+                    labelWidth: 150,
                     items : [{
                         border : false,
                         html : this.i18n._("Limits data retention to one week, this allows reports to run faster on high traffic sites.")
                     },  {
                         xtype : 'checkbox',
                         name : 'Limit data retention',
-                        labelStyle: 'width:150px;',
                         fieldLabel : this.i18n._('Limit data retention'),
                         boxLabel : this.i18n._("Keep One Week's Data"),
                         checked : this.getReportingSettings().daysToKeep == 8,

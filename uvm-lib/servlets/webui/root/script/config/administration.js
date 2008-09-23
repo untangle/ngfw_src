@@ -282,6 +282,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 	xtype : 'fieldset',
                 	title : this.i18n._('External Administration'),
                     autoHeight : true,
+                    labelWidth: 150,                    
                 	items : [{
                         xtype : 'checkbox',
                         name : 'isOutsideAdministrationEnabled',
@@ -331,7 +332,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         id: 'administration_httpsPort',
                         value : this.getAddressSettings().httpsPort,
                         width: 50,
-                        labelStyle: 'width:150px;',
                         allowDecimals: false,
                         allowNegative: false,
                         allowBlank : false,
@@ -605,10 +605,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 },
                 items: [{
                     title: this.i18n._('Status'),
+                    labelWidth: 150,
                     items : [{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Current Certificate Type'),
-                        labelStyle: 'width:150px;',
                         id : 'administration_status_appearsSelfSigned',
                         value : this.getCurrentServerCertInfo() == null ? "" : (this.getCurrentServerCertInfo().appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted")),
                         disabled : true,
@@ -619,7 +619,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Valid starting'),
-                        labelStyle: 'width:150px; font-weight:bold',
+                        labelStyle: 'font-weight:bold',
                         id : 'administration_status_notBefore',
                         value : this.getCurrentServerCertInfo() == null ? "" : i18n.timestampFormat(this.getCurrentServerCertInfo().notBefore),
                         disabled : true,
@@ -627,7 +627,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Valid until'),
-                        labelStyle: 'width:150px; font-weight:bold',
+                        labelStyle: 'font-weight:bold',
                         id : 'administration_status_notAfter',
                         value : this.getCurrentServerCertInfo() == null ? "" : i18n.timestampFormat(this.getCurrentServerCertInfo().notAfter),
                         disabled : true,
@@ -635,7 +635,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Subject DN'),
-                        labelStyle: 'width:150px; font-weight:bold',
+                        labelStyle: 'font-weight:bold',
                         id : 'administration_status_subjectDN',
                         value : this.getCurrentServerCertInfo() == null ? "" : this.getCurrentServerCertInfo().subjectDN,
                         disabled : true,
@@ -643,7 +643,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Issuer DN'),
-                        labelStyle: 'width:150px; font-weight:bold',
+                        labelStyle: 'font-weight:bold',
                         id : 'administration_status_issuerDN',
                         value : this.getCurrentServerCertInfo() == null ? "" : this.getCurrentServerCertInfo().issuerDN,
                         disabled : true,
@@ -959,9 +959,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 items: {
                     xtype: 'fieldset',
                     autoHeight : true,
-                    defaults : {
-                        labelStyle: 'width:150px;'
-                    },
+                    labelWidth: 150,                    
                     items : [{
                         html : this.i18n._('Please fill out the following fields, which will be used to generate your self-signed certificate.'),
                         bodyStyle : 'padding-bottom:10px;',

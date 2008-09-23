@@ -2431,6 +2431,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     grid : null,
     // input lines for standard input lines (text, checkbox, textarea, ..)
     inputLines : null,
+    // label width for row editor input lines
+    rowEditorLabelWidth: null,    
     // the record currently edit
     record : null,
     // initial record data
@@ -2447,6 +2449,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.title == null) {
             this.title = i18n._('Edit');
         }
+        if (this.rowEditorLabelWidth == null) {
+            this.rowEditorLabelWidth = 100;
+        }
         Ung.RowEditorWindow.superclass.initComponent.call(this);
     },
     onRender : function(container, position) {
@@ -2457,7 +2462,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         this.formPanel = new Ext.FormPanel({
 //            id : 'editor-form',
             renderTo : this.getContentEl(),
-            labelWidth : 75,
+            labelWidth : this.rowEditorLabelWidth,
             buttonAlign : 'right',
             border : false,
             bodyStyle : 'padding:10px 10px 0px 10px;',
@@ -2846,6 +2851,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     emptyRow : null,
     // input lines used by the row editor
     rowEditorInputLines : null,
+    // label width for row editor input lines
+    rowEditorLabelWidth: null,    
     // the default sort field
     sortField : null,
     // the columns are sortable by default, if sortable is not specified
@@ -2987,7 +2994,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         if (this.rowEditor==null && this.rowEditorInputLines != null) {
             this.rowEditor = new Ung.RowEditorWindow({
                 grid : this,
-                inputLines : this.rowEditorInputLines
+                inputLines : this.rowEditorInputLines,
+                rowEditorLabelWidth : this.rowEditorLabelWidth
             });
         }
         if(this.rowEditor!=null) {

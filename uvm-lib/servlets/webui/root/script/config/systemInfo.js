@@ -118,8 +118,9 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
 	                    layout : "form",
                         border : false,
                         style : 'text-align: right;',
+                        labelWidth: 150,
+                        labelAlign: 'right',
 		                defaults : {
-		                    labelStyle : 'text-align: right; width: 150px;',
                             style : 'text-align: left;',
                             width : 200
 		                },

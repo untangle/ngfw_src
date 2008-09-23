@@ -126,34 +126,29 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                             name : "User/Login ID",
                             dataIndex: "UID",
                             fieldLabel : this.i18n._("User/Login ID"),
-                            labelStyle : 'width: 80px;',
                             allowBlank : false,
                             width : 100
                         }), new Ext.form.TextField({
                             name : "First Name",
                             dataIndex: "firstName",
                             fieldLabel : this.i18n._("First Name"),
-                            labelStyle : 'width: 80px;',
                             allowBlank : false,
                             width : 100
                         }), new Ext.form.TextField({
                             name : "Last Name",
                             dataIndex: "lastName",
                             fieldLabel : this.i18n._("Last Name"),
-                            labelStyle : 'width: 80px;',
                             width : 100
                         }), new Ext.form.TextField({
                             name : "Email Address",
                             dataIndex: "email",
                             fieldLabel : this.i18n._("Email Address"),
-                            labelStyle : 'width: 80px;',
                             width : 250
                         }), new Ext.form.TextField({
                             inputType: 'password',
                             name : "Password",
                             dataIndex: "password",
                             fieldLabel : this.i18n._("Password"),
-                            labelStyle : 'width: 80px;',
                             width : 150
                         })]
                     })

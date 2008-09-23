@@ -420,7 +420,8 @@ if (!Ung.hasResource["Ung.System"]) {
                         autoHeight : true
                     },
                     items : [{
-                      title: this.i18n._('Web Override'),
+                        title: this.i18n._('Web Override'),
+                        labelWidth: 100,
                         items : [{
                             xtype : 'radio',
                             boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of web traffic.  (This is the default setting)'), '<b>', '</b>'), 
@@ -450,6 +451,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }]
                     },{
                         title: this.i18n._('Long URIs'),
+                        labelWidth: 200,                      
                         items : [{
                             xtype : 'radio',
                             boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
@@ -479,7 +481,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         },{
                             xtype : 'numberfield',
                             fieldLabel : this.i18n._('Max URI Length (characters)'),
-                            labelStyle: 'width:200px;',
                             name : 'Max URI Length',
                             id: 'system_protocolSettings_maxUriLength',
                             value : this.getHttpSettings().maxUriLength,
@@ -498,6 +499,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }]
                     },{
                         title: this.i18n._('Long Headers'),
+                        labelWidth: 200,                      
                         items : [{
                             xtype : 'radio',
                             boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
@@ -527,7 +529,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         },{
                             xtype : 'numberfield',
                             fieldLabel : this.i18n._('Max Header Length (characters)'),
-                            labelStyle: 'width:200px;',
                             name : 'Max Header Length',
                             id: 'system_protocolSettings_maxHeaderLength',
                             value : this.getHttpSettings().maxHeaderLength,
@@ -615,6 +616,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 protocolSettingsItems.push(new Ext.form.FieldSet({
                     title: this.i18n._('SMTP'),
                     autoHeight : true,
+                    labelWidth: 200,                      
                     items : [{
                         xtype : 'radio',
                         boxLabel : String.format(this.i18n._('{0}Enable SMTP{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
@@ -644,7 +646,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('SMTP timeout (seconds)'),
-                        labelStyle: 'width:200px;',
                         name : 'SMTP timeout',
                         id: 'system_protocolSettings_smtpTimeout',
                         value : this.getMailSettings().smtpTimeout/1000,
@@ -665,6 +666,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 protocolSettingsItems.push(new Ext.form.FieldSet({
                     title: this.i18n._('POP3'),
                     autoHeight : true,
+                    labelWidth: 200,                      
                     items : [{
                         xtype : 'radio',
                         boxLabel : String.format(this.i18n._('{0}Enable POP3{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
@@ -694,7 +696,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('POP3 timeout (seconds)'),
-                        labelStyle: 'width:200px;',
                         name : 'POP3 timeout',
                         id: 'system_protocolSettings_popTimeout',
                         value : this.getMailSettings().popTimeout/1000,
@@ -715,6 +716,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 protocolSettingsItems.push( new Ext.form.FieldSet({
                     title: this.i18n._('IMAP'),
                     autoHeight : true,
+                    labelWidth: 200,                      
                     items : [{
                         xtype : 'radio',
                         boxLabel : String.format(this.i18n._('{0}Enable IMAP{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
@@ -744,7 +746,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('IMAP timeout (seconds)'),
-                        labelStyle: 'width:200px;',
                         name : 'IMAP timeout',
                         id: 'system_protocolSettings_imapTimeout',
                         value : this.getMailSettings().imapTimeout/1000,
