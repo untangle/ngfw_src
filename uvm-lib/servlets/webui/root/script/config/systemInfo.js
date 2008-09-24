@@ -114,14 +114,10 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     autoHeight : true,
                     layout : 'column',
                     items: [{
-	                    columnWidth : .4,
 	                    layout : "form",
                         border : false,
-                        style : 'text-align: right;',
                         labelWidth: 150,
-                        labelAlign: 'right',
 		                defaults : {
-                            style : 'text-align: left;',
                             width : 200
 		                },
 	                    items : [ new Ext.form.TextField({
@@ -187,11 +183,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                             allowBlank : false,
                             value : this.getRegistrationInfo().numSeats
                         })]
-	                },{
-	                    columnWidth : .4,
-                        layout : "form",
-                        border : false
-//                        items : [ requiredLabel, requiredLabel, requiredLabel]
 	                }]
                 }]
            });
@@ -201,6 +192,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 name : 'License Agreement',
                 parentId : this.getId(),
                 title : this.i18n._('License Agreement'),
+                bodyStyle : 'padding:5px 5px 0px 5px;',
                 items: [ new Ext.form.TextArea({
                     name : 'License Agreement',
                     hideLabel : true,
