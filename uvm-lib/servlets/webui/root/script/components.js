@@ -1270,9 +1270,9 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         this.getEl().addClass("systemStats");
         var contentSystemStatsArr=[
             '<div class="label" style="width:100px;left:0px;">'+i18n._("Network")+'</div>',
-            '<div class="label" style="width:50px;left:113px;">'+i18n._("CPU Load")+'</div>',
-            '<div class="label" style="width:79px;left:173px;">'+i18n._("Memory")+'</div>',
-            '<div class="label" style="width:30px;right:0px;">'+i18n._("Disk")+'</div>',
+            '<div class="label" style="width:70px;left:103px;">'+i18n._("CPU Load")+'</div>',
+            '<div class="label" style="width:75px;left:180px;">'+i18n._("Memory")+'</div>',
+            '<div class="label" style="width:40px;right:-5px;">'+i18n._("Disk")+'</div>',
             '<div class="network"><div class="tx">'+i18n._("Tx:")+'<div class="tx_value"></div></div><div class="rx">'+i18n._("Rx:")+'<div class="rx_value"></div></div></div>',
             '<div class="cpu"></div>',
             '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free_value"></div></div><div class="used">'+i18n._("U:")+'<div class="used_value"></div></div></div>',
@@ -1297,7 +1297,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             target: this.getEl().child("div[class=network]"),
             dismissDelay:0,
             hideDelay :400,
-            width: 350,
+            width: 330,
             cls: 'extendedStats',
             html: networkArr.join(''),
             show : function(){
@@ -1329,7 +1329,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             target: this.getEl().child("div[class=cpu]"),
             dismissDelay:0,
             hideDelay :400,
-            width: 350,
+            width: 330,
             cls: 'extendedStats',
             html: cpuArr.join(''),
             show : function(){
@@ -1361,7 +1361,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             target: this.getEl().child("div[class=memory]"),
             dismissDelay:0,
             hideDelay :400,
-            width: 350,
+            width: 330,
             cls: 'extendedStats',
             html: memoryArr.join(''),
             show : function(){
@@ -1385,7 +1385,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             target: this.getEl().child("div[class=disk]"),
             dismissDelay:0,
             hideDelay :400,
-            width: 350,
+            width: 330,
             cls: 'extendedStats',
             html: diskArr.join(''),
             show : function(){
@@ -1685,7 +1685,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
                     this.setSize({width:260,height:280});
                     this.alignTo(this.blingerCmp.getEl(),"tr-br");
                     var pos=this.getPosition();
-                    var sub=pos[1]+280-main.viewport.getSize().height
+                    var sub=pos[1]+280-main.viewport.getSize().height;
                     if(sub>0) {
                         this.setPosition( pos[0],pos[1]-sub);
                     }
@@ -2092,10 +2092,13 @@ Ung.Window = Ext.extend(Ext.Window, {
     show : function() {
         Ung.Window.superclass.show.call(this);
         if (this.sizeToRack) {
-            this.setPosition(main.contentLeftWidth, 0);
             var objSize = main.viewport.getSize();
-            objSize.width = objSize.width - main.contentLeftWidth;
+            var viewportWidth=objSize.width;
+            objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
+            this.setPosition(viewportWidth-objSize.width, 0);
+            objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
             this.setSize(objSize);
+            
         }
     }
 });
@@ -2289,6 +2292,9 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     },
     // initialize window buttons
     initButtons : function() {
+    	if(this.getContentEl()==null) {
+    		return;
+    	}
         this.subCmps.push(new Ext.Button({
             name : 'Help',
             id : this.getId() + "_helpBtn",
@@ -2348,6 +2354,9 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
 Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
     hasHelp : false,
     initButtons : function() {
+        if(this.getContentEl()==null) {
+            return;
+        }
         if (this.hasHelp) {
             this.subCmps.push(new Ext.Button({
                 name : 'Help',
@@ -3440,7 +3449,6 @@ Ext.grid.ButtonColumn.prototype = {
 Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     // the record currently edit
     record : null,
-    //renderTo: 'container',
     sizeToRack : true,
     // size to grid on show
     sizeToGrid : false,

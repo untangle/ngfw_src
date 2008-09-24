@@ -313,7 +313,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 initSubComponents : function(container, position) {
                     this.formPanel = new Ext.FormPanel({
                         renderTo : this.getContentEl(),
-                        labelWidth : 75,
+                        labelWidth : 110,
                         buttonAlign : 'right',
                         border : false,
                         bodyStyle : 'padding:10px 10px 0px 10px;',
@@ -345,10 +345,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                     "check" : {
                                         fn : function(elem, checked) {
                                         	var emailCmp=Ext.getCmp('openvpn_distributeWindow_email_address');
+                                        	
                                         	this.distributeUsb=!checked;
                                         	if(checked) {
                                                 emailCmp.enable();
-                                                this.record.data.distributionEmail=emailCmp.getValue();
+                                                var emailVal=emailCmp.getValue();
+                                                this.record.data.distributionEmail=(emailVal!=null && emailVal.length>0)?emailVal:null;
                                         	} else {
                                         		emailCmp.disable();
                                         		this.record.data.distributionEmail=null;
@@ -388,7 +390,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     this.record = record;
                 },                
                 proceedAction : function() {
-                	if(!this.distributeUsb && this.record.data.distributionEmail==null) {
+                	if(!this.distributeUsb && (this.record.data.distributionEmail==null || this.record.data.distributionEmail.length==0)) {
                 		Ext.MessageBox.alert(i18n._("Failure"), this.settingsCmp.i18n._("You must specify an email address to send the key to."));
                         return;
                 	}

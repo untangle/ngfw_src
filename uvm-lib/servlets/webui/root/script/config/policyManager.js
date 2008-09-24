@@ -14,6 +14,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             }];
             if(this.node!=null) {
             	this.initButtons=function() {
+                    if(this.getContentEl()==null) {
+                        return;
+                    }
                     this.subCmps.push(new Ext.Button({
                         name : "Remove",
                         id : this.getId() + "_removeBtn",
@@ -55,6 +58,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             // builds the tabs
         },
         initSubCmps : function() {
+        	if(this.getContentEl()==null) {
+        		return;
+        	}
             this.buildPolicyManagement();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelPolicyManagement]);
