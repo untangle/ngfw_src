@@ -129,7 +129,7 @@ Ung.Main.prototype = {
         this.initExtI18n();
         this.initExtGlobal();
         this.initExtVTypes();
-        
+        Ext.EventManager.onWindowResize(Ung.Util.resizeWindows);
         // initialize viewport object
         var contentLeftArr=[
             '<div id="contentleft">',

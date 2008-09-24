@@ -277,9 +277,15 @@ Ung.Util= {
     },
     bytesToMBs : function(value) {
         return Math.round(value/10000)/100;
+    },
+    resizeWindows : function() {
+    	Ext.WindowMgr.each(Ung.Util.setSizeToRack);
+    },
+    setSizeToRack:function (win) {
+    	if(win!=null && win.sizeToRack==true) {
+            win.setSizeToRack();
+    	}
     }
-    
-
 };
 
 Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
@@ -2092,15 +2098,18 @@ Ung.Window = Ext.extend(Ext.Window, {
     show : function() {
         Ung.Window.superclass.show.call(this);
         if (this.sizeToRack) {
-            var objSize = main.viewport.getSize();
-            var viewportWidth=objSize.width;
-            objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
-            this.setPosition(viewportWidth-objSize.width, 0);
-            objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
-            this.setSize(objSize);
-            
+            this.setSizeToRack();
         }
+    },
+    setSizeToRack: function () {
+        var objSize = main.viewport.getSize();
+        var viewportWidth=objSize.width;
+        objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
+        this.setPosition(viewportWidth-objSize.width, 0);
+        objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
+        this.setSize(objSize);
     }
+    
 });
 // Buttons Window
 // has the content and 3 standard buttons one in the left and 2 in the right
@@ -2886,8 +2895,11 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     generatedId:1,
     loadMask: null,
     autoEncode:true,  
-
-
+    subCmps:null,
+    constructor : function(config) {
+        this.subCmps=[];
+        Ung.EditorGrid.superclass.constructor.apply(this, arguments);
+    },
     initComponent : function() {
         this.changedData = {};
         if(this.loadMask===null) {
@@ -3009,6 +3021,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         }
         if(this.rowEditor!=null) {
             this.rowEditor.render('container');
+            this.subCmps.push(this.rowEditor);
         }
         if (this.hasAdd) {
             this.tbar = [{
@@ -3066,10 +3079,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     clearChangedData : function () {
         this.changedData = {};
     },
+    
     beforeDestroy : function() {
-        if(this.rowEditor) {
-            Ext.destroy(this.rowEditor);
-        }
+        Ext.each(this.subCmps, Ext.destroy);
         Ung.EditorGrid.superclass.beforeDestroy.call(this);
     },
     afterRender : function() {
