@@ -1154,16 +1154,18 @@ Ung.MessageManager = {
                    for(var i=0;i<messageQueue.messages.list.length;i++) {
                        var msg=messageQueue.messages.list[i];
                         if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
-                            var policy=null;
-                            policy = rpc.currentPolicy;
-                            var appItemName=msg.mackageDesc.type=="TRIAL"?msg.mackageDesc.fullVersion:msg.mackageDesc.name
-                            Ung.AppItem.updateState(appItemName, "activating");
-                            rpc.toolboxManager.installAndInstantiate(function(result, exception) {
-                                if (exception) {
-                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                    return;
-                                }
-                            }.createDelegate(this),msg.mackageDesc.name, policy);
+                        	if(!msg.installed) {
+                                var policy=null;
+                                policy = rpc.currentPolicy;
+                                var appItemName=msg.mackageDesc.type=="TRIAL"?msg.mackageDesc.fullVersion:msg.mackageDesc.name
+                                Ung.AppItem.updateState(appItemName, "activating");
+                                rpc.toolboxManager.installAndInstantiate(function(result, exception) {
+                                    if (exception) {
+                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                        return;
+                                    }
+                                }.createDelegate(this),msg.mackageDesc.name, policy);
+                        	}
                         } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
 
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
