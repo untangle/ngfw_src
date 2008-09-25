@@ -285,7 +285,7 @@ Ung.Util= {
     	if(win!=null && win.sizeToRack==true) {
             win.setSizeToRack();
     	}
-    }
+    }    
 };
 
 Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
@@ -1918,7 +1918,6 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     columns : null,
     enableHdMenu : false,
     enableColumnMove: false,
-    autoEncode:true,
     // for internal use
     rpc : null,
     // called when the component is initialized
@@ -2894,7 +2893,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     addedId : 0,
     generatedId:1,
     loadMask: null,
-    autoEncode:true,  
     subCmps:null,
     constructor : function(config) {
         this.subCmps=[];

@@ -419,6 +419,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header : this.i18n._("name"),
                     width : 150,
                     dataIndex : 'name',
+                    renderer : Ext.util.Format.htmlEncode, 
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
