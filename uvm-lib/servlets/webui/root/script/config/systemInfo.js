@@ -227,7 +227,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 );
                 return false;
             }
-            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
+            this.getRegistrationInfo().firstName = firstNameCmp.getValue();
 
             var lastNameCmp = Ext.getCmp('lastName');
             if (!lastNameCmp.isValid()) {
@@ -239,7 +239,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 );
                 return false;
             }
-            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
+            this.getRegistrationInfo().lastName = lastNameCmp.getValue();
 
             var emailAddrCmp = Ext.getCmp('emailAddr');
             if (!emailAddrCmp.isValid()) {
@@ -251,7 +251,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 );
                 return false;
             }
-            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
+            this.getRegistrationInfo().emailAddr = emailAddrCmp.getValue();
 
             var numSeatsCmp = Ext.getCmp('numSeats');
             if (!numSeatsCmp.isValid()) {
@@ -263,7 +263,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 );
                 return false;
             }
-            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
+            this.getRegistrationInfo().numSeats = numSeatsCmp.getValue();
 
             var address1Cmp = Ext.getCmp('address1');
             this.getRegistrationInfo().address1 = address1Cmp.getValue();

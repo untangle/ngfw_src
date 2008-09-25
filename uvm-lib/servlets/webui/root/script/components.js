@@ -564,7 +564,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 var url = "../library/launcher?" + query;
                 var iframeWin = main.getIframeWin();
                 iframeWin.show();
-                iframeWin.setTitle("");
+                iframeWin.setTitle(String.format(i18n._("More Info - {0}"),this.item.displayName));
                 window.frames["iframeWin_iframe"].location.href = url;
                 Ext.MessageBox.hide();
             }

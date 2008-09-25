@@ -221,7 +221,7 @@ Ung.Main.prototype = {
                         var url = "../library/launcher?" + query;
                         var iframeWin = main.getIframeWin();
                         iframeWin.show();
-                        iframeWin.setTitle("");
+                        iframeWin.setTitle(i18n._('What Apps should I use?'));
                         window.frames["iframeWin_iframe"].location.href = url;
                         Ext.MessageBox.hide();
                     }

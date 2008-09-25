@@ -187,6 +187,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }, {
                         name : 'javaClass' //needed as users is a set
                     }],
+                    autoExpandColumn: 'name',
                     // the list of columns for the column model
                     columns : [{
                         id : 'login',
