@@ -757,6 +757,16 @@ Ung.Main.prototype = {
     	}
         return null;
     },
+    isNodeRunning : function(nodeName) {
+    	var node = main.getNode(nodeName);
+    	if (node != null) {
+    		 var nodeCmp = Ung.Node.getCmp(node.tid);
+    		 if (nodeCmp != null && nodeCmp.isRunning()){
+    		 	return true;
+    		 }
+    	}
+    	return false;
+    },
     // Show - hide Services header in the rack
     updateSeparator: function() {
     	if(this.nodes.length==0) {

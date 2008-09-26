@@ -3603,7 +3603,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         xtype: "button",
                         name : 'Open Active Directory',
                         text : i18n._("Open Active Directory"),
-                        disabled : main.getNode('untangle-node-adconnector') == null,
+                        disabled : !main.isNodeRunning('untangle-node-adconnector'),
                         handler : function() {
                             var node = main.getNode('untangle-node-adconnector');
                             if (node != null) {
@@ -3636,17 +3636,21 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         });
         this.populateSemaphore=2;
         this.userEntries=this.singleSelectUser ? [] : [{UID: "[any]"}];
-        main.getAppAddressBook().getUserEntries(function(result, exception) {
-            if (exception) {
-                Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
-                    this.populateCallback();
-                }.createDelegate(this));
-                return;
-            } else {
-                this.userEntries=this.userEntries.concat(result.list);
-            }
-            this.populateCallback();
-        }.createDelegate(this),'MS_ACTIVE_DIRECTORY')
+        if (main.isNodeRunning('untangle-node-adconnector')){
+            main.getAppAddressBook().getUserEntries(function(result, exception) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
+                        this.populateCallback();
+                    }.createDelegate(this));
+                    return;
+                } else {
+                    this.userEntries=this.userEntries.concat(result.list);
+                }
+                this.populateCallback();
+            }.createDelegate(this),'MS_ACTIVE_DIRECTORY')
+        } else {
+            this.populateSemaphore--;
+        }
         main.getAppAddressBook().getUserEntries(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."), function(){
