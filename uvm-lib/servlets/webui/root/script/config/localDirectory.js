@@ -176,6 +176,15 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                         return false;
                     }
                 }
+                // login name contains no forward slash character
+                if (listUsers[i].UID.indexOf("/") != -1) {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The login name at row {0} must not contain forward slash character.'), i+1),
+                        function () {
+                            this.tabs.activate(this.panelLocalDirectory);
+                        }.createDelegate(this) 
+                    );
+                    return false;
+                }
                 // first name contains no spaces
                 if (listUsers[i].firstName.indexOf(" ") != -1) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The first name at row {0} must not contain any space characters.'), i+1),
