@@ -285,7 +285,12 @@ Ung.Util= {
     	if(win!=null && win.sizeToRack==true) {
             win.setSizeToRack();
     	}
-    }    
+    },
+    defaultRenderer :function (value) {
+    	return (typeof value == 'string') ? 
+    	   value.length<1? "&#160;": Ext.util.Format.htmlEncode(value) :
+    	   value;
+    }
 };
 
 Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
@@ -1975,6 +1980,13 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             store : this.store
         })];
         Ung.GridEventLog.superclass.initComponent.call(this);
+        var columnModel=this.getColumnModel();
+        columnModel.getRenderer = function(col){
+            if(!this.config[col].renderer){
+                return Ung.Util.defaultRenderer;
+            }
+            return this.config[col].renderer;
+        };
     },
     // called when the component is rendered
     onRender : function(container, position) {
@@ -3034,8 +3046,15 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }];
         }
         Ung.EditorGrid.superclass.initComponent.call(this);
+        var columnModel=this.getColumnModel();
+        columnModel.getRenderer = function(col){
+            if(!this.config[col].renderer){
+                return Ung.Util.defaultRenderer;
+            }
+            return this.config[col].renderer;
+        };
         if (this.columnsDefaultSortable !== null) {
-            this.getColumnModel().defaultSortable = this.columnsDefaultSortable;
+            columnModel.defaultSortable = this.columnsDefaultSortable;
         }
     },
     addHandler : function() {
