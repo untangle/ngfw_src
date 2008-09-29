@@ -1,6 +1,6 @@
 if (!Ung.hasResource["Ung.WebFilter"]) {
     Ung.hasResource["Ung.WebFilter"] = true;
-    Ung.Settings.registerClassName('untangle-node-webfilter', 'Ung.WebFilter');
+    Ung.Settings.registerClassName('untangle-base-webfilter', 'Ung.WebFilter');
 
     Ung.WebFilter = Ext.extend(Ung.Settings, {
         gridExceptions : null,

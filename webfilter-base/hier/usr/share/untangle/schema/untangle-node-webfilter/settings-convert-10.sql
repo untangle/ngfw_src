@@ -1,5 +1,5 @@
 -- settings conversion for release-5.0
--- $HeadURL: svn://chef/branch/prod/web-ui/work/src/webfilter/hier/usr/share/untangle/schema/untangle-node-webfilter/settings-convert-8.sql $
+-- $HeadURL: svn://chef/branch/prod/web-ui/work/src/webfilter/hier/usr/share/untangle/schema/untangle-base-webfilter/settings-convert-8.sql $
 -- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
