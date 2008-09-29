@@ -110,7 +110,8 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     private volatile SpamSettings spamSettings;
 
-    //private final BlingBlinger scanBlinger;
+    private final BlingBlinger emailReceivedBlinger;
+    private final BlingBlinger spamDetectedBlinger;
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
     private final BlingBlinger markBlinger;
@@ -151,12 +152,14 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        //scanBlinger = c.addActivity("scan", "Scan Message", null, "SCAN");
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Message"), null, I18nUtil.marktr("PASS"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Message"), null, I18nUtil.marktr("BLOCK"));
         markBlinger = c.addActivity("mark", I18nUtil.marktr("Mark Message"), null, I18nUtil.marktr("MARK"));
         quarantineBlinger = c.addActivity("quarantine", I18nUtil.marktr("Quarantine Message"), null, I18nUtil.marktr("QUARANTINE"));
-        lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
+        spamDetectedBlinger = c.addMetric("spam", I18nUtil.marktr("Spam Detected"), null);
+        emailReceivedBlinger = c.addMetric("email", I18nUtil.marktr("Email Received"), null);
+        lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, blockBlinger, markBlinger, quarantineBlinger, 
+		spamDetectedBlinger, emailReceivedBlinger);
     }
 
     // Spam methods -----------------------------------------------------------
@@ -174,17 +177,12 @@ public class SpamImpl extends AbstractNode implements SpamNode
     // Node methods ------------------------------------------------------
 
     /**
-     * Increment the counter for messages scanned
-     */
-    //public void incrementScanCount() {
-	//scanBlinger.increment();
-    //}
-
-    /**
      * Increment the counter for blocked (SMTP only).
      */
     public void incrementBlockCount() {
 	blockBlinger.increment();
+	spamDetectedBlinger.increment();
+	emailReceivedBlinger.increment();
     }
 
     /**
@@ -192,6 +190,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
      */
     public void incrementPassCount() {
 	passBlinger.increment();
+	emailReceivedBlinger.increment();
     }
 
     /**
@@ -199,6 +198,8 @@ public class SpamImpl extends AbstractNode implements SpamNode
      */
     public void incrementMarkCount() {
 	markBlinger.increment();
+	spamDetectedBlinger.increment();
+	emailReceivedBlinger.increment();
     }
 
     /**
@@ -206,6 +207,8 @@ public class SpamImpl extends AbstractNode implements SpamNode
      */
     public void incrementQuarantineCount() {
 	quarantineBlinger.increment();
+	spamDetectedBlinger.increment();
+	emailReceivedBlinger.increment();
     }
 
     /**
