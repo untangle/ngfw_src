@@ -1947,7 +1947,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             this.serverSetup = new Ung.Window({
                 gridExportsId: gridExports.getId(),
-                title : this.i18n._("OpenVPN Client Setup Wizard"),
+                title : this.i18n._("OpenVPN Server Setup Wizard"),
                 closeAction : "cancelAction",
                 wizard: serverWizard,
                 items : [{
