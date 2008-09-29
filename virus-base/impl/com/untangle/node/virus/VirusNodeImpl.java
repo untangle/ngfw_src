@@ -132,6 +132,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
     private final BlingBlinger removeBlinger;
+    private final BlingBlinger passedInfectedMessageBlinger;
 
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
@@ -223,7 +224,8 @@ public abstract class VirusNodeImpl extends AbstractNode
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Message"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Message"), null, I18nUtil.marktr("PASS"));
         removeBlinger = c.addActivity("remove", I18nUtil.marktr("Remove Message"), null, I18nUtil.marktr("REMOVE"));
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
+        passedInfectedMessageBlinger = c.addMetric("infected", I18nUtil.marktr("Passed Infected Message"), null);
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, removeBlinger, passedInfectedMessageBlinger);
     }
 
     // VirusNode methods -------------------------------------------------
@@ -674,6 +676,15 @@ public abstract class VirusNodeImpl extends AbstractNode
     public void incrementRemoveCount()
     {
         removeBlinger.increment();
+    }
+
+    /**
+     * Increment the counter for messages where we
+     * found a firus but passed it on due to a rule
+     */
+    public void incrementPassedInfectedMessageCount()
+    {
+        passedInfectedMessageBlinger.increment();
     }
 
     private static synchronized void deployWebAppIfRequired(Logger logger)

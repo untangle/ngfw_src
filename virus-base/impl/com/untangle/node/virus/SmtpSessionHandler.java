@@ -173,6 +173,7 @@ public class SmtpSessionHandler
             }
             else {
                 m_logger.debug("Passing infected message (as-per policy)");
+		m_virusImpl.incrementPassedInfectedMessageCount();
             }
         }
         m_virusImpl.incrementPassCount();

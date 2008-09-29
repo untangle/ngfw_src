@@ -1,4 +1,5 @@
 /*
+		m_virusImpl.increment
  * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
@@ -145,6 +146,7 @@ public class VirusImapHandler
             }
             else {
                 m_logger.debug("Passing infected message (as-per policy)");
+		m_virusImpl.incrementPassedInfectedMessageCount();
             }
         }
         m_virusImpl.incrementPassCount();

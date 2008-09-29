@@ -92,6 +92,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
     private final BlingBlinger scanBlinger;
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
+    private final BlingBlinger pagesLoggedBlinger;
 
     // constructors -----------------------------------------------------------
 
@@ -115,7 +116,8 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Scan Connection"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Connection"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Connection"), null, I18nUtil.marktr("PASS"));
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger);
+        pagesLoggedBlinger = c.addMetric("log", I18nUtil.marktr("Web Pages Logged"), null);
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, pagesLoggedBlinger);
     }
 
     // WebFilter methods ------------------------------------------------------
@@ -600,6 +602,7 @@ public class WebFilterImpl extends AbstractNode implements WebFilter
     void log(WebFilterEvent se)
     {
         eventLogger.log(se);
+	pagesLoggedBlinger.increment();
     }
 
     String generateNonce(WebFilterBlockDetails details)

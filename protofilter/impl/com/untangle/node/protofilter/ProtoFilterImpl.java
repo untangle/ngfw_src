@@ -71,6 +71,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     private final BlingBlinger scanBlinger;
     private final BlingBlinger detectBlinger;
     private final BlingBlinger blockBlinger;
+    //private final BlingBlinger passedBlinger;
 
     // constructors -----------------------------------------------------------
 

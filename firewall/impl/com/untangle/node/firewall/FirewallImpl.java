@@ -68,6 +68,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
+    private final BlingBlinger loggedBlinger;
 
     public FirewallImpl()
     {
@@ -91,7 +92,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
         Counters c = lmm.getCounters(getTid());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Request"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Request"), null, I18nUtil.marktr("PASS"));
-        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger);
+        loggedBlinger = c.addMetric("logged", I18nUtil.marktr("Request Logged"), null);
+        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger, loggedBlinger);
     }
 
     // Firewall methods --------------------------------------------------------
@@ -242,6 +244,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
     void log(FirewallEvent logEvent)
     {
         eventLogger.log(logEvent);
+	loggedBlinger.increment();
     }
 
     FirewallSettings getDefaultSettings()

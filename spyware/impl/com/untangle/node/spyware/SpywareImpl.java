@@ -135,6 +135,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private final BlingBlinger scanBlinger;
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
+    private final BlingBlinger spyPagesDetectedBlinger;
 
     private volatile SpywareSettings settings;
 
@@ -212,7 +213,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Scan Connection"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Connection"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Connection"), null, I18nUtil.marktr("PASS"));
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger);
+        spyPagesDetectedBlinger = c.addActivity("spydetected", I18nUtil.marktr("Spyware Pages Detected"), null, I18nUtil.marktr("SPYDETECTED"));
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, spyPagesDetectedBlinger);
     }
 
     // SpywareNode methods -----------------------------------------------------
@@ -469,6 +471,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     void incrementHttpBlockedDomain()
     {
         blockBlinger.increment();
+	spyPagesDetectedBlinger.increment();
     }
 
     void incrementHttpPassed()
