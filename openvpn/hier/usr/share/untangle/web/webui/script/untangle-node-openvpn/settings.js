@@ -1544,7 +1544,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                             displayField : 'name',
                                             valueField : 'key',
                                             value : "[No Configurations]",
-                                            disabled : true
+                                            disabled : true,
+                                            lazyInit : false
                                         }]
                                     }]
                                 }]
