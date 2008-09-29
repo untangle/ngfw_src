@@ -337,14 +337,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 xtype : 'radio',
                                 boxLabel : this.settingsCmp.i18n._('Distribute via Email'),
                                 hideLabel : true,
-                                id: 'openvpn_distributeWindow_distributeMethod_email',
                                 name : 'distributeMethod',
                                 checked : true,
                                 value: 1,
                                 listeners : {
                                     "check" : {
                                         fn : function(elem, checked) {
-                                        	var emailCmp=Ext.getCmp('openvpn_distributeWindow_email_address');
+                                        	var emailCmp=Ext.getCmp('openvpn_distributeWindow_email_address'+this.getId());
                                         	
                                         	this.distributeUsb=!checked;
                                         	if(checked) {
@@ -362,7 +361,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 xtype : 'textfield',
                                 fieldLabel : this.settingsCmp.i18n._('Email Address'),
                                 name : 'outsideNetwork',
-                                id : 'openvpn_distributeWindow_email_address',
+                                id : 'openvpn_distributeWindow_email_address'+this.getId(),
                                 labelStyle: "padding-left:20px;",
                                 width: 200,
                                 allowBlank : false,
@@ -418,7 +417,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return {
                 id : 'groupId',
                 header : this.i18n._("address pool"),
-                width : 200,
+                width : 160,
                 dataIndex : 'groupId',
                 renderer : function(value, metadata, record) {
                     var result = ""
@@ -468,7 +467,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var defaultGroup= this.getGroupsStore().getCount()>0?this.getGroupsStore().getAt(0).data:null;
             var gridClients = new Ung.EditorGrid({
                 initComponent : function() {
-                	this.distributeWindow=this.settingsCmp.getDistributeWindow(this)
+                	this.distributeWindow=this.settingsCmp.getDistributeWindow(this);
+                	this.subCmps.push(this.distributeWindow);
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
                 settingsCmp : this,
@@ -509,11 +509,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name : 'address'
                 }],
+                autoExpandColumn: 'name',
                 // the list of columns for the column model
                 columns : [liveColumn, {
                     id : 'name',
                     header : this.i18n._("client name"),
-                    width : 200,
+                    width : 130,
                     dataIndex : 'name',
                     editor : new Ext.form.TextField({
                         allowBlank : false
@@ -576,6 +577,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var defaultGroup= this.getGroupsStore().getCount()>0?this.getGroupsStore().getAt(0).data:null
 
             var gridSites = new Ung.EditorGrid({
+                initComponent : function() {
+                    this.distributeWindow=this.settingsCmp.getDistributeWindow(this);
+                    this.subCmps.push(this.distributeWindow);
+                    Ung.EditorGrid.prototype.initComponent.call(this);
+                },
                 settingsCmp : this,
                 name : 'VPN Sites',
                 // the total records is set from the base settings
@@ -632,11 +638,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         return val==null?null:val.id;
                     }
                 }],
+                autoExpandColumn: 'name',
                 // the list of columns for the column model
                 columns : [liveColumn, {
                     id : 'name',
                     header : this.i18n._("site name"),
-                    width : 200,
+                    width : 130,
                     dataIndex : 'name',
                     // this is a simple text editor
                     editor : new Ext.form.TextField({
@@ -778,18 +785,19 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name : 'netmask'
                 }],
+                autoExpandColumn: 'name',
                 // the list of columns for the column model
                 columns : [liveColumn, {
                     id : 'name',
                     header : this.i18n._("host/network name"),
-                    width : inWizard?180:200,
+                    width : 180,
                     dataIndex : 'name',
                     // this is a simple text editor
                     editor : new Ext.form.TextField({})
                 }, {
                     id : 'network',
                     header : this.i18n._("IP address"),
-                    width : inWizard?100:200,
+                    width : inWizard?100:130,
                     dataIndex : 'network',
                     editor : new Ext.form.TextField({
                         allowBlank : false,
@@ -798,7 +806,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     id : 'netmask',
                     header : this.i18n._("netmask"),
-                    width : 200,
+                    width : 130,
                     dataIndex : 'netmask',
                     editor : new Ext.form.TextField({
                         allowBlank : false,
@@ -864,8 +872,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 settingsCmp : this,
                 name : 'Address Pools',
                 // the total records is set from the base settings
+                anchor :"100% 100%",
                 paginated : false,
                 height : 250,
+                autoScroll : true,
                 emptyRow : {
                     "live" : true,
                     "name" : this.i18n._("[no name]"),
@@ -891,11 +901,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name : 'netmask'
                 }],
+                autoExpandColumn: 'name',
                 // the list of columns for the column model
                 columns : [liveColumn, {
                     id : 'name',
                     header : this.i18n._("pool name"),
-                    width : 200,
+                    width : 160,
                     dataIndex : 'name',
                     // this is a simple text editor
                     editor : new Ext.form.TextField({
@@ -904,7 +915,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     id : 'address',
                     header : this.i18n._("IP address"),
-                    width : 200,
+                    width : 130,
                     dataIndex : 'address',
                     editor : new Ext.form.TextField({
                         allowBlank : false,
@@ -913,7 +924,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     id : 'netmask',
                     header : this.i18n._("netmask"),
-                    width : 200,
+                    width : 130,
                     dataIndex : 'netmask',
                     editor : new Ext.form.TextField({
                         allowBlank : false,
@@ -977,10 +988,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     buttonAlign : 'left'
                 },
                 items : [{
-                    xtype : 'fieldset',
+                    xtype : 'form',
                     autoHeight : true,
-                    items : [this.gridGroups]
-                }, {
+                    autoScroll : true,
+                    border: false,
+                    bodyStyle : 'padding-bottom:20px;',
+                    items : [this.gridGroups]}
+                
+                , {
                     xtype : 'fieldset',
                     autoHeight : true,
                     labelWidth: 160,
