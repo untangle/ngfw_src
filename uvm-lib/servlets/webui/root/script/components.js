@@ -493,7 +493,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 } else {
                     var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
                     var progressIndex = parseFloat(0.9 * currentPercentComplete);
-                    var progressString = "Get @ " + options.speed;
+                    var progressString = String.format(i18n._("Get@{0}"), options.speed);
                     this.progressBar.updateProgress(progressIndex, progressString);
                 }
                 break;

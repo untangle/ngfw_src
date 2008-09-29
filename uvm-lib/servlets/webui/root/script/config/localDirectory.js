@@ -79,7 +79,9 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                             width : 100,
                             dataIndex : 'UID',
 		                    editor : new Ext.form.TextField({
-		                        allowBlank : false
+		                        allowBlank : false,
+		                        regex: /^[\w ]+$/,
+		                        regexText: this.i18n._("The field user/login ID can have only alphanumeric characters.")
 		                    })
                         }, {
                             id : 'firstName',
@@ -127,6 +129,8 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                             dataIndex: "UID",
                             fieldLabel : this.i18n._("User/Login ID"),
                             allowBlank : false,
+                            regex: /^[\w ]+$/,
+                            regexText: this.i18n._("The field user/login ID can have only alphanumeric character."),
                             width : 100
                         }), new Ext.form.TextField({
                             name : "First Name",

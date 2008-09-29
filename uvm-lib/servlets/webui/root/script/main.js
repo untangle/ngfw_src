@@ -691,7 +691,7 @@ Ung.Main.prototype = {
                 });
                 break;
             case "localDirectory":
-                Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/LocalDirectory.js", function() {
+                Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/localDirectory.js", function() {
                     main.localDirectoryWin=new Ung.LocalDirectory(configItem);
                     main.localDirectoryWin.show();
                 });
