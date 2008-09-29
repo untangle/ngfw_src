@@ -1,5 +1,5 @@
 # -*-ruby-*-
-# $HeadURL: svn://chef/branch/prod/mawk/work/src/clam/package.rb $
+# $HeadURL$
 # Copyright (c) 2003-2007 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -16,12 +16,15 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-implDeps = []
+http = BuildEnv::SRC['untangle-casing-http']
 
-%w(untangle-casing-http).each do |c|
-  implDeps << BuildEnv::SRC[c]['localapi']
-end
+webfilter = BuildEnv::SRC['untangle-base-webfilter']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-webfilter', 'webfilter',
-                     implDeps, [],
-                     { 'webfilter-base' => BuildEnv::SRC['untangle-base-webfilter'] })
+NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-webfilter', 'webfilter-base',
+                     [http['localapi']])
+
+deps = [webfilter['impl'], http['localapi']]
+
+ServletBuilder.new(webfilter, 'com.untangle.node.webfilter.jsp',
+                   "./webfilter-base/servlets/webfilter", [],
+                   deps, [], [BuildEnv::SERVLET_COMMON])

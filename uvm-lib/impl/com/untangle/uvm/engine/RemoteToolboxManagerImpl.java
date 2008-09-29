@@ -873,6 +873,10 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     value.delete(0, value.length());
                 }
                 int cidx = line.indexOf(':');
+                if (0 > cidx) {
+                    logger.warn("bad line (no colon): " + line);
+                    continue;
+                }
                 key.append(line.substring(0, cidx).trim().toLowerCase());
                 value.append(line.substring(cidx + 1).trim());
                 // hack for short/long descriptions

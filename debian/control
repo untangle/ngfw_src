@@ -197,7 +197,7 @@ Description: Spyware Blocker
 
 Package: untangle-node-webfilter
 Architecture: all
-Depends: untangle-vm, untangle-casing-http, untangle-webfilter-init
+Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter
 Conflicts: httpblocker-transform
 Provides: httpblocker-transform
 Replaces: httpblocker-transform
@@ -900,6 +900,14 @@ XB-Display-Name: Spam Blocker Base
 XB-Untangle-Type: base
 Description: Spam Blocker Base
  The Spam Blocker Base.
+
+Package: untangle-base-webfilter
+Architecture: all
+Depends: untangle-vm, untangle-casing-http
+XB-Display-Name: WebFilter Base
+XB-Untangle-Type: base
+Description: WebFilter Base
+ The WebFilter Base.
 
 Package: untangle-client
 Architecture: all

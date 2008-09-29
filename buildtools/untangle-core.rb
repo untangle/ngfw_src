@@ -46,17 +46,20 @@ require "#{SRC_HOME}/firewall/package.rb"
 require "#{SRC_HOME}/openvpn/package.rb"
 require "#{SRC_HOME}/protofilter/package.rb"
 require "#{SRC_HOME}/sigma/package.rb"
-require "#{SRC_HOME}/webfilter/package.rb"
 require "#{SRC_HOME}/ips/package.rb"
 
 ## Base Nodes
 require "#{SRC_HOME}/spam-base/package.rb"
 require "#{SRC_HOME}/virus-base/package.rb"
 require "#{SRC_HOME}/clam-base/package.rb"
+require "#{SRC_HOME}/webfilter-base/package.rb"
 
 ## SPAM based nodes
 require "#{SRC_HOME}/phish/package.rb"
 require "#{SRC_HOME}/spamassassin/package.rb"
+
+## Webfilter based nodes
+require "#{SRC_HOME}/webfilter/package.rb"
 
 ## Virus based nodes
 require "#{SRC_HOME}/clam/package.rb"

@@ -147,7 +147,8 @@ public class BlacklistCategory implements Serializable
         this.log = log;
     }
 
-    public void update(BlacklistCategory blacklistCategory) {
+    public void update(BlacklistCategory blacklistCategory)
+    {
         this.name = blacklistCategory.name;
         this.displayName = blacklistCategory.displayName;
         this.description = blacklistCategory.description;

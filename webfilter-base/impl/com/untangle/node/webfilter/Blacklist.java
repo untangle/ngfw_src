@@ -18,12 +18,8 @@
 
 package com.untangle.node.webfilter;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,20 +30,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
 import com.untangle.node.util.CharSequenceUtil;
-import com.untangle.node.util.PrefixUrlList;
-import com.untangle.node.util.UrlDatabase;
-import com.untangle.node.util.UrlList;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -56,27 +45,14 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class Blacklist
+public abstract class Blacklist
 {
-    private static final URL BLACKLIST_HOME;
-    static {
-        try {
-            BLACKLIST_HOME = new URL("http://webupdates.untangle.com/diffserver");
-        } catch (MalformedURLException exn) {
-            throw new RuntimeException(exn);
-        }
-    }
-
     private static final Pattern IP_PATTERN = Pattern
         .compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 
-    private static final File INIT_HOME = new File("/usr/share/untangle-webfilter-init/");
-
     private final Logger logger = Logger.getLogger(Blacklist.class);
 
-    private final WebFilterImpl node;
-
-    private final UrlDatabase<String> urlDatabase = new UrlDatabase<String>();
+    private final WebFilterBase node;
 
     private final Map<InetAddress, Set<String>> hostWhitelists
         = new HashMap<InetAddress, Set<String>>();
@@ -85,54 +61,40 @@ class Blacklist
     private volatile String[] blockedUrls = new String[0];
     private volatile String[] passedUrls = new String[0];
 
+    // XXX support expressions
+
     // constructors -----------------------------------------------------------
 
-    Blacklist(WebFilterImpl node)
+    Blacklist(WebFilterBase node)
     {
         this.node = node;
     }
 
+    // abstract methods -------------------------------------------------------
+
+    public abstract void open();
+    public abstract void close();
+
     // blacklist methods ------------------------------------------------------
 
-    void configure(WebFilterSettings settings)
+    public void configure(WebFilterSettings settings)
     {
         this.settings = settings;
     }
 
-    synchronized void reconfigure()
+    public synchronized void reconfigure()
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
-        Map m = new HashMap();
-        m.put("key", uvm.getActivationKey());
-        RemoteToolboxManager tm = uvm.toolboxManager();
-        Boolean rup = tm.hasPremiumSubscription();
-        m.put("premium", rup.toString());
-        m.put("client-version", uvm.getFullVersion());
-
-        urlDatabase.clear();
-
-        for (BlacklistCategory cat : settings.getBlacklistCategories()) {
-            String catName = cat.getName();
-            if (cat.getBlock()) {
-                String dbName = "ubl-" + catName + "-url";
-                try {
-                    UrlList ul = new PrefixUrlList(BLACKLIST_HOME, "webfilter",
-                                                   dbName, m,
-                                                   new File(INIT_HOME, dbName));
-                    urlDatabase.addBlacklist(dbName, ul);
-                } catch (IOException exn) {
-                    logger.warn("could not open: " + dbName, exn);
-                } catch (DatabaseException exn) {
-                    logger.warn("could not open: " + dbName, exn);
-                }
-            }
-        }
-
-        urlDatabase.updateAll(true);
-
         blockedUrls = makeCustomList(settings.getBlockedUrls());
         passedUrls = makeCustomList(settings.getPassedUrls());
+
+        doReconfigure();
     }
+
+    // protected methods ------------------------------------------------------
+
+    protected abstract void doReconfigure();
+
+    // package protected methods ----------------------------------------------
 
     void addWhitelistHost(InetAddress addr, String site)
     {
@@ -148,16 +110,6 @@ class Blacklist
         synchronized (wl) {
             wl.add(site);
         }
-    }
-
-    void startUpdateTimer()
-    {
-        urlDatabase.startUpdateTimer();
-    }
-
-    void stopUpdateTimer()
-    {
-        urlDatabase.stopUpdateTimer();
     }
 
     /**
@@ -304,6 +256,33 @@ class Blacklist
         return null;
     }
 
+    // protected methods ------------------------------------------------------
+
+    protected abstract String checkBlacklistDatabase(String proto, String dom,
+                                                     String uri);
+
+    protected abstract void updateToCurrentCategories(WebFilterSettings s);
+
+    protected WebFilterSettings getSettings()
+    {
+        return settings;
+    }
+
+    protected String mostSpecificCategory(List<String> catNames)
+    {
+        if (catNames != null) {
+            for (String catName : catNames) {
+                BlacklistCategory bc = getSettings().getBlacklistCategory(catName);
+
+                if (null != bc && (bc.getBlock() || bc.getLog())) {
+                    return catName;
+                }
+             }
+        }
+
+        return null;
+    }
+
     // private methods --------------------------------------------------------
 
     /**
@@ -353,8 +332,7 @@ class Blacklist
             if (null != category) {
                 reason = Reason.BLOCK_URL;
             } else {
-                List<String> all = urlDatabase.findAllBlacklisted("http", dom, uri);
-                category = mostSpecificCategory(all);
+                category = checkBlacklistDatabase("http", dom, uri);
 
                 if (null != category) {
                     reason = Reason.BLOCK_CATEGORY;
@@ -389,35 +367,6 @@ class Blacklist
             } else {
                 return null;
             }
-        }
-
-        return null;
-    }
-
-    // protected methods -------------------------------------------------------
-
-    protected String mostSpecificCategory(List<String> catNames)
-    {
-        if (catNames != null) {
-            for (String dbName : catNames) {
-                String catName = dbName;
-
-                int i = dbName.indexOf('-');
-                if (0 < i) {
-                    i++;
-                    if (dbName.length() > i) {
-                        int j = dbName.indexOf('-', i);
-                        if (i < j) {
-                            catName = dbName.substring(i, j);
-                        }
-                    }
-                }
-
-                BlacklistCategory bc = settings.getBlacklistCategory(catName);
-                if (null != bc && bc.getBlock()) {
-                    return catName;
-                }
-             }
         }
 
         return null;

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+
+cd $1/dnsjava-2.0.6 && ../apache-ant-1.6.5/bin/ant

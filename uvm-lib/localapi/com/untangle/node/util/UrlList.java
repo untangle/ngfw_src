@@ -109,7 +109,6 @@ public abstract class UrlList
 
         dbLock = dbName.intern();
 
-        int tries = 0;
         Environment dbEnv = LocalUvmContextFactory.context().getBdbEnvironment();
 
         // Open the database. Create it if it does not already exist.

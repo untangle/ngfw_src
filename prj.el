@@ -6,8 +6,8 @@
 
 (setq prj-dir (file-name-directory jde-loading-project-file))
 (jde-set-variables
- '(jde-jdk-registry '(("1.5.0" . "/usr/lib/jvm/java-1.5.0-sun/")))
- '(jde-jdk '("1.5.0"))
+ '(jde-jdk-registry '(("1.6.0" . "/usr/lib/jvm/java-6-sun/")))
+ '(jde-jdk '("1.6.0"))
  '(jde-make-program "rake")
  '(jde-compile-option-directory ".")
  '(jde-make-working-directory ".")

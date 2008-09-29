@@ -138,6 +138,7 @@ class Jars
   ## Jars required to run/compile unit tests
   Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ]
   Bdb        = [ Jars.downloadTarget('je-3.2.74/lib/je-3.2.74.jar') ]
+  DnsJava    = [ Jars.downloadTarget('dnsjava-2.0.6/dnsjava-2.0.6.jar') ]
 
   HttpClient = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
                    commons-codec-1.3/commons-codec-1.3.jar
@@ -158,8 +159,8 @@ class Jars
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, JRuby,
-                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc, Jstl,
-                              XStream, Json, Jabsorb, Slf4j)
+                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc,
+                              Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava)
 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)

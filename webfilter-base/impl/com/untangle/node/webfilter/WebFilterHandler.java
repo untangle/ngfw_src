@@ -37,11 +37,11 @@ public class WebFilterHandler extends HttpStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final WebFilterImpl node;
+    private final WebFilterBase node;
 
     // constructors -----------------------------------------------------------
 
-    WebFilterHandler(TCPSession session, WebFilterImpl node)
+    WebFilterHandler(TCPSession session, WebFilterBase node)
     {
         super(session);
 
