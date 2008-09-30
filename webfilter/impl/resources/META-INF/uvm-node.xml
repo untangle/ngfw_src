@@ -18,6 +18,7 @@
 -->
 
 <uvm-node>
-  <node-desc classname="com.untangle.node.webfilter.WebFilterImpl"/>
+  <node-desc classname="com.untangle.node.webfilter.WebFilterImpl"
+             node-base="untangle-base-webfilter"/>
   <parent>untangle-casing-http</parent>
 </uvm-node>
