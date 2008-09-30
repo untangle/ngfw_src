@@ -564,7 +564,9 @@ Ung.Main.prototype = {
             if(!main.disableThreads) {
                 Ung.MessageManager.start(true);
             }
-            Ext.MessageBox.hide();
+            if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Please wait")) {
+                Ext.MessageBox.hide();
+            }
         }.createDelegate(this));
     },
 
