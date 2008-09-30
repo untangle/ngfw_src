@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-01 11:34+0300\n"
+"POT-Creation-Date: 2008-09-30 16:54+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -99,27 +99,27 @@ msgstr ""
 msgid "Web Event Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:248
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:320
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:247
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:327
 msgid "timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:256
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:360
-msgid "client"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:264
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:328
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:255
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:335
 msgid "action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:271
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:262
 msgid "pass"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:274
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:265
 msgid "block"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:269
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:367
+msgid "client"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:278
@@ -127,53 +127,53 @@ msgid "request"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:286
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:384
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:390
 msgid "server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:301
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:302
 msgid "Email Event Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:337
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:346
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:344
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:353
 msgid "pass message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:340
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:348
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:347
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:355
 msgid "mark infection"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:350
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:357
 msgid "block message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:353
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:360
 msgid "quarantine message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:369
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:375
 msgid "subject"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:374
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:380
 msgid "receiver"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:379
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:385
 msgid "sender"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:398
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:403
 msgid "Saving..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:398
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:403
 msgid "Please wait"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:402
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:407
 msgid "Failed"
 msgstr ""
 

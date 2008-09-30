@@ -1,8 +1,8 @@
 #!/bin/sh
 
 ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config
-    untangle-casing-mail untangle-base-virus 
-    untangle-node-webfilter untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
+    untangle-casing-mail untangle-base-virus untangle-base-webfilter 
+    untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
     untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote'
 OFFICIAL_LANGUAGES='ro'
@@ -36,7 +36,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java
     
     msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
@@ -62,9 +62,9 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-webfilter")
+"untangle-base-webfilter")
     moduleName=`echo "$1"|cut -d"-" -f3`
-    cd ../${moduleName}/po/
+    cd ../webfilter-base/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java
