@@ -158,8 +158,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
         quarantineBlinger = c.addActivity("quarantine", I18nUtil.marktr("Quarantine Message"), null, I18nUtil.marktr("QUARANTINE"));
         spamDetectedBlinger = c.addMetric("spam", I18nUtil.marktr("Spam Detected"), null);
         emailReceivedBlinger = c.addMetric("email", I18nUtil.marktr("Email Received"), null);
-        lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, blockBlinger, markBlinger, quarantineBlinger, 
-		spamDetectedBlinger, emailReceivedBlinger);
+        lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
     }
 
     // Spam methods -----------------------------------------------------------
