@@ -61,11 +61,9 @@ public abstract class Blacklist
     private volatile String[] blockedUrls = new String[0];
     private volatile String[] passedUrls = new String[0];
 
-    // XXX support expressions
-
     // constructors -----------------------------------------------------------
 
-    Blacklist(WebFilterBase node)
+    public Blacklist(WebFilterBase node)
     {
         this.node = node;
     }
