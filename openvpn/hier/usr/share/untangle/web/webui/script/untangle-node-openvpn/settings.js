@@ -762,7 +762,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 name : 'Exported Hosts and Networks',
                 // the total records is set from the base settings
                 paginated : false,
-                height : inWizard?250:null,
+                height : inWizard?220:null,
                 emptyRow : {
                     "live" : true,
                     "name" : this.i18n._("[no name]"),
