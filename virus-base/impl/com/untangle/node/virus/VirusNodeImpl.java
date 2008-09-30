@@ -225,7 +225,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Message"), null, I18nUtil.marktr("PASS"));
         removeBlinger = c.addActivity("remove", I18nUtil.marktr("Remove Message"), null, I18nUtil.marktr("REMOVE"));
         passedInfectedMessageBlinger = c.addMetric("infected", I18nUtil.marktr("Passed Infected Message"), null);
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, removeBlinger, passedInfectedMessageBlinger);
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
     }
 
     // VirusNode methods -------------------------------------------------
