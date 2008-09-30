@@ -1225,7 +1225,7 @@ Ung.MessageManager = {
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                 	this.stop();
                                 	Ext.MessageBox.alert(
-                                	   i18n._("Upgrade Successfull"),
+                                	   i18n._("Upgrade Successful"),
                                 	   i18n._("The Upgrade succeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
                                 	   function() {
                                 	   	   Ext.MessageBox.wait(i18n._("Redirecting to the start page"), i18n._("Please wait"));
