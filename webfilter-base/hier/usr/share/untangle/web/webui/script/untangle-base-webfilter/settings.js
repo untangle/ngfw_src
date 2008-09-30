@@ -1,14 +1,14 @@
-if (!Ung.hasResource["Ung.WebFilter"]) {
-    Ung.hasResource["Ung.WebFilter"] = true;
-    Ung.Settings.registerClassName('untangle-base-webfilter', 'Ung.WebFilter');
+if (!Ung.hasResource["Ung.BaseWebFilter"]) {
+    Ung.hasResource["Ung.BaseWebFilter"] = true;
+    Ung.Settings.registerClassName('untangle-base-webfilter', 'Ung.BaseWebFilter');
 
-    Ung.WebFilter = Ext.extend(Ung.Settings, {
+    Ung.BaseWebFilter = Ext.extend(Ung.Settings, {
         gridExceptions : null,
         gridEventLog : null,
         // called when the component is rendered
         onRender : function(container, position) {
             // call superclass renderer first
-            Ung.WebFilter.superclass.onRender.call(this, container, position);
+            Ung.BaseWebFilter.superclass.onRender.call(this, container, position);
             // builds the 3 tabs
             this.buildBlockLists();
             this.buildPassLists();
