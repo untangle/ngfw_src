@@ -5,9 +5,9 @@ if (!Ung.hasResource["Ung.Email"]) {
         panelOutgoingServer : null,
         panelFromSafeList : null,
         panelQuarantine : null,
-        globalSafelistGrid : null,
-        userSafelistGrid : null,
-        userSafelistDetailsGrid : null,
+        gridSafelistGlobal : null,
+        gridSafelistUser : null,
+        gridSafelistUserDetails : null,
         quarantinableAddressesGrid : null,
         quarantineForwardsGrid : null,
         userQuarantinesGrid :null,        
@@ -133,6 +133,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.panelOutgoingServer = new Ext.Panel({
                 // private fields
                 name : 'Outgoing Server',
+                helpSource : 'outgoing_server',
                 parentId : this.getId(),
                 title : this.i18n._('Outgoing Server'),
                 layout : "form",
@@ -374,27 +375,21 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.panelFromSafeList = new Ext.Panel({
                 // private fields
                 name : 'From-Safe List',
+                helpSource : 'from_safe_list',
                 parentId : this.getId(),
                 title : this.i18n._('From-Safe List'),
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
-                defaults : {
-                    xtype : 'fieldset'
-                },
-                items : [{
-                    title : this.i18n._('Global'),
-                    height : 300,
-                    items : [ this.globalSafelistGrid = new Ung.EditorGrid({
+                items : [this.gridSafelistGlobal = new Ung.EditorGrid({
                         name : 'Global',
+                        title : this.i18n._('Global'),
                         hasEdit : false,
-//                        paginated : false,
                         settingsCmp : this,
-//                        data : storeDataGlobal,
-//                        dataRoot: null,
-//                        proxyRpcFn : this.getSafelistAdminView().getSafelistContents,
-//                        proxyRpcFnArgs : ['GLOBAL'],
+                        anchor : "100% 48%",
                         height : 250,
+                        style: "margin-bottom:10px;",
+                        autoScroll : true,
                         emptyRow : {
                             "emailAddress" : this.i18n._("[no email address]")
                         },
@@ -426,19 +421,18 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 fields : ['emailAddress']
                             })
                         }) 
-                    })]
-                },{
-                	title : this.i18n._('Per User'),
-                    height : 300,
-                    items : [ this.userSafelistGrid = new Ung.EditorGrid({
+                }), this.gridSafelistUser = new Ung.EditorGrid({
                         name : 'Per User',
+                        title : this.i18n._('Per User'),
                         sm : smUserSafelist,
                         hasEdit : false,
                         hasAdd : false,
                         hasDelete : false,
                         settingsCmp : this,
                         paginated : false,
+                        anchor : "100% 50%",
                         height : 250,
+                        autoScroll : true,
                         proxyRpcFn : this.getSafelistAdminView().getUserSafelistCounts,
                         tbar : [{
                             text : this.i18n._('Purge Selected'),
@@ -447,7 +441,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             name : 'Purge Selected',
                             parentId : this.getId(),
                             handler : function() {
-                                var selectedRecords = this.userSafelistGrid.getSelectionModel().getSelections();
+                                var selectedRecords = this.gridSafelistUser.getSelectionModel().getSelections();
                                 if(selectedRecords === undefined || selectedRecords.length == 0) {
                                     return;
                                 }
@@ -465,7 +459,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     Ext.MessageBox.hide();
                                 }.createDelegate(this), accounts);
                                 
-                                this.userSafelistGrid.store.load();
+                                this.gridSafelistUser.store.load();
                             }.createDelegate(this)
                         }],
                         fields : [{
@@ -493,9 +487,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                         onShowDetail : function(record) {
                             if (!this.safelistDetailsWin) {
-                                this.buildUserSafelistDetailsGrid();
+                                this.buildGridSafelistUserDetails();
                                 this.safelistDetailsWin = new Ung.EmailAddressDetails({
-                                    detailsPanel : this.userSafelistDetailsGrid,
+                                    detailsPanel : this.gridSafelistUserDetails,
                                     settingsCmp : this,
                                     showForCurrentAccount : function(emailAddress) {
                                         this.account = emailAddress;  
@@ -513,7 +507,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                                                     return;
                                                 }
-                                                this.settingsCmp.userSafelistDetailsGrid.store.loadData(result);
+                                                this.settingsCmp.gridSafelistUserDetails.store.loadData(result);
                                             }.createDelegate(this), emailAddress); 
                                     }          
                                 });
@@ -521,15 +515,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                             this.safelistDetailsWin.showForCurrentAccount(record.get('emailAddress'));
                         }.createDelegate(this)
                         
-                    })
-                ]}]
+                    })]
             });
             
         },
-        buildUserSafelistDetailsGrid : function() {
+        buildGridSafelistUserDetails : function() {
             var smUserSafelistDetails = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
-            this.userSafelistDetailsGrid = new Ung.EditorGrid({
-                name : 'userSafelistDetailsGrid',
+            this.gridSafelistUserDetails = new Ung.EditorGrid({
+                name : 'gridSafelistUserDetails',
                 sm : smUserSafelistDetails,
                 hasEdit : false,
                 hasAdd : false,
@@ -543,7 +536,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     name : 'Purge Selected',
                     parentId : this.getId(),
                     handler : function() {
-                            var selectedRecords = this.userSafelistDetailsGrid.getSelectionModel().getSelections();
+                            var selectedRecords = this.gridSafelistUserDetails.getSelectionModel().getSelections();
                             if(selectedRecords === undefined || selectedRecords.length == 0) {
                                 return;
                             }
@@ -558,11 +551,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                                     return;
                                 }
-                                 this.userSafelistDetailsGrid.store.loadData(result);
+                                 this.gridSafelistUserDetails.store.loadData(result);
                                 Ext.MessageBox.hide();
                             }.createDelegate(this), this.safelistDetailsWin.account, senders);
                             
-                            this.userSafelistGrid.store.load();
+                            this.gridSafelistUser.store.load();
                     }.createDelegate(this)
                 }], 
                 columns : [smUserSafelistDetails, {
@@ -600,6 +593,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         	
             this.panelQuarantine = new Ext.Panel({
                 name : 'panelQuarantine',
+                helpSource : 'quarantine',
                 parentId : this.getId(),
                 title : this.i18n._('Quarantine'),
                 layout : "form",
@@ -607,7 +601,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
+                    anchor: "98% 25%",
                     autoHeight : true,
+                    autoScroll: true,
                     buttonAlign : 'left',
                     labelWidth: 230
                 },
@@ -652,7 +648,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }]
                 }, {
                 	title : this.i18n._('User Quarantines'),
-                    height : 300,
                     items : [ this.userQuarantinesGrid = new Ung.EditorGrid({
                         name : 'User Quarantines',
                         sm : sm,
@@ -663,6 +658,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         autoGenerateId : true,
                         settingsCmp : this,
                         height : 250,
+                        autoScroll: true,
                         proxyRpcFn : this.getQuarantineMaintenenceView().listInboxes,
  
                         tbar : [{
@@ -792,6 +788,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         name : 'Quarantinable Addresses',
                         settingsCmp : this,
                         height : 250,
+                        autoScroll: true,
                         paginated : false,
                         emptyRow : {
                             "address" : "email@example.com",
@@ -860,6 +857,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         name : 'Quarantine Forwards',
                         settingsCmp : this,
                         height : 250,
+                        autoScroll: true,
                         paginated : false,
                         emptyRow : {
                             "address1" : this.i18n._("distributionlistrecipient@example.com"),
@@ -1188,10 +1186,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }.createDelegate(this), this.getMailNodeSettings());
 
                 // save global safelist
-                var globalSafelistGridValues = this.globalSafelistGrid.getFullSaveList();
+                var gridSafelistGlobalValues = this.gridSafelistGlobal.getFullSaveList();
                 var globalList = [];
-	            for(var i=0; i<globalSafelistGridValues.length; i++) {
-	                globalList.push(globalSafelistGridValues[i].emailAddress);
+	            for(var i=0; i<gridSafelistGlobalValues.length; i++) {
+	                globalList.push(gridSafelistGlobalValues[i].emailAddress);
 	            }
                 this.getSafelistAdminView().replaceSafelist(function(result, exception) {
                      if (exception) {
@@ -1218,6 +1216,25 @@ if (!Ung.hasResource["Ung.Email"]) {
         // the certPanel
         detailsPanel : null,
         account : null,
+        initComponent : function() {
+            this.bbar= ['->',{
+                name : 'Cancel',
+                iconCls : 'cancelIcon',
+                text : i18n._('Cancel'),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            },{
+                name : 'Help',
+                iconCls : 'iconHelp',
+                text : this.settingsCmp.i18n._('Help'),
+                handler : function() {
+                    this.settingsCmp.helpAction();
+                }.createDelegate(this)
+            }];
+            Ung.EmailAddressDetails.superclass.initComponent.call(this);
+        },
+        
         onRender : function(container, position) {
             Ung.EmailAddressDetails.superclass.onRender.call(this, container, position);
             this.initSubComponents.defer(1, this);
@@ -1232,26 +1249,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                 },
                 delay : 1
             }
-        },
-        initButtons : function() {
-            this.subCmps.push(new Ext.Button({
-                name : 'Cancel',
-                renderTo : 'button_margin_right_' + this.getId(),
-                iconCls : 'cancelIcon',
-                text : i18n._('Cancel'),
-                handler : function() {
-                    this.cancelAction();
-                }.createDelegate(this)
-            }));
-            this.subCmps.push(new Ext.Button({
-                name : 'Help',
-                renderTo : 'button_left_' + this.getId(),
-                iconCls : 'iconHelp',
-                text : this.settingsCmp.i18n._('Help'),
-                handler : function() {
-                    this.settingsCmp.helpAction();
-                }.createDelegate(this)
-            }));
         },
         // to override
         showForCurrentAccount : function(emailAddress) {

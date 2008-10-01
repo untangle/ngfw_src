@@ -141,6 +141,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             this.panelAdministration = new Ext.Panel({
                 name : 'panelAdministration',
+                helpSource : 'administration',
                 // private fields
                 parentId : this.getId(),
 
@@ -468,8 +469,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         buildPublicAddress : function() {
             this.panelPublicAddress = new Ext.Panel({
-
-                name : 'panelMonitoring',
+                name : 'panelPublicAddress',
+                helpSource : 'public_address',
                 // private fields
                 parentId : this.getId(),
 
@@ -590,6 +591,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         buildCertificates : function() {
             this.panelCertificates = new Ext.Panel({
                 name : 'panelCertificates',
+                helpSource : 'certificates',
                 // private fields
                 parentId : this.getId(),
                 winGenerateSelfSignedCertificate : null,
@@ -1097,6 +1099,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         buildMonitoring : function() {
             this.panelMonitoring = new Ext.Panel({
                 name : 'panelMonitoring',
+                helpSource : 'monitoring',
                 // private fields
                 parentId : this.getId(),
 
@@ -1423,6 +1426,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             
             this.panelSkins = new Ext.Panel({
                 name : "panelSkins",
+                helpSource : 'skins',
                 // private fields
                 parentId : this.getId(),
                 title : this.i18n._('Skins'),
@@ -1584,6 +1588,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.panelBranding = new Ext.Panel({
                 // private fields
                 name : 'Branding',
+                helpSource: 'branding',
                 parentId : this.getId(),
                 title : this.i18n._('Branding'),
                 layout : "form",
@@ -2107,6 +2112,25 @@ if (!Ung.hasResource["Ung.Administration"]) {
     Ung.CertGenerateWindow = Ext.extend(Ung.ButtonsWindow, {
         // the certPanel
         certPanel : null,
+        initComponent : function() {
+        	var settingsCmp = Ext.getCmp(this.certPanel.parentId);
+            this.bbar= ['->',{
+                name : 'Cancel',
+                iconCls : 'cancelIcon',
+                text : i18n._('Cancel'),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            },{
+                name : 'Proceed',
+                iconCls : 'saveIcon',
+                text : settingsCmp.i18n._('Proceed'),
+                handler : function() {
+                    this.proceedAction();
+                }.createDelegate(this)
+            }];
+             Ung.ButtonsWindow.prototype.initComponent.call(this);
+        },
         onRender : function(container, position) {
             Ung.CertGenerateWindow.superclass.onRender.call(this, container, position);
             this.initSubComponents.defer(1, this);
@@ -2121,27 +2145,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 },
                 delay : 1
             }
-        },
-        initButtons : function() {
-            var settingsCmp = Ext.getCmp(this.certPanel.parentId);
-            this.subCmps.push(new Ext.Button({
-                name : 'Cancel',
-                renderTo : 'button_inner_right_' + this.getId(),
-                iconCls : 'cancelIcon',
-                text : i18n._('Cancel'),
-                handler : function() {
-                    this.cancelAction();
-                }.createDelegate(this)
-            }));
-            this.subCmps.push(new Ext.Button({
-                name : 'Proceed',
-                renderTo : 'button_margin_right_' + this.getId(),
-                iconCls : 'saveIcon',
-                text : settingsCmp.i18n._('Proceed'),
-                handler : function() {
-                    this.proceedAction();
-                }.createDelegate(this)
-            }));
         },
         // the proceed actions
         // to override

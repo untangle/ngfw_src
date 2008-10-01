@@ -286,26 +286,24 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         		settingsCmp: this,
         		title: i18n._('OpenVPN Question...'),
         		distributeUsb: false,
-                initButtons : function() {
-                    this.subCmps.push(new Ext.Button({
+    		    initComponent : function() {
+    		    	this.bbar= ['->',{
                         name : 'Cancel',
-                        renderTo : 'button_inner_right_' + this.getId(),
                         iconCls : 'cancelIcon',
                         text : i18n._('Cancel'),
                         handler : function() {
                             this.cancelAction();
                         }.createDelegate(this)
-                    }));
-                    this.subCmps.push(new Ext.Button({
+                    },{
                         name : 'Proceed',
-                        renderTo : 'button_margin_right_' + this.getId(),
                         iconCls : 'saveIcon',
                         text : i18n._('Proceed'),
                         handler : function() {
                             this.proceedAction();
                         }.createDelegate(this)
-                    }));
-                },
+                    }];
+    		    	 Ung.ButtonsWindow.prototype.initComponent.call(this);
+    		    },
                 onRender : function(container, position) {
                     Ung.ButtonsWindow.superclass.onRender.call(this, container, position);
                     this.initSubComponents.defer(1, this);
@@ -477,6 +475,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 paginated : false,
                 anchor : "100% 50%",
                 height : 250,
+                //style: "margin-bottom:10px;",
                 emptyRow : {
                     "live" : true,
                     "name" : this.i18n._("[no name]"),
@@ -993,9 +992,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     autoScroll : true,
                     border: false,
                     bodyStyle : 'padding-bottom:20px;',
-                    items : [this.gridGroups]}
-                
-                , {
+                    items : [this.gridGroups]
+                }, {
                     xtype : 'fieldset',
                     autoHeight : true,
                     labelWidth: 160,

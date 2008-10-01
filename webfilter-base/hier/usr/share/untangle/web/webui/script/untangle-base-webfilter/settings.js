@@ -287,7 +287,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : "displayName",
                     fieldLabel : this.i18n._("Category"),
                     allowBlank : false,
-                    width : 200
+                    width : 200,
+                    ctCls: "fixedPos"
                 }), new Ext.form.Checkbox({
                     name : "Block",
                     dataIndex : "block",

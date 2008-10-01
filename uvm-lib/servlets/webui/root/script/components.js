@@ -735,6 +735,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     subCmps : null,
     constructor : function(config) {
         config.id = "node_" + config.tid;
+        config.helpSource=config.md.displayName.toLowerCase().replace(/ /g,"_")
         this.subCmps = [];
         Ung.Window.superclass.constructor.apply(this, arguments);
     },
@@ -891,7 +892,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     // on click help
     onHelpAction : function() {
-        main.openHelp(this.md.displayName.toLowerCase().replace(/ /g,"_"));
+        main.openHelp(this.helpSource);
     },
     // on click settings
     onSettingsAction : function(handler) {
@@ -1819,8 +1820,6 @@ Ung.Settings = Ext.extend(Ext.Component, {
                         this.addNamesToPanels();
                         var settingsCmp = Ext.getCmp(this.parentId);
                         var objSize = settingsCmp.node.settingsWin.items.get(0).getEl().getSize(true);
-                        objSize.width = objSize.width - 24;
-                        objSize.height = objSize.height - 17;
                         this.setSize(objSize);
                     }
                 }
@@ -2150,27 +2149,10 @@ Ung.ButtonsWindow = Ext.extend(Ung.Window, {
             html : '<div class="windowContent" id="window_content_' + this.getId() + '">' + this.contentHtml + '</div>',
             border : false,
             autoScroll : true,
-            cls : 'windowBackground',
-            bodyStyle : 'background-color: transparent;'
-        }, {
-            region : "south",
-            html : Ung.ButtonsWindow.buttonsTemplate.applyTemplate({
-                id : this.getId()
-            }),
-            border : false,
-            height : 40,
-            cls : 'windowBackground',
-            bodyStyle : 'background-color: transparent;'
+            cls : 'windowBackground'
+            //bodyStyle : 'background-color: transparent;'
         }];
         Ung.ButtonsWindow.superclass.initComponent.call(this);
-    },
-    afterRender : function() {
-        Ung.ButtonsWindow.superclass.afterRender.call(this);
-        this.initButtons.defer(1, this);
-    },
-    // to override
-    initButtons: function() {
-
     },
     // the cancel action
     // to override
@@ -2178,12 +2160,6 @@ Ung.ButtonsWindow = Ext.extend(Ung.Window, {
         this.hide();
     }
 });
-
-// buttons Template
-Ung.ButtonsWindow.buttonsTemplate = new Ext.Template('<div class="buttonsLeftPos" id="button_left_{id}"></div>',
-        '<div class="buttonsRightPos">', '<table cellspacing="0" cellpadding="0" border="0" style="width: auto;">',
-        '<tr><td><div style="margin-right: 10px;" id="button_inner_right_{id}"></div></td>',
-        '<td><div id="button_margin_right_{id}"></div></td></tr>', '</table>', '</div>');
 
 // Node Settings Window
 Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
@@ -2202,52 +2178,58 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             html : '<div class="windowContent" id="window_content_' + this.getId() + '">' + this.contentHtml + '</div>',
             border : false,
             autoScroll : true,
-            cls : 'windowBackground',
-            bodyStyle : 'background-color: transparent;'
-        }, {
-            region : "south",
-            html : Ung.ButtonsWindow.buttonsTemplate.applyTemplate({
-                id : this.getId()
-            }),
-            border : false,
-            height : 40,
-            cls : 'windowBackground',
-            bodyStyle : 'background-color: transparent;'
+            cls : 'windowBackground'
+            //bodyStyle : 'background-color: transparent;'
+            
         }];
+        if(this.bbar==null) {
+            this.bbar=[{
+                name : "Remove",
+                id : this.getId() + "_removeBtn",
+                iconCls : 'nodeRemoveIcon',
+                text : i18n._('Remove'),
+                handler : function() {
+                    this.removeAction();
+                }.createDelegate(this)
+            },{
+                name : 'Help',
+                id : this.getId() + "_helpBtn",
+                iconCls : 'iconHelp',
+                text : i18n._('Help'),
+                handler : function() {
+                    this.helpAction();
+                }.createDelegate(this)
+            },'->',{
+                name : "Cancel",
+                id : this.getId() + "_cancelBtn",
+                iconCls : 'cancelIcon',
+                text : i18n._('Cancel'),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            },{
+                name : "Save",
+                id : this.getId() + "_saveBtn",
+                iconCls : 'saveIcon',
+                text : i18n._('Save'),
+                handler : function() {
+                    this.saveAction.defer(1, this);
+                }.createDelegate(this)
+            }];
+        }
         Ung.NodeSettingsWin.superclass.initComponent.call(this);
     },
-    initButtons : function() {
-        this.subCmps.push(new Ext.Button({
-            name : "Remove",
-            id : this.getId() + "_removeBtn",
-            iconCls : 'nodeRemoveIcon',
-            renderTo : 'button_left_' + this.getId(),
-            text : i18n._('Remove'),
-            handler : function() {
-                this.removeAction();
-            }.createDelegate(this)
-        }));
-        this.subCmps.push(new Ext.Button({
-            name : "Cancel",
-            id : this.getId() + "_cancelBtn",
-            iconCls : 'cancelIcon',
-            renderTo : 'button_inner_right_' + this.getId(),
-            text : i18n._('Cancel'),
-            handler : function() {
-                this.cancelAction();
-            }.createDelegate(this)
-        }));
-        this.subCmps.push(new Ext.Button({
-            name : "Save",
-            id : this.getId() + "_saveBtn",
-            iconCls : 'saveIcon',
-            renderTo : 'button_margin_right_' + this.getId(),
-            text : i18n._('Save'),
-            handler : function() {
-                this.saveAction.defer(1, this);
-            }.createDelegate(this)
-        }));
+    helpAction : function() {
+        var helpSource=this.nodeCmp.helpSource;
+        if(this.nodeCmp.settings!=null && this.nodeCmp.settings.tabs!=null && this.nodeCmp.settings.tabs.getActiveTab()!=null) {
+            var tabHelpSource=this.nodeCmp.settings.tabs.getActiveTab().helpSource;
+            if(tabHelpSource!=null) {
+                helpSource+="_"+tabHelpSource;
+            }
+        }
+        main.openHelp(helpSource);
     },
+    
     removeAction : function() {
         this.nodeCmp.removeAction();
     },
@@ -2281,6 +2263,33 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
         if (!this.name) {
             this.name = "configWin_" + this.name;
         }
+        if(this.bbar==null) {
+            this.bbar=[{
+                name : 'Help',
+                id : this.getId() + "_helpBtn",
+                iconCls : 'iconHelp',
+                text : i18n._('Help'),
+                handler : function() {
+                    this.helpAction();
+                }.createDelegate(this)
+            },'->',{
+                name : 'Cancel',
+                id : this.getId() + "_cancelBtn",
+                iconCls : 'cancelIcon',
+                text : i18n._('Cancel'),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            },{
+                name : 'Save',
+                id : this.getId() + "_saveBtn",
+                iconCls : 'saveIcon',
+                text : i18n._('Save'),
+                handler : function() {
+                    this.saveAction.defer(1, this);;
+                }.createDelegate(this)
+            }];
+        }
         Ung.ConfigWin.superclass.initComponent.call(this);
     },
     // build Tab panel from an array of tab items
@@ -2300,8 +2309,6 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
                         this.addNamesToPanels();
                         var winCmp = Ext.getCmp(this.parentId);
                         var objSize = winCmp.items.get(0).getEl().getSize(true);
-                        objSize.width = objSize.width - 24;
-                        objSize.height = objSize.height - 17;
                         this.setSize(objSize);
                     }
                 }
@@ -2312,44 +2319,15 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
         Ext.destroy(this.tabs);
         Ung.Settings.superclass.beforeDestroy.call(this);
     },
-    // initialize window buttons
-    initButtons : function() {
-    	if(this.getContentEl()==null) {
-    		return;
-    	}
-        this.subCmps.push(new Ext.Button({
-            name : 'Help',
-            id : this.getId() + "_helpBtn",
-            renderTo : 'button_left_' + this.getId(),
-            iconCls : 'iconHelp',
-            text : i18n._('Help'),
-            handler : function() {
-                this.helpAction();
-            }.createDelegate(this)
-        }));
-        this.subCmps.push(new Ext.Button({
-            name : 'Cancel',
-            id : this.getId() + "_cancelBtn",
-            iconCls : 'cancelIcon',
-            renderTo : 'button_inner_right_' + this.getId(),
-            text : i18n._('Cancel'),
-            handler : function() {
-                this.cancelAction();
-            }.createDelegate(this)
-        }));
-        this.subCmps.push(new Ext.Button({
-            name : 'Save',
-            id : this.getId() + "_saveBtn",
-            iconCls : 'saveIcon',
-            renderTo : 'button_margin_right_' + this.getId(),
-            text : i18n._('Save'),
-            handler : function() {
-                this.saveAction.defer(1, this);;
-            }.createDelegate(this)
-        }));
-    },
     helpAction : function() {
-        main.openHelp(this.helpSource);
+    	var helpSource=this.helpSource;
+    	if(this.tabs && this.tabs.getActiveTab()!=null) {
+            var tabHelpSource=this.tabs.getActiveTab().helpSource;
+            if(tabHelpSource!=null) {
+                helpSource+="_"+tabHelpSource;
+            }
+    	}
+        main.openHelp(helpSource);
     },
     // to override
     cancelAction : function() {
@@ -2374,45 +2352,25 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
 // update window
 // has the content and 3 standard buttons: help, cancel, Update
 Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
-    hasHelp : false,
-    initButtons : function() {
-        if(this.getContentEl()==null) {
-            return;
-        }
-        if (this.hasHelp) {
-            this.subCmps.push(new Ext.Button({
-                name : 'Help',
-                renderTo : 'button_left_' + this.getId(),
-                iconCls : 'iconHelp',
-                text : i18n._('Help'),
+    initComponent : function() {
+        if(this.bbar==null) {
+            this.bbar=['->',{
+                name : 'Cancel',
+                iconCls : 'cancelIcon',
+                text : i18n._('Cancel'),
                 handler : function() {
-                    this.helpAction();
+                    this.cancelAction();
                 }.createDelegate(this)
-            }));
+            },{
+                name : 'Update',
+                iconCls : 'saveIcon',
+                text : i18n._('Update'),
+                handler : function() {
+                    this.updateAction();
+                }.createDelegate(this)
+            }];
         }
-        this.subCmps.push(new Ext.Button({
-            name : 'Cancel',
-            renderTo : 'button_inner_right_' + this.getId(),
-            iconCls : 'cancelIcon',
-            text : i18n._('Cancel'),
-            handler : function() {
-                this.cancelAction();
-            }.createDelegate(this)
-        }));
-        this.subCmps.push(new Ext.Button({
-            name : 'Update',
-            renderTo : 'button_margin_right_' + this.getId(),
-            iconCls : 'saveIcon',
-            text : i18n._('Update'),
-            handler : function() {
-                this.updateAction();
-            }.createDelegate(this)
-        }));
-    },
-    // the help method
-    // to override
-    helpAction : function() {
-        Ung.Util.todo();
+        Ung.UpdateWindow.superclass.initComponent.call(this);
     },
     // the update actions
     // to override
@@ -3025,6 +2983,15 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             });
         }
         if (this.rowEditor==null && this.rowEditorInputLines != null) {
+        	/*this fixes the cursor but introduces a bigger bug with positioning
+        	if(Ext.isGecko && !Ext. isGecko3) {
+        		for(var i=0;i<this.rowEditorInputLines.length;i++) {
+        			var xtype=this.rowEditorInputLines[i].xtype
+        			if(xtype=="textfield" || xtype=="textarea" || xtype=="numberfield" || xtype=="timefield") {
+        				this.rowEditorInputLines[i].ctCls="fixedPos";
+        			}
+        		}
+        	}*/
             this.rowEditor = new Ung.RowEditorWindow({
                 grid : this,
                 inputLines : this.rowEditorInputLines,

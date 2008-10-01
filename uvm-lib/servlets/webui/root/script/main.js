@@ -186,7 +186,8 @@ Ung.Main.prototype = {
             iconCls: 'iconHelp',
             text: i18n._('Help'),
             handler: function() {
-                main.openHelp("rack");
+            	var helpSource=main.leftTabs.getActiveTab().helpSource;
+                main.openHelp(helpSource);
             }
         });
         buttonCmp=new Ext.Button({
@@ -265,7 +266,7 @@ Ung.Main.prototype = {
     	
     	// init quick tips
     	Ext.QuickTips.init();
-    	
+
     	//hide/unhide Field and label
         Ext.override(Ext.form.Field, {
             showContainer: function() {
@@ -428,11 +429,13 @@ Ung.Main.prototype = {
             defaults:{autoScroll: true},
             items:[{
                 title: i18n._('Apps'),
+                helpSource: 'apps',
                 tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],
                 html:'<div id="appsItems"></div>',name:'Apps'},
                 {title:i18n._('Config'),
                 tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],   
                 html:'<div id="configItems"></div>',
+                helpSource: 'config',
                 name:'Config'}
             ],
             listeners : {

@@ -13,41 +13,39 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 title : this.i18n._('Policy Manager')
             }];
             if(this.node!=null) {
-            	this.initButtons=function() {
-                    if(this.getContentEl()==null) {
-                        return;
-                    }
-                    this.subCmps.push(new Ext.Button({
-                        name : "Remove",
-                        id : this.getId() + "_removeBtn",
-                        iconCls : 'nodeRemoveIcon',
-                        renderTo : 'button_left_' + this.getId(),
-                        text : i18n._('Remove'),
-                        handler : function() {
-                            this.node.settingsWin.removeAction();
-                        }.createDelegate(this)
-                    }));
-                    this.subCmps.push(new Ext.Button({
-                        name : "Cancel",
-                        id : this.getId() + "_cancelBtn",
-                        iconCls : 'cancelIcon',
-                        renderTo : 'button_inner_right_' + this.getId(),
-                        text : i18n._('Cancel'),
-                        handler : function() {
-                            this.cancelAction();
-                        }.createDelegate(this)
-                    }));
-                    this.subCmps.push(new Ext.Button({
-                        name : "Save",
-                        id : this.getId() + "_saveBtn",
-                        iconCls : 'saveIcon',
-                        renderTo : 'button_margin_right_' + this.getId(),
-                        text : i18n._('Save'),
-                        handler : function() {
-                            this.saveAction();
-                        }.createDelegate(this)
-                    }));
-            	}
+                this.bbar=[{
+                    name : "Remove",
+                    id : this.getId() + "_removeBtn",
+                    iconCls : 'nodeRemoveIcon',
+                    text : i18n._('Remove'),
+                    handler : function() {
+                        this.removeAction();
+                    }.createDelegate(this)
+                },{
+                    name : 'Help',
+                    id : this.getId() + "_helpBtn",
+                    iconCls : 'iconHelp',
+                    text : i18n._('Help'),
+                    handler : function() {
+                        this.helpAction();
+                    }.createDelegate(this)
+                },'->',{
+                    name : "Cancel",
+                    id : this.getId() + "_cancelBtn",
+                    iconCls : 'cancelIcon',
+                    text : i18n._('Cancel'),
+                    handler : function() {
+                        this.cancelAction();
+                    }.createDelegate(this)
+                },{
+                    name : "Save",
+                    id : this.getId() + "_saveBtn",
+                    iconCls : 'saveIcon',
+                    text : i18n._('Save'),
+                    handler : function() {
+                        this.saveAction.defer(1, this);
+                    }.createDelegate(this)
+                }];
             }
             Ung.PolicyManager.superclass.initComponent.call(this);
         },

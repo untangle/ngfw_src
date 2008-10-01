@@ -25,6 +25,9 @@
         	<fileset dir="./../../../../shield/hier/usr/share/untangle/web/webui/script/">
 				<include name="**/*.*"/>
         	</fileset>
+            <fileset dir="./../../../../webfilter-base/hier/usr/share/untangle/web/webui/script/">
+                <include name="**/*.*"/>
+            </fileset>
         	<fileset dir="./../../../../webfilter/hier/usr/share/untangle/web/webui/script/">
 				<include name="**/*.*"/>
         	</fileset>
@@ -65,6 +68,9 @@
                 <include name="**/*.*"/>
             </fileset>
             <fileset dir="./../../../../../../hades/rup/adconnector/hier/usr/share/untangle/web/webui/script/">
+                <include name="**/*.*"/>
+            </fileset>
+            <fileset dir="./../../../../../../hades/rup/sitefilter/hier/usr/share/untangle/web/webui/script/">
                 <include name="**/*.*"/>
             </fileset>
         </copy>
