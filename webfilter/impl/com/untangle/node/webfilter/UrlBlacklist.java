@@ -185,8 +185,7 @@ class UrlBlacklist extends Blacklist
 
     // protected methods ------------------------------------------------------
 
-    protected String checkBlacklistDatabase(String proto, String dom,
-                                            String uri)
+    protected String checkBlacklistDatabase(String dom, int port, String uri)
     {
         List<String> all = urlDatabase.findAllBlacklisted("http", dom, uri);
 

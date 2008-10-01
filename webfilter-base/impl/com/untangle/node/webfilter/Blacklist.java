@@ -118,8 +118,8 @@ public abstract class Blacklist
      * @param path the requested path.
      * @return an HTML response.
      */
-    String checkRequest(InetAddress clientIp,
-                        RequestLineToken requestLine, Header header)
+    public String checkRequest(InetAddress clientIp, int port,
+                               RequestLineToken requestLine, Header header)
     {
         URI uri = requestLine.getRequestUri().normalize();
 
@@ -191,7 +191,7 @@ public abstract class Blacklist
         }
 
         // check in WebFilterSettings
-        String nonce = checkBlacklist(clientIp, host, requestLine);
+        String nonce = checkBlacklist(clientIp, host, port, requestLine);
 
         if (null != nonce) {
             return nonce;
@@ -256,7 +256,7 @@ public abstract class Blacklist
 
     // protected methods ------------------------------------------------------
 
-    protected abstract String checkBlacklistDatabase(String proto, String dom,
+    protected abstract String checkBlacklistDatabase(String dom, int port,
                                                      String uri);
 
     protected abstract void updateToCurrentCategories(WebFilterSettings s);
@@ -300,7 +300,7 @@ public abstract class Blacklist
         return null;
     }
 
-    private String checkBlacklist(InetAddress clientIp, String host,
+    private String checkBlacklist(InetAddress clientIp, String host, int port,
                                   RequestLineToken requestLine)
     {
         String uri = requestLine.getRequestUri().normalize().toString();
@@ -330,7 +330,7 @@ public abstract class Blacklist
             if (null != category) {
                 reason = Reason.BLOCK_URL;
             } else {
-                category = checkBlacklistDatabase("http", dom, uri);
+                category = checkBlacklistDatabase(dom, port, uri);
 
                 if (null != category) {
                     reason = Reason.BLOCK_CATEGORY;

@@ -64,7 +64,8 @@ public class WebFilterHandler extends HttpStateMachine
         TCPSession sess = getSession();
 
         String nonce = node.getBlacklist()
-            .checkRequest(sess.clientAddr(), getRequestLine(), requestHeader);
+            .checkRequest(sess.clientAddr(), 80, getRequestLine(),
+                          requestHeader);
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader
                          + "check request returns: " + nonce);
