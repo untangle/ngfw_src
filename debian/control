@@ -903,7 +903,7 @@ Description: Spam Blocker Base
 
 Package: untangle-base-webfilter
 Architecture: all
-Depends: untangle-vm, untangle-casing-http
+Depends: untangle-libuvm, untangle-casing-http
 XB-Display-Name: WebFilter Base
 XB-Untangle-Type: base
 Description: WebFilter Base
