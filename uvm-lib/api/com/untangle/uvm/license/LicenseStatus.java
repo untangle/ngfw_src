@@ -37,6 +37,8 @@ import java.io.Serializable;
 
 import java.util.Date;
 
+import org.json.JSONBean;
+
 /**
  * Class used to describe the licensing status of an application,
  * presently really only used for the GUI.
@@ -44,6 +46,7 @@ import java.util.Date;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@JSONBean.Marker
 public class LicenseStatus implements Serializable
 {
     /* True if this product ever had a license, false otherwise, used
@@ -68,12 +71,16 @@ public class LicenseStatus implements Serializable
 
     /* true if this is a trial */
     private final boolean isTrial;
+
+    /* This is the mackage name for the license */
+    private final String mackageName;
     
-    public LicenseStatus( boolean hasLicense, String identifier, String type, Date expirationDate, 
-                          String timeRemaining, boolean isTrial )
+    public LicenseStatus( boolean hasLicense, String identifier, String mackageName, String type, 
+                          Date expirationDate, String timeRemaining, boolean isTrial )
     {
         this.hasLicense = hasLicense;
         this.identifier = identifier;
+        this.mackageName = mackageName;
         this.type = type;
         this.expirationDate = expirationDate;
         /* it is unstable if it doesn't have a license or the current time is after the expiration time */
@@ -82,6 +89,7 @@ public class LicenseStatus implements Serializable
         this.isTrial = isTrial;
     }
 
+    @JSONBean.Getter
     public boolean hasLicense()
     {
         return this.hasLicense;
@@ -107,13 +115,20 @@ public class LicenseStatus implements Serializable
     {
         return this.timeRemaining;
     }
+
+    public String getMackageName()
+    {
+        return this.mackageName;
+    }
     
+    @JSONBean.Getter
     public boolean isTrial()
     {
         return this.isTrial;
     }
 
     /* Done this way so that timezone issues between the GUI and the UVM */
+    @JSONBean.Getter
     public boolean isExpired()
     {
         return this.isExpired;

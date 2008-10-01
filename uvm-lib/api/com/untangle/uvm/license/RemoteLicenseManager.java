@@ -46,6 +46,11 @@ public interface RemoteLicenseManager
     public LicenseStatus getLicenseStatus( String productIdentifier );
 
     /**
+     * Get the status of a mackage.
+     */
+    public LicenseStatus getMackageStatus( String mackageName );
+
+    /**
      * Return true if the user has any premium products.
      */
     public boolean hasPremiumLicense();

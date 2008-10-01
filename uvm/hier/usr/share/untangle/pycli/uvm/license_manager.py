@@ -1,4 +1,7 @@
+import time
+
 from uvm.manager import Manager
+
 
 class LicenseManager(Manager):
     def __init__( self, remoteContext ):
@@ -7,5 +10,24 @@ class LicenseManager(Manager):
 
     def api_reloadlicenses( self ):
         self.__licenseManager.reloadLicenses()
+
+    def api_reloadlicenses( self ):
+        self.__licenseManager.reloadLicenses()
+
+    def api_getlicensestatus( self, identifier ):
+        self.print_status( self.__licenseManager.getLicenseStatus( identifier ))
+
+    def api_getmackagelicense( self, mackageName ):
+        self.print_status( self.__licenseManager.getMackageStatus( mackageName ))
+
+    def print_status( self, status ):
+        num_days = int((( status["expirationDate"]["time"] / 1000.0 ) - time.time()) / ( 60 * 60 * 24 ))
+        if ( num_days < 0 ): num_days = 0
+        print "identifier:  %s" % status["identifier"]
+        print "mackage:     %s" % status["mackageName"]
+        print "has license: %s" % status["hasLicense"]
+        print "type:        %s" % status["type"]
+        print "expires:     %s day(s)" % num_days
+        print "is expired:  %s" % status["isExpired"]
 
 Manager.managers.append( LicenseManager )

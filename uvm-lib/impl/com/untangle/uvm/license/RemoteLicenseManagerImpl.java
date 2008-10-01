@@ -16,11 +16,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package com.untangle.uvm.license;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -56,12 +51,23 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
     {
         if ( this.licenseManager == null ) {
             /* no manager, so status is always no license */
-            return new LicenseStatus( false, identifier, "unused", new Date( 0 ), "expired", false);
+            return new LicenseStatus( false, identifier, "no-mackage", "invalid", new Date( 0 ), "expired", 
+                                      false);
         }
 
         return this.licenseManager.getLicenseStatus( identifier );
     }
 
+    public synchronized LicenseStatus getMackageStatus( String mackageName )
+    {
+        if ( this.licenseManager == null ) {
+            /* no manager, so status is always no license */
+            return new LicenseStatus( false, "unknown", mackageName, "invalid", new Date( 0 ), "expired", 
+                                      false);
+        }
+
+        return this.licenseManager.getMackageStatus( mackageName );
+    }
 
     /**
      * Return true if the user has any premium products.
