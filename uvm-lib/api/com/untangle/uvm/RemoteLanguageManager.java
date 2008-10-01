@@ -71,7 +71,7 @@ public interface RemoteLanguageManager
     /**
      * Get list of available languages
      */
-    List<LanguageInfo> getLanguagesList();
+    List<LocaleInfo> getLanguagesList();
     
     /**
      * Return the map of translations for a module, for the current language

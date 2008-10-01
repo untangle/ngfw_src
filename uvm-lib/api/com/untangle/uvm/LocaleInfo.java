@@ -40,32 +40,76 @@ import java.io.Serializable;
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
-public class LanguageInfo implements Serializable {
-    private String code;
-    private String name;
+public class LocaleInfo implements Serializable {
+    private String languageCode;
+    private String languageName;
+    private String countryCode;
+    private String countryName;
 
-    public LanguageInfo() { }
+    public LocaleInfo() { }
+    
+    public LocaleInfo(String languageCode, String languageName) {
+        super();
+        this.languageCode = languageCode;
+        this.languageName = languageName;
+    }
 
-	public LanguageInfo(String code, String name) {
-		super();
-		this.code = code;
-		this.name = name;
-	}
+    public LocaleInfo(String languageCode, String languageName,
+            String countryCode, String countryName) {
+        super();
+        this.countryCode = countryCode;
+        this.countryName = countryName;
+        this.languageCode = languageCode;
+        this.languageName = languageName;
+    }
 
-	public String getCode() {
-		return code;
-	}
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public String getLanguageCode() {
+        return languageCode;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getLanguageName() {
+        return languageName;
+    }
+
+    public void setLanguageName(String languageName) {
+        this.languageName = languageName;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
+    public String getName() {
+        String name = languageName;
+        if (countryName != null){
+            name = countryName + " " + name;
+        }
+        return name;
+    }
+    
+    public String getCode() {
+        String code = languageCode;
+        if (countryCode != null){
+            code = code + "_" + countryCode;
+        }
+        return code;
+    }
 
 }

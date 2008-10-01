@@ -39,7 +39,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.untangle.uvm.LanguageInfo;
+import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.UvmException;
@@ -69,6 +69,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private static final String BASENAME_COMMUNITY_PREFIX = "i18n.community";
     private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
     private static final String LANGUAGES_CFG = "lang.cfg";
+    private static final String COUNTRIES_CFG = "country.cfg";
     private static final String LC_MESSAGES = "LC_MESSAGES";
     private static final int BUFFER = 2048;
 
@@ -76,7 +77,8 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
     private final UvmContextImpl uvmContext;
     private LanguageSettings settings;
-    private List<LanguageInfo> allLanguages;
+    private Map<String, String> allLanguages;
+    private Map<String, String> allCountries;
 
     static {
         LANGUAGES_DIR = System.getProperty("bunnicula.lang.dir"); // place for languages resources files
@@ -106,7 +108,8 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         };
         uvmContext.runTransaction(tw);
         
-        allLanguages = loadAllLanguagesList();
+        allLanguages = loadAllLanguages();
+        allCountries = loadAllCountries();
         
     }
 
@@ -193,13 +196,13 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         String tokens[] = entry.getName().split(File.separator);
         if (entry.isDirectory()) {
             // in order to be a valid entry, the folder name should be a valid language code
-            if (tokens.length != 1 || !isValidLanguageCode(tokens[0])) {
+            if (tokens.length != 1 || !isValidLocaleCode(tokens[0])) {
                 logger.warn("The folder " + entry.getName() + " does not correspond to a valid language code");
                 return false;
             }
         } else {
             // in order to be a valid entry, it should be in the following format: <lang_code>/<package_name>.po
-            if (tokens.length != 2 || !isValidLanguageCode(tokens[0]) || !entry.getName().endsWith(".po")) {
+            if (tokens.length != 2 || !isValidLocaleCode(tokens[0]) || !entry.getName().endsWith(".po")) {
                 logger.warn("The entry " + entry.getName() + " does not conform to the correct naming: <lang_code>/<module_name>.po ");
                 return false;
             }
@@ -270,10 +273,12 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         logger.error(errorBuffer);
     }
 
-    public List<LanguageInfo> getLanguagesList() {
-        List<LanguageInfo> languages = new ArrayList<LanguageInfo>();
+    public List<LocaleInfo> getLanguagesList() {
+        List<LocaleInfo> locales = new ArrayList<LocaleInfo>();
 
         Set<String> availableLanguages = new HashSet<String>();
+        // add default language
+        availableLanguages.add(DEFAULT_LANGUAGE);
         // get available official languages
         Collections.addAll(availableLanguages, (new File(LANGUAGES_OFFICIAL_DIR)).list());
         // get available community languages
@@ -281,31 +286,33 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
         // From all languages from config file, keep only the
         // one which we have translations for
-        for (LanguageInfo languageInfo : allLanguages) {
-            if (DEFAULT_LANGUAGE.equals(languageInfo.getCode()) ||
-                    availableLanguages.contains(languageInfo.getCode())){
-                languages.add(new LanguageInfo(languageInfo.getCode(), languageInfo.getName()));
-            }
+        for (String code : availableLanguages) {
+            String tokens[] = code.split("_");
+            String langCode = tokens[0];
+            String langName = allLanguages.get(langCode);
+            String countryCode = tokens.length == 2 ? tokens[1] : null;
+            String countryName = countryCode == null ? null : allCountries.get(countryCode);
+            locales.add(new LocaleInfo(langCode, langName, countryCode, countryName));
         }
         
-        return languages;
+        return locales;
     }
 
     public Map<String, String> getTranslations(String module){
         Map<String, String> map = new HashMap<String, String>();
         String i18nModule = module.replaceAll("-", "_");
+        Locale locale = getLocale(); 
+        
         try {
             I18n i18n = null;
             ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
             try {
                 i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule, Thread
-                        .currentThread().getContextClassLoader(), new Locale(settings
-                        .getLanguage()), I18nFactory.DEFAULT);
+                        .currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
             } catch (MissingResourceException e) {
                 // fall back to official translations
                 i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule, Thread
-                        .currentThread().getContextClassLoader(), new Locale(settings
-                        .getLanguage()), I18nFactory.DEFAULT);
+                        .currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
             }
 
             if (i18n != null) {
@@ -323,15 +330,27 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         return map;
     }
 
+
     // private methods --------------------------------------------------------
+    private Locale getLocale() {
+        Locale locale = new Locale(DEFAULT_LANGUAGE);
+        String tokens[] = settings.getLanguage().split("_");
+        if (tokens.length == 1) {
+            locale = new Locale(tokens[0]);
+        } else if (tokens.length == 2) {
+            locale = new Locale(tokens[0], tokens[1]);
+        }
+        return locale;
+    }
+    
     private void saveSettings(LanguageSettings settings) {
         DeletingDataSaver<LanguageSettings> saver =
             new DeletingDataSaver<LanguageSettings>(uvmContext,"LanguageSettings");
         this.settings = saver.saveData(settings);
     }
     
-    private List<LanguageInfo> loadAllLanguagesList() {
-        List<LanguageInfo> languages = new ArrayList<LanguageInfo>();
+    private Map<String, String> loadAllLanguages() {
+        Map<String, String> languages = new HashMap<String, String>();
 
         // Reading all languages from config file
         try {
@@ -339,11 +358,11 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             String s = new String();
             while((s = in.readLine())!= null) {
                 if (s.trim().length() > 0){
-                    String[] tokens = s.split("\\s");
+                    String[] tokens = s.split("\\s+");
                     if (tokens.length >= 2) {
                         String langCode = tokens[0];
                         String langName = tokens[1];
-                        languages.add(new LanguageInfo(tokens[0], tokens[1]));
+                        languages.put(tokens[0], tokens[1]);
                     }
                 }
             }
@@ -355,13 +374,52 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         return languages;
     }
     
-    private boolean isValidLanguageCode(String code) {
-        for (LanguageInfo languageInfo : allLanguages) {
-            if (languageInfo.getCode().equals(code)) {
-                return true;
+    private Map<String, String> loadAllCountries() {
+        Map<String, String> countries = new HashMap<String, String>();
+
+        // Reading all countries from config file
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + COUNTRIES_CFG));
+            String s = new String();
+            while((s = in.readLine())!= null) {
+                if (s.trim().length() > 0){
+                    String[] tokens = s.split("\\s+");
+                    if (tokens.length >= 2) {
+                        String countryCode = tokens[0];
+                        String countryName = tokens[1];
+                        countries.put(tokens[0], tokens[1]);
+                    }
+                }
             }
+            in.close();
+        } catch (IOException e) {
+            logger.warn("Failed getting all countries!", e);
         }
-        return false;
+
+        return countries;
+    }
+    
+    private boolean isValidLocaleCode(String code) {
+        if (code == null) {
+            return false;
+        }
+        String tokens[] = code.split("_");
+        if (tokens.length == 0 || tokens.length > 2) {
+            return false;
+        }
+        
+        String langCode = tokens[0];
+        String countryCode = tokens.length == 2 ? tokens[1] : null;
+        return isValidLanguageCode(langCode) 
+            && (countryCode == null || isValidCountryCode(countryCode));
+    }
+    
+    private boolean isValidLanguageCode(String code) {
+        return allLanguages.containsKey(code);
+    }
+    
+    private boolean isValidCountryCode(String code) {
+        return allCountries.containsKey(code);
     }
     
 }
