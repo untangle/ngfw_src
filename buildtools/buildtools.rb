@@ -75,7 +75,7 @@ if SRC_HOME.nil?
     end
   end
 
-  [ 'virus' ].each do |c|
+  [ 'virus', 'webfilter' ].each do |c|
     p =  BuildEnv::SRC["untangle-base-#{c}"]
     ['impl'].each do |n|
       InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-base-#{c}-#{n}/")
