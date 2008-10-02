@@ -106,6 +106,8 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 	        BufferedOutputStream dest = null;
 			ZipEntry entry = null;
             File defaultSkinDir = new File(SKINS_DIR + File.separator + DEFAULT_SKIN);
+            File skinDir = new File(SKINS_DIR);
+            List<File> processedSkinFolders = new ArrayList<File>();
 			
 			//validate skin
 		    if (!item.getName().endsWith(".zip")) {
@@ -116,19 +118,28 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 		    InputStream uploadedStream = item.getInputStream();
 		    ZipInputStream zis = new ZipInputStream(uploadedStream);
 			while ((entry = zis.getNextEntry()) != null) {
+			    //validate default skin
+		        String tokens[] = entry.getName().split(File.separator);
+	            if (tokens.length >= 1) {
+                    File dir = new File(SKINS_DIR + File.separator + tokens[0]);
+                    if (dir.equals(defaultSkinDir)) {
+                        throw new UvmException("The default skin can not be overwritten");
+                    }
+	            }
+			    
 				if (entry.isDirectory()) {
                     File dir = new File(SKINS_DIR + File.separator + entry.getName());
-				    if (dir.equals(defaultSkinDir)) {
-				        throw new UvmException("The default skin can not be overwritten");
-				    }
-					if (dir.exists()) {
-					    FileUtils.cleanDirectory(dir);
-					} else {
-	                    if (!dir.mkdir()) {
-	                        throw new UvmException("Error creating skin folder");
-	                    }
-					}
+					processSkinFolder(dir, processedSkinFolders);
 				} else {
+				    File file = new File(SKINS_DIR + File.separator + entry.getName());
+                    File parentDir = file.getParentFile();
+                    if (parentDir.equals(skinDir)) {
+                        // invalid entry; skip it
+                        continue;
+                    } else {
+                        processSkinFolder(parentDir, processedSkinFolders);
+                    }
+                    
 					int count;
 					byte data[] = new byte[BUFFER];
 					// write the files to the disk
@@ -148,7 +159,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 			throw new UvmException("Upload Skin Failed");
 	    }
     }
-	
+
     public List<SkinInfo> getSkinsList(boolean fetchAdminSkins, boolean fetchUserFacingSkins) {
     	
     	List<SkinInfo> skins = new ArrayList<SkinInfo>();
@@ -195,6 +206,21 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
         this.settings = saver.saveData(settings);
     }
     
+    private void processSkinFolder(File dir, List<File> processedSkinFolders) throws IOException, UvmException {
+        if (processedSkinFolders.contains(dir)){
+            return;
+        }
+        if (dir.exists()) {
+            FileUtils.cleanDirectory(dir);
+        } else {
+            if (!dir.mkdirs()) {
+                logger.error("Error creating skin folder: " + dir );
+                throw new UvmException("Error creating skin folder");
+            }
+        }
+        processedSkinFolders.add(dir);
+    }
+        
     static {
         SKINS_DIR = System.getProperty("bunnicula.skins.dir");
     }
