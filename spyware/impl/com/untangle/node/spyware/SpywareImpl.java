@@ -124,7 +124,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                            Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
           new SoloPipeSpec("spyware-byte", this, streamHandler,
                            Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
-xb
+b
     private final Map<InetAddress, Set<String>> hostWhitelists
         = new HashMap<InetAddress, Set<String>>();
 
