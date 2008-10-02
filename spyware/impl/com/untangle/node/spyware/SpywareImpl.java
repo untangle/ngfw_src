@@ -1106,6 +1106,4 @@ public class SpywareImpl extends AbstractNode implements Spyware
             SpywareImpl.this.lastSignatureUpdate = new Date();
         }
     }
-
-
 }

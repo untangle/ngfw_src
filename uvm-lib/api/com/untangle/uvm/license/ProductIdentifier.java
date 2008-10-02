@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -42,6 +42,7 @@ public class ProductIdentifier
     public static final String CONFIGURATION_BACKUP = "untangle-configuration-backup";
     public static final String DUAL_VIRUS_BLOCKER = "untangle-dual-virus-blocker";
     public static final String KASPERSKY_AV = "untangle-dual-virus-blocker-kav";
+    public static final String SITEFILTER = "untangle-sitefilter";
     public static final String PC_REMOTE = "untangle-pcremote";
     public static final String BRANDING_MANAGER = "untangle-branding-manager";
 }

@@ -219,8 +219,8 @@ public abstract class Blacklist
         return null;
     }
 
-    String checkResponse(InetAddress clientIp, RequestLineToken requestLine,
-                         Header header)
+    public String checkResponse(InetAddress clientIp,
+                                RequestLineToken requestLine, Header header)
     {
         if (null == requestLine) {
             return null;
