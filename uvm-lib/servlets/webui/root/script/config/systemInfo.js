@@ -70,6 +70,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         buildVersion : function() {
             this.panelVersion = new Ext.Panel({
                 name : 'Version',
+                helpSource : 'version',
                 parentId : this.getId(),
                 title : this.i18n._('Version'),
                 layout : "form",
@@ -103,6 +104,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             };
             this.panelRegistration = new Ext.Panel({
                 name : 'Registration',
+                helpSource : 'registration',
                 parentId : this.getId(),
                 title : this.i18n._('Registration'),
                 layout : "form",
@@ -190,6 +192,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         buildLicenseAgreement : function() {
             this.panelLicenseAgreement = new Ext.Panel({
                 name : 'License Agreement',
+                helpSource : 'license_agreement',
                 parentId : this.getId(),
                 title : this.i18n._('License Agreement'),
                 bodyStyle : 'padding:5px 5px 0px 5px;',

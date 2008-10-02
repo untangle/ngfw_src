@@ -114,6 +114,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             this.gridUpgrade = new Ext.grid.GridPanel({
                 // private fields
                 name : 'Upgrade',
+                helpSource : 'upgrade',
                 parentId : this.getId(),
                 title : this.i18n._('Upgrade'),
                 enableHdMenu : false,
@@ -203,6 +204,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             this.panelSetup = new Ext.Panel({
                 // private fields
                 name : 'Upgrade Setup',
+                helpSource : 'upgrade_setup',
                 parentId : this.getId(),
                 title : this.i18n._('Upgrade Setup'),
                 layout : "form",

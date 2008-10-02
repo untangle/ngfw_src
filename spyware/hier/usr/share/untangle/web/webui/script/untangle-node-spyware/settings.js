@@ -25,6 +25,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildBlockLists : function() {
             this.panelBlockLists = new Ext.Panel({
                 name : 'Block Lists',
+                helpSource : 'block_lists',
                 winCookiesList : null,
                 winActiveXList : null,
                 winSubnetList : null,
@@ -483,6 +484,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
 
             this.gridPassList = new Ung.EditorGrid({
                 name : 'Pass List',
+                helpSource : 'pass_list',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().domainWhitelistLength,
                 emptyRow : {

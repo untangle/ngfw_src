@@ -829,7 +829,7 @@ Ung.Main.prototype = {
 					}
 				}
                 Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
-                    main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager"});
+                    main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
                     main.policyManagerWin.show();
                 });
 	       	} else {

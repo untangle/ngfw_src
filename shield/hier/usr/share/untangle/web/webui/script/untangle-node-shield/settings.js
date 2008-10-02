@@ -21,6 +21,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
             this.statusPanel = new Ext.Panel({
                 title : this.i18n._('Status'),
                 name : 'Status',
+                helpSource : 'status',
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -62,6 +63,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
             this.gridExceptions = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'Exceptions',
+                helpSource : 'exceptions',
                 // the total records is set from the base settings
                 // shieldNodeRulesLength field
                 totalRecords : this.getBaseSettings().shieldNodeRulesLength,

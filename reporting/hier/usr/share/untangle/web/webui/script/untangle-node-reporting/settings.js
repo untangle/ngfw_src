@@ -37,6 +37,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.panelStatus = new Ext.Panel({
                 title : this.i18n._('Status'),
                 name : 'Status',
+                helpSource : 'status',
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -163,6 +164,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.panelGeneration = new Ext.Panel({
                 // private fields
                 name : 'Generation',
+                helpSource : 'generation',
                 parentId : this.getId(),
                 title : this.i18n._('Generation'),
                 layout : "form",
@@ -411,8 +413,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         buildIpMap : function() {
             this.gridIpMap = new Ung.EditorGrid({
                 settingsCmp : this,
-                name : 'IP addresses',
-                title : this.i18n._("IP addresses"),
+                name : 'IP Addresses',
+                helpSource : 'ip_addresses',
+                title : this.i18n._("IP Addresses"),
                 emptyRow : {
                     "ipMaddr" : "0.0.0.0/32",
                     "name" : this.i18n._("[no name]"),

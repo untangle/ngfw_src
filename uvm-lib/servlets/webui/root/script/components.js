@@ -1932,6 +1932,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     enableColumnMove: false,
     // for internal use
     rpc : null,
+    helpSource : 'event_log',
     // called when the component is initialized
     initComponent : function() {
         this.rpc = {};

@@ -28,6 +28,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
 
             this.panelRules = new Ext.Panel({
                 name : 'panelRules',
+                helpSource : 'rules',
                 // private fields
                 gridRulesList : null,
                 parentId : this.getId(),

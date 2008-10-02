@@ -35,6 +35,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             
             this.gridUsers = new Ung.EditorGrid({
                 name : 'Local Directory',
+                helpSource : 'local_directory',
                 title : this.i18n._('Local Directory'),
                 settingsCmp : this,
                 height : 500,

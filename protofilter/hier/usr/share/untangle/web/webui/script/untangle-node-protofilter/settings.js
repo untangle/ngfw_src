@@ -33,6 +33,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
             this.gridProtocolList = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'Protocol List',
+                helpSource : 'protocol_list',
                 // the total records is set from the base settings
                 // patternsLength field
                 totalRecords : this.getBaseSettings().patternsLength,

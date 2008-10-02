@@ -20,6 +20,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildBlockLists : function() {
             this.panelBlockLists = new Ext.Panel({
                 name : 'Block Lists',
+                helpSource : 'block_lists',
                 // private fields
                 winBlacklistCategories : null,
                 winBlockedUrls : null,
@@ -596,6 +597,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.panelPassLists = new Ext.Panel({
                 // private fields
                 name : 'Pass Lists',
+                helpSource : 'pass_lists',
                 winPassedUrls : null,
                 winPassedClients : null,
                 parentId : this.getId(),

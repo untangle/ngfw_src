@@ -121,6 +121,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.panelSupport = new Ext.Panel({
                 // private fields
                 name : 'Support',
+                helpSource : 'support',
                 parentId : this.getId(),
                 title : this.i18n._('Support'),
                 layout : "form",
@@ -174,6 +175,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.panelBackup = new Ext.Panel({
                 // private fields
                 name : 'Backup',
+                helpSource : 'backup',
                 parentId : this.getId(),
                 title : this.i18n._('Backup'),
                 layout : "form",
@@ -297,6 +299,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.panelRestore = new Ext.Panel({
                 // private fields
                 name : 'Restore',
+                helpSource : 'restore',
                 parentId : this.getId(),
                 title : this.i18n._('Restore'),
                 layout : "form",
@@ -767,6 +770,7 @@ if (!Ung.hasResource["Ung.System"]) {
             
             this.panelProtocolSettings = new Ext.Panel({
                 name : 'Protocol Settings',
+                helpSource : 'protocol_settings',
                 // private fields
                 parentId : this.getId(),
 
@@ -797,6 +801,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.panelRegionalSettings = new Ext.Panel({
                 // private fields
                 name : 'Regional Settings',
+                helpSource : 'regional_settings',
                 parentId : this.getId(),
                 title : this.i18n._('Regional Settings'),
                 layout : "form",

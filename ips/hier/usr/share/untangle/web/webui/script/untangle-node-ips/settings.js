@@ -28,6 +28,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
         buildStatus : function() {
             this.panelStatus = new Ext.Panel({
                 name : 'Status',
+                helpSource : 'status',
                 parentId : this.getId(),
 
                 title : this.i18n._('Status'),
@@ -86,6 +87,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
             
             this.panelRules = new Ext.Panel({
                 name : 'panelRules',
+                helpSource : 'rules',
                 // private fields
                 parentId : this.getId(),
                 title : this.i18n._('Rules'),

@@ -20,6 +20,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildWeb : function() {
             this.panelWeb = new Ext.Panel({
                 name : 'Web',
+                helpSource : 'web',
                 // private fields
                 winExtensions : null,
                 winMimeTypes : null,
@@ -322,6 +323,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildFtp : function() {
             this.panelFtp = new Ext.Panel({
                 name : 'FTP',
+                helpSource : 'ftp',
                 // private fields
                 parentId : this.getId(),
 
@@ -400,6 +402,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         buildEmail : function() {
             this.panelEmail = new Ext.Panel({
                 name : 'Email',
+                helpSource : 'email',
                 // private fields
                 parentId : this.getId(),
 

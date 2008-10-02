@@ -49,6 +49,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
                 name : 'Email',
+                helpSource : 'email',
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -196,6 +197,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         buildWeb : function() {
             this.webPanel = new Ext.Panel({
                 title : this.i18n._('Web'),
+                helpSource : 'web',
                 layout : "form",
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -231,6 +233,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         buildWebEventLog : function() {
             this.gridWebEventLog = new Ung.GridEventLog({
                 name : 'Web Event Log',
+                helpSource : 'web_event_log',
                 settingsCmp : this,
                 title : this.i18n._("Web Event Log"),
                 eventManagerFn : this.getRpcNode().getPhishHttpEventManager(),
@@ -298,6 +301,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         buildEmailEventLog : function() {
             this.gridEmailEventLog = new Ung.GridEventLog({
                 name : 'Email Event Log',
+                helpSource : 'email_event_log',
                 settingsCmp : this,
                 title : this.i18n._("Email Event Log"),
                 // the list of fields

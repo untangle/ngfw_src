@@ -106,6 +106,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
             this.panelStatus = new Ext.Panel({
                 name : 'Status',
+                helpSource : 'status',
                 title : this.i18n._("Status"),
                 parentId : this.getId(),
 
@@ -730,6 +731,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.panelClients = new Ext.Panel({
                 // private fields
                 name : 'Clients',
+                helpSource : 'clients',
                 parentId : this.getId(),
                 title : this.i18n._('Clients'),
                 layout : "form",
@@ -759,6 +761,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var gridExports = new Ung.EditorGrid({
                 settingsCmp : this,
                 name : 'Exported Hosts and Networks',
+                helpSource : 'exported_hosts_and_network',
                 // the total records is set from the base settings
                 paginated : false,
                 height : inWizard?220:null,
@@ -975,6 +978,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.gridGroups = this.generateGridGroups();
             this.panelAdvanced = new Ext.Panel({
                 name : 'Advanced',
+                helpSource : 'advanced',
                 title : this.i18n._("Advanced"),
                 parentId : this.getId(),
 
