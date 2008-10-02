@@ -22,10 +22,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <linux/netfilter.h>
-
 #include <netinet/ip.h>
 #include <netinet/udp.h>
+
+#include <linux/netfilter.h>
 
 #include <libmvutil.h>
 #include <libvector.h>

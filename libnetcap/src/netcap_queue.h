@@ -18,6 +18,7 @@
 #ifndef __NETCAP_QUEUE_H
 #define __NETCAP_QUEUE_H
 
+#include <netinet/in.h>
 #include <linux/netfilter.h>
 #include "libnetcap.h"
 
