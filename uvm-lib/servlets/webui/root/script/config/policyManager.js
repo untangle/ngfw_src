@@ -53,6 +53,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             this.tabs.activate(this.panelPolicyManagement);
             Ung.PolicyManager.superclass.initComponent.call(this);
         },
+        
         getPolicyConfiguration : function(forceReload) {
             if (forceReload || this.rpc.policyConfiguration === undefined) {
                 this.rpc.policyConfiguration = rpc.policyManager.getPolicyConfiguration();
