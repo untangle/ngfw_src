@@ -1141,7 +1141,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         // save function
         saveAction : function() {
             if (this.validate()) {
-                this.saveSemaphore = 3;
+                this.saveSemaphore = this.isMailLoaded() ? 3 : 1;
                 Ext.MessageBox.show({
                    title : this.i18n._('Please wait'),
                    msg : this.i18n._('Saving...'),
@@ -1161,30 +1161,32 @@ if (!Ung.hasResource["Ung.Email"]) {
                     this.afterSave();
                 }.createDelegate(this), this.getMailSettings());
                 
-                // save mail node settings 
-                this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList()                
-                this.getMailNodeSettings().quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList()                
-                this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
-                     if (exception) {
-                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                         return;
+                if( this.isMailLoaded() ) {
+                    // save mail node settings 
+                    this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList()                
+                    this.getMailNodeSettings().quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList()                
+                    this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
+                         if (exception) {
+                             Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                             return;
+                        }
+                        this.afterSave();
+                    }.createDelegate(this), this.getMailNodeSettings());
+    
+                    // save global safelist
+                    var gridSafelistGlobalValues = this.gridSafelistGlobal.getFullSaveList();
+                    var globalList = [];
+                    for(var i=0; i<gridSafelistGlobalValues.length; i++) {
+                        globalList.push(gridSafelistGlobalValues[i].emailAddress);
                     }
-                    this.afterSave();
-                }.createDelegate(this), this.getMailNodeSettings());
-
-                // save global safelist
-                var gridSafelistGlobalValues = this.gridSafelistGlobal.getFullSaveList();
-                var globalList = [];
-	            for(var i=0; i<gridSafelistGlobalValues.length; i++) {
-	                globalList.push(gridSafelistGlobalValues[i].emailAddress);
-	            }
-                this.getSafelistAdminView().replaceSafelist(function(result, exception) {
-                     if (exception) {
-                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                         return;
-                    }
-                    this.afterSave();
-                }.createDelegate(this), 'GLOBAL', globalList);
+                    this.getSafelistAdminView().replaceSafelist(function(result, exception) {
+                         if (exception) {
+                             Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                             return;
+                        }
+                        this.afterSave();
+                    }.createDelegate(this), 'GLOBAL', globalList);
+                }
                 
             }
         },
