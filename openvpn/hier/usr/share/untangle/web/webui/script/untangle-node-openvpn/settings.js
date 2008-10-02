@@ -13,38 +13,26 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         gridGroups : null,
         panelAdvanced : null,
         gridEventLog : null,
-        // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.OpenVPN.superclass.onRender.call(this, container, position);
-            this.getRpcNode().getConfigState(function(result, exception) {
-                Ext.MessageBox.hide();
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
-                this.configState = result;
-
-                this.buildStatus();
-                var tabs = [this.panelStatus];
-                if (this.configState == "SERVER_ROUTE") {
-                    this.buildClients();
-                    this.buildExports();
-                    this.buildAdvanced();
-                    this.buildEventLog();
-                    tabs.push(this.panelClients);
-                    tabs.push(this.gridExports);
-                    tabs.push(this.panelAdvanced);
-                    tabs.push(this.gridEventLog);
-                } else if (this.configState == "CLIENT") {
-                    this.buildEventLog();
-                    tabs.push(this.gridEventLog);
-                }
-                this.buildTabPanel(tabs);
-
-            }.createDelegate(this))
+        initComponent : function(container, position) {
+            this.configState=this.getRpcNode().getConfigState();
+            this.buildStatus();
+            var tabs = [this.panelStatus];
+            if (this.configState == "SERVER_ROUTE") {
+                this.buildClients();
+                this.buildExports();
+                this.buildAdvanced();
+                this.buildEventLog();
+                tabs.push(this.panelClients);
+                tabs.push(this.gridExports);
+                tabs.push(this.panelAdvanced);
+                tabs.push(this.gridEventLog);
+            } else if (this.configState == "CLIENT") {
+                this.buildEventLog();
+                tabs.push(this.gridEventLog);
+            }
+            this.buildTabPanel(tabs);
+            Ung.OpenVPN.superclass.initComponent.call(this);
         },
-
         getVpnSettings : function(forceReload) {
             if (forceReload || this.rpc.vpnSettings === undefined) {
                 this.rpc.vpnSettings = this.getRpcNode().getVpnSettings();
@@ -303,15 +291,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             this.proceedAction();
                         }.createDelegate(this)
                     }];
-    		    	 Ung.ButtonsWindow.prototype.initComponent.call(this);
-    		    },
-                onRender : function(container, position) {
-                    Ung.ButtonsWindow.superclass.onRender.call(this, container, position);
-                    this.initSubComponents.defer(1, this);
-                },
-                initSubComponents : function(container, position) {
-                    this.formPanel = new Ext.FormPanel({
-                        renderTo : this.getContentEl(),
+                    this.items=new Ext.FormPanel({
                         labelWidth : 110,
                         buttonAlign : 'right',
                         border : false,
@@ -342,17 +322,17 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 listeners : {
                                     "check" : {
                                         fn : function(elem, checked) {
-                                        	var emailCmp=Ext.getCmp('openvpn_distributeWindow_email_address'+this.getId());
-                                        	
-                                        	this.distributeUsb=!checked;
-                                        	if(checked) {
+                                            var emailCmp=Ext.getCmp('openvpn_distributeWindow_email_address'+this.getId());
+                                            
+                                            this.distributeUsb=!checked;
+                                            if(checked) {
                                                 emailCmp.enable();
                                                 var emailVal=emailCmp.getValue();
                                                 this.record.data.distributionEmail=(emailVal!=null && emailVal.length>0)?emailVal:null;
-                                        	} else {
-                                        		emailCmp.disable();
-                                        		this.record.data.distributionEmail=null;
-                                        	}
+                                            } else {
+                                                emailCmp.disable();
+                                                this.record.data.distributionEmail=null;
+                                            }
                                         }.createDelegate(this)
                                     }
                                 }
@@ -382,8 +362,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             }]
                         }]
                     });
-                    this.subCmps.push(this.formPanel);
-                },
+    		    	Ung.ButtonsWindow.prototype.initComponent.call(this);
+    		    },
                 populate : function(record) {
                     this.record = record;
                 },                

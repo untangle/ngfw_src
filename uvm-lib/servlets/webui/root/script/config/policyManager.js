@@ -47,22 +47,11 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }.createDelegate(this)
                 }];
             }
-            Ung.PolicyManager.superclass.initComponent.call(this);
-        },
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.PolicyManager.superclass.onRender.call(this, container, position);
-            this.initSubCmps.defer(1, this);
-            // builds the tabs
-        },
-        initSubCmps : function() {
-        	if(this.getContentEl()==null) {
-        		return;
-        	}
             this.buildPolicyManagement();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelPolicyManagement]);
             this.tabs.activate(this.panelPolicyManagement);
+            Ung.PolicyManager.superclass.initComponent.call(this);
         },
         getPolicyConfiguration : function(forceReload) {
             if (forceReload || this.rpc.policyConfiguration === undefined) {
@@ -87,6 +76,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             this.buildPolicies();
             this.panelPolicyManagement = new Ext.Panel({
                 // private fields
+            	anchor: "100% 100%",
                 name : 'Policy Management',
                 parentId : this.getId(),
                 title : this.i18n._('Policy Management'),

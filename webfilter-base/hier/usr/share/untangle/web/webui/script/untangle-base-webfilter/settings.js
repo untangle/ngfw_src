@@ -6,15 +6,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         gridExceptions : null,
         gridEventLog : null,
         // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.BaseWebFilter.superclass.onRender.call(this, container, position);
-            // builds the 3 tabs
+        initComponent : function() {
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelBlockLists, this.panelPassLists, this.gridEventLog]);
+            Ung.BaseWebFilter.superclass.initComponent.call(this);
         },
         // Block Lists Panel
         buildBlockLists : function() {

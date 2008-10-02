@@ -16,16 +16,6 @@ if (!Ung.hasResource["Ung.System"]) {
             }, {
                 title : i18n._('System')
             }];
-            Ung.System.superclass.initComponent.call(this);
-        },
-
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.System.superclass.onRender.call(this, container, position);
-            this.initSubCmps.defer(1, this);
-            // builds the 5 tabs
-        },
-        initSubCmps : function() {
             this.buildSupport();
             this.buildBackup();
             this.buildRestore();
@@ -38,8 +28,9 @@ if (!Ung.hasResource["Ung.System"]) {
             if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ){
                 this.panelProtocolSettings.disable();
             }
-
+            Ung.System.superclass.initComponent.call(this);
         },
+
         // get languange settings object
         getLanguageSettings : function(forceReload) {
             if (forceReload || this.rpc.languageSettings === undefined) {

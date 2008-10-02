@@ -7,10 +7,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         panelGeneration : null,
         gridRecipients : null,
         gridIpMap : null,
-        // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Reporting.superclass.onRender.call(this, container, position);
+        initComponent : function(container, position) {
             // builds the 3 tabs
             this.buildStatus();
             this.buildGeneration();
@@ -18,6 +15,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelStatus, this.panelGeneration, this.gridIpMap]);
             this.tabs.activate(this.panelStatus);
+            Ung.Reporting.superclass.initComponent.call(this);
         },
         getReportingSettings : function(forceReload) {
             if (forceReload || this.rpc.reportingSettings === undefined) {

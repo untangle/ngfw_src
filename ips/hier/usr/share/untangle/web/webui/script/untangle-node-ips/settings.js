@@ -7,15 +7,13 @@ if (!Ung.hasResource["Ung.Ips"]) {
         gridVariables : null,
         gridEventLog : null,
         // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Ips.superclass.onRender.call(this, container, position);
-            // builds the 3 tabs
+        initComponent : function() {
             this.buildStatus();
             this.buildRules();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
+            Ung.Virus.superclass.initComponent.call(this);
         },
         // get branding settings
         getBrandingBaseSettings : function(forceReload) {

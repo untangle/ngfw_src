@@ -23,20 +23,10 @@ if (!Ung.hasResource["Ung.Email"]) {
             }, {
                 title : i18n._('Email')
             }];
-            Ung.Email.superclass.initComponent.call(this);
-        },
-
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Email.superclass.onRender.call(this, container, position);
-            this.initSubCmps.defer(1, this);
-            // builds the 5 tabs
-        },
-        initSubCmps : function() {
             this.buildOutgoingServer();
             if( this.isMailLoaded() ) {
-	            this.buildFromSafeList();
-	            this.buildQuarantine();
+                this.buildFromSafeList();
+                this.buildQuarantine();
             }
             // builds the tab panel with the tabs
             var pageTabs = [this.panelOutgoingServer];
@@ -46,7 +36,15 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
             this.buildTabPanel(pageTabs);
             this.tabs.activate(this.panelOutgoingServer);
-            
+            Ung.Email.superclass.initComponent.call(this);
+        },
+
+        onRender : function(container, position) {
+            // call superclass renderer first
+            Ung.Email.superclass.onRender.call(this, container, position);
+            this.initSubCmps.defer(1, this);
+        },
+        initSubCmps : function() {
             var useSmtp = Ext.getCmp('email_smtpEnabled').getValue();
             if(useSmtp == false) {
                 Ext.getCmp('email_smtpHost').disable();
@@ -64,7 +62,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
             
             var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
-            var useAuthentication = smtpLoginCmp != null && smtpLoginCmp.getValue().length > 0;
+            var useAuthentication = smtpLoginCmp != null && smtpLoginCmp.getValue()!=null && smtpLoginCmp.getValue().length > 0;
             Ext.getCmp('email_smtpUseAuthentication').setValue(useAuthentication);
             Ext.getCmp('email_smtpLogin').setContainerVisible(useAuthentication);
             Ext.getCmp('email_smtpPassword').setContainerVisible(useAuthentication);
@@ -317,27 +315,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                     	html : String.format(this.i18n._("The {0} Server will send email from this address."),
                                     this.getBrandingBaseSettings().companyName)
                     }, {
-                        border: false,
-                        layout:'column',
-                        items: [{
-                            border: false,
-                            width: 50,
-                            html : '&nbsp;'
-                        },{
-                            border: false,
-                            columnWidth:1,
-                            layout: 'form',
-                            items: [{
-                                xtype : 'textfield',
-                                name : 'Email From Address',
-                                id : 'email_fromAddress',
-                                vtype : 'email',
-                                hideLabel : true,
-                                allowBlank : false,
-                                width : 200,
-                                value : this.getMailSettings().fromAddress
-                            }]
-                        }]
+                        xtype : 'textfield',
+                        name : 'Email From Address',
+                        id : 'email_fromAddress',
+                        vtype : 'email',
+                        hideLabel : true,
+                        allowBlank : false,
+                        width : 200,
+                        value : this.getMailSettings().fromAddress
                     }]
                 }, {
                     title : this.i18n._('Email Test'),
@@ -522,6 +507,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         buildGridSafelistUserDetails : function() {
             var smUserSafelistDetails = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
             this.gridSafelistUserDetails = new Ung.EditorGrid({
+            	anchor: "100% 100%",
                 name : 'gridSafelistUserDetails',
                 sm : smUserSafelistDetails,
                 hasEdit : false,
@@ -924,6 +910,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         buildUserQuarantinesGrid : function() {
             var smUserQuarantinesDetails = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
             this.userQuarantinesDetailsGrid = new Ung.EditorGrid({
+            	anchor: "100% 100%",
                 name : 'userQuarantinesDetailsGrid',
                 sm : smUserQuarantinesDetails,
                 hasEdit : false,
@@ -1232,23 +1219,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                     this.settingsCmp.helpAction();
                 }.createDelegate(this)
             }];
+            this.items=this.detailsPanel;
             Ung.EmailAddressDetails.superclass.initComponent.call(this);
-        },
-        
-        onRender : function(container, position) {
-            Ung.EmailAddressDetails.superclass.onRender.call(this, container, position);
-            this.initSubComponents.defer(1, this);
-        },
-        initSubComponents : function(container, position) {
-            this.detailsPanel.render(this.getContentEl());
-        },
-        listeners : {
-            'show' : {
-                fn : function() {
-                    this.detailsPanel.setHeight(this.getContentHeight());
-                },
-                delay : 1
-            }
         },
         // to override
         showForCurrentAccount : function(emailAddress) {
@@ -1259,10 +1231,6 @@ if (!Ung.hasResource["Ung.Email"]) {
         // to override
         proceedAction : function() {
             main.todo();
-        },
-        beforeDestroy : function() {
-            Ext.destroy(this.detailsPanel);
-            Ung.ButtonsWindow.superclass.beforeDestroy.call(this);
         }
     });
 }

@@ -14,15 +14,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }, {
                 title : i18n._('System Info')
             }];
-            Ung.SystemInfo.superclass.initComponent.call(this);
-        },
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.SystemInfo.superclass.onRender.call(this, container, position);
-            this.initSubCmps.defer(1, this);
-            // builds the 2 tabs
-        },
-        initSubCmps : function() {
             this.buildVersion();
             this.buildRegistration();
             if (this.hasPremiumLicense()) {
@@ -35,6 +26,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }
             this.buildTabPanel(pageTabs);
             this.tabs.activate(this.panelVersion);
+            Ung.SystemInfo.superclass.initComponent.call(this);
         },
         getSystemInfo : function(forceReload) {
             if (forceReload || this.rpc.systemInfo === undefined) {

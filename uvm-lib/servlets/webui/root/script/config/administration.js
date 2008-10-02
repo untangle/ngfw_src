@@ -16,16 +16,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }, {
                 title : i18n._('Administration')
             }];
-            Ung.Administration.superclass.initComponent.call(this);
-        },
-
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Administration.superclass.onRender.call(this, container, position);
-            this.initSubCmps.defer(1, this);
-            // builds the tabs
-        },
-        initSubCmps : function() {
             this.buildAdministration();
             this.buildPublicAddress();
             this.buildCertificates();
@@ -42,7 +32,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             this.buildTabPanel(adminTabs);
             this.tabs.activate(this.panelAdministration);
-
+            Ung.Administration.superclass.initComponent.call(this);
         },
         // get base settings object
         getSkinSettings : function(forceReload) {
@@ -759,7 +749,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }, {
                                 title : settingsCmp.i18n._("Generate a Self-Signed Certificate")
                             }],
-                            certPanel : settingsCmp.panelGenerateSelfSignedCertificate,
+                            items : settingsCmp.panelGenerateSelfSignedCertificate,
                             
                             proceedAction : function() {
                                 Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
@@ -842,7 +832,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }, {
                                 title : settingsCmp.i18n._("Generate a Certificate Signature Request")
                             }],
-                            certPanel : settingsCmp.panelGenerateCertGenTrusted,
+                            items : settingsCmp.panelGenerateCertGenTrusted,
                             
                             proceedAction : function() {
                                 Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
@@ -898,7 +888,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }, {
                                 title : settingsCmp.i18n._("Import Signed Certificate")
                             }],
-                            certPanel : settingsCmp.panelCertImportTrusted,
+                            items : settingsCmp.panelCertImportTrusted,
                             
                             proceedAction : function() {
                                 Ext.MessageBox.wait(this.i18n._("Importing Certificate..."), i18n._("Please wait"));
@@ -954,7 +944,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 name : 'panelGenerateSelfSignedCertificate',
                 // private fields
                 parentId : this.getId(),
-
+                anchor: "100% 100%",
                 title : this.i18n._('Generate a Self-Signed Certificate'),
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -1020,7 +1010,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 name : 'panelGenerateCertGenTrusted',
                 // private fields
                 parentId : this.getId(),
-
+                anchor: "100% 100%",
                 title : this.i18n._('Generate a Certificate Signature Request'),
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -1050,7 +1040,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 name : 'panelCertImportTrusted',
                 // private fields
                 parentId : this.getId(),
-
+                anchor: "100% 100%",
                 title : this.i18n._('Import Signed Certificate'),
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -2110,10 +2100,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
     
     // certificate generation window
     Ung.CertGenerateWindow = Ext.extend(Ung.ButtonsWindow, {
-        // the certPanel
-        certPanel : null,
         initComponent : function() {
-        	var settingsCmp = Ext.getCmp(this.certPanel.parentId);
+        	var settingsCmp = Ext.getCmp(this.items.parentId);
             this.bbar= ['->',{
                 name : 'Cancel',
                 iconCls : 'cancelIcon',
@@ -2129,31 +2117,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.proceedAction();
                 }.createDelegate(this)
             }];
-             Ung.ButtonsWindow.prototype.initComponent.call(this);
-        },
-        onRender : function(container, position) {
-            Ung.CertGenerateWindow.superclass.onRender.call(this, container, position);
-            this.initSubComponents.defer(1, this);
-        },
-        initSubComponents : function(container, position) {
-            this.certPanel.render(this.getContentEl());
-        },
-        listeners : {
-            'show' : {
-                fn : function() {
-                    this.certPanel.setHeight(this.getContentHeight());
-                },
-                delay : 1
-            }
+            Ung.ButtonsWindow.prototype.initComponent.call(this);
         },
         // the proceed actions
         // to override
         proceedAction : function() {
             main.todo();
-        },
-        beforeDestroy : function() {
-            Ext.destroy(this.certPanel);
-            Ung.ManageListWindow.superclass.beforeDestroy.call(this);
         }
     });
     

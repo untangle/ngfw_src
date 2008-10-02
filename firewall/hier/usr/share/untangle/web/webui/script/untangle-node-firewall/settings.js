@@ -5,15 +5,13 @@ if (!Ung.hasResource["Ung.Firewall"]) {
     Ung.Firewall = Ext.extend(Ung.Settings, {
         gridRules : null,
         gridEventLog : null,
-        // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Firewall.superclass.onRender.call(this, container, position);
+        initComponent : function() {
             // builds the tabs
             this.buildRules();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelRules, this.gridEventLog]);
+            Ung.Firewall.superclass.initComponent.call(this);
         },
         // Rules Panel
         buildRules : function() {

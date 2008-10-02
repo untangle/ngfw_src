@@ -62,6 +62,20 @@ Ext.override(Ext.TabPanel, {
     }
 });
 Ung.Util= {
+	encode : function (obj) {
+        if(obj == null || typeof(obj) != 'object') {
+            return obj;
+        }
+        var msg="";
+        var val=null;
+        for(var key in obj) {
+            val=obj[key]
+            if(val!=null) {
+              msg+=" | "+key+" - "+val;
+            }
+        }
+        return msg;
+	},
     // Load css file Dynamically
     loadCss: function(filename) {
         var fileref=document.createElement("link");
@@ -267,7 +281,8 @@ Ung.Util= {
             "javaClass" : "java.util.ArrayList"
         }];
     },
-    // If the grid is not rendered it sets the new store data; otherwise it loads the now store data
+    // If the grid is not rendered it sets the new store data; otherwise it
+    // loads the now store data
     loadGridStoreData : function(grid, storeData) {
         if (grid.rendered) {
             grid.store.loadData(storeData);
@@ -375,7 +390,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         } else {
            Ext.MessageBox.alert(i18n._("Apps Error"), i18n._("Error in Rack View applications list."));
            this.isValid=false;
-           //error
+           // error
         }
         this.id = "appItem_" + name;
         Ung.AppItem.superclass.constructor.apply(this, arguments);
@@ -429,17 +444,17 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.actionEl = Ext.get("action_" + this.getId());
         this.progressBar.hide();
         this.subCmps.push(this.progressBar);
-        if(this.libItem!=null && this.node==null) { //libitem
+        if(this.libItem!=null && this.node==null) { // libitem
             this.getEl().on("click", this.linkToStoreFn, this);
-            //this.actionEl.on("click", this.linkToStoreFn, this);
+            // this.actionEl.on("click", this.linkToStoreFn, this);
             this.actionEl.insertHtml("afterBegin", i18n._("More Info"));
             this.actionEl.addClass("iconInfo");
-        } else if(this.node!=null) { //node
+        } else if(this.node!=null) { // node
             this.getEl().on("click", this.installNodeFn, this);
-            //this.actionEl.on("click", this.installNodeFn, this);
+            // this.actionEl.on("click", this.installNodeFn, this);
             this.actionEl.insertHtml("afterBegin", this.libItem==null?i18n._("Install"):i18n._("Trial Install"));
             this.actionEl.addClass("iconArrowRight");
-            if(this.libItem!=null) { //libitem and trial node
+            if(this.libItem!=null) { // libitem and trial node
                 this.buttonBuy.setVisible(true);
                 this.buttonBuy.insertHtml("afterBegin", i18n._("Buy"));
                 this.buttonBuy.on("click", this.linkToStoreFn, this);
@@ -448,7 +463,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             }
         } else {
             return;
-            //error
+            // error
         }
     },
     // get the node name associated with the App
@@ -743,7 +758,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     beforeDestroy : function() {
         Ext.each(this.subCmps, Ext.destroy);
         Ext.get('nodePower_' + this.getId()).removeAllListeners();
-        Ext.destroy(this.settingsWin, this.settings);
+        Ext.destroy(this.settingsWin);
         Ung.Node.superclass.beforeDestroy.call(this);
     },
     onRender : function(container, position) {
@@ -902,13 +917,6 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     // on click settings
     onSettingsAction : function(handler) {
-        if (!this.settingsWin) {
-            this.settingsWin = new Ung.NodeSettingsWin({
-                nodeCmp : this
-            });
-        }
-        this.settingsWin.show();
-        Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
         this.loadSettings(handler);
     },
     getNodeContext: function(handler) {
@@ -972,10 +980,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
     },
     loadSettings : function(handler) {
-        if (this.settings) {
-            this.settings.destroy();
-            this.settings = null;
-        }
+    	Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
         this.settingsClassName = Ung.Settings.getClassName(this.name);
         if (!this.settingsClassName) {
             // Dynamically load node javaScript
@@ -989,9 +994,9 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     // init settings
     initSettings : function(handler) {
-    	this.loadNodeContext.createDelegate(this,[this.loadSettingsTranslations.createDelegate(this,[this.renderSettings.createDelegate(this,[handler])])]).call(this);
+    	this.loadNodeContext.createDelegate(this,[this.initSettingsTranslations.createDelegate(this,[this.openSettings.createDelegate(this,[handler])])]).call(this);
     },
-    loadSettingsTranslations : function(handler) {
+    initSettingsTranslations : function(handler) {
         if(Ung.Settings.dependency[this.name]) {
             var dependencyName=Ung.Settings.dependency[this.name].name;
             Ung.Util.loadModuleTranslations.call(this, dependencyName, null, function(nodeName,dependencyName) {
@@ -1001,15 +1006,24 @@ Ung.Node = Ext.extend(Ext.Component, {
         	Ung.Util.loadModuleTranslations.call(this, this.name, null, handler);
         }
     },
-    // render settings component
-    renderSettings : function() {
-        var settingsContentEl = this.settingsWin.getContentEl();
+    // open settings window
+    openSettings : function() {
+    	var items=null;
         if (this.settingsClassName !== null) {
             eval('this.settings=new ' + this.settingsClassName + '({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
-            this.settings.render(settingsContentEl);
+            items=this.settings;
         } else {
-            settingsContentEl.innerHTML = "Error: There is no settings class for the node '" + this.name + "'.";
+            items =[{
+            	anchor: '100% 100%',
+            	bodyStyle : "padding: 15px 5px 5px 15px;",
+                html: String.format(i18n._("Error: There is no settings class for the node '{0}'."),this.name)
+            }];
         }
+        this.settingsWin = new Ung.NodeSettingsWin({
+            nodeCmp : this,
+            items: items
+        });
+        this.settingsWin.show();
         Ext.MessageBox.hide();
     },
 
@@ -1122,7 +1136,7 @@ Ung.MessageManager = {
     upgradeUpdateTime:1000,
     upgradeSummary: null, 
     upgradesComplete: 0,
-    messageHistory:[], //for debug info
+    messageHistory:[], // for debug info
     start : function(now) {
         this.stop();
         if(now) {
@@ -1162,7 +1176,9 @@ Ung.MessageManager = {
                var messageQueue=result;
                if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
                    var hasNodeInstantiated=false;
-                   Ung.MessageManager.messageHistory.push(messageQueue.messages.list); //for debug info
+                   Ung.MessageManager.messageHistory.push(messageQueue.messages.list); // for
+                                                                                        // debug
+                                                                                        // info
                    for(var i=0;i<messageQueue.messages.list.length;i++) {
                        var msg=messageQueue.messages.list[i];
                         if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
@@ -1261,9 +1277,9 @@ Ung.MessageManager = {
                     }
                 }
                 if(!Ung.MessageManager.upgradeMode) {
-                    //update system stats
+                    // update system stats
                     main.systemStats.update(messageQueue.systemStats)
-                    //upgrade nodes blingers
+                    // upgrade nodes blingers
                     for (var i = 0; i < main.nodes.length; i++) {
                         var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
                         if (nodeCmp && nodeCmp.isRunning()) {
@@ -1300,18 +1316,35 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         ];
         this.getEl().insertHtml("afterBegin", contentSystemStatsArr.join(''));
 
-        //network tooltip
+        // network tooltip
         var networkArr=[
             '<div class="title">'+i18n._("RX Speed:")+'</div>',
             '<div class="values"><span name="rx_speed"></span> KB/sec</div>',
             '<div class="title">'+i18n._("TX Speed:")+'</div>',
-            '<div class="values"><span name="tx_speed"></span> KB/sec</div>'/*,
-            '<div class="title">'+i18n._("Data received (since last start):")+'</div>',
-            '<div class="values"><span name="data_received"></span> MBs</div>',
-            '<div class="title">'+i18n._("Data sent (since last start):")+'</div>',
-            '<div class="values"><span name="data_sent"></span> MBs</div>',
-            '<div class="title">'+i18n._("Total Throughput:")+'</div>',
-            '<div class="values"><span name="total_throughput"></span> MBs</div>'*/
+            '<div class="values"><span name="tx_speed"></span> KB/sec</div>'/*
+                                                                             * , '<div
+                                                                             * class="title">'+i18n._("Data
+                                                                             * received
+                                                                             * (since
+                                                                             * last
+                                                                             * start):")+'</div>', '<div
+                                                                             * class="values"><span
+                                                                             * name="data_received"></span>
+                                                                             * MBs</div>', '<div
+                                                                             * class="title">'+i18n._("Data
+                                                                             * sent
+                                                                             * (since
+                                                                             * last
+                                                                             * start):")+'</div>', '<div
+                                                                             * class="values"><span
+                                                                             * name="data_sent"></span>
+                                                                             * MBs</div>', '<div
+                                                                             * class="title">'+i18n._("Total
+                                                                             * Throughput:")+'</div>', '<div
+                                                                             * class="values"><span
+                                                                             * name="total_throughput"></span>
+                                                                             * MBs</div>'
+                                                                             */
         ];
         this.networkToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=network]"),
@@ -1326,17 +1359,17 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         });
         this.networkToolTip.render(Ext.getBody());
 
-        //cpu tooltip
+        // cpu tooltip
         var cpuArr=[
             '<div class="title">'+i18n._("Number of Processors / Type / Speed:")+'</div>',
             '<div class="values"><span name="num_cpus"></span>, <span name="cpu_model"></span>, <span name="cpu_speed"></span></div>',
             '<div class="title">'+i18n._("Uptime:")+'</div>',
             '<div class="values"><span name="uptime"></span> sec</div>',
             '<div class="title">'+i18n._("Tasks (Processes)")+
-            //"/"+i18n._("Threads")+
+            // "/"+i18n._("Threads")+
             '</div>',
             '<div class="values"><span name="tasks"></span>'+
-            //', <span name="threads"></span>'+
+            // ', <span name="threads"></span>'+
             '</div>',
             '<div class="title">'+i18n._("CPU Utilization by User:")+'</div>',
             '<div class="values"><span name="cpu_utilization_user"></span>  %</div>',
@@ -1358,7 +1391,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         });
         this.cpuToolTip.render(Ext.getBody());
 
-        //memory tooltip
+        // memory tooltip
         var memoryArr=[
 
             '<div class="title">'+i18n._("Total Memory:")+'</div>',
@@ -1390,7 +1423,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         });
         this.memoryToolTip.render(Ext.getBody());
 
-        //disk tooltip
+        // disk tooltip
         var diskArr=[
             '<div class="title">'+i18n._("Total Disk Space:")+'</div>',
             '<div class="values"><span name="total_disk_space"></span> GBs</div>',
@@ -1432,10 +1465,10 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=tx_speed]").dom.innerHTML=txSpeed;
             toolTipEl.child("span[name=rx_speed]").dom.innerHTML=rxSpeed;
             /*
-            toolTipEl.child("span[name=data_received]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=data_sent]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=total_throughput]").dom.innerHTML="TODO";
-            */
+             * toolTipEl.child("span[name=data_received]").dom.innerHTML="TODO";
+             * toolTipEl.child("span[name=data_sent]").dom.innerHTML="TODO";
+             * toolTipEl.child("span[name=total_throughput]").dom.innerHTML="TODO";
+             */
         }
         if(this.cpuToolTip.rendered) {
             var toolTipEl=this.cpuToolTip.getEl();
@@ -1444,7 +1477,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=cpu_speed]").dom.innerHTML=stats.map.cpuSpeed;
             toolTipEl.child("span[name=uptime]").dom.innerHTML=Math.round(stats.map.uptime);
             toolTipEl.child("span[name=tasks]").dom.innerHTML=stats.map.numProcs;
-            //toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
+            // toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=cpu_utilization_user]").dom.innerHTML=Math.round(stats.map.userCpuUtilization*100.0/stats.map.numCpus);
             toolTipEl.child("span[name=cpu_utilization_system]").dom.innerHTML=Math.round(stats.map.systemCpuUtilization*100.0/stats.map.numCpus);
             toolTipEl.child("span[name=load_average_1_min]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
@@ -1661,12 +1694,12 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
                                 }
                                 if(checked) {
                                     if(itemIndex==-1) {
-                                        //add element
+                                        // add element
                                         this.tempMetrics.push(elem.dataIndex);
                                     }
                                 } else {
                                     if(itemIndex!=-1) {
-                                        //remove element
+                                        // remove element
                                         this.tempMetrics.splice(itemIndex,1);
                                     }
                                 }
@@ -1786,7 +1819,9 @@ Ung.SystemBlinger.template = new Ext.Template('<div class="blingerName">{blinger
 Ext.ComponentMgr.registerType('ungSystemBlinger', Ung.SystemBlinger);
 
 // Setting base class
-Ung.Settings = Ext.extend(Ext.Component, {
+Ung.Settings = Ext.extend(Ext.Panel, {
+	layout : 'anchor',
+	anchor: '100% 100%',
     // node i18n
     i18n : null,
     // node object
@@ -1796,41 +1831,33 @@ Ung.Settings = Ext.extend(Ext.Component, {
     // holds the json rpc results for the settings class like baseSettings
     // object, repository, repositoryDesc
     rpc : null,
-    autoEl : 'div',
     constructor : function(config) {
         var nodeName=config.node.name;
-        this.id = "settings_" + nodeName + "_" + rpc.currentPolicy;
-        Ung.Settings.superclass.constructor.apply(this, arguments);
-    },
-    // called when the component is initialized
-    initComponent : function(container, position) {
-        this.rpc = {};
+        this.id = "settings_" + nodeName + "_" + rpc.currentPolicy.id;
+        config.rpc = {};
         // initializes the node i18n instance
-        this.i18n = Ung.i18nModuleInstances[this.name];
-        Ung.Settings.superclass.initComponent.call(this);
+        config.i18n = Ung.i18nModuleInstances[nodeName];
+        Ung.Settings.superclass.constructor.apply(this, arguments);
     },
     // build Tab panel from an array of tab items
     buildTabPanel : function(itemsArray) {
         this.tabs = new Ext.TabPanel({
-            renderTo : this.getEl().id,
+        	anchor: '100% 100%',
             autoWidth : true,
+            defaults: {
+            	anchor: '100% 100%',
+            	autoWidth : true,
+                autoScroll: true
+            },
+
             height : 400,
             activeTab : 0,
             frame : true,
             parentId : this.getId(),
             items : itemsArray,
-            layoutOnTabChange : true,
-            listeners : {
-                "render" : {
-                    fn : function() {
-                        this.addNamesToPanels();
-                        var settingsCmp = Ext.getCmp(this.parentId);
-                        var objSize = settingsCmp.node.settingsWin.items.get(0).getEl().getSize(true);
-                        this.setSize(objSize);
-                    }
-                }
-            }
+            layoutOnTabChange : true
         });
+        this.items=this.tabs;
     },
     // get nodeContext.rpcNode object
     getRpcNode : function() {
@@ -1856,10 +1883,6 @@ Ung.Settings = Ext.extend(Ext.Component, {
             this.node.nodeContext.rpcNode.eventManager = this.node.nodeContext.rpcNode.getEventManager();
         }
         return this.node.nodeContext.rpcNode.eventManager;
-    },
-    beforeDestroy : function() {
-        Ext.destroy(this.tabs);
-        Ung.Settings.superclass.beforeDestroy.call(this);
     },
     cancelAction : function() {
         this.node.settingsWin.cancelAction()
@@ -2115,10 +2138,10 @@ Ung.Window = Ext.extend(Ext.Window, {
     },
     // on show position and size
     show : function() {
-        Ung.Window.superclass.show.call(this);
         if (this.sizeToRack) {
             this.setSizeToRack();
         }
+        Ung.Window.superclass.show.call(this);
     },
     setSizeToRack: function () {
         var objSize = main.viewport.getSize();
@@ -2133,34 +2156,13 @@ Ung.Window = Ext.extend(Ext.Window, {
 // Buttons Window
 // has the content and 3 standard buttons one in the left and 2 in the right
 Ung.ButtonsWindow = Ext.extend(Ung.Window, {
-    layout : 'border',
-    // content html
-    contentHtml : null,
-    // buttons html
-    buttonsHtml : null,
+    layout : 'anchor',
+    defaults: {
+    	anchor: '100% 100%',
+    	autoScroll: true,
+    	autoWidth : true
+    },
     closeAction : 'cancelAction',
-    // get the content element
-    getContentEl : function() {
-        return document.getElementById("window_content_" + this.getId());
-    },
-    // get the content element height
-    getContentHeight : function() {
-        return this.items.get(0).getEl().getHeight(true);
-    },
-    initComponent : function() {
-        if (!this.contentHtml) {
-            this.contentHtml = "";
-        }
-        this.items = [{
-            region : "center",
-            html : '<div class="windowContent" id="window_content_' + this.getId() + '">' + this.contentHtml + '</div>',
-            border : false,
-            autoScroll : true,
-            cls : 'windowBackground'
-            //bodyStyle : 'background-color: transparent;'
-        }];
-        Ung.ButtonsWindow.superclass.initComponent.call(this);
-    },
     // the cancel action
     // to override
     cancelAction : function() {
@@ -2179,15 +2181,6 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             }.createDelegate(this)
         }, {
             title : this.nodeCmp.md.displayName
-        }];
-        this.items = [{
-            region : "center",
-            html : '<div class="windowContent" id="window_content_' + this.getId() + '">' + this.contentHtml + '</div>',
-            border : false,
-            autoScroll : true,
-            cls : 'windowBackground'
-            //bodyStyle : 'background-color: transparent;'
-            
         }];
         if(this.bbar==null) {
             this.bbar=[{
@@ -2241,9 +2234,8 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
         this.nodeCmp.removeAction();
     },
     cancelAction : function() {
-        Ext.destroy(this.nodeCmp.settings);
-        this.nodeCmp.settings = null;
         this.hide();
+        Ext.destroy(this);
     },
     saveAction : function() {
         if (this.nodeCmp.settings) {
@@ -2302,29 +2294,15 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     // build Tab panel from an array of tab items
     buildTabPanel : function(itemsArray) {
         this.tabs = new Ext.TabPanel({
-            renderTo : this.getContentEl().id,
             autoWidth : true,
             height : 400,
             activeTab : 0,
             frame : true,
             parentId : this.getId(),
             items : itemsArray,
-            layoutOnTabChange : true,
-            listeners : {
-                "render" : {
-                    fn : function() {
-                        this.addNamesToPanels();
-                        var winCmp = Ext.getCmp(this.parentId);
-                        var objSize = winCmp.items.get(0).getEl().getSize(true);
-                        this.setSize(objSize);
-                    }
-                }
-            }
+            layoutOnTabChange : true
         });
-    },
-    beforeDestroy : function() {
-        Ext.destroy(this.tabs);
-        Ung.Settings.superclass.beforeDestroy.call(this);
+        this.items=this.tabs;
     },
     helpAction : function() {
     	var helpSource=this.helpSource;
@@ -2336,7 +2314,6 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     	}
         main.openHelp(helpSource);
     },
-    // to override
     cancelAction : function() {
         this.hide();
         Ext.destroy(this);
@@ -2390,21 +2367,9 @@ Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
 Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
     // the editor grid
     grid : null,
-    onRender : function(container, position) {
-        Ung.ManageListWindow.superclass.onRender.call(this, container, position);
-        this.initSubComponents.defer(1, this);
-    },
-    initSubComponents : function(container, position) {
-        this.grid.render(this.getContentEl());
-    },
-    listeners : {
-        'show' : {
-            fn : function() {
-                this.initialChangedData = Ext.encode(this.grid.changedData);
-                this.grid.setHeight(this.getContentHeight());
-            },
-            delay : 1
-        }
+    initComponent : function() {
+    	this.items=this.grid;
+        Ung.ManageListWindow.superclass.initComponent.call(this);
     },
     cancelAction : function() {
         this.grid.changedData = Ext.decode(this.initialChangedData);
@@ -2414,11 +2379,13 @@ Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
     updateAction : function() {
         this.hide();
     },
-    beforeDestroy : function() {
-        Ext.destroy(this.grid);
-        Ung.ManageListWindow.superclass.beforeDestroy.call(this);
+    listeners : {
+        'show' : {
+            fn : function() {
+                this.initialChangedData = Ext.encode(this.grid.changedData);
+            }
+        }
     }
-
 });
 
 // Row editor window used by editor grid
@@ -2436,7 +2403,6 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     sizeToRack : false,
     // size to grid on show
     sizeToGrid : false,
-    formPanel : null,
     addMode: null,
     initComponent : function() {
         if (!this.height && !this.width) {
@@ -2448,16 +2414,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.rowEditorLabelWidth == null) {
             this.rowEditorLabelWidth = 100;
         }
-        Ung.RowEditorWindow.superclass.initComponent.call(this);
-    },
-    onRender : function(container, position) {
-        Ung.RowEditorWindow.superclass.onRender.call(this, container, position);
-        this.initSubComponents.defer(1, this);
-    },
-    initSubComponents : function(container, position) {
-        this.formPanel = new Ext.FormPanel({
-//            id : 'editor-form',
-            renderTo : this.getContentEl(),
+        this.items = new Ext.FormPanel({
+            anchor: "100% 100%",
             labelWidth : this.rowEditorLabelWidth,
             buttonAlign : 'right',
             border : false,
@@ -2469,9 +2427,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             },
             items : this.inputLines
         });
-        this.subCmps.push(this.formPanel);
-        this.inputLines=this.formPanel.items.getRange();
-
+        // this.inputLines=this.items.items.getRange();
+        Ung.RowEditorWindow.superclass.initComponent.call(this);
     },
     show : function() {
         Ung.UpdateWindow.superclass.show.call(this);
@@ -2480,9 +2437,6 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.sizeToGrid) {
             var objSize = this.grid.getSize();
             this.setSize(objSize);
-        }
-        if (this.formPanel) {
-            this.formPanel.setHeight(this.getContentHeight() - 10);
         }
     },
     // populate is called whent a record is edited, tot populate the edit window
@@ -2875,10 +2829,10 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     subCmps:null,
     constructor : function(config) {
         this.subCmps=[];
+        this.changedData = {};
         Ung.EditorGrid.superclass.constructor.apply(this, arguments);
     },
     initComponent : function() {
-        this.changedData = {};
         if(this.loadMask===null) {
            this.loadMask={msg: i18n._("Loading ...")} ;
         }
@@ -2990,15 +2944,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             });
         }
         if (this.rowEditor==null && this.rowEditorInputLines != null) {
-        	/*this fixes the cursor but introduces a bigger bug with positioning
-        	if(Ext.isGecko && !Ext. isGecko3) {
-        		for(var i=0;i<this.rowEditorInputLines.length;i++) {
-        			var xtype=this.rowEditorInputLines[i].xtype
-        			if(xtype=="textfield" || xtype=="textarea" || xtype=="numberfield" || xtype=="timefield") {
-        				this.rowEditorInputLines[i].ctCls="fixedPos";
-        			}
-        		}
-        	}*/
+        	/*
+             * this fixes the cursor but introduces a bigger bug with
+             * positioning if(Ext.isGecko && !Ext. isGecko3) { for(var i=0;i<this.rowEditorInputLines.length;i++) {
+             * var xtype=this.rowEditorInputLines[i].xtype if(xtype=="textfield" ||
+             * xtype=="textarea" || xtype=="numberfield" || xtype=="timefield") {
+             * this.rowEditorInputLines[i].ctCls="fixedPos"; } } }
+             */
             this.rowEditor = new Ung.RowEditorWindow({
                 grid : this,
                 inputLines : this.rowEditorInputLines,
@@ -3098,7 +3050,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
                     this.getView().refresh();
 
-                    // put the cursor focus on the row of the gridRules which we just draged
+                    // put the cursor focus on the row of the gridRules which we
+                    // just draged
                     this.getSelectionModel().selectRow(cindex);
                 }.createDelegate(this)
             });
@@ -3430,7 +3383,7 @@ Ext.grid.ButtonColumn.prototype = {
             this.handle(record)
         }
     },
-    //to override
+    // to override
     handle : function(record) {
     },
     // private
@@ -3462,7 +3415,6 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     usersGrid:null,
     populateSemaphore: null,
     userEntries: null,
-    formPanel : null,
     fnCallback: null,
     initComponent : function() {
         if (!this.height && !this.width) {
@@ -3471,16 +3423,9 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.title == null) {
             this.title = i18n._('Portal Question');
         }
-        Ung.UsersWindow.superclass.initComponent.call(this);
-    },
-    onRender : function(container, position) {
-        Ung.UsersWindow.superclass.onRender.call(this, container, position);
-        this.initSubComponents.defer(1, this);
-    },
-    initSubComponents : function(container, position) {
         var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectUser});
         this.usersGrid=new Ext.grid.GridPanel({
-           //title: i18n._('Users'),
+           // title: i18n._('Users'),
            height: 210,
            width: 290,
            enableHdMenu : false,
@@ -3531,8 +3476,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             }],
             selModel : selModel
         });
-        this.formPanel = new Ext.FormPanel({
-            renderTo : this.getContentEl(),
+        this.items = new Ext.FormPanel({
             labelWidth : 75,
             buttonAlign : 'right',
             border : false,
@@ -3593,7 +3537,9 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 }]
             }]
         });
-        this.subCmps.push(this.formPanel);
+        Ung.UsersWindow.superclass.initComponent.call(this);
+    },
+    initSubComponents : function(container, position) {
     },
     // populate is called whent a record is edited, tot populate the edit window
     populate : function(record,fnCallback) {

@@ -13,19 +13,11 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             }, {
                 title : i18n._('Local Directory')
             }];
-            Ung.LocalDirectory.superclass.initComponent.call(this);
-        },
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.LocalDirectory.superclass.onRender.call(this, container, position);
-            this.initSubCmps.defer(1, this);
-            // builds the 2 tabs
-        },
-        initSubCmps : function() {
             this.buildLocalDirectory();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.gridUsers]);
             this.tabs.activate(this.gridUsers);
+            Ung.LocalDirectory.superclass.initComponent.call(this);
         },
         buildLocalDirectory : function() {
             var storeData=main.getAppAddressBook().getLocalUserEntries().list;

@@ -16,18 +16,14 @@ if (!Ung.hasResource["Ung.Phish"]) {
             }
             return this.rpc.baseSettings;
         },
-
-        // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Phish.superclass.onRender.call(this, container, position);
-            // builds the tabs
+        initComponent : function() {
             this.buildEmail();
             this.buildWeb();
             this.buildWebEventLog();
             this.buildEmailEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.emailPanel, this.webPanel, this.gridWebEventLog, this.gridEmailEventLog]);
+            Ung.Phish.superclass.initComponent.call(this);
         },
         lookup : function(needle, haystack1, haystack2) {
             for (var i = 0; i < haystack1.length; i++) {

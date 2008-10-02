@@ -9,18 +9,22 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         emailPanel : null,
         gridEventLog : null,
         gridRBLEventLog : null,
-        // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.SpamAssassin.superclass.onRender.call(this, container, position);
-            // builds the tabs
+        initComponent : function() {
             this.buildEmail();
             this.buildEventLog();
             this.buildRBLEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.emailPanel, this.gridEventLog, this.gridRBLEventLog]);
             this.tabs.activate(this.emailPanel);
-            
+            Ung.SpamAssassin.superclass.initComponent.call(this);
+        },
+        // called when the component is rendered
+        onRender : function(container, position) {
+            // call superclass renderer first
+            Ung.SpamAssassin.superclass.onRender.call(this, container, position);
+            this.initSubCmps.defer(1, this);
+        },
+        initSubCmps : function() {
             Ext.getCmp('spamassassin_smtpStrengthValue').setContainerVisible(this.isCustomStrength(this.getBaseSettings().smtpConfig.strength));
             Ext.getCmp('spamassassin_pop3StrengthValue').setContainerVisible(this.isCustomStrength(this.getBaseSettings().popConfig.strength));
             Ext.getCmp('spamassassin_imapStrengthValue').setContainerVisible(this.isCustomStrength(this.getBaseSettings().imapConfig.strength));

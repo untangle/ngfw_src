@@ -13,6 +13,11 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             }, {
                 title : i18n._('Upgrade')
             }];
+            this.buildUpgrade();
+            this.buildSetup();
+            // builds the tab panel with the tabs
+            this.buildTabPanel([this.gridUpgrade, this.panelSetup]);
+            this.tabs.activate(this.gridUpgrade);
             Ung.Upgrade.superclass.initComponent.call(this);
         },
 
@@ -20,14 +25,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             // call superclass renderer first
             Ung.Upgrade.superclass.onRender.call(this, container, position);
             this.initSubCmps.defer(1, this);
-            // builds the 5 tabs
         },
         initSubCmps : function() {
-            this.buildUpgrade();
-            this.buildSetup();
-            // builds the tab panel with the tabs
-            this.buildTabPanel([this.gridUpgrade, this.panelSetup]);
-            this.tabs.activate(this.gridUpgrade);
             this.loadGridUpgrade();
         },
         getUpgradeSettings : function(forceReload) {

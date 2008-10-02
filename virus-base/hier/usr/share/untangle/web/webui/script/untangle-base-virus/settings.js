@@ -5,16 +5,14 @@ if (!Ung.hasResource["Ung.Virus"]) {
     Ung.Virus = Ext.extend(Ung.Settings, {
         gridEventLog : null,
         // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Virus.superclass.onRender.call(this, container, position);
-            // builds the 4 tabs
+        initComponent : function() {
             this.buildWeb();
             this.buildEmail();
             this.buildFtp();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelWeb, this.panelEmail, this.panelFtp, this.gridEventLog]);
+            Ung.Virus.superclass.initComponent.call(this);
         },
         // Web Panel
         buildWeb : function() {
