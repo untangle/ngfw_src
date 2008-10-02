@@ -557,7 +557,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 (cmp = Ext.getCmp('spamassassin_pop3StrengthValue')).isValid() &&
                 (cmp = Ext.getCmp('spamassassin_imapStrengthValue')).isValid());
             if (!valid) {
-                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
+                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._('The value of Strength Value field is invalid.'),
                     function () {
                         this.tabs.activate(this.emailPanel);
                         cmp.focus(true);
