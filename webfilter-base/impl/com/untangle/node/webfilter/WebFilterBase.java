@@ -74,10 +74,10 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     private final WebFilterFactory factory = new WebFilterFactory(this);
 
-    private final PipeSpec pipeSpec = new SoloPipeSpec
+    protected final PipeSpec httpPipeSpec = new SoloPipeSpec
         ("http-blocker", this, new TokenAdaptor(this, factory), Fitting.HTTP_TOKENS,
          Affinity.CLIENT, 0);
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipeSpec };
 
     private final WebFilterReplacementGenerator replacementGenerator;
 
