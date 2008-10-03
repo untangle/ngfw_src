@@ -128,8 +128,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     dataIndex : 'notes',
                     editor : this.getPolicyManagerLicenseStatus().expired ? null : new Ext.form.TextField({allowBlank : false})
                 }],
-                rowEditorInputLines : [{
-                    xtype : "textfield",
+                rowEditorInputLines : [new Ext.form.TextField({
                     name : "Name",
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Name"),
@@ -139,8 +138,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, {
-                    xtype : "textfield",
+                }), new Ext.form.TextField({
                     name : "Description",
                     dataIndex : "notes",
                     fieldLabel : this.i18n._("Description"),
@@ -149,7 +147,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : true
                     })
-                }],
+                })],
                 addHandler : function() {
                 	if (this.getPolicyManagerLicenseStatus().expired){
                 		this.showProfessionalMessage();

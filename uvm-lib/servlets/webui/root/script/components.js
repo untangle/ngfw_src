@@ -2427,7 +2427,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             },
             items : this.inputLines
         });
-        // this.inputLines=this.items.items.getRange();
+        this.inputLines=this.items.items.getRange();
         Ung.RowEditorWindow.superclass.initComponent.call(this);
     },
     show : function() {
