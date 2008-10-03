@@ -212,7 +212,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }],
                 columns : [{
                     header : i18n._("start time"),
-                    width : 120,
+                    width : 100,
                     sortable : true,
                     dataIndex : 'start',
                     renderer : function(value) {
@@ -220,13 +220,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                 }, {
                     header : i18n._("end time"),
-                    width : 70,
+                    width : 100,
                     sortable : true,
                     dataIndex : 'end',
                     renderer : function(value) {
                         return i18n.dateFormat(value);
                     }
                 }, {
+                	id: 'client_name',
                     header : i18n._("client name"),
                     width : 120,
                     sortable : true,
@@ -246,7 +247,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 120,
                     sortable : true,
                     dataIndex : 'bytesRx'
-                }]
+                }],
+                autoExpandColumn : 'client_name'
 
             });
         },
@@ -297,7 +299,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         border : false,
                         bodyStyle : 'padding:10px 10px 0px 10px;',
                         autoScroll: true,
-                        autoHeight : true,
                         defaults : {
                             selectOnFocus : true,
                             msgTarget : 'side'
@@ -962,24 +963,22 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 title : this.i18n._("Advanced"),
                 parentId : this.getId(),
 
-                layout : "form",
+                layout : "anchor",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
                 defaults : {
+                	anchor:"98%",
                     xtype : 'fieldset',
                     autoHeight : true,
                     buttonAlign : 'left'
                 },
                 items : [{
                     xtype : 'form',
-                    autoHeight : true,
-                    autoScroll : true,
                     border: false,
                     bodyStyle : 'padding-bottom:20px;',
-                    items : [this.gridGroups]
+                    items : this.gridGroups
                 }, {
                     xtype : 'fieldset',
-                    autoHeight : true,
                     labelWidth: 160,
                     items : [{
                         xtype : 'numberfield',
