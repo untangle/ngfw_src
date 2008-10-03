@@ -15,7 +15,7 @@ class ToolboxManager(Manager):
         self.doAptTailLog( key )
 
     def api_uninstall(self, mackageName):
-        self.__toolbox.uninstall( mackageName )        
+        self.__toolbox.uninstall( mackageName )
 
     def api_update(self):
         self.__toolbox.update()
@@ -23,9 +23,6 @@ class ToolboxManager(Manager):
     def api_upgrade(self):
         key = self.__toolbox.upgrade()
         self.doAptTailLog( key )
-
-    def api_extraname(self, mackageName, extraName):
-        self.__toolbox.extraName( mackageName, extraName )
 
     def api_requestinstall(self, mackageName):
         self.__toolbox.requestInstall( mackage )
@@ -38,14 +35,14 @@ class ToolboxManager(Manager):
 
     def api_uninstalled(self):
         self.__print_mackages( self.__toolbox.uninstalled())
-            
+
     def api_upgradable(self):
         self.__print_mackages( self.__toolbox.upgradable())
 
     def api_uptodate(self):
         mkgs = self.__toolbox.upgradable()
         for mkg in mkgs:
-            print "extraName: %s\tinstalled: %s\tavailable: %s" % ( mkg["name"], mkg["installedVersion"], mkg["availableVersion"])
+            print "name: %s\tinstalled: %s\tavailable: %s" % ( mkg["name"], mkg["installedVersion"], mkg["availableVersion"])
 
     def api_reloadt(self, shortName):
         mkg = self.shortNameToPackageName(shortName)
@@ -65,6 +62,6 @@ class ToolboxManager(Manager):
 
     def __print_mackages(self,mackages):
         for mackage in mackages:
-            print "%-30sextraName: %-25sinstalled: %-40savailable: %s" % ( mackage["name"], mackage["extraName"], mackage["installedVersion"], mackage["availableVersion"])
+            print "%-30s installed: %-40savailable: %s" % ( mackage["name"], mackage["installedVersion"], mackage["availableVersion"])
 
 Manager.managers.append( ToolboxManager )

@@ -78,13 +78,9 @@ public class MackageDesc implements Serializable
     private final int viewPosition;
     private final boolean autoStart;
     private final boolean invisible;
-    private final String extraName;
 
-    public MackageDesc(Map<String, String> m, String installedVersion,
-                       String extraName)
+    public MackageDesc(Map<String, String> m, String installedVersion)
     {
-        this.extraName = extraName;
-
         name = m.get("package");
 
         String ut = m.get("untangle-type");
@@ -149,11 +145,6 @@ public class MackageDesc implements Serializable
     public String getName()
     {
         return name;
-    }
-
-    public String getExtraName()
-    {
-        return extraName;
     }
 
     public String getDisplayName()

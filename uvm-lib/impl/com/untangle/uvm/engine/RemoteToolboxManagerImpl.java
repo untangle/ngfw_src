@@ -43,6 +43,8 @@ import java.util.concurrent.TimeoutException;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
+import com.untangle.uvm.license.LicenseStatus;
+import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.StatDescs;
@@ -59,7 +61,6 @@ import com.untangle.uvm.toolbox.MackageException;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.MackageUninstallException;
-import com.untangle.uvm.toolbox.MackageUpdateExtraName;
 import com.untangle.uvm.toolbox.RackView;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
@@ -228,7 +229,15 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         Collections.sort(apps);
 
-        return new RackView(apps, instances, statDescs);
+        Map<String, LicenseStatus> licenseStatus = new HashMap<String, LicenseStatus>();
+        RemoteLicenseManager lm = LocalUvmContextFactory.context()
+            .remoteLicenseManager();
+        for (NodeDesc nd : instances) {
+            String n = nd.getMackageDesc().getName();
+            licenseStatus.put(n, lm.getMackageStatus(n));
+        }
+
+        return new RackView(apps, instances, statDescs, licenseStatus);
     }
 
     public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException
@@ -431,11 +440,12 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         return alt.getKey();
     }
+
     public void enable(String mackageName) throws MackageException
     {
         MackageState ms = mackageState.get(mackageName);
         if (null == ms) {
-            ms = new MackageState(mackageName, null, true);
+            ms = new MackageState(mackageName, true);
             mackageState.put(mackageName, ms);
         } else {
             ms.setEnabled(true);
@@ -459,7 +469,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     {
         MackageState ms = mackageState.get(mackageName);
         if (null == ms) {
-            ms = new MackageState(mackageName, null, false);
+            ms = new MackageState(mackageName, false);
             mackageState.put(mackageName, ms);
         } else {
             ms.setEnabled(false);
@@ -477,27 +487,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         syncMackageState(ms);
-    }
-
-    public void extraName(String mackageName, String extraName)
-    {
-        MackageState ms = mackageState.get(mackageName);
-        if (null == ms) {
-            ms = new MackageState(mackageName, extraName, true);
-            mackageState.put(mackageName, ms);
-        } else {
-            ms.setExtraName(extraName);
-        }
-
-        syncMackageState(ms);
-
-        refreshLists();
-
-        MackageUpdateExtraName mue = new MackageUpdateExtraName(mackageName,extraName);
-
-        LocalMessageManager mm = LocalUvmContextFactory.context()
-            .localMessageManager();
-        mm.submitMessage(mue);
     }
 
     public void requestInstall(String mackageName)
@@ -850,8 +839,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 String name = m.get("package");
 
                 MackageState mState = mackageState.get(name);
-                String en = null == mState ? null : mState.getExtraName();
-                MackageDesc md = new MackageDesc(m, instList.get(name), en);
+                MackageDesc md = new MackageDesc(m, instList.get(name));
                 if (null == md.getType()) {
                     continue;
                 }

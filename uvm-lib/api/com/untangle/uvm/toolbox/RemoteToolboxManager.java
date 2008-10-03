@@ -140,12 +140,10 @@ public interface RemoteToolboxManager
     void update() throws MackageException;
 
     long upgrade() throws MackageException;
-    
+
     void enable(String mackageName) throws MackageException;
 
     void disable(String mackageName) throws MackageException;
-
-    void extraName(String mackageName, String extraName);
 
     void requestInstall(String mackageName);
 

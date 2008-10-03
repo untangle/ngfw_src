@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -36,15 +36,13 @@ class MackageState
 {
     private Long id;
     private String mackageName;
-    private String extraName;
     private boolean enabled;
 
     MackageState() { }
 
-    MackageState(String mackageName, String extraName, boolean enabled)
+    MackageState(String mackageName, boolean enabled)
     {
         this.mackageName = mackageName;
-        this.extraName = extraName;
         this.enabled = enabled;
     }
 
@@ -75,23 +73,6 @@ class MackageState
     public void setMackageName(String mackageName)
     {
         this.mackageName = mackageName;
-    }
-
-    /**
-     * Extra name of mackage.
-     *
-     * @return the mackage's extra name.
-     */
-    @Column(name="extra_name")
-    public String getExtraName()
-    {
-        return extraName;
-    }
-
-
-    public void setExtraName(String extraName)
-    {
-        this.extraName = extraName;
     }
 
     /**
