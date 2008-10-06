@@ -5,16 +5,14 @@ if (!Ung.hasResource["Ung.Shield"]) {
     Ung.Shield = Ext.extend(Ung.Settings, {
         gridExceptions : null,
         gridEventLog : null,
-        // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Shield.superclass.onRender.call(this, container, position);
+        initComponent : function(container, position) {
             // builds the 3 tabs
             this.buildStatus();
             this.buildExceptions();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.statusPanel, this.gridExceptions, this.gridEventLog]);
+            Ung.Shield.superclass.initComponent.call(this);
         },
         // Status Panel
         buildStatus : function() {
@@ -222,6 +220,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     sortable : true,
                     dataIndex : 'client'
                 }, {
+                    id :'clientIntf',
                     header : this.i18n._("source") + "<br>" + this.i18n._("interface"),
                     width : 120,
                     sortable : true,
@@ -236,7 +235,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     }
                 }, {
                     header : this.i18n._("limited"),
-                    width : 120,
+                    width : 110,
                     sortable : true,
                     dataIndex : 'limited',
                     renderer : function(value) {
@@ -244,7 +243,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     }
                 }, {
                     header : this.i18n._("dropped"),
-                    width : 120,
+                    width : 110,
                     sortable : true,
                     dataIndex : 'dropped',
                     renderer : function(value) {
@@ -252,13 +251,14 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     }
                 }, {
                     header : this.i18n._("reject"),
-                    width : 120,
+                    width : 110,
                     sortable : true,
                     dataIndex : 'rejected',
                     renderer : function(value) {
                         return i18n.numberFormat(value);
                     }
                 }],
+                autoExpandColumn: 'clientIntf',
                 refreshList : function() {
                     this.settingsCmp.node.nodeContext.rpcNode.getLogs(this.refreshCallback.createDelegate(this), this.eventDepth);
                 }

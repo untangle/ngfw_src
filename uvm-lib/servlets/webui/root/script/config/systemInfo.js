@@ -99,85 +99,87 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 helpSource : 'registration',
                 parentId : this.getId(),
                 title : this.i18n._('Registration'),
-                layout : "form",
+                layout: 'anchor',
+                defaults: {
+                    anchor: '98%',
+                    autoWidth: true,
+                    autoScroll: true
+                },
+                autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 items : [{
                     title : this.i18n._('Registration'),
                     name : 'Registration',
                     xtype : 'fieldset',
                     autoHeight : true,
-                    layout : 'column',
-                    items: [{
-	                    layout : "form",
-                        border : false,
-                        labelWidth: 150,
-		                defaults : {
-                            width : 200
-		                },
-	                    items : [ new Ext.form.TextField({
-	                        name : "Company Name",
-	                        fieldLabel : this.i18n._("Company Name"),
-                            id : 'companyName',
-                            allowBlank : false,
-                            value : this.getRegistrationInfo().companyName
-	                    }), new Ext.form.TextField({
-                            name : "First Name",
-                            fieldLabel : this.i18n._("First Name"),
-                            id : 'firstName',
-                            allowBlank : false,
-                            value : this.getRegistrationInfo().firstName
-                        }), new Ext.form.TextField({
-                            name : "Last Name",
-                            fieldLabel : this.i18n._("Last Name"),
-                            id : 'lastName',
-                            allowBlank : false,
-                            value : this.getRegistrationInfo().lastName
-                        }), new Ext.form.TextField({
-                            name : "Address 1",
-                            id : 'address1',
-                            fieldLabel : this.i18n._("Address 1"),
-                            value : this.getRegistrationInfo().address1
-                        }), new Ext.form.TextField({
-                            name : "Address 2",
-                            id : 'address2',
-                            fieldLabel : this.i18n._("Address 2"),
-                            value : this.getRegistrationInfo().address2
-                        }), new Ext.form.TextField({
-                            name : "City",
-                            id : 'city',
-                            fieldLabel : this.i18n._("City"),
-                            value : this.getRegistrationInfo().city
-                        }), new Ext.form.TextField({
-                            name : "State",
-                            id : 'state',
-                            fieldLabel : this.i18n._("State"),
-                            value : this.getRegistrationInfo().state
-                        }), new Ext.form.TextField({
-                            name : "Zipcode",
-                            id : 'zipcode',
-                            fieldLabel : this.i18n._("Zipcode"),
-                            value : this.getRegistrationInfo().zipcode
-                        }), new Ext.form.TextField({
-                            name : "Phone #",
-                            id : 'phone',
-                            fieldLabel : this.i18n._("Phone #"),
-                            value : this.getRegistrationInfo().phone
-                        }), new Ext.form.TextField({
-                            name : "Email",
-                            id : 'emailAddr',
-                            fieldLabel : this.i18n._("Email"),
-                            allowBlank : false,
-                            value : this.getRegistrationInfo().emailAddr,
-                            vtype : 'email'
-                        }), new Ext.form.TextField({
-                            name : "Number of computers protected by Untangle",
-                            id : 'numSeats',
-                            fieldLabel : String.format(this.i18n._('Number of computers{0}protected by {1}'),
-                                            '<br>',this.getBrandingBaseSettings().companyName),
-                            allowBlank : false,
-                            value : this.getRegistrationInfo().numSeats
-                        })]
-	                }]
+                    layout : 'form',
+                    labelWidth: 160,
+                    defaults : {
+                        width : 200
+                    },
+                    items : [ new Ext.form.TextField({
+                        name : "Company Name",
+                        fieldLabel : this.i18n._("Company Name"),
+                        id : 'companyName',
+                        allowBlank : false,
+                        value : this.getRegistrationInfo().companyName
+                    }), new Ext.form.TextField({
+                        name : "First Name",
+                        fieldLabel : this.i18n._("First Name"),
+                        id : 'firstName',
+                        allowBlank : false,
+                        value : this.getRegistrationInfo().firstName
+                    }), new Ext.form.TextField({
+                        name : "Last Name",
+                        fieldLabel : this.i18n._("Last Name"),
+                        id : 'lastName',
+                        allowBlank : false,
+                        value : this.getRegistrationInfo().lastName
+                    }), new Ext.form.TextField({
+                        name : "Address 1",
+                        id : 'address1',
+                        fieldLabel : this.i18n._("Address 1"),
+                        value : this.getRegistrationInfo().address1
+                    }), new Ext.form.TextField({
+                        name : "Address 2",
+                        id : 'address2',
+                        fieldLabel : this.i18n._("Address 2"),
+                        value : this.getRegistrationInfo().address2
+                    }), new Ext.form.TextField({
+                        name : "City",
+                        id : 'city',
+                        fieldLabel : this.i18n._("City"),
+                        value : this.getRegistrationInfo().city
+                    }), new Ext.form.TextField({
+                        name : "State",
+                        id : 'state',
+                        fieldLabel : this.i18n._("State"),
+                        value : this.getRegistrationInfo().state
+                    }), new Ext.form.TextField({
+                        name : "Zipcode",
+                        id : 'zipcode',
+                        fieldLabel : this.i18n._("Zipcode"),
+                        value : this.getRegistrationInfo().zipcode
+                    }), new Ext.form.TextField({
+                        name : "Phone #",
+                        id : 'phone',
+                        fieldLabel : this.i18n._("Phone #"),
+                        value : this.getRegistrationInfo().phone
+                    }), new Ext.form.TextField({
+                        name : "Email",
+                        id : 'emailAddr',
+                        fieldLabel : this.i18n._("Email"),
+                        allowBlank : false,
+                        value : this.getRegistrationInfo().emailAddr,
+                        vtype : 'email'
+                    }), new Ext.form.TextField({
+                        name : "Number of computers protected by Untangle",
+                        id : 'numSeats',
+                        fieldLabel : String.format(this.i18n._('Number of computers{0}protected by {1}'),
+                                        '<br>',this.getBrandingBaseSettings().companyName),
+                        allowBlank : false,
+                        value : this.getRegistrationInfo().numSeats
+                    })]
                 }]
            });
         },

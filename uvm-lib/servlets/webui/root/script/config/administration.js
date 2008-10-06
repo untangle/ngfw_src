@@ -136,7 +136,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 parentId : this.getId(),
 
                 title : this.i18n._('Administration'),
-                layout : "form",
+                layout : "anchor",
+                defaults: {
+                	anchor: '98%'
+                },
+                bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
                 items : [this.gridAdminAccounts=new Ung.EditorGrid({
                     settingsCmp : this,
@@ -378,7 +382,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     	layout:'column',
                     	items: [{
                             border: false,
-                            columnWidth:.3,
+                            columnWidth:.4,
                             layout: 'form',
                             items: [{
                                 xtype : 'textfield',
@@ -393,11 +397,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }]
                     	},{
                             border: false,
-                            columnWidth:.3,
+                            columnWidth:.6,
                             layout: 'form',
                             items: [{
                                 xtype : 'textfield',
-                                fieldLabel : '/', 
+                                fieldLabel : '/',
                                 labelSeparator  : '',
                                 name : 'outsideNetmask',
                                 id : 'administration_outsideNetmask',
@@ -589,10 +593,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 winCertImportTrusted : null,
                 
                 title : this.i18n._('Certificates'),
-                layout : "form",
+                layout : "anchor",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
                 defaults : {
+                	anchor: '98%',
                     xtype : 'fieldset',
                     autoHeight : true
                 },
@@ -1015,22 +1020,18 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
-                items: {
-                    xtype: 'fieldset',
-                    autoHeight : true,
-                    items : [{
-                        html : this.i18n._('Click the Proceed button to generate a signature below. Copy the signature (Control-C), and paste it into the necessary form from your Certificate Authority (Verisign, Thawte, etc.).'),
-                        bodyStyle : 'padding-bottom:10px;',
-                        border : false
-                    },{
-                        xtype : 'textarea',
-                        name : 'crs',
-                        id: 'administration_crs',
-                        anchor:'95%',
-                        height : 200,
-                        hideLabel : true
-                    }]
-                }
+                items: [{
+                    html : this.i18n._('Click the Proceed button to generate a signature below. Copy the signature (Control-C), and paste it into the necessary form from your Certificate Authority (Verisign, Thawte, etc.).'),
+                    bodyStyle : 'padding-bottom:10px;',
+                    border : false
+                },{
+                    xtype : 'textarea',
+                    name : 'crs',
+                    id: 'administration_crs',
+                    anchor:'98%',
+                    height : 200,
+                    hideLabel : true
+                }]
             });
         },
         
@@ -1055,7 +1056,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textarea',
                         name : 'cert',
                         id: 'administration_import_cert',
-                        anchor:'95%',
+                        anchor:'98%',
                         height : 200,
                         hideLabel : true
                     },{
@@ -1068,7 +1069,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textarea',
                         name : 'caCert',
                         id: 'administration_import_caCert',
-                        anchor:'95%',
+                        anchor:'98%',
                         height : 200,
                         hideLabel : true
                     }]

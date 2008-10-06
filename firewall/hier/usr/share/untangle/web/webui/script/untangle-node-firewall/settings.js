@@ -3,6 +3,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
     Ung.Settings.registerClassName('untangle-node-firewall', 'Ung.Firewall');
 
     Ung.Firewall = Ext.extend(Ung.Settings, {
+    	panelRules: null,
         gridRules : null,
         gridEventLog : null,
         initComponent : function() {
@@ -31,7 +32,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._('Rules'),
-                layout : 'form',
+                layout : 'anchor',
+                defaults: {
+                	anchor: '98%',
+                	autoWidth: true,
+                	autoScroll: true
+                },
                 autoScroll : true,
                 border : false,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
@@ -227,7 +233,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 }],
                 columns : [{
                     header : i18n._("timestamp"),
-                    width : 150,
+                    width : 130,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -235,7 +241,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     }
                 }, {
                     header : i18n._("action"),
-                    width : 55,
+                    width : 100,
                     sortable : true,
                     dataIndex : 'wasBlocked',
                     renderer : function(value) {
@@ -256,6 +262,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
                     }
                 }, {
+                	id: 'ruleIndex',
                     header : this.i18n._('reason for action'),
                     width : 150,
                     sortable : true,
@@ -271,7 +278,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     renderer : function(value) {
                         return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
                     }
-                }]
+                }],
+                autoExpandColumn: 'ruleIndex'
                 
             });
         },

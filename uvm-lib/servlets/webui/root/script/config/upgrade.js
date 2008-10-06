@@ -149,6 +149,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         return "<img src='" + value + "'/>";
                     }
                 }, {
+                	id: 'displayName',
                     header : this.i18n._("name"),
                     width : 190,
                     sortable : true,
@@ -172,6 +173,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     align: 'right', 
                     dataIndex : 'size'
                 }],
+                autoExpandColumn: 'displayName',
                 buttonAlign : 'center',
                 buttons : [{
                     id : 'config_start_upgrade_button',

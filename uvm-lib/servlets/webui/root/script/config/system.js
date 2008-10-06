@@ -118,17 +118,10 @@ if (!Ung.hasResource["Ung.System"]) {
                 layout : "form",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
-                defaults : {
+                items : [{
                     xtype : 'fieldset',
                     autoHeight : true,
-                    buttonAlign : 'left'
-                },
-                items : [{
                     title : this.i18n._('Support'),
-                    defaults : {
-                        border : false,
-                        bodyStyle : 'padding:5px 5px 0px 5px;'
-                    },
                     items : [{
                         xtype : 'checkbox',
                         name : 'Allow us to securely access your server for support purposes',
@@ -149,6 +142,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                 ._('{0}Send{1} us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted.'),
                                 '<b>', '</b>'),
                         hideLabel : true,
+                        height: 100,
                         checked : this.getMiscSettings().isExceptionReportingEnabled,
                         listeners : {
                             "check" : {

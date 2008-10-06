@@ -3,6 +3,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
     Ung.Settings.registerClassName('untangle-node-ips', 'Ung.Ips');
 
     Ung.Ips = Ext.extend(Ung.Settings, {
+    	panelStatus: null,
+    	panelRules: null,
         gridRules : null,
         gridVariables : null,
         gridEventLog : null,
@@ -91,6 +93,12 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 title : this.i18n._('Rules'),
                 autoScroll : true,
                 border : false,
+                layout: 'anchor',
+                defaults: {
+                    anchor: '98%',
+                    autoWidth: true,
+                    autoScroll: true
+                },
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 items : [this.gridRules = new Ung.EditorGrid({
 		                name : 'Rules',
@@ -306,7 +314,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 }],
                 columns : [{
                     header : i18n._("timestamp"),
-                    width : 150,
+                    width : 130,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -314,7 +322,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     }
                 }, {
                     header : i18n._("action"),
-                    width : 55,
+                    width : 100,
                     sortable : true,
                     dataIndex : 'blocked',
                     renderer : function(value) {
@@ -335,6 +343,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
                     }
                 }, {
+                	id: 'ruleSid',
                     header : this.i18n._('reason for action'),
                     width : 150,
                     sortable : true,
@@ -350,7 +359,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     renderer : function(value) {
                         return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
                     }
-                }]
+                }],
+                autoExpandColumn: 'ruleSid'
                 
             });
         },

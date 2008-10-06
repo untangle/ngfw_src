@@ -3,6 +3,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
     Ung.Settings.registerClassName('untangle-base-virus', 'Ung.Virus');
 
     Ung.Virus = Ext.extend(Ung.Settings, {
+    	panelWeb:null,
+    	panelEmail: null,
+    	panelFtp: null,
         gridEventLog : null,
         // called when the component is rendered
         initComponent : function() {
@@ -405,14 +408,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 parentId : this.getId(),
 
                 title : this.i18n._('Email'),
-                layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
-                autoScroll : true,
-                defaults : {
+                layout : "anchor",
+                defaults: {
+                	anchor: '98%',
                     xtype : 'fieldset',
                     autoHeight : true,
+                	autoScroll: true,
                     buttonAlign : 'left'
                 },
+                bodyStyle : 'padding:5px 5px 0px 5px;',
+                autoScroll : true,
                 items : [{
                 	layout:'column',
                     items:[{
@@ -460,7 +465,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             }
                         }]
                     },{
-                        columnWidth:.3,
+                        columnWidth:.7,
                         layout: 'form',
                         border:false,
                         items: [{
@@ -566,13 +571,14 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 // the list of columns
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 120,
+                    width : 130,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
+                	id: 'action',
                     header : this.i18n._("action"),
                     width : 120,
                     sortable : true,
@@ -643,7 +649,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     renderer : function(value) {
                         return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
                     }
-                }]
+                }],
+                autoExpandColumn: 'action'
             });
         },
         // validation function

@@ -9,17 +9,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         panelBlockLists : null,
         gridPassList : null,
         gridEventLog : null,
-        // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Spyware.superclass.onRender.call(this, container, position);
-
-            // build the 3 tabs
+        initComponent : function() {
             this.buildBlockLists();
             this.buildPassList();
             this.buildEventLog();
             // builds a tab panel with the 3 panels
             this.buildTabPanel([this.panelBlockLists, this.gridPassList, this.gridEventLog]);
+            Ung.SpamAssassin.superclass.initComponent.call(this);
         },
         // Block lists panel
         buildBlockLists : function() {
@@ -575,7 +571,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 120,
+                    width : 130,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -583,7 +579,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     }
                 }, {
                     header : this.i18n._("action"),
-                    width : 70,
+                    width : 90,
                     sortable : true,
                     dataIndex : 'blocked',
                     renderer : function(value) {
@@ -606,6 +602,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     	return record.data.location + " : " + record.data.identification
                     }
                 }, {
+                	id: 'reason',
                     header : this.i18n._("reason for action"),
                     width : 120,
                     sortable : true,
@@ -636,7 +633,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     renderer : function(value) {
                         return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
                     }
-                }]
+                }],
+                autoExpandColumn: 'reason'
             });
         },
 

@@ -165,10 +165,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 helpSource : 'generation',
                 parentId : this.getId(),
                 title : this.i18n._('Generation'),
-                layout : "form",
+                layout : "anchor",
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
                 defaults : {
+                	anchor: "98%",
                     xtype : 'fieldset',
                     autoHeight : true
                 },

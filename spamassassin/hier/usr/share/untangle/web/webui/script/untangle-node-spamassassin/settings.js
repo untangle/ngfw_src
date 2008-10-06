@@ -63,7 +63,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 title : this.i18n._('Email'),
                 name : 'Email',
                 helpSource : 'email',
-                layout : "form",
+                layout : "anchor",
+                defaults: {
+                    anchor: '98%',
+                    autoScroll: true
+                },
                 autoScroll : true,
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 items : [{
@@ -103,7 +107,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         autoWidth : true,
                         items: [{
                             border: false,
-                            columnWidth:.5,
+                            columnWidth:.6,
                             layout: 'form',
                             labelWidth: 150,
                             items: [{
@@ -134,7 +138,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }]
                         },{
                             border: false,
-                            columnWidth:.5,
+                            columnWidth:.4,
                             layout: 'form',
                             items: [{
                                 xtype : 'numberfield',
@@ -205,7 +209,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         autoWidth : true,
                         items: [{
                             border: false,
-                            columnWidth:.5,
+                            columnWidth:.6,
                             layout: 'form',
                             labelWidth: 150,
                             items: [{
@@ -236,7 +240,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }]
                         },{
                             border: false,
-                            columnWidth:.5,
+                            columnWidth:.4,
                             layout: 'form',
                             items: [{
                                 xtype : 'numberfield',
@@ -308,7 +312,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         autoWidth : true,
                         items: [{
                             border: false,
-                            columnWidth:.5,
+                            columnWidth:.6,
                             layout: 'form',
                             labelWidth: 150,
                             items: [{
@@ -339,7 +343,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }]
                         },{
                             border: false,
-                            columnWidth:.5,
+                            columnWidth:.4,
                             layout: 'form',
                             items: [{
                                 xtype : 'numberfield',
