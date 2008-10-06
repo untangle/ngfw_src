@@ -19,6 +19,7 @@
 package com.untangle.node.openvpn;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -346,10 +347,12 @@ public class VpnSettings implements Serializable, Validatable
     @Transient
     public List<VpnClientBase> getCompleteClientList()
     {
-        /* ??? Is there a better way to do this */
-        List<VpnClientBase> completeList = new LinkedList<VpnClientBase>();
-        completeList.addAll( getClientList());
-        completeList.addAll( getSiteList());
+        List<VpnClient> clientList = getClientList();
+        List<VpnSite> siteList = getSiteList();
+        List<VpnClientBase> completeList = 
+            new ArrayList<VpnClientBase>( clientList.size() + siteList.size());
+        completeList.addAll( clientList );
+        completeList.addAll( siteList );
         return completeList;
     }
 

@@ -1,6 +1,164 @@
+/* XXXX This logic should be moved outside of this file and into the
+ * loading code, having a conditional around an entire file is a
+ * little ridiculous. Especially a 2000 line file. XXX */
 if (!Ung.hasResource["Ung.OpenVPN"]) {
     Ung.hasResource["Ung.OpenVPN"] = true;
     Ung.Settings.registerClassName('untangle-node-openvpn', "Ung.OpenVPN");
+
+    Ext.namespace('Ung');
+    Ext.namespace('Ung.Node');
+    Ext.namespace('Ung.Node.OpenVPN');
+    
+    Ung.Node.OpenVPN.DistributeClient = Ext.extend( Object, {
+        constructor : function( config )
+        {
+            this.i18n = config.i18n;
+            this.node = config.node;
+
+            this.panel = new Ext.FormPanel({
+                items : [{
+                    cls : 'u-form-panel',
+                    xtype : 'fieldset',
+                    title : this.i18n._('Distribute via Email'),
+                    autoHeight : true,
+                    labelWidth: 150,
+                    items: [{
+                        html : this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
+                        cls : "description"
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Email Address'),
+                        name : 'emailAddress'
+                    },{
+                        xtype : 'button',
+                        text : this.i18n._( "Send Email" ),
+                        name : 'sendEmail',
+                        handler : this.sendEmail.createDelegate( this )
+                }]},{
+                    xtype : 'fieldset',
+                    title : this.i18n._('Download Key'),
+                    autoHeight : true,
+                    labelWidth: 150,
+                    items: [{
+                        html : this.i18n._('Click here to download a key for Windows clients.'),
+                        cls : "description"
+                    },{
+                        xtype : 'button',
+                        text : this.i18n._( "Windows Installer" ),
+                        name : 'windowsInstaller',
+                        handler : this.windowsInstaller.createDelegate( this )
+                    },{
+                        html : this.i18n._('Use this button for all other clients.'),
+                        cls : "description"
+                    },{
+                        xtype : 'button',
+                        text : this.i18n._( "Configuration Files" ),
+                        name : 'configurationFiles',
+                        handler : this.configurationFiles.createDelegate( this )
+                    }]
+                }]
+            });
+
+            this.window = new Ung.ButtonsWindow({
+                title : this.i18n._('Distribute VPN Client'),
+                bbar : [
+                    '->',
+                {
+                    name : 'close',
+                    iconCls : 'cancelIcon',
+                    text : this.i18n._('Close')
+                }],
+                items : [
+                    this.panel
+               ]
+            });
+        },
+
+        sendEmail : function()
+        {
+            /* Determine the email address */
+            var emailAddress = this.panel.find( "name", "emailAddress" )[0].getValue();
+
+            if ( emailAddress == null || emailAddress.length == 0 ) {
+                Ext.MessageBox.alert( this.i18n._("Failure"),
+                                      this.i18n._("You must specify an email address to send the key to."));
+                return;
+            }
+
+            this.record.data.distributionEmail = emailAddress;
+
+            Ext.MessageBox.wait( this.i18n._( "Distributing digital key..." ), this.i18n._( "Please wait" ));
+            
+            this.node.distributeClientConfig(this.completeSendEmail.createDelegate(this), this.record.data);
+        },
+
+        completeSendEmail : function( result, exception )
+        {
+            if (exception) {
+                Ext.MessageBox.alert( this.i18n._("Error saving/sending key"), 
+                                      this.i18n._("OpenVPN was not able to send your digital key via email.  Please try again." ));
+                return;
+            }
+
+            // go to next step
+            Ext.MessageBox.alert( this.i18n._("Success"), 
+                                  this.i18n._("OpenVPN successfully sent your digital key via email."), 
+                                  this.hide.createDelegate( this ));
+        },
+
+        populate : function( record )
+        {
+            this.record = record;
+        },
+        
+        windowsInstaller : function()
+        {
+            this.startDownload( "SETUP_EXE" );
+        },
+
+        configurationFiles : function()
+        {
+            this.startDownload( "ZIP" );
+        },
+
+        startDownload : function( format )
+        {
+            var name = this.record.data.name;
+
+            Ext.MessageBox.wait( this.i18n._( "Downloading digital key..." ), this.i18n._( "Please wait" ));
+            
+            this.node.getAdminDownloadLink(this.completeDownload.createDelegate(this),  name, format );
+        },
+
+        completeDownload : function( result, exception )
+        {
+            if ( exception ) {
+                Ext.MessageBox.alert( this.i18n._("Error downloading key"), 
+                                      this.i18n._("OpenVPN was not able to download your digital key.  Please try again." ));
+                return;
+            }
+
+            var link = result;
+
+            var iframeWin = main.getIframeWin();
+            window.frames["iframeWin_iframe"].location.href = link;
+
+            // go to next step
+            Ext.MessageBox.alert( this.i18n._("Success"), 
+                                  this.i18n._("OpenVPN successfully download your digital key."), 
+                                  this.hide.createDelegate( this ));
+        },
+
+        show : function()
+        {
+            this.window.show();
+        },
+        
+        hide : function()
+        {
+            this.window.hide();
+        }
+    });
 
     Ung.OpenVPN = Ext.extend(Ung.Settings, {
         configState : null,
@@ -311,9 +469,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             items: [{
                                 bodyStyle : 'padding:0px 0px 5px 5px;',
                                 border : false,
-                                html: String.format(this.settingsCmp.i18n._("Please choose how you would like to distribute your digital key. {0}Note: If you choose to send via email, you must supply an email address to send the email to. If you choose to download to USB key, the data will be located on the key at: {1}"),
-                                    '<br>','<br>/untangle-data/openvpn/setup-<span id="openvpn_distributeWindow_client_internal_name"></span>.exe')
-                            }, {
+                                html: this.settingsCmp.i18n._("Please choose how you would like to distribute your digital key. <br/>Note: If you choose to send via email, you must supply an email address to send the email to.)")
+                            },{
                                 xtype : 'radio',
                                 boxLabel : this.settingsCmp.i18n._('Distribute via Email'),
                                 hideLabel : true,
@@ -355,7 +512,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 }
                             }, {
                                 xtype : 'radio',
-                                boxLabel : this.settingsCmp.i18n._('Distribute via USB Key'),
+                                boxLabel : this.settingsCmp.i18n._('Download.'),
                                 hideLabel : true,
                                 name : 'distributeMethod',
                                 checked : false,
@@ -447,8 +604,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var defaultGroup= this.getGroupsStore().getCount()>0?this.getGroupsStore().getAt(0).data:null;
             var gridClients = new Ung.EditorGrid({
                 initComponent : function() {
-                	this.distributeWindow=this.settingsCmp.getDistributeWindow(this);
-                	this.subCmps.push(this.distributeWindow);
+                    this.distributeWindow = new Ung.Node.OpenVPN.DistributeClient({
+                        i18n : this.settingsCmp.i18n,
+                        node : this.settingsCmp.getRpcNode()
+                    });
+                    this.subCmps.push(this.distributeWindow.window);
+                        // this.distributeWindow=this.settingsCmp.getDistributeWindow(this);
+                        // this.subCmps.push(this.distributeWindow);
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
                 settingsCmp : this,

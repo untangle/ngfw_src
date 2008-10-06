@@ -33,6 +33,10 @@ public class Constants
     /* The directory for all of the client packages, needed by the servlet */
     public static final String PACKAGES_DIR = CONF_DIR + "/client-packages";
 
+    /* This is the variable used to define which client to download */
+    public static final String ADMIN_DOWNLOAD_CLIENT_PARAM = "client";
+    public static final String ADMIN_DOWNLOAD_CLIENT_KEY = "adminKey";
+
     /* The PKI infrastructure */
     static final String PKI_DIR = CONF_DIR + "/pki";
 
@@ -50,5 +54,4 @@ public class Constants
 
     /* Error reading from the usb device */
     static final int USB_ERROR_CODE      = 252;
-
 }

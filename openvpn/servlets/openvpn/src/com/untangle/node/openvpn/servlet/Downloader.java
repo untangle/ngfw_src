@@ -24,6 +24,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.ParseException;
+
 public class Downloader extends HttpServlet
 {
     private static final String CONFIG_PAGE        = "/config.zip";
@@ -37,6 +43,8 @@ public class Downloader extends HttpServlet
     private static final String SETUP_NAME_PREFIX = "setup-";
     private static final String SETUP_NAME_SUFFIX = ".exe";
     private static final String SETUP_TYPE        = "application/download";
+
+    private final Logger logger = Logger.getLogger( this.getClass());
 
     protected void service( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException {
@@ -72,6 +80,14 @@ public class Downloader extends HttpServlet
             }
             util.rejectFile( request, response );
         } else {
+            try {
+                IPaddr address = IPaddr.parse( request.getRemoteAddr());
+                util.getNode().addClientDistributionEvent( address, commonName );
+            } catch ( NodeException e ) {
+                logger.warn( "Unable to log distribution event." );
+            } catch ( ParseException e ) {
+                logger.warn( "Unable to log distribution event." );
+            }
             util.streamFile( request, response, fileName, download, type );
         }
     }

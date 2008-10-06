@@ -1,4 +1,4 @@
-## A rush script for retrieving an authentication token for an email address.
+## A rush script for testing the list of default VPN exports
 
 ## (Wherever the rush shell is)
 ## To run use: ./dist/usr/bin/rush ./openvpn/unittest/wizard.rb 

@@ -20,6 +20,7 @@ package com.untangle.node.openvpn;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,6 +74,9 @@ public class VpnNodeImpl extends AbstractNode
 
     private static final String SERVICE_NAME = "openvpn";
 
+    /* Expire these links after an hour */
+    private static final long ADMIN_DOWNLOAD_CLIENT_TIMEOUT = 1000l * 60 * 60;
+
     private final Logger logger = Logger.getLogger( VpnNodeImpl.class );
 
     private boolean isWebAppDeployed = false;
@@ -98,6 +102,9 @@ public class VpnNodeImpl extends AbstractNode
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
     private final BlingBlinger connectBlinger;
+    
+    private String adminDownloadClientKey = null;
+    private long   adminDownloadClientExpiration = 0l;
 
     // constructor ------------------------------------------------------------
 
@@ -235,7 +242,6 @@ public class VpnNodeImpl extends AbstractNode
             }
         }
     }
-    
 
     public VpnSettings getVpnSettings()
     {
@@ -270,7 +276,7 @@ public class VpnNodeImpl extends AbstractNode
 
     private void distributeAllClientFiles( VpnSettings settings ) throws NodeException
     {
-        for ( VpnClientBase client : (List<VpnClientBase>)settings.getCompleteClientList()) {
+        for ( VpnClientBase client : settings.getCompleteClientList()) {
             if ( !client.getDistributeClient()) continue;
             distributeRealClientConfig( client );
         }
@@ -281,10 +287,9 @@ public class VpnNodeImpl extends AbstractNode
     {
         /* Retrieve the client configuration object from the settings */
         boolean foundRealClient = false;
-        for ( VpnClientBase realClient : (List<VpnClientBase>)settings.getCompleteClientList()) {
+        for ( VpnClientBase realClient : settings.getCompleteClientList()) {
             if ( client.getInternalName().equals( realClient.getInternalName())) {
                 realClient.setDistributionEmail( client.getDistributionEmail());
-                realClient.setDistributeUsb( client.getDistributeUsb());
                 client = realClient;
                 foundRealClient = true;
                 break;
@@ -305,12 +310,8 @@ public class VpnNodeImpl extends AbstractNode
 
         this.certificateManager.createClient( client );
 
-        if ( client.getDistributeUsb()) {
-            // ??? Should this be here?
-            // Uncommented in case there is an email lying around somewhere, and someone
-            // uses it to retrieve the data after the admin distributes it over USB.
-            // client.setDistributionKey( null );
-        } else {
+        final String email = client.getDistributionEmail();
+        if ( email != null ) {
             /* Generate a random key for email distribution */
             String key = client.getDistributionKey();
 
@@ -340,14 +341,7 @@ public class VpnNodeImpl extends AbstractNode
 
         this.openVpnManager.writeClientConfigurationFiles( settings, client );
 
-        if ( client.getDistributeUsb()) distributeClientConfigUsb( client );
-        else distributeClientConfigEmail( client, client.getDistributionEmail());
-    }
-
-    private void distributeClientConfigUsb( VpnClientBase client )
-        throws NodeException
-    {
-        /* XXX Nothing to do here, it is copied in writeConfigurationFiles */
+        if ( email != null ) distributeClientConfigEmail( client, email );
     }
 
     private void distributeClientConfigEmail( VpnClientBase client, String email )
@@ -396,6 +390,78 @@ public class VpnNodeImpl extends AbstractNode
         return null;
     }
 
+    /* Returns a URL to use to download the admin key. */
+    public String getAdminDownloadLink( String clientName, ConfigFormat format )
+        throws NodeException
+    {
+        long now = System.currentTimeMillis();
+
+        boolean foundClient = false;
+        for ( final VpnClientBase client : this.settings.getCompleteClientList()) {
+            if ( !client.getInternalName().equals( clientName )) continue;
+            
+            /* Clear out the distribution email */
+            client.setDistributionEmail( null );
+            distributeRealClientConfig( client );
+            foundClient = true;
+            break;
+        }
+
+        if ( !foundClient ) {
+            throw new NodeException( "Unable to download unsaved clients <" + clientName +">" );
+        }
+
+        /* This is designed to protect against clock changes and keys create way in the future */
+        if (( this.adminDownloadClientExpiration < now ) ||
+            ( this.adminDownloadClientExpiration > ( now + ( ADMIN_DOWNLOAD_CLIENT_TIMEOUT * 2 )))) {
+            this.adminDownloadClientExpiration = 0;
+            this.adminDownloadClientKey = null;
+        }
+        
+        if ( this.adminDownloadClientKey == null ) {
+            this.adminDownloadClientKey = String.format( "%08x%08x", 
+                                                         this.random.nextInt(), this.random.nextInt());
+            this.adminDownloadClientExpiration = now + ADMIN_DOWNLOAD_CLIENT_TIMEOUT;
+        }
+
+        String fileName = null;
+        switch ( format ) {
+        case SETUP_EXE : fileName = "setup.exe";  break;
+        case ZIP: fileName = "config.zip"; break;
+        }
+        
+        return WEB_APP_PATH + "/" + fileName + 
+            "?" + Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + 
+            URLEncoder.encode( this.adminDownloadClientKey ) + 
+            "&" + Constants.ADMIN_DOWNLOAD_CLIENT_PARAM + "=" + URLEncoder.encode( clientName );
+    }
+
+    /* Returns true if this is the correct authentication key for
+     * downloading keys as the administrator */
+    public boolean isAdminKey( String key )
+    {
+        long now = System.currentTimeMillis();
+        
+        /* This is designed to protect against clock changes and keys create way in the future */
+        if (( this.adminDownloadClientExpiration < now ) ||
+            ( this.adminDownloadClientExpiration > ( now + ( ADMIN_DOWNLOAD_CLIENT_TIMEOUT * 2 )))) {
+            this.adminDownloadClientExpiration = 0;
+            this.adminDownloadClientKey = null;
+        }
+            
+        if (( this.adminDownloadClientKey == null ) || !this.adminDownloadClientKey.equals( key )) {
+            return false;
+        }
+    
+        return true;
+    }
+
+    public void addClientDistributionEvent( IPaddr clientAddress, String clientName )
+    {
+        this.openVpnMonitor.
+            addClientDistributionEvent( new ClientDistributionEvent( clientAddress, clientName ));
+    }
+
     private boolean lookupClientDistributionKey( String key, IPaddr clientAddress, final VpnClientBase client )
     {
         String clientKey = client.getDistributionKey();
@@ -422,12 +488,6 @@ public class VpnNodeImpl extends AbstractNode
             };
 
         getNodeContext().runTransaction( tw );
-
-        /* Log the client distribution event.  Must be done with
-         * the openvpn monitor because the thread is not currently
-         * registered for the event logger. */
-        this.openVpnMonitor.
-            addClientDistributionEvent( new ClientDistributionEvent( clientAddress, client.getName()));
 
         return true;
     }

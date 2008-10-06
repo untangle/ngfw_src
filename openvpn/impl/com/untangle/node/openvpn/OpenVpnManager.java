@@ -340,9 +340,10 @@ class OpenVpnManager
             String key = client.getDistributionKey();
             if ( key == null ) key = "";
 
+            /* USB Distribution is no longer supported. */
             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
                                              key, publicAddress,
-                                             String.valueOf( client.getDistributeUsb()),
+                                             String.valueOf( false ),
                                              String.valueOf( client.isUntanglePlatform()),
                                              settings.getInternalSiteName(),
                                              bs.getCompanyName(),

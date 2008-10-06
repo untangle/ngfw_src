@@ -162,20 +162,6 @@ public class VpnClientBase extends Rule implements Validatable
     }
 
     @Transient
-    public boolean getDistributeUsb()
-    {
-        return ( this.distributionEmail == null );
-    }
-
-    public void setDistributeUsb( boolean distributeUsb )
-    {
-        /* In order to distribute over usb, you have to null out the email address  *
-         * in order to distribute over email, you have to just set the distribution *
-         * email. */
-        if ( distributeUsb ) this.distributionEmail = null;
-    }
-
-    @Transient
     public String getDistributionEmail()
     {
         return this.distributionEmail;
@@ -184,6 +170,12 @@ public class VpnClientBase extends Rule implements Validatable
     public void setDistributionEmail( String email )
     {
         this.distributionEmail = email;
+    }
+
+    @Transient
+    public boolean hasDistributionEmail()
+    {
+        return this.distributionEmail != null;
     }
 
     /* This is the name that is used as the common name in the certificate */

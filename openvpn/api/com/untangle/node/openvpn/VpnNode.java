@@ -33,6 +33,12 @@ import java.util.List;
 
 public interface VpnNode extends Node
 {
+    public enum ConfigFormat
+    {
+        SETUP_EXE,
+        ZIP;
+    };
+    
     public void setVpnSettings( VpnSettings settings );
     public VpnSettings getVpnSettings();
 
@@ -45,6 +51,17 @@ public interface VpnNode extends Node
 
     /* Need the address to log where the request came from */
     public String lookupClientDistributionKey( String key, IPaddr address );
+
+    /* Returns a URL to use to download the admin key. */
+    public String getAdminDownloadLink( String clientName, ConfigFormat format )
+        throws NodeException;
+     
+    /* Returns true if this is the correct authentication key for
+     * downloading keys as the administrator */
+    public boolean isAdminKey( String key );
+
+    /** Log a distribution event */
+    public void addClientDistributionEvent( IPaddr clientAddress, String clientName );
 
     /* Send out the client distribution */
     public void distributeClientConfig( VpnClientBase client ) throws NodeException;

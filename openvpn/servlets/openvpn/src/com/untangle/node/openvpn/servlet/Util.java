@@ -41,6 +41,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeException;
 import com.untangle.node.openvpn.Constants;
 import com.untangle.node.openvpn.VpnNode;
 import com.untangle.uvm.util.ServletStreamer;
@@ -76,8 +77,15 @@ class Util
     boolean requiresSecure( HttpServletRequest request, HttpServletResponse response )
         throws ServletException, IOException
     {
-        if ( request.getScheme().equals( "https" )) return false;
+        /* Let the admin do whatever they want */
+        try {
+            if ( isAdmin( request )) return false;
+        } catch ( Exception e ) {
+            logger.warn( "Unable to determine if the user is an admin.", e );
+        }
 
+        if ( request.getScheme().equals( "https" )) return false;
+             
         /* Otherwise, reject the page, they definitely didn't use the link to get it */
         rejectFile( request, response );
         return true;
@@ -86,25 +94,38 @@ class Util
     /* Returns the commonName for the request, or null if the request is not valid */
     String getCommonName(HttpServlet servlet, HttpServletRequest request )
     {
+        VpnNode node = null;
+
+        try {
+            node = getNode();
+        } catch ( NodeException e ) {
+            logger.warn( "Unable to get common name.", e );
+            return null;
+        }
+
+        /* Handle admin users that want to download the client directly. */
+        if ( isAdmin( request, node )) {
+            logger.debug( "Authenticated a valid administative login" );
+
+            String client = request.getParameter( Constants.ADMIN_DOWNLOAD_CLIENT_PARAM );
+            if ( client != null ) {
+                logger.debug( "Sending the client: <" + client + "> to an administrator." );
+                return client;
+            }
+        }
+        
         String key = request.getParameter( DISTRIBUTION_KEY_PARAM );
 
         if ( key != null ) key = key.trim();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug( "key is : " + key );
-        }
+        if (logger.isDebugEnabled()) logger.debug( "key is : " + key );
 
         if ( key != null && key.length() > 0 ) {
             String commonName = null;
 
             try {
-                /* XXX Should this be cached?? */
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
-
-                LocalUvmContext ctx = LocalUvmContextFactory.context();
-                Tid tid = ctx.nodeManager().nodeInstances( "untangle-node-openvpn" ).get( 0 );
-                NodeContext tc = ctx.nodeManager().nodeContext( tid );
-                commonName = ((VpnNode)tc.node()).lookupClientDistributionKey( key, address );
+                commonName = node.lookupClientDistributionKey( key, address );
             } catch ( Exception e ) {
                 logger.error( "Error connecting to the openvpn node", e );
                 request.setAttribute( REASON_ATTR, "Error connnecting to the openvpn node " + e );
@@ -165,8 +186,10 @@ class Util
 
         long length = 0;
 
+        logger.debug( "Streaming '" + fileName + "'" );
+
         try {
-            File file = new File( fileName );
+            File file = new File( fileName );            
             fileData  = new FileInputStream( file );
             length = file.length();
         } catch ( FileNotFoundException e ) {
@@ -190,6 +213,31 @@ class Util
         /* Indicate that the response was not rejected */
         response.setStatus( HttpServletResponse.SC_FORBIDDEN );
         request.getRequestDispatcher( "/Index.jsp" ).forward( request, response );
+    }
+
+    VpnNode getNode()  throws NodeException
+    {
+        LocalUvmContext ctx = LocalUvmContextFactory.context();
+        Tid tid = ctx.nodeManager().nodeInstances( "untangle-node-openvpn" ).get( 0 );
+        if ( tid == null ) throw new NodeException( "OpenVPN is not loaded." );
+        NodeContext tc = ctx.nodeManager().nodeContext( tid );
+
+        if ( tc == null ) throw new NodeException( "OpenVPN is not loaded." );
+        return (VpnNode)tc.node();
+    }
+    
+    private boolean isAdmin( HttpServletRequest request ) throws NodeException
+    {
+        return isAdmin( request, getNode());
+    }
+
+    private boolean isAdmin( HttpServletRequest request, VpnNode node )
+    {
+        String key = request.getParameter( Constants.ADMIN_DOWNLOAD_CLIENT_KEY );
+        if ( key == null ) return false;
+        if ( !node.isAdminKey( key )) return false;
+
+        return true;
     }
 
     static Util getInstance()
