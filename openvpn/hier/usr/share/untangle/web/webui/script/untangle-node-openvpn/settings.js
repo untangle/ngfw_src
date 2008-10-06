@@ -66,7 +66,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 {
                     name : 'close',
                     iconCls : 'cancelIcon',
-                    text : this.i18n._('Close')
+                    text : this.i18n._('Close'),
+                    handler : this.hide.createDelegate( this )
                 }],
                 items : [
                     this.panel
@@ -428,128 +429,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }
             });
         },
-        getDistributeWindow : function(grid) {
-        	return new Ung.ButtonsWindow({
-        		grid: grid,
-        		sizeToGrid:true,
-        		settingsCmp: this,
-        		title: i18n._('OpenVPN Question...'),
-        		distributeUsb: false,
-    		    initComponent : function() {
-    		    	this.bbar= ['->',{
-                        name : 'Cancel',
-                        iconCls : 'cancelIcon',
-                        text : i18n._('Cancel'),
-                        handler : function() {
-                            this.cancelAction();
-                        }.createDelegate(this)
-                    },{
-                        name : 'Proceed',
-                        iconCls : 'saveIcon',
-                        text : i18n._('Proceed'),
-                        handler : function() {
-                            this.proceedAction();
-                        }.createDelegate(this)
-                    }];
-                    this.items=new Ext.FormPanel({
-                        labelWidth : 110,
-                        buttonAlign : 'right',
-                        border : false,
-                        bodyStyle : 'padding:10px 10px 0px 10px;',
-                        autoScroll: true,
-                        defaults : {
-                            selectOnFocus : true,
-                            msgTarget : 'side'
-                        },
-                        items : [{
-                            xtype : 'fieldset',
-                            title :  i18n._('Question:'),
-                            autoHeight : true,
-                            labelWidth: 150,
-                            items: [{
-                                bodyStyle : 'padding:0px 0px 5px 5px;',
-                                border : false,
-                                html: this.settingsCmp.i18n._("Please choose how you would like to distribute your digital key. <br/>Note: If you choose to send via email, you must supply an email address to send the email to.)")
-                            },{
-                                xtype : 'radio',
-                                boxLabel : this.settingsCmp.i18n._('Distribute via Email'),
-                                hideLabel : true,
-                                name : 'distributeMethod',
-                                checked : true,
-                                value: 1,
-                                listeners : {
-                                    "check" : {
-                                        fn : function(elem, checked) {
-                                            var emailCmp=Ext.getCmp('openvpn_distributeWindow_email_address'+this.getId());
-                                            
-                                            this.distributeUsb=!checked;
-                                            if(checked) {
-                                                emailCmp.enable();
-                                                var emailVal=emailCmp.getValue();
-                                                this.record.data.distributionEmail=(emailVal!=null && emailVal.length>0)?emailVal:null;
-                                            } else {
-                                                emailCmp.disable();
-                                                this.record.data.distributionEmail=null;
-                                            }
-                                        }.createDelegate(this)
-                                    }
-                                }
-                            }, {
-                                xtype : 'textfield',
-                                fieldLabel : this.settingsCmp.i18n._('Email Address'),
-                                name : 'outsideNetwork',
-                                id : 'openvpn_distributeWindow_email_address'+this.getId(),
-                                labelStyle: "padding-left:20px;",
-                                width: 200,
-                                allowBlank : false,
-                                blankText : this.settingsCmp.i18n._("You must specify an email address to send the key to."),
-                                listeners : {
-                                    "change" : {
-                                        fn : function(elem, newValue) {
-                                            this.record.data.distributionEmail = newValue;
-                                        }.createDelegate(this)
-                                    }
-                                }
-                            }, {
-                                xtype : 'radio',
-                                boxLabel : this.settingsCmp.i18n._('Download.'),
-                                hideLabel : true,
-                                name : 'distributeMethod',
-                                checked : false,
-                                value: 2
-                            }]
-                        }]
-                    });
-    		    	Ung.ButtonsWindow.prototype.initComponent.call(this);
-    		    },
-                populate : function(record) {
-                    this.record = record;
-                },                
-                proceedAction : function() {
-                	if(!this.distributeUsb && (this.record.data.distributionEmail==null || this.record.data.distributionEmail.length==0)) {
-                		Ext.MessageBox.alert(i18n._("Failure"), this.settingsCmp.i18n._("You must specify an email address to send the key to."));
-                        return;
-                	}
-                	Ext.MessageBox.wait(this.settingsCmp.i18n._("Distributing digital key..."), i18n._("Please wait"));
-                    this.settingsCmp.getRpcNode().distributeClientConfig(function(result, exception) {
-                        if (exception) {
-                            var errorMsg=(this.record.data.distributionEmail==null)?
-                               this.settingsCmp.i18n._("OpenVPN was not able to save your digital key to your USB key.  Please try again."):
-                               this.settingsCmp.i18n._("OpenVPN was not able to send your digital key via email.  Please try again.");
-                            Ext.MessageBox.alert(this.settingsCmp.i18n._("Error saving/sending key"), errorMsg);
-                            return;
-                        }
-                        var successMsg=(this.record.data.distributionEmail==null)?
-                           this.settingsCmp.i18n._("OpenVPN successfully saved your digital key to your USB key."):
-                           this.settingsCmp.i18n._("OpenVPN successfully sent your digital key via email.");
-                        // go to next step
-                        Ext.MessageBox.alert(this.settingsCmp.i18n._("Success"),successMsg, function() {
-                        	this.hide();
-                        }.createDelegate(this));
-                    }.createDelegate(this), this.record.data)
-                }
-        	});
-        },
         getGroupsColumn : function() {
             return {
                 id : 'groupId',
@@ -609,8 +488,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         node : this.settingsCmp.getRpcNode()
                     });
                     this.subCmps.push(this.distributeWindow.window);
-                        // this.distributeWindow=this.settingsCmp.getDistributeWindow(this);
-                        // this.subCmps.push(this.distributeWindow);
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
                 settingsCmp : this,
@@ -721,8 +598,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             var gridSites = new Ung.EditorGrid({
                 initComponent : function() {
-                    this.distributeWindow=this.settingsCmp.getDistributeWindow(this);
-                    this.subCmps.push(this.distributeWindow);
+                    this.distributeWindow = new Ung.Node.OpenVPN.DistributeClient({
+                        i18n : this.settingsCmp.i18n,
+                        node : this.settingsCmp.getRpcNode()
+                    });
+                    this.subCmps.push(this.distributeWindow.window);
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
                 settingsCmp : this,
