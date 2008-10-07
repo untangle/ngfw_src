@@ -47,6 +47,7 @@ import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
@@ -55,6 +56,7 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.Application;
+import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.MackageDesc.Type;
 import com.untangle.uvm.toolbox.MackageException;
@@ -332,14 +334,14 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     public void installAndInstantiate(final String name, final Policy p)
         throws MackageInstallException
     {
-        Runnable r =new Runnable()
+        Runnable r = new Runnable()
             {
                 public void run()
                 {
                     List<String> nodes = predictNodeInstall(name);
                     install(name, false);
-                    NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-                        .context().nodeManager();
+                    UvmContextImpl mctx = UvmContextImpl.getInstance();
+                    NodeManagerImpl tm = mctx.nodeManager();
                     for (String nn : nodes) {
                         try {
                             register(nn);
@@ -352,6 +354,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                             logger.warn("could not register", e);
                         }
                     }
+
+                    LocalMessageManager mm = mctx.localMessageManager();
+                    Message m = new InstallAndInstantiateComplete(name);
+                    mm.submitMessage(m);
+
                 }
             };
         LocalUvmContextFactory.context().newThread(r).start();
