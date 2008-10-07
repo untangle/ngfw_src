@@ -500,7 +500,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 this.displayButtonsOrProgress(false);
                 this.progressBar.waitDefault(i18n._("Uninstalling..."));
                 break;
-            case "activating_downloading" :
+            case "download_progress" :
                 this.displayButtonsOrProgress(false);
                 if (options == null) {
                     this.progressBar.reset();
@@ -512,15 +512,11 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                     this.progressBar.updateProgress(progressIndex, progressString);
                 }
                 break;
-            case "activating" :
+            case "download" :
                 this.displayButtonsOrProgress(false);
-                this.progressBar.waitDefault(i18n._("Activating..."));
+                this.progressBar.waitDefault(i18n._("Downloading..."));
                 break;
-            case "activated_ok" :
-                this.displayButtonsOrProgress(false);
-                this.progressBar.waitDefault(i18n._("Activate ok."));
-                break;
-            case "activated_timeout" :
+            case "activate_timeout" :
                 this.displayButtonsOrProgress(false);
                 this.progressBar.waitDefault(i18n._("Activate timeout."));
                 break;
@@ -774,16 +770,16 @@ Ung.Node = Ext.extend(Ext.Component, {
 
         var trialFlag = "";
         var trialDays = "";
-        if (this.md.extraName != null && this.md.extraName.indexOf("Trial") != -1) {
-            trialFlag = i18n._("Trial");
-            if (this.md.extraName.indexOf("expired") != -1) {
-                trialDays = i18n._("Trial expired");
-            } else {
-                var daysRemain = parseInt(this.md.extraName.replace("Trial (", ""))
+        if(this.licenseStatus.isTrial) {
+        	trialFlag = i18n._("Trial");
+        	if(this.licenseStatus.isExpired) {
+        		trialDays = i18n._("Trial expired");
+        	} else {
+        		var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
                 if (!isNaN(daysRemain)) {
                     trialDays = String.format(i18n._("{0} days remain"), daysRemain);
                 }
-            }
+        	}
         }
         var templateHTML = Ung.Node.template.applyTemplate({
             'id' : this.getId(),
@@ -1176,7 +1172,7 @@ Ung.MessageManager = {
                                 var policy=null;
                                 policy = rpc.currentPolicy;
                                 var appItemName=msg.mackageDesc.type=="TRIAL"?msg.mackageDesc.fullVersion:msg.mackageDesc.name
-                                Ung.AppItem.updateState(appItemName, "activating");
+                                Ung.AppItem.updateState(appItemName, "download");
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                     if (exception) {
                                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
@@ -1190,7 +1186,7 @@ Ung.MessageManager = {
                             var node=main.getNode(msg.nodeDesc.mackageDesc.name)
                             if(!node) {
                                 hasNodeInstantiated=true;
-                                var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs);
+                                var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs, msg.licenseStatus);
                                 main.nodes.push(node);
                                 main.addNode(node, true);
                             }
@@ -1199,15 +1195,15 @@ Ung.MessageManager = {
                         	if(msg.upgrade==false) {
                         		var appItemName=msg.requestingMackage.type=="TRIAL"?msg.requestingMackage.fullVersion:msg.requestingMackage.name; 
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
-                                	Ung.AppItem.updateState(appItemName, "activating");
+                                	Ung.AppItem.updateState(appItemName, "download");
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                	Ung.AppItem.updateState(appItemName, "activating_downloading", msg);
+                                	Ung.AppItem.updateState(appItemName, "download_progress", msg);
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
-                                	Ung.AppItem.updateState(appItemName, "installing");
+                                	Ung.AppItem.updateState(appItemName, "download");
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
-                                	Ung.AppItem.updateState(appItemName, "activated_ok");
+                                	Ung.AppItem.updateState(appItemName, "installing");
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
-                                    Ung.AppItem.updateState(appItemName, "activated_timeout");
+                                    Ung.AppItem.updateState(appItemName, "activate_timeout");
                                 }
                         	} else if(msg.upgrade==true) {
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {

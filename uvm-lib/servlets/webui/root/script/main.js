@@ -478,13 +478,14 @@ Ung.Main.prototype = {
         }
         return null;
     },
-    createNode: function (Tid, md, statDesc) {
+    createNode: function (Tid, md, statDesc,licenseStatus) {
         var node={};
         node.tid=Tid.id;
         node.Tid=Tid;
         node.md=md;
         node.name=md.name;
         node.displayName=md.displayName;
+        node.licenseStatus=licenseStatus;
         node.image='image?name='+node.name;
         node.blingers=statDesc;
         return node;
@@ -519,7 +520,7 @@ Ung.Main.prototype = {
         this.nodes=[];
         for(var i=0;i<rpc.rackView.instances.list.length;i++) {
             var instance=rpc.rackView.instances.list[i];
-            var node=this.createNode(instance.tid, instance.mackageDesc,rpc.rackView.statDescs.map[instance.tid.id]);
+            var node=this.createNode(instance.tid, instance.mackageDesc,rpc.rackView.statDescs.map[instance.tid.id],rpc.rackView.licenseStatus.map[instance.mackageDesc.name]);
             this.nodes.push(node);
         }
         for(var i=0;i<this.nodes.length;i++) {

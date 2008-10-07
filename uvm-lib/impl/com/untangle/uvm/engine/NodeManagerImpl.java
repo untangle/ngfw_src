@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
@@ -306,7 +307,9 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             LocalMessageManager lmm = LocalUvmContextFactory.context()
                 .localMessageManager();
             Counters c = lmm.getCounters(node.getTid());
-            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs());
+            RemoteLicenseManager lm = LocalUvmContextFactory.context().remoteLicenseManager();
+            
+            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs(),lm.getMackageStatus(mackageDesc.getName()));
             LocalMessageManager mm = mctx.localMessageManager();
             mm.submitMessage(ne);
         }
