@@ -75,7 +75,7 @@ public class RackView implements Serializable
         return statDescs;
     }
 
-    public Map<String, LicenseStatus> getLicenceStatus()
+    public Map<String, LicenseStatus> getLicenseStatus()
     {
         return licenseStatus;
     }
