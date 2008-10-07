@@ -2362,7 +2362,7 @@ Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
     },
     cancelAction : function() {
         this.grid.changedData = Ext.decode(this.initialChangedData);
-        this.grid.getView().refresh();
+        this.grid.initialLoad();
         this.hide();
     },
     updateAction : function() {
