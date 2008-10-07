@@ -68,7 +68,11 @@ require "#{SRC_HOME}/clam/package.rb"
 require "#{SRC_HOME}/util/package.rb"
 require "#{SRC_HOME}/gui/package.rb"
 
-if CCompilerEnv::Amd64
+# Newer iptables has only PIC library, older has both
+iptables_dev_package_version = `dpkg -l iptables-dev | tail -1 | awk '{print $3}'`
+if `dpkg --compare-versions "$iptables_dev_package_version" ge "1.4.0"`
+  wlibs         = ['ipq']
+elsif CCompilerEnv::Amd64
   wlibs         = ['ipq_pic']
 else
   wlibs         = ['ipq']
