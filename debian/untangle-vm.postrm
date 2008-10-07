@@ -13,3 +13,4 @@ if [ "$1" = "purge" ] ; then
     update-rc.d untangle-vm remove > /dev/null
 fi
 
+exit 0
