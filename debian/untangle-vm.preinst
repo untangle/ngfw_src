@@ -6,3 +6,5 @@ killall update-reports rollup-logs 2>/dev/null
 if [ -x /usr/bin/uvm-restart ]; then
     uvm-restart restart
 fi
+
+exit 0
