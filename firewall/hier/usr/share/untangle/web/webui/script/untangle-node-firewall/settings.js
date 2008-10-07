@@ -23,7 +23,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 fixed : true
             });
 
-            var actionData = [[false, this.i18n._('Pass')],[true, this.i18n._('Block')]];
+            var actionData = [["Pass", this.i18n._('Pass')],["Block", this.i18n._('Block')]];
 
             this.panelRules = new Ext.Panel({
                 name : 'panelRules',
@@ -50,7 +50,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         hasReorder : true,
                         emptyRow : {
                             "live" : true,
-                            "action" : this.i18n._('Block'),
+                            "action" : 'Block',
                             "log" : false,
                             "protocol" : "TCP & UDP",
                             "srcIntf" : "any",
