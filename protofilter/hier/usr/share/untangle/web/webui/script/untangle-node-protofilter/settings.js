@@ -5,15 +5,12 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
     Ung.Protofilter = Ext.extend(Ung.Settings, {
         gridProtocolList : null,
         gridEventLog : null,
-        // called when the component is rendered
-        onRender : function(container, position) {
-            // call superclass renderer first
-            Ung.Protofilter.superclass.onRender.call(this, container, position);
-            // builds the 2 tabs
+        initComponent : function() {
             this.buildProtocolList();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.gridProtocolList, this.gridEventLog]);
+            Ung.Protofilter.superclass.initComponent.call(this);
         },
         // Protocol list grid
         buildProtocolList : function() {
@@ -56,30 +53,30 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 fields : [{
                     name : 'id'
                 },
-                        // this field is internationalized so a converter was
-                        // added
-                        {
-                            name : 'category',
-                            convert : function(v) {
-                                return this.i18n._(v)
-                            }.createDelegate(this)
-                        }, {
-                            name : 'protocol'
-                        }, {
-                            name : 'blocked'
-                        }, {
-                            name : 'log'
-                        },
-                        // this field is internationalized so a converter was
-                        // added
-                        {
-                            name : 'description',
-                            convert : function(v) {
-                                return this.i18n._(v)
-                            }.createDelegate(this)
-                        }, {
-                            name : 'definition'
-                        }],
+                // this field is internationalized so a converter was
+                // added
+                {
+                    name : 'category',
+                    convert : function(v) {
+                        return this.i18n._(v)
+                    }.createDelegate(this)
+                }, {
+                    name : 'protocol'
+                }, {
+                    name : 'blocked'
+                }, {
+                    name : 'log'
+                },
+                // this field is internationalized so a converter was
+                // added
+                {
+                    name : 'description',
+                    convert : function(v) {
+                        return this.i18n._(v)
+                    }.createDelegate(this)
+                }, {
+                    name : 'definition'
+                }],
                 // the list of columns for the column model
                 columns : [{
                     id : 'category',

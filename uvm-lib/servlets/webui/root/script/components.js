@@ -753,9 +753,11 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     // before Destroy
     beforeDestroy : function() {
+    	if(this.settingsWin && this.settingsWin.isVisible()) {
+    		this.settingsWin.cancelAction();
+    	}
         Ext.each(this.subCmps, Ext.destroy);
         Ext.get('nodePower_' + this.getId()).removeAllListeners();
-        Ext.destroy(this.settingsWin);
         Ung.Node.superclass.beforeDestroy.call(this);
     },
     onRender : function(container, position) {
