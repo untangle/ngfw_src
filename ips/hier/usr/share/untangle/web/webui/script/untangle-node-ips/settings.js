@@ -15,7 +15,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelStatus, this.panelRules, this.gridEventLog]);
-            Ung.Virus.superclass.initComponent.call(this);
+            Ung.Ips.superclass.initComponent.call(this);
         },
         // get branding settings
         getBrandingBaseSettings : function(forceReload) {

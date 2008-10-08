@@ -572,6 +572,9 @@ Ung.Main.prototype = {
 
     installNode: function(mackageDesc, targetPolicy) {
         if(mackageDesc!==null) {
+        	if(main.getNode(mackageDesc.name)!=null) {
+        		return;
+        	}
             Ung.AppItem.updateStateForNode(mackageDesc.name, "installing");
             var policy=null;
             if(targetPolicy==null) {

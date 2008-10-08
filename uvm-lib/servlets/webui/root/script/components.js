@@ -1188,6 +1188,7 @@ Ung.MessageManager = {
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
                         	}
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
+                        	refreshApps=true;
                             var node=main.getNode(msg.nodeDesc.mackageDesc.name)
                             if(!node) {
                                 var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs, msg.licenseStatus);

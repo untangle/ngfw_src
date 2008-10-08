@@ -15,7 +15,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             this.buildEventLog();
             // builds a tab panel with the 3 panels
             this.buildTabPanel([this.panelBlockLists, this.gridPassList, this.gridEventLog]);
-            Ung.SpamAssassin.superclass.initComponent.call(this);
+            Ung.Spyware.superclass.initComponent.call(this);
         },
         // Block lists panel
         buildBlockLists : function() {
