@@ -18,7 +18,6 @@
 package com.untangle.node.webfilter;
 
 import java.io.Serializable;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -39,7 +38,7 @@ import com.untangle.node.http.UserWhitelistMode;
  */
 @Embeddable
 public class WebFilterBaseSettings implements Serializable {
-	
+
     private UserWhitelistMode userWhitelistMode = UserWhitelistMode.NONE;
 
     private BlockTemplate blockTemplate = new BlockTemplate();
@@ -48,16 +47,18 @@ public class WebFilterBaseSettings implements Serializable {
 
     private boolean fascistMode = false;
 
+    private boolean enableHttps = true;
+
     private int passedClientsLength;
     private int passedUrlsLength;
     private int blockedUrlsLength;
     private int blockedMimeTypesLength;
     private int blockedExtensionsLength;
     private int blacklistCategoriesLength;
-	
 
-	public WebFilterBaseSettings() {}
-	
+
+    public WebFilterBaseSettings() {}
+
     /**
      * Template for block messages.
      *
@@ -107,6 +108,22 @@ public class WebFilterBaseSettings implements Serializable {
         this.fascistMode = fascistMode;
     }
 
+    /**
+     * If true, enables checking of HTTPS traffic.
+     *
+     * @return true to block.
+     */
+    @Column(name="enable_https", nullable=false)
+    public boolean getEnableHttps()
+    {
+        return enableHttps;
+    }
+
+    public void setEnableHttps(boolean enableHttps)
+    {
+        this.enableHttps = enableHttps;
+    }
+
     @Enumerated(EnumType.STRING)
     @Column(name="user_whitelist_mode", nullable=false)
     public UserWhitelistMode getUserWhitelistMode()
@@ -120,57 +137,57 @@ public class WebFilterBaseSettings implements Serializable {
     }
 
     @Transient
-	public int getPassedClientsLength() {
-		return passedClientsLength;
-	}
+    public int getPassedClientsLength() {
+        return passedClientsLength;
+    }
 
-	public void setPassedClientsLength(int passedClientsLength) {
-		this.passedClientsLength = passedClientsLength;
-	}
-
-    @Transient
-	public int getPassedUrlsLength() {
-		return passedUrlsLength;
-	}
-
-	public void setPassedUrlsLength(int passedUrlsLength) {
-		this.passedUrlsLength = passedUrlsLength;
-	}
+    public void setPassedClientsLength(int passedClientsLength) {
+        this.passedClientsLength = passedClientsLength;
+    }
 
     @Transient
-	public int getBlockedUrlsLength() {
-		return blockedUrlsLength;
-	}
+    public int getPassedUrlsLength() {
+        return passedUrlsLength;
+    }
 
-	public void setBlockedUrlsLength(int blockedUrlsLength) {
-		this.blockedUrlsLength = blockedUrlsLength;
-	}
-
-    @Transient
-	public int getBlockedMimeTypesLength() {
-		return blockedMimeTypesLength;
-	}
-
-	public void setBlockedMimeTypesLength(int blockedMimeTypesLength) {
-		this.blockedMimeTypesLength = blockedMimeTypesLength;
-	}
+    public void setPassedUrlsLength(int passedUrlsLength) {
+        this.passedUrlsLength = passedUrlsLength;
+    }
 
     @Transient
-	public int getBlockedExtensionsLength() {
-		return blockedExtensionsLength;
-	}
+    public int getBlockedUrlsLength() {
+        return blockedUrlsLength;
+    }
 
-	public void setBlockedExtensionsLength(int blockedExtensionsLength) {
-		this.blockedExtensionsLength = blockedExtensionsLength;
-	}
+    public void setBlockedUrlsLength(int blockedUrlsLength) {
+        this.blockedUrlsLength = blockedUrlsLength;
+    }
 
     @Transient
-	public int getBlacklistCategoriesLength() {
-		return blacklistCategoriesLength;
-	}
+    public int getBlockedMimeTypesLength() {
+        return blockedMimeTypesLength;
+    }
 
-	public void setBlacklistCategoriesLength(int blacklistCategoriesLength) {
-		this.blacklistCategoriesLength = blacklistCategoriesLength;
-	}
-    
+    public void setBlockedMimeTypesLength(int blockedMimeTypesLength) {
+        this.blockedMimeTypesLength = blockedMimeTypesLength;
+    }
+
+    @Transient
+    public int getBlockedExtensionsLength() {
+        return blockedExtensionsLength;
+    }
+
+    public void setBlockedExtensionsLength(int blockedExtensionsLength) {
+        this.blockedExtensionsLength = blockedExtensionsLength;
+    }
+
+    @Transient
+    public int getBlacklistCategoriesLength() {
+        return blacklistCategoriesLength;
+    }
+
+    public void setBlacklistCategoriesLength(int blacklistCategoriesLength) {
+        this.blacklistCategoriesLength = blacklistCategoriesLength;
+    }
+
 }
