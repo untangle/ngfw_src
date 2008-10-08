@@ -117,14 +117,21 @@ if BuildEnv::SRC.isDevel
                                            'pkg-list-main')
 
   activationKey = "#{uvm_lib.distDirectory}/usr/share/untangle/activation.key"
+  regInfo = "#{uvm_lib.distDirectory}/usr/share/untangle/registration.info"
 
-  ## Insert the activation key if necessary.  Done here to not include
-  ## The file inside of packages
+  ## Create all-zeros activation key to signal non-production install.
+  ## Done here to not include the file inside of packages.
   file activationKey do
     File.open( activationKey, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
   end
+  ## Create blank registration info to avoid setup wizard in development.
+  ## Done here to not include the file inside of packages.
+  file regInfo do
+    File.open( regInfo, "w" ) { |f| f.puts( "" ) }
+  end
 
   BuildEnv::SRC.installTarget.register_dependency(activationKey)
+  BuildEnv::SRC.installTarget.register_dependency(regInfo)
 end
 
 BuildEnv::SRC.installTarget.register_dependency(uvm_cacerts)
