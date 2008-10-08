@@ -561,7 +561,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
         rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
             if (exception) {
-                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message, function () {
+                	this.openStore();
+                }.createDelegate(this));
                 return;
             }
             var upgradeStatus=result;
@@ -570,22 +572,25 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             } else if(upgradeStatus.upgradesAvailable){
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
             } else {
-                var currentLocation = window.location;
-                var query = "&host=" + currentLocation.hostname;
-                query += "&port=" + currentLocation.port;
-                query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-                query += "&action=browse";
-                query += "&libitem=" + this.libItem.name;
-    
-                var url = "../library/launcher?" + query;
-                var iframeWin = main.getIframeWin();
-                iframeWin.show();
-                iframeWin.setTitle(String.format(i18n._("More Info - {0}"),this.item.displayName));
-                window.frames["iframeWin_iframe"].location.href = url;
+                this.openStore();
                 Ext.MessageBox.hide();
             }
         }.createDelegate(this), true);
 
+    },
+    openStore : function () {
+        var currentLocation = window.location;
+        var query = "&host=" + currentLocation.hostname;
+        query += "&port=" + currentLocation.port;
+        query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+        query += "&action=browse";
+        query += "&libitem=" + this.libItem.name;
+
+        var url = "../library/launcher?" + query;
+        var iframeWin = main.getIframeWin();
+        iframeWin.show();
+        iframeWin.setTitle(String.format(i18n._("More Info - {0}"),this.item.displayName));
+        window.frames["iframeWin_iframe"].location.href = url;
     },
     // install node / uninstall App
     installNodeFn : function(e) {
@@ -1163,7 +1168,7 @@ Ung.MessageManager = {
            try {
                var messageQueue=result;
                if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
-                   var hasNodeInstantiated=false;
+                   var refreshApps=false;
                    Ung.MessageManager.messageHistory.push(messageQueue.messages.list); // for
                                                                                         // debug
                                                                                         // info
@@ -1182,17 +1187,16 @@ Ung.MessageManager = {
                                     }
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
                         	}
-                        } else if (msg.javaClass.indexOf("MackageUpdateExtraName") >= 0) {
-
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             var node=main.getNode(msg.nodeDesc.mackageDesc.name)
                             if(!node) {
-                                hasNodeInstantiated=true;
                                 var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs, msg.licenseStatus);
                                 main.nodes.push(node);
                                 main.addNode(node, true);
                             }
                             main.startNode(Ung.Node.getCmp(node.tid));
+                        } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
+                        	refreshApps=true;
                         } else {
                         	if(msg.upgrade==false) {
                         		var appItemName=msg.requestingMackage.type=="TRIAL"?msg.requestingMackage.fullVersion:msg.requestingMackage.name; 
@@ -1259,7 +1263,7 @@ Ung.MessageManager = {
                         	}
                         }
                     }
-                    if(hasNodeInstantiated && !Ung.MessageManager.upgradeMode) {
+                    if(refreshApps && !Ung.MessageManager.upgradeMode) {
                         main.updateSeparator();
                         main.loadApps();
                     }

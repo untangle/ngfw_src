@@ -113,6 +113,7 @@ Ung.Main.prototype = {
         rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                this.startApplication.defer(1500,this);
                 return;
             }
             var upgradeStatus=result;
@@ -204,7 +205,9 @@ Ung.Main.prototype = {
                 Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
                 rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
                     if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message, function () {
+                            main.openStore("wizard",i18n._('What Apps should I use?'));
+                    	});
                         return;
                     }
                     var upgradeStatus=result;
@@ -213,17 +216,7 @@ Ung.Main.prototype = {
                     } else if(upgradeStatus.upgradesAvailable){
                         Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
                     } else {
-                        var currentLocation = window.location;
-                        var query = "host=" + currentLocation.hostname;
-                        query += "&port=" + currentLocation.port;
-                        query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-                        query += "&action=wizard";
-        
-                        var url = "../library/launcher?" + query;
-                        var iframeWin = main.getIframeWin();
-                        iframeWin.show();
-                        iframeWin.setTitle(i18n._('What Apps should I use?'));
-                        window.frames["iframeWin_iframe"].location.href = url;
+	                    main.openStore("wizard",i18n._('What Apps should I use?'));
                         Ext.MessageBox.hide();
                     }
                 }.createDelegate(this), true);
@@ -241,22 +234,25 @@ Ung.Main.prototype = {
                 this.getEl().alignTo("appsItems","c-c",[0,10]);
             }, 
             handler: function() {
-                var currentLocation = window.location;
-                var query = "host=" + currentLocation.hostname;
-                query += "&port=" + currentLocation.port;
-                query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-                query += "&action=my_account";
-
-                var url = "../library/launcher?" + query;
-                var iframeWin = main.getIframeWin();
-                iframeWin.show();
-                iframeWin.setTitle("");
-                window.frames["iframeWin_iframe"].location.href = url;
+            	main.openStore("my_account",i18n._("My Account"));
             }
         });
         buttonCmp.hide();
         this.loadConfig();
         this.loadPolicies();
+    },
+    openStore : function (action,title) {
+        var currentLocation = window.location;
+        var query = "host=" + currentLocation.hostname;
+        query += "&port=" + currentLocation.port;
+        query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+        query += "&action="+action;
+
+        var url = "../library/launcher?" + query;
+        var iframeWin = main.getIframeWin();
+        iframeWin.show();
+        iframeWin.setTitle(title);
+        window.frames["iframeWin_iframe"].location.href = url;
     },
     initExtI18n: function(){
         Ext.form.Field.prototype.invalidText=i18n._('The value in this field is invalid');
