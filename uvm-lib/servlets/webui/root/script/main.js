@@ -570,24 +570,19 @@ Ung.Main.prototype = {
         }.createDelegate(this));
     },
 
-    installNode: function(mackageDesc, targetPolicy) {
+    installNode: function(mackageDesc, appItem) {
         if(mackageDesc!==null) {
         	if(main.getNode(mackageDesc.name)!=null) {
+        		appItem.hide();
         		return;
         	}
             Ung.AppItem.updateStateForNode(mackageDesc.name, "installing");
-            var policy=null;
-            if(targetPolicy==null) {
-                policy = rpc.currentPolicy;
-            } else {
-                policy = targetPolicy;
-            }
             rpc.nodeManager.instantiate(function (result, exception) {
                 if(exception) {
                     Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
                     return;
                 }
-            }.createDelegate(this), mackageDesc.name, policy);
+            }.createDelegate(this), mackageDesc.name, rpc.currentPolicy);
         }
     },
     getIframeWin: function() {

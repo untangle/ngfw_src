@@ -601,7 +601,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         if (e.shiftKey) { // uninstall App
             main.unactivateNode(this.node);
         } else { // install node
-            main.installNode(this.node);
+            main.installNode(this.node, this);
         }
     }
 
