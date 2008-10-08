@@ -736,7 +736,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     // is powered on,
     powerOn : null,
     // running state
-    runState : "INITIALIZED", // RUNNING, INITIALIZED
+    runState : null, // RUNNING, INITIALIZED
 
     // settings Component
     settings : null,
@@ -751,8 +751,11 @@ Ung.Node = Ext.extend(Ext.Component, {
     subCmps : null,
     fnCallback: null,
     constructor : function(config) {
-        config.id = "node_" + config.tid;
-        config.helpSource=config.md.displayName.toLowerCase().replace(/ /g,"_")
+        this.id = "node_" + config.tid;
+        config.helpSource=config.md.displayName.toLowerCase().replace(/ /g,"_");
+        if(config.runState==null) {
+        	config.runState="INITIALIZED";
+        }
         this.subCmps = [];
         Ung.Window.superclass.constructor.apply(this, arguments);
     },
@@ -1191,7 +1194,7 @@ Ung.MessageManager = {
                         	refreshApps=true;
                             var node=main.getNode(msg.nodeDesc.mackageDesc.name)
                             if(!node) {
-                                var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs, msg.licenseStatus);
+                                var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
                                 main.nodes.push(node);
                                 main.addNode(node, true);
                             }

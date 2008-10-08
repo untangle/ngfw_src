@@ -53,6 +53,8 @@ import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.Application;
@@ -238,8 +240,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             String n = nd.getMackageDesc().getName();
             licenseStatus.put(n, lm.getMackageStatus(n));
         }
-
-        return new RackView(apps, instances, statDescs, licenseStatus);
+        Map<Tid, NodeState> runStates=tm.allNodeStates();
+        return new RackView(apps, instances, statDescs, licenseStatus, runStates);
     }
 
     public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException

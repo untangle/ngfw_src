@@ -474,7 +474,7 @@ Ung.Main.prototype = {
         }
         return null;
     },
-    createNode: function (Tid, md, statDesc,licenseStatus) {
+    createNode: function (Tid, md, statDesc,licenseStatus,runState) {
         var node={};
         node.tid=Tid.id;
         node.Tid=Tid;
@@ -484,6 +484,7 @@ Ung.Main.prototype = {
         node.licenseStatus=licenseStatus;
         node.image='image?name='+node.name;
         node.blingers=statDesc;
+        node.runState=runState;
         return node;
     },
     buildApps: function () {
@@ -516,7 +517,10 @@ Ung.Main.prototype = {
         this.nodes=[];
         for(var i=0;i<rpc.rackView.instances.list.length;i++) {
             var instance=rpc.rackView.instances.list[i];
-            var node=this.createNode(instance.tid, instance.mackageDesc,rpc.rackView.statDescs.map[instance.tid.id],rpc.rackView.licenseStatus.map[instance.mackageDesc.name]);
+            var node=this.createNode(instance.tid, instance.mackageDesc,
+                rpc.rackView.statDescs.map[instance.tid.id],
+                rpc.rackView.licenseStatus.map[instance.mackageDesc.name],
+                rpc.rackView.runStates.map[instance.tid.id]);
             this.nodes.push(node);
         }
         for(var i=0;i<this.nodes.length;i++) {
@@ -524,9 +528,15 @@ Ung.Main.prototype = {
             this.addNode(node);
         }
         this.updateSeparator();
-        this.loadNodesRunStates();
+        if(!main.disableThreads) {
+            Ung.MessageManager.start(true);
+        }
+        if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Please wait")) {
+            Ext.MessageBox.hide();
+        }
 
     },
+
     // load the rack view for current policy
     loadRackView: function() {
     	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
@@ -547,27 +557,6 @@ Ung.Main.prototype = {
             rpc.rackView=result;
             main.buildApps();
         }.createDelegate(this), rpc.currentPolicy);
-    },
-    // load run states for all Nodes
-    loadNodesRunStates: function() {
-        rpc.nodeManager.allNodeStates(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-                return;
-            }
-            var allNodeStates=result;
-            for(var i=0;i<this.nodes.length;i++) {
-                var nodeCmp=Ung.Node.getCmp(this.nodes[i].tid);
-                if(nodeCmp) {
-                    nodeCmp.updateRunState(allNodeStates.map[this.nodes[i].tid]);
-                }
-            }
-            if(!main.disableThreads) {
-                Ung.MessageManager.start(true);
-            }
-            if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Please wait")) {
-                Ext.MessageBox.hide();
-            }
-        }.createDelegate(this));
     },
 
     installNode: function(mackageDesc, appItem) {

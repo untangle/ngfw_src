@@ -41,6 +41,7 @@ import java.util.Map;
 import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.security.Tid;
 
 public class RackView implements Serializable
@@ -49,15 +50,18 @@ public class RackView implements Serializable
     private List<NodeDesc> instances;
     private Map<Tid, StatDescs> statDescs;
     private Map<String, LicenseStatus> licenseStatus;
+    private Map<Tid, NodeState> runStates;
 
     public RackView(List<Application> applications, List<NodeDesc> instances,
                     Map<Tid, StatDescs> statDescs,
-                    Map<String, LicenseStatus> licenseStatus)
+                    Map<String, LicenseStatus> licenseStatus,
+                    Map<Tid, NodeState> runStates)
     {
         this.applications = Collections.unmodifiableList(applications);
         this.instances = Collections.unmodifiableList(instances);
         this.statDescs = Collections.unmodifiableMap(statDescs);
         this.licenseStatus = Collections.unmodifiableMap(licenseStatus);
+        this.runStates = Collections.unmodifiableMap(runStates);
     }
 
     public List<Application> getApplications()
@@ -80,9 +84,14 @@ public class RackView implements Serializable
         return licenseStatus;
     }
 
+    public Map<Tid, NodeState> getRunStates() {
+        return runStates;
+    }
+
     @Override
     public String toString()
     {
         return "RackView\n  AVAILABLE: " + applications + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + statDescs;
     }
+
 }
