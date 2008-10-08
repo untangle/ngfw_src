@@ -304,7 +304,7 @@ SQL
 end
 
 def setup_schema(dbh)
-  unless dbh.select_one('select current_schemas(false)')[0].any? { |e| 'settings' == e }
+  unless dbh.select_one('select schema_name from information_schema.schemata where schema_name = \'settings\'')
     dbh.do('CREATE SCHEMA settings')
   end
 
