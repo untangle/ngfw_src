@@ -68,16 +68,18 @@ require "#{SRC_HOME}/clam/package.rb"
 require "#{SRC_HOME}/util/package.rb"
 require "#{SRC_HOME}/gui/package.rb"
 
-# Newer iptables has only PIC library, older has both
-iptables_dev_package_version = `dpkg -l iptables-dev | tail -1 | awk '{print $3}'`
-system 'dpkg --compare-versions "$iptables_dev_package_version" ge "1.4.0"'
-if $? == 0
-  wlibs         = ['ipq']
-elsif CCompilerEnv::Amd64
-  wlibs         = ['ipq_pic']
-else
-  wlibs         = ['ipq']
-end
+# # We don't need ipq at all, as netfilter-queue replaces it.
+# # --Seb & Robert
+# # Newer iptables has only PIC library, older has both
+# iptables_dev_package_version = `dpkg -l iptables-dev | tail -1 | awk '{print $3}'`
+# system 'dpkg --compare-versions "$iptables_dev_package_version" ge "1.4.0"'
+# if $? == 0
+#   wlibs         = ['ipq']
+# elsif CCompilerEnv::Amd64
+#   wlibs         = ['ipq_pic']
+# else
+#   wlibs         = ['ipq']
+# end
 
 libuvmcore_so = "#{BuildEnv::SRC.staging}/libuvmcore.so"
 
