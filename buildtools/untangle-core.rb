@@ -80,6 +80,7 @@ require "#{SRC_HOME}/gui/package.rb"
 # else
 #   wlibs         = ['ipq']
 # end
+wlibs = []
 
 libuvmcore_so = "#{BuildEnv::SRC.staging}/libuvmcore.so"
 
