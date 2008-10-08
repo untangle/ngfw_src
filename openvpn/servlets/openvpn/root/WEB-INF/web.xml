@@ -56,6 +56,17 @@
     <url-pattern>/config.zip</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ClientSetup</servlet-name>
+    <servlet-class>com.untangle.node.openvpn.servlet.ClientSetup</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ClientSetup</servlet-name>
+    <url-pattern>/clientSetup</url-pattern>
+  </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>Start</servlet-name>
     <url-pattern>*.html</url-pattern>

@@ -18,7 +18,7 @@ EG_TEMPLATE="${DATA_DIR}/eg-template.html"
 commonName=`removeSpaces ${1}`
 distributionKey=${2}
 publicAddress=${3}
-distributeUsb=${4}
+method=${4}
 isEdgeGuard=${5}
 siteName=${6}
 
@@ -101,43 +101,6 @@ buildEmail()
         ${t_mailTemplate} > ${t_emailFile}
 }
 
-copyToUsb()
-{
-    local t_usbDevice=`lookup_usb_device`
-    ## Unique qualifier to distinguish the file on the USB key
-    local fileKey="${siteName}-${commonName}"
-    
-    if [ -z "${t_usbDevice}" ]; then
-        echo "Unable to find USB device"
-        exit -${USB_ERROR}
-    fi
-
-    ## Attempt to mount the usb key
-    echo "Mounting device ${t_usbDevice}"
-
-    local t_mountPoint=`mktemp -d || exit -3`
-    
-    mount "${t_usbDevice}" ${t_mountPoint} || usbCleanup ${t_mountPoint} ${USB_ERROR}
-    
-    mkdir -p ${t_mountPoint}/${USB_DEST}/ || usbCleanup ${t_mountPoint} ${USB_ERROR}
-
-    cp -f ${PACKAGE_DIR}/config-${commonName}.zip \
-        ${t_mountPoint}/${USB_DEST}/config-${fileKey}.zip || usbCleanup ${t_mountPoint} ${USB_ERROR}
-
-    cp -f ${PACKAGE_DIR}/setup-${commonName}.exe \
-        ${t_mountPoint}/${USB_DEST}/setup-${fileKey}.exe || usbCleanup ${t_mountPoint} ${USB_ERROR}
-
-    # A stamp which indicates whether or not this client is an edgeguard
-    if [ "${isEdgeGuard}x" = "truex" ]; then
-        touch ${t_mountPoint}/${USB_DEST}/eg-${fileKey}.stamp || usbCleanup ${t_mountPoint} ${USB_ERROR}
-    else
-        rm -f ${t_mountPoint}/${USB_DEST}/eg-${fileKey}.stamp || usbCleanup ${t_mountPoint} ${USB_ERROR}
-    fi
-    
-    ## Cleanup
-    usbCleanup ${t_mountPoint}
-}
-
 ## Convert the client file to dos
 unix2dos ${WIN_CONFIG_FILE}
 
@@ -146,13 +109,14 @@ makensis -V1 -DCOMMON_NAME="${commonName}" -DSITE_NAME="${siteName}" ${NSI_SCRIP
 
 buildConfigFile
 
-if [ "${distributeUsb}x" = "truex" ]; then
-    echo "Copying configuration to USB"
-    copyToUsb
-else
-    echo "Distributing over email"
-    buildEmail
-fi
+case "${method}" in
+    "email")
+        echo "[`date`,generate-distro] Distributing over email"
+        buildEmail
+        ;;
+    *)
+        echo "[`date`,generate-distro] ignoring method ${method}"
+esac
 
 true
 

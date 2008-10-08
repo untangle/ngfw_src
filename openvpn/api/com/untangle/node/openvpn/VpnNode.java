@@ -71,12 +71,17 @@ public interface VpnNode extends Node
     public HostAddress getVpnServerAddress();
 
     public void startConfig(ConfigState state) throws ValidateException;
+
+    /* Retrieve the link to use as a post to upload client configuration files. */
+    public String getAdminClientUploadLink();
     public void completeConfig() throws Exception;
 
-    //// the stages of the setup wizard ///
-    List<String> getAvailableUsbList() throws NodeException;
+    /* This installs a client configuration that is somewhere on the
+     * file system.  On success, this makes a copy of the
+     * configuration. */
+    public void installClientConfig( String path ) throws Exception;
+
     public void downloadConfig( HostAddress address, int port, String key ) throws Exception;
-    public void downloadConfigUsb( String name ) throws Exception;
     public void generateCertificate( CertificateParameters parameters ) throws Exception;
     public GroupList getAddressGroups() throws Exception;
     public void setAddressGroups( GroupList parameters ) throws Exception;

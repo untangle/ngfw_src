@@ -61,9 +61,6 @@ class CertificateManager
 
     private static final String SERVER_NAME_FLAG  = "SERVER_NAME";
     private static final String CA_NAME_FLAG      = "CA_NAME";
-    
-    /* Set to true to store the certificate private key onto the usb key */
-    private static final String USB_FLAG          = "USE_USB_KEY";
 
     private static final String HEADER[]          = new String[] {
         "# VPN Base parameter generator configuration file\n"
@@ -114,9 +111,6 @@ class CertificateManager
 
         sw.appendComment( "Key size" );
         sw.appendVariable( KEY_SIZE_FLAG, String.valueOf( settings.getKeySize()), true );
-
-        sw.appendComment( "USB Key indicator" );
-        sw.appendVariable( USB_FLAG, String.valueOf( settings.getCaKeyOnUsb()));
 
         sw.appendLines( DEFAULTS );
 

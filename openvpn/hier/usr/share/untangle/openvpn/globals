@@ -27,12 +27,6 @@ OPENVPN_CCD_DIR="${OPENVPN_CONF_DIR}/ccd"
 ## This is the client status file that java uses to check the certificate status for each client
 CLIENT_STATUS_FILE="${MISC_DIR}/client_status.txt"
 
-## Destination on the USB drive for untangle openvpn data
-USB_DEST="untangle-data/openvpn"
-
-## Error code for when something goes wrong with the usb device
-USB_ERROR=4
-
 ## There must be a configuration file 
 if [ -r ${BASE_CONFIG_FILE} ]; then
     . ${BASE_CONFIG_FILE}
@@ -75,19 +69,6 @@ rmDbg()
 {
     echo rm $@
     rm $@
-}
-
-
-validateUsbKey()
-{
-############################# XXXXXXXXXXXXXXXXXXXXXXXXXX
-    true
-}
-
-saveToUsbKey()
-{
-############################# XXXXXXXXXXXXXXXXXXXXXXXXXX
-    true
 }
 
 removeSpaces()
@@ -154,27 +135,6 @@ getCommonNames()
     sed -e "/dnQualifier=${DN_QUALIFIER_SERVER}/d" \
         -e 's|.*\/CN=\([^/]*\).*|\1|' ${INDEX_FILE} | \
         uniq
-}
-
-lookup_usb_device()
-{
-    udevinfo --export | awk '/^N:/ { device="/dev/"$2 ; is_usb=0 ; is_disk=0; is_partition=0 }
-/ID_BUS=usb/ { is_usb=1  }
-/ID_TYPE=disk/ { is_disk=1 }
-/ID_FS_USAGE=filesystem/ { is_partition=1 }
-/^$/ { if ( is_usb == 1 && is_disk == 1 ) { print device ; is_usb=0 ; is_disk=0 ; if ( is_partition == 1 ) exit }}
-' | tail -n 1
-}
-
-usbCleanup()
-{
-    local t_mountPoint=$1
-    local t_exitCode=$2
-
-    umount ${t_mountPoint}
-    rmdir ${t_mountPoint}
-
-    if [ -n "${t_exitCode}" ]; then exit -${t_exitCode} ; fi
 }
 
 disableOpenVPNStartup()

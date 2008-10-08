@@ -15,37 +15,29 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.i18n = config.i18n;
             this.node = config.node;
 
-            this.panel = new Ext.FormPanel({
-            	bodyStyle : 'padding:5px 5px 0px 5px;',
-                items : [{
-                    cls : 'u-form-panel',
-                    xtype : 'fieldset',
-                    title : this.i18n._('Distribute via Email'),
+            var download = null;
+            if ( config.isVpnSite == true ) {
+                download = new Ext.form.FieldSet({
+                    title : this.i18n._('Download Key'),
                     autoHeight : true,
-                    
+                    labelWidth: 150,
                     items: [{
-                        html : this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
-                        border: false,
+                        html : this.i18n._('Download VPN Site configuration.'),
                         cls : "description"
                     },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Email Address'),
-                        labelWidth: 150,
-                        width: 200,
-                        name : 'emailAddress'
-                    },{
                         xtype : 'button',
-                        text : this.i18n._( "Send Email" ),
-                        name : 'sendEmail',
-                        handler : this.sendEmail.createDelegate( this )
-                }]},{
-                    xtype : 'fieldset',
+                        text : this.i18n._( "Configuration Files" ),
+                        name : 'configurationFiles',
+                        handler : this.configurationFiles.createDelegate( this )
+                    }]
+                });                
+            } else {
+                download = new Ext.form.FieldSet({
                     title : this.i18n._('Download Key'),
                     autoHeight : true,
                     labelWidth: 150,
                     items: [{
                         html : this.i18n._('Click here to download a key for Windows clients.'),
-                        border: false,
                         cls : "description"
                     },{
                         xtype : 'button',
@@ -54,8 +46,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         handler : this.windowsInstaller.createDelegate( this )
                     },{
                         html : this.i18n._('Use this button for all other clients.'),
-                        bodyStyle : 'paddingTop:10px',
-                        border: false,
                         cls : "description"
                     },{
                         xtype : 'button',
@@ -63,7 +53,30 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         name : 'configurationFiles',
                         handler : this.configurationFiles.createDelegate( this )
                     }]
-                }]
+                });
+            }
+
+            this.panel = new Ext.FormPanel({
+                items : [{
+                    cls : 'u-form-panel',
+                    xtype : 'fieldset',
+                    title : this.i18n._('Distribute via Email'),
+                    autoHeight : true,
+                    labelWidth: 150,
+                    items: [{
+                        html : this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
+                        cls : "description"
+                    },{
+                        xtype : 'textfield',
+                        fieldLabel : this.i18n._('Email Address'),
+                        name : 'emailAddress'
+                    },{
+                        xtype : 'button',
+                        text : this.i18n._( "Send Email" ),
+                        name : 'sendEmail',
+                        handler : this.sendEmail.createDelegate( this )
+                }]}, download 
+                ]
             });
 
             this.window = new Ung.ButtonsWindow({
@@ -165,6 +178,279 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         hide : function()
         {
             this.window.hide();
+        }
+    });
+
+    /* Namespace for the openvpn client configuration cards. */
+    Ext.namespace('Ung.Node.OpenVPN.ClientWizard');
+    Ung.Node.OpenVPN.ClientWizard.Welcome = Ext.extend( Object, {
+        constructor : function( config )
+        {
+            this.i18n = config.i18n;
+            this.node = config.node;
+
+            this.title = this.i18n._("Welcome"),
+            this.panel = new Ext.FormPanel({
+                items : [{
+                    xtype : 'label',
+                    html : '<h2 class="wizardTitle">'+i18n._("Welcome to the OpenVPN Setup Wizard!")+'</h2>'
+                },{
+                    html : this.i18n._('This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Client.'),
+                    bodyStyle : 'padding:10px 10px 10px 10px;',
+                    border : false
+                },{
+                    html : this.i18n._('Warning: Completing this wizard will overwrite any previous OpenVPN settings with new settings. All previous settings will be lost!'),
+                    
+                    bodyStyle : 'padding:10px 10px 10px 10px;',
+                    cls: 'warning', 
+                    border : false
+                }]
+            })
+        }
+    });
+
+    Ung.Node.OpenVPN.ClientWizard.LoadConfig = Ext.extend( Object, {
+        constructor : function( config )
+        {
+            this.i18n = config.i18n;
+            this.node = config.node;
+
+            this.title = this.i18n._( "Install Configuration" );
+            
+            this.panel = new Ext.FormPanel({
+                fileUpload : true,
+                items : [{
+                    xtype : 'label',
+                    html : '<h2 class="wizardTitle">'+i18n._("Download Configuration")+'</h2>'
+                },{
+                    html : this.i18n
+                        ._('Please specify where your VPN Client configuration should come from.'),
+                },{
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left',
+                    labelWidth: 150,
+                    labelAlign: 'right',                        
+                    items : [{
+                        xtype : "radio",
+                        boxLabel : this.i18n._('Download from Server'),
+                        hideLabel : true,
+                        name : 'downloadClientConfiguration',
+                        inputValue : "server",
+                        checked : true,
+                        listeners : {
+                            "check" : {
+                                fn : this.onChangeConfigType.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : "textfield",
+                        name : "serverAddress",
+                        fieldLabel : this.i18n._("Server IP Address"),
+                        allowBlank : false,
+                        width : 200,
+                        validator : this.validateServerAddress.createDelegate( this )
+                    },{
+                        xtype : "textfield",
+                        name : "password",
+                        fieldLabel : this.i18n._("Password"),
+                        width : 200,
+                        allowBlank : false,
+                        inputType : 'password'
+                    },{
+                        xtype : "radio",
+                        boxLabel : this.i18n._('Upload Configuration'),
+                        hideLabel : true,
+                        name : 'downloadClientConfiguration',
+                        inputValue : "upload",
+                        checked : false
+                    },{
+                        xtype : 'textfield',
+                        inputType : 'file',
+                        name : 'siteConfiguration',
+                        fieldLabel : 'Configuration File',
+                        allowBlank : false,
+                        width : 300
+                    }]
+                }]
+            });
+
+            this.onNext = this.retrieveClient.createDelegate( this );
+            this.onValidate = this.validateSettings.createDelegate( this );
+
+            this.onChangeConfigType( this.panel.find( "name", "downloadClientConfiguration" )[0], true );
+        },
+
+        onChangeConfigType : function( elem, checked )
+        {
+            /* Checked means that download client is selected */
+            var serverAddress = this.panel.find( 'name', 'serverAddress' )[0];
+            var password = this.panel.find( 'name', 'password' )[0];
+            var siteConfiguration = this.panel.find( 'name', 'siteConfiguration' )[0];
+            serverAddress.setDisabled( !checked );
+            password.setDisabled( !checked );
+            siteConfiguration.setDisabled( checked );
+
+            if ( checked ) {
+                _invalidate( siteConfiguration );
+            } else {
+                _invalidate( [ serverAddress, password ] );
+            }
+        },
+
+        validateSettings : function()
+        {
+            var method = this.panel.find( "name", "downloadClientConfiguration" )[0].getGroupValue();
+
+            var rv = true;
+
+            switch ( method ) {
+            case "upload": 
+                if ( !_validate( this.panel.find( 'name', 'siteConfiguration' ))) rv = false;
+                break;
+
+            case "server":
+                if ( !_validate( this.panel.find( 'name', 'serverAddress' ))) rv = false;
+                if ( !_validate( this.panel.find( 'name', 'password' ))) rv = false;
+                break;
+            default:
+                rv = false;
+            }
+
+            return rv;
+        },
+
+        validateServerAddress : function( value )
+        {
+            var sarr = value.split( ":" );
+            if ( sarr.length > 2 ) return this.i18n._( "Invalid Server Address" );
+
+            /* Could check if the address is of the form <ip>|<hostname>:[<port>] */
+            return true;
+        },
+        
+        retrieveClient : function( handler )
+        {
+            var method = this.panel.find( "name", "downloadClientConfiguration" )[0].getGroupValue();
+
+            switch ( method ) {
+            case "upload": return this.uploadClient( handler );
+            case "server": return this.fetchClient( handler );
+            default:
+                Ext.MessageBox.alert(i18n._( "Select a value" ), i18n._( "Please choose 'Download from Server' or 'Upload Configuration'." )); 
+                return;
+            }
+        },
+
+        fetchClient : function( handler )
+        {
+            Ext.MessageBox.wait(this.i18n._("Downloading Configuration... (This may take up to one minute)"),
+                                this.i18n._("Please wait"));
+
+            var serverAddress = this.panel.find( 'name', 'serverAddress' )[0].getValue();
+            var serverPort = "443";
+            var password = this.panel.find( 'name', 'password' )[0].getValue();
+            
+            var sarr = serverAddress.split( ":" );
+            if ( sarr.length == 2 ) serverPort = sarr[1];
+
+            this.node.downloadConfig( this.completeFetchClient.createDelegate( this , [ handler ], true ),
+                                      serverAddress, serverPort, password );
+        },
+
+        completeFetchClient : function( result, exception, foo, handler )
+        {
+            if ( exception ) {
+                Ext.MessageBox.alert(this.i18n._("Error downloading configuration from server."), 
+                                     this.i18n._("Your VPN Client configuration could not be downloaded from the server.  Please try again."));
+                                     
+                return;
+            }
+
+            this.node.completeConfig( this.c_completeConfig.createDelegate( this, [ handler ], true ));
+        },
+
+        uploadClient : function( handler )
+        {
+            Ext.MessageBox.wait(this.i18n._("Uploading Configuration... (This may take up to one minute)"),
+                                this.i18n._("Please wait"));
+
+            this.node.getAdminClientUploadLink( this.completeGetAdminClientUploadLink.createDelegate( this, [handler], true ));
+        },
+
+        completeGetAdminClientUploadLink : function( result, exception, foo, handler )
+        {
+            if ( exception ) {
+                Ext.MessageBox.alert( this.i18n._("Failed."), this.i18n._( "Unable to load VPN Client" ));
+                return;
+            }
+
+            var file = this.panel.find( "name", "siteConfiguration" )[0].getValue();
+
+            /* This should have already happened in onValidate */
+            if ( file == null || file.length == 0 ) {
+                Ext.MessageBox.alert(i18n._( "Select File" ), i18n._( "Please choose a file to upload." )); 
+                return;
+            }
+
+            this.panel.getForm().submit({
+                url : result,
+                success : this.completeUploadClient.createDelegate( this, [ handler ], true ),
+                failure : this.failUploadClient.createDelegate( this ),
+                clientValidation : false
+            });
+        },
+
+        completeUploadClient : function( form, action, handler )
+        {
+            this.node.completeConfig( this.c_completeConfig.createDelegate( this, [ handler ], true ));
+        },
+        
+        failUploadClient : function( form, action )
+        {
+            Ext.MessageBox.alert(i18n._( "Failed" ), i18n._( "Unable to install client'." ));
+        },
+
+        c_completeConfig : function( result, exception, foo, handler )
+        {
+            if ( exception ) {
+                Ext.MessageBox.alert( this.i18n._("Failed."), this.i18n._( "Unable to load VPN Client" ));
+                return;
+            }
+
+            // go to next step
+            Ext.MessageBox.alert( this.i18n._("Success"), 
+                                  this.i18n._("Installed OpenVPN client."));
+
+            handler();
+        }
+    });
+
+    Ung.Node.OpenVPN.ClientWizard.Congratulations = Ext.extend( Object, {
+        constructor : function( config )
+        {
+            this.i18n = config.i18n;
+            this.node = config.node;
+            this.gui = config.gui;
+
+            this.title = this.i18n._( "Finished!" );
+            this.panel = new Ext.FormPanel({
+                items : [{
+                        xtype : 'label',
+                        html : '<h2 class="wizardTitle">'+i18n._("Finished!")+'</h2>'
+                    }, {
+                        html : this.i18n._('Congratulations! OpenVPN is configured as a VPN Client.')
+                    },{
+                        html : this.i18n._('If necessary, you can change the configuration of OpenVPN by launching the Setup Wizard again.')
+                }]
+            });
+
+            this.onNext = this.completeWizard.createDelegate( this );
+        },
+
+        completeWizard : function( handler )
+        {
+            this.gui.clientSetup.endAction();
         }
     });
 
@@ -300,7 +586,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                     Ext.MessageBox.alert(this.i18n._("Failed"), exception.message);
                                     return;
                                 }
-                                this.configureVNPServer();
+                                this.configureVPNServer();
                             }.createDelegate(this), "SERVER_ROUTE")
                         	
                         }.createDelegate(this)
@@ -321,7 +607,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                     Ext.MessageBox.alert(this.i18n._("Failed"), exception.message);
                                     return;
                                 }
-                                this.configureVNPClient();
+                                this.configureVPNClient();
                             }.createDelegate(this), "CLIENT")
                         }.createDelegate(this)
                     }, {
@@ -607,7 +893,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 initComponent : function() {
                     this.distributeWindow = new Ung.Node.OpenVPN.DistributeClient({
                         i18n : this.settingsCmp.i18n,
-                        node : this.settingsCmp.getRpcNode()
+                        node : this.settingsCmp.getRpcNode(),
+                        isVpnSite : true    
                     });
                     this.subCmps.push(this.distributeWindow.window);
                     Ung.EditorGrid.prototype.initComponent.call(this);
@@ -1423,270 +1710,27 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
         },
 
-        configureVNPClient : function() {
+        configureVPNClient : function() {
             if (this.clientSetup) {
                 Ext.destroy(this.clientSetup)
             }
-            var welcomeCard = {
-                title : this.i18n._("Welcome"),
-                panel : {
-                    xtype : 'form',
-                    items : [{
-                        xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Welcome to the OpenVPN Setup Wizard!")+'</h2>'
-                    },
-                    {
-                        html : this.i18n
-                                ._('This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Client.'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
-                        border : false
-                    }, {
-                        html : this.i18n
-                                ._('Warning: Completing this wizard will overwrite any previous OpenVPN settings with new settings. All previous settings will be lost!'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
-                        cls: 'warning', 
-                        border : false
-                    }]
-                },
-                onNext : function(handler) {
-                    handler();
-                }
-            };
-            var downloadCard = {
-                title : this.i18n._("Download Configuration"),
-                panel : {
-                    xtype : 'form',
-                    items : [{
-                        xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Download Configuration")+'</h2>'
-                    }, {
-                        html : this.i18n
-                                ._('Please specify where your VPN Client configuration should come from.  You may specify a Server or USB Key.  If you choose USB Key, you must press "Read USB Key" to load configurations from the key, and then choose a configuration from the drop-down-list.'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
-                        border : false
-                    }, {
-                        xtype : 'fieldset',
-                        autoHeight : true,
-                        buttonAlign : 'left',
-                        labelWidth: 150,
-                        labelAlign: 'right',                        
-                        items : [{
-                            xtype : "radio",
-                            boxLabel : this.i18n._('Download from Server'),
-                            hideLabel : true,
-                            name : 'downloadClientConfiguration',
-                            inputValue : true,
-                            checked : true,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
-                                        if (checked) {
-                                            Ext.getCmp("openvpn_client_wizard_server_ip").enable();
-                                            Ext.getCmp("openvpn_client_wizard_password").enable();
-                                            Ext.getCmp("openvpn_client_read_usb").disable();
-                                            Ext.getCmp("openvpn_client_configurations").disable();
-                                        } else {
-                                            Ext.getCmp("openvpn_client_wizard_server_ip").disable();
-                                            Ext.getCmp("openvpn_client_wizard_password").disable();
-                                            Ext.getCmp("openvpn_client_read_usb").enable();
-                                            Ext.getCmp("openvpn_client_configurations").enable();
-                                        }
-                                    }.createDelegate(this)
-                                }
-                            }
-                        }, {
-                            xtype : "textfield",
-                            id : 'openvpn_client_wizard_server_ip',
-                            name : "Server IP Address",
-                            fieldLabel : this.i18n._("Server IP Address"),
-                            allowBlank : false,
-                            width : 200
-                                // vtype : 'ipAddress'
-                                }, {
-                                    xtype : "textfield",
-                                    id : 'openvpn_client_wizard_password',
-                                    name : "Password",
-                                    fieldLabel : this.i18n._("Password"),
-                                    width : 200,
-                                    inputType : 'password'
-                                }, {
-                                    xtype : "radio",
-                                    boxLabel : this.i18n._('Download from USB Key'),
-                                    style : "margin-left:20px;",
-                                    hideLabel : true,
-                                    name : 'downloadClientConfiguration',
-                                    inputValue : true,
-                                    checked : false
 
-                                }, {
-                                    xtype : "panel",
-                                    border : false,
-                                    width : 500,
-                                    layout : 'column',
-                                    items : [{
-                                        width : 180,
-                                        border : false,
-                                        items : [{
-                                            xtype : 'button',
-                                            id : 'openvpn_client_read_usb',
-                                            name : 'Read USB Key',
-                                            text : this.i18n._('Read USB Key'),
-                                            style : "padding-left: 30px;",
-                                            disabled : true,
-                                            handler : function() {
-                                            	Ext.MessageBox.wait(i18n._("Reading USB Key..."), i18n._("Please wait"));
-                                                this.getRpcNode().getAvailableUsbList(function(result, exception) {
-                                                    if (exception) {
-                                                        Ext.MessageBox.alert(i18n._("OpenVPN Setup Wizard Warning"),this.i18n._("The USB Key could not be read.  Please make sure the key is properly inserted, and try again."));
-                                                        return;
-                                                    }
-                                                    if(result.list.length==0) {
-                                                        Ext.MessageBox.alert(i18n._("OpenVPN Setup Wizard Warning"),this.i18n._("No configuration found."));
-                                                        return;
-                                                    }
-                                                    var configurationsCmp = Ext.getCmp("openvpn_client_configurations");
-                                                    var storeData = [];
-                                                    for (var i = 0; i < result.list.length; i++) {
-                                                        storeData.push([result.list[i], result.list[i]])
-                                                    }
-                                                    configurationsCmp.store.loadData(storeData);
-                                                    Ext.MessageBox.hide();
-                                                }.createDelegate(this))
-                                            }.createDelegate(this)
-                                        }]
-                                    }, {
-                                        width : 280,
-                                        border : false,
-                                        items : [{
-                                            xtype : 'combo',
-                                            name : 'Configurations',
-                                            id : 'openvpn_client_configurations',
-                                            editable : false,
-                                            hideLabel : true,
-                                            width : 230,
-                                            mode : 'local',
-                                            triggerAction : 'all',
-                                            listClass : 'x-combo-list-small',
-                                            store : new Ext.data.SimpleStore({
-                                                fields : ['key', 'name'],
-                                                data : [["[No Configurations]", this.i18n._("[No Configurations]")]]
-                                            }),
-                                            displayField : 'name',
-                                            valueField : 'key',
-                                            value : "[No Configurations]",
-                                            disabled : true,
-                                            lazyInit : false
-                                        }]
-                                    }]
-                                }]
-                    }]
-                },
-                onNext : function(handler) {
-                    if (!Ext.getCmp("openvpn_client_wizard_server_ip").disabled) {
-                        // download from server
-                        var serverAddress = Ext.getCmp("openvpn_client_wizard_server_ip").getValue();
-                        var serverPort = null;
-                        var serverAddressErrorMsg = this.i18n._('The "Server Address" is not a valid IP address.');
-                        if (serverAddress == null || serverAddress.length == 0) {
-                            Ext.MessageBox.alert(i18n._("Failed"), serverAddressErrorMsg);
-                            return;
-                        }
-                        var serverAddressArr = serverAddress.split(":");
-                        if (serverAddressArr.length == 1) {
-                            serverPort = "443"
-                        } else if (serverAddressArr.length == 2) {
-                            serverPort = serverAddressArr[1];
-                        } else {
-                            Ext.MessageBox.alert(i18n._("Failed"), serverAddressErrorMsg);
-                            return;
-                        }
-                        var ipAddr = serverAddressArr[0];
-                        var password = Ext.getCmp("openvpn_client_wizard_password").getValue();
-                        if (password == null || password.length == 0) {
-                            Ext.MessageBox.alert(i18n._("Failed"), this.i18n
-                                    ._('Please supply a password will be used to connect to the server.'));
-                            return;
-                        }
-                        Ext.MessageBox.wait(i18n._("Downloading Configuration... (This may take up to one minute)"), i18n._("Please wait"));
-                        this.getRpcNode().downloadConfig(function(result, exception) {
-                            Ext.MessageBox.hide();
-                            if (exception) {
-                                Ext.MessageBox.alert(this.settingsCmp.i18n._("Error downloading config from server."), i18n
-                                        ._("Your VPN Client configuration could not be downloaded from the server.  Please try again."));
-                                return;
-                            }
-                            this.getRpcNode().completeConfig(function(result, exception) {
-                                if (exception) {
-                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                    return;
-                                }
-                                // go to next step
-                                this.handler();
-                            }.createDelegate(this))
-                        }.createDelegate({
-                            handler : handler,
-                            settingsCmp : this
-                        }), ipAddr, serverPort, password)
-                    } else {
-                        // download from usb key
-                        var configCombo = Ext.getCmp("openvpn_client_configurations");
-                        var selection = configCombo.getValue();
-                        if (selection == "[No Configurations]") {
-                            Ext.MessageBox.alert(i18n._("Failed"), this.i18n._('You must click "Read USB Key" before proceeding.'));
-                            return;
-                        } else if (selection == "") {
-                            Ext.MessageBox
-                                    .alert(
-                                            i18n._("Failed"),
-                                            this.i18n
-                                                    ._('You must click "Read USB Key", and select a valid configuration from the drop-down-list before proceeding."'));
-                            return;
-                        }
-                        Ext.MessageBox.wait(i18n._("Downloading Configuration... (This may take up to one minute)"), i18n._("Please wait"));
-                        this.getRpcNode().downloadConfigUsb(function(result, exception) {
-                            if (exception) {
-                                Ext.MessageBox.alert(this.settingsCmp.i18n._("Error downloading config from USB key."), i18n
-                                        ._("Your VPN Client configuration could not be downloaded from the USB key.  Please try again."));
-                                return;
-                            }
-                            this.getRpcNode().completeConfig(function(result, exception) {
-                            	Ext.MessageBox.hide();
-                                if (exception) {
-                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                    return;
-                                }
-                                // go to next step
-                                this.handler();
-                            }.createDelegate(this))
-                        }.createDelegate({
-                            handler : handler,
-                            settingsCmp : this
-                        }), selection)
-                    }
-                }.createDelegate(this)
-            };
-            var congratulationsCard = {
-                title : this.i18n._("Finished!"),
-                panel : {
-                    xtype : 'form',
-                    items : [{
-                        xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Finished!")+'</h2>'
-                    }, {
-                        html : this.i18n._('Congratulations! OpenVPN is configured as a VPN Client.'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
-                        border : false
-                    }, {
-                        html : this.i18n
-                                ._('If necessary, you can change the configuration of OpenVPN by launching the Setup Wizard again.'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
-                        border : false
-                    }]
-                },
-                onNext : function(handler) {
-                    this.clientSetup.endAction();
-                }.createDelegate(this)
-            };
+            welcomeCard = new Ung.Node.OpenVPN.ClientWizard.Welcome({
+                i18n : this.i18n,
+                node : this.getRpcNode()
+            });
+
+            downloadCard = new Ung.Node.OpenVPN.ClientWizard.LoadConfig({
+                i18n : this.i18n,
+                node : this.getRpcNode()
+            });
+
+            congratulationsCard = new Ung.Node.OpenVPN.ClientWizard.Congratulations({
+                i18n : this.i18n,
+                node : this.getRpcNode(),
+                gui : this
+            });
+
             var clientWizard = new Ung.Wizard({
                 height : 450,
                 width : 800,
@@ -1711,7 +1755,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls : 'windowBackground',
                     bodyStyle : 'background-color: transparent;'
                 }],
-                endAction : function() {
+                    endAction : function() {
                     this.clientSetup.hide();
                     Ext.destroy(this.clientSetup);
                     if(this.mustRefresh || true) {
@@ -1740,7 +1784,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         //
-        configureVNPServer : function() {
+        configureVPNServer : function() {
             if (this.serverSetup) {
                 Ext.destroy(this.serverSetup)
             }
@@ -1902,7 +1946,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }, {
-                        html : "<i>" + this.i18n._('By default the entire internal network and the DNS server is exported.') + "</i>",
+                        html : "<i>" + this.i18n._('By default the entire internal network is exported.') + "</i>",
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         border : false
                     }, gridExports]

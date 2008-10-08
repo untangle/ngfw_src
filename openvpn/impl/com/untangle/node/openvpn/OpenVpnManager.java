@@ -321,7 +321,7 @@ class OpenVpnManager
     /**
      * Create all of the client configuration files
      */
-    void writeClientConfigurationFiles( VpnSettings settings, VpnClientBase client )
+    void writeClientConfigurationFiles( VpnSettings settings, VpnClientBase client, String method )
         throws NodeException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
@@ -334,26 +334,23 @@ class OpenVpnManager
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
 
         if (logger.isDebugEnabled()) {
-            logger.debug( "Executing: " + GENERATE_DISTRO_SCRIPT );
+            logger.debug( "Executing: " + GENERATE_DISTRO_SCRIPT + "[" + method + "]" );
         }
+
         try {
             String key = client.getDistributionKey();
             if ( key == null ) key = "";
 
             /* USB Distribution is no longer supported. */
             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
-                                             key, publicAddress,
-                                             String.valueOf( false ),
+                                             key, publicAddress, method,
                                              String.valueOf( client.isUntanglePlatform()),
                                              settings.getInternalSiteName(),
                                              bs.getCompanyName(),
                                              bs.getCompanyUrl());
         } catch ( ScriptException e ) {
-            if ( e.getCode() == Constants.USB_ERROR_CODE ) {
-                throw new UsbUnavailableException( "Unable to connect or write to USB device" );
-            } else {
-                throw e;
-            }
+            logger.warn( "Unable to execute distribution script", e );
+            throw e;
         }
     }
 

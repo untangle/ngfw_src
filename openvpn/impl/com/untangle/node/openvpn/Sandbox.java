@@ -60,9 +60,6 @@ import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptException;
 
-
-
-
 /* XXX Probably want to make this an abstract class and make this a little more generic */
 class Sandbox
 {
@@ -73,8 +70,6 @@ class Sandbox
     private static final boolean DEFAULT_EXPOSE_CLIENTS = true;
 
     private static final String DOWNLOAD_SCRIPT = Constants.SCRIPT_DIR + "/get-client";
-    private static final String LS_CLIENTS_SCRIPT = Constants.SCRIPT_DIR + "/list-usb-configs";
-    private static final String CLIENT_LIST_FILE = Constants.MISC_DIR + "/client-list";
 
     private static final String OPENVPN_CLIENT_FILE = OpenVpnManager.OPENVPN_CONF_DIR + "/client.conf";
 
@@ -111,48 +106,12 @@ class Sandbox
         }
     }
 
-    List<String> getAvailableUsbList() throws NodeException
+    void installClientConfig( String path ) throws NodeException
     {
-        BufferedReader in = null;
-        
-        try {
-            /* Run the script to generate a list of the clients that are available */
-            ScriptRunner.getInstance().exec( LS_CLIENTS_SCRIPT );
 
-            /* Get the List */
-            in = new BufferedReader( new FileReader( CLIENT_LIST_FILE ));
-            List<String> availableList = new LinkedList<String>();
+        logger.debug( "Installing from : " + path );
 
-            /* Add each line to the available list */
-            String str;
-            while (( str = in.readLine()) != null ) availableList.add( str.trim());
-            
-            return availableList;
-        } catch ( ScriptException e ) {
-            switch ( e.getCode()) {                
-            case Constants.USB_ERROR_CODE:
-                throw new UsbUnavailableException( "Unable to read the USB device." );
-
-            default:
-                logger.warn( "Unable to read USB files", e );
-                throw new NodeException( "Unable to read the USB device." );
-            }
-        } catch ( FileNotFoundException e ) {
-            /* It is a problem, but no need to let the client know this */
-            logger.warn( "File " + CLIENT_LIST_FILE + " does not exist" );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to read USB files", e );
-            throw new NodeException( "Unable to read USB files." );
-        } finally {
-            try {
-                if ( in != null ) in.close();
-            } catch ( Exception e ) {
-                /* who cares, it is attempting to close the file */
-            }
-        }
-
-        /* This is for any exceptions that are logged, but not errors */
-        return new LinkedList<String>();
+        execDownloadScript( "local", path, "" );        
     }
 
     void downloadConfig( HostAddress address, int port, String key ) throws Exception
@@ -171,19 +130,13 @@ class Sandbox
 
         logger.debug( "Downloading key from: " + serverSocketAddress );
 
-        execDownloadScript( false, serverSocketAddress, key );
+        execDownloadScript( "email", serverSocketAddress, key );
     }
 
-    void downloadConfigUsb( String name ) throws Exception
-    {
-        VpnClientBase.validateName( name );
-        execDownloadScript( true, name, "" );
-    }
-
-    private void execDownloadScript( boolean isUsb, String arg1, String arg2 ) throws Exception
+    private void execDownloadScript( String method, String arg1, String arg2 ) throws NodeException
     {
         try {
-            ScriptRunner.getInstance().exec( DOWNLOAD_SCRIPT, String.valueOf( isUsb ), arg1, arg2 );
+            ScriptRunner.getInstance().exec( DOWNLOAD_SCRIPT, method, arg1, arg2 );
         } catch ( ScriptException e ) {
             switch ( e.getCode()) {
             case Constants.DOWNLOAD_ERROR_CODE: 
@@ -192,13 +145,13 @@ class Sandbox
             case Constants.START_ERROR:
                 throw new StartException( "Test connection with OpenVPN server failed." );
 
-            case Constants.USB_ERROR_CODE:
-                throw new UsbUnavailableException( "Unable to read the USB device." );
-
             default:
                 logger.warn( "Unable to install client configuration", e );
                 throw new NodeException( "Unable to install client configuration" );
             }
+        } catch ( NodeException e ) {
+            logger.warn( "Unable to install client configuration", e );
+            throw e;
         } catch ( Exception e ) {
             logger.warn( "Unable to install client configuration", e );
             throw new NodeException( "Unable to install client configuration." );
@@ -302,7 +255,7 @@ class Sandbox
         group.setAddress( network.getNetwork());
         group.setNetmask( network.getNetmask());
         /* i18n. */
-        group.setName( "[no name]" );
+        group.setName( "default" );
         GroupList gl = new GroupList();
         List<VpnGroup> list = new LinkedList<VpnGroup>();
         list.add( group );
@@ -357,7 +310,7 @@ class Sandbox
             ssn.setNetwork( network.getNetwork());
             ssn.setNetmask( network.getNetmask());
             ssn.setLive( true );
-            ssn.setName( "[no name]" );
+            ssn.setName( "internal network" );
             networkList.add( ssn );
         }
 

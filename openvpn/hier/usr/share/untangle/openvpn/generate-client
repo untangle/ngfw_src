@@ -73,9 +73,6 @@ generateClientKey()
 ## Check if the client key has already been created
 clientExists
 
-## Check for the USB key if necessary
-validateUsbKey
-
 ## Validate that the base has been generated
 validateBase
 

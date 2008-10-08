@@ -19,6 +19,8 @@ RETRY_ATTEMPTS=15
 TEST_DELAY=1
 TEST_FAILED=-5
 DOWNLOAD_ERROR=-6
+MISSING_FILE_ERROR=-7
+ERROR_INTERNAL=-8
 
 ## Amount of time to spend on each download
 DOWNLOAD_TIMEOUT=6
@@ -26,9 +28,9 @@ DOWNLOAD_TIMEOUT=6
 ## Number of times to retry ( 5 times at 6 seconds, 30 seconds)
 DOWNLOAD_RETRIES=5
 
-getFromUsb=${1}
+method=${1}
 serverAddress=${2}
-commonName=${2}
+localPath="${2}"
 distributionKey=${3}
 
 mkdir -p ${PACKAGE_DIR}
@@ -41,38 +43,23 @@ if [ ! -c ${TUN_DEVICE} ]; then
     mknod ${TUN_DEVICE} c 10 200
 fi
 
-destination="${PACKAGE_DIR}/config-${commonName}.zip"
+destination=`mktemp || exit ${MISSING_FILE_ERROR}`
 
-logFile=/var/log/openvpn-eg.log
+logFile=@UVM_LOG@/openvpn.log
 
-copyFromUsb()
+copyLocalFile()
 {
-    local t_usbDevice=`lookup_usb_device`
-    
-    if [ -z "${t_usbDevice}" ]; then
-        echo "Unable to find USB device"
-        exit -${USB_ERROR}
+    if [ !-f "${localPath}" ]; then
+        echo "Unable to find the file: ${localPath}"
+        exit ${MISSING_FILE_ERROR}
     fi
-    
-    t_usbDevice="${t_usbDevice}"
 
-    echo "Mounting device ${t_usbDevice}"
-    
-    local t_mountPoint=`mktemp -d || exit -3`
-    
-    ## Attempt to mount the usb key {dev}
-    mount "${t_usbDevice}" ${t_mountPoint} || usbCleanup ${t_mountPoint} ${USB_ERROR}
-    
-    cp -f ${t_mountPoint}/${USB_DEST}/config-${commonName}.zip \
-        ${destination} || usbCleanup ${t_mountPoint} ${USB_ERROR}
-    
-    ## Cleanup
-    usbCleanup ${t_mountPoint}
+    cp "${localPath}" "${destination}"
 }
 
 downloadClient()
 {
-    curl -k --max-time ${DOWNLOAD_TIMEOUT} \
+    curl -f -v -k --max-time ${DOWNLOAD_TIMEOUT} \
         --retry ${DOWNLOAD_RETRIES} -o ${destination} \
         "https://${serverAddress}/openvpn/config.zip?key=${distributionKey}" \
         || exit ${DOWNLOAD_ERROR}
@@ -94,7 +81,7 @@ installClient()
         || ( ${RM_CMD} -rf ${t_output};  exit -4 )
 
     ## Update the configuration file to log to a normal place
-    sed -i -e "\$a log ${logFile}" ${OPENVPN_CONF_DIR}/client.conf 
+    sed -i -e "\$a log-append ${logFile}" ${OPENVPN_CONF_DIR}/client.conf 
 
     cp -r ${t_output}/untangle-vpn/untangle-vpn ${OPENVPN_CONF_DIR}/untangle-vpn \
         || ( ${RM_CMD} -f ${OPENVPN_CONF_DIR}/client.conf ; ${RM_CMD} -rf ${t_output};  exit -4 )
@@ -132,14 +119,23 @@ testInstall()
 completeInstall()
 {
     ## Modify the startup script to run a command to update the route after startup
-    sed  -i -e "\$ a route-up \"bash ${SCRIPT_DIR}/route-up\"" ${OPENVPN_CONF_DIR}/client.conf    
+    sed  -i -e "\$ a route-up \"bash ${SCRIPT_DIR}/route-up\"" ${OPENVPN_CONF_DIR}/client.conf
 }
 
-if [ "${getFromUsb}x" = "truex" ]; then 
-    copyFromUsb
-else
-    downloadClient
-fi
+case "${method}" in
+    "local")
+        copyLocalFile
+        ;;
+    
+    "email")
+        downloadClient
+        ;;
+    
+    *)
+        echo "Unknown method '${method}'"
+        exit ${ERROR_INTERNAL}
+        ;;
+esac
 
 installClient
 

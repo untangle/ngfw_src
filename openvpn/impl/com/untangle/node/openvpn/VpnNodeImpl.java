@@ -311,6 +311,8 @@ public class VpnNodeImpl extends AbstractNode
         this.certificateManager.createClient( client );
 
         final String email = client.getDistributionEmail();
+        String method = "download";
+
         if ( email != null ) {
             /* Generate a random key for email distribution */
             String key = client.getDistributionKey();
@@ -326,6 +328,8 @@ public class VpnNodeImpl extends AbstractNode
                 }
             }
             client.setDistributionKey( key );
+
+            method = "email";
         }
 
         TransactionWork tw = new TransactionWork()
@@ -339,7 +343,7 @@ public class VpnNodeImpl extends AbstractNode
 
         getNodeContext().runTransaction( tw );
 
-        this.openVpnManager.writeClientConfigurationFiles( settings, client );
+        this.openVpnManager.writeClientConfigurationFiles( settings, client, method );
 
         if ( email != null ) distributeClientConfigEmail( client, email );
     }
@@ -394,11 +398,12 @@ public class VpnNodeImpl extends AbstractNode
     public String getAdminDownloadLink( String clientName, ConfigFormat format )
         throws NodeException
     {
-        long now = System.currentTimeMillis();
-
         boolean foundClient = false;
         for ( final VpnClientBase client : this.settings.getCompleteClientList()) {
-            if ( !client.getInternalName().equals( clientName )) continue;
+            if ( !client.getInternalName().equals( clientName ) &&
+                 !client.getName().equals( clientName )) continue;
+
+            clientName = client.getInternalName();
             
             /* Clear out the distribution email */
             client.setDistributionEmail( null );
@@ -411,18 +416,7 @@ public class VpnNodeImpl extends AbstractNode
             throw new NodeException( "Unable to download unsaved clients <" + clientName +">" );
         }
 
-        /* This is designed to protect against clock changes and keys create way in the future */
-        if (( this.adminDownloadClientExpiration < now ) ||
-            ( this.adminDownloadClientExpiration > ( now + ( ADMIN_DOWNLOAD_CLIENT_TIMEOUT * 2 )))) {
-            this.adminDownloadClientExpiration = 0;
-            this.adminDownloadClientKey = null;
-        }
-        
-        if ( this.adminDownloadClientKey == null ) {
-            this.adminDownloadClientKey = String.format( "%08x%08x", 
-                                                         this.random.nextInt(), this.random.nextInt());
-            this.adminDownloadClientExpiration = now + ADMIN_DOWNLOAD_CLIENT_TIMEOUT;
-        }
+        generateAdminClientKey();
 
         String fileName = null;
         switch ( format ) {
@@ -736,6 +730,14 @@ public class VpnNodeImpl extends AbstractNode
         }
     }
 
+    public String getAdminClientUploadLink()
+    {
+        generateAdminClientKey();
+        
+        return WEB_APP_PATH + "/clientSetup?" +
+            Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + URLEncoder.encode( this.adminDownloadClientKey );
+    }
+
     public void completeConfig() throws Exception
     {
         VpnSettings newSettings = this.sandbox.completeConfig( this.getTid());
@@ -764,20 +766,14 @@ public class VpnNodeImpl extends AbstractNode
         this.sandbox = null;
     }
 
-    //// the stages of the setup wizard ///
-    public List<String> getAvailableUsbList() throws NodeException
+    public void installClientConfig( String path ) throws Exception
     {
-        return this.sandbox.getAvailableUsbList();
+        this.sandbox.installClientConfig( path );
     }
-
+    
     public void downloadConfig( HostAddress address, int port, String key ) throws Exception
     {
         this.sandbox.downloadConfig( address, port, key );
-    }
-
-    public void downloadConfigUsb( String name ) throws Exception
-    {
-        this.sandbox.downloadConfigUsb( name );
     }
 
     public void generateCertificate( CertificateParameters parameters ) throws Exception
@@ -848,5 +844,23 @@ public class VpnNodeImpl extends AbstractNode
     public Validator getValidator()
     {
         return new OpenVpnValidator();
+    }
+
+    private void generateAdminClientKey()
+    {
+        long now = System.currentTimeMillis();
+
+        /* This is designed to protect against clock changes and keys create way in the future */
+        if (( this.adminDownloadClientExpiration < now ) ||
+            ( this.adminDownloadClientExpiration > ( now + ( ADMIN_DOWNLOAD_CLIENT_TIMEOUT * 2 )))) {
+            this.adminDownloadClientExpiration = 0;
+            this.adminDownloadClientKey = null;
+        }
+        
+        if ( this.adminDownloadClientKey == null ) {
+            this.adminDownloadClientKey = String.format( "%08x%08x", 
+                                                         this.random.nextInt(), this.random.nextInt());
+            this.adminDownloadClientExpiration = now + ADMIN_DOWNLOAD_CLIENT_TIMEOUT;
+        }
     }
 }

@@ -14,5 +14,10 @@ puts "URL: openvpn.getAdminDownloadLink( clientName, \"SETUP_EXE\") = #{link}"
 
 puts "wget 'http://localhost#{link}'"
 
+link = openvpn.getAdminClientUploadLink()
+puts "retrieving the client upload link"
+puts "URL: openvpn.getAdminClientUploadLink() = #{link}"
+
+
 
 

@@ -84,10 +84,6 @@ makeBase()
     cp ${SERIAL_FILE} ${SERIAL_FILE}.base
 }
 
-if [ "${USE_USB_KEY}x" = "truex" ]; then
-    validateUsbKey
-fi
-
 ## Clean out the key directories and create new keys.
 cleanBase
 makeBase
@@ -100,10 +96,6 @@ generateCA
 
 ## Create the server key.
 generateServerKey
-
-if [ "${USE_USB_KEY}x" = "truex" ]; then
-    saveToUsbKey
-fi
 
 ## Update the client status file
 updateClientStatus

@@ -76,9 +76,6 @@ if [ -n "`isRevoked ${commonName}`" ]; then
     exit 0
 fi
 
-## Check for the USB key if necessary
-validateUsbKey
-
 ## Validate that the base has been generated
 validateBase
 

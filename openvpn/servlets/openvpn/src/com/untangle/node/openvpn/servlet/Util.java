@@ -226,12 +226,12 @@ class Util
         return (VpnNode)tc.node();
     }
     
-    private boolean isAdmin( HttpServletRequest request ) throws NodeException
+    boolean isAdmin( HttpServletRequest request ) throws NodeException
     {
         return isAdmin( request, getNode());
     }
 
-    private boolean isAdmin( HttpServletRequest request, VpnNode node )
+    boolean isAdmin( HttpServletRequest request, VpnNode node )
     {
         String key = request.getParameter( Constants.ADMIN_DOWNLOAD_CLIENT_KEY );
         if ( key == null ) return false;

@@ -88,12 +88,15 @@ public class VpnSite extends VpnClientBase
     }
 
     /**
-     * @return whether the other side is an edgeguard.
+     * @return whether the other side is an edgeguard (All sites are
+     * assumed to be edgeguards, they can download the client manually
+     * if they want to setup a non-edgeguard site to site.
      */
-    @Column(name="is_edgeguard", nullable=false)
+    @Transient
+    @Override
     public boolean isUntanglePlatform()
     {
-        return this.isUntanglePlatform;
+        return true;
     }
 
     public void setUntanglePlatform( boolean isUntanglePlatform )

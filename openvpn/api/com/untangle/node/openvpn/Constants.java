@@ -37,6 +37,8 @@ public class Constants
     public static final String ADMIN_DOWNLOAD_CLIENT_PARAM = "client";
     public static final String ADMIN_DOWNLOAD_CLIENT_KEY = "adminKey";
 
+    public static final String ADMIN_UPLOAD_CLIENT_PARAM = "siteConfiguration";
+
     /* The PKI infrastructure */
     static final String PKI_DIR = CONF_DIR + "/pki";
 
@@ -51,7 +53,4 @@ public class Constants
     /* Unable to start the openvpn server, may just be the other end is
      * not started */
     static final int START_ERROR         = 251;
-
-    /* Error reading from the usb device */
-    static final int USB_ERROR_CODE      = 252;
 }
