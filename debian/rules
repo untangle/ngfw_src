@@ -101,7 +101,7 @@ binary-arch: install
 	@for i in $(PACKAGES) ; do \
 	if [ -f debian/version ] ; then dh_gencontrol -- -v"`cat debian/version`" ; else dh_gencontrol ; fi \
 	done
-	@rm -fr debian/untangle-node-openvpn/usr/share/untangle/openvpn/installer/openvpn/install-win32/license.txt
+#	@rm -fr debian/untangle-node-openvpn/usr/share/untangle/openvpn/installer/openvpn/install-win32/license.txt
 	@find debian/untangle-libuvmthirdparty -name '*.jar' | xargs chmod 644
 	@dh_md5sums
 	@dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
