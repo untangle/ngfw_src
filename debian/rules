@@ -96,6 +96,7 @@ binary-arch: install
 #	@dh_link
 	@dh_compress
 #	@dh_fixperms
+	@dh_lintian
 	@dh_installdeb
 #	@dh_perl
 	@for i in $(PACKAGES) ; do \
