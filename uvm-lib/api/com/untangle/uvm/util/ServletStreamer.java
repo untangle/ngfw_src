@@ -81,7 +81,7 @@ public class ServletStreamer
         response.setContentType( type );
 
         if ( downloadFileName != null ) {
-            response.setHeader( "Content-Disposition", "attachment;filename=\"" + downloadFileName + "\"" );
+            response.setHeader( "Content-Disposition", "attachment; filename=\"" + downloadFileName + "\"" );
         }
         if ( length > 0 ) {
             response.setHeader( "Content-Length", "" + length );

@@ -192,17 +192,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     });                	
                 }.createDelegate(this),
-                onBackupToUSBKey: function() {
-                	Ext.MessageBox.wait(i18n._("Backing Up..."), i18n._("Please wait"));
-                    var cmp=Ext.getCmp(this.parentId);
-                    rpc.jsonrpc.RemoteUvmContext.usbBackup(function (result, exception) {
-                        if(exception) {
-                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The USB Key backup procedure failed.  Contact support for further direction.")); 
-                        } else {
-                            Ext.MessageBox.alert(this.i18n._("Backup Success"),this.i18n._("Success:  The USB Key backup procedure completed."));
-                        }
-                    }.createDelegate(cmp));
-                },
                 onBackupToHardDisk: function() {
                     Ext.MessageBox.wait(i18n._("Backing Up..."), i18n._("Please wait"));
                     var cmp=Ext.getCmp(this.parentId);
@@ -235,27 +224,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         name: "Backup to File",
                         handler : function() {
                             this.panelBackup.onBackupToFile();
-                        }.createDelegate(this)
-                    }]
-                },{
-                    title : this.i18n._('Backup to USB Key'),
-                    defaults : {
-                        border : false,
-                        bodyStyle : 'padding:5px 5px 0px 5px;'
-                    },
-                    items : [{
-                        html: this.i18n._("You can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings.") +
-                        		"<br>\n<br>\n" +
-                        		String.format(this.i18n._("After backing up your current system configuration to USB Key, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."),'<b>','</b>') +
-                        		"<br>\n<br>\n<b>" +
-                        		this.i18n._("Note: You must insert your USB Key into a valid USB port on the back of your server before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete.") +
-                        		"</b>"
-                    }],
-                    buttons : [{
-                    	name: "Backup to USB Key",
-                        text : this.i18n._("Backup to USB Key"),
-                        handler : function() {
-                            this.panelBackup.onBackupToUSBKey();
                         }.createDelegate(this)
                     }]
                 },{
@@ -377,7 +345,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }.createDelegate(this)
                     }]
                 },{
-                    title : this.i18n._('From Hard Disk and USB Key'),
+                    title : this.i18n._('From Hard Disk'),
                     defaults : {
                         border : false,
                         bodyStyle : 'padding:5px 5px 0px 5px;'
