@@ -189,21 +189,26 @@ class UrlBlacklist extends Blacklist
     {
         List<String> all = urlDatabase.findAllBlacklisted("http", dom, uri);
 
-        for (int ai = 0; ai < all.size(); ai++) {
-            String dbName = all.get(ai);
+        if (null == all) {
+            return null;
+        } else {
 
-            int i = dbName.indexOf('-');
-            if (0 < i) {
-                i++;
-                if (dbName.length() > i) {
-                    int j = dbName.indexOf('-', i);
-                    if (i < j) {
-                        all.set(ai, dbName.substring(i, j));
+            for (int ai = 0; ai < all.size(); ai++) {
+                String dbName = all.get(ai);
+
+                int i = dbName.indexOf('-');
+                if (0 < i) {
+                    i++;
+                    if (dbName.length() > i) {
+                        int j = dbName.indexOf('-', i);
+                        if (i < j) {
+                            all.set(ai, dbName.substring(i, j));
+                        }
                     }
                 }
             }
-        }
 
-        return mostSpecificCategory(all);
+            return mostSpecificCategory(all);
+        }
     }
 }
