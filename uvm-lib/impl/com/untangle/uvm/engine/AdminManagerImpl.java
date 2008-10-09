@@ -277,9 +277,10 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
 
     public RegistrationInfo getRegistrationInfo() {
         File regFile = new File(REGISTRATION_INFO_FILE);
-        if (!regFile.exists())
-            return null;
 
+        /* Just return an empty registration */
+        if (!regFile.exists())
+            return new RegistrationInfo(new Hashtable());
         try {
             Hashtable entries = FormUtil.parsePostData(regFile);
             return new RegistrationInfo(entries);

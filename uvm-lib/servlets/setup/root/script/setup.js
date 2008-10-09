@@ -316,7 +316,6 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
             defaults : { 
                 autoHeight : true,
 				cls : 'noborder'
-				
             },
             items : [{
 					xtype : 'label',
@@ -334,8 +333,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
 					html : i18n._( '<span class="requiredstar">*</span> indicates Required Information' ),
 					border : false,
 					cls : 'requiredInfo'
-				},
-				{
+				},{
                     xtype : 'label',
                     html : '<b>'+i18n._( 'Please provide administrator contact info.' )+'</b>',
                     border : false

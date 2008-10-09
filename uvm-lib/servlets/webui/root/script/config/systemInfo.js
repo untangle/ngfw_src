@@ -90,98 +90,98 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             });
         },
         buildRegistration : function() {
-            var requiredLabel = {
-                html : '(required)',
-                border : false
-            };
-            this.panelRegistration = new Ext.Panel({
-                name : 'Registration',
-                helpSource : 'registration',
+            var info = this.getRegistrationInfo();
+            var misc = null;
+            if ( info.misc != null ) misc = info.misc.map;
+
+            if ( misc == null ) misc = {};
+
+            this.countryStore = [];
+            
+            for ( var i = 0 ; i < Ung.CountryData.length ; i++ ) {
+                this.countryStore.push([ Ung.CountryData[i][0], this.i18n._( Ung.CountryData[i][1] )]);
+            }
+            
+            this.environmentStore = [
+                this.i18n._( "My Business" ),
+                this.i18n._( "A Client's Business" ),
+                this.i18n._( "School" ),
+                this.i18n._( "Home" )];
+
+            this.panelRegistration = new Ext.FormPanel({
                 parentId : this.getId(),
-                title : this.i18n._('Registration'),
-                layout: 'anchor',
-                defaults: {
-                    anchor: '98%',
-                    autoWidth: true,
-                    autoScroll: true
-                },
-                autoScroll : true,
-                bodyStyle : 'padding:5px 5px 0px 5px;',
-                items : [{
-                    title : this.i18n._('Registration'),
-                    name : 'Registration',
-                    xtype : 'fieldset',
+                title : this.i18n._( "Registration" ),
+                helpSource : 'registration',
+                defaultType : 'fieldset',
+                defaults : { 
                     autoHeight : true,
-                    layout : 'form',
-                    labelWidth: 160,
+                    labelWidth : 200,
+                    cls : 'noborder'
+                },
+                    
+                items : [{
+                    defaultType : 'textfield',
                     defaults : {
-                        width : 200
+                        validationEvent : 'blur',
+                        msgTarget : 'side'
                     },
-                    items : [ new Ext.form.TextField({
-                        name : "Company Name",
-                        fieldLabel : this.i18n._("Company Name"),
-                        id : 'companyName',
+                    items : [{
+                        xtype : 'label',
+                        html : this.i18n._( '<span class="requiredstar">*</span> indicates Required Information' ),
+                        cls : 'requiredInfo'
+                    },{
+                        xtype : 'label',
+                        html : '<b>'+this.i18n._( 'Please provide administrator contact info.' )+'</b>'
+                    },{
+                        fieldLabel : '<span class="requiredstar">*</span>'+this.i18n._('Email'),
+                        name : 'emailAddr',
+                        width : 200,
                         allowBlank : false,
-                        value : this.getRegistrationInfo().companyName
-                    }), new Ext.form.TextField({
-                        name : "First Name",
-                        fieldLabel : this.i18n._("First Name"),
-                        id : 'firstName',
-                        allowBlank : false,
-                        value : this.getRegistrationInfo().firstName
-                    }), new Ext.form.TextField({
-                        name : "Last Name",
-                        fieldLabel : this.i18n._("Last Name"),
-                        id : 'lastName',
-                        allowBlank : false,
-                        value : this.getRegistrationInfo().lastName
-                    }), new Ext.form.TextField({
-                        name : "Address 1",
-                        id : 'address1',
-                        fieldLabel : this.i18n._("Address 1"),
-                        value : this.getRegistrationInfo().address1
-                    }), new Ext.form.TextField({
-                        name : "Address 2",
-                        id : 'address2',
-                        fieldLabel : this.i18n._("Address 2"),
-                        value : this.getRegistrationInfo().address2
-                    }), new Ext.form.TextField({
-                        name : "City",
-                        id : 'city',
-                        fieldLabel : this.i18n._("City"),
-                        value : this.getRegistrationInfo().city
-                    }), new Ext.form.TextField({
-                        name : "State",
-                        id : 'state',
-                        fieldLabel : this.i18n._("State"),
-                        value : this.getRegistrationInfo().state
-                    }), new Ext.form.TextField({
-                        name : "Zipcode",
-                        id : 'zipcode',
-                        fieldLabel : this.i18n._("Zipcode"),
-                        value : this.getRegistrationInfo().zipcode
-                    }), new Ext.form.TextField({
-                        name : "Phone #",
-                        id : 'phone',
-                        fieldLabel : this.i18n._("Phone #"),
-                        value : this.getRegistrationInfo().phone
-                    }), new Ext.form.TextField({
-                        name : "Email",
-                        id : 'emailAddr',
-                        fieldLabel : this.i18n._("Email"),
-                        allowBlank : false,
-                        value : this.getRegistrationInfo().emailAddr,
-                        vtype : 'email'
-                    }), new Ext.form.TextField({
-                        name : "Number of computers protected by Untangle",
-                        id : 'numSeats',
-                        fieldLabel : String.format(this.i18n._('Number of computers{0}protected by {1}'),
-                                        '<br>',this.getBrandingBaseSettings().companyName),
-                        allowBlank : false,
-                        value : this.getRegistrationInfo().numSeats
-                    })]
+                        value : info.emailAddr
+                    },{
+                        fieldLabel : this.i18n._('Name'),
+                        name : 'name',
+                        value : misc.name
+                    },{
+                        xtype : 'numberfield',
+                        minValue : 0,
+                        allowDecimals : false,
+                        fieldLabel : '<span class="requiredstar">*</span>'+this.i18n._('Number of PCs on your network'),
+                        name : 'numSeats',
+                        value : info.numSeats,
+                        allowBlank : false	
+                    }]
+                },{
+                    defaultType : 'textfield',
+                    items : [{
+                        xtype : 'label',
+                        html : '<b>'+this.i18n._( 'Answering these questions will help us build a better product - for you!' )+'</b>',
+                        border : false
+                    },{
+                        fieldLabel : this.i18n._('Where will you be using Untangle'),
+                        name : "environment",
+                        xtype : 'combo',
+                        width : 200,
+                        listWidth : 205,
+                        store : this.environmentStore,
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small',
+                        value : misc.environment
+                    },{
+                        fieldLabel : this.i18n._('Country'),
+                        name : "country",
+                        xtype : 'combo',
+                        width : 200,
+                        listWidth : 205,
+                        store : this.countryStore,
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small',
+                        value : misc.country
+                    }]
                 }]
-           });
+            });
         },
         buildLicenseAgreement : function() {
             this.panelLicenseAgreement = new Ext.Panel({
@@ -202,78 +202,25 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         },
         //validate Registration Info
         validateClient : function() {
-            var companyNameCmp = Ext.getCmp('companyName');
-            if (!companyNameCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out the company name.'),
-                    function () {
-                        this.tabs.activate(this.panelRegistration);
-                        companyNameCmp.focus(true);
-                    }.createDelegate(this) 
-                );
+            if ( !_validate( this.panelRegistration.items.items )) {
+                this.tabs.activate(this.panelRegistration);
+
+                Ext.MessageBox.alert( this.i18n._('Warning'),
+                                      this.i18n._('You must complete all required fields.'));
+
                 return false;
             }
-            this.getRegistrationInfo().companyName = companyNameCmp.getValue();
+            
+            var info = this.getRegistrationInfo();
+            var misc = {};
+            misc.name        = this.panelRegistration.find( "name", "name" )[0].getValue();
+            info.emailAddr   = this.panelRegistration.find( "name", "emailAddr" )[0].getValue();
+            info.numSeats    = this.panelRegistration.find( "name", "numSeats" )[0].getValue();
+            
+            misc.environment = this.panelRegistration.find( "name", "environment" )[0].getRawValue();
+            misc.country     = this.panelRegistration.find( "name", "country" )[0].getRawValue();
 
-            var firstNameCmp = Ext.getCmp('firstName');
-            if (!firstNameCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out your first name.'),
-                    function () {
-                        this.tabs.activate(this.panelRegistration);
-                        firstNameCmp.focus(true);
-                    }.createDelegate(this) 
-                );
-                return false;
-            }
-            this.getRegistrationInfo().firstName = firstNameCmp.getValue();
-
-            var lastNameCmp = Ext.getCmp('lastName');
-            if (!lastNameCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out the last name.'),
-                    function () {
-                        this.tabs.activate(this.panelRegistration);
-                        lastNameCmp.focus(true);
-                    }.createDelegate(this) 
-                );
-                return false;
-            }
-            this.getRegistrationInfo().lastName = lastNameCmp.getValue();
-
-            var emailAddrCmp = Ext.getCmp('emailAddr');
-            if (!emailAddrCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._('You must fill out the email address in the format "user@domain.com".'),
-                    function () {
-                        this.tabs.activate(this.panelRegistration);
-                        emailAddrCmp.focus(true);
-                    }.createDelegate(this) 
-                );
-                return false;
-            }
-            this.getRegistrationInfo().emailAddr = emailAddrCmp.getValue();
-
-            var numSeatsCmp = Ext.getCmp('numSeats');
-            if (!numSeatsCmp.isValid()) {
-                Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('You must fill out the number of computers protected by {0}.'), this.getBrandingBaseSettings().companyName),
-                    function () {
-                        this.tabs.activate(this.panelRegistration);
-                        numSeatsCmp.focus(true);
-                    }.createDelegate(this) 
-                );
-                return false;
-            }
-            this.getRegistrationInfo().numSeats = numSeatsCmp.getValue();
-
-            var address1Cmp = Ext.getCmp('address1');
-            this.getRegistrationInfo().address1 = address1Cmp.getValue();
-            var address2Cmp = Ext.getCmp('address2');
-            this.getRegistrationInfo().address2 = address2Cmp.getValue();
-            var cityCmp = Ext.getCmp('city');
-            this.getRegistrationInfo().city = cityCmp.getValue();
-            var stateCmp = Ext.getCmp('state');
-            this.getRegistrationInfo().state = stateCmp.getValue();
-            var zipcodeCmp = Ext.getCmp('zipcode');
-            this.getRegistrationInfo().zipcode = zipcodeCmp.getValue();
-            var phoneCmp = Ext.getCmp('phone');
-            this.getRegistrationInfo().phone = phoneCmp.getValue();
+            info.misc.map = misc;
             
             return true;
         },
