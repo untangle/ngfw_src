@@ -754,7 +754,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 		                name : "netmask",
 		                fieldLabel : i18n._( "Netmask" ),
 						vText : i18n._('Invalid Netmask Value'),
-						allowBlank : false													
+						allowBlank : false
 		            },{
 		                name : "gateway",
 		                fieldLabel : i18n._( "Gateway" ),
@@ -765,8 +765,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 						allowBlank : false													
 		            },{
 		                name : "dns2",
-		                fieldLabel : i18n._( "Secondary DNS" ),
-						allowBlank : false													
+		                fieldLabel : i18n._( "Secondary DNS" )
 		            },{
                 xtype : 'button',
                 text : i18n._( 'Test Connectivity' ),
