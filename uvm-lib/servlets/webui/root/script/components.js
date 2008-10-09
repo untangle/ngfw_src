@@ -443,7 +443,6 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.buttonBuy.setVisible(false);
         this.actionEl = Ext.get("action_" + this.getId());
         this.progressBar.hide();
-        this.subCmps.push(this.progressBar);
         if(this.libItem!=null && this.node==null) { // libitem
             this.getEl().on("click", this.linkToStoreFn, this);
             // this.actionEl.on("click", this.linkToStoreFn, this);
@@ -532,6 +531,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     beforeDestroy : function() {
         this.actionEl.removeAllListeners();
         this.buttonBuy.removeAllListeners();
+        this.progressBar.reset(true);
+        this.progressBar.destroy();
         Ext.each(this.subCmps, Ext.destroy);
         Ung.AppItem.superclass.beforeDestroy.call(this);
     },
