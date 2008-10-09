@@ -11,7 +11,7 @@ baseNotRequired="true"
 if [ -r ${GLOBALS} ]; then
     . ${GLOBALS}
 else
-    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    echo "[`date`,stop-openvpn] Unable to load the openvpn configuration file ${GLOBALS}"
     exit -2
 fi
 

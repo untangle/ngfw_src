@@ -8,7 +8,7 @@ GLOBALS=@UVM_HOME@/openvpn/globals
 if [ -r ${GLOBALS} ]; then
     . ${GLOBALS}
 else
-    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    echo "[`date`,revoke-client] Unable to load the openvpn configuration file ${GLOBALS}"
     exit -2
 fi
 
@@ -18,14 +18,14 @@ commonName=`removeSpaces $1`
 validateBase()
 {
     if [ "${commonName}x" = "x" ]; then
-        echo "Must specify a common name for the key"
+        echo "[`date`,revoke-client] Must specify a common name for the key"
         exit -3
     fi
     
     ## Also have to check the ca.crt and the ca.key
     if [ ! -d ${PKI_DIR} ] || [ ! -d ${OPENVPN_DATA_DIR} ] || [ ! -f ${INDEX_FILE} ] || 
         [ ! -f ${SERIAL_FILE} ]; then
-        echo "The base is not currently initialized"
+        echo "[`date`,revoke-client] The base is not currently initialized"
         exit -4
     fi
 }
@@ -38,7 +38,7 @@ revokeClient()
     local clientKey=`getClientKeyFile ${commonName}`
 
     if [ ! -f ${clientCrt} ]; then
-        echo "The client certificate for '${commonName} does not exist"
+        echo "[`date`,revoke-client] The client certificate for '${commonName} does not exist"
         return
     fi
 
@@ -72,7 +72,7 @@ revokeClient()
 }
 
 if [ -n "`isRevoked ${commonName}`" ]; then
-    echo "The cert for ${commonName} is already revoked"
+    echo "[`date`,revoke-client] The cert for ${commonName} is already revoked"
     exit 0
 fi
 

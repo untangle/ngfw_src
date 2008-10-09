@@ -31,7 +31,7 @@ CLIENT_STATUS_FILE="${MISC_DIR}/client_status.txt"
 if [ -r ${BASE_CONFIG_FILE} ]; then
     . ${BASE_CONFIG_FILE}
 else
-    echo "Unable to load the openvpn configuration file ${BASE_CONFIG_FILE}"
+    echo "[`date`,globals] Unable to load the openvpn configuration file ${BASE_CONFIG_FILE}"
     ## Exit only if the base is required.
     if [ -z "${baseNotRequired}" ]; then exit -2 ; fi
 fi
@@ -61,7 +61,7 @@ OPENVPN_SCRIPT="/etc/init.d/openvpn"
 ## Debugging functions
 opensslDbg()
 {
-    echo openssl $@
+    echo "[`date`,globals] openssl $@"
     openssl $@
 }
 
@@ -139,7 +139,7 @@ getCommonNames()
 
 disableOpenVPNStartup()
 {
-    echo "Disabling the openvpn server from starting at system startup"
+    echo "[`date`,globals] Disabling the openvpn server from starting at system startup"
 
     local t_openvpnInit=`basename ${OPENVPN_SCRIPT}`    
     

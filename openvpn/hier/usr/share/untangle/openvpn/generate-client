@@ -8,7 +8,7 @@ GLOBALS=@UVM_HOME@/openvpn/globals
 if [ -r ${GLOBALS} ]; then
     . ${GLOBALS}
 else
-    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    echo "[`date`,generate-client] Unable to load the openvpn configuration file ${GLOBALS}"
     exit -2
 fi
 
@@ -24,26 +24,26 @@ CLIENT_CRT=`getClientCrtFile ${commonName}`
 clientExists()
 {
     if [ -f ${CLIENT_CRT} ]; then
-        echo "The client ${commonName} already has a key"
+        echo "[`date`,generate-client] The client ${commonName} already has a key"
         exit 0
     fi
     
     if [ -n "`isRevoked ${commonName}`" ] && [ -z "${recreateCrt}" ]; then
-        echo "The client ${commonName} is revoked, and it was not requested that it be recreated"
+        echo "[`date`,generate-client] The client ${commonName} is revoked, and it was not requested that it be recreated"
         exit 0
     fi
 }
 
 validateBase() {
     if [ -z "${commonName}" ]; then
-        echo "Must specify a common name for the key"
+        echo "[`date`,generate-client] Must specify a common name for the key"
         exit -3
     fi
     
     ## Also have to check the ca.crt and the ca.key
     if [ ! -d ${PKI_DIR} ] || [ ! -d ${OPENVPN_DATA_DIR} ] || [ ! -f ${INDEX_FILE} ] || 
         [ ! -f ${SERIAL_FILE} ]; then
-        echo "The base is not currently initialized"
+        echo "[`date`,generate-client] The base is not currently initialized"
         exit -4
     fi
 }

@@ -10,7 +10,7 @@ baseNotRequired="true"
 if [ -r ${GLOBALS} ]; then
     . ${GLOBALS}
 else
-    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    echo "[`date`,get-client] Unable to load the openvpn configuration file ${GLOBALS}"
     exit -2
 fi
 
@@ -50,7 +50,7 @@ logFile=@UVM_LOG@/openvpn.log
 copyLocalFile()
 {
     if [ !-f "${localPath}" ]; then
-        echo "Unable to find the file: ${localPath}"
+        echo "[`date`,get-client] Unable to find the file: ${localPath}"
         exit ${MISSING_FILE_ERROR}
     fi
 
@@ -109,10 +109,10 @@ testInstall()
     bash ${SCRIPT_DIR}/stop-openvpn
 
     if [ -z "${t_success}" ]; then
-        echo "Unable to start server"
+        echo "[`date`,get-client] Unable to start server"
         exit ${TEST_FAILED}
     else
-        echo "Succesfully started server"
+        echo "[`date`,get-client] Succesfully started server"
     fi
 }
 
@@ -132,7 +132,7 @@ case "${method}" in
         ;;
     
     *)
-        echo "Unknown method '${method}'"
+        echo "[`date`,get-client] Unknown method '${method}'"
         exit ${ERROR_INTERNAL}
         ;;
 esac

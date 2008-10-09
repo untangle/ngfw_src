@@ -8,7 +8,7 @@ GLOBALS=@UVM_HOME@/openvpn/globals
 if [ -r ${GLOBALS} ]; then
     . ${GLOBALS}
 else
-    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    echo "[`date`,generate-distro] Unable to load the openvpn configuration file ${GLOBALS}"
     exit -2
 fi
 
@@ -29,12 +29,12 @@ companyUri="${8}"
 ## XXX May need to do some checks to see if files exists etc.
 
 if [ -z "${commonName}" ]; then
-    echo "Must specify a common name."
+    echo "[`date`,generate-distro] Must specify a common name."
     exit -3
 fi
 
 if [ -z "${siteName}" ]; then
-    echo "Must specify a site name."
+    echo "[`date`,generate-distro] Must specify a site name."
     exit -3
 fi
 
