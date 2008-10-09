@@ -224,7 +224,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     html : '<h2 class="wizardTitle">'+i18n._("Download Configuration")+'</h2>'
                 },{
                     html : this.i18n
-                        ._('Please specify where your VPN Client configuration should come from.'),
+                        ._('Please specify where your VPN Client configuration should come from.')
                 },{
                     xtype : 'fieldset',
                     autoHeight : true,
