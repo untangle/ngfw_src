@@ -361,8 +361,8 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
                     String[] tokens = s.split("\\s+");
                     if (tokens.length >= 2) {
                         String langCode = tokens[0];
-                        String langName = tokens[1];
-                        languages.put(tokens[0], tokens[1]);
+                        String langName = s.replaceFirst(langCode, "").trim();
+                        languages.put(langCode, langName);
                     }
                 }
             }
@@ -386,8 +386,8 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
                     String[] tokens = s.split("\\s+");
                     if (tokens.length >= 2) {
                         String countryCode = tokens[0];
-                        String countryName = tokens[1];
-                        countries.put(tokens[0], tokens[1]);
+                        String countryName = s.replaceFirst(countryCode, "").trim();;
+                        countries.put(countryCode, countryName);
                     }
                 }
             }
