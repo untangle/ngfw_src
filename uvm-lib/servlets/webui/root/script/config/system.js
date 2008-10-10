@@ -235,7 +235,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         html: this.i18n._("You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.") +
                         		"<br>\n<br>\n" +
-                        		String.format(this.i18n._("After backing up your current system configuration to Hard Disk, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.",'<b>','</b>'))
+                        		String.format(this.i18n._("After backing up your current system configuration to Hard Disk, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."),'<b>','</b>')
                     }],
                     buttons : [{
                         text : this.i18n._("Backup to Hard Disk"),
