@@ -242,9 +242,18 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             String tokens[] = entry.getName().split(File.separator);
             String lang = tokens[0];
             String moduleName = tokens[1].substring(0, tokens[1].lastIndexOf("."));
+            String moduleLocaleDirName = LOCALE_DIR + File.separator + lang + File.separator + LC_MESSAGES;
+
+            File moduleLocaleDir = new File(moduleLocaleDirName);
+            if (!moduleLocaleDir.exists()){
+                if (!moduleLocaleDir.mkdirs()) {
+                    logger.error("Error creating locale folder: " + moduleLocaleDir );
+                    return false;
+                }
+            }
 
             String cmd[] = { "msgfmt",
-                    "-o", LOCALE_DIR + File.separator + lang + File.separator + LC_MESSAGES + File.separator + moduleName  + ".mo",
+                    "-o", moduleLocaleDirName + File.separator + moduleName  + ".mo",
                     LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName()};
             Process p = Runtime.getRuntime().exec(cmd);
             p.waitFor();
