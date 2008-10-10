@@ -142,10 +142,6 @@ def printUsage():
     ucli userLogs tid
     ucli resetLogs
     ucli logError [text]
-  combo commands:
-    ucli loadt short-name [ args ]
-    ucli reloadt short-name
-    ucli unloadt short-name
   apt commands:
     ucli register mackage-name
     ucli unregister mackage-name
@@ -158,7 +154,7 @@ def printUsage():
 
 def make_proxy( parser ):
     handler = CurlRequestHandler()
-    
+
     try:
         if ( parser.username != None and parser.password != None ):
             handler.make_request( "http://" + parser.hostname  + "/auth/login", urllib.urlencode({ "username" : parser.username, "password" : parser.password }))

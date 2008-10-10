@@ -44,11 +44,6 @@ class ToolboxManager(Manager):
         for mkg in mkgs:
             print "name: %s\tinstalled: %s\tavailable: %s" % ( mkg["name"], mkg["installedVersion"], mkg["availableVersion"])
 
-    def api_reloadt(self, shortName):
-        mkg = self.shortNameToPackageName(shortName)
-        self.__toolbox.unregister(mkg)
-        self.__toolbox.register(mkg)
-
     def api_register(self, mackageName):
         print "Registering the mackage: ", mackageName
         self.__toolbox.register(mackageName)

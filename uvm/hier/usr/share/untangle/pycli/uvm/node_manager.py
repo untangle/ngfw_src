@@ -13,18 +13,6 @@ class NodeManager(Manager):
         print tid["id"]
         return tid
 
-    def api_loadt(self,shortName,*args):
-        mackage = self.shortNameToPackageName(shortName)
-        if not self.__isInstalled( mackage ): self.install(mackage)
-        tid = self.api_instantiate(mackage)
-        self.__nodeManager.nodeContext(tid).node().start()
-
-    def api_unloadt(self,shortName):
-        packageName = self.shortNameToPackageName(shortName)
-        for tid in self.__nodeManager.nodeInstances()["list"]:
-            nodeContext, node = self.__get_node( tid, True )
-            if ( nodeContext.getNodeDesc()["name"] == packageName ): self.__nodeManager.destroy( tid )
-
     def api_start( self, tidString ):
         tid = self.buildTid( tidString )
         self.__nodeManager.nodeContext( tid ).node().start()
@@ -46,7 +34,7 @@ class NodeManager(Manager):
     def api_instances(self):
         if ( Manager.policy == None ): instances = self.__nodeManager.nodeInstances()
         else: instances = self.__nodeManager.nodeInstances( Manager.policy )
-        
+
         for tid in instances["list"]:
             nodeContext, node = self.__get_node( tid, True )
 
