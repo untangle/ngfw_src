@@ -16,6 +16,7 @@ if (!Ung.hasResource["Ung.System"]) {
             }, {
                 title : i18n._('System')
             }];
+            this.companyName=this.getBrandingBaseSettings().companyName;
             this.buildSupport();
             this.buildBackup();
             this.buildRestore();
@@ -151,6 +152,36 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }.createDelegate(this)
                             }
                         }
+                    }]
+                },{
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    title : this.i18n._('Manual Reboot'),
+                    buttonAlign: "left",
+                    items : [{
+                        border: false,
+                        html: String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>",this.companyName)                      
+                    }],
+                    buttons: [{
+                        xtype : 'button',
+                        text : this.i18n._('Reboot'),
+                        name : 'View Reports',
+                        iconCls : 'rebootIcon',
+                        handler : function() {
+                            Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),this.i18n._("You are about to manually reboot.  This will interrupt normal network operations<br>" +
+                             "until the Untangle Server is finished automatically restarting.<br>" +
+                             "This may take up to several minutes to complete."), function(btn) {
+                                if (btn == 'yes') {
+                                    rpc.jsonrpc.RemoteUvmContext.rebootBox(function (result, exception) {
+                                        if(exception) {
+                                            Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),String.format(this.i18n._("Error: Unable to reboot {0} Server"),this.companyName)); 
+                                        } else {
+                                            Ext.MessageBox.wait(String.format(this.i18n._("The {0} Server is rebooting."),this.companyName), i18n._("Please wait"));
+                                        }
+                                    }.createDelegate(this))    
+                                }
+                             });
+                        }.createDelegate(this)
                     }]
                 }]
             });
