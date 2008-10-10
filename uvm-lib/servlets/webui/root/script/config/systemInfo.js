@@ -52,13 +52,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }
             return this.rpc.getLicenseAgreement;
         },
-        // get branding settings
-        getBrandingBaseSettings : function(forceReload) {
-            if (forceReload || this.rpc.brandingBaseSettings === undefined) {
-                this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
-            }
-            return this.rpc.brandingBaseSettings;
-        },        
         buildVersion : function() {
             this.panelVersion = new Ext.Panel({
                 name : 'Version',

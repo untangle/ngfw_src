@@ -89,13 +89,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
             return this.rpc.mailNodeSettings;
         },
-        // get branding settings
-        getBrandingBaseSettings : function(forceReload) {
-            if (forceReload || this.rpc.brandingBaseSettings === undefined) {
-                this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
-            }
-            return this.rpc.brandingBaseSettings;
-        },
         getSafelistAdminView : function(forceReload) {
             if (forceReload || this.rpc.safelistAdminView === undefined) {
                 this.rpc.safelistAdminView = this.getMailNode().getSafelistAdminView();
@@ -214,7 +207,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         border : false,
                         html : String.format(this.i18n
                                 ._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. In most cases the default setting should work, but if not, you should specify an SMTP server that will relay mail for the {0} Server."),
-                                this.getBrandingBaseSettings().companyName)
+                                main.getBrandingBaseSettings().companyName)
                     }, {
                         xtype : 'radio',
                         id : 'email_smtpDisabled',
@@ -313,7 +306,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
                     	html : String.format(this.i18n._("The {0} Server will send email from this address."),
-                                    this.getBrandingBaseSettings().companyName)
+                                    main.getBrandingBaseSettings().companyName)
                     }, {
                         xtype : 'textfield',
                         name : 'Email From Address',

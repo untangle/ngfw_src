@@ -23,7 +23,7 @@ Ung.Main.prototype = {
     iframeWin: null,
     // init function
     init: function() {
-        this.initSemaphore=9;
+        this.initSemaphore=10;
         rpc = {};
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
@@ -94,11 +94,20 @@ Ung.Main.prototype = {
             rpc.messageManager=result;
             rpc.messageManager.getMessageKey(function (result, exception) {
                 if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-                    rpc.messageKey=result;
-                    this.postinit();// 9
-                }.createDelegate(this));
-            
-            this.postinit();// 9
+                rpc.messageKey=result;
+                this.postinit();// 9
+            }.createDelegate(this));
+        }.createDelegate(this));
+        // get branding manager
+        rpc.jsonrpc.RemoteUvmContext.brandingManager(function (result, exception) {
+            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            rpc.brandingManager=result;
+            rpc.brandingManager.getBaseSettings(function (result, exception) {
+                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+                rpc.brandingBaseSettings=result;
+                document.title=rpc.brandingBaseSettings.companyName;
+                this.postinit();// 10
+            }.createDelegate(this));
         }.createDelegate(this));
 
     },
@@ -361,6 +370,14 @@ Ung.Main.prototype = {
         }
         return rpc.brandingManager;
     },
+    
+    // get branding settings
+    getBrandingBaseSettings : function(forceReload) {
+        if (forceReload || rpc.brandingBaseSettings === undefined) {
+            rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
+        }
+        return rpc.brandingBaseSettings;
+    },        
 
     getLicenseManager : function(forceReload) {
         if (forceReload || rpc.licenseManager === undefined) {

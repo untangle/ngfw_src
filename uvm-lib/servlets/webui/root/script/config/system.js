@@ -16,7 +16,7 @@ if (!Ung.hasResource["Ung.System"]) {
             }, {
                 title : i18n._('System')
             }];
-            this.companyName=this.getBrandingBaseSettings().companyName;
+            this.companyName=main.getBrandingBaseSettings().companyName;
             this.buildSupport();
             this.buildBackup();
             this.buildRestore();
@@ -102,13 +102,6 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             return this.rpc.timeZone;
         },
-        // get branding settings
-        getBrandingBaseSettings : function(forceReload) {
-            if (forceReload || this.rpc.brandingBaseSettings === undefined) {
-                this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
-            }
-            return this.rpc.brandingBaseSettings;
-        },        
         buildSupport : function() {
             this.panelSupport = new Ext.Panel({
                 // private fields
@@ -308,7 +301,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                 Ext.MessageBox.alert(cmp.i18n._("Attention"),
                                     cmp.i18n._("You must now exit this program.")+"<br>"+
                                     cmp.i18n._("You can log in again after a brief period.")+"<br><b>"+
-                                    String.format(cmp.i18n._("Do not manually shutdown or restart the {0} Server while it is upgrading!"),cmp.getBrandingBaseSettings().companyName).toUpperCase()+"</b>");
+                                    String.format(cmp.i18n._("Do not manually shutdown or restart the {0} Server while it is upgrading!"),main.getBrandingBaseSettings().companyName).toUpperCase()+"</b>");
                             });
                         },
                         failure : function(form, action) {
@@ -317,13 +310,13 @@ if (!Ung.hasResource["Ung.System"]) {
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
                                     case 'File does not seem to be valid Untangle backup' : 
-                                        errorMsg = String.format(cmp.i18n._("File does not seem to be valid {0} backup"), cmp.getBrandingBaseSettings().companyName);
+                                        errorMsg = String.format(cmp.i18n._("File does not seem to be valid {0} backup"), main.getBrandingBaseSettings().companyName);
                                     break;
                                     case 'Error in processing restore itself (yet file seems valid)' : 
                                         errorMsg = cmp.i18n._("Error in processing restore itself (yet file seems valid)");
                                     break;
                                     case 'File is from an older version of Untangle and cannot be used' : 
-                                        errorMsg = String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), cmp.getBrandingBaseSettings().companyName);
+                                        errorMsg = String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), main.getBrandingBaseSettings().companyName);
                                     break;
                                     case 'Unknown error in local processing' : 
                                         errorMsg = cmp.i18n._("Unknown error in local processing");
