@@ -3,4 +3,6 @@
 
 /usr/bin/mcli -t 30 register untangle-casing-mail 2>/dev/null || true
 
+/etc/init.d/apache2 reload
+
 exit 0
