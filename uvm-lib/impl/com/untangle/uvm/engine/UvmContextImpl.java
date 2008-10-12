@@ -136,12 +136,10 @@ public class UvmContextImpl extends UvmContextBase
     private AppServerManagerImpl appServerManager;
     private RemoteAppServerManagerAdaptor remoteAppServerManager;
     private AddressBookFactory addressBookFactory;
-    private RemoteBrandingManager brandingManager;
-    private LocalBrandingManager localBrandingManager;
+    private BrandingManagerFactory brandingManagerFactory;
     private RemoteSkinManagerImpl skinManager;
     private MessageManagerImpl localMessageManager;
     private RemoteMessageManager messageManager;
-    private RemoteBrandingManager remoteMessageManager;
     private RemoteLanguageManagerImpl languageManager;
     private PhoneBookFactory phoneBookFactory;
     private BasePortalManager portalManager;
@@ -196,12 +194,12 @@ public class UvmContextImpl extends UvmContextBase
 
     public RemoteBrandingManager brandingManager()
     {
-        return brandingManager;
+        return brandingManagerFactory.getRemoteBrandingManager();
     }
 
     public LocalBrandingManager localBrandingManager()
     {
-        return localBrandingManager;
+        return brandingManagerFactory.getBrandingManager();
     }
 
     public RemoteSkinManagerImpl skinManager()
@@ -697,7 +695,7 @@ public class UvmContextImpl extends UvmContextBase
     }
     
     public String getCompanyName(){
-        return brandingManager.getBaseSettings().getCompanyName();
+        return brandingManager().getBaseSettings().getCompanyName();
     }
 
     // UvmContextBase methods --------------------------------------------------
@@ -754,8 +752,7 @@ public class UvmContextImpl extends UvmContextBase
         //Start AddressBookImpl
         addressBookFactory = AddressBookFactory.makeInstance();
 
-        localBrandingManager = new BrandingManagerImpl();
-        brandingManager = new RemoteBrandingManagerAdaptor(localBrandingManager);
+        brandingManagerFactory = BrandingManagerFactory.makeInstance();
 
         //Skins and Language managers
         skinManager = new RemoteSkinManagerImpl(this);
@@ -1049,6 +1046,7 @@ public class UvmContextImpl extends UvmContextBase
                 // Do these in same order as boot time.
                 policyManagerFactory.refresh();
                 addressBookFactory.refresh();
+                brandingManagerFactory.refresh();
                 phoneBookFactory.refresh();
                 adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
             }
