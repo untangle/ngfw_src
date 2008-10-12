@@ -1125,7 +1125,7 @@ Ung.Node.template = new Ext.Template('<div class="nodeImage"><img src="{image}"/
 // Message Manager object
 Ung.MessageManager = {
     // update interval in millisecond
-    updateTime : 500000,
+    updateTime : 5000,
     started : false,
     intervalId : null,
     cycleCompleted : true,
