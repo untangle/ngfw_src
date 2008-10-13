@@ -68,7 +68,12 @@ Ung.Main.prototype = {
         rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
             rpc.toolboxManager=result;
-            this.postinit();// 5
+            rpc.toolboxManager.getUpgradeSettings(function (result, exception) {
+                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+                rpc.upgradeSettings=result;
+                this.postinit();// 5
+            }.createDelegate(this));
+            
         }.createDelegate(this));
         // get admin manager
         rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
@@ -116,22 +121,26 @@ Ung.Main.prototype = {
         if(this.initSemaphore!==0) {
             return;
         }
-    	//this.startApplication();return; //just for test
-        //check for upgrades
-        Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
-        rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
-            if (exception) {
-                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                this.startApplication.defer(1500,this);
-                return;
-            }
-            var upgradeStatus=result;
-            if(!upgradeStatus.upgrading && upgradeStatus.upgradesAvailable) {
-                this.upgrade();
-            } else {
-                this.startApplication();
-            }
-        }.createDelegate(this),true);
+        if(!rpc.upgradeSettings.autoUpgrade) {
+        	//do not upgrade automaticaly
+        	this.startApplication()
+        } else {
+            //check for upgrades
+        	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
+            rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    this.startApplication.defer(1500,this);
+                    return;
+                }
+                var upgradeStatus=result;
+                if(!upgradeStatus.upgrading && upgradeStatus.upgradesAvailable) {
+                    this.upgrade();
+                } else {
+                    this.startApplication();
+                }
+            }.createDelegate(this),true);
+        }
     },
     startApplication: function() {
     	Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
