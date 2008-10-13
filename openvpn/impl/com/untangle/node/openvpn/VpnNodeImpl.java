@@ -136,7 +136,11 @@ public class VpnNodeImpl extends AbstractNode
         VpnSettings settings = new VpnSettings( this.getTid());
         logger.info( "Initializing Settings... to unconfigured" );
 
-        setVpnSettings( settings );
+        try {
+            setVpnSettings( settings );
+        } catch ( ValidateException e ) {
+            logger.error( "Unable to initialize VPN settings.", e );
+        }
 
         /* Stop the open vpn monitor(I don't think this actually does anything, rbs) */
         this.openVpnMonitor.stop();
@@ -144,9 +148,14 @@ public class VpnNodeImpl extends AbstractNode
     }
 
     // VpnNode methods --------------------------------------------------
-    public void setVpnSettings( final VpnSettings newSettings )
+    public void setVpnSettings( final VpnSettings newSettings ) throws ValidateException
     {
         fixGroups(newSettings);
+
+        /* Verify that all of the client names are valid. */
+        for ( VpnClientBase client : newSettings.getCompleteClientList()) {
+            VpnClientBase.validateName( client.getName());
+        }
 
         /* Attempt to assign all of the clients addresses only if in server mode */
         try {
@@ -684,7 +693,7 @@ public class VpnNodeImpl extends AbstractNode
         return getVpnSettings();
     }
 
-    public void setSettings( Object settings )
+    public void setSettings( Object settings ) throws ValidateException
     {
         setVpnSettings((VpnSettings)settings);
     }

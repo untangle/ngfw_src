@@ -469,6 +469,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.configState=this.getRpcNode().getConfigState();
             this.buildStatus();
             var tabs = [this.panelStatus];
+
+            /* Register the VTypes, need i18n to be initialized for the text */
+            Ext.form.VTypes["openvpnClientName"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
+            Ext.form.VTypes["openvpnClientNameMask"] = /[-_.0-9A-Za-z]*/;
+            Ext.form.VTypes["openvpnClientNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
+
             if (this.configState == "SERVER_ROUTE") {
                 this.buildClients();
                 this.buildExports();
@@ -830,7 +836,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 130,
                     dataIndex : 'name',
                     editor : new Ext.form.TextField({
-                        allowBlank : false
+                        allowBlank : false,
+                        vtype : 'openvpnClientName'
                     })
                 }, groupsColumn, distributeColumn, {
                     id : 'address',
@@ -856,6 +863,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Client name"),
                     allowBlank : false,
+                    vtype : 'openvpnClientName',
                     width : 200
                 }, {
                     xtype : "combo",
@@ -964,7 +972,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     dataIndex : 'name',
                     // this is a simple text editor
                     editor : new Ext.form.TextField({
-                        allowBlank : false
+                        allowBlank : false,
+                        vtype : 'openvpnClientName'
                     })
                 }, groupsColumn, {
                     id : 'network',
@@ -1008,6 +1017,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Site name"),
                     allowBlank : false,
+                    vtype : 'openvpnClientName',
                     width : 200
                 }, {
                     xtype : "combo",

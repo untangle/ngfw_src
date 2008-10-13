@@ -39,7 +39,7 @@ public interface VpnNode extends Node
         ZIP;
     };
     
-    public void setVpnSettings( VpnSettings settings );
+    public void setVpnSettings( VpnSettings settings ) throws ValidateException;
     public VpnSettings getVpnSettings();
 
     /* Create a client certificate, if the client already has a certificate
