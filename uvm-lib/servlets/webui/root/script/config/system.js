@@ -173,7 +173,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                         }
                                     }.createDelegate(this))    
                                 }
-                             });
+                             }.createDelegate(this));
                         }.createDelegate(this)
                     }]
                 }]
