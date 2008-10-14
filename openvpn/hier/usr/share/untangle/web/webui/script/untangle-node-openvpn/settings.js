@@ -469,7 +469,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.configState=this.getRpcNode().getConfigState();
             this.buildStatus();
             var tabs = [this.panelStatus];
-
+    
             /* Register the VTypes, need i18n to be initialized for the text */
             Ext.form.VTypes["openvpnClientName"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
             Ext.form.VTypes["openvpnClientNameMask"] = /[-_.0-9A-Za-z]*/;

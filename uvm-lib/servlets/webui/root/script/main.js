@@ -21,6 +21,8 @@ Ung.Main.prototype = {
     // the application build version
     version: null,
     iframeWin: null,
+    upgradeStatus:null,
+    upgradeLastCheckTime: null,
     // init function
     init: function() {
         this.initSemaphore=10;
@@ -142,6 +144,43 @@ Ung.Main.prototype = {
             }.createDelegate(this),true);
         }
     },
+    warnOnUpgrades : function(handler) {
+    	if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
+            main.warnOnUpgradesCallback(main.upgradeStatus,handler);
+    	} else {
+            if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
+                main.warnOnUpgradesCallback(main.upgradeStatus,handler);
+            } else {
+                Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
+                rpc.toolboxManager.getUpgradeStatus(function(result, exception,opt,handler) {
+                	main.upgradeLastCheckTime=(new Date()).getTime();
+                    Ext.MessageBox.hide();
+                    if (exception) {
+                        Ext.MessageBox.alert(i18n._("Failed"), exception.message, function (handler) {
+                        	main.upgradeStatus={};
+                            main.warnOnUpgradesCallback(main.upgradeStatus,handler);
+                        }.createDelegate(this,[handler]));
+                        return;
+                    }
+                    
+                    main.upgradeStatus=result;
+                    main.warnOnUpgradesCallback(main.upgradeStatus,handler);
+                }.createDelegate(this,[handler],true),true);
+    		}
+    	}
+    },
+    warnOnUpgradesCallback : function (upgradeStatus,handler) {
+        if(upgradeStatus!=null) {
+            if(upgradeStatus.upgrading) {
+                Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
+                return;
+            } else if(upgradeStatus.upgradesAvailable){
+                Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
+                return;
+            }
+		}
+        handler.call(this);
+    },
     startApplication: function() {
     	Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
 
@@ -220,24 +259,9 @@ Ung.Main.prototype = {
                 this.getEl().alignTo("contentright","c-c");
             }, 
             handler: function() {
-                Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
-                rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message, function () {
-                            main.openStore("wizard",i18n._('What Apps should I use?'));
-                    	});
-                        return;
-                    }
-                    var upgradeStatus=result;
-                    if(upgradeStatus.upgrading) {
-                        Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
-                    } else if(upgradeStatus.upgradesAvailable){
-                        Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
-                    } else {
-	                    main.openStore("wizard",i18n._('What Apps should I use?'));
-                        Ext.MessageBox.hide();
-                    }
-                }.createDelegate(this), true);
+    	        main.warnOnUpgrades(function() {
+                     main.openStore("wizard",i18n._('What Apps should I use?'));
+                }.createDelegate(this));
             }.createDelegate(this)
         });
         buttonCmp.hide();
@@ -252,7 +276,9 @@ Ung.Main.prototype = {
                 this.getEl().alignTo("appsItems","c-c",[0,10]);
             }, 
             handler: function() {
-            	main.openStore("my_account",i18n._("My Account"));
+            	main.warnOnUpgrades(function() {
+                     main.openStore("my_account",i18n._("My Account"));
+                }.createDelegate(this));
             }
         });
         buttonCmp.hide();

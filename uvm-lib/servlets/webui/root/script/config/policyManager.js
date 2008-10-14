@@ -19,7 +19,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     iconCls : 'nodeRemoveIcon',
                     text : i18n._('Remove'),
                     handler : function() {
-                        this.removeAction();
+                    	if(this.node && this.node.settingsWin) {
+                            this.node.settingsWin.removeAction();
+                    	}
                     }.createDelegate(this)
                 },{
                     name : 'Help',
