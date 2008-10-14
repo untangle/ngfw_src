@@ -51,7 +51,7 @@ public class ReportingOutsideAccessValve extends OutsideValve
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
-        return I18nUtil.tr("off-site access to reporting", i18n_map);
+        return I18nUtil.tr("off-site access to reporting is not allowed", i18n_map);
     }
 
     protected String httpErrorMessage()
