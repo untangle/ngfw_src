@@ -245,12 +245,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     sortable : true,
                     dataIndex : 'wasBlocked',
                     renderer : function(value) {
-                        switch (value) {
-                            case 1 : // BLOCKED
-                                return this.i18n._("blocked");
-                            default :
-                            case 0 : // PASSED
-                                return this.i18n._("passed");
+                        if (value) {
+                            return this.i18n._("blocked");
+                        } else {
+                            return this.i18n._("passed");
                         }
                     }.createDelegate(this)
                 }, {
@@ -268,8 +266,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     sortable : true,
                     dataIndex : 'ruleIndex',
                     renderer : function(value, metadata, record) {
-                           return this.i18n._("rule #") + value;
-					}
+                           return String.format(this.i18n._("rule #{0}"), value);
+					}.createDelegate(this)
                 }, {
                     header : i18n._("server"),
                     width : 165,
