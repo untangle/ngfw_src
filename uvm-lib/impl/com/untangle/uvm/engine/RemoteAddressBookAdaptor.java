@@ -68,6 +68,9 @@ class RemoteAddressBookAdaptor implements RemoteAddressBook {
         return this.addressBook.getStatus();
     }
 
+    public Status getStatusForSettings(AddressBookSettings newSettings) {
+        return this.addressBook.getStatusForSettings(newSettings);
+    }
 
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook

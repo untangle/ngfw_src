@@ -161,6 +161,10 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     }
 
 
+    public Status getStatusForSettings(AddressBookSettings newSettings) {
+        return this.getStatus();
+    }
+
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================

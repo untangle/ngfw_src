@@ -97,6 +97,8 @@ public interface RemoteAddressBook extends LicensedProduct
      */
     Status getStatus();
 
+    Status getStatusForSettings(AddressBookSettings newSettings);
+
     interface Status
     {
         boolean isLocalWorking();
