@@ -267,7 +267,7 @@ WHERE component = ?
 SQL
 
   { 'uvm' => 'mvvm',
-    'untangle-node-webfilter' => 'httpblocker-transform',
+    'untangle-node-webfilter' => 'untangle-base-webfilter',
     'untangle-node-openvpn' => 'openvpn-transform',
     'untangle-node-ips' => 'ids-transform',
     'untangle-node-sigma' => 'sigma-transform',
