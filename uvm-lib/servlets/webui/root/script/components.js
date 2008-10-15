@@ -765,9 +765,9 @@ Ung.Node = Ext.extend(Ext.Component, {
 
         var trialFlag = "";
         var trialDays = "";
-        if(this.licenseStatus.isTrial) {
+        if(this.licenseStatus.trial) {
         	trialFlag = i18n._("Trial");
-        	if(this.licenseStatus.isExpired) {
+        	if(this.licenseStatus.expired) {
         		trialDays = i18n._("Trial expired");
         	} else {
         		var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
