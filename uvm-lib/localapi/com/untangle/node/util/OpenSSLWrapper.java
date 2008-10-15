@@ -421,7 +421,7 @@ public class OpenSSLWrapper {
         if(result.exitCode==0) {
             return result.stdOut;
         }
-        throw new IOException("openssl exited with value " + result.exitCode);
+        throw new IOException("openssl exited with value " + result.exitCode + " key file " + keyFile.getAbsolutePath() + " Subject " + subject.toString());
     }
 
     //============

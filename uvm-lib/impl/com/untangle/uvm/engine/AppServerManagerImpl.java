@@ -329,8 +329,8 @@ class AppServerManagerImpl implements LocalAppServerManager
         return OpenSSLWrapper.createCSR(eHost,
                         // get them from dn
                         "FIXME org",
-                        "FIXME country",
-                        "FIXME state",
+                        "US",
+                        "CA",
                         "FIXME city",
                         new File(APACHE_PEM_FILE));
         } catch (Exception ex) {
