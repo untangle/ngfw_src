@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -161,7 +161,7 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         jPanel1.add(labelJLabel, gridBagConstraints);
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        messageJLabel.setText("<html>\n<center>\nThis is some sample text.  This is some sample text.  This is some sample text.  You must now shut down the Untangle Client.<br>\n<br>\nYou can log in again after shutting down, after a brief period.\n</center>\n</html>");
+        messageJLabel.setText("<html>\n<center>\nThis is some sample text.  This is some sample text.  This is some sample text.  You must now shut down the client.<br>\n<br>\nYou can log in again after shutting down, after a brief period.\n</center>\n</html>");
         messageJLabel.setFocusable(false);
         messageJLabel.setMaximumSize(null);
         messageJLabel.setMinimumSize(null);

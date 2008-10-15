@@ -52,7 +52,7 @@ public class InstallWizard extends MWizardJDialog {
     public InstallWizard(String[] args) {
         this.args = args;
         setModal(true);
-        setTitle(Util.tr("Untangle Platform Install Wizard"));
+        setTitle(Util.tr("Installation Wizard"));
 
         InstallWelcomeJPanel iwjp = new InstallWelcomeJPanel();
         Util.addLocalizable(iwjp);
@@ -76,7 +76,7 @@ public class InstallWizard extends MWizardJDialog {
     public void reloadStrings()
     {
         super.reloadStrings();
-        setTitle(Util.tr("Untangle Platform Install Wizard"));
+        setTitle(Util.tr("Installation Wizard"));
     }
 
     private static String targetDisk;
@@ -104,9 +104,9 @@ public class InstallWizard extends MWizardJDialog {
     }
 
     protected void wizardFinishedAbnormal(int currentPage){
-        MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, Util.tr("Install Wizard"),
+        MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, Util.tr("Installation Wizard"),
                                                              Util.tr("If you exit now, you will not be able to continue installation. You should continue, if possible."),
-                                                             Util.tr("Install Wizard Warning"),
+                                                             Util.tr("Installation Wizard Warning"),
                                                              Util.tr("Warning"));
         dialog.setProceedText(Util.tr("<html><b>Exit</b> Wizard</html>"));
         dialog.setCancelText(Util.tr("<html><b>Continue</b> Wizard</html>"));

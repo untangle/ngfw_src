@@ -65,7 +65,7 @@ public class InstallDiskJPanel
 
     public void reloadStrings()
     {
-        jLabel1.setText(Util.tr("<html>This list shows the boot disks that were found.  <font color='#FF0000'>Please choose a disk for the Untangle Platform installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>"));
+        jLabel1.setText(Util.tr("<html>This list shows the boot disks that were found.  <font color='#FF0000'>Please choose a disk for installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>"));
     }
 
     public boolean enteringForwards(){
@@ -110,9 +110,9 @@ public class InstallDiskJPanel
             return true;
         }
         else{
-            MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallDiskJPanel.this.getTopLevelAncestor(), Util.tr("Install Wizard"),
-                                                                 Util.tr("You must select a boot disk which you would like to install Untangle onto."),
-                                                                 Util.tr("Install Wizard Message"), Util.tr("Message"));
+            MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallDiskJPanel.this.getTopLevelAncestor(), Util.tr("Installation Wizard"),
+                                                                 Util.tr("You must select a boot disk which you would like to install onto."),
+                                                                 Util.tr("Installation Wizard Message"), Util.tr("Message"));
             return false;
         }
     }
@@ -170,7 +170,7 @@ public class InstallDiskJPanel
 
         contentJPanel.setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel1.setText(Util.tr("<html>This list shows the boot disks that were found.  <font color='#FF0000'>Please choose a disk for the Untangle Platform installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>"));
+        jLabel1.setText(Util.tr("<html>This list shows the boot disks that were found.  <font color='#FF0000'>Please choose a disk for installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

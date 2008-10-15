@@ -44,6 +44,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -69,8 +70,6 @@ import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import java.text.MessageFormat;
 
 public class Util {
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
@@ -119,9 +118,6 @@ public class Util {
         INVALID_BACKGROUND_COLOR = Color.PINK;
         VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
     }
-
-    // BRANDING ///////////////////
-    public static final String getCompanyName(){ return "Untangle"; }
 
     // LOOK AND FEEL //////////////
     private static LookAndFeel lookAndFeel;
@@ -499,7 +495,7 @@ public class Util {
     private static Map<String, String> getTranslations(Locale locale)
     {
         String module = "untangle-install-wizard";
-        
+
         Map<String, String> map = new HashMap<String, String>();
         String i18nModule = module.replaceAll("-", "_");
         try {

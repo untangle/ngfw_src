@@ -88,8 +88,8 @@ public class InstallWelcomeJPanel
 
     public void reloadStrings()
     {
-        jLabel1.setText(Util.tr("<html>Welcome to the<br>Untangle Platform Install Wizard!</html>"));
-        jLabel2.setText(Util.tr("<html>This wizard will take you step-by-step through<br> the Untangle Platform CD installation process.</html>"));
+        jLabel1.setText(Util.tr("<html>Welcome to the<br> Installation Wizard!</html>"));
+        jLabel2.setText(Util.tr("<html>This wizard will take you step-by-step through<br> the CD installation process.</html>"));
         jLabel3.setText(Util.tr("Language:"));
     }
 
@@ -113,7 +113,7 @@ public class InstallWelcomeJPanel
         contentJPanel.setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText(Util.tr("<html>Welcome to the<br>Untangle Platform Install Wizard!</html>"));
+        jLabel1.setText(Util.tr("<html>Welcome to the<br>Installation Wizard!</html>"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -123,7 +123,7 @@ public class InstallWelcomeJPanel
         contentJPanel.add(jLabel1, gridBagConstraints);
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText(Util.tr("<html>This wizard will take you step-by-step through<br> the Untangle Platform CD installation process.</html>"));
+        jLabel2.setText(Util.tr("<html>This wizard will take you step-by-step through<br> the CD installation process.</html>"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;

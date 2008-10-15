@@ -182,8 +182,8 @@ public class InstallBenchmarkJPanel
                     resultMessage = Util.tr("<html><font color=\"#445BFF\"><b>Success!</b><br>Your hardware meets all requirements.<br>Press the Next button in the main window to continue.</font></html>");
                     testPassed = true;
                 }
-                MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallBenchmarkJPanel.this.getTopLevelAncestor(), Util.tr("Install Wizard"), resultMessage,
-                                                                     Util.tr("Install Wizard"), Util.tr("Result"));
+                MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallBenchmarkJPanel.this.getTopLevelAncestor(), Util.tr("Installation Wizard"), resultMessage,
+                                                                     Util.tr("Installation Wizard"), Util.tr("Result"));
             }
             catch(Exception e){
                 e.printStackTrace();

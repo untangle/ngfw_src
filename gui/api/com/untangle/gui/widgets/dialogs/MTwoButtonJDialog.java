@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -161,7 +161,7 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         jPanel1.add(labelJLabel, gridBagConstraints);
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        messageJLabel.setText("<html>\n<center>\nThis upgrade requires that the Untangle Client be<br>\nautomatically shut down.  The Untangle Server may also be<br>\nautomatically restarted.  You may log in again after a restart.<br>\n<br>\nWould you like to continue with this upgrade?\n</center>\n</html>");
+        messageJLabel.setText("<html>\n<center>\nThis upgrade requires that the client be<br>\nautomatically shut down.  The server may also be<br>\nautomatically restarted.  You may log in again after a restart.<br>\n<br>\nWould you like to continue with this upgrade?\n</center>\n</html>");
         messageJLabel.setMaximumSize(null);
         messageJLabel.setMinimumSize(null);
         messageJLabel.setPreferredSize(null);

@@ -52,9 +52,9 @@ public class InstallWarningJPanel
 
     protected boolean leavingForwards(){
         MTwoButtonJDialog dialog = MTwoButtonJDialog.factory((Window) this.getTopLevelAncestor(),
-                                                             Util.tr("Install Wizard"),
+                                                             Util.tr("Installation Wizard"),
                                                              Util.tr("Your selected disk will be erased if you continue installation. Would you like to continue?"),
-                                                             Util.tr("Install Wizard Warning"),
+                                                             Util.tr("Installation Wizard Warning"),
                                                              Util.tr("Warning"));
         dialog.setProceedText(Util.tr("<html><b>Continue</b></html>"));
         dialog.setCancelText(Util.tr("<html><b>Don't Continue</b></html>"));
@@ -68,7 +68,7 @@ public class InstallWarningJPanel
     public void reloadStrings()
     {
         headerJLabel.setText(Util.tr("Warning!"));
-        subheaderJLabel.setText(Util.tr("If you continue, in preparation for the Untangle Platform installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"));
+        subheaderJLabel.setText(Util.tr("If you continue, in preparation for the installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"));
         messageJLabel.setText(Util.tr("If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button."));
     }
 
@@ -103,7 +103,7 @@ public class InstallWarningJPanel
         subheaderJLabel.setFont(new java.awt.Font("Dialog", 0, 18));
         subheaderJLabel.setForeground(java.awt.Color.red);
         subheaderJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        subheaderJLabel.setText(Util.tr("If you continue, in preparation for the Untangle Platform installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"));
+        subheaderJLabel.setText(Util.tr("If you continue, in preparation for the installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
