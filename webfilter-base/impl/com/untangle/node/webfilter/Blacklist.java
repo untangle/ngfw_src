@@ -308,18 +308,6 @@ public abstract class Blacklist
         StringRule stringRule = null;
         Reason reason = null;
 
-        if (settings.getBaseSettings().getFascistMode()) {
-            String c = "All Web Content";
-            Reason r = Reason.BLOCK_ALL;
-            WebFilterEvent hbe = new WebFilterEvent
-                (requestLine.getRequestLine(), Action.BLOCK, r, c);
-            node.log(hbe);
-
-            WebFilterBlockDetails bd = new WebFilterBlockDetails
-                (settings, host, uri, "not allowed", clientIp);
-            return node.generateNonce(bd);
-        }
-
         String dom = host;
         while (null == category && null != dom) {
             String url = dom + uri;

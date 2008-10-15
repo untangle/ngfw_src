@@ -35,7 +35,6 @@ CREATE TABLE settings.n_webfilter_settings (
     user_whitelist_mode text NOT NULL,
     template int8 NOT NULL,
     block_all_ip_hosts bool NOT NULL,
-    fascist_mode bool NOT NULL,
     enable_https bool NOT NULL,
     PRIMARY KEY (settings_id));
 

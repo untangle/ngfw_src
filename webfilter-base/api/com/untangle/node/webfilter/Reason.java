@@ -31,17 +31,17 @@ public enum Reason
     BLOCK_URL('U', "in URLs Block list"),
     BLOCK_EXTENSION('E', "in File Extensions Block list"),
     BLOCK_MIME('M', "in MIME Types Block list"),
-    BLOCK_ALL('A', "blocking all traffic"),
+    BLOCK_ALL('A', "blocking all traffic"), // XXX removed in 6.0
     BLOCK_IP_HOST('H', "hostname is an IP address"),
     PASS_URL('I', "in URLs Pass list"),
     PASS_CLIENT('C', "in Clients Pass list"),
-    
+
     /**
      * None is to help the GUI deal with the concept of none. Don't
      * log this to the database, I know where you live.
      */
     DEFAULT('N', "no rule applied");
-    
+
     private static final long serialVersionUID = -1388743204136725990L;
 
 
@@ -58,19 +58,19 @@ public enum Reason
         return key;
     }
 
-	public String getReason() {
-		return reason;
-	}
+    public String getReason() {
+        return reason;
+    }
 
     public static Reason getInstance(char key)
     {
-    	Reason[] values = values();
-    	for (int i = 0; i < values.length; i++) {
-    		if (values[i].getKey() == key){
-    			return values[i];
-    		}
-		}
-    	return null;
+        Reason[] values = values();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].getKey() == key){
+                return values[i];
+            }
+        }
+        return null;
     }
 
 }

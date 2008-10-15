@@ -19,3 +19,10 @@
 ALTER TABLE settings.n_webfilter_settings ADD COLUMN enable_https bool;
 UPDATE settings.n_webfilter_settings SET enable_https = true;
 ALTER TABLE settings.n_webfilter_settings ALTER COLUMN enable_https SET NOT NULL;
+
+UPDATE settings.n_webfilter_blcat SET block = true, log = true
+WHERE setting_id IN (SELECT settings_id
+                     FROM settings.n_webfilter_settings
+                     WHERE fascist_mode = true);
+
+ALTER TABLE settings.n_webfilter_settings DROP COLUMN fascist_mode;

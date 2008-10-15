@@ -45,8 +45,6 @@ public class WebFilterBaseSettings implements Serializable {
 
     private boolean blockAllIpHosts = false;
 
-    private boolean fascistMode = false;
-
     private boolean enableHttps = true;
 
     private int passedClientsLength;
@@ -90,22 +88,6 @@ public class WebFilterBaseSettings implements Serializable {
     public void setBlockAllIpHosts(boolean blockAllIpHosts)
     {
         this.blockAllIpHosts = blockAllIpHosts;
-    }
-
-    /**
-     * If true, block everything that is not whitelisted.
-     *
-     * @return true to block.
-     */
-    @Column(name="fascist_mode", nullable=false)
-    public boolean getFascistMode()
-    {
-        return fascistMode;
-    }
-
-    public void setFascistMode(boolean fascistMode)
-    {
-        this.fascistMode = fascistMode;
     }
 
     /**
