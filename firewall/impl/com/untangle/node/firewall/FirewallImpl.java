@@ -161,6 +161,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             }
         };
         getNodeContext().runTransaction(tw);
+        handler.configure(settings);
     }
 
     public Validator getValidator() {
