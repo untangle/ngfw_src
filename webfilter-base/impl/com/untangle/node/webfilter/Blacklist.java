@@ -356,9 +356,8 @@ public abstract class Blacklist
                 node.log(hbe);
             }
 
-            if (null == bc && null != stringRule && !stringRule.isLive()) {
-                return null;
-            } else if (null != bc && bc.getBlock()) {
+            if ((null != bc && bc.getBlock())
+                || (null != stringRule && stringRule.isLive())) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri, null == bc ? category : bc.getDisplayName(), clientIp);
                 return node.generateNonce(bd);
