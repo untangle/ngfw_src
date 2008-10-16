@@ -151,21 +151,21 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     })
                 })],
                 addHandler : function() {
-                	if (this.getPolicyManagerLicenseStatus().expired){
+                	if (this.getPolicyManagerLicenseStatus(true).expired){
                 		this.showProfessionalMessage();
                 	} else {
                         Ung.EditorGrid.prototype.addHandler.call(this.gridRacks);
                 	}
                 }.createDelegate(this),
                 editHandler : function(record) {
-                	if (this.getPolicyManagerLicenseStatus().expired){
+                	if (this.getPolicyManagerLicenseStatus(true).expired){
                 		this.showProfessionalMessage();
                 	} else {
                         Ung.EditorGrid.prototype.editHandler.call(this.gridRacks,record);
                 	}
                 }.createDelegate(this),
                 deleteHandler : function(record) {
-                	if (this.getPolicyManagerLicenseStatus().expired){
+                	if (this.getPolicyManagerLicenseStatus(true).expired){
                 		this.showProfessionalMessage();
                 	} else {
                         Ung.EditorGrid.prototype.deleteHandler.call(this.gridRacks,record);
