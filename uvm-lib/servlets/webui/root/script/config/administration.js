@@ -853,7 +853,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         //success
                                         Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Signature Request Successfully Generated"),
                                             function () {
-                                                Ext.getCmp('administration_crs').setValue(result);
+                                                var crsCmp = Ext.getCmp('administration_crs');
+                                                crsCmp.setValue(result);
+                                                crsCmp.focus(true);
                                             }.createDelegate(this) 
                                         );
                                     } else {
