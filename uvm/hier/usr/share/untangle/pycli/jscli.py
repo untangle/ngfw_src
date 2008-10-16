@@ -20,15 +20,16 @@ import pycurl
 # urlgrabber, it doesn't support cookies which are required in order
 # for java callable references to work.
 class CurlRequestHandler(object):
-    def __init__(self):
+    def __init__( self, timeout=30 ):
         self.__curl = pycurl.Curl()
         self.__curl.setopt( pycurl.POST, 1 )
         self.__curl.setopt( pycurl.NOSIGNAL, 1 )
         self.__curl.setopt( pycurl.CONNECTTIMEOUT, 10 )
+        self.__curl.setopt( pycurl.TIMEOUT, timeout )
         self.__curl.setopt( pycurl.COOKIEFILE, "" )
         self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
 
-    def make_request(self, url, postdata, content_type = "text/plain"  ):
+    def make_request(self, url, postdata, content_type = "text/plain" ):
         response = StringIO()
 
         self.__curl.setopt( pycurl.URL, url )
@@ -49,7 +50,7 @@ class ArgumentParser(object):
         self.hostname = "localhost"
         self.username = None
         self.password = None
-        self.timeout = None
+        self.timeout = 30
         self.policy_name = None
         self.verbosity = 0
 
@@ -152,8 +153,8 @@ def printUsage():
     ucli aptTail
 """ % sys.argv[0]
 
-def make_proxy( parser ):
-    handler = CurlRequestHandler()
+def make_proxy( parser, timeout=30 ):
+    handler = CurlRequestHandler( timeout )
 
     try:
         if ( parser.username != None and parser.password != None ):
@@ -173,7 +174,7 @@ except:
     printUsage()
     sys.exit(1)
 
-proxy = make_proxy( parser )
+proxy = make_proxy( parser, parser.timeout )
 remoteContext = proxy.RemoteUvmContext
 
 if ( parser.policy_name != None ):

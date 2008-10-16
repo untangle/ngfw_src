@@ -20,10 +20,12 @@ end
 
 module Untangle
   class RequestHandler
-    def initialize()
+    def initialize( read_timeout = 30, open_timeout = 10 )
       @opener = WWW::Mechanize.new
       @opener.keep_alive = true
       @opener.redirect_ok = false
+      @opener.read_timeout = read_timeout
+      @opener.open_timeout = open_timeout
     end
     
     def make_request( url, postdata )
