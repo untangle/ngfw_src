@@ -36,21 +36,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     buttonAlign : 'left'
                 },
                 items : [{
-                    items : [{
-                        xtype : 'checkbox',
-                        boxLabel : this.i18n._('Block all sites except for Pass Lists'),
-                        hideLabel : true,
-                        name : 'Block all sites except for Pass Lists',
-                        checked : this.getBaseSettings().fascistMode,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().fascistMode = checked;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }]
-                }, {
                     title : this.i18n._('Categories'),
                     buttons : [{
                         name : 'Categories manage list',
