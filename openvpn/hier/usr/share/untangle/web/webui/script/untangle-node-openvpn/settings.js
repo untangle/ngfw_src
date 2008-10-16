@@ -23,6 +23,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     labelWidth: 150,
                     items: [{
                         html : this.i18n._('Download VPN Site configuration.'),
+                        border: false,
                         cls : "description"
                     },{
                         xtype : 'button',
@@ -38,6 +39,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     labelWidth: 150,
                     items: [{
                         html : this.i18n._('Click here to download a key for Windows clients.'),
+                        border: false,
                         cls : "description"
                     },{
                         xtype : 'button',
@@ -46,6 +48,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         handler : this.windowsInstaller.createDelegate( this )
                     },{
                         html : this.i18n._('Use this button for all other clients.'),
+                        bodyStyle : 'paddingTop:10px',
+                        border: false,
                         cls : "description"
                     },{
                         xtype : 'button',
@@ -57,6 +61,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
 
             this.panel = new Ext.FormPanel({
+            	bodyStyle : 'padding:5px 5px 0px 5px;',
                 items : [{
                     cls : 'u-form-panel',
                     xtype : 'fieldset',
@@ -65,10 +70,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     labelWidth: 150,
                     items: [{
                         html : this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
+                        border: false,
                         cls : "description"
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Email Address'),
+                        labelWidth: 150,
+                        width: 200,
                         name : 'emailAddress'
                     },{
                         xtype : 'button',
