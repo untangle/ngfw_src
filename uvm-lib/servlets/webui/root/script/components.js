@@ -1009,7 +1009,19 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
 
     // remove node
-    removeAction : function() {
+    removeAction : function()
+    {
+        /* A hook for doing something in a node before attempting to remove it */
+        if ( this.settings.preRemoveAction ) {
+            this.settings.preRemoveAction( this, this.completeRemoveAction.createDelegate( this ));
+            return;
+        }
+        
+        this.completeRemoveAction();
+    },
+
+    completeRemoveAction : function()
+    {
         var message = this.md.displayName
                 + " is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?";
         Ext.Msg.confirm(i18n._("Warning:"), message, function(btn, text) {
@@ -1023,6 +1035,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                 rpc.nodeManager.destroy(function(result, exception) {
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                        this.getEl().unmask();
                         return;
                     }
                     if (this) {
