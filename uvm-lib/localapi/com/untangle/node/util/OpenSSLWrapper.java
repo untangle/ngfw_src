@@ -424,6 +424,83 @@ public class OpenSSLWrapper {
         throw new IOException("openssl exited with value " + result.exitCode + " key file " + keyFile.getAbsolutePath() + " Subject " + subject.toString());
     }
 
+
+    public static void importCert(byte[] certBytes, byte[] caBytes, File keyFile)
+        throws IOException {
+	File temp = File.createTempFile("apache", ".tmp");
+	byte[] fullCertBytes;
+        try {
+	    SimpleExec.SimpleExecResult result = SimpleExec.exec(
+								 "openssl",
+								 new String[] {
+								     "rsa",
+								     "-in",
+								     keyFile.getAbsolutePath()
+								 },
+								 null,
+								 null,
+								 true,
+								 false,
+								 1000*60);
+	    
+	    if (caBytes != null) {
+		fullCertBytes = new byte[certBytes.length+result.stdOut.length+caBytes.length+2];
+	    } else {
+		fullCertBytes = new byte[certBytes.length+result.stdOut.length+2];
+	    }
+
+	    int i;
+	    for (i = 0; i < certBytes.length; i++) {
+		fullCertBytes[i] = certBytes[i];
+	    }
+
+	    fullCertBytes[certBytes.length] = Byte.parseByte("10");
+
+	    for (i = 0; i < result.stdOut.length; i++) {
+		fullCertBytes[certBytes.length+i+1] = result.stdOut[i];
+	    }
+	    
+	    if (caBytes != null) {
+		for (i = 0; i < caBytes.length; i++) {
+		    fullCertBytes[certBytes.length+result.stdOut.length+i+1] = caBytes[i];
+		}
+	    }
+
+	    IOUtil.bytesToFile(fullCertBytes, temp);
+	    
+	    SimpleExec.SimpleExecResult verifyResult = SimpleExec.exec(
+								       "openssl",
+								       new String[] {
+									   "verify",
+									   "-CApath",
+									   "/usr/share/ca-certificates",
+									   "-CAfile",
+									   temp.getAbsolutePath(),
+									   "-purpose",
+									   "any",
+									   temp.getAbsolutePath()
+								       },
+								       null,
+								       null,
+								       true,
+								       false,
+								       1000*60);
+	    if (verifyResult.exitCode == 0) {
+		temp.renameTo(keyFile);
+	    } else {
+		throw new IOException("openssl exited with value " + verifyResult.exitCode + " error verifying cert against private key and CA");
+
+
+	    }
+        }
+        catch(IOException ex) {
+            IOUtil.delete(temp);
+            throw ex;
+        }
+    }
+    
+
+
     //============
     // Helpers
     //============
@@ -534,7 +611,6 @@ public class OpenSSLWrapper {
 
 
     }
-
 
     //============================================================
     // Trying to determine the "purpose" of a cert.  Example

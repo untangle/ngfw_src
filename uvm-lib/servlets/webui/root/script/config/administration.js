@@ -685,7 +685,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             layout: 'form',
                             items: [{
                                 xtype : 'button',
-                                text : String.format(this.i18n._('Generate a {0}Certificate Signature Request{1}'), '<b>', '</b>'),
+                                text : String.format(this.i18n._('Generate a {0}CSR{1}'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
                                 iconCls : 'actionIcon',
@@ -698,7 +698,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             columnWidth:1,
                             layout: 'form',
                             items: [{
-                                html : this.i18n._("Click this button to generate a certificate signature request, which you can then copy and paste for use by certificate authorities such as Thawte, Verisign, etc."),
+                                html : this.i18n._("Click this button to generate a Certificate Signature Request (CSR), which you can then copy and paste for use by certificate authorities such as Thawte, Verisign, etc."),
                                 border : false
                             }]
                         }]

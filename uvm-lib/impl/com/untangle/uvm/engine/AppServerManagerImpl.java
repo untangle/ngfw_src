@@ -253,10 +253,9 @@ class AppServerManagerImpl implements LocalAppServerManager
         }
     }
 
+    //caCert is ignored for now, and may be just dropped
     public boolean importServerCert(byte[] cert, byte[] caCert)
     {
-    // FIXME !!!
-
         CertInfo localCertInfo = null;
 
         try {
@@ -277,15 +276,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
         String reason = "";
         try {
-            if (null != caCert) {
-                reason = "Unable to import CA cert \"" + new String(caCert)
-                    + "\"";
-                keyStore.importCert(caCert, cn + "-ca");
-            }
-            reason = "Unable to CA cert \"" + new String(cert) + "\"";
-            keyStore.importCert(cert, cn);
-            tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS,
-                                          getFQDN());
+            OpenSSLWrapper.importCert(cert, caCert, new File(APACHE_PEM_FILE));
         } catch (Exception ex) {
             logger.error(reason, ex);
             return false;
