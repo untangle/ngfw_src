@@ -606,16 +606,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     labelWidth: 150,
                     items : [{
                         xtype : 'textfield',
-                        fieldLabel : this.i18n._('Current Certificate Type'),
-                        id : 'administration_status_appearsSelfSigned',
-                        value : this.getCurrentServerCertInfo() == null ? "" : (this.getCurrentServerCertInfo().appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted")),
-                        disabled : true,
-                        width: 300
-                    },{
-                        html : '<hr>',
-                        border : false
-                    },{
-                        xtype : 'textfield',
                         fieldLabel : this.i18n._('Valid starting'),
                         labelStyle: 'font-weight:bold',
                         id : 'administration_status_notBefore',
@@ -1081,7 +1071,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
         updateCertificatesStatus : function() {
         	var certInfo = this.getCurrentServerCertInfo(true);
         	if (certInfo != null) {
-                Ext.getCmp('administration_status_appearsSelfSigned').setValue(certInfo.appearsSelfSigned ? this.i18n._("Self-Signed") : this.i18n._("Signed / Trusted"));
                 Ext.getCmp('administration_status_notBefore').setValue(i18n.timestampFormat(certInfo.notBefore));
                 Ext.getCmp('administration_status_notAfter').setValue(i18n.timestampFormat(certInfo.notAfter));
                 Ext.getCmp('administration_status_subjectDN').setValue(certInfo.subjectDN);
