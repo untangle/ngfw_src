@@ -62,6 +62,7 @@ public class OpenSSLWrapper {
     private static final String CERT_DATE_FORMAT =
         "MMM d HH:mm:ss yyy z";
 
+    private static final String KEY_PAIR_VALID_DAYS = "3650"; // In the neighborhood of 10 years
 
 
     /**
@@ -287,6 +288,8 @@ public class OpenSSLWrapper {
                                                                  "-new",
                                                                  "-x509",
                                                                  "-nodes",
+								 "-days",
+								 KEY_PAIR_VALID_DAYS,
                                                                  "-out",
                                                                  filename,
                                                                  "-keyout",
