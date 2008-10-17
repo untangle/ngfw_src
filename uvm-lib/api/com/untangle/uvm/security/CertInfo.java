@@ -65,6 +65,8 @@ public class CertInfo implements java.io.Serializable {
      */
     public final boolean isCA;
 
+    public Boolean appearsSelfSignedFlag;
+
     /**
      * A String representation of the cert (from OpenSSL).  Not
      * that pretty, but sufficent for the hard-code nerd who
@@ -102,6 +104,10 @@ public class CertInfo implements java.io.Serializable {
         return subjectDN.getValue("CN");
     }
 
+    public void setAppearsSelfSignedFlag(boolean flag) {
+	appearsSelfSignedFlag = Boolean.valueOf(flag);
+    }
+
     /**
      * Method to test if a vert seems self-signed.  Note that
      * {@link #isCA CA} certs will be self-signed, as well
@@ -110,6 +116,11 @@ public class CertInfo implements java.io.Serializable {
      * @return true if the subjectDN is the same as the issuerDN
      */
     public boolean appearsSelfSigned() {
+	//Skip this test if someone tells us better
+	if (appearsSelfSignedFlag != null) {
+	    return appearsSelfSignedFlag.booleanValue();
+	}
+
         if(subjectDN == null ||
            issuerDN == null) {
             return issuerDN==null && subjectDN==null;

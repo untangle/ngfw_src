@@ -216,12 +216,16 @@ public class OpenSSLWrapper {
                                      null,//logas
                                      false);//TODO More thread junk.  This is getting to be a real pain...
 
-            return new CertInfo(notBefore,
+           CertInfo ci = new CertInfo(notBefore,
                                 notAfter,
                                 subjectDN,
                                 issuerDN,
                                 result.exitCode == 0,
                                 prettyPrint(certFile));
+
+	   ci.setAppearsSelfSignedFlag(appearsSelfSigned(certFile));
+
+	   return ci;
         }
 
         throw new IOException("openssl exited with value " + result.exitCode);
@@ -276,10 +280,10 @@ public class OpenSSLWrapper {
         SimpleExec.SimpleExecResult result = SimpleExec.exec(
                                                              "openssl",
                                                              new String[] {
-                                                                 "-req",
+                                                                 "req",
                                                                  "-batch",
                                                                  "-subj",
-                                                                 "'/CN=" + alias + "'",
+                                                                 "/CN=" + alias,
                                                                  "-new",
                                                                  "-x509",
                                                                  "-nodes",
@@ -468,29 +472,10 @@ public class OpenSSLWrapper {
 
 	    IOUtil.bytesToFile(fullCertBytes, temp);
 	    
-	    SimpleExec.SimpleExecResult verifyResult = SimpleExec.exec(
-								       "openssl",
-								       new String[] {
-									   "verify",
-									   "-CApath",
-									   "/usr/share/ca-certificates",
-									   "-CAfile",
-									   temp.getAbsolutePath(),
-									   "-purpose",
-									   "any",
-									   temp.getAbsolutePath()
-								       },
-								       null,
-								       null,
-								       true,
-								       false,
-								       1000*60);
-	    if (verifyResult.exitCode == 0) {
+	    if (appearsSelfSigned(temp) == false) {
 		temp.renameTo(keyFile);
 	    } else {
-		throw new IOException("openssl exited with value " + verifyResult.exitCode + " error verifying cert against private key and CA");
-
-
+		throw new IOException("Error verifying cert against private key and CA");
 	    }
         }
         catch(IOException ex) {
@@ -498,8 +483,37 @@ public class OpenSSLWrapper {
             throw ex;
         }
     }
-    
 
+
+    public static boolean appearsSelfSigned(File certFile) {
+	try {
+	    SimpleExec.SimpleExecResult verifyResult = SimpleExec.exec(
+								       "openssl",
+								       new String[] {
+									   "verify",
+									   "-CApath",
+									   "/usr/share/ca-certificates",
+									   "-CAfile",
+									   certFile.getAbsolutePath(),
+									   "-purpose",
+									   "any",
+									   certFile.getAbsolutePath()
+								       },
+								       null,
+								       null,
+								       true,
+								       false,
+								       1000*60);
+	    if (verifyResult.exitCode == 0) {
+		return false; //If openssl verify succeeds then it checks against a CA
+	    }
+	} catch(IOException ex) {
+	    //hmm maybe do something here TODO FIXME !!!
+        }
+	
+	return true;
+    }
+    
 
     //============
     // Helpers
