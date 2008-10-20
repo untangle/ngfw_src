@@ -131,68 +131,61 @@ if (!Ung.hasResource["Ung.Email"]) {
                 bodyStyle : 'padding:5px 5px 0px 5px;',
                 autoScroll : true,
                 
-                onEmailTest : function() {
-                    this.emailTestMessage = "<center>" + 
-                            this.i18n._("Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct.") + 
-                            "</center>";
-                    if( this.validateOutgoingServer() ) {
-	                    Ext.MessageBox.show({
-	                        title : this.i18n._('Email Test'),
-	                        buttons : { 
-                                cancel:this.i18n._('Close'), 
-                                ok:this.i18n._('Proceed') 
-                            },
-                            msg : this.emailTestMessage,
-	                        modal : true,
-                            prompt : true,
-	                        fn: function(btn, emailAddress){
-							    if (btn == 'ok'){
-                                    Ext.MessageBox.show({
-                                        title : this.i18n._('Email Test'),
-                                        msg : this.emailTestMessage,
-			                            buttons : { 
-			                                cancel:this.i18n._('Close'), 
-			                                ok:this.i18n._('Proceed') 
-			                            },
-                                        modal : true,
+                onEmailTest : function(saveBefore) {
+                    var emailTestMessage = this.i18n._("Enter an email address which you would like to send a test message to, and then press \"Proceed\". You should receive an email shortly after running the test. If not, your email settings may not be correct.");
+                    Ext.MessageBox.show({
+                        title : this.i18n._('Email Test'),
+                        buttons : { 
+                            cancel:this.i18n._('Close'), 
+                            ok:this.i18n._('Proceed') 
+                        },
+                        msg : emailTestMessage,
+                        modal : true,
+                        prompt : true,
+                        fn: function(btn, emailAddress){
+						    if (btn == 'ok'){
+                                Ext.MessageBox.show({
+                                    title : this.i18n._('Email Test'),
+                                    msg : emailTestMessage,
+		                            buttons : { 
+		                                cancel:this.i18n._('Close'), 
+		                                ok:this.i18n._('Proceed') 
+		                            },
+                                    modal : true,
+                                    prompt : true,
+                                    progress : true,
+                                    wait : true,
+                                    waitConfig: {interval: 100},
+                                    progressText : this.i18n._('Sending...'),
+                                    value : emailAddress
+                                });
+		                        var message = rpc.adminManager.sendTestMessage( function(result, exception) {
+		                            if (exception) {
+		                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+		                                return;
+		                            }
+		                            this.testEmailResultMessage = result == true ? this.i18n._('Test email sent.') : this.i18n._('Warning!  Test failed.  Check your settings.');
+		    
+		                            Ext.MessageBox.show({
+		                                title : this.i18n._('Email Test'),
+		                                msg : emailTestMessage,
+                                        buttons : { 
+                                            cancel:this.i18n._('Close'), 
+                                            ok:this.i18n._('Proceed') 
+                                        },
+		                                modal : true,
                                         prompt : true,
-                                        progress : true,
-                                        wait : true,
-                                        waitConfig: {interval: 100},
-                                        progressText : this.i18n._('Sending...'),
-                                        value : emailAddress,
-                                        width : 450
-                                    });
-			                        var message = rpc.adminManager.sendTestMessage( function(result, exception) {
-			                            if (exception) {
-			                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-			                                return;
-			                            }
-			                            this.testEmailResultMessage = result == true ? this.i18n._('Test email sent.') : this.i18n._('Warning!  Test failed.  Check your settings.');
-			    
-			                            Ext.MessageBox.show({
-			                                title : this.i18n._('Email Test'),
-			                                msg : this.emailTestMessage,
-	                                        buttons : { 
-	                                            cancel:this.i18n._('Close'), 
-	                                            ok:this.i18n._('Proceed') 
-	                                        },
-			                                modal : true,
-                                            prompt : true,
-			                                progress : true,
-			                                waitConfig: {interval: 100},
-			                                progressText : this.testEmailResultMessage,
-                                            value : emailAddress,
-			                                width : 450
-			                            });
-			                        }.createDelegate(this), emailAddress);
-							    }
-                            }.createDelegate(this),
-                            progress : true,
-	                        progressText : ' ',
-	                        width : 450
-	                    });
-                    }
+		                                progress : true,
+		                                waitConfig: {interval: 100},
+		                                progressText : this.testEmailResultMessage,
+                                        value : emailAddress
+		                            });
+		                        }.createDelegate(this), emailAddress);
+						    }
+                        }.createDelegate(this),
+                        progress : true,
+                        progressText : ' '
+                    });
                 }.createDelegate(this),
 
                 defaults : {
@@ -330,7 +323,55 @@ if (!Ung.hasResource["Ung.Email"]) {
                         iconCls : 'testIcon',
                         name: "emailTestButton",
                         handler : function() {
-                            this.panelOutgoingServer.onEmailTest();
+                        	var enabledCmp = Ext.getCmp('email_smtpEnabled'); 
+                            var hostCmp = Ext.getCmp('email_smtpHost');
+                            var portCmp = Ext.getCmp('email_smtpPort');
+                            var loginCmp = Ext.getCmp('email_smtpLogin');
+                            var passwordCmp = Ext.getCmp('email_smtpPassword');
+                            var fromAddressCmp = Ext.getCmp('email_fromAddress');
+                            
+                            var settingsChanged = enabledCmp.isDirty() 
+                                        || hostCmp.isDirty()
+                                        || portCmp.isDirty()
+                                        || loginCmp.isDirty()
+                                        || passwordCmp.isDirty()
+                                        || fromAddressCmp.isDirty();
+                                    
+                            if (settingsChanged) {
+                                Ext.Msg.show({
+                                   title:this.i18n._('Save Changes?'),
+                                   msg: String.format(this.i18n._("Your current settings have not been saved yet.{0}Would you like to save your settings before executing the test?"), '<br>'),
+                                   buttons: Ext.Msg.YESNOCANCEL,
+                                   fn: function(btnId) {
+                                   	    if (btnId == 'yes') {
+                                   	    	if (this.validateOutgoingServer()) {
+                                                Ext.MessageBox.wait(this.i18n._('Saving...'), this.i18n._('Please wait'));
+                                                // save mail settings
+                                                main.getMailSender().setMailSettings(function(result, exception) {
+                                                     if (exception) {
+                                                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                                                         return;
+                                                    }
+                                                    Ext.MessageBox.hide();
+                                                    // update original values
+                                                    enabledCmp.originalValue = enabledCmp.getValue();
+                                                    hostCmp.originalValue = hostCmp.getValue();
+                                                    portCmp.originalValue = portCmp.getValue();
+                                                    loginCmp.originalValue = loginCmp.getValue();
+                                                    passwordCmp.originalValue = passwordCmp.getValue();
+                                                    fromAddressCmp.originalValue = fromAddressCmp.getValue();
+                                                    // send test mail
+                                                    this.panelOutgoingServer.onEmailTest();
+                                                }.createDelegate(this), this.getMailSettings());
+                                   	    	}
+                                   	    }
+                                   }.createDelegate(this),
+                                   animEl: 'elId',
+                                   icon: Ext.MessageBox.QUESTION
+                                });                            	
+                            } else {
+                                this.panelOutgoingServer.onEmailTest();
+                            }
                         }.createDelegate(this)
                     }]
                 }]
