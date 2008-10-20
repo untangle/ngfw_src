@@ -188,7 +188,8 @@ public class SnmpManagerImpl
         snmpd_config.append("pass .1.3.6.1.4.1.30054.8 /bin/sh /usr/bin/uvmsnmp spyware").append(EOL);
         snmpd_config.append("pass .1.3.6.1.4.1.30054.9 /bin/sh /usr/bin/uvmsnmp virus").append(EOL);
         snmpd_config.append("pass .1.3.6.1.4.1.30054.10 /bin/sh /usr/bin/uvmsnmp spamblocker").append(EOL);
-        snmpd_config.append("pass .1.3.6.1.4.1.30054.11 /bin/sh /usr/bin/uvmsnmp kav").append(TWO_LINES);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.11 /bin/sh /usr/bin/uvmsnmp kav").append(EOL);
+        snmpd_config.append("pass .1.3.6.1.4.1.30054.12 /bin/sh /usr/bin/uvmsnmp sitefilter").append(TWO_LINES);
 
         if(isNotNullOrBlank(settings.getCommunityString())) {
             snmpd_config.append("# Simple access rules, so there is only one read").append(EOL);
