@@ -1607,6 +1607,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     items : [{
                         xtype : 'radio',
                         name : 'Logo',
+                        id : 'administration_branding_default_logo',
                         hideLabel : true,
                         boxLabel : 'Use Default Logo',
                         value : 'default',
@@ -1618,8 +1619,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         this.getBrandingBaseSettings().defaultLogo = true;
                                         this.panelBranding.enableFileUpload(false);
                                     }
-                                    Ext.MessageBox.alert(this.i18n._("Info"), this.i18n
-                                            ._("Please note that you have to refresh the application after saving for the new logo to take effect."));
                                 }.createDelegate(this)
                             }
                         }
@@ -1679,6 +1678,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Company Name'),
                         name : 'Company Name',
+                        id : 'administration_branding_company_name',
                         allowBlank : true,
                         value : brandingBaseSettings.companyName,
                         listeners : {
@@ -1692,6 +1692,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Company URL'),
                         name : 'Company URL',
+                        id : 'administration_branding_company_url',
                         allowBlank : true,
                         value : brandingBaseSettings.companyUrl,
                         listeners : {
@@ -1705,6 +1706,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Contact Name'),
                         name : 'Contact Name',
+                        id : 'administration_branding_contact_name',
                         allowBlank : true,
                         value : brandingBaseSettings.contactName,
                         listeners : {
@@ -1718,6 +1720,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Contact Email'),
                         name : 'Contact Email',
+                        id : 'administration_branding_contact_email',
                         allowBlank : true,
                         value : brandingBaseSettings.contactEmail,
                         listeners : {
@@ -1744,7 +1747,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         waitMsg : cmp.i18n._('Please wait while your logo image is uploaded...'),
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Logo Succeeded"), 
+                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), 
+                                    String.format(cmp.i18n._("Upload Logo Succeeded. {0}Please note that you have to refresh the application for the new logo to take effect."), '<br>'), 
                                 function() {
                                     Ext.getCmp('upload_logo_file_textfield').reset();
                                 } 
@@ -2008,6 +2012,28 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         // save function
         saveAction : function() {
+            /* A hook for doing something in a node before attempting to remove it */
+        	
+            //check to see if the branding info was changed in order to inform the user
+            if (!this.isBrandingExpired()) {
+                var brandingChanged = Ext.getCmp('administration_branding_default_logo').isDirty() 
+                            || Ext.getCmp('administration_branding_company_name').isDirty()
+                            || Ext.getCmp('administration_branding_company_url').isDirty()
+                            || Ext.getCmp('administration_branding_contact_name').isDirty()
+                            || Ext.getCmp('administration_branding_contact_email').isDirty();
+                if (brandingChanged) {
+                    Ext.MessageBox.alert(this.i18n._("Info"), 
+                            this.i18n._("Please note that you have to refresh the application after saving for the new branding information to take effect."),
+                            function() {
+                            	 this.completeSaveAction();
+                            }.createDelegate(this)
+                    );
+                    return;
+                }
+            }
+            this.completeSaveAction();
+        },
+        completeSaveAction : function() {
             if (this.validate()) {
             	this.saveSemaphore = 6;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
