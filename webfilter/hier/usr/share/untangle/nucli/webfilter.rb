@@ -19,7 +19,7 @@ require 'filternode'
 
 class Webfilter < UVMFilterNode
     
-    UVM_NODE_NAME = "untangle-base-webfilter"
+    UVM_NODE_NAME = "untangle-node-webfilter"
     WEBFILTER_MIB_ROOT = UVM_FILTERNODE_MIB_ROOT + ".1"
 
     def initialize
