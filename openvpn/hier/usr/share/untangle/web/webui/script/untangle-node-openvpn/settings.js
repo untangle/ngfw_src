@@ -479,9 +479,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var tabs = [this.panelStatus];
     
             /* Register the VTypes, need i18n to be initialized for the text */
-            Ext.form.VTypes["openvpnClientName"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
-            Ext.form.VTypes["openvpnClientNameMask"] = /[-_.0-9A-Za-z]*/;
-            Ext.form.VTypes["openvpnClientNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
+            if(Ext.form.VTypes["openvpnClientNameVal"]==null) {
+                Ext.form.VTypes["openvpnClientNameVal"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
+                Ext.form.VTypes["openvpnClientName"] = function(v){
+                    return Ext.form.VTypes["openvpnClientNameVal"].test(v);
+                }
+                Ext.form.VTypes["openvpnClientNameMask"] = /[-_.0-9A-Za-z]*/;
+                Ext.form.VTypes["openvpnClientNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
+            }
 
             if (this.configState == "SERVER_ROUTE") {
                 this.buildClients();
