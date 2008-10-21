@@ -1730,6 +1730,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         this.cancelAction();
                     }.createDelegate(this), vpnSettings);
                 }
+            } else {
+            	this.cancelAction();
             }
         },
 
