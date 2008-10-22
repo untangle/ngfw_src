@@ -317,10 +317,8 @@ public class IPMaddr implements Serializable, Comparable
 
     /**
      * The <code>parse</code> method takes an addrString, with BNF of: <p><code>
-     * addr      = "any" | nummask | host-or-addr [ " mask " ipaddr | " mask " hexnumber ]
-     * nummask   = host-or-addr [ "/" maskbits ]
-     * host-or-addr
-     *           = [ ipaddr | hostname-with-at-least-one-dot.com ]
+     * addr      = "any" | nummask | ipaddr [ " mask " ipaddr | " mask " hexnumber ]
+     * nummask   = ipaddr [ "/" maskbits ]
      * ipaddr    = host-num "." host-num [ "." host-num [ "." host-num ] ]
      * host-num  = digit [ digit [ digit ] ]
      * maskbits  = 0 | 1 | ... | 32
@@ -331,12 +329,6 @@ public class IPMaddr implements Serializable, Comparable
      * netmask in dotted form, both as Strings.
      *
      * No IPV6 handling here.  XX
-     *
-     * Currently the name lookup
-     * behavior is that the node VM does the host lookup as usual for its
-     * configured machine.  This generally means a DNS query will be issued.  To
-     * remove any question of ambiguous names "without a dot", only absolute host
-     * names are recommended.
      *
      * @param addrString a <code>String</code> giving an host, address, host/mask, or address/mask
      * @return an <code>IPMaddr</code> value
@@ -376,11 +368,12 @@ public class IPMaddr implements Serializable, Comparable
         int ma = addrString.indexOf(" mask ");
         if (ma > 0) {
             String maskstr = addrString.substring(ma + 6);
-            if (addrString.startsWith("0x") || addrString.startsWith("0X")) {
+            if (maskstr.startsWith("0x") || maskstr.startsWith("0X")) {
                 // Hex mask
                 try {
-                    long lmask = Long.parseLong(maskstr, 16);
-                    if (lmask > 0xffffffff)
+                    /* Parse long doesn't want the 0x */
+                    long lmask = Long.parseLong(maskstr.substring( 2 ), 16);
+                    if (lmask > 0xffffffffl)
                         throw new IllegalArgumentException("IPMaddr.parse(): out of range mask: " + maskstr);
                     String ipaddr = addrString.substring(0, ma);
                     addr = canonicalizeHostAddress(ipaddr);
