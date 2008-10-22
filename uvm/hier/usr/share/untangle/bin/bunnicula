@@ -11,7 +11,7 @@ procset() {
         if [ $? != 0 ] ; then
             echo "WARNING: Failed to set proc setting \"$1\""  >&2
             if [ "$3" != "" ] ; then
-                echo "ERROR: Failed to set required proc setting \"$1\""  >&2
+                echo "EXCEPTION: Failed to set required proc setting \"$1\""  >&2
                 exit 1
             fi
         fi
@@ -23,7 +23,7 @@ procset() {
 # make sure we're using untangle kernel.  There should be a cleaner
 # way to do this. XX
 if ! /sbin/modprobe -q iptable_tune; then
-    echo "ERROR: kernel does not have Untangle extensions.  Need untangle-linux-image."
+    echo "EXCEPTION: kernel does not have Untangle extensions.  Need untangle-linux-image."
     exit 1
 fi
 
@@ -33,19 +33,19 @@ fi
 # check nfqueue
 /sbin/modprobe -q nfnetlink_queue
 if [ ! -f /proc/net/netfilter/nfnetlink_queue ]; then
-    echo "ERROR: kernel does not have IP_NF_QUEUE" >& 2
+    echo "EXCEPTION: kernel does not have IP_NF_QUEUE" >& 2
     exit 1
 
 queue_owner=`awk -v queue=0 '{ if ( $1 == queue ) print $2 }' /proc/net/netfilter/nfnetlink_queue `
 elif [ -n "${queue_owner}" ] ; then
-    echo "ERROR: nfqueue allocated by (${queue_owner}), exiting" >&2
+    echo "EXCEPTION: nfqueue allocated by (${queue_owner}), exiting" >&2
     exit 1
 fi
 
 # also check that there is no ip_queue.  2.6.24 can't handle.
 /sbin/modprobe -q -r ip_queue
 if [ -f /proc/net/ip_queue ]; then
-    echo "ERROR: ip_queue loaded, exiting" >&2
+    echo "EXCEPTION: ip_queue loaded, exiting" >&2
     exit 1
 fi
 
