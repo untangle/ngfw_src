@@ -2014,6 +2014,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             tooltip : i18n._('Refresh'),
             iconCls : 'iconRefresh',
             handler : function() {
+            	Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
                 this.refreshList();
             }.createDelegate(this)
         }, {
@@ -2092,6 +2093,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 }
             });
         }
+        Ext.MessageBox.hide();
     },
     refreshList : function() {
         if (this.hasRepositories) {
