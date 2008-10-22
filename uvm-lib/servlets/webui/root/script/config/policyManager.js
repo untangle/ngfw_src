@@ -582,7 +582,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     
                     this.usersWindow= new Ung.UsersWindow({
                     	grid : this,
-                    	userDataIndex : "user"
+                    	userDataIndex : "user",
+                    	loadLocalDirectoryUsers: false
                     });
                     
                     Ung.EditorGrid.prototype.initComponent.call(this);

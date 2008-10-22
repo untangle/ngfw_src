@@ -3431,6 +3431,8 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     // size to grid on show
     sizeToGrid : false,
     singleSelectUser : false,
+    loadActiveDirectoryUsers : true,
+    loadLocalDirectoryUsers : true,
     userDataIndex : null,
     usersGrid:null,
     populateSemaphore: null,
@@ -3529,6 +3531,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         xtype: "button",
                         name : 'Open Local Directory',
                         text : i18n._("Open Local Directory"),
+                        disabled : !this.loadLocalDirectoryUsers,
                         handler : function() {
                             Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/localDirectory.js", function() {
                                 main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
@@ -3541,7 +3544,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         xtype: "button",
                         name : 'Open Active Directory',
                         text : i18n._("Open Active Directory"),
-                        disabled : !main.isNodeRunning('untangle-node-adconnector'),
+                        disabled : !this.loadActiveDirectoryUsers || !main.isNodeRunning('untangle-node-adconnector'),
                         handler : function() {
                             var node = main.getNode('untangle-node-adconnector');
                             if (node != null) {
@@ -3576,7 +3579,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         });
         this.populateSemaphore=2;
         this.userEntries=this.singleSelectUser ? [] : [{UID: "[any]"}];
-        if (main.isNodeRunning('untangle-node-adconnector')){
+        if (this.loadActiveDirectoryUsers && main.isNodeRunning('untangle-node-adconnector')){
             main.getAppAddressBook().getUserEntries(function(result, exception) {
                 if (exception) {
                     Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
@@ -3591,17 +3594,21 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         } else {
             this.populateSemaphore--;
         }
-        main.getAppAddressBook().getUserEntries(function(result, exception) {
-            if (exception) {
-                Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."), function(){
-                    this.populateCallback();
-                }.createDelegate(this));
-                return;
-            } else {
-                this.userEntries=this.userEntries.concat(result.list);
-            }
+        if (this.loadLocalDirectoryUsers) {
+            main.getAppAddressBook().getUserEntries(function(result, exception) {
+                if (exception) {
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."), function(){
+                        this.populateCallback();
+                    }.createDelegate(this));
+                    return;
+                } else {
+                    this.userEntries=this.userEntries.concat(result.list);
+                }
+                this.populateCallback();
+            }.createDelegate(this),'LOCAL_DIRECTORY')
+        } else {
             this.populateCallback();
-        }.createDelegate(this),'LOCAL_DIRECTORY')
+        }
     },
     populateCallback : function () {
         this.populateSemaphore--;
