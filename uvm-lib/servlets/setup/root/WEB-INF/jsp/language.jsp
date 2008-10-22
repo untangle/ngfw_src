@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:uvm="http://java.untangle.com/jsp/uvm">
   <head>
-    <title>Untangle - Setup Wizard</title>
+    <title>Setup Wizard</title>
     
     <style type="text/css">
       @import "/ext/resources/css/ext-all.css";

@@ -1515,6 +1515,8 @@ Ung.Setup = {
 
         i18n = new Ung.I18N( { "map" : Ung.SetupWizard.languageMap })
 
+    document.title = i18n._( "Setup Wizard" );
+
         var welcome = new Ung.SetupWizard.Welcome();
         var settings = new Ung.SetupWizard.Settings();
         var registration = new Ung.SetupWizard.Registration();

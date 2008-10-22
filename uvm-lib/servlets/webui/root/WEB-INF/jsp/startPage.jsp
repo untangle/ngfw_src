@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <c:set var="isDebug" value="false"/>
 <head>
-    <title>Untangle</title>
+    <title>${bbs.companyName}</title>
     
     <style type="text/css">
         @import "/ext/resources/css/ext-all.css";
