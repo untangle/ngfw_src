@@ -253,7 +253,6 @@ class AppServerManagerImpl implements LocalAppServerManager
         }
     }
 
-    //caCert is ignored for now, and may be just dropped
     public boolean importServerCert(byte[] cert, byte[] caCert)
     {
         CertInfo localCertInfo = null;
