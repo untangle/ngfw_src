@@ -415,6 +415,10 @@ Ung.Main.prototype = {
     },        
 
     getLicenseManager : function(forceReload) {
+    	// default functionality is to reload license manager as it might change in uvm
+    	if (typeof forceReload === 'undefined') {
+    		forceReload = true;
+    	}
         if (forceReload || rpc.licenseManager === undefined) {
             rpc.licenseManager = rpc.jsonrpc.RemoteUvmContext.licenseManager()
         }
