@@ -1579,7 +1579,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var clientList=this.gridClients.getFullSaveList();
             for(var i=0;i<clientList.length;i++) {
                 if(clientList[i].id>=0 && clientList[i].name!=clientList[i].originalName) {
-                    Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._('You cannot change an account name after its key has been distributed. Client name should be {0}.'), clientList[i].originalName),
+                    Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("Unable to change name once you've saved. Create a new user. Client name should be {0}."), clientList[i].originalName),
                         function () {
                             this.tabs.activate(this.panelClients);
                         }.createDelegate(this) 
