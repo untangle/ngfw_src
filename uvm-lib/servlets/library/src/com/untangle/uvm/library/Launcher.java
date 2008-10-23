@@ -174,6 +174,7 @@ public class Launcher extends HttpServlet
         query += "&protocol=" + URLEncoder.encode( protocol );
         query += "&action=" + URLEncoder.encode( action );
         query += "&webui=" + URLEncoder.encode( String.valueOf( true ));
+        query += "&arch=" + URLEncoder.encode( System.getProperty( "os.arch" ));
 
         return query;
     }
