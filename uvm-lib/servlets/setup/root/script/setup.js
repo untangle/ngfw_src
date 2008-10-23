@@ -145,7 +145,6 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
 				{
 					xtype : 'label',
 					html : '<h2 class="wizardTitle">'+i18n._( "Configure your Server" )+'</h2>'
-				
 				},
 				{
                 defaultType : 'textfield',
@@ -222,6 +221,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
 	},
     saveSettings : function( handler )
     {
+        Ext.MessageBox.wait( i18n._( "Saving Settings" ), i18n._( "Please wait" ));
         var saver = new Ung.SetupWizard.SettingsSaver( this.panel, handler );
         saver.savePassword();
     }
@@ -288,6 +288,7 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
             rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getRemoteConnectivityTester();
             rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
             rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
+            Ext.MessageBox.hide();
             this.handler();
         } else {
             Ext.MessageBox.alert( i18n._( "Unable to save password." ));
@@ -410,6 +411,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
 	},
     saveRegistrationInfo : function( handler )
     {
+        Ext.MessageBox.wait( i18n._( "Saving Registration Info" ), i18n._( "Please wait" ));
         var info = Ung.SetupWizard.CurrentValues.registrationInfo;
         var misc = {};
         this.setRegistrationValue( "name", misc, false );
@@ -431,6 +433,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
             return;
         }
         
+        Ext.MessageBox.hide();
         handler();
     },
 
@@ -610,6 +613,8 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
     saveInterfaceList : function( handler )
     {
+        Ext.MessageBox.wait( i18n._( "Remapping Network Interfaces" ), i18n._( "Please wait" ));
+
         /* Commit the store to get rid of the change marks */
         this.interfaceStore.commitChanges();
 
@@ -632,11 +637,14 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             return;
         }
 
+        Ext.MessageBox.hide();
         handler();
     },
 
     refreshInterfaces : function()
     {
+        Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please wait" ));
+
         rpc.networkManager.getInterfaceList( this.completeRefreshInterfaces.createDelegate( this ), true );
     },
         
@@ -666,6 +674,8 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             var status = currentRow.get( "status" );
             currentRow.set( "status", statusHash[status[0]]);
         });
+
+        Ext.MessageBox.hide();
     }
 });
 
@@ -925,6 +935,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
     saveSettings : function( handler )
     {
+        Ext.MessageBox.wait( i18n._( "Configuring Internet Connection" ), i18n._( "Please wait" ));
         this.cardPanel.layout.activeItem.saveData( handler );
     },
 
@@ -977,6 +988,8 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         Ung.SetupWizard.CurrentValues.networkSettings = result;
 
         this.refreshNetworkSettings();
+
+        Ext.MessageBox.hide();
         
         handler();
     },
@@ -1116,7 +1129,8 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     allowBlank : false,
                     msgTarget : 'side',
                     maskRe : /(\d+|\.)/,					
-                    disabled : true
+                    disabled : true,
+                    value : "192.168.1.1"
                 },{
                     name : 'netmask',
                     xtype : 'textfield',
@@ -1126,7 +1140,8 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     allowBlank : false,
                     msgTarget : 'side',
                     maskRe : /(\d+|\.)/,
-                    disabled : true
+                    disabled : true,
+                    value : "255.255.255.0"
                 }]
            }]
         });
@@ -1171,6 +1186,8 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             Ext.MessageBox.alert(i18n._( "Select a value" ), i18n._( "Please choose bridge or router." )); 
             return;
         }
+
+        Ext.MessageBox.wait( i18n._( "Configuring Internal Network" ), i18n._( "Please wait" ));
                 
         var delegate = this.complete.createDelegate( this, [ handler ], true );
         if ( value == 'bridge' ) {
@@ -1189,6 +1206,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             return;
         }
 
+        Ext.MessageBox.hide();
         handler();
     }
 });
@@ -1433,6 +1451,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
 
     saveSettings : function( handler )
     {
+        Ext.MessageBox.wait( i18n._( "Saving Email Settings" ), i18n._( "Please wait" ));
         var settings = Ung.SetupWizard.CurrentValues.mailSettings;
         
         settings.fromAddress = "untangle@" + Ung.SetupWizard.CurrentValues.addressSettings.hostName;
@@ -1467,6 +1486,8 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             return;
         }
 
+        Ext.MessageBox.hide();
+
         handler();
     }
 });
@@ -1488,8 +1509,15 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
         this.card = {
             title : i18n._( "Finished" ),
             cardTitle : i18n._( "Congratulations!" ),
-            panel : panel
+            panel : panel,
+            onNext : this.openUserInterface.createDelegate( this )
         }
+    },
+
+    openUserInterface : function( handler ) 
+    {
+        Ext.MessageBox.wait( i18n._( "Loading User Interface" ), i18n._( "Please wait" ));
+        document.location = "/webui/startPage.do";
     }
 });
 
