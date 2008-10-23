@@ -17,17 +17,24 @@
  */
 package com.untangle.uvm.license;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmException;
 
 public class LicenseManagerFactory
 {
+    static final String STANDARD_LICENSE_RESOURCE = "LicenseStandard.txt";
+    static final String PROFESSIONAL_LICENSE_RESOURCE = "LicenseProfessional.txt";
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private LocalLicenseManager localManager;
 
-    private RemoteLicenseManager remoteManager = new RemoteLicenseManagerImpl( null );
+    private RemoteLicenseManagerImpl remoteManager = new RemoteLicenseManagerImpl( null );
 
     private LicenseManagerFactory()
     {
@@ -85,4 +92,29 @@ public class LicenseManagerFactory
         this.remoteManager = new RemoteLicenseManagerImpl( this.localManager );
     }
 
+    static String loadLicenseText( String resource )
+    {
+        try {
+            InputStream licenseInputStream = Thread.currentThread().
+                getContextClassLoader().getResourceAsStream( resource );
+
+            InputStreamReader licenseInputStreamReader = new InputStreamReader(licenseInputStream);
+            BufferedReader licenseBufferedReader = new BufferedReader(licenseInputStreamReader);
+            StringBuilder licenseStringBuilder = new StringBuilder();
+            String licenseLine;
+            while( true ) {
+                licenseLine=licenseBufferedReader.readLine();
+                if( licenseLine == null ) break;
+                else licenseStringBuilder.append(licenseLine).append("\n");
+            }
+            
+            licenseBufferedReader.close();
+            licenseInputStreamReader.close();
+            
+            return licenseStringBuilder.toString();
+        } catch ( Exception e ) {
+            Logger.getLogger( LicenseManagerFactory.class ).warn( "Unable to load professional license", e );
+            return null;
+        }
+    }
 }

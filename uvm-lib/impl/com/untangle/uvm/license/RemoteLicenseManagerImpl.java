@@ -24,6 +24,8 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private String standardLicense;
+
     private final LocalLicenseManager licenseManager;
 
     RemoteLicenseManagerImpl( LocalLicenseManager licenseManager )
@@ -88,10 +90,18 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
     public String getLicenseAgreement()
     {     
         if ( this.licenseManager == null ) {
-            /* can only have a premium license if they have the full license manager */
-            return null;
+            if ( this.standardLicense == null ) loadLicenseAgreement();
+            if ( this.standardLicense == null ) return "";
+            
+            return this.standardLicense;
         }
         
         return this.licenseManager.getLicenseAgreement();
+    }
+
+    private void loadLicenseAgreement()
+    {
+        this.standardLicense = 
+            LicenseManagerFactory.loadLicenseText( LicenseManagerFactory.STANDARD_LICENSE_RESOURCE );
     }
 }

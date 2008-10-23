@@ -16,14 +16,10 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }];
             this.buildVersion();
             this.buildRegistration();
-            if (this.hasPremiumLicense()) {
-                this.buildLicenseAgreement();
-            }
+            this.buildLicenseAgreement();
+
             // builds the tab panel with the tabs
-            var pageTabs = [this.panelVersion, this.panelRegistration];
-            if (this.hasPremiumLicense()) {
-                pageTabs.push(this.panelLicenseAgreement);
-            }
+            var pageTabs = [this.panelVersion, this.panelRegistration, this.panelLicenseAgreement];
             this.buildTabPanel(pageTabs);
             this.tabs.activate(this.panelVersion);
             Ung.SystemInfo.superclass.initComponent.call(this);
