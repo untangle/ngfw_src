@@ -247,6 +247,14 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
         return new Date(System.currentTimeMillis());
     }
 
+    /*
+     * Activate the box, used during the setup wizard to create the initial pop id.
+     */
+    public boolean activate(RegistrationInfo regInfo)
+    {
+        return uvmContext.activate(null, regInfo);
+    }
+
     public void setRegistrationInfo(RegistrationInfo info)
         throws TransactionRolledbackException
     {

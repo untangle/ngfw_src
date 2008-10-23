@@ -86,6 +86,11 @@ public interface RemoteAdminManager
      */
     Date getDate();
 
+    /*
+     * Activate the box, used during the setup wizard to create the initial pop id.
+     */
+    public boolean activate(RegistrationInfo regInfo);
+
     /**
      * Sets the registration info for the box customer.  The new info
      * will be transmitted to Untangle automatically by cron.

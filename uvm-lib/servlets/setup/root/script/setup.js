@@ -423,7 +423,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
 
         info.misc.map = misc;
 
-        rpc.adminManager.setRegistrationInfo(this.errorHandler.createDelegate( this, [ handler ], true ), info );
+        rpc.adminManager.activate( this.errorHandler.createDelegate( this, [ handler ], true ), info );
     },
 
     errorHandler : function( result, exception, foo, handler )
