@@ -33,6 +33,7 @@ import com.untangle.uvm.util.Pulse;
 
 import com.untangle.node.util.UtLogger;
 
+
 public class LicenseManagerImpl implements LicenseManager
 {    
     private static final int  SELF_SIGNED_VERSION = 0x1F;
@@ -140,6 +141,10 @@ public class LicenseManagerImpl implements LicenseManager
 
     private final UtLogger logger = new UtLogger( getClass());
 
+    /* Lazily initialized */
+    private String standardLicense = null;
+    private String professionalLicense = null;
+
     private LicenseManagerImpl()
     {
         /* XXXX This shouldn't be in properties, it is too easy to override. XXX */
@@ -189,10 +194,14 @@ public class LicenseManagerImpl implements LicenseManager
         return this.licenseSettings.getLicenses().size() > 0;
     }
 
-    public String getLicenseAgreement()
+    public synchronized String getLicenseAgreement()
     {
-        logger.warn( "Implement ME" );
-        return "";
+        loadLicenseAgreement();
+        
+        String licenseText = this.standardLicense;
+        if ( hasPremiumLicense()) licenseText = this.professionalLicense;
+        
+        return licenseText;
     }
 
     /* --------------------- PACKAGE --------------------- */
@@ -512,6 +521,19 @@ public class LicenseManagerImpl implements LicenseManager
     private void scheduleFixedTask()
     {
         this.pulse.start( this.timerDelay );
+    }
+
+    private synchronized void loadLicenseAgreement()
+    {
+        if ( this.professionalLicense == null ) {
+            this.professionalLicense = 
+                LicenseManagerFactory.loadLicenseText( LicenseManagerFactory.PROFESSIONAL_LICENSE_RESOURCE );
+        }
+                
+        if ( this.standardLicense == null ) {
+            this.standardLicense = 
+                LicenseManagerFactory.loadLicenseText( LicenseManagerFactory.STANDARD_LICENSE_RESOURCE );
+        }
     }
 
     /* statics */

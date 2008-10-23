@@ -26,6 +26,7 @@ j << JarTarget.build_target( license_manager, deps, "ext-localapi", "./license/e
 
 ## Deps for ext-impl
 deps << license_manager["ext-localapi"]
+deps << uvm_lib['impl']
 
 j << JarTarget.build_target( license_manager, deps, "ext-impl", "./license/ext-impl" )
 
