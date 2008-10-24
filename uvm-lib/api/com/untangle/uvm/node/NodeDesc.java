@@ -49,7 +49,7 @@ import com.untangle.uvm.toolbox.MackageDesc;
  */
 public class NodeDesc implements Serializable
 {
-    // private static final long serialVersionUID = -578021414141899172L;
+    private static final long serialVersionUID = 6989238743786939975L;
 
     private final Tid tid;
 
