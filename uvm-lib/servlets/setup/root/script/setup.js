@@ -64,7 +64,7 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object,
             modal : true,
             prompt : true,
             progress : true,
-            progressText : config.progressText,
+                progressText : config.progressText,
             value : this.emailAddress,
             fn : this.buttonHandler.createDelegate( this )
         });
@@ -74,33 +74,33 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object,
 Ext.apply( Ext.form.VTypes, {
     ipCheck : function( val, field )
     {
-		var re = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/;
-		if ( val.match( re )) {
-			return true;
-		}
-	},
+        var re = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/;
+        if ( val.match( re )) {
+            return true;
+        }
+    },
         
-	emailAddressCheck : function( val, field )
+    emailAddressCheck : function( val, field )
     {
         var re = new RegExp( "[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
         if( val.match( re )) {
-			return true;
-		}
-	},
-        
+	    return true;
+	}
+    },
+    
     emailAddressMatchCheck : function( val, field )
     {
-		var email_original = Ext.getCmp(field.compareEmailField);
-		return val == email_original.getValue();
-	},
-	passwordConfirmCheck : function(val,field){
-		var pass_original = Ext.getCmp(field.comparePasswordField);
-		return val == pass_original.getValue();
-	},
-	ipCheckText : 'Please enter a valid IP Address',
-	emailAddressCheckText : 'Please enter a valid email address',
-	emailAddressMatchCheckText : 'Email addresses do not match',
-	passwordConfirmCheckText : 'Passwords do not match'
+	var email_original = Ext.getCmp(field.compareEmailField);
+	return val == email_original.getValue();
+    },
+    passwordConfirmCheck : function(val,field){
+	var pass_original = Ext.getCmp(field.comparePasswordField);
+	return val == pass_original.getValue();
+    },
+    ipCheckText : 'Please enter a valid IP Address',
+    emailAddressCheckText : 'Please enter a valid email address',
+    emailAddressMatchCheckText : 'Email addresses do not match',
+    passwordConfirmCheckText : 'Passwords do not match'
 });
 
 Ung.SetupWizard.Welcome = Ext.extend(Object,
@@ -494,7 +494,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                dataIndex : 'status',
                sortable : false,
                renderer : function( value ) {
-                   return value[0] + " : " + value[1];
+                   return "<div class='draggable-interface'>" + value[0] + " : " + value[1] + "</div>";
                },
                width : 400
             }])
@@ -748,42 +748,40 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 defaultType : 'textfield',
                 defaults : {
                     disabled : false,
-					msgTarget : 'side',
-					maskRe : /(\d+|\.)/,
-					vtype : 'ipCheck'					
+		    msgTarget : 'side',
+		    maskRe : /(\d+|\.)/,
+		    vtype : 'ipCheck'					
                 },
                 autoHeight : true,
-				items : [
-					{
-		                name : "ip",
-		                fieldLabel : i18n._( "IP" ),
-						allowBlank : false							
-		            },{
-		                name : "netmask",
-		                fieldLabel : i18n._( "Netmask" ),
-						vText : i18n._('Invalid Netmask Value'),
-						allowBlank : false
-		            },{
-		                name : "gateway",
-		                fieldLabel : i18n._( "Gateway" ),
-						allowBlank : false													
-		            },{
-		                name : "dns1",
-		                fieldLabel : i18n._( "Primary DNS" ),
-						allowBlank : false													
-		            },{
-		                name : "dns2",
-		                fieldLabel : i18n._( "Secondary DNS" )
-		            },{
-                xtype : 'button',
-                text : i18n._( 'Test Connectivity' ),
-				cls : 'testConnectivity2',
-                handler : this.testConnectivity.createDelegate( this ),
-                disabled : false
-            }
-				]				
-			}]}));
-
+		items : [{
+		    name : "ip",
+		    fieldLabel : i18n._( "IP" ),
+		    allowBlank : false							
+		},{
+		    name : "netmask",
+		    fieldLabel : i18n._( "Netmask" ),
+		    vText : i18n._('Invalid Netmask Value'),
+		    allowBlank : false
+		},{
+		    name : "gateway",
+		    fieldLabel : i18n._( "Gateway" ),
+		    allowBlank : false
+		},{
+		    name : "dns1",
+		    fieldLabel : i18n._( "Primary DNS" ),
+		    allowBlank : false
+		},{
+		    name : "dns2",
+		    fieldLabel : i18n._( "Secondary DNS" )
+		},{
+                    xtype : 'button',
+                    text : i18n._( 'Test Connectivity' ),
+		    cls : 'testConnectivity2',
+                    handler : this.testConnectivity.createDelegate( this ),
+                    disabled : false
+                }]
+	    }]}));
+        
         /* PPPoE Panel */
         this.cards.push( this.pppoePanel = new Ext.FormPanel({
             saveData : this.savePPPoE.createDelegate( this ),
@@ -1075,7 +1073,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             defaultType : 'fieldset',
             defaults : {
                 autoHeight : true,
-				labelWidth : Ung.SetupWizard.LabelWidth3			
+		labelWidth : Ung.SetupWizard.LabelWidth3			
             },
             items : [{
                 xtype : 'label',
@@ -1165,19 +1163,19 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     {
         var rv = true;
         var nic = false;
-		for(var i=0;i<this.panel.find('name','bridgeInterfaces').length;i++){
-			if(this.panel.find('name','bridgeInterfaces')[i].getValue()){
-				nic = this.panel.find('name','bridgeInterfaces')[i].inputValue;
-				break;
-			}
-		}
-		switch(nic){
-			case 'router' :
-				rv = _validate(this.panel.items.items);			
-			break;
-		}
-		return rv;
-	},
+	for(var i=0;i<this.panel.find('name','bridgeInterfaces').length;i++){
+	    if(this.panel.find('name','bridgeInterfaces')[i].getValue()){
+		nic = this.panel.find('name','bridgeInterfaces')[i].inputValue;
+		break;
+	    }
+	}
+	switch(nic){
+	case 'router' :
+	    rv = _validate(this.panel.items.items);			
+	    break;
+	}
+	return rv;
+    },
     saveInternalNetwork : function( handler )
     {
         var value = this.panel.find( "name", "bridgeInterfaces" )[0].getGroupValue();
@@ -1222,14 +1220,12 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 labelWidth : Ung.SetupWizard.LabelWidth4
             },
             items : [{
-				xtype : 'label',
-				html : '<h2 class="wizardTitle">'+i18n._( "Email Configuration" )+'</h2>'
-			},
-			{
-				xtype : 'label',
-				html : i18n._('Your Untangle Server sends email for Quarantine Digests, Reports, etc.')
-			},
-			{
+		xtype : 'label',
+		html : '<h2 class="wizardTitle">'+i18n._( "Email Configuration" )+'</h2>'
+	    },{
+		xtype : 'label',
+		html : i18n._('Your Untangle Server sends email for Quarantine Digests, Reports, etc.')
+	    },{
                 xtype : 'button',
                 text : i18n._( 'Send Test Email' ),
                 handler : this.emailTest.createDelegate( this ),
@@ -1394,26 +1390,26 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         
     validateEmailConfiguration : function()
     {
-		var rv = true;
-		if(this.panel.find('name','advanced')[0].getValue()){//advanced email config checked
-			if(!_validate(this.panel.find('name','from-address')[0].items.items)) {
+	var rv = true;
+	if(this.panel.find('name','advanced')[0].getValue()){//advanced email config checked
+	    if(!_validate(this.panel.find('name','from-address')[0].items.items)) {
                 rv = !rv;
             }
-			if(this.panel.find('name','smtp-send-directly')[1].getValue()){
-				if(!_validate(this.directlyArray) && rv){
-					rv = !rv;
-				}
-			}
-			if(this.panel.find('name','smtp-server-requires-auth')[0].getValue()){
-				if(!_validate(this.authArray) && rv){
-					rv = !rv;
-				}
-			}			
-
+	    if(this.panel.find('name','smtp-send-directly')[1].getValue()){
+		if(!_validate(this.directlyArray) && rv){
+		    rv = !rv;
 		}
-
-		return rv;	
-	},
+	    }
+	    if(this.panel.find('name','smtp-server-requires-auth')[0].getValue()){
+		if(!_validate(this.authArray) && rv){
+		    rv = !rv;
+		}
+	    }			
+            
+	}
+        
+	return rv;	
+    },
     onSetMode : function( isAdvanced )
     {	
 	    var length = this.advancedArray.length;
@@ -1529,22 +1525,22 @@ Ung.Setup = {
     {
         if ( this.isInitialized == true ) return;
         this.isInitialized = true;
-
+        
         Ext.WindowMgr.zseed = 20000;
-
+        
         rpc = {};
-
+        
         /* Initialize the timezone data */
         for ( var i = 0; i < Ung.TimeZoneData.length; i++) {
             Ung.SetupWizard.TimeZoneStore.push([Ung.TimeZoneData[i][0], "(" + Ung.TimeZoneData[i][0] + ") " + Ung.TimeZoneData[i][1]]);
         }
-
+        
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
-
+        
         i18n = new Ung.I18N( { "map" : Ung.SetupWizard.languageMap })
-
+        
         document.title = i18n._( "Setup Wizard" );
-
+        
         var welcome = new Ung.SetupWizard.Welcome();
         var settings = new Ung.SetupWizard.Settings();
         var registration = new Ung.SetupWizard.Registration();
@@ -1553,7 +1549,7 @@ Ung.Setup = {
         var internal = new Ung.SetupWizard.InternalNetwork();
         var email = new Ung.SetupWizard.Email();
         var complete = new Ung.SetupWizard.Complete();
-
+        
         this.wizard = new Ung.Wizard({
             height : 500,
             width : 800,
@@ -1569,16 +1565,27 @@ Ung.Setup = {
                      internal.card,
                      email.card,
                      complete.card
-            ],
+                    ],
             disableNext : false,
             el : "container"
-			
         });
-
+        
         this.wizard.render();
         Ext.QuickTips.init();
-
-        this.wizard.goToPage( 0 );
-	}
+        
+        if ( false ) {
+            /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
+            var debugHandler = function() {
+                this.wizard.goToPage( 3 );
+            }.createDelegate( this );
+            var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
+            
+            ss.password = "passwd";
+            ss.authenticate( null, null );
+            /* DEBUGGING CODE */
+        } else {
+            this.wizard.goToPage( 0 );
+        }
+    }
 };
 
