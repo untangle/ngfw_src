@@ -49,7 +49,7 @@ import com.untangle.uvm.toolbox.MackageDesc;
  */
 public class NodeDesc implements Serializable
 {
-    private static final long serialVersionUID = -578021414141899172L;
+    // private static final long serialVersionUID = -578021414141899172L;
 
     private final Tid tid;
 
@@ -59,6 +59,8 @@ public class NodeDesc implements Serializable
     private final String guiClassName;
     private final String nodeBase;
     private final String syslogName;
+
+    private final boolean hasPowerButton;
 
     private final List<String> exports;
     private final List<String> parents;
@@ -72,7 +74,8 @@ public class NodeDesc implements Serializable
     public NodeDesc(Tid tid, MackageDesc mackageDesc, String className,
                     String guiClassName, String nodeBase,
                     List<String> exports, List<String> parents,
-                    List<String> uvmResources, boolean singleInstance)
+                    List<String> uvmResources, boolean singleInstance,
+                    boolean hasPowerButton)
     {
         this.tid = tid;
         this.mackageDesc = mackageDesc;
@@ -88,6 +91,7 @@ public class NodeDesc implements Serializable
         this.singleInstance = singleInstance;
         String n = mackageDesc.getDisplayName();
         this.syslogName = null == n ? null : n.replaceAll("\\p{Space}", "_");
+        this.hasPowerButton = hasPowerButton;
     }
 
     // accessors --------------------------------------------------------------
@@ -236,6 +240,14 @@ public class NodeDesc implements Serializable
     public String getNodeBase()
     {
         return nodeBase;
+    }
+
+    /**
+     * True if this node can be turned on and off.  False, otherwise.
+     */
+    public boolean getHasPowerButton()
+    {
+        return hasPowerButton;
     }
 
     // Object methods ---------------------------------------------------------
