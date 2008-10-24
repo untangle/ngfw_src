@@ -1397,30 +1397,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("RX Speed:")+'</div>',
             '<div class="values"><span name="rx_speed"></span> KB/sec</div>',
             '<div class="title">'+i18n._("TX Speed:")+'</div>',
-            '<div class="values"><span name="tx_speed"></span> KB/sec</div>'/*
-                                                                             * , '<div
-                                                                             * class="title">'+i18n._("Data
-                                                                             * received
-                                                                             * (since
-                                                                             * last
-                                                                             * start):")+'</div>', '<div
-                                                                             * class="values"><span
-                                                                             * name="data_received"></span>
-                                                                             * MBs</div>', '<div
-                                                                             * class="title">'+i18n._("Data
-                                                                             * sent
-                                                                             * (since
-                                                                             * last
-                                                                             * start):")+'</div>', '<div
-                                                                             * class="values"><span
-                                                                             * name="data_sent"></span>
-                                                                             * MBs</div>', '<div
-                                                                             * class="title">'+i18n._("Total
-                                                                             * Throughput:")+'</div>', '<div
-                                                                             * class="values"><span
-                                                                             * name="total_throughput"></span>
-                                                                             * MBs</div>'
-                                                                             */
+            '<div class="values"><span name="tx_speed"></span> KB/sec</div>'
         ];
         this.networkToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=network]"),
