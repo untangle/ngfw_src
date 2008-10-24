@@ -89,14 +89,14 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 }, {
                     name : 'divider'
                 },
-                        // this field is internationalized so a converter was
-                        // added
-                        {
-                            name : 'description',
-                            convert : function(v) {
-                                return this.i18n._(v)
-                            }.createDelegate(this)
-                        },],
+                // this field is internationalized so a converter was
+                // added
+                {
+                    name : 'description',
+                    convert : function(v) {
+                        return this.i18n._(v)
+                    }.createDelegate(this)
+                }],
                 // the list of columns for the column model
                 columns : [enableColumn, {
                     id : 'address',
@@ -110,7 +110,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     })
                 }, {
                     id : 'divider',
-                    header : this.i18n._("user") + "<br>" + this.i18n._("count"),
+                    header : this.i18n._("user count"),
                     width : 100,
                     dataIndex : 'divider',
                     editor : new Ext.form.ComboBox({
