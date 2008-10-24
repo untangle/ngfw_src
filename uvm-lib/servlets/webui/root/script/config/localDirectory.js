@@ -228,10 +228,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 });
                 //save local users            
                 main.getAppAddressBook().setLocalUserEntries(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     // exit settings screen
                     Ext.MessageBox.hide();
                     this.cancelAction();

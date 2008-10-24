@@ -25,29 +25,30 @@ Ung.Main.prototype = {
     upgradeLastCheckTime: null,
     // init function
     init: function() {
+    	//JSONRpcClient.toplevel_ex_handler=Ung.Util.handleException;
         this.initSemaphore=10;
         rpc = {};
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
         // get language manager
         rpc.jsonrpc.RemoteUvmContext.languageManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.languageManager=result;
             // get translations for main module
             rpc.languageManager.getTranslations(function (result, exception) {
-                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-                    i18n=new Ung.I18N({"map":result.map});
-                    Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"));
-                    this.postinit();// 1
-                }.createDelegate(this),"untangle-libuvm");
+                Ung.Util.handleException(exception);
+                i18n=new Ung.I18N({"map":result.map});
+                Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"));
+                this.postinit();// 1
+            }.createDelegate(this),"untangle-libuvm");
         }.createDelegate(this));
         // get skin manager
         rpc.jsonrpc.RemoteUvmContext.skinManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.skinManager=result;
             // Load Current Skin
             rpc.skinManager.getSkinSettings(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+                Ung.Util.handleException(exception);
                 var skinSettings=result;
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
@@ -56,22 +57,22 @@ Ung.Main.prototype = {
         }.createDelegate(this));
         // get node manager
         rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.nodeManager=result;
             this.postinit();// 3
         }.createDelegate(this));
         // get policy manager
         rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.policyManager=result;
             this.postinit();// 4
         }.createDelegate(this));
         // get toolbox manager
         rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.toolboxManager=result;
             rpc.toolboxManager.getUpgradeSettings(function (result, exception) {
-                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+                Ung.Util.handleException(exception);
                 rpc.upgradeSettings=result;
                 this.postinit();// 5
             }.createDelegate(this));
@@ -79,38 +80,38 @@ Ung.Main.prototype = {
         }.createDelegate(this));
         // get admin manager
         rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.adminManager=result;
             this.postinit();// 6
         }.createDelegate(this));
         // get version
         rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.version=result;
             this.postinit();// 7
         }.createDelegate(this));
         // get network manager
         rpc.jsonrpc.RemoteUvmContext.networkManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.networkManager=result;
             this.postinit();// 8
         }.createDelegate(this));
         // get message manager & message key
         rpc.jsonrpc.RemoteUvmContext.messageManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.messageManager=result;
             rpc.messageManager.getMessageKey(function (result, exception) {
-                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+                Ung.Util.handleException(exception);
                 rpc.messageKey=result;
                 this.postinit();// 9
             }.createDelegate(this));
         }.createDelegate(this));
         // get branding manager
         rpc.jsonrpc.RemoteUvmContext.brandingManager(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+            Ung.Util.handleException(exception);
             rpc.brandingManager=result;
             rpc.brandingManager.getBaseSettings(function (result, exception) {
-                if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
+                Ung.Util.handleException(exception);
                 rpc.brandingBaseSettings=result;
                 document.title=rpc.brandingBaseSettings.companyName;
                 this.postinit();// 10
@@ -130,11 +131,9 @@ Ung.Main.prototype = {
             //check for upgrades
         	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
             rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    this.startApplication.defer(1500,this);
-                    return;
-                }
+            	Ung.Util.handleException(exception,function() {
+            		this.startApplication.defer(1500,this);
+            	}.createDelegate(this),"outsideAlert");
                 var upgradeStatus=result;
                 if(!upgradeStatus.upgrading && upgradeStatus.upgradesAvailable) {
                     this.upgrade();
@@ -379,10 +378,7 @@ Ung.Main.prototype = {
         Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
         Ung.MessageManager.startUpgradeMode();
         rpc.toolboxManager.upgrade(function(result, exception) {
-            if (exception) {
-                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                return;
-            }
+            Ung.Util.handleException(exception);
         }.createDelegate(this));
     },
     getLoggingManager : function(forceReload) {
@@ -441,10 +437,7 @@ Ung.Main.prototype = {
 
     unactivateNode: function(mackageDesc) {
         rpc.nodeManager.nodeInstances(function (result, exception) {
-                if(exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-                    return;
-                }
+                Ung.Util.handleException(exception);
                 var tids=result;
                 if(tids.length>0) {
                     Ext.MessageBox.alert(this.name+" "+i18n._("Warning"),
@@ -453,17 +446,11 @@ Ung.Main.prototype = {
                 } else {
                     Ung.AppItem.updateStateForNode(this.name,"unactivating");
                     rpc.toolboxManager.uninstall(function (result, exception) {
-                        if(exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-                            return;
-                        }
+                       Ung.Util.handleException(exception);
                         main.loadApps();
                         /*
                         rpc.toolboxManager.unregister(function (result, exception) {
-                            if(exception) {
-                                Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-                                return;
-                            }
+                            Ung.Util.handleException(exception);
                             main.loadApps();
                         }.createDelegate(this), this.name);
                         */
@@ -514,7 +501,7 @@ Ung.Main.prototype = {
     loadPolicies: function() {
     	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
         rpc.policyManager.getPolicies( function (result, exception) {
-            if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return; }
+            Ung.Util.handleException(exception);
             rpc.policies=result;
             this.buildPolicies();
         }.createDelegate(this));
@@ -597,9 +584,7 @@ Ung.Main.prototype = {
     loadRackView: function() {
     	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
         rpc.toolboxManager.getRackView(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-                return;
-            }
+            Ung.Util.handleException(exception);
             rpc.rackView=result;
             main.buildApps();
             main.buildNodes();
@@ -607,9 +592,7 @@ Ung.Main.prototype = {
     },
     loadApps: function() {
         rpc.toolboxManager.getRackView(function (result, exception) {
-            if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-                return;
-            }
+            Ung.Util.handleException(exception);
             rpc.rackView=result;
             main.buildApps();
         }.createDelegate(this), rpc.currentPolicy);
@@ -623,10 +606,7 @@ Ung.Main.prototype = {
         	}
             Ung.AppItem.updateStateForNode(mackageDesc.name, "installing");
             rpc.nodeManager.instantiate(function (result, exception) {
-                if(exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
-                    return;
-                }
+                Ung.Util.handleException(exception);
             }.createDelegate(this), mackageDesc.name, rpc.currentPolicy);
         }
     },

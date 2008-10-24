@@ -1019,29 +1019,20 @@ if (!Ung.hasResource["Ung.System"]) {
                 this.saveSemaphore = 6;
                 // save language settings
                 rpc.languageManager.setLanguageSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getLanguageSettings());
                 
                 // save network settings
                 rpc.networkManager.setSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getAccessSettings(), this.getMiscSettings());
                 
                 // save http settings
                 if (this.isHttpLoaded()) {
                     this.getHttpNode().setHttpSettings(function(result, exception) {
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
+                        Ung.Util.handleException(exception);
                         this.afterSave();
                     }.createDelegate(this), this.getHttpSettings());
                 } else {
@@ -1051,10 +1042,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 // save ftp settings
                 if (this.isFtpLoaded()) {
                     this.getFtpNode().setFtpSettings(function(result, exception) {
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
+                        Ung.Util.handleException(exception);
                         this.afterSave();
                     }.createDelegate(this), this.getFtpSettings());
                 } else {
@@ -1064,10 +1052,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 // save mail settings
                 if (this.isMailLoaded()) {
                     this.getMailNode().setMailNodeSettings(function(result, exception) {
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
+                        Ung.Util.handleException(exception);
                         this.afterSave();
                     }.createDelegate(this), this.getMailSettings());
                 } else {
@@ -1076,10 +1061,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 
                 //save timezone
                 rpc.adminManager.setTimeZone(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.rpc.timeZone);
             }

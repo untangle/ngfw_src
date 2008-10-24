@@ -846,6 +846,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         	try {
                 var result = rpc.nodeManager.nodeInstances(rackDeletedList[i]);
                 if (result.list.length>0) {
+
+//                var isEmptyPolicy = rpc.nodeManager.isEmptyPolicy(rackDeletedList[i]);
+//                if (!isEmptyPolicy) {
                     Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("The rack named {0} cannot be removed because it is not empty.  Please remove all products first."),rackDeletedList[i].name));
                     return false;
                 }
@@ -912,10 +915,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 this.getPolicyConfiguration().userPolicyRules.list=this.gridRules.getFullSaveList();
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 rpc.policyManager.setPolicyConfiguration(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     Ext.MessageBox.hide();
                 	this.cancelAction();
                 	main.loadPolicies.defer(1,main);

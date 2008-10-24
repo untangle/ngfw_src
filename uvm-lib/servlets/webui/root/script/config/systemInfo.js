@@ -219,10 +219,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 rpc.adminManager.setRegistrationInfo(function(result, exception) {
                     Ext.MessageBox.hide();
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.cancelAction();
                 }.createDelegate(this), this.getRegistrationInfo());
             }

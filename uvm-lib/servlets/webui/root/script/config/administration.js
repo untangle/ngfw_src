@@ -774,10 +774,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 
                                 // generate certificate
                                 main.getAppServerManager().regenCert(function(result, exception) {
-                                    if (exception) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                        return;
-                                    }
+                                    Ung.Util.handleException(exception);
                                     
                                     if (result) { //true or false
                                         //success
@@ -834,10 +831,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 
                                 // generate certificate request
                                 main.getAppServerManager().generateCSR(function(result, exception) {
-                                    if (exception) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                        return;
-                                    }
+                                    Ung.Util.handleException(exception);
                                     
                                     if (result != null) { 
                                         //success
@@ -896,10 +890,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 
                                 // import certificate
                                 main.getAppServerManager().importServerCert(function(result, exception) {
-                                    if (exception) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                        return;
-                                    }
+                                    Ung.Util.handleException(exception);
                                     
                                     if (result) { //true or false
                                         //success
@@ -2045,51 +2036,33 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
                 this.getAdminSettings().users.set=setAdministration;
                 rpc.adminManager.setAdminSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getAdminSettings());
 
                rpc.networkManager.setAccessSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getAccessSettings());
                 
                delete this.getAddressSettings().publicAddress;
                rpc.networkManager.setAddressSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getAddressSettings());
                 
                rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getSnmpSettings());
                 
                 main.getLoggingManager().setLoggingSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getLoggingSettings());
                 
                 rpc.skinManager.setSkinSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getSkinSettings());
                 
@@ -2097,10 +2070,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 	this.saveSemaphore++;
                     main.getBrandingManager().setBaseSettings(function(result, exception) {
                         Ext.MessageBox.hide();
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
+                        Ung.Util.handleException(exception);
                         // update global branding settings
                         rpc.brandingManager.getBaseSettings(function (result, exception) {
                             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}

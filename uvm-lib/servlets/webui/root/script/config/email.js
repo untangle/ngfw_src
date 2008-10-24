@@ -111,10 +111,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.getQuarantineMaintenenceView().getInboxRecordArray(
                 function(result, exception) {
                     Ext.MessageBox.hide();
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.userQuarantinesDetailsGrid.store.loadData(result.inboxRecords);
                 }.createDelegate(this), this.quarantinesDetailsWin.account)
         },
@@ -160,10 +157,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     value : emailAddress
                                 });
 		                        var message = rpc.adminManager.sendTestMessage( function(result, exception) {
-		                            if (exception) {
-		                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-		                                return;
-		                            }
+		                            Ung.Util.handleException(exception);
 		                            this.testEmailResultMessage = result == true ? this.i18n._('Test email sent.') : this.i18n._('Warning!  Test failed.  Check your settings.');
 		    
 		                            Ext.MessageBox.show({
@@ -348,10 +342,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                                 Ext.MessageBox.wait(this.i18n._('Saving...'), this.i18n._('Please wait'));
                                                 // save mail settings
                                                 main.getMailSender().setMailSettings(function(result, exception) {
-                                                     if (exception) {
-                                                         Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                                         return;
-                                                    }
+                                                    Ung.Util.handleException(exception);
                                                     Ext.MessageBox.hide();
                                                     // update original values
                                                     enabledCmp.originalValue = enabledCmp.getValue();
@@ -471,11 +462,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 
                                 Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                                 this.getSafelistAdminView().deleteSafelists(function(result, exception) {
-                                    if (exception) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                        return;
-                                    }
                                     Ext.MessageBox.hide();
+                                    Ung.Util.handleException(exception);
                                 }.createDelegate(this), accounts);
                                 
                                 this.gridSafelistUser.store.load();
@@ -522,10 +510,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         this.settingsCmp.getSafelistAdminView().getSafelistContents(
                                             function(result, exception) {
                                                 Ext.MessageBox.hide();
-                                                if (exception) {
-                                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                                    return;
-                                                }
+                                                Ung.Util.handleException(exception);
                                                 this.settingsCmp.gridSafelistUserDetails.store.loadData(result);
                                             }.createDelegate(this), emailAddress); 
                                     }          
@@ -567,11 +552,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                             
                             Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                             this.getSafelistAdminView().removeFromSafelists(function(result, exception) {
-                                if (exception) {
-                                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                    return;
-                                }
-                                 this.gridSafelistUserDetails.store.loadData(result);
+                                Ung.Util.handleException(exception);
+                                this.gridSafelistUserDetails.store.loadData(result);
                                 Ext.MessageBox.hide();
                             }.createDelegate(this), this.safelistDetailsWin.account, senders);
                             
@@ -699,10 +681,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 
                                 Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                                 this.getQuarantineMaintenenceView().deleteInboxes(function(result, exception) {
-                                    if (exception) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                        return;
-                                    }
+                                    Ung.Util.handleException(exception);
                                     Ext.MessageBox.hide();
                                 }.createDelegate(this), accounts);
                                 
@@ -727,10 +706,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 
                                 Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
                                 this.getQuarantineMaintenenceView().rescueInboxes(function(result, exception) {
-                                    if (exception) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                        return;
-                                    }
+                                    Ung.Util.handleException(exception);
                                     Ext.MessageBox.hide();
                                 }.createDelegate(this), accounts);
                                 
@@ -971,10 +947,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                         Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                         this.getQuarantineMaintenenceView().purge(function(result, exception) {
-                            if (exception) {
-                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                return;
-                            }
+                            Ung.Util.handleException(exception);
                             //load Quarantines Details
                             this.loadQuarantinesDetails();
                         }.createDelegate(this), this.quarantinesDetailsWin.account, emails);
@@ -999,11 +972,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                         Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
                         this.getQuarantineMaintenenceView().rescue(function(result, exception) {
-                            if (exception) {
-                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                return;
-                            }
-                            
+                            Ung.Util.handleException(exception);
                             //load Quarantines Details
                             this.loadQuarantinesDetails();
                         }.createDelegate(this), this.quarantinesDetailsWin.account, emails);
@@ -1188,10 +1157,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 
                 // save mail settings
                 main.getMailSender().setMailSettings(function(result, exception) {
-	                 if (exception) {
-		                 Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-		                 return;
-                    }
+	                Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getMailSettings());
                 
@@ -1200,10 +1166,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList()                
                     this.getMailNodeSettings().quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList()                
                     this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
-                         if (exception) {
-                             Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                             return;
-                        }
+                        Ung.Util.handleException(exception);
                         this.afterSave();
                     }.createDelegate(this), this.getMailNodeSettings());
     
@@ -1214,10 +1177,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         globalList.push(gridSafelistGlobalValues[i].emailAddress);
                     }
                     this.getSafelistAdminView().replaceSafelist(function(result, exception) {
-                         if (exception) {
-                             Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                             return;
-                        }
+                        Ung.Util.handleException(exception);
                         this.afterSave();
                     }.createDelegate(this), 'GLOBAL', globalList);
                 }

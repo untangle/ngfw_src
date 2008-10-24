@@ -38,24 +38,15 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
         loadGridUpgrade : function() {
         	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
             rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
+                Ung.Util.handleException(exception);
                 var upgradeStatus=result;
                 if(upgradeStatus.upgrading) {
                 	Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
                 } else {
                 	rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
+                        Ung.Util.handleException(exception);
                         rpc.toolboxManager.upgradable(function(result, exception) {
-                            if (exception) {
-                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                return;
-                            }
+                            Ung.Util.handleException(exception);
                             Ext.MessageBox.hide();
                             var upgradeList = result;
                             // var upgradeList=[]; /for test
@@ -390,10 +381,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 // save language settings
 
                 rpc.toolboxManager.setUpgradeSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    Ung.Util.handleException(exception);
                     this.afterSave();
                 }.createDelegate(this), this.getUpgradeSettings());
             }
