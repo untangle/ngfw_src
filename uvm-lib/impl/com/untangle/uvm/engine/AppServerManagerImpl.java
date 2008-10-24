@@ -111,44 +111,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public void postInit()
     {
-        String eHost = getFQDN();
-
-        try {
-            keyStore = UtKeyStore.open(System.getProperty("bunnicula.conf.dir")
-                                       + "/keystore", KS_STORE_PASS, true);
-        } catch (Exception ex) {
-            logger.error("Exception opening KeyStore", ex);
-        }
-
-        // Check for the old key system (i.e. "tomcat" being the name
-        // of the key).  If so, simply generate a new key based on
-        // whatever is the current host name.
-        try {
-            if (!(keyStore.containsAlias(eHost))) {
-                logger.debug("Adding key for effective hostname \""
-                             + eHost + "\"");
-                String OU = "mv-customer-" + System.currentTimeMillis();
-                RegistrationInfo ri = mctx.adminManager().getRegistrationInfo();
-                if (null != ri && null != ri.getCompanyName()) {
-                    OU = ri.getCompanyName();
-                }
-
-                RFC2253Name dn = RFC2253Name.create();
-                dn.add("OU", OU);
-
-                regenCert(dn, 365 * 5 + 1);
-            }
-        } catch (Exception ex) {
-            logger.error("could not update keystore", ex);
-        }
-
-        try {
-            tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS,
-                                          eHost);
-        } catch (Exception ex) {
-            logger.error("Exception passing cert parameters to Tomcat", ex);
-        }
-
+	//TODO check for expiration and call regenCert if expired
         try {
             String disableTomcat = System.getProperty("bunnicula.devel.notomcat");
             if (null == disableTomcat || !Boolean.valueOf(disableTomcat)) {
@@ -245,7 +208,7 @@ class AppServerManagerImpl implements LocalAppServerManager
     public boolean regenCert(RFC2253Name dn, int durationInDays)
     {
         try {
-        OpenSSLWrapper.generateSelfSignedCert(getFQDN(), APACHE_PEM_FILE);
+	    OpenSSLWrapper.generateSelfSignedCert(getFQDN(), APACHE_PEM_FILE);
             return true;
         } catch (Exception ex) {
             logger.error("Unable to regen cert", ex);
