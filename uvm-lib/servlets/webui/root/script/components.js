@@ -62,49 +62,51 @@ Ext.override(Ext.TabPanel, {
     }
 });
 
-JSONRpcClient.toplevel_ex_handler = function (exception) {
-    if(exception instanceof JSONRpcClient.Exception)
-    {
-        if(exception.code == 550)
-        {
-            Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), function(){
-                Ext.MessageBox.wait(i18n._("Redirecting to the start page"), i18n._("Please wait"));
-                window.location.href="/webui";
-            });
-        }
-    }
-    if(exception)
-        throw exception.message;
-    else
-        throw Ext.MessageBox.alert(i18n._("Failed"),i18n._("Error making rpc request to server"));
-};
-
 Ung.Util= {
-	handleException: function(exception, handler, type) { //type: alertCallback, alert, noAlert
+	rpcExHandler: function(exception) {
+        if(exception instanceof JSONRpcClient.Exception)
+        {
+            if(exception.code == 550)
+            {
+                Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), function(){
+                    Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
+                    window.location.href="/webui";
+                });
+            }
+        }
+        if(exception) {
+            throw exception;
+        }
+        else {
+            throw i18n._("Error making rpc request to server");
+        }
+		
+	},
+	handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
 		if(exception) {
 			if(exception.code==550) {
                 Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), function(){
                     Ext.MessageBox.wait(i18n._("Redirecting to the start page"), i18n._("Please wait"));
                     window.location.href="/webui";
                 });
-                return;
+                return true;
 			} else {
 				if(handler==null) {
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
 				} else if(type==null || type== "alertCallback"){
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message, handler);
-                    return;
 				} else if (type== "alert") {
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                     handler();
-                    return;
 				} else if (type== "noAlert") {
 					handler();
 				}
+                return !continueExecution;
 			}
 		}
+		return false;
 	},
+	
 	encode : function (obj) {
         if(obj == null || typeof(obj) != 'object') {
             return obj;
@@ -160,7 +162,7 @@ Ung.Util= {
     loadModuleTranslations : function(moduleName, dependencyMap, handler) {
     	if(!Ung.i18nModuleInstances[moduleName]) {
             rpc.languageManager.getTranslations(function(result, exception, opt, moduleName, dependencyMap, handler) {
-            	Ung.Util.handleException(exception);
+            	if(Ung.Util.handleException(exception)) return;
                 var moduleMap=result.map;
                 if(dependencyMap!=null) {
                 	Ext.applyIf(moduleMap, dependencyMap)
@@ -950,11 +952,9 @@ Ung.Node = Ext.extend(Ext.Component, {
             this.setPowerOn(true);
             this.setState("Attention");
             this.nodeContext.rpcNode.start(function(result, exception) {
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    this.updateRunState("INITIALIZED");
-                    return;
-                }
+            	if(Ung.Util.handleException(exception, function() {
+            	   this.updateRunState("INITIALIZED");
+            	}.createDelegate(this),"alert")) return;
                 this.updateRunState("RUNNING");
             }.createDelegate(this));
     	}.createDelegate(this));
@@ -969,7 +969,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             this.nodeContext.rpcNode.stop(function(result, exception) {
                 this.updateRunState("INITIALIZED");
                 this.resetBlingers();
-                Ung.Util.handleException(exception);
+                if(Ung.Util.handleException(exception)) return;
             }.createDelegate(this));
         }.createDelegate(this));
     },
@@ -986,7 +986,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         if(handler==null) {handler=Ext.emptyFn;}
         if (this.nodeContext === undefined) {
             rpc.nodeManager.nodeContext(function(result, exception) {
-                Ung.Util.handleException(exception);
+                if(Ung.Util.handleException(exception)) return;
                 this.nodeContext = result;
             }.createSequence(handler).createDelegate(this), this.Tid);
             
@@ -1001,7 +1001,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
         if (this.nodeContext.rpcNode === undefined) {
             this.nodeContext.node(function(result, exception) {
-                Ung.Util.handleException(exception);
+                if(Ung.Util.handleException(exception)) return;
                 this.nodeContext.rpcNode = result;
             }.createSequence(handler).createDelegate(this));
         } else {
@@ -1015,7 +1015,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
         if (this.nodeContext.nodeDesc === undefined) {
             this.nodeContext.getNodeDesc(function(result, exception) {
-                Ung.Util.handleException(exception);
+                if(Ung.Util.handleException(exception)) return;
                 this.nodeContext.nodeDesc = result;
             }.createSequence(handler).createDelegate(this));
         } else {
@@ -1100,11 +1100,9 @@ Ung.Node = Ext.extend(Ext.Component, {
                 this.getEl().mask();
                 Ung.AppItem.updateStateForNode(this.name, "uninstalling");
                 rpc.nodeManager.destroy(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    if(Ung.Util.handleException(exception, function() {
                         this.getEl().unmask();
-                        return;
-                    }
+                    }.createDelegate(this),"alert")) return;
                     if (this) {
                         var nodeName = this.name;
                         var cmp = this;
@@ -1231,19 +1229,18 @@ Ung.MessageManager = {
         }
         this.cycleCompleted = false;
         rpc.messageManager.getMessageQueue(function(result, exception) {
-           if (exception) {
-           	    var tolearteError=exception.code==500 && this.errorToleranceTime!=null && (new Date()).getTime()-this.errorToleranceTime<60000;
-           	    if(tolearteError) {
-           	    	//Tolerate Error 500: Internal Server Error after an install 
-           	    	//Keep silent because apache may reload
-           	    	this.cycleCompleted = true;
-           	    	return;
-           	    }
+            if(Ung.Util.handleException(exception, function() {
+                var tolearteError=exception.code==500 && this.errorToleranceTime!=null && (new Date()).getTime()-this.errorToleranceTime<60000;
+                if(tolearteError) {
+                    //Tolerate Error 500: Internal Server Error after an install 
+                    //Keep silent because apache may reload
+                    this.cycleCompleted = true;
+                    return;
+                }
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
                     this.cycleCompleted = true;
                 }.createDelegate(this));
-                return;
-           }
+        	}.createDelegate(this),"noAlert")) return;
            this.cycleCompleted = true;
            try {
                var messageQueue=result;
@@ -1262,7 +1259,7 @@ Ung.MessageManager = {
                                 Ung.AppItem.updateState(appItemName, "download");
                                 this.resetErrorTolerance();
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
-                                    Ung.Util.handleException(exception);
+                                    if(Ung.Util.handleException(exception)) return;
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
                         	}
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
@@ -1856,7 +1853,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
             }
         }
         rpc.messageManager.setActiveMetrics(function(result, exception) {
-            Ung.Util.handleException(exception);
+            if(Ung.Util.handleException(exception)) return;
             var nodeCmp = Ext.getCmp(this.parentId);
             nodeCmp.blingers.activeMetrics.list=activeMetrics;
             this.buildActiveMetrics();
@@ -1942,21 +1939,33 @@ Ung.Settings = Ext.extend(Ext.Panel, {
     // get base settings object
     getBaseSettings : function(forceReload) {
         if (forceReload || this.rpc.baseSettings === undefined) {
-            this.rpc.baseSettings = this.getRpcNode().getBaseSettings();
+        	try {
+                this.rpc.baseSettings = this.getRpcNode().getBaseSettings();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
         }
         return this.rpc.baseSettings;
     },
     // get Validator object
     getValidator : function() {
         if (this.node.nodeContext.rpcNode.validator === undefined) {
-            this.node.nodeContext.rpcNode.validator = this.getRpcNode().getValidator();
+        	try {
+                this.node.nodeContext.rpcNode.validator = this.getRpcNode().getValidator();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
         }
         return this.node.nodeContext.rpcNode.validator;
     },
     // get eventManager object
     getEventManager : function() {
         if (this.node.nodeContext.rpcNode.eventManager === undefined) {
-            this.node.nodeContext.rpcNode.eventManager = this.node.nodeContext.rpcNode.getEventManager();
+        	try {
+                this.node.nodeContext.rpcNode.eventManager = this.node.nodeContext.rpcNode.getEventManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
         }
         return this.node.nodeContext.rpcNode.eventManager;
     },
@@ -2100,7 +2109,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "Table"});
         if (this.hasRepositories) {
             this.eventManagerFn.getRepositoryDescs(function(result, exception) {
-                Ung.Util.handleException(exception);
+                if(Ung.Util.handleException(exception)) return;
                 if (this.settingsCmp) {
                     this.rpc.repositoryDescs = result;
                     var repList = this.rpc.repositoryDescs.list;
@@ -2137,7 +2146,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     },
     // Refresh the events list
     refreshCallback : function(result, exception) {
-        Ung.Util.handleException(exception);
+        if(Ung.Util.handleException(exception)) return;
         var events = result;
         if (this.settingsCmp !== null) {
             this.getStore().proxy.data = events;
@@ -2155,9 +2164,14 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             var selRepository = this.getSelectedRepository();
             if (selRepository !== null) {
                 if (this.rpc.repository[selRepository] === undefined) {
-                    this.rpc.repository[selRepository] = this.eventManagerFn.getRepository(selRepository);
+                    this.eventManagerFn.getRepository(selRepository, function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        this.rpc.repository[selRepository] = result;
+                        this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
+                    }.createDelegate(this));
+                } else {
+                    this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
                 }
-                this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
             }
         }
     }
@@ -2624,11 +2638,10 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
         }
     },
     errorHandler : function(result, exception) {
-        if (exception) {
-            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+        if(Ung.Util.handleException(exception, function() {
             this.callback.call(this.scope, null, this.arg, false);
-            return;
-        }
+        }.createDelegate(this),"alert")) return;
+
         var res = null;
         try {
             res = this.reader.readRecords(result);
@@ -3635,14 +3648,12 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.userEntries=this.singleSelectUser ? [] : [{UID: "[any]"}];
         if (this.loadActiveDirectoryUsers && main.isNodeRunning('untangle-node-adconnector')){
             main.getAppAddressBook().getUserEntries(function(result, exception) {
-                if (exception) {
+                if(Ung.Util.handleException(exception, function() {
                     Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
                         this.populateCallback();
                     }.createDelegate(this));
-                    return;
-                } else {
-                    this.userEntries=this.userEntries.concat(result.list);
-                }
+                }.createDelegate(this),"noAlert")) return;
+                this.userEntries=this.userEntries.concat(result.list);
                 this.populateCallback();
             }.createDelegate(this),'MS_ACTIVE_DIRECTORY')
         } else {
@@ -3650,14 +3661,12 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         }
         if (this.loadLocalDirectoryUsers) {
             main.getAppAddressBook().getUserEntries(function(result, exception) {
-                if (exception) {
+                if(Ung.Util.handleException(exception, function() {
                     Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."), function(){
                         this.populateCallback();
                     }.createDelegate(this));
-                    return;
-                } else {
-                    this.userEntries=this.userEntries.concat(result.list);
-                }
+                }.createDelegate(this),"noAlert")) return;
+                this.userEntries=this.userEntries.concat(result.list);
                 this.populateCallback();
             }.createDelegate(this),'LOCAL_DIRECTORY')
         } else {

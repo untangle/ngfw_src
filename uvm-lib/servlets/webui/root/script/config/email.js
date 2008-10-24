@@ -70,7 +70,12 @@ if (!Ung.hasResource["Ung.Email"]) {
         
         getMailNode : function(forceReload) {
             if (forceReload || this.rpc.mailNode === undefined) {
-                this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
+            	try {
+                    this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.mailNode;
         },
@@ -79,25 +84,45 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         getMailSettings : function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
-                this.rpc.mailSettings = main.getMailSender().getMailSettings();
+            	try {
+                    this.rpc.mailSettings = main.getMailSender().getMailSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.mailSettings;
         },
         getMailNodeSettings : function(forceReload) {
             if (forceReload || this.rpc.mailNodeSettings === undefined) {
-                this.rpc.mailNodeSettings = this.getMailNode().getMailNodeSettings();
+            	try {
+                    this.rpc.mailNodeSettings = this.getMailNode().getMailNodeSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.mailNodeSettings;
         },
         getSafelistAdminView : function(forceReload) {
             if (forceReload || this.rpc.safelistAdminView === undefined) {
-                this.rpc.safelistAdminView = this.getMailNode().getSafelistAdminView();
+            	try {
+                    this.rpc.safelistAdminView = this.getMailNode().getSafelistAdminView();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.safelistAdminView;
         },
         getQuarantineMaintenenceView : function(forceReload) {
             if (forceReload || this.rpc.quarantineMaintenenceView === undefined) {
-                this.rpc.quarantineMaintenenceView = this.getMailNode().getQuarantineMaintenenceView();
+            	try {
+                    this.rpc.quarantineMaintenenceView = this.getMailNode().getQuarantineMaintenenceView();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.quarantineMaintenenceView;
         }, 
@@ -111,7 +136,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.getQuarantineMaintenenceView().getInboxRecordArray(
                 function(result, exception) {
                     Ext.MessageBox.hide();
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.userQuarantinesDetailsGrid.store.loadData(result.inboxRecords);
                 }.createDelegate(this), this.quarantinesDetailsWin.account)
         },
@@ -157,7 +182,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     value : emailAddress
                                 });
 		                        var message = rpc.adminManager.sendTestMessage( function(result, exception) {
-		                            Ung.Util.handleException(exception);
+		                            if(Ung.Util.handleException(exception)) return;
 		                            this.testEmailResultMessage = result == true ? this.i18n._('Test email sent.') : this.i18n._('Warning!  Test failed.  Check your settings.');
 		    
 		                            Ext.MessageBox.show({
@@ -342,7 +367,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                                 Ext.MessageBox.wait(this.i18n._('Saving...'), this.i18n._('Please wait'));
                                                 // save mail settings
                                                 main.getMailSender().setMailSettings(function(result, exception) {
-                                                    Ung.Util.handleException(exception);
+                                                    if(Ung.Util.handleException(exception)) return;
                                                     Ext.MessageBox.hide();
                                                     // update original values
                                                     enabledCmp.originalValue = enabledCmp.getValue();
@@ -463,7 +488,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                                 this.getSafelistAdminView().deleteSafelists(function(result, exception) {
                                     Ext.MessageBox.hide();
-                                    Ung.Util.handleException(exception);
+                                    if(Ung.Util.handleException(exception)) return;
                                 }.createDelegate(this), accounts);
                                 
                                 this.gridSafelistUser.store.load();
@@ -510,7 +535,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         this.settingsCmp.getSafelistAdminView().getSafelistContents(
                                             function(result, exception) {
                                                 Ext.MessageBox.hide();
-                                                Ung.Util.handleException(exception);
+                                                if(Ung.Util.handleException(exception)) return;
                                                 this.settingsCmp.gridSafelistUserDetails.store.loadData(result);
                                             }.createDelegate(this), emailAddress); 
                                     }          
@@ -552,7 +577,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             
                             Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                             this.getSafelistAdminView().removeFromSafelists(function(result, exception) {
-                                Ung.Util.handleException(exception);
+                                if(Ung.Util.handleException(exception)) return;
                                 this.gridSafelistUserDetails.store.loadData(result);
                                 Ext.MessageBox.hide();
                             }.createDelegate(this), this.safelistDetailsWin.account, senders);
@@ -681,7 +706,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 
                                 Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                                 this.getQuarantineMaintenenceView().deleteInboxes(function(result, exception) {
-                                    Ung.Util.handleException(exception);
+                                    if(Ung.Util.handleException(exception)) return;
                                     Ext.MessageBox.hide();
                                 }.createDelegate(this), accounts);
                                 
@@ -706,7 +731,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 
                                 Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
                                 this.getQuarantineMaintenenceView().rescueInboxes(function(result, exception) {
-                                    Ung.Util.handleException(exception);
+                                    if(Ung.Util.handleException(exception)) return;
                                     Ext.MessageBox.hide();
                                 }.createDelegate(this), accounts);
                                 
@@ -947,7 +972,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                         Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                         this.getQuarantineMaintenenceView().purge(function(result, exception) {
-                            Ung.Util.handleException(exception);
+                            if(Ung.Util.handleException(exception)) return;
                             //load Quarantines Details
                             this.loadQuarantinesDetails();
                         }.createDelegate(this), this.quarantinesDetailsWin.account, emails);
@@ -972,7 +997,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                         Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
                         this.getQuarantineMaintenenceView().rescue(function(result, exception) {
-                            Ung.Util.handleException(exception);
+                            if(Ung.Util.handleException(exception)) return;
                             //load Quarantines Details
                             this.loadQuarantinesDetails();
                         }.createDelegate(this), this.quarantinesDetailsWin.account, emails);
@@ -1157,7 +1182,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 
                 // save mail settings
                 main.getMailSender().setMailSettings(function(result, exception) {
-	                Ung.Util.handleException(exception);
+	                if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getMailSettings());
                 
@@ -1166,7 +1191,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList()                
                     this.getMailNodeSettings().quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList()                
                     this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
-                        Ung.Util.handleException(exception);
+                        if(Ung.Util.handleException(exception)) return;
                         this.afterSave();
                     }.createDelegate(this), this.getMailNodeSettings());
     
@@ -1177,7 +1202,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         globalList.push(gridSafelistGlobalValues[i].emailAddress);
                     }
                     this.getSafelistAdminView().replaceSafelist(function(result, exception) {
-                        Ung.Util.handleException(exception);
+                        if(Ung.Util.handleException(exception)) return;
                         this.afterSave();
                     }.createDelegate(this), 'GLOBAL', globalList);
                 }

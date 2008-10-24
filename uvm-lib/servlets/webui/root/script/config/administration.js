@@ -37,70 +37,117 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // get base settings object
         getSkinSettings : function(forceReload) {
             if (forceReload || this.rpc.skinSettings === undefined) {
-                this.rpc.skinSettings = rpc.skinManager.getSkinSettings();
+            	try {
+                    this.rpc.skinSettings = rpc.skinManager.getSkinSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
             }
             return this.rpc.skinSettings;
         },
         // get admin settings
         getAdminSettings : function(forceReload) {
             if (forceReload || this.rpc.adminSettings === undefined) {
-                this.rpc.adminSettings = rpc.adminManager.getAdminSettings();
+            	try {
+                    this.rpc.adminSettings = rpc.adminManager.getAdminSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.adminSettings;
         },
         // get access settings
         getAccessSettings : function(forceReload) {
             if (forceReload || this.rpc.accessSettings === undefined) {
-                this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
+            	try {
+                    this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
             }
             return this.rpc.accessSettings;
         },
         // get address settings
         getAddressSettings : function(forceReload) {
             if (forceReload || this.rpc.addressSettings === undefined) {
-                this.rpc.addressSettings = rpc.networkManager.getAddressSettings();
+            	try {
+                    this.rpc.addressSettings = rpc.networkManager.getAddressSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
             }
             return this.rpc.addressSettings;
         },
         // get snmp settings
         getSnmpSettings : function(forceReload) {
             if (forceReload || this.rpc.snmpSettings === undefined) {
-                this.rpc.snmpSettings = rpc.adminManager.getSnmpManager().getSnmpSettings();
+            	try {
+                    this.rpc.snmpSettings = rpc.adminManager.getSnmpManager().getSnmpSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+
             }
             return this.rpc.snmpSettings;
         },
         // get logging settings
         getLoggingSettings : function(forceReload) {
             if (forceReload || this.rpc.loggingSettings === undefined) {
-                this.rpc.loggingSettings = main.getLoggingManager().getLoggingSettings();
+            	try {
+                    this.rpc.loggingSettings = main.getLoggingManager().getLoggingSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.loggingSettings;
         },
         // get Current Server CertInfo
         getCurrentServerCertInfo : function(forceReload) {
             if (forceReload || this.rpc.currentServerCertInfo === undefined) {
-                this.rpc.currentServerCertInfo = main.getAppServerManager().getCurrentServerCertInfo();
+            	try {
+                    this.rpc.currentServerCertInfo = main.getAppServerManager().getCurrentServerCertInfo();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.currentServerCertInfo;
         },
         // get hostname
         getHostname : function(forceReload) {
             if (forceReload || this.rpc.hostname === undefined) {
-                this.rpc.hostname = rpc.networkManager.getHostname();
+            	try {
+                    this.rpc.hostname = rpc.networkManager.getHostname();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.hostname;
         },
         // is Branding Expired
         isBrandingExpired : function(forceReload) {
             if (forceReload || this.rpc.isBrandingExpired === undefined) {
-                this.rpc.isBrandingExpired = main.getLicenseManager().getLicenseStatus('untangle-branding-manager').expired;
+            	try {
+                    this.rpc.isBrandingExpired = main.getLicenseManager().getLicenseStatus('untangle-branding-manager').expired;
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.isBrandingExpired;
         },
         // get branding settings
         getBrandingBaseSettings : function(forceReload) {
             if (forceReload || this.rpc.brandingBaseSettings === undefined) {
-                this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
+            	try { 
+                    this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.brandingBaseSettings;
         },
@@ -774,8 +821,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 
                                 // generate certificate
                                 main.getAppServerManager().regenCert(function(result, exception) {
-                                    Ung.Util.handleException(exception);
-                                    
+                                    if(Ung.Util.handleException(exception)) return;
                                     if (result) { //true or false
                                         //success
                                         
@@ -831,8 +877,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 
                                 // generate certificate request
                                 main.getAppServerManager().generateCSR(function(result, exception) {
-                                    Ung.Util.handleException(exception);
-                                    
+                                    if(Ung.Util.handleException(exception)) return;
                                     if (result != null) { 
                                         //success
                                         Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Signature Request Successfully Generated"),
@@ -890,8 +935,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 
                                 // import certificate
                                 main.getAppServerManager().importServerCert(function(result, exception) {
-                                    Ung.Util.handleException(exception);
-                                    
+                                    if(Ung.Util.handleException(exception)) return;
                                     if (result) { //true or false
                                         //success
                                         
@@ -2036,33 +2080,33 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
                 this.getAdminSettings().users.set=setAdministration;
                 rpc.adminManager.setAdminSettings(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getAdminSettings());
 
                rpc.networkManager.setAccessSettings(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getAccessSettings());
                 
                delete this.getAddressSettings().publicAddress;
                rpc.networkManager.setAddressSettings(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getAddressSettings());
                 
                rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getSnmpSettings());
                 
                 main.getLoggingManager().setLoggingSettings(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getLoggingSettings());
                 
                 rpc.skinManager.setSkinSettings(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getSkinSettings());
                 
@@ -2070,7 +2114,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 	this.saveSemaphore++;
                     main.getBrandingManager().setBaseSettings(function(result, exception) {
                         Ext.MessageBox.hide();
-                        Ung.Util.handleException(exception);
+                        if(Ung.Util.handleException(exception)) return;
                         // update global branding settings
                         rpc.brandingManager.getBaseSettings(function (result, exception) {
                             if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}

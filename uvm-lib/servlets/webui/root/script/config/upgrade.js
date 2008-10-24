@@ -31,22 +31,27 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
         },
         getUpgradeSettings : function(forceReload) {
             if (forceReload || this.rpc.upgradeSettings === undefined) {
-                this.rpc.upgradeSettings = rpc.toolboxManager.getUpgradeSettings();
+            	try {
+                    this.rpc.upgradeSettings = rpc.toolboxManager.getUpgradeSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.upgradeSettings;
         },
         loadGridUpgrade : function() {
         	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
             rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
-                Ung.Util.handleException(exception);
+                if(Ung.Util.handleException(exception)) return;
                 var upgradeStatus=result;
                 if(upgradeStatus.upgrading) {
                 	Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
                 } else {
                 	rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
-                        Ung.Util.handleException(exception);
+                        if(Ung.Util.handleException(exception)) return;
                         rpc.toolboxManager.upgradable(function(result, exception) {
-                            Ung.Util.handleException(exception);
+                            if(Ung.Util.handleException(exception)) return;
                             Ext.MessageBox.hide();
                             var upgradeList = result;
                             // var upgradeList=[]; /for test
@@ -381,7 +386,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 // save language settings
 
                 rpc.toolboxManager.setUpgradeSettings(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getUpgradeSettings());
             }

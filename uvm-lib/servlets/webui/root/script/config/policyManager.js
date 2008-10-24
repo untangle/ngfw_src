@@ -58,19 +58,34 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         
         getPolicyConfiguration : function(forceReload) {
             if (forceReload || this.rpc.policyConfiguration === undefined) {
-                this.rpc.policyConfiguration = rpc.policyManager.getPolicyConfiguration();
+            	try {
+                    this.rpc.policyConfiguration = rpc.policyManager.getPolicyConfiguration();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.policyConfiguration;
         },
         getPolicyManagerValidator : function(forceReload) {
             if (forceReload || this.rpc.policyManagerValidator === undefined) {
-                this.rpc.policyManagerValidator = rpc.policyManager.getValidator();
+            	try {
+                    this.rpc.policyManagerValidator = rpc.policyManager.getValidator();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.policyManagerValidator;
         },
         getPolicyManagerLicenseStatus : function(forceReload) {
             if (forceReload || this.rpc.policyManagerLicenseStatus === undefined) {
-                this.rpc.policyManagerLicenseStatus = main.getLicenseManager().getLicenseStatus("untangle-policy-manager");
+            	try {
+                    this.rpc.policyManagerLicenseStatus = main.getLicenseManager().getLicenseStatus("untangle-policy-manager");
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.policyManagerLicenseStatus;
         },
@@ -815,7 +830,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         validateClient : function() {
             var rackList=this.gridRacks.getFullSaveList();
             if(rackList.length==0) {
-                Ext.MessageBox.alert(this.i18n._("There must always be at least one available rack."));
+                Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("There must always be at least one available rack."));
                 return false;
             }
             for(var i=0;i<rackList.length;i++) {
@@ -844,7 +859,12 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         	var rackDeletedList=this.gridRacks.getDeletedList();
         	for(var i=0;i<rackDeletedList.length;i++)
         	try {
-                var result = rpc.nodeManager.nodeInstances(rackDeletedList[i]);
+        		try {
+                    var result = rpc.nodeManager.nodeInstances(rackDeletedList[i]);
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
                 if (result.list.length>0) {
 
 //                var isEmptyPolicy = rpc.nodeManager.isEmptyPolicy(rackDeletedList[i]);
@@ -882,7 +902,12 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             }
             if (Ung.Util.hasData(validateData.map)) {
                 try {
-                    var result = this.getPolicyManagerValidator().validate(validateData);
+                	try {
+                        var result = this.getPolicyManagerValidator().validate(validateData);
+                    } catch (e) {
+                        Ung.Util.rpcExHandler(e);
+                    }
+                        
                     if (!result.valid) {
                         var errorMsg = "";
                         switch (result.errorCode) {
@@ -915,7 +940,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 this.getPolicyConfiguration().userPolicyRules.list=this.gridRules.getFullSaveList();
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 rpc.policyManager.setPolicyConfiguration(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     Ext.MessageBox.hide();
                 	this.cancelAction();
                 	main.loadPolicies.defer(1,main);

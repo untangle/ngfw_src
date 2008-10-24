@@ -26,25 +26,45 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         },
         getSystemInfo : function(forceReload) {
             if (forceReload || this.rpc.systemInfo === undefined) {
-                this.rpc.systemInfo = rpc.adminManager.getSystemInfo();
+            	try {
+                    this.rpc.systemInfo = rpc.adminManager.getSystemInfo();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.systemInfo;
         },
         getRegistrationInfo : function(forceReload) {
             if (forceReload || this.rpc.registrationInfo === undefined) {
-                this.rpc.registrationInfo = rpc.adminManager.getRegistrationInfo();
+            	try {
+                    this.rpc.registrationInfo = rpc.adminManager.getRegistrationInfo();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.registrationInfo;
         },
         hasPremiumLicense : function(forceReload) {
             if (forceReload || this.rpc.hasPremiumLicense === undefined) {
-                this.rpc.hasPremiumLicense = main.getLicenseManager().hasPremiumLicense();
+            	try {
+                    this.rpc.hasPremiumLicense = main.getLicenseManager().hasPremiumLicense();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.hasPremiumLicense;
         },
         getLicenseAgreement : function(forceReload) {
             if (forceReload || this.rpc.getLicenseAgreement === undefined) {
-                this.rpc.getLicenseAgreement = main.getLicenseManager().getLicenseAgreement();
+            	try {
+                    this.rpc.getLicenseAgreement = main.getLicenseManager().getLicenseAgreement();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.getLicenseAgreement;
         },
@@ -219,7 +239,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 rpc.adminManager.setRegistrationInfo(function(result, exception) {
                     Ext.MessageBox.hide();
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.cancelAction();
                 }.createDelegate(this), this.getRegistrationInfo());
             }

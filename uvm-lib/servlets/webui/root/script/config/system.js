@@ -35,25 +35,45 @@ if (!Ung.hasResource["Ung.System"]) {
         // get languange settings object
         getLanguageSettings : function(forceReload) {
             if (forceReload || this.rpc.languageSettings === undefined) {
-                this.rpc.languageSettings = rpc.languageManager.getLanguageSettings();
+            	try {
+                    this.rpc.languageSettings = rpc.languageManager.getLanguageSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.languageSettings;
         },
         getAccessSettings : function(forceReload) {
             if (forceReload || this.rpc.accessSettings === undefined) {
-                this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
+            	try {
+                    this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.accessSettings;
         },
         getMiscSettings : function(forceReload) {
             if (forceReload || this.rpc.miscSettings === undefined) {
-                this.rpc.miscSettings = rpc.networkManager.getMiscSettings();
+            	try {
+                    this.rpc.miscSettings = rpc.networkManager.getMiscSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.miscSettings;
         },
         getHttpNode : function(forceReload) {
             if (forceReload || this.rpc.httpNode === undefined) {
-                this.rpc.httpNode = rpc.nodeManager.node("untangle-casing-http");
+            	try {
+                    this.rpc.httpNode = rpc.nodeManager.node("untangle-casing-http");
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.httpNode;
         },
@@ -62,13 +82,23 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getHttpSettings : function(forceReload) {
             if (forceReload || this.rpc.httpSettings === undefined) {
-                this.rpc.httpSettings = this.getHttpNode(forceReload).getHttpSettings();
+            	try {
+                    this.rpc.httpSettings = this.getHttpNode(forceReload).getHttpSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.httpSettings;
         },
         getFtpNode : function(forceReload) {
             if (forceReload || this.rpc.ftpNode === undefined) {
-                this.rpc.ftpNode = rpc.nodeManager.node("untangle-casing-ftp");
+            	try {
+                    this.rpc.ftpNode = rpc.nodeManager.node("untangle-casing-ftp");
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.ftpNode;
         },
@@ -77,13 +107,23 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getFtpSettings : function(forceReload) {
             if (forceReload || this.rpc.ftpSettings === undefined) {
-                this.rpc.ftpSettings = this.getFtpNode(forceReload).getFtpSettings();
+            	try {
+                    this.rpc.ftpSettings = this.getFtpNode(forceReload).getFtpSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                
             }
             return this.rpc.ftpSettings;
         },
         getMailNode : function(forceReload) {
             if (forceReload || this.rpc.mailNode === undefined) {
-                this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
+            	try {
+                    this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.mailNode;
         },
@@ -92,13 +132,23 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getMailSettings : function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
-                this.rpc.mailSettings = this.getMailNode(forceReload).getMailNodeSettings();
+            	try {
+                    this.rpc.mailSettings = this.getMailNode(forceReload).getMailNodeSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.mailSettings;
         },
         getTimeZone : function(forceReload) {
             if (forceReload || this.rpc.timeZone === undefined) {
-                this.rpc.timeZone = rpc.adminManager.getTimeZone();
+            	try {
+                    this.rpc.timeZone = rpc.adminManager.getTimeZone();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+                    
             }
             return this.rpc.timeZone;
         },
@@ -1019,20 +1069,20 @@ if (!Ung.hasResource["Ung.System"]) {
                 this.saveSemaphore = 6;
                 // save language settings
                 rpc.languageManager.setLanguageSettings(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getLanguageSettings());
                 
                 // save network settings
                 rpc.networkManager.setSettings(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getAccessSettings(), this.getMiscSettings());
                 
                 // save http settings
                 if (this.isHttpLoaded()) {
                     this.getHttpNode().setHttpSettings(function(result, exception) {
-                        Ung.Util.handleException(exception);
+                        if(Ung.Util.handleException(exception)) return;
                         this.afterSave();
                     }.createDelegate(this), this.getHttpSettings());
                 } else {
@@ -1042,7 +1092,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 // save ftp settings
                 if (this.isFtpLoaded()) {
                     this.getFtpNode().setFtpSettings(function(result, exception) {
-                        Ung.Util.handleException(exception);
+                        if(Ung.Util.handleException(exception)) return;
                         this.afterSave();
                     }.createDelegate(this), this.getFtpSettings());
                 } else {
@@ -1052,7 +1102,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 // save mail settings
                 if (this.isMailLoaded()) {
                     this.getMailNode().setMailNodeSettings(function(result, exception) {
-                        Ung.Util.handleException(exception);
+                        if(Ung.Util.handleException(exception)) return;
                         this.afterSave();
                     }.createDelegate(this), this.getMailSettings());
                 } else {
@@ -1061,7 +1111,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 
                 //save timezone
                 rpc.adminManager.setTimeZone(function(result, exception) {
-                    Ung.Util.handleException(exception);
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.rpc.timeZone);
             }
