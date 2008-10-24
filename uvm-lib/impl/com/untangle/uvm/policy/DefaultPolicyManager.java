@@ -201,6 +201,7 @@ class DefaultPolicyManager implements LocalPolicyManager
         pl.add(defaultPolicy);
 
         PolicyConfiguration result = new PolicyConfiguration(pl, cUserRules);
+        result.setHasRackManagement(false);
         return result;
     }
 

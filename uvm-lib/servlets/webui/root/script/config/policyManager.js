@@ -90,8 +90,20 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             return this.rpc.policyManagerLicenseStatus;
         },
         buildPolicyManagement : function() {
+            this.buildInfo();
             this.buildRacks();
             this.buildPolicies();
+            
+            var items = [];
+
+            if (this.getPolicyConfiguration().hasRackManagement) {
+                items.push(this.gridRacks);
+            } else {
+                items.push(this.infoLabel);
+            }
+
+            items.push( this.gridRules );
+                
             this.panelPolicyManagement = new Ext.Panel({
                 // private fields
             	anchor: "100% 100%",
@@ -100,7 +112,34 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 title : this.i18n._('Policy Management'),
                 layout : "form",
                 autoScroll : true,
-                items : [this.gridRacks, this.gridRules]
+                items : items
+            });
+        },
+        buildInfo : function() {
+            var items = null;
+            
+            if ( this.getPolicyManagerLicenseStatus().expired ) {
+                items = [{
+                    xtype : 'label',
+                    html : this.i18n._( 'Need to create network-access policies by username or time of the week? Click on "More Info" to learn more.' )
+                },{
+                    xtype : 'button',
+                    text : this.i18n._( "More Info" ),
+                    handler : function() {
+			var app = Ung.AppItem.getApp("untangle-libitem-policy");
+			if (app != null && app.libItem != null) app.linkToStoreFn();
+                    }
+                }];
+            } else {
+                items = [{
+                    xtype : 'label',
+                    html : this.i18n._( 'You must install the policy manager in order to add additional racks.' )
+                }];
+            }
+            this.infoLabel = new Ext.form.FieldSet({
+                title : this.i18n._("Racks"),
+                items : items,
+                autoHeight : true
             });
         },
         buildRacks : function() {
@@ -192,15 +231,15 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 	        Ext.MessageBox.show({
 	           title: this.i18n._('Professional Package Feature'),
 	           msg: this.i18n._('Need to create network-access policies by username or time of the week? Click on "More Info" to learn more.'),
-			   buttons: {ok:this.i18n._('More Info'), cancel:true},
-				fn: function(btn){
-					if(btn=='ok'){
-					    var app = Ung.AppItem.getApp("untangle-libitem-policy");
-					    if (app != null && app.libItem != null) {
-					    	app.linkToStoreFn();
-					    }
-					}
-				},						   
+		    buttons: {ok:this.i18n._('More Info'), cancel:true},
+		    fn: function(btn){
+			if(btn=='ok'){
+			    var app = Ung.AppItem.getApp("untangle-libitem-policy");
+			    if (app != null && app.libItem != null) {
+				app.linkToStoreFn();
+			    }
+			}
+		    },						   
 	           icon: Ext.MessageBox.INFO
 	       })                		
         },
@@ -942,17 +981,17 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 rpc.policyManager.setPolicyConfiguration(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     Ext.MessageBox.hide();
-                	this.cancelAction();
-                	main.loadPolicies.defer(1,main);
+                    this.cancelAction();
+                    main.loadPolicies.defer(1,main);
                 }.createDelegate(this), this.getPolicyConfiguration());
             }
         },
         // save function
-	    cancelAction : function() {
+	cancelAction : function() {
             Ung.PolicyManager.superclass.cancelAction.call(this);
             if(this.fnCallback) {
                 this.fnCallback.call();
             }
-	    }
+	}
     });
 }

@@ -37,13 +37,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 public class PolicyConfiguration implements Serializable
 {
-    private static final long serialVersionUID = -8235091515969174553L;
+    // private static final long serialVersionUID = -8235091515969174553L;
 
     private List policies;
 
     private List<UserPolicyRule> userPolicyRules;
+
+    private boolean hasRackManagement = false;
 
     public PolicyConfiguration()
     {
@@ -76,6 +80,22 @@ public class PolicyConfiguration implements Serializable
     {
         this.userPolicyRules = userPolicyRules;
     }
+
+    /**
+     * True if the user is able to modify the racks.  This is true
+     * if the user has policy manager and the policy manager is installed.
+     */
+    @Transient
+    public boolean getHasRackManagement()
+    {
+        return this.hasRackManagement;
+    }
+
+    public void setHasRackManagement(boolean newValue)
+    {
+        this.hasRackManagement = newValue;
+    }
+
 }
 
 
