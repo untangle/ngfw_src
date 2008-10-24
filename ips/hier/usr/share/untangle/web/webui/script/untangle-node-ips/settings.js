@@ -295,15 +295,38 @@ if (!Ung.hasResource["Ung.Ips"]) {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'ruleSid'
+                    name : 'action',
+                    mapping : 'blocked',
+                    type : 'string',
+                    convert : function(value) {
+                        switch (value) {
+                            case 1 : // BLOCKED
+                                return this.i18n._("block");
+                            default :
+                            case 0 : // PASSED
+                                return this.i18n._("pass");
+                        }
+                    }.createDelegate(this)
                 }, {
-                    name : 'pipelineEndpoints'
+                    name : 'reason',
+                    mapping : 'ruleSid',
+                    type : 'string',
+                    convert : function(value, rec) {
+                           return "#" + rec.ruleSid + ": " + rec.message;
+                    }
+                }, {
+                    name : 'client',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asClient
+                }, {
+                    name : 'server',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asServer
                 }, {
                     name : 'message'
-                }, {
-                    name : 'blocked'
                 }],
                 columns : [{
                     header : i18n._("timestamp"),
@@ -317,41 +340,25 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     header : i18n._("action"),
                     width : 100,
                     sortable : true,
-                    dataIndex : 'blocked',
-                    renderer : function(value) {
-                        switch (value) {
-                            case 1 : // BLOCKED
-                                return this.i18n._("block");
-                            default :
-                            case 0 : // PASSED
-                                return this.i18n._("pass");
-                        }
-                    }.createDelegate(this)
+                    dataIndex : 'action'
                 }, {
                     header : i18n._("client"),
                     width : 165,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
-                    }
+                    dataIndex : 'client',
+                    renderer : Ung.SortTypes.asClient
                 }, {
                 	id: 'ruleSid',
                     header : this.i18n._('reason for action'),
                     width : 150,
                     sortable : true,
-                    dataIndex : 'ruleSid',
-                    renderer : function(value, metadata, record) {
-                           return "#" + record.data.ruleSid + ": " + record.data.message;
-					}
+                    dataIndex : 'reason'
                 }, {
                     header : i18n._("server"),
                     width : 165,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
-                    }
+                    dataIndex : 'server',
+                    renderer : Ung.SortTypes.asServer
                 }],
                 autoExpandColumn: 'ruleSid'
                 

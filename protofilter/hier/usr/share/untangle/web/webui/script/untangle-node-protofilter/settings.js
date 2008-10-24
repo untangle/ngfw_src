@@ -146,16 +146,39 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         },
         // Event Log
         buildEventLog : function() {
+        	var asAction = function(value) {
+                return value ? this.i18n._("blocked") : this.i18n._("passed");
+            }.createDelegate(this);
+            var asReason = function(value) {
+                return value ? this.i18n._("blocked in block list") : this.i18n._("not blocked in block list");
+            }.createDelegate(this);
+            
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'blocked'
+                    name : 'action',
+                    mapping : 'blocked',
+                    convert : asAction,
+                    type : 'string'
                 }, {
-                    name : 'pipelineEndpoints'
+                    name : 'reason',
+                    mapping : 'blocked',
+                    convert : asReason,
+                    type : 'string'
                 }, {
-                    name : 'protocol'
+                    name : 'client',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asClient
+                }, {
+                    name : 'server',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asServer
+                }, {
+                    name : 'protocol',
+                    type : 'string'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
@@ -169,18 +192,13 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     header : this.i18n._("action"),
                     width : 70,
                     sortable : true,
-                    dataIndex : 'blocked',
-                    renderer : function(value) {
-                        return value ? this.i18n._("blocked") : this.i18n._("passed");
-                    }.createDelegate(this)
+                    dataIndex : 'action'
                 }, {
                     header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
-                    }
+                    dataIndex : 'client',
+                    renderer : Ung.SortTypes.asClient
                 }, {
                     header : this.i18n._("request"),
                     width : 120,
@@ -190,18 +208,13 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     header : this.i18n._("reason for action"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'blocked',
-                    renderer : function(value) {
-                        return value ? this.i18n._("blocked in block list") : this.i18n._("not blocked in block list");
-                    }.createDelegate(this)
+                    dataIndex : 'reason'
                 }, {
                     header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
-                    }
+                    dataIndex : 'server',
+                    renderer : Ung.SortTypes.asServer
                 }]
             });
         },

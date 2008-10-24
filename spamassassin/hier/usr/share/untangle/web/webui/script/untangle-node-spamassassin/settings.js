@@ -408,44 +408,14 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 settingsCmp : this,
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'type'
-                }, {
-                    name : 'actionType'
-                }, {
-                    name : 'clientAddr'
-                }, {
-                    name : 'clientPort'
-                }, {
-                    name : 'serverAddr'
-                }, {
-                    name : 'serverPort'
-                }, {
-                    name : 'subject'
-                }, {
-                    name : 'receiver'
-                }, {
-                    name : 'sender'
-                }, {
-                    name : 'score'
-                }],
-                // the list of columns
-                columns : [{
-                    header : i18n._("timestamp"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'timeStamp',
-                    renderer : function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header : i18n._("action"),
-                    width : 90,
-                    sortable : true,
-                    dataIndex : 'actionType',
-                    renderer : function(value, metadata, record ) {
-                        switch (record.data.type) {
+                    name : 'displayAction',
+                    mapping : 'actionType',
+                    type : 'string',
+                    convert : function(value, rec ) {
+                        switch (rec.type) {
                             case 'POP/IMAP' :
                                 switch (value) {
                                     case 0 : // PASSED
@@ -472,13 +442,48 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         return "";
                     }.createDelegate(this)
                 }, {
+                    name : 'client',
+                    mapping : 'clientAddr',
+                    convert : function(value, rec ) {
+                        return value === null ? "" : rec.clientAddr + ":" + rec.clientPort;
+                    }
+                }, {
+                    name : 'server',
+                    mapping : 'serverAddr',
+                    convert : function(value, rec ) {
+                        return value === null ? "" : rec.serverAddr + ":" + rec.serverPort;
+                    }
+                }, {
+                    name : 'subject',
+                    type : 'string'
+                }, {
+                    name : 'receiver',
+                    type : 'string'
+                }, {
+                    name : 'sender',
+                    type : 'string'
+                }, {
+                    name : 'score'
+                }],
+                // the list of columns
+                columns : [{
+                    header : i18n._("timestamp"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : i18n._("action"),
+                    width : 90,
+                    sortable : true,
+                    dataIndex : 'displayAction'
+                }, {
                     header : i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'clientAddr',
-                    renderer : function(value, metadata, record ) {
-                        return value === null ? "" : record.data.clientAddr + ":" + record.data.clientPort;
-                    }
+                    dataIndex : 'client'
                 }, {
                     header : this.i18n._("subject"),
                     width : 90,
@@ -503,10 +508,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'serverAddr',
-                    renderer : function(value, metadata, record ) {
-                        return value === null ? "" : record.data.serverAddr + ":" + record.data.serverPort;
-                    }
+                    dataIndex : 'server'
                 }]
             });
         },
@@ -520,13 +522,23 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 title : this.i18n._("Tarpit Event Log"),
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'skipped'
+                    name : 'action',
+                    mapping : 'skipped',
+                    type : 'string',
+                    convert : function(value) {
+                        return value ? this.i18n._("skipped") : this.i18n._("blocked");
+                    }.createDelegate(this)
                 }, {
-                    name : 'IPAddr'
+                    name : 'sender',
+                    mapping : 'IPAddr',
+                    convert : function(value) {
+                        return value == null ? "" : value;
+                    }
                 }, {
-                    name : 'hostname'
+                    name : 'hostname'                   
                 }],
                 // the list of columns
                 columns : [{
@@ -541,18 +553,12 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : i18n._("action"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'skipped',
-                    renderer : function(value) {
-                        return value ? this.i18n._("skipped") : this.i18n._("blocked");
-                    }.createDelegate(this)
+                    dataIndex : 'action'
                 }, {
                     header : this.i18n._("sender"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'IPAddr',
-                    renderer : function(value) {
-                        return value == null ? "" : value;
-                    }
+                    dataIndex : 'sender'
                 }, {
                     header : this.i18n._("DNSBL server"),
                     width : 120,

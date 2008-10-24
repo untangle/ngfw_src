@@ -556,17 +556,67 @@ if (!Ung.hasResource["Ung.Virus"]) {
 
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'type'
+                    name : 'displayAction',
+                    mapping : 'actionType',
+                    type : 'string',
+                    convert : function(value, rec ) {
+                        switch (rec.type) {
+                            case 'HTTP' :
+                            case 'FTP' :
+                                switch (value) {
+                                    case 0 : // PASSED
+                                        return this.i18n._("clean");
+                                    case 1 : // CLEANED
+                                        return this.i18n._("cleaned");
+                                    default :
+                                    case 2 : // BLOCKED
+                                        return this.i18n._("blocked");
+                                }
+                                break;
+                            case 'POP/IMAP' :
+                                switch (value) {
+                                    case 0 : // PASSED
+                                        return this.i18n._("pass message");
+                                    default :
+                                    case 1 : // CLEANED
+                                        return this.i18n._("remove infection");
+                                }
+                                break;
+                            case 'SMTP' :
+                                switch (value) {
+                                    case 0 : // PASSED
+                                        return this.i18n._("pass message");
+                                    case 1 : // CLEANED
+                                        return this.i18n._("remove infection");
+                                    default :
+                                    case 2 : // BLOCKED
+                                        return this.i18n._("block message");
+                                }
+                                break;
+                        }
+                        return "";
+                    }.createDelegate(this)
                 }, {
-                    name : 'actionType'
+                    name : 'client',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asClient
                 }, {
-                    name : 'pipelineEndpoints'
+                    name : 'server',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asServer
                 }, {
-                    name : 'traffic'
+                    name : 'traffic',
+                    type : 'string'
                 }, {
-                    name : 'infected'
+                    name : 'reason',
+                    mapping : 'infected',
+                    type : 'string',
+                    convert : function(value) {
+                        return value ? this.i18n._("virus found") : this.i18n._("no virus found");
+                    }.createDelegate(this)
                 }],
                 // the list of columns
                 columns : [{
@@ -578,57 +628,18 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                	id: 'action',
                     header : this.i18n._("action"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'actionType',
-                    renderer : function(value, metadata, record ) {
-						switch (record.data.type) {
-							case 'HTTP' :
-							case 'FTP' :
-								switch (value) {
-									case 0 : // PASSED
-										return this.i18n._("clean");
-									case 1 : // CLEANED
-										return this.i18n._("cleaned");
-									default :
-									case 2 : // BLOCKED
-										return this.i18n._("blocked");
-								}
-								break;
-							case 'POP/IMAP' :
-								switch (value) {
-									case 0 : // PASSED
-										return this.i18n._("pass message");
-									default :
-									case 1 : // CLEANED
-										return this.i18n._("remove infection");
-								}
-								break;
-							case 'SMTP' :
-								switch (value) {
-									case 0 : // PASSED
-										return this.i18n._("pass message");
-									case 1 : // CLEANED
-										return this.i18n._("remove infection");
-									default :
-									case 2 : // BLOCKED
-										return this.i18n._("block message");
-								}
-                                break;
-						}
-						return "";
-                    }.createDelegate(this)
+                    dataIndex : 'displayAction'
                 }, {
                     header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
-                    }
+                    dataIndex : 'client',
+                    renderer : Ung.SortTypes.asClient
                 }, {
+                    id: 'traffic',
                     header : this.i18n._("traffic"),
                     width : 120,
                     sortable : true,
@@ -637,20 +648,15 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     header : this.i18n._("reason for action"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'infected',
-                    renderer : function(value) {
-                        return value ? this.i18n._("virus found") : this.i18n._("no virus found");
-                    }.createDelegate(this)
+                    dataIndex : 'reason'
                 }, {
                     header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
-                    }
+                    dataIndex : 'server',
+                    renderer : Ung.SortTypes.asServer
                 }],
-                autoExpandColumn: 'action'
+                autoExpandColumn: 'traffic'
             });
         },
         // validation function

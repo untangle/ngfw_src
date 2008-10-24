@@ -555,61 +555,37 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'blocked'
-                }, {
-                    name : 'pipelineEndpoints'
-                }, {
-                    name : 'location'
-                }, {
-                    name : 'identification'
-                }, {
-                    name : 'reason'
-                }, {
-                    name : 'type'
-                }],
-                columns : [{
-                    header : this.i18n._("timestamp"),
-                    width : 130,
-                    sortable : true,
-                    dataIndex : 'timeStamp',
-                    renderer : function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header : this.i18n._("action"),
-                    width : 90,
-                    sortable : true,
-                    dataIndex : 'blocked',
-                    renderer : function(value) {
+                    name : 'action',
+                    mapping : 'blocked',
+                    type : 'string',
+                    convert :  function(value) {
                         return value ? this.i18n._("block") : this.i18n._("pass");
                     }.createDelegate(this)
                 }, {
-                    header : this.i18n._("client"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
+                    name : 'client',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asClient
+                }, {
+                    name : 'server',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asServer
+                }, {
+                    name : 'request',
+                    mapping : 'location',
+                    type : 'string',
+                    convert : function(value, rec ) {
+                        return rec.location + " : " + rec.identification
                     }
                 }, {
-                    header : this.i18n._("request"),
-                    width : 200,
-                    sortable : true,
-                    dataIndex : 'location',
-                    renderer : function(value, metadata, record ) {
-                    	return record.data.location + " : " + record.data.identification
-                    }
-                }, {
-                	id: 'reason',
-                    header : this.i18n._("reason for action"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'reason',
-                    renderer : function(value, metadata, record ) {
-                    	var displayValue = value;
-                        switch (record.data.type) {
+                    name : 'reason',
+                    mapping : 'reason',
+                    type : 'string',
+                    convert : function(value, rec ) {
+                        var displayValue = value;
+                        switch (rec.type) {
                             case 'Access' :
                                 displayValue = this.i18n._("in Subnet List");
                                 break;
@@ -625,16 +601,45 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                         return displayValue;
                     }.createDelegate(this)
+                }],
+                columns : [{
+                    header : this.i18n._("timestamp"),
+                    width : 130,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : this.i18n._("action"),
+                    width : 90,
+                    sortable : true,
+                    dataIndex : 'action'
+                }, {
+                    header : this.i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'client',
+                    renderer : Ung.SortTypes.asClient
+                }, {
+                    id: 'request',
+                    header : this.i18n._("request"),
+                    width : 200,
+                    sortable : true,
+                    dataIndex : 'request'
+                }, {
+                    header : this.i18n._("reason for action"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'reason'
                 }, {
                     header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
-                    }
+                    dataIndex : 'server',
+                    renderer : Ung.SortTypes.asServer
                 }],
-                autoExpandColumn: 'reason'
+                autoExpandColumn: 'request'
             });
         },
 

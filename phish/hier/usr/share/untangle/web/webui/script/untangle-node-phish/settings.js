@@ -227,6 +227,18 @@ if (!Ung.hasResource["Ung.Phish"]) {
         },
         // Web Event Log
         buildWebEventLog : function() {
+            var asClient = function(value) {
+                var pe = (value == null ? null : value.pipelineEndpoints);
+                return pe === null ? "" : pe.CClientAddr + ":" + pe.CClientPort;
+            };
+            var asServer = function(value) {
+                var pe = (value == null ? null : value.pipelineEndpoints);
+                return pe === null ? "" : pe.SServerAddr + ":" + pe.SServerPort;
+            };
+            var asRequest = function(value) {
+                return value == null || value.url == null ? "" : value.url;
+            }.createDelegate(this);
+            
             this.gridWebEventLog = new Ung.GridEventLog({
                 name : 'Web Event Log',
                 helpSource : 'web_event_log',
@@ -235,11 +247,33 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 eventManagerFn : this.getRpcNode().getPhishHttpEventManager(),
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'actionType'
+                    name : 'displayAction',
+                    mapping : 'actionType',
+                    type : 'string',
+                    convert : function(value) {
+                        switch (value) {
+                            case 0 : // PASSED
+                                return this.i18n._("pass");
+                            default :
+                            case 1 : // BLOCKED
+                                return this.i18n._("block");
+                        }
+                    }.createDelegate(this)
                 }, {
-                    name : 'requestLine'
+                    name : 'client',
+                    mapping : 'requestLine',
+                    sortType : asClient
+                }, {
+                    name : 'server',
+                    mapping : 'requestLine',
+                    sortType : asServer
+                }, {
+                    name : 'request',
+                    mapping : 'requestLine',
+                    sortType : asRequest
                 }],
                 // the list of columns
                 columns : [{
@@ -254,42 +288,25 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : i18n._("action"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'actionType',
-                    renderer : function(value) {
-                        switch (value) {
-                            case 0 : // PASSED
-                                return this.i18n._("pass");
-                            default :
-                            case 1 : // BLOCKED
-                                return this.i18n._("block");
-                        }
-                    }.createDelegate(this)
+                    dataIndex : 'displayAction'
                 }, {
                     header : i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'requestLine',
-                    renderer : function(value) {
-                    	var pe = (value == null ? null : value.pipelineEndpoints);
-                        return pe === null ? "" : pe.CClientAddr + ":" + pe.CClientPort;
-                    }
+                    dataIndex : 'client',
+                    renderer : asClient
                 }, {
                     header : this.i18n._("request"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'requestLine',
-                    renderer : function(value) {
-                        return value == null || value.url == null ? "" : value.url;
-                    }.createDelegate(this)
+                    dataIndex : 'request',
+                    renderer : asRequest
                 }, {
                     header : i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'requestLine',
-                    renderer : function(value) {
-                        var pe = (value == null ? null : value.pipelineEndpoints);
-                        return pe === null ? "" : pe.SServerAddr + ":" + pe.SServerPort;
-                    }
+                    dataIndex : 'server',
+                    renderer : asServer
                 }]
             });
         },
@@ -302,42 +319,14 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 title : this.i18n._("Email Event Log"),
                 // the list of fields
                 fields : [{
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'type'
-                }, {
-                    name : 'actionType'
-                }, {
-                    name : 'clientAddr'
-                }, {
-                    name : 'clientPort'
-                }, {
-                    name : 'serverAddr'
-                }, {
-                    name : 'serverPort'
-                }, {
-                    name : 'subject'
-                }, {
-                    name : 'receiver'
-                }, {
-                    name : 'sender'
-                }],
-                // the list of columns
-                columns : [{
-                    header : i18n._("timestamp"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'timeStamp',
-                    renderer : function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header : i18n._("action"),
-                    width : 90,
-                    sortable : true,
-                    dataIndex : 'actionType',
-                    renderer : function(value, metadata, record ) {
-                        switch (record.data.type) {
+                    name : 'displayAction',
+                    mapping : 'actionType',
+                    type : 'string',
+                    convert : function(value, rec ) {
+                        switch (rec.type) {
                             case 'POP/IMAP' :
                                 switch (value) {
                                     case 0 : // PASSED
@@ -364,13 +353,46 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         return "";
                     }.createDelegate(this)
                 }, {
+                    name : 'client',
+                    mapping : 'clientAddr',
+                    convert : function(value, rec ) {
+                        return value === null ? "" : rec.clientAddr + ":" + rec.clientPort;
+                    }
+                }, {
+                    name : 'server',
+                    mapping : 'serverAddr',
+                    convert : function(value, rec ) {
+                        return value === null ? "" : rec.serverAddr + ":" + rec.serverPort;
+                    }
+                }, {
+                    name : 'subject',
+                    type : 'string'
+                }, {
+                    name : 'receiver',
+                    type : 'string'
+                }, {
+                    name : 'sender',
+                    type : 'string'
+                }],
+                // the list of columns
+                columns : [{
+                    header : i18n._("timestamp"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : i18n._("action"),
+                    width : 90,
+                    sortable : true,
+                    dataIndex : 'displayAction'
+                }, {
                     header : i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'clientAddr',
-                    renderer : function(value, metadata, record ) {
-                        return value === null ? "" : record.data.clientAddr + ":" + record.data.clientPort;
-                    }
+                    dataIndex : 'client'
                 }, {
                     header : this.i18n._("subject"),
                     width : 90,
@@ -390,10 +412,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'serverAddr',
-                    renderer : function(value, metadata, record ) {
-                        return value === null ? "" : record.data.serverAddr + ":" + record.data.serverPort;
-                    }
+                    dataIndex : 'server'
                 }]
             });
         },

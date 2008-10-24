@@ -652,14 +652,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
-                    name : 'start'
+                    name : 'start',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'end',
-                    convert : function(val, rec) {
-                        var date = end;
+                    sortType : Ung.SortTypes.asTimestamp,
+                    convert : function(val) {
+                        var date = val;
                         if (date == null) {
-                            date = new Date();
-                            date.setTime(0);
+                        	date={time:0};
                         }
                         return date;
                     }
@@ -668,16 +669,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name : 'address',
                     convert : function(val, rec) {
-                        return val == null ? "" : val.addr + ":" + rec.port;
+                        return val == null ? "" : val + ":" + rec.port;
                     }
                 }, {
                     name : 'bytesTx',
-                    convert : function(val, rec) {
+                    convert : function(val) {
                         return parseFloat(val) / 1024;
                     }
                 }, {
                     name : 'bytesRx',
-                    convert : function(val, rec) {
+                    convert : function(val) {
                         return parseFloat(val) / 1024;
                     }
                 }],
@@ -709,12 +710,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     sortable : true,
                     dataIndex : 'address'
                 }, {
-                    header : i18n._("Kbytes<br>sent"),
+                    header : i18n._("Kbytes sent"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'bytesTx'
                 }, {
-                    header : i18n._("Kbytes<br>received"),
+                    header : i18n._("Kbytes received"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'bytesRx'

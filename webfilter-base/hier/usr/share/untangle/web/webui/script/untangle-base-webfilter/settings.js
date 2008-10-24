@@ -836,32 +836,26 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Event Log
         buildEventLog : function() {
+            var asClient = function(value) {
+                return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.CClientAddr + ":" + value.pipelineEndpoints.CClientPort;
+            };
+            var asServer = function(value) {
+                return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.SServerAddr + ":" + value.pipelineEndpoints.SServerPort;
+            };
+            var asRequest = function(value) {
+                return (value === null  || value.url === null) ? "" : value.url;
+            };
+            
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'actionType'
-                }, {
-                    name : 'requestLine'
-                }, {
-                    name : 'reason'
-                }],
-                autoExpandColumn: 'requestLine',
-                columns : [{
-                    header : i18n._("timestamp"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'timeStamp',
-                    renderer : function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header : i18n._("action"),
-                    width : 70,
-                    sortable : true,
-                    dataIndex : 'actionType',
-                    renderer : function(value) {
+                    name : 'displayAction',
+                    mapping : 'actionType',
+                    type : 'string',
+                    convert : function(value) {
                         switch (value) {
                             case 0 : // PASSED
                                 return this.i18n._("pass");
@@ -871,28 +865,21 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         }
                     }.createDelegate(this)
                 }, {
-                    header : i18n._("client"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'requestLine',
-                    renderer : function(value) {
-                        return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.CClientAddr + ":" + value.pipelineEndpoints.CClientPort;
-                    }
+                    name : 'client',
+                    mapping : 'requestLine',
+                    sortType : asClient
                 }, {
-                    id: 'requestLine',
-                    header : i18n._("request"),
-                    width : 200,
-                    sortable : true,
-                    dataIndex : 'requestLine',
-                    renderer : function(value) {
-                        return (value === null  || value.url === null) ? "" : value.url;
-                    }
+                    name : 'server',
+                    mapping : 'requestLine',
+                    sortType : asServer
                 }, {
-                    header : i18n._("reason for action"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'reason',
-                    renderer : function(value) {
+                    name : 'request',
+                    mapping : 'requestLine',
+                    sortType : asRequest
+                }, {
+                    name : 'reason',
+                    type : 'string',
+                    convert : function(value) {
                         switch (value) {
                             case 'BLOCK_CATEGORY' :
                                 return this.i18n._("in Categories Block list");
@@ -915,14 +902,46 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 return this.i18n._("no rule applied");
                         }
                     }.createDelegate(this)
+                    
+                }],
+                autoExpandColumn: 'request',
+                columns : [{
+                    header : i18n._("timestamp"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : i18n._("action"),
+                    width : 70,
+                    sortable : true,
+                    dataIndex : 'displayAction'
+                }, {
+                    header : i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'client',
+                    renderer : asClient
+                }, {
+                    id: 'request',
+                    header : i18n._("request"),
+                    width : 200,
+                    sortable : true,
+                    dataIndex : 'request',
+                    renderer : asRequest
+                }, {
+                    header : i18n._("reason for action"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'reason'
                 }, {
                     header : i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'requestLine',
-                    renderer : function(value) {
-                        return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.SServerAddr + ":" + value.pipelineEndpoints.SServerPort;
-                    }
+                    dataIndex : 'server',
+                    renderer : asServer
                 }]
 
             });

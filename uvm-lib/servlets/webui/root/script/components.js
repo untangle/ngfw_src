@@ -375,6 +375,38 @@ Ung.Util.ProtocolCombo=Ext.extend(Ext.form.ComboBox, {
     listClass : 'x-combo-list-small'
 });
 
+/**
+ * @class Ung.SortTypes
+ * @singleton
+ * Defines custom sorting (casting?) comparison functions used when sorting data.
+ */
+Ung.SortTypes = {
+    /**
+     * Timestamp sorting
+     * @param {Mixed} value The value being converted
+     * @return {Number} The comparison value
+     */
+    asTimestamp : function(value){
+        return value.time;
+    },
+    
+    /**
+     * @param {Mixed} value The PipelineEndpoints value being converted
+     * @return {String} The comparison value
+     */
+    asClient : function(value) {
+        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
+    },
+    
+    /**
+     * @param {Mixed} value The PipelineEndpoints value being converted
+     * @return {String} The comparison value
+     */
+    asServer : function(value) {
+        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
+    }};
+
+
 // resources map
 Ung.hasResource = {};
 
@@ -2025,7 +2057,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 field : this.sortField,
                 direction : "ASC"
             } : null,
-            remoteSort : false,
+            remoteSort : true,
             reader : new Ext.data.JsonReader({
                 totalProperty : "totalRecords",
                 root : 'list',
@@ -2626,7 +2658,7 @@ Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
     },
     // the root property
     root : null,
-    // the data
+    // the data 
     data : null,
     // load function for Proxy class
     load : function(params, reader, callback, scope, arg) {
@@ -2642,27 +2674,26 @@ Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
                 list = [];
             }
             var totalRecords = list.length;
-            var pageList = null;
-            if (params.sort != null) {
-                list.sort(function(obj1, obj2) {
-                    var v1 = obj1[params.sort];
-                    var v2 = obj2[params.sort];
-                    var ret = params.dir == "ASC" ? -1 : 1;
-                    return v1 == v2 ? 0 : (v1 < v2) ? ret : -ret;
-                });
-            }
-            if (params.start != null && params.limit != null && list != null) {
-                pageList = list.slice(params.start, params.start + params.limit);
-            } else {
-                pageList = list;
-            }
             if (this.root == null) {
-                readerData = pageList;
+                readerData = list;
             } else {
-                readerData[this.root] = pageList;
+                readerData[this.root] = list;
                 readerData.totalRecords = totalRecords;
             }
             result = reader.readRecords(readerData);
+
+            if (params.sort != null) {
+                var st = scope.fields.get(params.sort).sortType;
+                var fn = function(r1, r2) {
+                    var v1 = st(r1.data[params.sort]), v2 = st(r2.data[params.sort]);
+                    var ret = params.dir == "ASC" ? -1 : 1;
+                    return v1 == v2 ? 0 : (v1 < v2) ? ret : -ret;
+                };
+                result.records.sort(fn);
+            }
+            if (params.start != null && params.limit != null && list != null) {
+                result.records = result.records.slice(params.start, params.start + params.limit);
+            } 
         } catch (e) {
             this.fireEvent("loadexception", this, arg, null, e);
             callback.call(scope, null, arg, false);

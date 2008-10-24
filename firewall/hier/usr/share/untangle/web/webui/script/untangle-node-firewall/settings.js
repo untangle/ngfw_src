@@ -223,13 +223,25 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'timeStamp'
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
+                }, {
+                    name : 'action',
+                    mapping : 'wasBlocked',
+                    type : 'string',
+                    convert : function(value) {
+                        return value ? this.i18n._("blocked") : this.i18n._("passed");
+                    }.createDelegate(this)
                 }, {
                     name : 'ruleIndex'
                 }, {
-                    name : 'pipelineEndpoints'
+                    name : 'client',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asClient
                 }, {
-                    name : 'wasBlocked'
+                    name : 'server',
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asServer
                 }],
                 columns : [{
                     header : i18n._("timestamp"),
@@ -243,22 +255,13 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     header : i18n._("action"),
                     width : 100,
                     sortable : true,
-                    dataIndex : 'wasBlocked',
-                    renderer : function(value) {
-                        if (value) {
-                            return this.i18n._("blocked");
-                        } else {
-                            return this.i18n._("passed");
-                        }
-                    }.createDelegate(this)
+                    dataIndex : 'action'
                 }, {
                     header : i18n._("client"),
                     width : 165,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.CClientAddr + ":" + value.CClientPort;
-                    }
+                    dataIndex : 'client',
+                    renderer : Ung.SortTypes.asClient
                 }, {
                 	id: 'ruleIndex',
                     header : this.i18n._('reason for action'),
@@ -272,10 +275,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     header : i18n._("server"),
                     width : 165,
                     sortable : true,
-                    dataIndex : 'pipelineEndpoints',
-                    renderer : function(value) {
-                        return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
-                    }
+                    dataIndex : 'server',
+                    renderer : Ung.SortTypes.asServer
                 }],
                 autoExpandColumn: 'ruleIndex'
                 

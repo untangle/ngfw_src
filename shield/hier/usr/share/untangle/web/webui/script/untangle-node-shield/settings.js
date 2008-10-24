@@ -191,19 +191,24 @@ if (!Ung.hasResource["Ung.Shield"]) {
 
                 // the list of fields
                 fields : [{
-                    name : 'createDate'
+                    name : 'createDate',
+                    sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'client'
                 }, {
                     name : 'clientIntf'
                 }, {
-                    name : 'reputation'
+                    name : 'reputation',
+                    sortType : Ext.data.SortTypes.asFloat 
                 }, {
-                    name : 'limited'
+                    name : 'limited',
+                    sortType : Ext.data.SortTypes.asInt 
                 }, {
-                    name : 'dropped'
+                    name : 'dropped',
+                    sortType : Ext.data.SortTypes.asInt 
                 }, {
-                    name : 'rejected'
+                    name : 'rejected',
+                    sortType : Ext.data.SortTypes.asInt 
                 }],
                 // the list of columns
                 columns : [{
@@ -221,7 +226,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     dataIndex : 'client'
                 }, {
                     id :'clientIntf',
-                    header : this.i18n._("source") + "<br>" + this.i18n._("interface"),
+                    header : this.i18n._("source interface"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'clientIntf'
@@ -258,7 +263,6 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         return i18n.numberFormat(value);
                     }
                 }],
-                autoExpandColumn: 'clientIntf',
                 refreshList : function() {
                     this.settingsCmp.node.nodeContext.rpcNode.getLogs(this.refreshCallback.createDelegate(this), this.eventDepth);
                 }
