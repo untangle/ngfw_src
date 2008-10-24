@@ -168,13 +168,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
 
             var link = result;
-
-            var iframeWin = main.getIframeWin();
-            window.frames["iframeWin_iframe"].location.href = link;
+	    //var w = window.open('/images/BrandingLogo.gif', 'openvpndownload','width=400,height=200,resizable=yes,toolbar=no, location=no,directories=no,status=no,menubar=no');
+            //w.location.href = link;
 
             // go to next step
             Ext.MessageBox.alert( this.i18n._("Success"), 
-                                  this.i18n._("OpenVPN successfully download your digital key."), 
+                                  "<a href=\""+link+"\" target=\"_blank\">"+this.i18n._("Click here to download your file.")+"</a>", 
                                   this.hide.createDelegate( this ));
         },
 
