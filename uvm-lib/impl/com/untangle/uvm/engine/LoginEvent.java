@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -47,7 +47,7 @@ import org.hibernate.annotations.Type;
         private boolean succeeded;
         private LoginFailureReason reason;
 
-        // constructors -----------------------------------------------------------
+        // constructors --------------------------------------------------------
 
         public LoginEvent() { }
 
@@ -68,7 +68,7 @@ import org.hibernate.annotations.Type;
             this.reason = reason;
         }
 
-        // accessors --------------------------------------------------------------
+        // accessors -----------------------------------------------------------
 
         /**
          * Client address
@@ -152,7 +152,7 @@ import org.hibernate.annotations.Type;
             this.reason = reason;
         }
 
-        // Syslog methods ---------------------------------------------------------
+        // Syslog methods ------------------------------------------------------
 
         public void appendSyslog(SyslogBuilder sb)
         {
@@ -183,7 +183,7 @@ import org.hibernate.annotations.Type;
             }
         }
 
-        // Object methods ---------------------------------------------------------
+        // Object methods ------------------------------------------------------
 
         public String toString()
         {

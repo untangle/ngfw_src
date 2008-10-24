@@ -904,6 +904,7 @@ Description: Spam Blocker Base
 Package: untangle-base-webfilter
 Architecture: all
 Depends: untangle-libuvm, untangle-casing-http
+Conflicts: untangle-node-webfilter (< 5.4.2)
 XB-Display-Name: WebFilter Base
 XB-Untangle-Type: base
 Description: WebFilter Base
