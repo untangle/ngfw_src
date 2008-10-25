@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,6 +20,7 @@ package com.untangle.uvm.reporting;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -37,8 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.untangle.uvm.node.Scanner;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.Scanner;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRParameter;
@@ -91,19 +92,19 @@ public class NodeReporter
 
     public void process(Connection conn) throws Exception
     {
-	
-	if (!tctx.resourceExists(REPORT_FILES_RESOURCE)) {
+
+    if (!tctx.resourceExists(REPORT_FILES_RESOURCE)) {
             logger.info("No reports for: " + nodeName);
-	    return;
-	}
+        return;
+    }
 
         InputStream is = tctx.getResourceAsStream(REPORT_FILES_RESOURCE);
         if (null == is) {
-	    // Shouldn't happen, and exception was already noted in NodeContextImpl.
+        // Shouldn't happen, and exception was already noted in NodeContextImpl.
             return;
-	}
+    }
 
-	logger.info("Beginning generation for: " + nodeName);
+    logger.info("Beginning generation for: " + nodeName);
         nodeDir.mkdir();
 
         File imagesDir = new File(nodeDir, "images");
@@ -128,8 +129,7 @@ public class NodeReporter
                 // XXX String only right now.
                 String paramValue = tok.nextToken();
                 extraParams.put(paramName, paramValue);
-            }
-            else if (type.equalsIgnoreCase("scanner")) {
+            } else if (type.equalsIgnoreCase("scanner")) {
                 try {
                     Class scannerClass = getClass().getClassLoader()
                         .loadClass(resourceOrClassname);
@@ -150,34 +150,16 @@ public class NodeReporter
         String tname = tctx.getNodeDesc().getClassName().replace('.', '/');
         String rdir = tname.substring(0, tname.lastIndexOf("/")) + "/gui/";
 
-        is = tctx.getResourceAsStream(rdir + ICON_ORG);
-        if (is == null) {
-            logger.warn("No icon_org for: " + rdir + ICON_ORG);
-        } else {
-            imagesDir.mkdir();
-            FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_ORG));
-            byte[] buf = new byte[256];
-            int count;
-            while ((count = is.read(buf)) > 0) {
-                fos.write(buf, 0, count);
-            }
-            fos.close();
-            is.close();
+        is = new ByteArrayInputStream(tctx.getMackageDesc().descIcon());
+        imagesDir.mkdir();
+        FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_DESC));
+        byte[] buf = new byte[256];
+        int count;
+        while ((count = is.read(buf)) > 0) {
+            fos.write(buf, 0, count);
         }
-        is = tctx.getResourceAsStream(rdir + ICON_DESC);
-        if (is == null) {
-            logger.warn("No icon_desc for: " + rdir + ICON_DESC);
-        } else {
-            imagesDir.mkdir();
-            FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_DESC));
-            byte[] buf = new byte[256];
-            int count;
-            while ((count = is.read(buf)) > 0) {
-                fos.write(buf, 0, count);
-            }
-            fos.close();
-            is.close();
-        }
+        fos.close();
+        is.close();
 
         // Now do everything else.
         is = tctx.getResourceAsStream("META-INF/report-files");
@@ -326,7 +308,7 @@ public class NodeReporter
         if (mktName.startsWith("Untangle Reports"))
             mktName = "Untangle Platform";
         logger.debug("Writing node name: " + mktName);
-        FileOutputStream fos = new FileOutputStream(new File(nodeDir, "name"));
+        fos = new FileOutputStream(new File(nodeDir, "name"));
         PrintWriter pw = new PrintWriter(fos);
         pw.println(mktName);
         pw.close();
