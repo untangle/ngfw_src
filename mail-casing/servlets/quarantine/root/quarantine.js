@@ -10,6 +10,11 @@ Ung.SimpleHash = function()
 }
 
 Ung.SimpleHash.prototype = {
+    /**
+     * Add an item to internal hash.
+     * @param key The key to update
+     * @param value The value to insert, use null to remove the item.
+     */
     put : function( key, value )
     {
         if ( this.data[key] != null ) {
@@ -18,7 +23,8 @@ Ung.SimpleHash.prototype = {
             if ( value != null ) this.size++;
         }
 
-        this.data[key] = value;
+        if ( value == null ) delete this.data[key];
+        else this.data[key] = value;
     },
 
     clear : function( key )
@@ -419,7 +425,7 @@ Ung.QuarantineSelectionModel = Ext.extend(  Ext.grid.CheckboxSelectionModel, {
     },
 
     onRowDeselect : function( sm, rowIndex, record ) {
-        quarantine.updateActionItem( record.data.mailID, record.data.sender, false );
+        this.quarantine.updateActionItem( record.data.mailID, record.data.sender, false );
     },
 
     constructor : function( config ) {
@@ -435,59 +441,61 @@ Ung.QuarantineSelectionModel = Ext.extend(  Ext.grid.CheckboxSelectionModel, {
 Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
     constructor : function( config ) {
         this.quarantine = config.quarantine;
-
+        
         config.cm = new Ext.grid.ColumnModel([
-        this.quarantine.selectionModel,
-        {
-           header: i18n._( "From" ),
-           dataIndex: 'sender',
-           width: 150
-        },{
-           header: "&nbsp",
-           dataIndex: 'attachmentCount',
-           width: 40
-        },{
-           header: i18n._( "Score" ),
-           dataIndex: 'quarantineDetail',
-           width: 40
-        },{
-           header: i18n._( "Subject" ),
-           dataIndex: 'truncatedSubject',
-           width: 250
-        },{
-           header: i18n._( "Date" ),
-           dataIndex: 'quarantinedDate',
-           width: 100,
-           renderer : function( value ) {
-               var date = new Date();
-               date.setTime( value.time );
-               d = Ext.util.Format.date( date, 'm/d/Y' );
-               t = Ext.util.Format.date( date, 'g:i a' );
-               return d + '<br/>' + t;
-           }
-        },{
-            header: i18n._( "Size (KB)" ),
-           dataIndex: 'size',
-           renderer : function( value ) {
-               return Math.round( (( value + 0.0 ) / 1024) * 10 ) / 10;
-           },
-           width: 60
-        }]);        
+            this.quarantine.selectionModel,
+            {
+                header: i18n._( "From" ),
+                dataIndex: 'sender',
+                width: 150
+            },{
+                header: "<div class='quarantine-attachment-header'>&nbsp</div>",
+                dataIndex: 'attachmentCount',
+                width: 60,
+                align : 'center'
+            },{
+                header: i18n._( "Score" ),
+                dataIndex: 'quarantineDetail',
+                width: 60,
+                align : 'center'
+            },{
+                header: i18n._( "Subject" ),
+                dataIndex: 'truncatedSubject',
+                width: 250
+            },{
+                header: i18n._( "Date" ),
+                dataIndex: 'quarantinedDate',
+                width: 100,
+                renderer : function( value ) {
+                    var date = new Date();
+                    date.setTime( value.time );
+                    d = Ext.util.Format.date( date, 'm/d/Y' );
+                    t = Ext.util.Format.date( date, 'g:i a' );
+                    return d + '<br/>' + t;
+                }
+            },{
+                header: i18n._( "Size (KB)" ),
+                dataIndex: 'size',
+                renderer : function( value ) {
+                    return Math.round( (( value + 0.0 ) / 1024) * 10 ) / 10;
+                },
+                width: 60
+            }]);
 
         config.cm.defaultSortable = true;
-
+        
         config.bbar = new Ext.PagingToolbar({
             pageSize: this.quarantine.pageSize,
             store: this.quarantine.store,
             displayInfo: true,
             displayMsg: i18n._( 'Showing items {0} - {1} of {2}' ),
-            emptyMsg: i18n._( 'No messges to display' ) });
-
-        config.tbar = new Ext.Toolbar({
-        items: [ this.quarantine.releaseButton, this.quarantine.deleteButton, 
-                 this.quarantine.safelistButton ] });
-
+            emptyMsg: i18n._( 'No messges to display' )
+        });
         
+        config.tbar = new Ext.Toolbar({
+            items: [ this.quarantine.releaseButton, 
+                     this.quarantine.deleteButton, 
+                     this.quarantine.safelistButton ]});
         
         config.store = this.quarantine.store;
         config.sm = this.quarantine.selectionModel;
