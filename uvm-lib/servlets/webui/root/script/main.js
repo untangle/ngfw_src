@@ -75,7 +75,7 @@ Ung.Main.prototype = {
                 rpc.upgradeSettings=result;
                 this.postinit();// 5
             }.createDelegate(this));
-            
+
         }.createDelegate(this));
         // get admin manager
         rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
@@ -124,11 +124,11 @@ Ung.Main.prototype = {
             return;
         }
         if(!rpc.upgradeSettings.autoUpgrade) {
-        	//do not upgrade automaticaly
-        	this.startApplication()
+            //do not upgrade automaticaly
+            this.startApplication()
         } else {
             //check for upgrades
-        	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
             rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
                 if (exception) {
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
@@ -145,29 +145,29 @@ Ung.Main.prototype = {
         }
     },
     warnOnUpgrades : function(handler) {
-    	if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
+        if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
             main.warnOnUpgradesCallback(main.upgradeStatus,handler);
-    	} else {
+        } else {
             if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
                 main.warnOnUpgradesCallback(main.upgradeStatus,handler);
             } else {
                 Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
                 rpc.toolboxManager.getUpgradeStatus(function(result, exception,opt,handler) {
-                	main.upgradeLastCheckTime=(new Date()).getTime();
+                    main.upgradeLastCheckTime=(new Date()).getTime();
                     Ext.MessageBox.hide();
                     if (exception) {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message, function (handler) {
-                        	main.upgradeStatus={};
+                            main.upgradeStatus={};
                             main.warnOnUpgradesCallback(main.upgradeStatus,handler);
                         }.createDelegate(this,[handler]));
                         return;
                     }
-                    
+
                     main.upgradeStatus=result;
                     main.warnOnUpgradesCallback(main.upgradeStatus,handler);
                 }.createDelegate(this,[handler],true),true);
-    		}
-    	}
+            }
+        }
     },
     warnOnUpgradesCallback : function (upgradeStatus,handler) {
         if(upgradeStatus!=null) {
@@ -178,11 +178,11 @@ Ung.Main.prototype = {
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
                 return;
             }
-		}
+        }
         handler.call(this);
     },
     startApplication: function() {
-    	Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
 
         this.initExtI18n();
         this.initExtGlobal();
@@ -244,7 +244,7 @@ Ung.Main.prototype = {
             iconCls: 'iconHelp',
             text: i18n._('Help'),
             handler: function() {
-            	var helpSource=main.leftTabs.getActiveTab().helpSource;
+                var helpSource=main.leftTabs.getActiveTab().helpSource;
                 main.openHelp(helpSource);
             }
         });
@@ -255,11 +255,11 @@ Ung.Main.prototype = {
             iconCls: 'iconHelp',
             text: i18n._('What Apps should I use?'),
             show : function() {
-            	Ung.Button.prototype.show.call(this);
+                Ung.Button.prototype.show.call(this);
                 this.getEl().alignTo("contentright","c-c");
-            }, 
+            },
             handler: function() {
-    	        main.warnOnUpgrades(function() {
+                main.warnOnUpgrades(function() {
                      main.openStore("wizard",i18n._('What Apps should I use?'));
                 }.createDelegate(this));
             }.createDelegate(this)
@@ -274,9 +274,9 @@ Ung.Main.prototype = {
             show : function() {
                 Ung.Button.prototype.show.call(this);
                 this.getEl().alignTo("appsItems","c-c",[0,10]);
-            }, 
+            },
             handler: function() {
-            	main.warnOnUpgrades(function() {
+                main.warnOnUpgrades(function() {
                      main.openStore("my_account",i18n._("My Account"));
                 }.createDelegate(this));
             }
@@ -303,24 +303,24 @@ Ung.Main.prototype = {
         Ext.form.TextField.prototype.blankText=i18n._('This field is required');
     },
     initExtGlobal: function(){
-    	
-    	// init quick tips
-    	Ext.QuickTips.init();
 
-    	//hide/unhide Field and label
+        // init quick tips
+        Ext.QuickTips.init();
+
+        //hide/unhide Field and label
         Ext.override(Ext.form.Field, {
             showContainer: function() {
                 this.enable();
                 this.show();
                 this.getEl().up('.x-form-item').setDisplayed(true); // show entire container and children (including label if applicable)
             },
-            
+
             hideContainer: function() {
                 this.disable(); // for validation
                 this.hide();
                 this.getEl().up('.x-form-item').setDisplayed(false); // hide container and children (including label if applicable)
             },
-            
+
             setContainerVisible: function(visible) {
                 if (visible) {
                     this.showContainer();
@@ -405,14 +405,14 @@ Ung.Main.prototype = {
         }
         return rpc.brandingManager;
     },
-    
+
     // get branding settings
     getBrandingBaseSettings : function(forceReload) {
         if (forceReload || rpc.brandingBaseSettings === undefined) {
             rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
         }
         return rpc.brandingBaseSettings;
-    },        
+    },
 
     getLicenseManager : function(forceReload) {
         if (forceReload || rpc.licenseManager === undefined) {
@@ -481,7 +481,7 @@ Ung.Main.prototype = {
                 //tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],
                 html:'<div id="appsItems"></div>',name:'Apps'},
                 {title:i18n._('Config'),
-                //tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],   
+                //tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],
                 html:'<div id="configItems"></div>',
                 helpSource: 'config',
                 name:'Config'}
@@ -496,10 +496,10 @@ Ung.Main.prototype = {
 
         });
     },
-    // open context sensitive help 
+    // open context sensitive help
     openHelp: function(source) {
-		var url = "../library/launcher?";
-		url += "action=help";
+        var url = "../library/launcher?";
+        url += "action=help";
         if(source) {
             url += "&source=" + source;
         }
@@ -508,7 +508,7 @@ Ung.Main.prototype = {
 
     // load policies list
     loadPolicies: function() {
-    	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
         rpc.policyManager.getPolicies( function (result, exception) {
             if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message); return; }
             rpc.policies=result;
@@ -557,9 +557,9 @@ Ung.Main.prototype = {
             }
         }
         if(this.apps.length>0) {
-        	Ext.getCmp("my_account_button").hide();
+            Ext.getCmp("my_account_button").hide();
         } else {
-        	Ext.getCmp("my_account_button").show();
+            Ext.getCmp("my_account_button").show();
         }
     },
     buildNodes: function() {
@@ -591,7 +591,7 @@ Ung.Main.prototype = {
 
     // load the rack view for current policy
     loadRackView: function() {
-    	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
         rpc.toolboxManager.getRackView(function (result, exception) {
             if(exception) { Ext.MessageBox.alert(i18n._("Failed"),exception.message);
                 return;
@@ -613,14 +613,14 @@ Ung.Main.prototype = {
 
     installNode: function(mackageDesc, appItem) {
         if(mackageDesc!==null) {
-        	if(main.getNode(mackageDesc.name)!=null) {
-        		appItem.hide();
-        		return;
-        	}
+            if(main.getNode(mackageDesc.name)!=null) {
+                appItem.hide();
+                return;
+            }
             Ung.AppItem.updateStateForNode(mackageDesc.name, "installing");
             rpc.nodeManager.instantiate(function (result, exception) {
                 if(exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"),exception.message); 
+                    Ext.MessageBox.alert(i18n._("Failed"),exception.message);
                     return;
                 }
             }.createDelegate(this), mackageDesc.name, rpc.currentPolicy);
@@ -657,9 +657,9 @@ Ung.Main.prototype = {
         } else { // the title represents breadcrumbs
             iframeWin.setTitle('<span id="title_' + iframeWin.getId() + '"></span>');
             iframeWin.breadcrumbs = new Ung.Breadcrumbs({
-				renderTo : 'title_' + iframeWin.getId(),
-				elements : title
-			})            
+                renderTo : 'title_' + iframeWin.getId(),
+                elements : title
+            })
         }
         window.frames["iframeWin_iframe"].location.href=url;
     },
@@ -681,7 +681,7 @@ Ung.Main.prototype = {
         for(var i=0;i<this.config.length;i++) {
             var item=this.config[i];
             var appItemCmp=new Ung.ConfigItem({
-            	item:item
+                item:item
             });
         }
     },
@@ -698,7 +698,7 @@ Ung.Main.prototype = {
                 }, {
                     title : i18n._('Networking')
                 }];
-                
+
                 main.openInRightFrame(breadcrumbs, alpacaUrl);
                 break;
             case "administration":
@@ -777,54 +777,54 @@ Ung.Main.prototype = {
         nodeWidget.render(place,position);
         Ung.AppItem.updateStateForNode(node.name, "installed");
         if(startNode) {
-        	main.startNode(nodeWidget)
+            main.startNode(nodeWidget)
         }
     },
     startNode : function(nodeWidget) {
         if(nodeWidget.name!="untangle-node-openvpn") {
             nodeWidget.start();
         } else {
-        	Ext.MessageBox.alert(i18n._("OpenVPN warning"), i18n._("OpenVPN can not be automatically turned on.<br>Please configure its settings first."));
+            Ext.MessageBox.alert(i18n._("OpenVPN warning"), i18n._("OpenVPN can not be automatically turned on.<br>Please configure its settings first."));
         }
     },
     getNode : function(nodeName) {
-    	if(main.nodes) {
+        if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
                 if (nodeName == main.nodes[i].name) {
                     return main.nodes[i];
                     break;
                 }
             }
-    	}
+        }
         return null;
     },
     isNodeRunning : function(nodeName) {
-    	var node = main.getNode(nodeName);
-    	if (node != null) {
-    		 var nodeCmp = Ung.Node.getCmp(node.tid);
-    		 if (nodeCmp != null && nodeCmp.isRunning()){
-    		 	return true;
-    		 }
-    	}
-    	return false;
+        var node = main.getNode(nodeName);
+        if (node != null) {
+             var nodeCmp = Ung.Node.getCmp(node.tid);
+             if (nodeCmp != null && nodeCmp.isRunning()){
+                return true;
+             }
+        }
+        return false;
     },
     // Show - hide Services header in the rack
     updateSeparator: function() {
-    	if(this.nodes.length==0) {
-    	    document.getElementById("racks").style.display="none";
-    	    Ext.getCmp("help_empty_rack").show();
-    	} else {
-    		Ext.getCmp("help_empty_rack").hide();
-    		document.getElementById("racks").style.display="";
+        if(this.nodes.length==0) {
+            document.getElementById("racks").style.display="none";
+            Ext.getCmp("help_empty_rack").show();
+        } else {
+            Ext.getCmp("help_empty_rack").hide();
+            document.getElementById("racks").style.display="";
             var hasUtil=false;
             var hasService=false;
             for(var i=0;i<this.nodes.length;i++) {
                 if(this.nodes[i].md.type!="NODE") {
-            	   hasService=true;
-            	   if(this.nodes[i].md.type!="SERVICE") {
-            	       hasUtil=true
-            	   }
-            	}
+                   hasService=true;
+                   if(this.nodes[i].md.type!="SERVICE") {
+                       hasUtil=true
+                   }
+                }
             }
             document.getElementById("nodes_separator_text").innerHTML=(hasService && hasUtil)?i18n._("Services & Utilities"):hasService?i18n._("Services"):"";
             document.getElementById("nodes_separator").style.display= hasService?"":"none";
@@ -833,85 +833,85 @@ Ung.Main.prototype = {
             } else {
                 document.getElementById("racks").style.backgroundPosition="0px 50px";
             }
-    	}
+        }
     },
     // build policies select box
      buildPolicies: function () {
-		Ext.get('rack_select_container').dom.innerHTML = '';
+        Ext.get('rack_select_container').dom.innerHTML = '';
         var out=[];
-		var selVirtualRackIndex = 0;
-		for(var i=0;i<rpc.policies.length;i++) {
+        var selVirtualRackIndex = 0;
+        for(var i=0;i<rpc.policies.length;i++) {
             selVirtualRackIndex = rpc.policies[i]["default"]===true ? i :selVirtualRackIndex;
-			out.push({text:i18n._(rpc.policies[i].name),value:rpc.policies[i].id,index:i,handler:main.changePolicy});//function(){Ung.Main.changePolicy(arguments)}
+            out.push({text:i18n._(rpc.policies[i].name),value:rpc.policies[i].id,index:i,handler:main.changePolicy});//function(){Ung.Main.changePolicy(arguments)}
 
             if(rpc.policies[i]["default"]===true) {
                 rpc.currentPolicy=rpc.policies[i];
             }
         }
-		out.push('-');
-		out.push({text:'Show Policy Manager',value:'SHOW_POLICY_MANAGER',handler:main.changePolicy});
-		var RackSelect = new Ext.SplitButton({
-			renderTo: 'rack_select_container', // the container id
-		   	text: out[selVirtualRackIndex].text,
-			id:'rack_select',
-		   	//handler: Ung.Main.changePolicy, // handle a click on the button itself
-		   	menu: new Ext.menu.Menu({
-		        items: out//testss
-		   	})
-		});
-		
-		/*
-	        var out=[];	
-	        out.push('<select id="rack_select" onchange="main.changePolicy()">');
-	        for(var i=0;i<rpc.policies.length;i++) {
-	            var selVirtualRack=rpc.policies[i]["default"]===true?"selected":"";
+        out.push('-');
+        out.push({text:'Show Policy Manager',value:'SHOW_POLICY_MANAGER',handler:main.changePolicy});
+        var RackSelect = new Ext.SplitButton({
+            renderTo: 'rack_select_container', // the container id
+            text: out[selVirtualRackIndex].text,
+            id:'rack_select',
+            //handler: Ung.Main.changePolicy, // handle a click on the button itself
+            menu: new Ext.menu.Menu({
+                items: out//testss
+            })
+        });
 
-	            if(rpc.policies[i]["default"]===true) {
-	                rpc.currentPolicy=rpc.policies[i];
-	            }
-	            out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+i18n._(rpc.policies[i].name)+'</option>');
-	        }
-	        out.push('<option value="SHOW_POLICY_MANAGER" class="ungButton">Policy Manager</option>');
-	        out.push('</select>');
-	        Ext.get("rack_select_container").dom.innerHTML=out.join('');
-		*/		
+        /*
+            var out=[];
+            out.push('<select id="rack_select" onchange="main.changePolicy()">');
+            for(var i=0;i<rpc.policies.length;i++) {
+                var selVirtualRack=rpc.policies[i]["default"]===true?"selected":"";
+
+                if(rpc.policies[i]["default"]===true) {
+                    rpc.currentPolicy=rpc.policies[i];
+                }
+                out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+i18n._(rpc.policies[i].name)+'</option>');
+            }
+            out.push('<option value="SHOW_POLICY_MANAGER" class="ungButton">Policy Manager</option>');
+            out.push('</select>');
+            Ext.get("rack_select_container").dom.innerHTML=out.join('');
+        */
         this.loadRackView();
     },
     // change current policy
     changePolicy: function () {
-		if(this.text=='Show Policy Manager'){
-			Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
-				main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
-				main.policyManagerWin.show();
-			});		
-		}else{
-			Ext.getCmp('rack_select').setText(this.text);		
-			rpc.currentPolicy=rpc.policies[this.index];
-			main.loadRackView();		
-		}
-		
+        if(this.text=='Show Policy Manager'){
+            Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
+                main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
+                main.policyManagerWin.show();
+            });
+        }else{
+            Ext.getCmp('rack_select').setText(this.text);
+            rpc.currentPolicy=rpc.policies[this.index];
+            main.loadRackView();
+        }
+
        /* var rack_select=document.getElementById('rack_select');
         if(rack_select.selectedIndex>=0) {
-        	if(rack_select.value == "SHOW_POLICY_MANAGER") {
-        		//select previous value
-				for (index = 0; index < rack_select.options.length; index++) {
-					if (rack_select.options[index].value == rpc.currentPolicy.id) {
-						rack_select.options[index].selected = true;
-						break;
-					}
-				}
+            if(rack_select.value == "SHOW_POLICY_MANAGER") {
+                //select previous value
+                for (index = 0; index < rack_select.options.length; index++) {
+                    if (rack_select.options[index].value == rpc.currentPolicy.id) {
+                        rack_select.options[index].selected = true;
+                        break;
+                    }
+                }
                 Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
                     main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
                     main.policyManagerWin.show();
                 });
-	       	} else {
-	            rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
-	            this.loadRackView();
-        	}
+            } else {
+                rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
+                this.loadRackView();
+            }
         }*/
     }
 };
-=======
+
 // Global Variables
 // the main object instance
 var main=null;
@@ -939,7 +939,7 @@ Ung.Main.prototype = {
     upgradeLastCheckTime: null,
     // init function
     init: function() {
-    	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
+        JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         this.initSemaphore=10;
         rpc = {};
         // get JSONRpcClient
@@ -990,7 +990,7 @@ Ung.Main.prototype = {
                 rpc.upgradeSettings=result;
                 this.postinit();// 5
             }.createDelegate(this));
-            
+
         }.createDelegate(this));
         // get admin manager
         rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
@@ -1039,15 +1039,15 @@ Ung.Main.prototype = {
             return;
         }
         if(!rpc.upgradeSettings.autoUpgrade) {
-        	//do not upgrade automaticaly
-        	this.startApplication()
+            //do not upgrade automaticaly
+            this.startApplication()
         } else {
             //check for upgrades
-        	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
             rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
-            	if(Ung.Util.handleException(exception,function() {
-            		this.startApplication.defer(1500,this);
-            	}.createDelegate(this),"alert")) return;
+                if(Ung.Util.handleException(exception,function() {
+                    this.startApplication.defer(1500,this);
+                }.createDelegate(this),"alert")) return;
                 var upgradeStatus=result;
                 if(!upgradeStatus.upgrading && upgradeStatus.upgradesAvailable) {
                     this.upgrade();
@@ -1058,15 +1058,15 @@ Ung.Main.prototype = {
         }
     },
     warnOnUpgrades : function(handler) {
-    	if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
+        if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
             main.warnOnUpgradesCallback(main.upgradeStatus,handler);
-    	} else {
+        } else {
             if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
                 main.warnOnUpgradesCallback(main.upgradeStatus,handler);
             } else {
                 Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
                 rpc.toolboxManager.getUpgradeStatus(function(result, exception,opt,handler) {
-                	main.upgradeLastCheckTime=(new Date()).getTime();
+                    main.upgradeLastCheckTime=(new Date()).getTime();
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception, function() {
                         Ext.MessageBox.alert(i18n._("Failed"), exception.message, function (handler) {
@@ -1074,12 +1074,12 @@ Ung.Main.prototype = {
                             main.warnOnUpgradesCallback(main.upgradeStatus,handler);
                         }.createDelegate(this,[handler]));
                     }.createDelegate(this),"noAlert")) return;
-                    
+
                     main.upgradeStatus=result;
                     main.warnOnUpgradesCallback(main.upgradeStatus,handler);
                 }.createDelegate(this,[handler],true),true);
-    		}
-    	}
+            }
+        }
     },
     warnOnUpgradesCallback : function (upgradeStatus,handler) {
         if(upgradeStatus!=null) {
@@ -1090,11 +1090,11 @@ Ung.Main.prototype = {
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
                 return;
             }
-		}
+        }
         handler.call(this);
     },
     startApplication: function() {
-    	Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
 
         this.initExtI18n();
         this.initExtGlobal();
@@ -1156,7 +1156,7 @@ Ung.Main.prototype = {
             iconCls: 'iconHelp',
             text: i18n._('Help'),
             handler: function() {
-            	var helpSource=main.leftTabs.getActiveTab().helpSource;
+                var helpSource=main.leftTabs.getActiveTab().helpSource;
                 main.openHelp(helpSource);
             }
         });
@@ -1167,11 +1167,11 @@ Ung.Main.prototype = {
             iconCls: 'iconHelp',
             text: i18n._('What Apps should I use?'),
             show : function() {
-            	Ung.Button.prototype.show.call(this);
+                Ung.Button.prototype.show.call(this);
                 this.getEl().alignTo("contentright","c-c");
-            }, 
+            },
             handler: function() {
-    	        main.warnOnUpgrades(function() {
+                main.warnOnUpgrades(function() {
                      main.openStore("wizard",i18n._('What Apps should I use?'));
                 }.createDelegate(this));
             }.createDelegate(this)
@@ -1186,9 +1186,9 @@ Ung.Main.prototype = {
             show : function() {
                 Ung.Button.prototype.show.call(this);
                 this.getEl().alignTo("appsItems","c-c",[0,10]);
-            }, 
+            },
             handler: function() {
-            	main.warnOnUpgrades(function() {
+                main.warnOnUpgrades(function() {
                      main.openStore("my_account",i18n._("My Account"));
                 }.createDelegate(this));
             }
@@ -1215,24 +1215,24 @@ Ung.Main.prototype = {
         Ext.form.TextField.prototype.blankText=i18n._('This field is required');
     },
     initExtGlobal: function(){
-    	
-    	// init quick tips
-    	Ext.QuickTips.init();
 
-    	//hide/unhide Field and label
+        // init quick tips
+        Ext.QuickTips.init();
+
+        //hide/unhide Field and label
         Ext.override(Ext.form.Field, {
             showContainer: function() {
                 this.enable();
                 this.show();
                 this.getEl().up('.x-form-item').setDisplayed(true); // show entire container and children (including label if applicable)
             },
-            
+
             hideContainer: function() {
                 this.disable(); // for validation
                 this.hide();
                 this.getEl().up('.x-form-item').setDisplayed(false); // hide container and children (including label if applicable)
             },
-            
+
             setContainerVisible: function(visible) {
                 if (visible) {
                     this.showContainer();
@@ -1296,55 +1296,55 @@ Ung.Main.prototype = {
     },
     getLoggingManager : function(forceReload) {
         if (forceReload || rpc.loggingManager === undefined) {
-        	try {
+            try {
                 rpc.loggingManager = rpc.jsonrpc.RemoteUvmContext.loggingManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-                
+
         }
         return rpc.loggingManager;
     },
 
     getAppServerManager : function(forceReload) {
         if (forceReload || rpc.appServerManager === undefined) {
-        	try {
+            try {
                 rpc.appServerManager = rpc.jsonrpc.RemoteUvmContext.appServerManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-            
+
         }
         return rpc.appServerManager;
     },
 
     getBrandingManager : function(forceReload) {
         if (forceReload || rpc.brandingManager === undefined) {
-        	try {
+            try {
                 rpc.brandingManager = rpc.jsonrpc.RemoteUvmContext.brandingManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-            
+
         }
         return rpc.brandingManager;
     },
-    
+
     // get branding settings
     getBrandingBaseSettings : function(forceReload) {
         if (forceReload || rpc.brandingBaseSettings === undefined) {
             rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
         }
         return rpc.brandingBaseSettings;
-    },        
+    },
 
     getLicenseManager : function(forceReload) {
-    	// default functionality is to reload license manager as it might change in uvm
-    	if (typeof forceReload === 'undefined') {
-    		forceReload = true;
-    	}
+        // default functionality is to reload license manager as it might change in uvm
+        if (typeof forceReload === 'undefined') {
+            forceReload = true;
+        }
         if (forceReload || rpc.licenseManager === undefined) {
-        	try {
+            try {
                 rpc.licenseManager = rpc.jsonrpc.RemoteUvmContext.licenseManager()
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
@@ -1355,7 +1355,7 @@ Ung.Main.prototype = {
 
     getAppAddressBook : function(forceReload) {
         if (forceReload || rpc.appAddressBook === undefined) {
-        	try {
+            try {
                 rpc.appAddressBook = rpc.jsonrpc.RemoteUvmContext.appAddressBook();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
@@ -1366,11 +1366,11 @@ Ung.Main.prototype = {
 
     getMailSender : function(forceReload) {
         if (forceReload || rpc.mailSender === undefined) {
-        	try {
+            try {
                 rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
-        	} catch (e) {
-        		Ung.Util.rpcExHandler(e);
-        	}
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
         }
         return rpc.mailSender;
     },
@@ -1412,7 +1412,7 @@ Ung.Main.prototype = {
                 tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],
                 html:'<div id="appsItems"></div>',name:'Apps'},
                 {title:i18n._('Config'),
-                tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],   
+                tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],
                 html:'<div id="configItems"></div>',
                 helpSource: 'config',
                 name:'Config'}
@@ -1427,10 +1427,10 @@ Ung.Main.prototype = {
 
         });
     },
-    // open context sensitive help 
+    // open context sensitive help
     openHelp: function(source) {
-		var url = "../library/launcher?";
-		url += "action=help";
+        var url = "../library/launcher?";
+        url += "action=help";
         if(source) {
             url += "&source=" + source;
         }
@@ -1439,7 +1439,7 @@ Ung.Main.prototype = {
 
     // load policies list
     loadPolicies: function() {
-    	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
         rpc.policyManager.getPolicies( function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.policies=result;
@@ -1488,9 +1488,9 @@ Ung.Main.prototype = {
             }
         }
         if(this.apps.length>0) {
-        	Ext.getCmp("my_account_button").hide();
+            Ext.getCmp("my_account_button").hide();
         } else {
-        	Ext.getCmp("my_account_button").show();
+            Ext.getCmp("my_account_button").show();
         }
     },
     buildNodes: function() {
@@ -1522,7 +1522,7 @@ Ung.Main.prototype = {
 
     // load the rack view for current policy
     loadRackView: function() {
-    	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
         rpc.toolboxManager.getRackView(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
@@ -1540,10 +1540,10 @@ Ung.Main.prototype = {
 
     installNode: function(mackageDesc, appItem) {
         if(mackageDesc!==null) {
-        	if(main.getNode(mackageDesc.name)!=null) {
-        		appItem.hide();
-        		return;
-        	}
+            if(main.getNode(mackageDesc.name)!=null) {
+                appItem.hide();
+                return;
+            }
             Ung.AppItem.updateStateForNode(mackageDesc.name, "installing");
             rpc.nodeManager.instantiate(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
@@ -1581,9 +1581,9 @@ Ung.Main.prototype = {
         } else { // the title represents breadcrumbs
             iframeWin.setTitle('<span id="title_' + iframeWin.getId() + '"></span>');
             iframeWin.breadcrumbs = new Ung.Breadcrumbs({
-				renderTo : 'title_' + iframeWin.getId(),
-				elements : title
-			})            
+                renderTo : 'title_' + iframeWin.getId(),
+                elements : title
+            })
         }
         window.frames["iframeWin_iframe"].location.href=url;
     },
@@ -1605,7 +1605,7 @@ Ung.Main.prototype = {
         for(var i=0;i<this.config.length;i++) {
             var item=this.config[i];
             var appItemCmp=new Ung.ConfigItem({
-            	item:item
+                item:item
             });
         }
     },
@@ -1622,7 +1622,7 @@ Ung.Main.prototype = {
                 }, {
                     title : i18n._('Networking')
                 }];
-                
+
                 main.openInRightFrame(breadcrumbs, alpacaUrl);
                 break;
             case "administration":
@@ -1701,54 +1701,54 @@ Ung.Main.prototype = {
         nodeWidget.render(place,position);
         Ung.AppItem.updateStateForNode(node.name, "installed");
         if(startNode) {
-        	main.startNode(nodeWidget)
+            main.startNode(nodeWidget)
         }
     },
     startNode : function(nodeWidget) {
         if(nodeWidget.name!="untangle-node-openvpn") {
             nodeWidget.start();
         } else {
-        	Ext.MessageBox.alert(i18n._("OpenVPN warning"), i18n._("OpenVPN can not be automatically turned on.<br>Please configure its settings first."));
+            Ext.MessageBox.alert(i18n._("OpenVPN warning"), i18n._("OpenVPN can not be automatically turned on.<br>Please configure its settings first."));
         }
     },
     getNode : function(nodeName) {
-    	if(main.nodes) {
+        if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
                 if (nodeName == main.nodes[i].name) {
                     return main.nodes[i];
                     break;
                 }
             }
-    	}
+        }
         return null;
     },
     isNodeRunning : function(nodeName) {
-    	var node = main.getNode(nodeName);
-    	if (node != null) {
-    		 var nodeCmp = Ung.Node.getCmp(node.tid);
-    		 if (nodeCmp != null && nodeCmp.isRunning()){
-    		 	return true;
-    		 }
-    	}
-    	return false;
+        var node = main.getNode(nodeName);
+        if (node != null) {
+             var nodeCmp = Ung.Node.getCmp(node.tid);
+             if (nodeCmp != null && nodeCmp.isRunning()){
+                return true;
+             }
+        }
+        return false;
     },
     // Show - hide Services header in the rack
     updateSeparator: function() {
-    	if(this.nodes.length==0) {
-    	    document.getElementById("racks").style.display="none";
-    	    Ext.getCmp("help_empty_rack").show();
-    	} else {
-    		Ext.getCmp("help_empty_rack").hide();
-    		document.getElementById("racks").style.display="";
+        if(this.nodes.length==0) {
+            document.getElementById("racks").style.display="none";
+            Ext.getCmp("help_empty_rack").show();
+        } else {
+            Ext.getCmp("help_empty_rack").hide();
+            document.getElementById("racks").style.display="";
             var hasUtil=false;
             var hasService=false;
             for(var i=0;i<this.nodes.length;i++) {
                 if(this.nodes[i].md.type!="NODE") {
-            	   hasService=true;
-            	   if(this.nodes[i].md.type!="SERVICE") {
-            	       hasUtil=true
-            	   }
-            	}
+                   hasService=true;
+                   if(this.nodes[i].md.type!="SERVICE") {
+                       hasUtil=true
+                   }
+                }
             }
             document.getElementById("nodes_separator_text").innerHTML=(hasService && hasUtil)?i18n._("Services & Utilities"):hasService?i18n._("Services"):"";
             document.getElementById("nodes_separator").style.display= hasService?"":"none";
@@ -1757,7 +1757,7 @@ Ung.Main.prototype = {
             } else {
                 document.getElementById("racks").style.backgroundPosition="0px 50px";
             }
-    	}
+        }
     },
     // build policies select box
     buildPolicies: function () {
@@ -1780,22 +1780,22 @@ Ung.Main.prototype = {
     changePolicy: function () {
         var rack_select=document.getElementById('rack_select');
         if(rack_select.selectedIndex>=0) {
-        	if(rack_select.value == "SHOW_POLICY_MANAGER") {
-        		//select previous value
-				for (index = 0; index < rack_select.options.length; index++) {
-					if (rack_select.options[index].value == rpc.currentPolicy.id) {
-						rack_select.options[index].selected = true;
-						break;
-					}
-				}
+            if(rack_select.value == "SHOW_POLICY_MANAGER") {
+                //select previous value
+                for (index = 0; index < rack_select.options.length; index++) {
+                    if (rack_select.options[index].value == rpc.currentPolicy.id) {
+                        rack_select.options[index].selected = true;
+                        break;
+                    }
+                }
                 Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
                     main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
                     main.policyManagerWin.show();
                 });
-	       	} else {
-	            rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
-	            this.loadRackView();
-        	}
+            } else {
+                rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
+                this.loadRackView();
+            }
         }
     }
 };
