@@ -53,4 +53,9 @@ public class Constants
     /* Unable to start the openvpn server, may just be the other end is
      * not started */
     static final int START_ERROR         = 251;
+
+    /**
+     * The loaded file is not a valid OpenVPN client configuration
+     */
+    static final int INVALID_FILE_ERROR  = 247;
 }

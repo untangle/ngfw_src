@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 
 import java.util.List;
@@ -45,8 +46,10 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.ParseException;
 
 import com.untangle.node.openvpn.Constants;
+import com.untangle.node.openvpn.DownloadException;
+import com.untangle.node.openvpn.StartException;
+import com.untangle.node.openvpn.InvalidFileException;
 import com.untangle.node.openvpn.VpnNode;
-
 
 /**
  * Servlet used to upload a client configuration file.
@@ -82,9 +85,11 @@ public class ClientSetup extends HttpServlet
             return;
         }
         
+        PrintWriter writer = response.getWriter();
+
         if ( !ServletFileUpload.isMultipartContent( request )) {
             logger.debug( "User has invalid post." );
-            response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Please access this through the admin client." );
+            writer.write( "invalid request, 1" );
             return;
         }
         
@@ -95,7 +100,7 @@ public class ClientSetup extends HttpServlet
             items = upload.parseRequest( request );
         } catch ( FileUploadException e ) {
             logger.warn( "Unable to parse the request", e );
-            response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Please access this through the admin client." );
+            writer.write( "invalid request, 2" );
             return;
         }
         
@@ -110,7 +115,7 @@ public class ClientSetup extends HttpServlet
 
         if ( inputStream == null ) {
             logger.info( "ClientSetup is missing the client file." );
-            response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Please access this through the admin client." );
+            writer.write( "invalid request, 3" );
             return;
         }
             
@@ -119,7 +124,7 @@ public class ClientSetup extends HttpServlet
         OutputStream outputStream = null;
         try {
             temp = File.createTempFile( "openvpn-client", ".zip" );
-
+            temp.deleteOnExit();
             outputStream = new FileOutputStream( temp );
             
             byte[] data = new byte[1024];
@@ -127,7 +132,7 @@ public class ClientSetup extends HttpServlet
             while (( len = inputStream.read( data )) > 0 ) outputStream.write( data, 0, len );
         } catch ( IOException e ) {
             logger.warn( "Unable to validate client file.", e  );
-            response.sendError( HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Unable to load client configuration." );
+            writer.write( "server error" );
             return;
         } finally {
             try {
@@ -145,13 +150,27 @@ public class ClientSetup extends HttpServlet
         
         try {
             node.installClientConfig( temp.getPath());
+        } catch ( DownloadException e ) {
+            logger.warn( "Unable to download client configuration", e );
+            writer.write( "installation failure: download" );
+            return;
+        } catch ( StartException e ) {
+            logger.warn( "Unable to download client configuration", e );
+            writer.write( "installation failure: connect" );
+            return;
+        } catch ( InvalidFileException e ) {
+            logger.warn( "Unable to download client configuration", e );
+            writer.write( "installation failure: invalid file" );
+            return;
         } catch ( Exception e ) {
             logger.warn( "Unable to install the client configuration", e );
-            response.sendError( HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Unable to install the client configuration." );
+            writer.write( "installation failure: unknown" );
             return;
+        } finally {
+            
         }
 
-        response.getWriter().write( "success" );
+        writer.write( "success" );
     }
 
     private static synchronized ServletFileUpload getServletFileUpload()

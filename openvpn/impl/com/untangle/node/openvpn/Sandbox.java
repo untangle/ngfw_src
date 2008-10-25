@@ -145,6 +145,9 @@ class Sandbox
             case Constants.START_ERROR:
                 throw new StartException( "Test connection with OpenVPN server failed." );
 
+            case Constants.INVALID_FILE_ERROR:
+                throw new InvalidFileException( "Invalid OpenVPN Client configuration" );
+
             default:
                 logger.warn( "Unable to install client configuration", e );
                 throw new NodeException( "Unable to install client configuration" );

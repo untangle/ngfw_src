@@ -21,6 +21,7 @@ TEST_FAILED=-5
 DOWNLOAD_ERROR=-6
 MISSING_FILE_ERROR=-7
 ERROR_INTERNAL=-8
+INVALID_FILE_ERROR=-9
 
 ## Amount of time to spend on each download
 DOWNLOAD_TIMEOUT=6
@@ -49,11 +50,12 @@ logFile=@UVM_LOG@/openvpn.log
 
 copyLocalFile()
 {
-    if [ !-f "${localPath}" ]; then
+    if [ ! -f "${localPath}" ]; then
         echo "[`date`,get-client] Unable to find the file: ${localPath}"
         exit ${MISSING_FILE_ERROR}
     fi
 
+    echo "[`date`,get-client] cp '${localPath}' '${destination}'"
     cp "${localPath}" "${destination}"
 }
 
@@ -67,24 +69,28 @@ downloadClient()
 
 installClient()
 {
-    local t_output=`mktemp -d || exit -3`
+    local t_output
+
+    t_output=`mktemp -d || exit -3`
     
-    unzip ${destination} -d ${t_output} || ( ${RM_CMD} -rf ${t_output};  exit -4 )
+    echo "[`date`,get-client] unzip '${destination}' -d '${t_output}'"
+    unzip ${destination} -d ${t_output} || { ${RM_CMD} -rf ${t_output};  exit ${INVALID_FILE_ERROR} ; }
     
     ## Cleanup the old files
     ## A little risky, but hey
     rm -rf /etc/openvpn
-    mkdir -p /etc/openvpn || ( ${RM_CMD} -rf ${t_output};  exit -4 )
+    mkdir -p /etc/openvpn || { ${RM_CMD} -rf ${t_output};  exit ${ERROR_INTERNAL} ; }
 
     ## Copy in the necessary files
     cp ${t_output}/untangle-vpn/*.conf ${OPENVPN_CONF_DIR}/client.conf \
-        || ( ${RM_CMD} -rf ${t_output};  exit -4 )
-
+    || { ${RM_CMD} -rf ${t_output} ; exit ${INVALID_FILE_ERROR} ; }
+    
     ## Update the configuration file to log to a normal place
-    sed -i -e "\$a log-append ${logFile}" ${OPENVPN_CONF_DIR}/client.conf 
+    sed -i -e "\$a log-append ${logFile}" ${OPENVPN_CONF_DIR}/client.conf \
+        || { ${RM_CMD} -f ${OPENVPN_CONF_DIR}/client.conf ; ${RM_CMD} -rf ${t_output};  exit ${MISSING_FILE_ERROR} ; }
 
     cp -r ${t_output}/untangle-vpn/untangle-vpn ${OPENVPN_CONF_DIR}/untangle-vpn \
-        || ( ${RM_CMD} -f ${OPENVPN_CONF_DIR}/client.conf ; ${RM_CMD} -rf ${t_output};  exit -4 )
+        || { ${RM_CMD} -f ${OPENVPN_CONF_DIR}/client.conf ; ${RM_CMD} -rf ${t_output};  exit ${MISSING_FILE_ERROR} ; }
     
     ## Cleanup
     ${RM_CMD} -rf ${t_output}
@@ -92,16 +98,23 @@ installClient()
 
 testInstall()
 {
-    /etc/init.d/openvpn start
     local t
     local t_success
+    local t_marker
+
+    t_marker="`date`,get-client test-install-marker"
+    echo "${t_marker}"
+    echo ""
+    sleep 1
+
+    /etc/init.d/openvpn start
 
     for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
-        if [ -n "`grep \"Initialization Sequence Completed\" ${logFile}`" ]; then
+        awk --assign marker=false "/${t_marker}/ { marker = true } ; /Initialization Sequence Completed/ { if ( marker == true ) exit 1 }" "${logFile}" || {
             t_success="true"
-            break;
-        fi
-
+            break
+        }
+        
         sleep ${TEST_DELAY}
     done
     

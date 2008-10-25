@@ -410,12 +410,26 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         completeUploadClient : function( form, action, handler )
         {
-            this.node.completeConfig( this.c_completeConfig.createDelegate( this, [ handler ], true ));
+            var response = action.result;
+
+            if ( response == "success" ) {
+                this.node.completeConfig( this.c_completeConfig.createDelegate( this, [ handler ], true ));
+            } else {
+                var message = this.i18n._("Unable to install OpenVPN client.");
+                if ( response == 'installation failure: connect' ||
+                     response == 'installation failure: unknown' ) {
+                    message = this.i18n._("Unable to verify connection to server.");
+                } else if ( response == 'installation failure: invalid file' ) {
+                    message = this.i18n._("The selected configuration file is not valid.");
+                }
+
+                Ext.MessageBox.alert(i18n._( "Failed" ), message );
+            }
         },
         
         failUploadClient : function( form, action )
         {
-            Ext.MessageBox.alert(i18n._( "Failed" ), i18n._( "Unable to install client'." ));
+            Ext.MessageBox.alert(i18n._( "Failed" ), i18n._( "Unable to install client." ));
         },
 
         c_completeConfig : function( result, exception, foo, handler )
