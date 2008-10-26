@@ -1218,7 +1218,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             var network = this.panel.find( "name", "network" )[0].getValue();
             var netmask = this.panel.find( "name", "netmask" )[0].getRawValue();
             var enableDhcpServer = this.panel.find( "name", "enableDhcpServer" )[0].getValue();
-            rpc.networkManager.setWizardNatEnabled( delegate, network, enableDhcpServer );
+            rpc.networkManager.setWizardNatEnabled( delegate, network, netmask, enableDhcpServer );
         }
     },
 
