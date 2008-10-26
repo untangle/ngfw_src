@@ -125,7 +125,7 @@ public interface RemoteNetworkManager
     String getPublicAddress();
 
     /* Allow the setup wizard to setup NAT properly, or disable it. */
-    void setWizardNatEnabled(IPaddr address, IPaddr netmask);
+    void setWizardNatEnabled(IPaddr address, IPaddr netmask, boolean enableDhcpServer );
     void setWizardNatDisabled();
 
     /* Returns true if address is local to the edgeguard */

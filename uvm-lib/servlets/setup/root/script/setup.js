@@ -10,8 +10,9 @@ var rpc = {};
 
 Ung.SetupWizard.LabelWidth = 200;
 Ung.SetupWizard.LabelWidth2 = 214;
-Ung.SetupWizard.LabelWidth3 = 70;
+Ung.SetupWizard.LabelWidth3 = 120;
 Ung.SetupWizard.LabelWidth4 = 100;
+
 
 Ung.SetupWizard.EmailTester = Ext.extend( Object,
 {
@@ -495,21 +496,27 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                dataIndex : 'status',
                sortable : false,
                renderer : function( value ) {
-                   return "<div class='draggable-interface'>" + value[0] + " : " + value[1] + "</div>";
+                   var divClass = "draggable-disabled-interface";
+                   var status = i18n._( "unknown" );
+                   
+                   if ( value[1] == "connected" ) {
+                       status = i18n._( "connected" );
+                       divClass = "draggable-enabled-interface";
+                   }
+                   
+                   return "<div class='" + divClass + "'>" + value[0] + " : " + status + "</div>";
                },
                width : 400
             }])
         });
     
         var panel = new Ext.Panel({
-			defaults : { cls : 'noborder' },
-            items : [
-				{
-					html : '<h2 class="wizardTitle">'+i18n._('Identify Network Cards')+'<h2>',
-					border : false
-				},
-				{
-				xtype : 'label',
+	    defaults : { cls : 'noborder' },
+            items : [{
+		html : '<h2 class="wizardTitle">'+i18n._('Identify Network Cards')+'<h2>',
+		border : false
+	    },{
+		xtype : 'label',
                 html : i18n._( 'This step can help you identify your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. You can also drag and drop the interfaces to remap them at this time.' ),
                 border : false
             }, this.interfaceGrid ]
@@ -1078,31 +1085,31 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             defaultType : 'fieldset',
             defaults : {
                 autoHeight : true,
-		labelWidth : Ung.SetupWizard.LabelWidth3			
+                labelWidth : Ung.SetupWizard.LabelWidth3
             },
             items : [{
                 xtype : 'label',
                 html : '<h2 class="wizardTitle">'+i18n._( "Configure your Internal Network Interface" )+'</h2>'
             },{
-                //title : i18n._( 'Transparent Bridge' ),
-                cls : 'noborder',
+                cls : 'noborder wizard-internal-network',
                 items : [{
                     xtype : 'radio',
                     name : 'bridgeInterfaces',
                     inputValue : 'bridge',
                     boxLabel : i18n._('Transparent Bridge'),
-                    ctCls : 'largeOption',					
+                    ctCls : 'largeOption',
                     hideLabel : 'true',
                     checked : true
                 },{
                     xtype : 'label',
-                    html : '<div class="wizardlabelmargin1">'+i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.')+'</div>'
+                    html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.') + "</div>"
                 },{
                     xtype : 'label',
-                    html : '<img class="wizardlabelmargin2" src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/bridge.png"/>'
+                    cls : 'wizard-network-image',
+                    html : '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/bridge.png"/>'
                 }]
             },{
-                cls : 'noborder tallMargin',	
+                cls : 'noborder  wizard-internal-network',
                 items : [{
                     xtype : 'radio',
                     name : 'bridgeInterfaces',
@@ -1119,25 +1126,24 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     }
                 },{
                     xtype : 'label',
-                    html : '<div class="wizardlabelmargin1">'+i18n._('This is recommended if the external port is plugged into your internet  connection. This enables NAT on the Internal Interface and DHCP.')+'</div>'
-                },{
-                    xtype : 'label',
-                    html : '<img class="wizardlabelmargin3" src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/router.png"/>'
+                    html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into your internet  connection. This enables NAT on the Internal Interface and DHCP.') + "</div>"
                 },{
                     name : 'network',
                     xtype : 'textfield',
-                    fieldLabel : i18n._('Network'),
+                    itemCls : 'wizard-internal-network-address spacingMargin1',
+                    fieldLabel : i18n._('Internal Address'),
                     vText : i18n._('Please enter a valid Network  Address'),
                     vtype : 'ipCheck',
                     allowBlank : false,
                     msgTarget : 'side',
-                    maskRe : /(\d+|\.)/,					
+                    maskRe : /(\d+|\.)/,
                     disabled : true,
                     value : "192.168.1.1",
                     validationEvent : 'blur'
                 },{
 		    name : "netmask",
-		    fieldLabel : i18n._( "Netmask" ),
+                    itemCls : 'wizard-internal-network-address',
+		    fieldLabel : i18n._( "Internal Netmask" ),
 		    xtype : 'combo',
                     store : Ung.SetupWizard.NetmaskData,
                     mode : 'local',
@@ -1147,8 +1153,19 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     listWidth : 125,
                     disabled : true,
                     editable : false
+                },{
+                    xtype : 'checkbox',
+                    hideLabel : true,
+                    checked : true,
+                    name : 'enableDhcpServer',
+                    itemCls : 'wizardlabelmargin6',
+                    boxLabel : i18n._("Enable DHCP Server (default)"),
+                },{
+                    xtype : 'label',
+                    cls : 'wizard-network-image',
+                    html : '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/router.png"/>'
                 }]
-           }]
+            }]
         });
         
         this.card = {
@@ -1200,7 +1217,8 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
         } else {
             var network = this.panel.find( "name", "network" )[0].getValue();
             var netmask = this.panel.find( "name", "netmask" )[0].getRawValue();
-            rpc.networkManager.setWizardNatEnabled( delegate, network, netmask );
+            var enableDhcpServer = this.panel.find( "name", "enableDhcpServer" )[0].getValue();
+            rpc.networkManager.setWizardNatEnabled( delegate, network, enableDhcpServer );
         }
     },
 
@@ -1406,7 +1424,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         if ( !this.isInitialized ) {
             var hostname = Ung.SetupWizard.CurrentValues.addressSettings.hostName;
             if ( hostname == null ) hostname = "example.com";
-            this.panel.find( "name", "from-address-textfield" )[0].setValue( "untangle@" + hostname );
+            this.panel.find( "name", "from-address-textfield" )[0].setValue( "gateway@" + hostname );
         }
 
         this.isInitialized = true;
@@ -1611,7 +1629,7 @@ Ung.Setup = {
         if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 6 );
+                this.wizard.goToPage( 5 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
             

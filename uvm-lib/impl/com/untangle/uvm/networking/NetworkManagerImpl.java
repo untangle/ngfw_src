@@ -400,23 +400,18 @@ public class NetworkManagerImpl implements LocalNetworkManager
     }
 
 
-    public void setWizardNatEnabled( IPaddr address, IPaddr netmask )
+    public void setWizardNatEnabled( IPaddr address, IPaddr netmask, boolean enableDhcpServer )
     {
         try{
-            boolean hasChanged = true;
-
-            if ( NetworkUtil.DEFAULT_NAT_ADDRESS.equals( address ) &&
-                 NetworkUtil.DEFAULT_NAT_NETMASK.equals( netmask )) {
-                hasChanged = false;
-            }
-
             logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
-
+            logger.debug( "use-dhcp: " + enableDhcpServer );
+            
             /* Make a synchronous request */
             try {
                 XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
                                                      "wizard_internal_interface_nat", null,
-                                                     address.toString(), netmask.toString());
+                                                     address.toString(), netmask.toString(),
+                                                     enableDhcpServer );
             } catch ( Exception e ) {
                 logger.warn( "Unable to enable NAT.", e );
             }

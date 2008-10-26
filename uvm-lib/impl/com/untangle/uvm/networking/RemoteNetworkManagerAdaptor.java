@@ -152,9 +152,9 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
     }
 
     /* Allow the setup wizard to setup NAT properly, or disable it. */
-    public void setWizardNatEnabled( IPaddr address, IPaddr netmask )
+    public void setWizardNatEnabled( IPaddr address, IPaddr netmask, boolean enableDhcpServer )
     {
-        lnm.setWizardNatEnabled( address, netmask );
+        lnm.setWizardNatEnabled( address, netmask, enableDhcpServer );
     }
 
     public void setWizardNatDisabled()

@@ -136,7 +136,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     },
                     items : [{
                         xtype : 'label',
-                        html : this.i18n._( '<span class="requiredstar">*</span> indicates Required Information' ),
+                        html : this.i18n._( '<span class="requiredstar">*</span> Required' ),
                         cls : 'requiredInfo'
                     },{
                         xtype : 'label',
