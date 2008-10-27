@@ -56,8 +56,6 @@ class AppServerManagerImpl implements LocalAppServerManager
     private final UvmContextImpl mctx;
     private final TomcatManager tomcatManager;
 
-    private UtKeyStore keyStore;
-
     AppServerManagerImpl(UvmContextImpl mctx)
     {
         this.mctx = mctx;
@@ -319,20 +317,12 @@ class AppServerManagerImpl implements LocalAppServerManager
     {
         String reason = "";
         try {
-            if (keyStore.containsAlias(newHostName)
-                && keyStore.getEntryType(newHostName) == UtKeyStore.UtKSEntryType.PrivKey) {
-                reason = "Unable to rebind tomcat to existing key with alias \""
-                    + newHostName + "\"";
-                tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS,
-                                              newHostName);
-            } else {
-                reason = "Unable to export current cert";
-                byte[] oldCert = getCurrentServerCert();
-                reason = "Unable to get current cert info";
-                CertInfo ci = OpenSSLWrapper.getCertInfo(oldCert);
-                RFC2253Name oldDN = ci.subjectDN;
-                regenCert(oldDN, 365 * 5 +1);
-            }
+            reason = "Unable to export current cert";
+            byte[] oldCert = getCurrentServerCert();
+            reason = "Unable to get current cert info";
+            CertInfo ci = OpenSSLWrapper.getCertInfo(oldCert);
+            RFC2253Name oldDN = ci.subjectDN;
+            regenCert(oldDN, 365 * 5 +1);
         } catch (Exception ex) {
             logger.error(reason, ex);
         }
