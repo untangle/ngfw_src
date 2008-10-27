@@ -29,18 +29,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             Ext.getCmp('spamassassin_pop3StrengthValue').setContainerVisible(this.isCustomStrength(this.getBaseSettings().popConfig.strength));
             Ext.getCmp('spamassassin_imapStrengthValue').setContainerVisible(this.isCustomStrength(this.getBaseSettings().imapConfig.strength));
         },
-        lookup : function(needle, haystack1, haystack2) {
-            for (var i = 0; i < haystack1.length; i++) {
-                if (haystack1[i] != undefined && haystack2[i] != undefined) {
-                    if (needle == haystack1[i]) {
-                        return haystack2[i];
-                    }
-                    if (needle == haystack2[i]) {
-                        return haystack1[i];
-                    }
-                }
-            }
-        },
         isCustomStrength : function(strength) {
             return !(strength == 50 || strength == 43 || strength == 35 || strength == 33 || strength == 30)
         },
@@ -589,10 +577,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.getRpcNode().setBaseSettings(function(result, exception) {
                     Ext.MessageBox.hide();
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
                     this.cancelAction();
                 }.createDelegate(this), this.getBaseSettings());

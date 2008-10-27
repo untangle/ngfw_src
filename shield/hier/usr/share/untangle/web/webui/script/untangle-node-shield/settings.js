@@ -273,10 +273,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
             this.getRpcNode().updateAll(function(result, exception) {
                 Ext.MessageBox.hide();
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
+                if(Ung.Util.handleException(exception)) return;
                 // exit settings screen
                 this.cancelAction();
             }.createDelegate(this), this.gridExceptions.getSaveList());

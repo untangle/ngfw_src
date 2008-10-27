@@ -12,7 +12,11 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // override get base settings object
         getBaseSettings : function(forceReload) {
             if (forceReload || this.rpc.baseSettings === undefined) {
-                this.rpc.baseSettings = this.getRpcNode().getPhishBaseSettings();
+            	try {
+                   this.rpc.baseSettings = this.getRpcNode().getPhishBaseSettings();
+                } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
             }
             return this.rpc.baseSettings;
         },
@@ -422,10 +426,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
             this.getRpcNode().setPhishBaseSettings(function(result, exception) {
                 Ext.MessageBox.hide();
-                if (exception) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                    return;
-                }
+                if(Ung.Util.handleException(exception)) return;
                 // exit settings screen
                 this.cancelAction();
             }.createDelegate(this), this.getBaseSettings());

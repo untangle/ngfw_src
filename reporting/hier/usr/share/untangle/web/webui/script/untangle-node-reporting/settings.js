@@ -19,14 +19,22 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         },
         getReportingSettings : function(forceReload) {
             if (forceReload || this.rpc.reportingSettings === undefined) {
-                this.rpc.reportingSettings = this.getRpcNode().getReportingSettings();
+            	try {
+                    this.rpc.reportingSettings = this.getRpcNode().getReportingSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
             }
             return this.rpc.reportingSettings;
         },
         // get mail settings
         getMailSettings : function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
-                this.rpc.mailSettings = rpc.adminManager.getMailSettings();
+            	try {
+                    this.rpc.mailSettings = rpc.adminManager.getMailSettings();
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
             }
             return this.rpc.mailSettings;
         },
@@ -483,10 +491,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             }
             if (ipMaddrList.length > 0) {
                 try {
-                    var result = this.getValidator().validate({
-                        list : ipMaddrList,
-                        "javaClass" : "java.util.ArrayList"
-                    });
+                    var result=null;
+                    try {
+                        result = this.getValidator().validate({
+                            list : ipMaddrList,
+                            "javaClass" : "java.util.ArrayList"
+                        });
+                    } catch (e) {
+                        Ung.Util.rpcExHandler(e);
+                    }
                     if (!result.valid) {
                         var errorMsg = "";
                         switch (result.errorCode) {
@@ -515,7 +528,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             if (this.validate()) {
                 this.saveSemaphore = 2;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                
+                if(!this.panelGeneration.rendered) {
+                	var activeTab=this.tabs.getActiveTab()
+                    this.tabs.activate(this.panelGeneration);
+                    this.tabs.activate(activeTab);
+                }
                 // set weekly schedule
                 var weeklySched = [];
                 if (Ext.getCmp('reporting_weeklySunday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:1});
@@ -537,10 +554,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 // set Ip Map list
                 this.getReportingSettings().networkDirectory.entries.list = this.gridIpMap.getFullSaveList();
                 this.getRpcNode().setReportingSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getReportingSettings());
                 
@@ -553,10 +567,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 this.getMailSettings().reportEmail = recipientsList.length == 0 ? "" : recipientsList.join(",");
                 // do the save
                 rpc.adminManager.setMailSettings(function(result, exception) {
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getMailSettings());
                 

@@ -314,7 +314,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 }
                 if (Ung.Util.hasData(validateData.map)) {
                     try {
-                        var result = this.getValidator().validate(validateData);
+                    	var result=null;
+                    	try {
+                            result = this.getValidator().validate(validateData);
+                        } catch (e) {
+                            Ung.Util.rpcExHandler(e);
+                        }
                         if (!result.valid) {
                             var errorMsg = "";
                             switch (result.errorCode) {
@@ -350,10 +355,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.getRpcNode().updateAll(function(result, exception) {
                     Ext.MessageBox.hide();
-                    if (exception) {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                        return;
-                    }
+                    if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
                     this.cancelAction();
                 }.createDelegate(this), this.getBaseSettings(), this.gridRules ? {javaClass:"java.util.ArrayList",list:this.gridRules.getFullSaveList()} : null);

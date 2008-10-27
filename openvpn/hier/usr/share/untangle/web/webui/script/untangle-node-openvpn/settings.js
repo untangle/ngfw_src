@@ -387,10 +387,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         completeGetAdminClientUploadLink : function( result, exception, foo, handler )
         {
-            if ( exception ) {
-                Ext.MessageBox.alert( this.i18n._("Failed."), this.i18n._( "Unable to load VPN Client" ));
-                return;
-            }
+            if(Ung.Util.handleException(exception,function() {
+                Ext.MessageBox.alert( this.i18n._("Failed"), this.i18n._( "Unable to load VPN Client" ));
+            }.createDelegate(this),"noAlert")) return;
 
             var file = this.panel.find( "name", "siteConfiguration" )[0].getValue();
 
@@ -434,10 +433,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         c_completeConfig : function( result, exception, foo, handler )
         {
-            if ( exception ) {
-                Ext.MessageBox.alert( this.i18n._("Failed."), this.i18n._( "Unable to load VPN Client" ));
-                return;
-            }
+            if(Ung.Util.handleException(exception,function() {
+                Ext.MessageBox.alert( this.i18n._("Failed"), this.i18n._( "Unable to load VPN Client" ));
+            }.createDelegate(this),"noAlert")) return;
 
             // go to next step
             Ext.MessageBox.alert( this.i18n._("Success"), 
@@ -614,10 +612,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         disabled : serverButtonDisabled,
                         handler : function() {
                             this.getRpcNode().startConfig(function(result, exception) {
-                                if (exception) {
-                                    Ext.MessageBox.alert(this.i18n._("Failed"), exception.message);
-                                    return;
-                                }
+                                if(Ung.Util.handleException(exception)) return;
                                 this.configureVPNServer();
                             }.createDelegate(this), "SERVER_ROUTE")
                         	
@@ -635,10 +630,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         disabled : clientButtonDisabled,
                         handler : function() {
                             this.getRpcNode().startConfig(function(result, exception) {
-                                if (exception) {
-                                    Ext.MessageBox.alert(this.i18n._("Failed"), exception.message);
-                                    return;
-                                }
+                                if(Ung.Util.handleException(exception)) return;
                                 this.configureVPNClient();
                             }.createDelegate(this), "CLIENT")
                         }.createDelegate(this)
@@ -1655,7 +1647,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             // now let the server validate
             if (Ung.Util.hasData(validateData.map)) {
                 try {
-                    var result = this.getValidator().validate(validateData);
+                	var result=null;
+                	try {
+                        result = this.getValidator().validate(validateData);
+                    } catch (e) {
+                        Ung.Util.rpcExHandler(e);
+                    }
+                        
                     if (!result.valid) {
                         var errorMsg = "";
                         var tabToActivate = null;
@@ -1736,10 +1734,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                     this.getRpcNode().setVpnSettings(function(result, exception) {
                         Ext.MessageBox.hide();
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
+                        if(Ung.Util.handleException(exception)) return;
                         // exit settings screen
                         this.cancelAction();
                     }.createDelegate(this), vpnSettings);
@@ -1961,10 +1956,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     };
                     this.getRpcNode().generateCertificate(function(result, exception) {
                         Ext.MessageBox.hide();
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
+                        if(Ung.Util.handleException(exception)) return;
                         this.handler();
                     }.createDelegate({
                             handler : handler,
@@ -2002,16 +1994,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     
                     Ext.MessageBox.wait(i18n._("Adding Exports..."), i18n._("Please wait"));
                     this.getRpcNode().setExportedAddressList(function(result, exception) {
-                        if (exception) {
-                            Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                            return;
-                        }
+                        if(Ung.Util.handleException(exception)) return;
                         this.settingsCmp.getRpcNode().completeConfig(function(result, exception) { //complete server configuration
                             Ext.MessageBox.hide();
-                            if (exception) {
-                                Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-                                return;
-                            }
+                            if(Ung.Util.handleException(exception)) return;
                             // go to next step
                             this.handler();
                         }.createDelegate(this))
