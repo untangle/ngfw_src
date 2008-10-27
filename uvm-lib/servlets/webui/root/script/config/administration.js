@@ -201,7 +201,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     emptyRow : {
                         "login" : this.i18n._("[no login]"),
                         "name" : this.i18n._("[no description]"),
-                        //"readOnly" : false,
+                        "readOnly" : false,
                         "email" : this.i18n._("[no email]"),
                         "clearPassword" : "",
                         "javaClass" : "com.untangle.uvm.security.User"
@@ -224,9 +224,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'notes'
                     }, {
                         name : 'sendAlerts'
-                    }, /*{
+                    }, {
                         name : 'readOnly'
-                    },*/ {
+                    }, {
                         name : 'javaClass' //needed as users is a set
                     }],
                     autoExpandColumn: 'name',
@@ -248,7 +248,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         editor : new Ext.form.TextField({
                             allowBlank : false
                         })
-                    }, /* readOnlyColumn, */{
+                    }, readOnlyColumn, {
                         id : 'email',
                         header : this.i18n._("email"),
                         width : 200,
@@ -275,11 +275,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._("Description"),
                         allowBlank : false,
                         width : 200
-                    }), /*new Ext.form.Checkbox({
+                    }), new Ext.form.Checkbox({
                         name : "Read-only",
                         dataIndex : "readOnly",
                         fieldLabel : this.i18n._("Read-only")
-                    }), */new Ext.form.TextField({
+                    }), new Ext.form.TextField({
                         name : "Email",
                         dataIndex : "email",
                         fieldLabel : this.i18n._("Email"),
@@ -322,12 +322,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         width : 200
                     })]
                 }), {
-                    xtype : 'fieldset',
-                    id:'external_administration_fieldset',
-                    title : this.i18n._('External Administration'),
+                	xtype : 'fieldset',
+                	title : this.i18n._('External Administration'),
                     autoHeight : true,
                     labelWidth: 150,                    
-                    items : [{
+                	items : [{
                         xtype : 'checkbox',
                         name : 'isOutsideAdministrationEnabled',
                         boxLabel : this.i18n._('Enable External Administration.'),
@@ -367,6 +366,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }
                         }
                     },{
+                        border: false,
+                        html : '<hr>'
+                    },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('External HTTPS port'),
                         name : 'httpsPort',
@@ -385,6 +387,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 }.createDelegate(this)
                             }
                         }
+                    },{
+                        border: false,
+                        html : '<hr>'
                     },{
                         xtype : 'radio',
                         boxLabel : this.i18n._('Allow external access from any IP address.'), 
@@ -422,10 +427,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         border: false,
                     	layout:'column',
-                        cls : 'administration_network',
                     	items: [{
                             border: false,
-                            columnWidth:.35,
+                            columnWidth:.4,
                             layout: 'form',
                             items: [{
                                 xtype : 'textfield',
@@ -440,7 +444,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }]
                     	},{
                             border: false,
-                            columnWidth:.35,
+                            columnWidth:.6,
                             layout: 'form',
                             items: [{
                                 xtype : 'textfield',
@@ -1179,7 +1183,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Community'),
                         name : 'communityString',
-			itemCls : 'left-indent-1',
                         id: 'administration_snmp_communityString',
                         value : this.getSnmpSettings().communityString,
                         allowBlank : false,
@@ -1187,7 +1190,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         disabled : !this.getSnmpSettings().enabled
                     },{
                         xtype : 'textfield',
-			itemCls : 'left-indent-1',
                         fieldLabel : this.i18n._('System Contact'),
                         name : 'sysContact',
                         id: 'administration_snmp_sysContact',
@@ -1196,15 +1198,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         //vtype : 'email'
                     },{
                         xtype : 'textfield',
-			itemCls : 'left-indent-1',
                         fieldLabel : this.i18n._('System Location'),
                         name : 'sysLocation',
                         id: 'administration_snmp_sysLocation',
                         value : this.getSnmpSettings().sysLocation,
                         disabled : !this.getSnmpSettings().enabled                        
                     },{
+                        border: false,
+                        html : '<hr>'
+                    },{
                         xtype : 'radio',
-                        itemCls : 'left-indent-1',
                         boxLabel : String.format(this.i18n._('{0}Disable Traps{1} so no trap events are generated.  (This is the default setting.)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'sendTraps',
@@ -1224,7 +1227,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'radio',
-			itemCls : 'left-indent-1',
                         boxLabel : String.format(this.i18n._('{0}Enable Traps{1} so trap events are sent when they are generated.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'sendTraps',
@@ -1244,27 +1246,24 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'textfield',
-                        itemCls : 'left-indent-2',
                         fieldLabel : this.i18n._('Community'),
                         name : 'trapCommunity',
                         id: 'administration_snmp_trapCommunity',
                         value : this.getSnmpSettings().trapCommunity,
                         allowBlank : false,
                         blankText : this.i18n._("An Trap \"Community\" must be specified."),
-                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps
+                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Host'),
-                        itemCls : 'left-indent-2',
                         name : 'trapHost',
                         id: 'administration_snmp_trapHost',
                         value : this.getSnmpSettings().trapHost,
                         allowBlank : false,
-                        blankText : this.i18n._("An Trap \"Host\" must be specified."),
-                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps
+                        blankText : this.i18n._("An Trap \"Host\" must be specified."),                        
+                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
                     },{
                         xtype : 'numberfield',
-			itemCls : 'left-indent-2',
                         fieldLabel : this.i18n._('Port'),
                         name : 'trapPort',
                         id: 'administration_snmp_trapPort',
@@ -1321,7 +1320,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Host'),
                         name : 'syslogHost',
-                        itemCls : 'left-indent-1',
                         id : 'administration_syslog_host',
                         value : this.getLoggingSettings().syslogHost,
                         allowBlank : false,
@@ -1331,7 +1329,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Port'),
                         name : 'syslogPort',
-                        itemCls : 'left-indent-1',
                         id : 'administration_syslog_port',
                         value : this.getLoggingSettings().syslogPort,
                         width: 50,
@@ -1344,7 +1341,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'combo',
                         name : 'syslogFacility',
-                        itemCls : 'left-indent-1',
                         id : 'administration_syslog_facility',
                         editable : false,
                         fieldLabel : this.i18n._('Facility'),
@@ -1387,7 +1383,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'combo',
                         name : 'syslogThreshold',
-                        itemCls : 'left-indent-1',
                         id : 'administration_syslog_threshold',
                         editable : false,
                         fieldLabel : this.i18n._('Threshold'),
@@ -2168,4 +2163,5 @@ if (!Ung.hasResource["Ung.Administration"]) {
             main.todo();
         }
     });
+    
 }
