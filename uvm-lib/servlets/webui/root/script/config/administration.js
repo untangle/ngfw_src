@@ -1644,7 +1644,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'Logo',
                         id : 'administration_branding_default_logo',
                         hideLabel : true,
-                        boxLabel : 'Use Default Logo',
+                        boxLabel : this.i18n._('Use Default Logo'),
                         value : 'default',
                         checked : brandingBaseSettings.defaultLogo,
                         listeners : {
@@ -1661,7 +1661,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'radio',
                         name : 'Logo',
                         hideLabel : true,
-                        boxLabel : 'Use Custom Logo',
+                        boxLabel : this.i18n._('Use Custom Logo. Maximum size is 220 x 100.'),
                         value : 'custom',
                         checked : !brandingBaseSettings.defaultLogo,
                         listeners : {
