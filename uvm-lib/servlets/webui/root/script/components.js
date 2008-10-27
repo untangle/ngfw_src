@@ -2141,11 +2141,11 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             var selRepository = this.getSelectedRepository();
             if (selRepository !== null) {
                 if (this.rpc.repository[selRepository] === undefined) {
-                    this.eventManagerFn.getRepository(selRepository, function(result, exception) {
+                    this.eventManagerFn.getRepository(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         this.rpc.repository[selRepository] = result;
                         this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
-                    }.createDelegate(this));
+                    }.createDelegate(this),selRepository);
                 } else {
                     this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
                 }
