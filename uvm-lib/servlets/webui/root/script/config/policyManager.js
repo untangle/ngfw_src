@@ -296,7 +296,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     "protocol" : "TCP & UDP",
                     "clientAddr" : "any",
                     "serverAddr" : "any",
-                    "clientPort" : null,
+                    "clientPort" : "any",
                     "serverPort" : "any",
                     "user" : "[any]",
                     "startTime" : {"time":-7200000,"javaClass":"java.sql.Time"},
@@ -575,6 +575,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                                     this.record.set("serverIntf", Ext.getCmp("gridRules_rowEditor_server_interface").getValue());
                                     this.record.set("clientAddr", Ext.getCmp("gridRules_rowEditor_client_address").getValue());
                                     this.record.set("serverAddr", Ext.getCmp("gridRules_rowEditor_server_address").getValue());
+                                    this.record.set("clientPort", "any");
                                     this.record.set("serverPort", Ext.getCmp("gridRules_rowEditor_server_port").getValue());
                                     this.record.set("user", Ext.getCmp("gridRules_rowEditor_user").getValue());
                                     this.record.set("startTimeFormatted", Ext.getCmp("gridRules_rowEditor_start_time").getValue());
@@ -771,7 +772,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     items : [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
-                        html : this.i18n._("The time of day you would like this policy active.")
+                        html : this.i18n._("The days of the week you would like this policy active.")
                     }, {
                         xtype : 'checkbox',
                         name : 'Sunday',
