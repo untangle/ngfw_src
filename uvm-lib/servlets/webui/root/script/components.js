@@ -2051,6 +2051,11 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             })
         });
 
+        this.pagingToolbar = new Ext.PagingToolbar({
+            pageSize : this.recordsPerPage,
+            store : this.store
+        });
+        
         this.bbar = [{
             xtype : 'tbtext',
             text : '<span id="boxRepository_' + this.getId() + '_' + this.settingsCmp.node.tid + '"></span>'
@@ -2067,10 +2072,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         }, {
             xtype : 'tbtext',
             text : '<div style="width:30px;"></div>'
-        }, new Ext.PagingToolbar({
-            pageSize : this.recordsPerPage,
-            store : this.store
-        })];
+        }, this.pagingToolbar];
         Ung.GridEventLog.superclass.initComponent.call(this);
         var columnModel=this.getColumnModel();
         columnModel.getRenderer = function(col){
@@ -2084,6 +2086,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     onRender : function(container, position) {
         Ung.GridEventLog.superclass.onRender.call(this, container, position);
         this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "Table"});
+        this.pagingToolbar.loading.hide();
         if (this.hasRepositories) {
             this.eventManagerFn.getRepositoryDescs(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
