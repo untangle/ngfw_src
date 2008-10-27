@@ -847,6 +847,29 @@ Ung.Main.prototype = {
     },
     // build policies select box
     buildPolicies: function () {
+		Ext.get('rack_select_container').dom.innerHTML = '';
+        var out=[];
+		var selVirtualRackIndex = 0;
+		for(var i=0;i<rpc.policies.length;i++) {
+            selVirtualRackIndex = rpc.policies[i]["default"]===true ? i :selVirtualRackIndex;
+			out.push({text:i18n._(rpc.policies[i].name),value:rpc.policies[i].id,index:i,handler:main.changePolicy});//function(){Ung.Main.changePolicy(arguments)}
+
+            if(rpc.policies[i]["default"]===true) {
+                rpc.currentPolicy=rpc.policies[i];
+            }
+        }
+		out.push('-');
+		out.push({text:'Show Policy Manager',value:'SHOW_POLICY_MANAGER',handler:main.changePolicy});
+		var RackSelect = new Ext.SplitButton({
+			renderTo: 'rack_select_container', // the container id
+		   	text: out[selVirtualRackIndex].text,
+			id:'rack_select',
+		   	//handler: Ung.Main.changePolicy, // handle a click on the button itself
+		   	menu: new Ext.menu.Menu({
+		        items: out//testss
+		   	})
+		});
+        /*
         var out=[];
         out.push('<select id="rack_select" onchange="main.changePolicy()">');
         for(var i=0;i<rpc.policies.length;i++) {
@@ -860,10 +883,22 @@ Ung.Main.prototype = {
         out.push('<option value="SHOW_POLICY_MANAGER" class="ungButton">Policy Manager</option>');
         out.push('</select>');
         Ext.get("rack_select_container").dom.innerHTML=out.join('');
+        */
         this.loadRackView();
     },
     // change current policy
     changePolicy: function () {
+        if(this.text=='Show Policy Manager'){
+			Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
+				main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
+				main.policyManagerWin.show();
+			});		
+		}else{
+			Ext.getCmp('rack_select').setText(this.text);		
+			rpc.currentPolicy=rpc.policies[this.index];
+			main.loadRackView();		
+		}
+        /*
         var rack_select=document.getElementById('rack_select');
         if(rack_select.selectedIndex>=0) {
         	if(rack_select.value == "SHOW_POLICY_MANAGER") {
@@ -883,5 +918,6 @@ Ung.Main.prototype = {
 	            this.loadRackView();
         	}
         }
+        */
     }
 };
