@@ -367,10 +367,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         completeFetchClient : function( result, exception, foo, handler )
         {
-            if ( exception ) {
+            if( Ung.Util.handleException(exception,function() {
                 Ext.MessageBox.alert(this.i18n._("Error downloading configuration from server."), 
                                      this.i18n._("Your VPN Client configuration could not be downloaded from the server.  Please try again."));
-                                     
+            })) {
                 return;
             }
 
@@ -407,28 +407,25 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             });
         },
 
+        /** action.result["success"] = true will trigger success in extjs for a form submit. */
         completeUploadClient : function( form, action, handler )
+        {            
+            this.node.completeConfig( this.c_completeConfig.createDelegate( this, [ handler ], true ));
+        },
+        
+        /** action.result["success"] = false will trigger failure in extjs. */
+        failUploadClient : function( form, action )
         {
             var response = action.result;
 
-            if ( response == "success" ) {
-                this.node.completeConfig( this.c_completeConfig.createDelegate( this, [ handler ], true ));
-            } else {
-                var message = this.i18n._("Unable to install OpenVPN client.");
-                if ( response == 'installation failure: connect' ||
-                     response == 'installation failure: unknown' ) {
-                    message = this.i18n._("Unable to verify connection to server.");
-                } else if ( response == 'installation failure: invalid file' ) {
-                    message = this.i18n._("The selected configuration file is not valid.");
-                }
-
-                Ext.MessageBox.alert(i18n._( "Failed" ), message );
+            var message = this.i18n._("Unable to install OpenVPN client.");
+            if ( response.code == 'connect' || response.code == 'unknown' ) {
+                message = this.i18n._("Unable to verify connection to server.");
+            } else if ( response.code == 'invalid file' ) {
+                message = this.i18n._("The selected configuration file is invalid.");
             }
-        },
-        
-        failUploadClient : function( form, action )
-        {
-            Ext.MessageBox.alert(i18n._( "Failed" ), i18n._( "Unable to install client." ));
+            
+            Ext.MessageBox.alert(i18n._( "Failed" ), message );
         },
 
         c_completeConfig : function( result, exception, foo, handler )

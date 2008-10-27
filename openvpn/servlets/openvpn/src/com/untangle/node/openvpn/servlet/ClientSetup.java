@@ -84,12 +84,18 @@ public class ClientSetup extends HttpServlet
             response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Please access this through the admin client." );
             return;
         }
-        
-        PrintWriter writer = response.getWriter();
 
+        /* See the extjs documentation for why this is text/html.
+         * when the flag fileUpload is set to true on a form panel,
+         * then it must return text/html as the content type,
+         * otherwise the return script is modified before it is
+         * decoded as JSON. */
+        response.setContentType("text/html");
+        PrintWriter writer = response.getWriter();
+        
         if ( !ServletFileUpload.isMultipartContent( request )) {
             logger.debug( "User has invalid post." );
-            writer.write( "invalid request, 1" );
+            writer.write( "{ \"success\" : false, \"code\" : \"client error\", \"type\" : 1 }" );
             return;
         }
         
@@ -100,7 +106,7 @@ public class ClientSetup extends HttpServlet
             items = upload.parseRequest( request );
         } catch ( FileUploadException e ) {
             logger.warn( "Unable to parse the request", e );
-            writer.write( "invalid request, 2" );
+            writer.write( "{ \"success\" : false, \"code\" : \"client error\", \"type\" : 2 }" );
             return;
         }
         
@@ -115,7 +121,7 @@ public class ClientSetup extends HttpServlet
 
         if ( inputStream == null ) {
             logger.info( "ClientSetup is missing the client file." );
-            writer.write( "invalid request, 3" );
+            writer.write( "{ \"success\" : false, \"code\" : \"client error\", \"type\" : 3 }" );
             return;
         }
             
@@ -132,7 +138,7 @@ public class ClientSetup extends HttpServlet
             while (( len = inputStream.read( data )) > 0 ) outputStream.write( data, 0, len );
         } catch ( IOException e ) {
             logger.warn( "Unable to validate client file.", e  );
-            writer.write( "server error" );
+            writer.write( "{ \"success\" : false, \"code\" : \"internal error\", \"type\" : 1 }" );
             return;
         } finally {
             try {
@@ -152,25 +158,23 @@ public class ClientSetup extends HttpServlet
             node.installClientConfig( temp.getPath());
         } catch ( DownloadException e ) {
             logger.warn( "Unable to download client configuration", e );
-            writer.write( "installation failure: download" );
+            writer.write( "{ \"success\" : false, \"code\" : \"download\" }" );
             return;
         } catch ( StartException e ) {
             logger.warn( "Unable to download client configuration", e );
-            writer.write( "installation failure: connect" );
+            writer.write( "{ \"success\" : false, \"code\" : \"connect\" }" );
             return;
         } catch ( InvalidFileException e ) {
             logger.warn( "Unable to download client configuration", e );
-            writer.write( "installation failure: invalid file" );
+            writer.write( "{ \"success\" : false, \"code\" : \"invalid file\" }" );
             return;
         } catch ( Exception e ) {
             logger.warn( "Unable to install the client configuration", e );
-            writer.write( "installation failure: unknown" );
+            writer.write( "{ \"success\" : false, \"code\" : \"unknown\" }" );
             return;
-        } finally {
-            
         }
 
-        writer.write( "success" );
+        writer.write( "{ \"success\" : true }" );
     }
 
     private static synchronized ServletFileUpload getServletFileUpload()
