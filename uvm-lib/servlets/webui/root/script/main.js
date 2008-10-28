@@ -885,15 +885,15 @@ Ung.Main.prototype = {
     // change current policy
     changePolicy: function () {
         if(this.text=='Show Policy Manager'){
-			Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
-				main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
-				main.policyManagerWin.show();
-			});		
-		}else{
-			Ext.getCmp('rack_select').setText(this.text);		
-			rpc.currentPolicy=rpc.policies[this.index];
-			main.loadRackView();		
-		}
+	    Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
+		main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
+		main.policyManagerWin.show();
+	    });		
+	}else{
+	    Ext.getCmp('rack_select').setText(this.text);		
+	    rpc.currentPolicy=rpc.policies[this.index];
+	    main.loadRackView();		
+	}
         /*
         var rack_select=document.getElementById('rack_select');
         if(rack_select.selectedIndex>=0) {

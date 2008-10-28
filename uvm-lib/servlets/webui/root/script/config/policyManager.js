@@ -96,7 +96,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             
             var items = [];
 
-            if (this.getPolicyConfiguration().hasRackManagement) {
+            /* This one should always reload policy management */
+            if (this.getPolicyConfiguration(true).hasRackManagement) {
                 items.push(this.gridRacks);
             } else {
                 items.push(this.infoLabel);
