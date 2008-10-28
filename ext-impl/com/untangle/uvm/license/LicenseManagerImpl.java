@@ -29,6 +29,7 @@ import java.util.Set;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.Pulse;
 
 import com.untangle.node.util.UtLogger;
@@ -348,6 +349,30 @@ public class LicenseManagerImpl implements LicenseManager
             }
         }        
     }
+
+    private synchronized void notifyClients()
+    {
+        Map<String,LicenseStatus> identifierMap = new HashMap<String,LicenseStatus>();
+        Map<String,LicenseStatus> mackageMap = new HashMap<String,LicenseStatus>();
+
+        for ( Map.Entry<String,License> entry : this.licenseMap.entrySet()) {
+            String identifier = entry.getKey();
+            License license = entry.getValue();
+
+            String mackageName = IDENTIFIER_TO_MACKAGE_MAP.get( identifier );
+            if ( mackageName == null ) mackageName = "unknown";
+
+            LicenseStatus status = makeLicenseStatus( identifier, mackageName, license );
+
+            identifierMap.put( identifier, status );
+            if ( "unknown".equals( mackageName )) continue;
+
+            mackageMap.put( mackageName, status );
+        }
+
+        LicenseUpdateMessage message = new LicenseUpdateMessage( identifierMap, mackageMap );
+        LocalUvmContextFactory.context().localMessageManager().submitMessage( message );
+    }
     
     private String createSelfSignedLicenseKey( License license ) throws NoSuchAlgorithmException
     {
@@ -552,6 +577,7 @@ public class LicenseManagerImpl implements LicenseManager
                 readLicenses();
                 mapLicenses();
                 notifyProducts();
+                notifyClients();
             }
 
             synchronized( this ) {
