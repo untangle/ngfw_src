@@ -136,10 +136,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     },
                     items : [{
                         xtype : 'label',
-                        html : this.i18n._( '<span class="requiredstar">*</span> Required' ),
-                        cls : 'requiredInfo'
-                    },{
-                        xtype : 'label',
                         html : '<b>'+this.i18n._( 'Please provide administrator contact info.' )+'</b>'
                     },{
                         fieldLabel : '<span class="requiredstar">*</span>'+this.i18n._('Email'),
@@ -189,6 +185,10 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         listClass : 'x-combo-list-small',
                         value : misc.country
                     }]
+                },{
+                    xtype : 'label',
+                    html : this.i18n._( '<span class="requiredstar">*</span> Required' ),
+                    cls : 'requiredInfo'
                 }]
             });
         },
