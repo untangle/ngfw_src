@@ -171,7 +171,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
 		    value : 'admin',
 		    readOnly : true,
 		    fieldClass : 'noborder',
-		    ctCls : 'smallTopMargin'
+		    itemCls : 'smallTopMargin'
                 },{
                     inputType : 'password',
                     fieldLabel : i18n._('Password'),
@@ -332,11 +332,6 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
 		    msgTarget : 'side'
 		},
                 items : [{
-		    xtype : 'label',
-		    html : i18n._( '<span class="requiredstar">*</span> Required' ),
-		    border : false,
-		    cls : 'requiredInfo'
-		},{
                     xtype : 'label',
                     html : '<b>'+i18n._( 'Please provide administrator contact info.' )+'</b>',
                     border : false
@@ -346,7 +341,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
 		    id : 'registration_email',
                     width : 200,
 		    allowBlank : false,
-		    ctCls : 'smallTopMargin',
+		    itemCls : 'smallTopMargin',
 		    vtype : 'emailAddressCheck'
                 },{
                     fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Confirm Email'),
@@ -362,9 +357,14 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     xtype : 'numberfield',
                     minValue : 0,
                     allowDecimals : false,
+                    width : 60,
                     fieldLabel : '<span class="requiredstar">*</span>'+i18n._('Number of PCs on your network'),
                     name : 'numSeats',
 		    allowBlank : false	
+                },{
+                    xtype : 'label',
+                    cls : 'info-detail',
+		    html : i18n._('Approximate')
                 }]
             },{
                 defaultType : 'textfield',
@@ -382,7 +382,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-		    ctCls : 'smallTopMargin'
+		    itemCls : 'smallTopMargin'
                 },{
                     fieldLabel : i18n._('Country'),
                     name : "country",
@@ -393,9 +393,14 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-		    ctCls : 'smallTopMargin'
+		    itemCls : 'smallTopMargin'
                 }]
-            }]
+            },{
+		xtype : 'label',
+		html : i18n._( '<span class="requiredstar">*</span> Required' ),
+		border : false,
+		cls : 'requiredInfo'
+	    }]
         });
 
         this.card = {
@@ -1159,7 +1164,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     checked : true,
                     name : 'enableDhcpServer',
                     itemCls : 'wizardlabelmargin6',
-                    boxLabel : i18n._("Enable DHCP Server (default)"),
+                    boxLabel : i18n._("Enable DHCP Server (default)")
                 },{
                     xtype : 'label',
                     cls : 'wizard-network-image',
@@ -1626,10 +1631,10 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
         
-        if ( false ) {
+        if ( true ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 5 );
+                this.wizard.goToPage( 6 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
             
