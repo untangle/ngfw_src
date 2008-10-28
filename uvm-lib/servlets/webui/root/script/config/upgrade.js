@@ -55,6 +55,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             Ext.MessageBox.hide();
                             var upgradeList = result;
                             if (upgradeList.length > 0) {
+                            	Ext.getCmp("configItem_upgrade").setIconCls("iconConfigUpgradeAvailable");
                                 Ext.getCmp("config_start_upgrade_button").enable();
                                 var upgradeData = [];
                                 var somethingVisibleAdded = false;
