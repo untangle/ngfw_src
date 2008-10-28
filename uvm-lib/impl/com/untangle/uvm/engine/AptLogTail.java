@@ -65,8 +65,6 @@ class AptLogTail implements Runnable
 
     private final RandomAccessFile raf;
 
-    private volatile boolean live = true;
-
     private StringBuilder builder = new StringBuilder(80);
     private long lastActivity = -1;
 
@@ -104,11 +102,6 @@ class AptLogTail implements Runnable
     long getKey()
     {
         return key;
-    }
-
-    boolean isDead()
-    {
-        return !live;
     }
 
     // Runnable methods -------------------------------------------------------
@@ -161,6 +154,11 @@ class AptLogTail implements Runnable
             }
         }
 
+        if (isUpgrade() && downloadQueue.size() == 0) {
+            // nothing to upgrade
+            return;
+        }
+        
         mm.submitMessage(new DownloadSummary(downloadQueue.size(),
                                              totalSize, requestingMackage));
 
@@ -209,7 +207,6 @@ class AptLogTail implements Runnable
 
         logger.debug("installation complete");
         mm.submitMessage(new InstallComplete(true, requestingMackage));
-        live = false;
     }
 
     private String readLine()
@@ -250,6 +247,11 @@ class AptLogTail implements Runnable
         } catch (IOException exn) {
             throw new RuntimeException("could not read apt-log", exn);
         }
+    }
+    
+    private boolean isUpgrade()
+    {
+        return null == requestingMackage;
     }
 
     private static class PackageInfo
