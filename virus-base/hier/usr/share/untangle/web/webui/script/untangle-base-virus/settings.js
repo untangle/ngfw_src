@@ -199,14 +199,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'string'
+                    name : 'string',
+                    type : 'string'
                 }, {
                     name : 'live'
                 }, {
                     name : 'name',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'string',
@@ -271,14 +270,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'mimeType'
+                    name : 'mimeType',
+                    type : 'string'
                 }, {
                     name : 'live'
                 }, {
                     name : 'name',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'mimeType',

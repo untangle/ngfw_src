@@ -57,23 +57,17 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 // added
                 {
                     name : 'category',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }, {
-                    name : 'protocol'
+                    name : 'protocol',
+                    type : 'string'
                 }, {
                     name : 'blocked'
                 }, {
                     name : 'log'
-                },
-                // this field is internationalized so a converter was
-                // added
-                {
+                }, {
                     name : 'description',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }, {
                     name : 'definition'
                 }],

@@ -120,7 +120,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 		}, {
 		                    name : 'name'
                 		}, {
-		                    name : 'category'
+		                    name : 'category',
+                            type : 'string'
                 		}, {
 		                    name : 'classification'
                 		}, {
@@ -130,7 +131,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                }, {
 		                    name : 'log'
 		                }, {
-		                    name : 'description'
+		                    name : 'description',
+                            type : 'string'
 		                }],
 		                columns : [{
 		                    id : 'category',
@@ -234,11 +236,14 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                fields : [{
                     		name : 'id'
                 		}, {
-		                    name : 'variable'
+		                    name : 'variable',
+                            type : 'string'
 		                }, {
-		                    name : 'definition'
+		                    name : 'definition',
+                            type : 'string'
 		                }, {
-		                    name : 'description'
+		                    name : 'description',
+                            type : 'string'
 		                }],
 		                columns : [{
 		                    id : 'variable',

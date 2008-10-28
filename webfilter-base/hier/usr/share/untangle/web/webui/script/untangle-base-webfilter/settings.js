@@ -255,15 +255,21 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'name'
+                    name : 'name',
+                    type : 'string'
                 }, {
-                    name : 'displayName'
+                    name : 'displayName',
+                    type : 'string',
+                    convert : function(v) {
+                        return this.i18n._(v)
+                    }.createDelegate(this)
                 }, {
                     name : 'block'
                 }, {
                     name : 'log'
                 }, {
                     name : 'description',
+                    type : 'string',
                     convert : function(v) {
                         return this.i18n._(v)
                     }.createDelegate(this)
@@ -370,16 +376,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'string'
+                    name : 'string',
+                    type : 'string'
                 }, {
                     name : 'live'
                 }, {
                     name : 'log'
                 }, {
                     name : 'description',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'string',
@@ -458,16 +463,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'string'
+                    name : 'string',
+                    type : 'string'
                 }, {
                     name : 'live'
                 }, {
                     name : 'log'
                 }, {
                     name : 'name',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'string',
@@ -542,16 +546,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'mimeType'
+                    name : 'mimeType',
+                    type : 'string'
                 }, {
                     name : 'live'
                 }, {
                     name : 'log'
                 }, {
                     name : 'name',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'mimeType',
@@ -732,14 +735,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'string'
+                    name : 'string',
+                    type : 'string'
                 }, {
                     name : 'live'
                 }, {
                     name : 'description',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'string',
@@ -813,9 +815,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name : 'live'
                 }, {
                     name : 'description',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'ipMaddr',

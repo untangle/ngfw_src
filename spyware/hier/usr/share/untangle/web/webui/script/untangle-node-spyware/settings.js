@@ -283,14 +283,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'string'
+                    name : 'string',
+                    type : 'string'
                 }, {
                     name : 'live'
                 }, {
                     name : 'description',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'string',
@@ -341,14 +340,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'string'
+                    name : 'string',
+                    type : 'string'
                 }, {
                     name : 'live'
                 }, {
                     name : 'description',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'string',
@@ -400,16 +398,15 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'name'
+                    name : 'name',
+                    type : 'string'
                 }, {
                     name : 'ipMaddr'
                 }, {
                     name : 'log'
                 }, {
                     name : 'description',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'name',
@@ -495,16 +492,16 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'string'
+                    name : 'string',
+                    type : 'string'
                 }, {
                     name : 'live'
                 }, {
-                    name : 'category'
+                    name : 'category',
+                    type : 'string'
                 }, {
                     name : 'description',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 columns : [{
                     id : 'string',

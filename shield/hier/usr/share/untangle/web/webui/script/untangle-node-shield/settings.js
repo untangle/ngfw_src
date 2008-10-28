@@ -89,13 +89,9 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 }, {
                     name : 'divider'
                 },
-                // this field is internationalized so a converter was
-                // added
                 {
                     name : 'description',
-                    convert : function(v) {
-                        return this.i18n._(v)
-                    }.createDelegate(this)
+                    type : 'string'
                 }],
                 // the list of columns for the column model
                 columns : [enableColumn, {

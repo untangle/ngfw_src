@@ -2593,7 +2593,12 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
         obj.totalRecords = this.totalRecords;
         var sortColumns = [];
         if (params.sort) {
-            sortColumns.push((params.dir == "ASC" ? "+" : "-") + params.sort)
+            var type = scope.fields.get(params.sort).type;
+            var sortField = params.sort;
+            if (type == 'string') {
+            	sortField = "UPPER("+params.sort+")";
+            }
+            sortColumns.push((params.dir == "ASC" ? "+" : "-") + sortField)
         }
         if (this.paginated) {
             if (this.rpcFnArgs == null) {
