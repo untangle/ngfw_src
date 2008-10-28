@@ -58,20 +58,20 @@ Ext.override(Ext.TabPanel, {
                 }
             }
         }
-
     }
 });
 
 Ung.Util= {
-	rpcExHandler: function(exception) {
+    goToStartPage: function () {
+        Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
+        window.location.href="/webui";
+    },
+    rpcExHandler: function(exception) {
         if(exception instanceof JSONRpcClient.Exception)
         {
             if(exception.code == 550)
             {
-                Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), function(){
-                    Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
-                    window.location.href="/webui";
-                });
+                Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
             }
         }
         if(exception) {
@@ -80,34 +80,30 @@ Ung.Util= {
         else {
             throw i18n._("Error making rpc request to server");
         }
-		
-	},
-	handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
-		if(exception) {
-			if(exception.code==550) {
-                Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), function(){
-                    Ext.MessageBox.wait(i18n._("Redirecting to the start page"), i18n._("Please wait"));
-                    window.location.href="/webui";
-                });
+    },
+    handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
+        if(exception) {
+            if(exception.code==550) {
+                Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
                 return true;
 			} else {
-				if(handler==null) {
+                if(handler==null) {
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
-				} else if(type==null || type== "alertCallback"){
+                } else if(type==null || type== "alertCallback"){
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message, handler);
-				} else if (type== "alert") {
+                } else if (type== "alert") {
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                     handler();
-				} else if (type== "noAlert") {
-					handler();
-				}
+                } else if (type== "noAlert") {
+                    handler();
+                }
                 return !continueExecution;
 			}
 		}
 		return false;
-	},
+    },
 	
-	encode : function (obj) {
+    encode : function (obj) {
         if(obj == null || typeof(obj) != 'object') {
             return obj;
         }
@@ -120,7 +116,7 @@ Ung.Util= {
             }
         }
         return msg;
-	},
+    },
     // Load css file Dynamically
     loadCss: function(filename) {
         var fileref=document.createElement("link");
@@ -1326,19 +1322,13 @@ Ung.MessageManager = {
                                 	Ext.MessageBox.alert(
                                 	   i18n._("Upgrade Successful"),
                                 	   i18n._("The Upgrade succeeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
-                                	   function() {
-                                	   	   Ext.MessageBox.wait(i18n._("Redirecting to the start page"), i18n._("Please wait"));
-                                	       window.location.href="/webui";
-                                	});
+                                	   Ung.Util.goToStartPage);
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
                                 	this.stop();
                                     Ext.MessageBox.alert(
                                        i18n._("Upgrade Timeout"),
                                        i18n._("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
-                                       function() {
-                                           Ext.MessageBox.wait(i18n._("Redirecting to the start page"), i18n._("Please wait"));
-                                           window.location.href="/webui";
-                                    });
+                                       Ung.Util.goToStartPage);
                                 }
                                 if(!this.upgradeMode) {
                                     this.startUpgradeMode();

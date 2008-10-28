@@ -54,10 +54,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             if(Ung.Util.handleException(exception)) return;
                             Ext.MessageBox.hide();
                             var upgradeList = result;
-                            // var upgradeList=[]; /for test
-                            // for(var i=0;i<main.nodes.length;i++) {
-                            // upgradeList.push(main.nodes[i].md);
-                            // }
                             if (upgradeList.length > 0) {
                                 Ext.getCmp("config_start_upgrade_button").enable();
                                 var upgradeData = [];

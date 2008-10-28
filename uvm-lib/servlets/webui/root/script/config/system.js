@@ -346,13 +346,10 @@ if (!Ung.hasResource["Ung.System"]) {
                         waitMsg : cmp.i18n._('Please wait while Restoring...'),
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Restore Success"), cmp.i18n._("Success:  The Local File restore procedure completed."), function(btn, text){
-                                Ext.getCmp('upload_restore_file_textfield').reset();
-                                Ext.MessageBox.alert(cmp.i18n._("Attention"),
-                                    cmp.i18n._("You must now exit this program.")+"<br>"+
-                                    cmp.i18n._("You can log in again after a brief period.")+"<br><b>"+
-                                    String.format(cmp.i18n._("Do not manually shutdown or restart the {0} Server while it is upgrading!"),main.getBrandingBaseSettings().companyName).toUpperCase()+"</b>");
-                            });
+                            Ung.MessageManager.stop();
+                            Ext.MessageBox.alert(cmp.i18n._("Restore Succes"),
+                                String.format( cmp.i18n._("Success:  The Local File restore procedure completed. You will be redirected to the start page now. The {0} Server will restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."), main.getBrandingBaseSettings().companyName),
+                                Ung.Util.goToStartPage);
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
