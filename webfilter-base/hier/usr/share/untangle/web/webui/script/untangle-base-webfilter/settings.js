@@ -3,6 +3,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
     Ung.Settings.registerClassName('untangle-base-webfilter', 'Ung.BaseWebFilter');
 
     Ung.BaseWebFilter = Ext.extend(Ung.Settings, {
+    	hasScanHTTPS: null,
         gridExceptions : null,
         gridEventLog : null,
         // called when the component is rendered
@@ -97,6 +98,28 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         }
                     }]
                 }],
+                initComponent : function () {
+                	var settingsCmp=Ext.getCmp(this.parentId);
+                    if(settingsCmp.hasScanHTTPS) {
+                    	this.items.push({
+                            items: {
+                                xtype : 'checkbox',
+                                boxLabel : settingsCmp.i18n._('Scan HTTP'),
+                                hideLabel : true,
+                                name : 'Scan HTTP',
+                                checked : settingsCmp.getBaseSettings().enableHttps,
+                                listeners : {
+                                    "check" : {
+                                        fn : function(elem, checked) {
+                                            this.getBaseSettings().enableHttps = checked;
+                                        }.createDelegate(settingsCmp)
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    Ext.Panel.prototype.initComponent.call(this);
+                },
 
                 onManageBlacklistCategories : function() {
                     if (!this.winBlacklistCategories) {
