@@ -133,7 +133,7 @@ restartServiceIfNeeded() {
     mongrel)
       pidFile=/tmp/foo-doesnt-exist
       isServiceRunning --find-shell mongrel_rails && return
-      serviceName="untangle-net-alpaca untangle-net-alpaca-iptables"
+      serviceName="untangle-net-alpaca"
       ;;
     slapd)
       pidFile=/var/run/untangle-ldap/slapd.pid
@@ -320,13 +320,12 @@ while true; do
 	        rc=$?
 	        if [ $rc -ne 0 ] ; then
 		  restartService untangle-net-alpaca /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
-		  restartService untangle-net-alpaca-iptables /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
 		fi
                 # memory-management for alpaca
 		pidof -x mongrel_rails | xargs -n 1 | while read pid ; do
 		  VIRT="`getVirtualMemUsage $pid`"
 		  if [ $VIRT -gt $ALPACA_MAX_VIRTUAL_SIZE ] ; then
-		    restartService untangle-net-alpaca-iptables /tmp/foo-doesnt-exist "memory-hogging ($VIRT)" stopFirst
+		    restartService untangle-net-alpaca /tmp/foo-doesnt-exist "memory-hogging ($VIRT)" stopFirst
 		  fi
 		done
 
