@@ -1097,6 +1097,4 @@ public class HttpParser extends AbstractParser
                 }
             };
     }
-
-
 }
