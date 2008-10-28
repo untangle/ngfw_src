@@ -391,7 +391,7 @@ public class PhishNode extends SpamImpl implements Phish
         }
     }
 
-    // XXX factor this shit out!
+    // XXX duplicated code
     private String nextHost(String host)
     {
         int i = host.indexOf('.');

@@ -425,6 +425,7 @@ public abstract class Blacklist
      * @param host a <code>String</code> value
      * @return a <code>String</code> value
      */
+    // XXX duplicated code
     private String nextHost(String host)
     {
         int i = host.indexOf('.');

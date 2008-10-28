@@ -191,7 +191,7 @@ public interface LocalUvmContext
      * @return the RemoteLanguageManager.
      */
     RemoteLanguageManager languageManager();
-    
+
     RemoteMessageManager messageManager();
 
     LocalMessageManager localMessageManager();
@@ -409,4 +409,6 @@ public interface LocalUvmContext
     void loadLibrary(String libname);
 
     Environment getBdbEnvironment();
+
+    String getPopID();
 }

@@ -88,37 +88,40 @@ public class HostCache
             return null;
         }
 
-        String s = null;
-        try {
-            DatabaseEntry k = new DatabaseEntry(domain.getBytes());
-            DatabaseEntry v = new DatabaseEntry();
+        while (null != domain) {
+            String s = null;
+            try {
+                DatabaseEntry k = new DatabaseEntry(domain.getBytes());
+                DatabaseEntry v = new DatabaseEntry();
 
-            OperationStatus status = db.get(null, k, v,
-                                            LockMode.READ_UNCOMMITTED);
-            if (OperationStatus.SUCCESS == status) {
-                byte[] data = v.getData();
-                if (null != data) {
-                    s = new String(data);
-                }
-            }
-        } catch (DatabaseException exn) {
-            logger.warn("could not access database", exn);
-        }
-
-        if (null != s) {
-            for (CacheRecord r : getRecords(s)) {
-                if (r.isExact()) {
-                    if (uri.equals(r.uri)) {
-                        return r.getCategoryString();
-                    }
-                } else {
-                    if (uri.startsWith(r.uri)) {
-                        return r.getCategoryString();
+                OperationStatus status = db.get(null, k, v,
+                                                LockMode.READ_UNCOMMITTED);
+                if (OperationStatus.SUCCESS == status) {
+                    byte[] data = v.getData();
+                    if (null != data) {
+                        s = new String(data);
                     }
                 }
+            } catch (DatabaseException exn) {
+                logger.warn("could not access database", exn);
             }
-        }
 
+            if (null != s) {
+                for (CacheRecord r : getRecords(s)) {
+                    if (r.isExact()) {
+                        if (uri.equals(r.uri)) {
+                            return r.getCategoryString();
+                        }
+                    } else {
+                        if (uri.startsWith(r.uri)) {
+                            return r.getCategoryString();
+                        }
+                    }
+                }
+            }
+
+            domain = nextHost(domain);
+        }
         return null;
     }
 
@@ -182,7 +185,6 @@ public class HostCache
         l.add(new CacheRecord(domain, categories, exact, uri));
 
         s = writeRecords(l);
-
         v.setData(s.getBytes());
 
         try {
@@ -265,6 +267,22 @@ public class HostCache
                     logger.warn("could not close cursor", exn);
                 }
             }
+        }
+    }
+
+    // XXX duplicated code
+    private String nextHost(String host)
+    {
+        int i = host.indexOf('.');
+        if (-1 == i) {
+            return null;
+        } else {
+            int j = host.indexOf('.', i + 1);
+            if (-1 == j) { // skip tld
+                return null;
+            }
+
+            return host.substring(i + 1);
         }
     }
 
