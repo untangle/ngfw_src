@@ -431,7 +431,7 @@ class OpenVpnManager
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
-            if(client.getGroup().isUseDNS()) {
+            if(client.getGroup().getUseDNS()) {
                 List<IPaddr> dnsServers = sis.getDnsServerList();
 
                 if ( settings.getIsDnsOverrideEnabled()) dnsServers = settings.getDnsServerList();

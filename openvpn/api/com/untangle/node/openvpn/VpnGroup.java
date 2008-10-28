@@ -54,7 +54,7 @@ public class VpnGroup extends Rule implements Validatable
      * Should clients use DNS from the server
      */
     @Column(name="use_dns", nullable=false)
-    public boolean isUseDNS()
+    public boolean getUseDNS()
     {
         return useDNS;
     }

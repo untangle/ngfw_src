@@ -1237,14 +1237,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 // the list of fields
                 fields : [{
                     name : 'id'
-                }, {
+                },{
                     name : 'live'
-                }, {
+                },{
                     name : 'name'
-                }, {
+                },{
                     name : 'address'
-                }, {
+                },{
                     name : 'netmask'
+                },{
+                    name : 'useDNS'
                 }],
                 autoExpandColumn: 'name',
                 // the list of columns for the column model
