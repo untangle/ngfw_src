@@ -71,12 +71,12 @@ Ung.Main.prototype = {
         rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.toolboxManager=result;
-            rpc.toolboxManager.getUpgradeSettings(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.upgradeSettings=result;
-                this.postinit();// 5
-            }.createDelegate(this));
-            
+            this.postinit();// 5
+//            rpc.toolboxManager.getUpgradeSettings(function (result, exception) {
+//                if(Ung.Util.handleException(exception)) return;
+//                rpc.upgradeSettings=result;
+//                this.postinit();// 5
+//            }.createDelegate(this));
         }.createDelegate(this));
         // get admin manager
         rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
@@ -124,24 +124,7 @@ Ung.Main.prototype = {
         if(this.initSemaphore!==0) {
             return;
         }
-        if(!rpc.upgradeSettings.autoUpgrade) {
-        	//do not upgrade automaticaly
-        	this.startApplication()
-        } else {
-            //check for upgrades
-        	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
-            rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
-            	if(Ung.Util.handleException(exception,function() {
-            		this.startApplication.defer(1500,this);
-            	}.createDelegate(this),"alert")) return;
-                var upgradeStatus=result;
-                if(!upgradeStatus.upgrading && upgradeStatus.upgradesAvailable) {
-                    this.upgrade();
-                } else {
-                    this.startApplication();
-                }
-            }.createDelegate(this),true);
-        }
+       	this.startApplication()
     },
     warnOnUpgrades : function(handler) {
     	if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
@@ -173,6 +156,7 @@ Ung.Main.prototype = {
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
                 return;
             } else if(upgradeStatus.upgradesAvailable){
+            	Ext.getCmp("configItem_upgrade").setIconCls("iconConfigUpgradeAvailable");
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
                 return;
             }
@@ -181,7 +165,6 @@ Ung.Main.prototype = {
     },
     startApplication: function() {
     	Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
-
         this.initExtI18n();
         this.initExtGlobal();
         this.initExtVTypes();
@@ -694,6 +677,19 @@ Ung.Main.prototype = {
             	item:item
             });
         }
+            //check for upgrades
+        rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
+            if(Ung.Util.handleException(exception, function() {
+            	main.upgradeLastCheckTime=(new Date()).getTime();
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message, function () {
+                    main.upgradeStatus={};
+                }.createDelegate(this));
+            }.createDelegate(this),"noAlert")) return;
+            main.upgradeStatus=result;
+            if(main.upgradeStatus.upgradesAvailable) {
+                Ext.getCmp("configItem_upgrade").setIconCls("iconConfigUpgradeAvailable");
+            }
+        }.createDelegate(this),true);
     },
     // click Config Button
     clickConfig: function(configItem) {

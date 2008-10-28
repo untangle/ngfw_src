@@ -412,6 +412,10 @@ Ung.ConfigItem = Ext.extend(Ext.Component, {
     item: null,
     renderTo : 'configItems',
     autoEl : 'div',
+    constructor : function(config) {
+        this.id = "configItem_" + config.item.name;
+        Ung.ConfigItem.superclass.constructor.apply(this, arguments);
+    },
     onRender : function(container, position) {
         Ung.ConfigItem.superclass.onRender.call(this, container, position);
         var html = Ung.ConfigItem.template.applyTemplate({
@@ -427,10 +431,13 @@ Ung.ConfigItem = Ext.extend(Ext.Component, {
             e.stopEvent();
         }
         main.clickConfig(this.item);
+    },
+    setIconCls: function(iconCls) {
+    	this.getEl().child("div[name=iconCls]").dom.className=iconCls;
     }
 });
 Ung.ConfigItem.template = new Ext.Template(
-    '<div class="icon"><div class="{iconCls}"></div></div>', '<div class="text textCenter">{text}</div>');
+    '<div class="icon"><div name="iconCls" class="{iconCls}"></div></div>', '<div class="text textCenter">{text}</div>');
 
 Ung.AppItem = Ext.extend(Ext.Component, {
     libItem: null,
