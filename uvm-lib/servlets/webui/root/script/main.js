@@ -133,7 +133,7 @@ Ung.Main.prototype = {
             if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
                 main.warnOnUpgradesCallback(main.upgradeStatus,handler);
             } else {
-                Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
+                Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
                 rpc.toolboxManager.getUpgradeStatus(function(result, exception,opt,handler) {
                 	main.upgradeLastCheckTime=(new Date()).getTime();
                     Ext.MessageBox.hide();
@@ -157,12 +157,17 @@ Ung.Main.prototype = {
                 return;
             } else if(upgradeStatus.upgradesAvailable){
             	Ext.getCmp("configItem_upgrade").setIconCls("iconConfigUpgradeAvailable");
-                Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.", function () {
-                    Ung.Util.loadResourceAndExecute("Ung.Upgrade","script/config/upgrade.js", function() {
-                        main.upgradeWin=new Ung.Upgrade(configItem);
-                        main.upgradeWin.show();
-                    });
-                }.createDelegate(this));
+            	Ext.Msg.show({
+                    title:i18n._("Upgrades warning"),
+                    msg: i18n._("Upgrades are available. You must perform all possible upgrades before downloading from the library. Please click OK to open Upgrade panel."),
+                    buttons: Ext.Msg.OKCANCEL,
+                    fn: function (btn, text) {
+                        if (btn == 'ok'){
+                            Ext.getCmp("configItem_upgrade").onClick();
+                        }
+                    },
+                    icon: Ext.MessageBox.QUESTION
+                });
                 return;
             }
 		}

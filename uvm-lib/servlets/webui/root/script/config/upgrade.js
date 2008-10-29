@@ -41,7 +41,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             return this.rpc.upgradeSettings;
         },
         loadGridUpgrade : function() {
-        	Ext.MessageBox.wait(i18n._("Checking for upgrades..."), i18n._("Please wait"));
+        	Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
             rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 var upgradeStatus=result;
