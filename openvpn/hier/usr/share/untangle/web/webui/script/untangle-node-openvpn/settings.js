@@ -14,22 +14,75 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         {
             this.i18n = config.i18n;
             this.node = config.node;
+            this.config = config;
+        },
 
+        sendEmail : function()
+        {
+            /* Determine the email address */
+            var emailAddress = this.panel.find( "name", "emailAddress" )[0].getValue();
+
+            if ( emailAddress == null || emailAddress.length == 0 ) {
+                Ext.MessageBox.alert( this.i18n._("Failure"),
+                                      this.i18n._("You must specify an email address to send the key to."));
+                return;
+            }
+
+            this.record.data.distributionEmail = emailAddress;
+
+            Ext.MessageBox.wait( this.i18n._( "Distributing digital key..." ), this.i18n._( "Please wait" ));
+            
+            this.node.distributeClientConfig(this.completeSendEmail.createDelegate(this), this.record.data);
+        },
+
+        completeSendEmail : function( result, exception )
+        {
+            if (exception) {
+                Ext.MessageBox.alert( this.i18n._("Error saving/sending key"), 
+                                      this.i18n._("OpenVPN was not able to send your digital key via email.  Please try again." ));
+                return;
+            }
+
+            // go to next step
+            Ext.MessageBox.alert( this.i18n._("Success"), 
+                                  this.i18n._("OpenVPN successfully sent your digital key via email."), 
+                                  this.hide.createDelegate( this ));
+        },
+
+        populate : function( record )
+        {
+            this.record = record;
+        },
+        
+        windowsInstaller : function()
+        {
+            return this.startDownload( "SETUP_EXE" );
+        },
+
+        configurationFiles : function()
+        {
+            return this.startDownload( "ZIP" );
+        },
+
+        startDownload : function( format )
+        {
+            var name = this.record.data.name;
+            
+            return this.node.getAdminDownloadLink( name, format );
+        },
+
+        show : function()
+        {
             var download = null;
-            if ( config.isVpnSite == true ) {
+            if ( this.config.isVpnSite == true ) {
                 download = new Ext.form.FieldSet({
                     title : this.i18n._('Download Key'),
                     autoHeight : true,
                     labelWidth: 150,
                     items: [{
-                        html : this.i18n._('Download VPN Site configuration.'),
+                        html :  "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Download VPN Site configuration.') + "</a>",
                         border: false,
                         cls : "description"
-                    },{
-                        xtype : 'button',
-                        text : this.i18n._( "Configuration Files" ),
-                        name : 'configurationFiles',
-                        handler : this.configurationFiles.createDelegate( this )
                     }]
                 });                
             } else {
@@ -38,24 +91,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     autoHeight : true,
                     labelWidth: 150,
                     items: [{
-                        html : this.i18n._('Click here to download a key for Windows clients.'),
+                        html :  "<a href=\"" + this.windowsInstaller() + "\" target=\"_blank\">" + this.i18n._('Click here to download a key for Windows clients.') + "</a>",
                         border: false,
                         cls : "description"
                     },{
-                        xtype : 'button',
-                        text : this.i18n._( "Windows Installer" ),
-                        name : 'windowsInstaller',
-                        handler : this.windowsInstaller.createDelegate( this )
-                    },{
-                        html : this.i18n._('Use this button for all other clients.'),
+                        html : "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Click here to download a key for all other clients.') + "</a>",
                         bodyStyle : 'paddingTop:10px',
                         border: false,
                         cls : "description"
-                    },{
-                        xtype : 'button',
-                        text : this.i18n._( "Configuration Files" ),
-                        name : 'configurationFiles',
-                        handler : this.configurationFiles.createDelegate( this )
                     }]
                 });
             }
@@ -101,84 +144,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     this.panel
                ]
             });
-        },
-
-        sendEmail : function()
-        {
-            /* Determine the email address */
-            var emailAddress = this.panel.find( "name", "emailAddress" )[0].getValue();
-
-            if ( emailAddress == null || emailAddress.length == 0 ) {
-                Ext.MessageBox.alert( this.i18n._("Failure"),
-                                      this.i18n._("You must specify an email address to send the key to."));
-                return;
-            }
-
-            this.record.data.distributionEmail = emailAddress;
-
-            Ext.MessageBox.wait( this.i18n._( "Distributing digital key..." ), this.i18n._( "Please wait" ));
-            
-            this.node.distributeClientConfig(this.completeSendEmail.createDelegate(this), this.record.data);
-        },
-
-        completeSendEmail : function( result, exception )
-        {
-            if (exception) {
-                Ext.MessageBox.alert( this.i18n._("Error saving/sending key"), 
-                                      this.i18n._("OpenVPN was not able to send your digital key via email.  Please try again." ));
-                return;
-            }
-
-            // go to next step
-            Ext.MessageBox.alert( this.i18n._("Success"), 
-                                  this.i18n._("OpenVPN successfully sent your digital key via email."), 
-                                  this.hide.createDelegate( this ));
-        },
-
-        populate : function( record )
-        {
-            this.record = record;
-        },
-        
-        windowsInstaller : function()
-        {
-            this.startDownload( "SETUP_EXE" );
-        },
-
-        configurationFiles : function()
-        {
-            this.startDownload( "ZIP" );
-        },
-
-        startDownload : function( format )
-        {
-            var name = this.record.data.name;
-
-            Ext.MessageBox.wait( this.i18n._( "Downloading digital key..." ), this.i18n._( "Please wait" ));
-            
-            this.node.getAdminDownloadLink(this.completeDownload.createDelegate(this),  name, format );
-        },
-
-        completeDownload : function( result, exception )
-        {
-            if ( exception ) {
-                Ext.MessageBox.alert( this.i18n._("Error downloading key"), 
-                                      this.i18n._("OpenVPN was not able to download your digital key.  Please try again." ));
-                return;
-            }
-
-            var link = result;
-	    //var w = window.open('/images/BrandingLogo.gif', 'openvpndownload','width=400,height=200,resizable=yes,toolbar=no, location=no,directories=no,status=no,menubar=no');
-            //w.location.href = link;
-
-            // go to next step
-            Ext.MessageBox.alert( this.i18n._("Success"), 
-                                  "<a href=\""+link+"\" target=\"_blank\">"+this.i18n._("Click here to download your file.")+"</a>", 
-                                  this.hide.createDelegate( this ));
-        },
-
-        show : function()
-        {
             this.window.show();
         },
         
@@ -732,8 +697,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 header : this.i18n._("distribute"),
                 dataIndex : null,
                 handle : function(record) {
-                    this.grid.distributeWindow.show();
                     this.grid.distributeWindow.populate(record);
+                    this.grid.distributeWindow.show();
                 },
                 renderer : function(value, metadata, record) {
                     var out= '';
