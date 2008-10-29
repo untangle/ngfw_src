@@ -45,6 +45,7 @@
     <script type="text/javascript" src="script/untangle-node-spyware/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-shield/settings.js"></script>
+    <script type="text/javascript" src="script/untangle-base-webfilter/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-webfilter/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-phish/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js"></script>
@@ -67,6 +68,7 @@
     <script type="text/javascript" src="script/config/policyManager.js"></script>
 </c:if>
 	<script type="text/javascript">
+        var debugMode=<c:out value="${isDebug}"/>;
 		function init() {
 			main=new Ung.Main();
 			main.init();

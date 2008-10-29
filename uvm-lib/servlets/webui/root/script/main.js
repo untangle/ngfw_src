@@ -6,6 +6,7 @@ var main=null;
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
+	debugMode: false,
     disableThreads: false, // in development environment is useful to disable
                             // threads.
     leftTabs: null,
@@ -25,6 +26,7 @@ Ung.Main.prototype = {
     upgradeLastCheckTime: null,
     // init function
     init: function() {
+    	this.debugMode=debugMode;
     	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         this.initSemaphore=10;
         rpc = {};
@@ -615,6 +617,18 @@ Ung.Main.prototype = {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             main.buildApps();
+        }.createDelegate(this), rpc.currentPolicy);
+    },
+    loadLicenseStatus: function() {
+        rpc.toolboxManager.getRackView(function (result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            rpc.rackView=result;
+            for (var i = 0; i < main.nodes.length; i++) {
+                var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
+                if (nodeCmp && nodeCmp.licenseStatus) {
+                    nodeCmp.updateLicenseStatus(rpc.rackView.licenseStatus.map[nodeCmp.name]);
+                }
+            }
         }.createDelegate(this), rpc.currentPolicy);
     },
 

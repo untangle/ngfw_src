@@ -1159,6 +1159,24 @@ Ung.Node = Ext.extend(Ext.Component, {
                 this.subCmps.push(this.systemBlinger);
             }
         }
+    },
+    updateLicenseStatus : function (licenseStatus) {
+    	this.licenseStatus=licenseStatus;
+    	var trialFlag = "";
+        var trialDays = "";
+        if(this.licenseStatus && this.licenseStatus.trial) {
+            trialFlag = i18n._("Trial");
+            if(this.licenseStatus.expired) {
+                trialDays = i18n._("Trial expired");
+            } else {
+                var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
+                if (!isNaN(daysRemain)) {
+                    trialDays = String.format(i18n._("{0} days remain"), daysRemain);
+                }
+            }
+        }
+    	this.getEl().child("div[class=nodeTrial]").dom.innerHTML=trialFlag;
+        this.getEl().child("div[class=nodeTrialDays]").dom.innerHTML=trialDays;
     }
 });
 // Get node component by tid
@@ -1250,14 +1268,14 @@ Ung.MessageManager = {
                     this.cycleCompleted = true;
                 }.createDelegate(this));
         	}.createDelegate(this),"noAlert")) return;
-           this.cycleCompleted = true;
-           try {
-               var messageQueue=result;
-               if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
+            this.cycleCompleted = true;
+            try {
+                var messageQueue=result;
+                if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
                    var refreshApps=false;
-                   Ung.MessageManager.messageHistory.push(messageQueue.messages.list); // for
-                                                                                        // debug
-                                                                                        // info
+                    if(main.debugMode) {
+                        Ung.MessageManager.messageHistory.push(messageQueue.messages.list); 
+                    }
                    for(var i=0;i<messageQueue.messages.list.length;i++) {
                        var msg=messageQueue.messages.list[i];
                         if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
@@ -1282,6 +1300,8 @@ Ung.MessageManager = {
                             main.startNode(Ung.Node.getCmp(node.tid));
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                         	refreshApps=true;
+                        } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
+                        	main.loadLicenseStatus();
                         } else {
                         	if(msg.upgrade==false) {
                         		var appItemName=msg.requestingMackage.type=="TRIAL"?msg.requestingMackage.fullVersion:msg.requestingMackage.name; 
