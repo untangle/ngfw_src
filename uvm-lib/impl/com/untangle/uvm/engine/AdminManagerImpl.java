@@ -287,14 +287,14 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
         File regFile = new File(REGISTRATION_INFO_FILE);
 
         /* Just return an empty registration */
-        if (!regFile.exists())
+        if (!regFile.exists() || ( regFile.length() == 0 ))
             return new RegistrationInfo(new Hashtable());
         try {
             Hashtable entries = FormUtil.parsePostData(regFile);
             return new RegistrationInfo(entries);
         } catch (Exception exn) {
-            logger.error("Exception during parsing registration info: ", exn);
-            return null;
+            logger.warn("Exception during parsing registration info: ", exn);
+            return new RegistrationInfo(new Hashtable());
         }
     }
 
