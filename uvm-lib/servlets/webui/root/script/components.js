@@ -866,24 +866,36 @@ Ung.Node = Ext.extend(Ext.Component, {
             'trialFlag' : trialFlag
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
-        this.subCmps.push(new Ext.Button({
-            name : "Show Settings",
-            iconCls : 'nodeSettingsIcon',
-            renderTo : 'nodeSettingsButton_' + this.getId(),
-            text : i18n._('Show Settings'),
-            handler : function() {
-                this.onSettingsAction();
-            }.createDelegate(this)
-        }));
-        this.subCmps.push(new Ext.Button({
-            name : "Help",
-            iconCls : 'iconHelp',
-            renderTo : 'nodeHelpButton_' + this.getId(),
-            text : i18n._('Help'),
-            handler : function() {
-                this.onHelpAction();
-            }.createDelegate(this)
-        }));
+        var buttonsPanel=new Ext.Panel({
+            renderTo : 'nodeButtons_' + this.getId(),
+            border: false, 
+            bodyStyle : 'background-color: transparent;',
+            width: 290,
+            buttonAlign: "left",
+            layout:'table',
+            layoutConfig: {
+                columns: 2
+            },
+            buttons : [{
+            	xtype: "button",
+                name : "Show Settings",
+                iconCls : 'nodeSettingsIcon',
+                text : i18n._('Show Settings'),
+                handler : function() {
+                    this.onSettingsAction();
+                }.createDelegate(this)
+            }, {
+                xtype: "button",
+                name : "Help",
+                iconCls : 'iconHelp',
+                text : i18n._('Help'),
+                handler : function() {
+                    this.onHelpAction();
+                }.createDelegate(this)
+            
+            }]
+        });
+        this.subCmps.push(buttonsPanel);
         if(this.hasPowerButton) {
             Ext.get('nodePower_' + this.getId()).on('click', this.onPowerClick, this);
             this.subCmps.push(new Ext.ToolTip({
@@ -1208,8 +1220,7 @@ Ung.Node.template = new Ext.Template('<div class="nodeImage"><img src="{image}"/
         '<div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
         '<div class="nodeState" id="nodeState_{id}" name="State"></div>',
         '<div class="{nodePowerCls}" id="nodePower_{id}" name="Power"></div>',
-        '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
-        '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
+        '<div class="nodeButtons" id="nodeButtons_{id}"></div>');
 
 // Message Manager object
 Ung.MessageManager = {
