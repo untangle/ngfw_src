@@ -813,7 +813,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 var city = cityCmp.getValue();
                                 var state = stateCmp.getValue();
                                 var country = countryCmp.getValue();
-                                var distinguishedName = String.format("O={0},OU={1},L={2},ST={3},C={4}",
+                                var distinguishedName = String.format("C={4},ST={3},L={2},OU={1},O={0}",
                                         organization, organizationUnit, city, state, country);
                                 
                                 // generate certificate

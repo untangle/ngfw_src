@@ -284,7 +284,7 @@ public class OpenSSLWrapper {
                                                                  "req",
                                                                  "-batch",
                                                                  "-subj",
-                                                                 "/CN=" + alias,
+                                                                 alias,
                                                                  "-new",
                                                                  "-x509",
                                                                  "-nodes",
