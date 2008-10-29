@@ -45,6 +45,12 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.initSubCmps.defer(1, this);
         },
         initSubCmps : function() {
+            var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
+            var useAuthentication = smtpLoginCmp != null && smtpLoginCmp.getValue()!=null && smtpLoginCmp.getValue().length > 0;
+            Ext.getCmp('email_smtpUseAuthentication').setValue(useAuthentication);
+            Ext.getCmp('email_smtpLogin').setContainerVisible(useAuthentication);
+            Ext.getCmp('email_smtpPassword').setContainerVisible(useAuthentication);
+        	
             var useSmtp = Ext.getCmp('email_smtpEnabled').getValue();
             if(useSmtp == false) {
                 Ext.getCmp('email_smtpHost').disable();
@@ -60,12 +66,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                 Ext.getCmp('email_smtpLogin').enable();
                 Ext.getCmp('email_smtpPassword').enable();
             }
-            
-            var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
-            var useAuthentication = smtpLoginCmp != null && smtpLoginCmp.getValue()!=null && smtpLoginCmp.getValue().length > 0;
-            Ext.getCmp('email_smtpUseAuthentication').setValue(useAuthentication);
-            Ext.getCmp('email_smtpLogin').setContainerVisible(useAuthentication);
-            Ext.getCmp('email_smtpPassword').setContainerVisible(useAuthentication);
         },
         
         getMailNode : function(forceReload) {
