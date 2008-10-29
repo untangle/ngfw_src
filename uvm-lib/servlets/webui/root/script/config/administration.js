@@ -1417,6 +1417,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
         },
         buildSkins : function() {
+        	// keep initial skin settings
+        	this.initialSkinSettings = Ung.Util.clone(this.getSkinSettings());
+        	
             var adminSkinsStore = new Ext.data.Store({
                 proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [true, false], false),
                 reader : new Ext.data.JsonReader({
@@ -1485,8 +1488,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             "select" : {
                                 fn : function(elem, record) {
                                     this.getSkinSettings().administrationClientSkin = record.data.name;
-                                    Ext.MessageBox.alert(this.i18n._("Info"), this.i18n
-                                            ._("Please note that you have to refresh the application after saving for the new skin to take effect."));
                                 }.createDelegate(this)
                             }
                         }
@@ -1607,6 +1608,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
 
         buildBranding : function() {
+            // keep initial branding settings
+            this.initialBrandingBaseSettings = Ung.Util.clone(this.getBrandingBaseSettings());
             var brandingBaseSettings = this.getBrandingBaseSettings();
             this.panelBranding = new Ext.Panel({
                 // private fields
@@ -1788,8 +1791,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         waitMsg : cmp.i18n._('Please wait while your logo image is uploaded...'),
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), 
-                                    String.format(cmp.i18n._("Upload Logo Succeeded. {0}Please note that you have to refresh the application for the new logo to take effect."), '<br>'), 
+                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Logo Succeeded."), 
                                 function() {
                                     Ext.getCmp('upload_logo_file_textfield').reset();
                                 } 
@@ -2053,28 +2055,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         // save function
         saveAction : function() {
-            /* A hook for doing something in a node before attempting to remove it */
-        	
-            //check to see if the branding info was changed in order to inform the user
-            if (!this.isBrandingExpired()) {
-                var brandingChanged = Ext.getCmp('administration_branding_default_logo').isDirty() 
-                            || Ext.getCmp('administration_branding_company_name').isDirty()
-                            || Ext.getCmp('administration_branding_company_url').isDirty()
-                            || Ext.getCmp('administration_branding_contact_name').isDirty()
-                            || Ext.getCmp('administration_branding_contact_email').isDirty();
-                if (brandingChanged) {
-                    Ext.MessageBox.alert(this.i18n._("Info"), 
-                            this.i18n._("Please note that you have to refresh the application after saving for the new branding information to take effect."),
-                            function() {
-                            	 this.completeSaveAction();
-                            }.createDelegate(this)
-                    );
-                    return;
-                }
-            }
-            this.completeSaveAction();
-        },
-        completeSaveAction : function() {
             if (this.validate()) {
             	this.saveSemaphore = 6;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
@@ -2136,8 +2116,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
         afterSave : function() {
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
+                var needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
+                if (!this.isBrandingExpired()) {
+                	needRefresh = needRefresh 
+                	       || this.initialBrandingBaseSettings.defaultLogo != this.getBrandingBaseSettings().defaultLogo
+                           || this.initialBrandingBaseSettings.companyName != this.getBrandingBaseSettings().companyName
+                           || this.initialBrandingBaseSettings.companyUrl != this.getBrandingBaseSettings().companyUrl
+                           || this.initialBrandingBaseSettings.contactName != this.getBrandingBaseSettings().contactName
+                           || this.initialBrandingBaseSettings.contactEmail != this.getBrandingBaseSettings().contactEmail;
+                }
                 Ext.MessageBox.hide();
                 this.cancelAction();
+                if (needRefresh) {
+                	Ung.Util.goToStartPage();
+                }
             }
         }        
     });
