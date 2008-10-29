@@ -157,7 +157,12 @@ Ung.Main.prototype = {
                 return;
             } else if(upgradeStatus.upgradesAvailable){
             	Ext.getCmp("configItem_upgrade").setIconCls("iconConfigUpgradeAvailable");
-                Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.");
+                Ext.MessageBox.alert(i18n._("Failed"), "Upgrades are available, please click Upgrade button in Config panel.", function () {
+                    Ung.Util.loadResourceAndExecute("Ung.Upgrade","script/config/upgrade.js", function() {
+                        main.upgradeWin=new Ung.Upgrade(configItem);
+                        main.upgradeWin.show();
+                    });
+                }.createDelegate(this));
                 return;
             }
 		}
