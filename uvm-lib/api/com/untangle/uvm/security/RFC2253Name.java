@@ -235,7 +235,7 @@ public class RFC2253Name implements java.io.Serializable {
 
         List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
 
-        LdapName ldapName = new LdapName(str);
+        LdapName ldapName = new LdapName(str.replaceAll(";","\\3B"));
 
         List<Rdn> rdns = ldapName.getRdns();
 
