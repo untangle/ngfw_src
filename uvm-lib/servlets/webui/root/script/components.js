@@ -794,6 +794,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     // mackage description
     md : null,
     // --------------------------------
+    hasPowerButton: null,
     // node state
     state : null, // On, Off, Attention, Stopped
     // is powered on,
@@ -828,7 +829,9 @@ Ung.Node = Ext.extend(Ext.Component, {
     		this.settingsWin.cancelAction();
     	}
         Ext.each(this.subCmps, Ext.destroy);
-        Ext.get('nodePower_' + this.getId()).removeAllListeners();
+        if(this.hasPowerButton) {
+            Ext.get('nodePower_' + this.getId()).removeAllListeners();
+        }
         Ung.Node.superclass.beforeDestroy.call(this);
     },
     onRender : function(container, position) {
@@ -858,30 +861,11 @@ Ung.Node = Ext.extend(Ext.Component, {
             'id' : this.getId(),
             'image' : this.image,
             'displayName' : this.md.displayName,
+            'nodePowerCls': this.hasPowerButton?"nodePower":"",
             'trialDays' : trialDays,
             'trialFlag' : trialFlag
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
-
-        Ext.get('nodePower_' + this.getId()).on('click', this.onPowerClick, this);
-        this.subCmps.push(new Ext.ToolTip({
-            html : Ung.Node.getStatusTip(),
-            target : 'nodeState_' + this.getId(),
-            autoWidth : true,
-            autoHeight : true,
-            showDelay : 20,
-            dismissDelay : 0,
-            hideDelay : 0
-        }));
-        this.subCmps.push(new Ext.ToolTip({
-            html : Ung.Node.getPowerTip(),
-            target : 'nodePower_' + this.getId(),
-            autoWidth : true,
-            autoHeight : true,
-            showDelay : 20,
-            dismissDelay : 0,
-            hideDelay : 0
-        }));
         this.subCmps.push(new Ext.Button({
             name : "Show Settings",
             iconCls : 'nodeSettingsIcon',
@@ -900,7 +884,28 @@ Ung.Node = Ext.extend(Ext.Component, {
                 this.onHelpAction();
             }.createDelegate(this)
         }));
-        this.updateRunState(this.runState);
+        if(this.hasPowerButton) {
+            Ext.get('nodePower_' + this.getId()).on('click', this.onPowerClick, this);
+            this.subCmps.push(new Ext.ToolTip({
+                html : Ung.Node.getStatusTip(),
+                target : 'nodeState_' + this.getId(),
+                autoWidth : true,
+                autoHeight : true,
+                showDelay : 20,
+                dismissDelay : 0,
+                hideDelay : 0
+            }));
+            this.subCmps.push(new Ext.ToolTip({
+                html : Ung.Node.getPowerTip(),
+                target : 'nodePower_' + this.getId(),
+                autoWidth : true,
+                autoHeight : true,
+                showDelay : 20,
+                dismissDelay : 0,
+                hideDelay : 0
+            }));
+            this.updateRunState(this.runState);
+        }
         this.initBlingers();
     },
     // is runState "RUNNING"
@@ -1182,8 +1187,9 @@ Ung.Node.getPowerTip = function() {
 };
 Ung.Node.template = new Ext.Template('<div class="nodeImage"><img src="{image}"/></div>', '<div class="nodeLabel">{displayName}</div>',
         '<div class="nodeTrialDays">{trialDays}</div>', '<div class="nodeTrial">{trialFlag}</div>',
-        '<div class="nodeBlingers" id="nodeBlingers_{id}"></div>', '<div class="nodeState" id="nodeState_{id}" name="State"></div>',
-        '<div class="nodePower" id="nodePower_{id}" name="Power"></div>',
+        '<div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
+        '<div class="nodeState" id="nodeState_{id}" name="State"></div>',
+        '<div class="{nodePowerCls}" id="nodePower_{id}" name="Power"></div>',
         '<div class="nodeSettingsButton" id="nodeSettingsButton_{id}"></div>',
         '<div class="nodeHelpButton" id="nodeHelpButton_{id}"></div>');
 
@@ -1269,7 +1275,7 @@ Ung.MessageManager = {
                         	refreshApps=true;
                             var node=main.getNode(msg.nodeDesc.mackageDesc.name)
                             if(!node) {
-                                var node=main.createNode(msg.nodeDesc.tid, msg.nodeDesc.mackageDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
+                                var node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
                                 main.nodes.push(node);
                                 main.addNode(node, true);
                             }

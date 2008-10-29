@@ -536,13 +536,14 @@ Ung.Main.prototype = {
         }
         return null;
     },
-    createNode: function (Tid, md, statDesc,licenseStatus,runState) {
+    createNode: function (nodeDesc, statDesc, licenseStatus, runState) {
         var node={};
-        node.tid=Tid.id;
-        node.Tid=Tid;
-        node.md=md;
-        node.name=md.name;
-        node.displayName=md.displayName;
+        node.tid=nodeDesc.tid.id;
+        node.Tid=nodeDesc.tid;
+        node.md=nodeDesc.mackageDesc;
+        node.hasPowerButton=nodeDesc.hasPowerButton
+        node.name=nodeDesc.mackageDesc.name;
+        node.displayName=nodeDesc.mackageDesc.displayName;
         node.licenseStatus=licenseStatus;
         node.image='image?name='+node.name;
         node.blingers=statDesc;
@@ -578,11 +579,11 @@ Ung.Main.prototype = {
         this.destoyNodes();
         this.nodes=[];
         for(var i=0;i<rpc.rackView.instances.list.length;i++) {
-            var instance=rpc.rackView.instances.list[i];
-            var node=this.createNode(instance.tid, instance.mackageDesc,
-                rpc.rackView.statDescs.map[instance.tid.id],
-                rpc.rackView.licenseStatus.map[instance.mackageDesc.name],
-                rpc.rackView.runStates.map[instance.tid.id]);
+            var nodeDesc=rpc.rackView.instances.list[i];
+            var node=this.createNode(nodeDesc,
+                rpc.rackView.statDescs.map[nodeDesc.tid.id],
+                rpc.rackView.licenseStatus.map[nodeDesc.mackageDesc.name],
+                rpc.rackView.runStates.map[nodeDesc.tid.id]);
             this.nodes.push(node);
         }
         for(var i=0;i<this.nodes.length;i++) {
