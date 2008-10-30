@@ -1083,6 +1083,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         } else {
             items =[{
             	anchor: '100% 100%',
+                cls: 'description',
             	bodyStyle : "padding: 15px 5px 5px 15px;",
                 html: String.format(i18n._("Error: There is no settings class for the node '{0}'."),this.name)
             }];
@@ -3599,8 +3600,8 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 title : this.singleSelectUser ? i18n._('Select User') : i18n._('Select Users'),
                 autoHeight : true,
                 items: [{
-                    bodyStyle : 'padding:0px 0px 5px 5px;',
                     border : false,
+                    cls: 'description',
                     html: this.singleSelectUser ? i18n._("You may choose user ID/Login that exists in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")
                                 : i18n._("You may choose user IDs/Logins that exist in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")
                 }, {

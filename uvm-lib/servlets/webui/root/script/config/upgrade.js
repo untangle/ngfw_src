@@ -216,10 +216,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 },
                 items : [{
                     title : this.i18n._('Automatic Upgrade'),
-                    defaults : {
-                        border : false,
-                        bodyStyle : 'padding:5px 5px 0px 5px;'
-                    },
                     items : [{
                         xtype : 'radio',
                         boxLabel : this.i18n._('Automatically Install Upgrades'),
@@ -234,7 +230,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             }
                         }
                     }, {
-                        bodyStyle : 'padding:5px 0px 5px 30px;',
+                        cls: 'description',
+                        border : false,
                         html : this.i18n
                                 ._("If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty.")
                     }, {
@@ -251,19 +248,18 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             }
                         }
                     }, {
-                        bodyStyle : 'padding:5px 0px 5px 30px;',
+                        cls: 'description',
+                        border : false,
                         html : this.i18n
                                 ._("If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab.")
                     }, {
+                        cls: 'description',
+                        border : false,
                         html : "<i>" + this.i18n._("Note: Turning off Automatic Upgrades does not disable signature & list updates")
                                 + "</i>"
                     }]
                 }, {
                     title : this.i18n._('Upgrade Time'),
-                    defaults : {
-                        border : false,
-                        bodyStyle : 'padding:5px 5px 0px 5px;'
-                    },
                     items : [{
                         xtype : 'checkbox',
                         name : 'Sunday',

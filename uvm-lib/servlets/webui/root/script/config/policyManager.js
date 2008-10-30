@@ -121,7 +121,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             
             if ( this.getPolicyManagerLicenseStatus().expired ) {
                 items = [{
-                    xtype : 'label',
+                    cls: 'description',
+                    border: false,
                     html : this.i18n._( 'Need to create network-access policies by username or time of the week? Click on "More Info" to learn more.' )
                 },{
                     xtype : 'button',
@@ -133,7 +134,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }];
             } else {
                 items = [{
-                    xtype : 'label',
+                    cls: 'description',
+                    border: false,
                     html : this.i18n._( 'You must install the policy manager in order to add additional racks.' )
                 }];
             }
@@ -649,7 +651,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     autoHeight : true,
                     title : this.i18n._("Protocol"),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._("The protocol you would like this policy to handle.")
                     }, new Ung.Util.ProtocolCombo({
@@ -662,7 +664,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     autoHeight : true,
                     title : this.i18n._("Interface"),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._("The ethernet interface (NIC) you would like this policy to handle.")
                     }, new Ung.Util.InterfaceCombo({
@@ -685,7 +687,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     autoHeight : true,
                     title : this.i18n._("Address"),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._("The IP address which you would like this policy to handle.")
                     }, {
@@ -706,7 +708,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     autoHeight : true,
                     title : this.i18n._("Port"),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._("The port which you would like this policy to handle.")
                     }, {
@@ -721,7 +723,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     autoHeight : true,
                     title : this.i18n._("Users"),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._("The users you would like to apply this policy to.")
                     }, {
@@ -748,7 +750,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     autoHeight : true,
                     title : this.i18n._("Time of Day"),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._("The time of day you would like this policy active.")
                     }, {
@@ -771,7 +773,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     autoHeight : true,
                     title : this.i18n._("Days of Week"),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._("The days of the week you would like this policy active.")
                     }, {
@@ -829,7 +831,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     autoHeight : true,
                     title : this.i18n._("Rack"),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._("The rack you would like to use to handle this policy.")
                     }, {

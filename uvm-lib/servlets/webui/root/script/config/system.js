@@ -203,6 +203,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     buttonAlign: "left",
                     items : [{
                         border: false,
+                        cls: 'description',
                         html: String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>",this.companyName)                      
                     }],
                     buttons: [{
@@ -284,11 +285,9 @@ if (!Ung.hasResource["Ung.System"]) {
                 },
                 items : [{
                     title : this.i18n._('Backup to File'),
-                    defaults : {
-                        border : false,
-                        bodyStyle : 'padding:5px 5px 0px 5px;'
-                    },
                     items : [{
+                        border : false,
+                    	cls: 'description',
                     	html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"") +
                     			"<br> <br> " +
                     			this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
@@ -302,11 +301,9 @@ if (!Ung.hasResource["Ung.System"]) {
                     }]
                 },{
                     title : this.i18n._('Backup to Hard Disk'),
-                    defaults : {
-                        border : false,
-                        bodyStyle : 'padding:5px 5px 0px 5px;'
-                    },
                     items : [{
+                        border : false,
+                    	cls: 'description',
                         html: this.i18n._("You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.") +
                         		"<br>\n<br>\n" +
                         		String.format(this.i18n._("After backing up your current system configuration to Hard Disk, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."),'<b>','</b>')
@@ -383,11 +380,9 @@ if (!Ung.hasResource["Ung.System"]) {
                 },
                 items : [{
                     title : this.i18n._('From File'),
-                    defaults : {
-                        border : false,
-                        bodyStyle : 'padding:5px 5px 0px 5px;'
-                    },
                     items : [{
+                    	border : false,
+                        cls: 'description',
                         html: this.i18n._("You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\"")
                     },{
                         fileUpload : true,
@@ -417,11 +412,9 @@ if (!Ung.hasResource["Ung.System"]) {
                     }]
                 },{
                     title : this.i18n._('From Hard Disk'),
-                    defaults : {
-                        border : false,
-                        bodyStyle : 'padding:5px 5px 0px 5px;'
-                    },
                     items : [{
+                        border : false,
+                        cls: 'description',
                         html: String.format(this.i18n._("After backing up your system configuration, you can restore that configuration through the {0}Recovery Utilities{1} on your server once it is done booting."),'<b>','</b>') +
                         		"\n<br>\n<br>" +
                         		String.format(this.i18n._("To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting."),'<b>','</b>')
@@ -435,6 +428,7 @@ if (!Ung.hasResource["Ung.System"]) {
             protocolSettingsItems.push(new Ext.form.FieldSet({
                 autoHeight : true,
                 border: false,
+                cls: 'description',
                 html: this.i18n._('Warning: These settings should not be changed unless instructed to do so by support.')
             }));
             
@@ -840,7 +834,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     title : this.i18n._('Current Time'),
                     defaults : {
                         border : false,
-                        bodyStyle : 'padding:5px 5px 0px 5px'
+                        cls: 'description'
                     },
                     items : [{
                         html : this.i18n._('time is automatically synced via NTP')

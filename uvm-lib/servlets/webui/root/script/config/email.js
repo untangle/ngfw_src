@@ -215,7 +215,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 items : [{
                     title : this.i18n._('Outgoing Email Server (SMTP)'),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : String.format(this.i18n
                                 ._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. In most cases the default setting should work, but if not, you should specify an SMTP server that will relay mail for the {0} Server."),
@@ -315,7 +315,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }, {
                     title : this.i18n._('Email From Address'),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                     	html : String.format(this.i18n._("The {0} Server will send email from this address."),
                                     main.getBrandingBaseSettings().companyName)
@@ -332,7 +332,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }, {
                     title : this.i18n._('Email Test'),
                     items : [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._('The Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect.')
                     },{
@@ -801,7 +801,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 ]}, {
                 	title : this.i18n._('Quarantinable Addresses'),
                     items: [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._('Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined.')
                     },  this.quarantinableAddressesGrid = new Ung.EditorGrid({
@@ -870,7 +870,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }, {
                     title : this.i18n._('Quarantine Forwards'),
                     items: [{
-                        bodyStyle : 'padding:0px 0px 5px 5px;',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._('This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest.')
                     }, this.quarantineForwardsGrid = new Ung.EditorGrid({
