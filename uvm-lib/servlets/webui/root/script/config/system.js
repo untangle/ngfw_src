@@ -168,8 +168,8 @@ if (!Ung.hasResource["Ung.System"]) {
                     title : this.i18n._('Support'),
                     items : [{
                         xtype : 'checkbox',
-                        name : 'Allow us to securely access your server for support purposes',
-                        boxLabel : String.format(this.i18n._('{0}Allow{1} us to securely access your server for support purposes.'), '<b>', '</b>'),
+                        name : 'Allow secure access to your server for support purposes',
+                        boxLabel : String.format(this.i18n._('{0}Allow{1} secure access to your server for support purposes.'), '<b>', '</b>'),
                         hideLabel : true,
                         checked : this.getAccessSettings().isSupportEnabled,
                         listeners : {
@@ -181,9 +181,9 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }, {
                         xtype : 'checkbox',
-                        name : 'Send us data about your server',
+                        name : 'Send data about your server for support purposes',
                         boxLabel : String.format(this.i18n
-                                ._('{0}Send{1} us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted.'),
+                                ._('{0}Send{1} data about your server for support purposes. This will send status updates and an email if any unexpected problems occur, but will not allow support secure access to your server. No personal information about the network will be transmitted.'),
                                 '<b>', '</b>'),
                         hideLabel : true,
                         height: 100,
