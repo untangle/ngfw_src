@@ -158,7 +158,7 @@ class AptLogTail implements Runnable
             // nothing to upgrade
             return;
         }
-        
+
         mm.submitMessage(new DownloadSummary(downloadQueue.size(),
                                              totalSize, requestingMackage));
 
@@ -248,7 +248,7 @@ class AptLogTail implements Runnable
             throw new RuntimeException("could not read apt-log", exn);
         }
     }
-    
+
     private boolean isUpgrade()
     {
         return null == requestingMackage;

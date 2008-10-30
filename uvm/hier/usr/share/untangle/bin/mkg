@@ -305,7 +305,7 @@ class RealMkg
           log "DOWNLOAD SUCCEEDED: #{p}"
         else
           log "DOWNLOAD FAILED: #{p}"
-      return -1
+          return -1
         end
 
       end

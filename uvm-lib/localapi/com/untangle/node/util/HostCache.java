@@ -88,10 +88,12 @@ public class HostCache
             return null;
         }
 
-        while (null != domain) {
+        String dom = domain;
+
+        while (null != dom) {
             String s = null;
             try {
-                DatabaseEntry k = new DatabaseEntry(domain.getBytes());
+                DatabaseEntry k = new DatabaseEntry(dom.getBytes());
                 DatabaseEntry v = new DatabaseEntry();
 
                 OperationStatus status = db.get(null, k, v,
@@ -109,7 +111,7 @@ public class HostCache
             if (null != s) {
                 for (CacheRecord r : getRecords(s)) {
                     if (r.isExact()) {
-                        if (uri.equals(r.uri)) {
+                        if (domain.equals(dom) && uri.equals(r.uri)) {
                             return r.getCategoryString();
                         }
                     } else {
@@ -120,12 +122,13 @@ public class HostCache
                 }
             }
 
-            domain = nextHost(domain);
+            dom = nextHost(dom);
         }
         return null;
     }
 
-    public void cacheCategories(String url, String categories)
+    public void cacheCategories(String url, String categories,
+                                String origDomain, String origUri)
     {
         String[] s = url.split("/", 2);
 
@@ -138,6 +141,10 @@ public class HostCache
             if (domain.startsWith(".")) {
                 exact = true;
                 domain = domain.substring(1);
+
+                if (origDomain.endsWith(domain)) {
+                    addRecord(origDomain, categories, true, origUri);
+                }
             }
 
             if (s.length >= 2) {

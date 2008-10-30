@@ -370,8 +370,9 @@ public abstract class Blacklist
         for (String cat : cats.keySet()) {
             CharSequence[] strs = cats.get(cat);
             int i = findMatch(strs, val);
-            if (0 <= i)
+            if (0 <= i) {
                 result.add(cat);
+            }
         }
         if (result.size() == 0) {
             return null;
