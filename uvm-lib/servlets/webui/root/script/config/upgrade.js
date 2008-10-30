@@ -59,8 +59,10 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                 Ext.getCmp("config_start_upgrade_button").enable();
                                 var upgradeData = [];
                                 var somethingVisibleAdded = false;
+                                var totalSize=0;
                                 for (var i = 0; i < upgradeList.length; i++) {
                                     var md = upgradeList[i];
+                                    totalSize+=md.size;
                                     if (md.type != "CASING" && md.type != "LIB_ITEM" && md.type != "TRIAL" && md.type != "BASE") {
                                         somethingVisibleAdded = true;
                                         upgradeData.push({
@@ -89,8 +91,10 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                         size : Math.round(md.size / 1000)
                                     });
                                 }
+                                this.gridUpgrade.getTopToolbar().items.get(0).getEl().innerHTML=String.format(i18n._("Upgrades are available. There are {0} packages. Total size is {1} MBs."),upgradeList.length,Ung.Util.bytesToMBs(totalSize));
                             } else {
                                 Ext.getCmp("config_start_upgrade_button").disable();
+                                this.gridUpgrade.getTopToolbar().items.get(0).getEl().innerHTML=i18n._("No upgrades available.");
                             }
                             this.gridUpgrade.getStore().proxy.data = {
                                 list : upgradeData
@@ -111,6 +115,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 title : this.i18n._('Upgrade'),
                 enableHdMenu : false,
                 enableColumnMove: false,
+                tbar: [{xtype: 'tbtext', text: " "}],
                 store : new Ext.data.Store({
                     proxy : new Ung.MemoryProxy({
                         root : 'list'

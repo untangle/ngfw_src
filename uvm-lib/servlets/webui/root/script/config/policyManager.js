@@ -13,7 +13,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 title : this.i18n._('Policy Manager')
             }];
             if(this.node!=null) {
-                this.bbar=[{
+                this.bbar=['-',{
                     name : "Remove",
                     id : this.getId() + "_removeBtn",
                     iconCls : 'nodeRemoveIcon',
@@ -23,7 +23,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             this.node.settingsWin.removeAction();
                     	}
                     }.createDelegate(this)
-                },{
+                },'-',{
                     name : 'Help',
                     id : this.getId() + "_helpBtn",
                     iconCls : 'iconHelp',
@@ -39,7 +39,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     handler : function() {
                         this.cancelAction();
                     }.createDelegate(this)
-                },{
+                },'-',{
                     name : "Save",
                     id : this.getId() + "_saveBtn",
                     iconCls : 'saveIcon',
@@ -47,7 +47,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     handler : function() {
                         this.saveAction.defer(1, this);
                     }.createDelegate(this)
-                }];
+                },'-'];
             }
             this.buildPolicyManagement();
             // builds the tab panel with the tabs

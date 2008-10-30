@@ -428,7 +428,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         emptyRow : {
                             "emailAddress" : this.i18n._("[no email address]")
                         },
-                        autoExpandColumn : 'emailAddress',
+                        //autoExpandColumn : 'emailAddress',
                         fields : [{
                             name : 'id'
                         }, {
@@ -437,7 +437,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         columns : [{
                             id : 'emailAddress',
                             header : this.i18n._("email address"),
-                            width : 200,
+                            width : 450,
                             dataIndex : 'emailAddress'
                         }],
                         sortField : 'emailAddress',
@@ -447,7 +447,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             dataIndex: "emailAddress",
                             fieldLabel : this.i18n._("Email Address"),
                             allowBlank : false,
-                            width : 200
+                            width : 300
                         })],
                         store : new Ext.data.Store({
                             proxy : new Ung.RpcProxy(this.getSafelistAdminView().getSafelistContents, ['GLOBAL'], false), 
@@ -504,15 +504,15 @@ if (!Ung.hasResource["Ung.Email"]) {
                         columns : [smUserSafelist, {
                             id : 'emailAddress',
                             header : this.i18n._("account address"),
-                            width : 200,
+                            width : 350,
                             dataIndex : 'emailAddress'
                         }, {
                             id : 'count',
                             header : this.i18n._("safe list size"),
-                            width : 200,
+                            width : 150,
                             dataIndex : 'count'
                         }, showDetailColumn],
-                        autoExpandColumn : 'emailAddress',
+                        //autoExpandColumn : 'emailAddress',
                         sortField : 'emailAddress',
                         columnsDefaultSortable : true,
                         plugins : [showDetailColumn],
@@ -1232,14 +1232,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                 handler : function() {
                     this.cancelAction();
                 }.createDelegate(this)
-            },{
+            },'-',{
                 name : 'Help',
                 iconCls : 'iconHelp',
                 text : this.settingsCmp.i18n._('Help'),
                 handler : function() {
                     this.settingsCmp.helpAction();
                 }.createDelegate(this)
-            }];
+            },'-'];
             this.items=this.detailsPanel;
             Ung.EmailAddressDetails.superclass.initComponent.call(this);
         },

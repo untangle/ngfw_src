@@ -2283,7 +2283,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             title : this.nodeCmp.md.displayName
         }];
         if(this.bbar==null) {
-            this.bbar=[{
+            this.bbar=['-',{
                 name : "Remove",
                 id : this.getId() + "_removeBtn",
                 iconCls : 'nodeRemoveIcon',
@@ -2291,7 +2291,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
                 handler : function() {
                     this.removeAction();
                 }.createDelegate(this)
-            },{
+            },'-',{
                 name : 'Help',
                 id : this.getId() + "_helpBtn",
                 iconCls : 'iconHelp',
@@ -2307,7 +2307,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
                 handler : function() {
                     this.cancelAction();
                 }.createDelegate(this)
-            },{
+            },'-',{
                 name : "Save",
                 id : this.getId() + "_saveBtn",
                 iconCls : 'saveIcon',
@@ -2315,7 +2315,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
                 handler : function() {
                     this.saveAction.defer(1, this);
                 }.createDelegate(this)
-            }];
+            },'-'];
         }
         Ung.NodeSettingsWin.superclass.initComponent.call(this);
     },
@@ -2366,7 +2366,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             this.name = "configWin_" + this.name;
         }
         if(this.bbar==null) {
-            this.bbar=[{
+            this.bbar=['-',{
                 name : 'Help',
                 id : this.getId() + "_helpBtn",
                 iconCls : 'iconHelp',
@@ -2382,7 +2382,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
                 handler : function() {
                     this.cancelAction();
                 }.createDelegate(this)
-            },{
+            },'-',{
                 name : 'Save',
                 id : this.getId() + "_saveBtn",
                 iconCls : 'saveIcon',
@@ -2390,7 +2390,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
                 handler : function() {
                     this.saveAction.defer(1, this);;
                 }.createDelegate(this)
-            }];
+            },'-'];
         }
         Ung.ConfigWin.superclass.initComponent.call(this);
     },
@@ -2448,14 +2448,14 @@ Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
                 handler : function() {
                     this.cancelAction();
                 }.createDelegate(this)
-            },{
+            },'-',{
                 name : 'Update',
                 iconCls : 'saveIcon',
                 text : i18n._('Update'),
                 handler : function() {
                     this.updateAction();
                 }.createDelegate(this)
-            }];
+            },'-'];
         }
         Ung.UpdateWindow.superclass.initComponent.call(this);
     },
