@@ -1536,17 +1536,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             xtype : 'textfield',
                             allowBlank : false
                         }, {
+                            xtype : 'button',
+                            text : this.i18n._("Upload"),
+                            handler : function() {
+                                this.panelSkins.onUpload();
+                            }.createDelegate(this)
+                        }, {
                             xtype : 'hidden',
                             name : 'type',
                             value : 'skin'
                         }]
-                    },
-                    buttons : [{
-                        text : this.i18n._("Upload"),
-                        handler : function() {
-                            this.panelSkins.onUpload();
-                        }.createDelegate(this)
-                    }]
+                    }
                 }],
                 onUpload : function() {
                     var prova = Ext.getCmp('upload_skin_form');
@@ -1630,10 +1630,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         var formItem = this.items.get(1).items.get(2);
                         if (enabled) {
                             formItem.items.get(0).enable();
-                            formItem.buttons[0].enable();
+                            formItem.items.get(1).enable();
                         } else {
                             formItem.items.get(0).disable();
-                            formItem.buttons[0].disable();
+                            formItem.items.get(1).disable();
 
                         }
                     } catch (e) {
@@ -1700,16 +1700,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             disabled : brandingBaseSettings.defaultLogo,
                             allowBlank : false
                         }, {
-                            xtype : 'hidden',
-                            name : 'type',
-                            value : 'logo'
-                        }],
-                        buttons : [{
+                            id : 'upload_logo_file_button',
+                            xtype : 'button',
                             text : this.i18n._("Upload"),
                             handler : function() {
                                 this.panelBranding.onUpload();
                             }.createDelegate(this),
                             disabled : (brandingBaseSettings.defaultLogo)
+                        }, {
+                            xtype : 'hidden',
+                            name : 'type',
+                            value : 'logo'
                         }]
                     }]
 

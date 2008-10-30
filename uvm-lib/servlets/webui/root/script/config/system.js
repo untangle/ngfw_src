@@ -403,17 +403,17 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'textfield',
                             allowBlank : false
                         }, {
+                            xtype : 'button',
+                            text : this.i18n._("Restore from File"),
+                            name: "Restore from File",
+                            handler : function() {
+                                this.panelRestore.onRestoreFromFileFile();
+                            }.createDelegate(this)
+                        }, {
                             xtype : 'hidden',
                             name : 'type',
                             value : 'restore'
                         }]
-                    }],
-                    buttons : [{
-                        text : this.i18n._("Restore from File"),
-                        name: "Restore from File",
-                        handler : function() {
-                            this.panelRestore.onRestoreFromFileFile();
-                        }.createDelegate(this)
                     }]
                 },{
                     title : this.i18n._('From Hard Disk'),
@@ -924,18 +924,18 @@ if (!Ung.hasResource["Ung.System"]) {
                             xtype : 'textfield',
                             allowBlank : false
                         }, {
+                            xtype : 'button',
+                            text : this.i18n._("Upload"),
+                            name : "Upload",
+                            handler : function() {
+                                this.panelRegionalSettings.onUpload();
+                            }.createDelegate(this)
+                        }, {
                             xtype : 'hidden',
                             name : 'type',
                             value : 'language'
                         }]
-                    },
-                    buttons : [{
-                        text : this.i18n._("Upload"),
-                        name : "Upload",
-                        handler : function() {
-                            this.panelRegionalSettings.onUpload();
-                        }.createDelegate(this)
-                    }]
+                    }
                 }],
                 onUpload : function() {
                     var prova = Ext.getCmp('upload_language_form');
