@@ -331,13 +331,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }]
                 }, {
                     title : this.i18n._('Email Test'),
-                    buttonAlign : 'center',
                     items : [{
                         bodyStyle : 'padding:0px 0px 5px 5px;',
                         border : false,
                         html : this.i18n._('The Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect.')
-                    }], 
-                    buttons : [{
+                    },{
+                    	xtype : 'button',
                         text : this.i18n._("Email Test"),
                         iconCls : 'testIcon',
                         name: "emailTestButton",
