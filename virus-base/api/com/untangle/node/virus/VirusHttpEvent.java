@@ -54,7 +54,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@org.hibernate.annotations.Entity(mutable=false)
+    @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_virus_evt_http", schema="events")
     public class VirusHttpEvent extends VirusEvent
     {
@@ -62,7 +62,7 @@ import org.hibernate.annotations.Type;
         private VirusScannerResult result;
         private String vendorName;
 
-        // constructors -----------------------------------------------------------
+        // constructors -------------------------------------------------------
 
         public VirusHttpEvent() { }
 
@@ -74,28 +74,28 @@ import org.hibernate.annotations.Type;
             this.vendorName = vendorName;
         }
 
-        // VirusEvent methods -----------------------------------------------------
+        // VirusEvent methods -------------------------------------------------
 
         @Transient
-        public String getType()
+            public String getType()
         {
             return "HTTP";
         }
 
         @Transient
-        public String getLocation()
+            public String getLocation()
         {
             return null == requestLine ? "" : requestLine.getUrl().toString();
         }
 
         @Transient
-        public boolean isInfected()
+            public boolean isInfected()
         {
             return !result.isClean();
         }
 
         @Transient
-        public int getActionType()
+            public int getActionType()
         {
             if (true == result.isClean()) {
                 return PASSED;
@@ -107,7 +107,7 @@ import org.hibernate.annotations.Type;
         }
 
         @Transient
-        public String getActionName()
+            public String getActionName()
         {
             switch(getActionType())
                 {
@@ -122,7 +122,7 @@ import org.hibernate.annotations.Type;
         }
 
         @Transient
-        public String getVirusName()
+            public String getVirusName()
         {
             String n = result.getVirusName();
 
@@ -130,12 +130,12 @@ import org.hibernate.annotations.Type;
         }
 
         @Transient
-        public PipelineEndpoints getPipelineEndpoints()
+            public PipelineEndpoints getPipelineEndpoints()
         {
             return null == requestLine ? null : requestLine.getPipelineEndpoints();
         }
 
-        // accessors --------------------------------------------------------------
+        // accessors ----------------------------------------------------------
 
         /**
          * Corresponding request line.
@@ -143,8 +143,8 @@ import org.hibernate.annotations.Type;
          * @return the request line.
          */
         @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-        @JoinColumn(name="request_line")
-        public RequestLine getRequestLine()
+            @JoinColumn(name="request_line")
+            public RequestLine getRequestLine()
         {
             return requestLine;
         }
@@ -160,12 +160,12 @@ import org.hibernate.annotations.Type;
          * @return the scan result.
          */
         @Columns(columns = {
-            @Column(name="clean"),
-            @Column(name="virus_name"),
-            @Column(name="virus_cleaned")
-        })
-        @Type(type="com.untangle.node.virus.VirusScannerResultUserType")
-        public VirusScannerResult getResult()
+                @Column(name="clean"),
+                @Column(name="virus_name"),
+                @Column(name="virus_cleaned")
+            })
+            @Type(type="com.untangle.node.virus.VirusScannerResultUserType")
+            public VirusScannerResult getResult()
         {
             return result;
         }
@@ -176,12 +176,12 @@ import org.hibernate.annotations.Type;
         }
 
         /**
-         * Spam scanner vendor.
+         * Virus vendor.
          *
          * @return the vendor
          */
         @Column(name="vendor_name")
-        public String getVendorName()
+            public String getVendorName()
         {
             return vendorName;
         }

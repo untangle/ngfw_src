@@ -34,8 +34,14 @@ public class WebFilterWhitelistFilter
     private static final RepositoryDesc REPO_DESC
         = new RepositoryDesc("Whitelisted HTTP Traffic");
 
-    private static final String WARM_QUERY
-        = "FROM WebFilterEvent evt WHERE evt.action = 'P' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    private final String warmQuery;
+
+    WebFilterWhitelistFilter(WebFilterBase node)
+    {
+        warmQuery = "FROM WebFilterEvent evt WHERE evt.vendorName = '"
+            + node.getVendor()
+            + "' AND evt.action = 'P' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    }
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -46,7 +52,7 @@ public class WebFilterWhitelistFilter
 
     public String[] getQueries()
     {
-        return new String[] { WARM_QUERY };
+        return new String[] { warmQuery };
     }
 
     public boolean accept(WebFilterEvent e)

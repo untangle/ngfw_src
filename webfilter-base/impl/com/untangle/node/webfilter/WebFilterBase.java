@@ -99,13 +99,13 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         replacementGenerator = new WebFilterReplacementGenerator(getTid());
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-        SimpleEventFilter sef = new WebFilterBlockedFilter();
+        SimpleEventFilter sef = new WebFilterBlockedFilter(this);
         eventLogger.addSimpleEventFilter(sef);
-        ListEventFilter lef = new WebFilterAllFilter();
+        ListEventFilter lef = new WebFilterAllFilter(this);
         eventLogger.addListEventFilter(lef);
-        sef = new WebFilterWhitelistFilter();
+        sef = new WebFilterWhitelistFilter(this);
         eventLogger.addSimpleEventFilter(sef);
-        lef = new WebFilterPassedFilter();
+        lef = new WebFilterPassedFilter(this);
         eventLogger.addListEventFilter(lef);
 
         LocalMessageManager lmm = LocalUvmContextFactory.context()
@@ -361,6 +361,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     protected abstract Blacklist getBlacklist();
+
+    protected abstract String getVendor();
 
     // Node methods ------------------------------------------------------
 

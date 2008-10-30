@@ -19,6 +19,7 @@
 package com.untangle.node.webfilter;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -51,6 +52,7 @@ import org.hibernate.annotations.Type;
         private Action action;
         private Reason reason;
         private String category;
+        private String vendorName;
 
         // non-persistent fields -----------------------------------------------
 
@@ -61,12 +63,15 @@ import org.hibernate.annotations.Type;
         public WebFilterEvent() { }
 
         public WebFilterEvent(RequestLine requestLine, Action action,
-                              Reason reason, String category, boolean nonEvent)
+                              Reason reason, String category,
+                              String vendorName, boolean nonEvent)
         {
             this.requestLine = requestLine;
             this.action = action;
             this.reason = reason;
             this.category = category;
+
+            this.vendorName = vendorName;
 
             this.nonEvent = nonEvent;
 
@@ -154,6 +159,22 @@ import org.hibernate.annotations.Type;
         public void setCategory(String category)
         {
             this.category = category;
+        }
+
+        /**
+         * Spam scanner vendor.
+         *
+         * @return the vendor
+         */
+        @Column(name="vendor_name")
+            public String getVendorName()
+        {
+            return vendorName;
+        }
+
+        public void setVendorName(String vendorName)
+        {
+            this.vendorName = vendorName;
         }
 
         // WebFilterEvent methods ----------------------------------------------

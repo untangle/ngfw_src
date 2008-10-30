@@ -34,8 +34,14 @@ public class WebFilterBlockedFilter
     private static final RepositoryDesc REPO_DESC
         = new RepositoryDesc("Blocked HTTP Traffic");
 
-    private static final String WARM_QUERY
-        = "FROM WebFilterEvent evt WHERE evt.action = 'B' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    private final String warmQuery;
+
+    WebFilterBlockedFilter(WebFilterBase node)
+    {
+        warmQuery = "FROM WebFilterEvent evt WHERE evt.vendor_name = '"
+            + node.getVendor()
+            + "' AND evt.action = 'B' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    }
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -46,7 +52,7 @@ public class WebFilterBlockedFilter
 
     public String[] getQueries()
     {
-        return new String[] { WARM_QUERY };
+        return new String[] { warmQuery };
     }
 
     public boolean accept(WebFilterEvent e)

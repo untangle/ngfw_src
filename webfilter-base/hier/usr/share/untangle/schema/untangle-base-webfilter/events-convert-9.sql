@@ -1,5 +1,5 @@
--- events schema for release-5.0
--- $HeadURL$
+-- events conversion for release-6.0
+-- $HeadURL: svn://chef/work/src/webfilter-base/hier/usr/share/untangle/schema/untangle-base-webfilter/events-convert-8.sql $
 -- Copyright (c) 2003-2007 Untangle, Inc.
 --
 -- This program is free software; you can redistribute it and/or modify
@@ -16,17 +16,4 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
--- com.untangle.tran.httpblocker.HttpBlockerEvent
-CREATE TABLE events.n_webfilter_evt_blk (
-    event_id int8 NOT NULL,
-    request_id int8,
-    action char(1),
-    reason char(1),
-    category varchar(255),
-    vendor_name text,
-    time_stamp timestamp,
-    PRIMARY KEY (event_id));
-
--- indices for reporting
-
-CREATE INDEX n_webfilter_evt_blk_ts_idx ON events.n_webfilter_evt_blk (time_stamp);
+ALTER TABLE events.n_webfilter_evt_blk ADD COLUMN vendor_name text;

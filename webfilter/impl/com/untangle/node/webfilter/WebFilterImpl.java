@@ -26,4 +26,9 @@ public class WebFilterImpl extends WebFilterBase
     {
         return blacklist;
     }
+
+    protected String getVendor()
+    {
+        return "untangle";
+    }
 }

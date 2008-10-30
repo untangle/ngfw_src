@@ -38,10 +38,22 @@ import org.hibernate.Session;
 public class WebFilterPassedFilter implements ListEventFilter<WebFilterEvent>
 {
     private static final String RL_QUERY = "FROM RequestLine rl ORDER BY rl.httpRequestEvent.timeStamp DESC";
-    private static final String EVT_QUERY = "FROM WebFilterEvent evt WHERE evt.requestLine = :requestLine";
+
+    private final String evtQuery;
 
     private static final RepositoryDesc REPO_DESC
         = new RepositoryDesc("Passed HTTP Traffic");
+
+    private final String vendorName;
+
+    public WebFilterPassedFilter(WebFilterBase node)
+    {
+        this.vendorName = node.getVendor();
+
+        evtQuery = "FROM WebFilterEvent evt WHERE evt.vendorName = '"
+            + vendorName
+            + "' AND evt.requestLine = :requestLine";
+    }
 
     public RepositoryDesc getRepositoryDesc()
     {
@@ -69,11 +81,12 @@ public class WebFilterPassedFilter implements ListEventFilter<WebFilterEvent>
         int c = 0;
         for (Iterator i = q.iterate(); i.hasNext() && c < limit; ) {
             RequestLine rl = (RequestLine)i.next();
-            Query evtQ = s.createQuery(EVT_QUERY);
+            Query evtQ = s.createQuery(evtQuery);
             evtQ.setEntity("requestLine", rl);
             WebFilterEvent evt = (WebFilterEvent)evtQ.uniqueResult();
             if (null == evt) {
-                evt = new WebFilterEvent(rl, null, null, null, true);
+                evt = new WebFilterEvent(rl, null, null, null,
+                                         vendorName, true);
                 Hibernate.initialize(rl);
                 l.add(evt);
                 c++;

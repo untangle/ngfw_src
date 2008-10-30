@@ -248,7 +248,8 @@ public abstract class Blacklist
         }
 
         WebFilterEvent e = new WebFilterEvent(requestLine.getRequestLine(),
-                                              null, null, null, true);
+                                              null, null, null,
+                                              node.getVendor(), true);
         node.log(e);
 
         return null;
