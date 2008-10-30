@@ -177,6 +177,8 @@ restartServiceIfNeeded() {
   for service in $serviceName ; do
     restartService $service $pidFile "missing" noStopFirst "$hook"
   done
+
+  return 1 # we did restart something
 }
 
 restartService() {
@@ -290,11 +292,13 @@ while true; do
 # Instead of waiting, we now monitor.
 
     counter=0
+    counter2=120
 
     while true; do
 
         sleep $SLEEP_TIME
 	let counter=${counter}+$SLEEP_TIME
+	let counter2=${counter2}-$SLEEP_TIME
 
         if [ "x" = "x@PREFIX@" ] ; then
             if [ ! -d /proc/$pid ] ; then
@@ -312,20 +316,25 @@ while true; do
             restartServiceIfNeeded spamassassin
             restartServiceIfNeeded slapd
             restartServiceIfNeeded untangle-support-agent
-            restartServiceIfNeeded mongrel
             restartServiceIfNeeded kav
+
+	    if [ $counter2 -lt 0 ] ; then
+                restartServiceIfNeeded mongrel || counter2=120 # so we don't check again before 120s have passed
+	    fi
 	    
 	    if [ $counter -gt 60 ] ; then # fire up the other nannies
                 curl -sf -m 10 "http://localhost:3000/alpaca/dns?argyle=`head -n 1 /etc/untangle-net-alpaca/nonce`" > /dev/null
 	        rc=$?
-	        if [ $rc -ne 0 ] ; then
+	        if [ $counter2 -lt 0 ] && [ $rc -ne 0 ] ; then
 		  restartService untangle-net-alpaca /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
+		  counter2=120 # so we don't check again before 120s have passed
 		fi
                 # memory-management for alpaca
 		pidof -x mongrel_rails | xargs -n 1 | while read pid ; do
 		  VIRT="`getVirtualMemUsage $pid`"
-		  if [ $VIRT -gt $ALPACA_MAX_VIRTUAL_SIZE ] ; then
+		  if [ $counter2 -lt 0 ] && [ $VIRT -gt $ALPACA_MAX_VIRTUAL_SIZE ] ; then
 		    restartService untangle-net-alpaca /tmp/foo-doesnt-exist "memory-hogging ($VIRT)" stopFirst
+		    counter2=120 # so we don't check again before 120s have passed
 		  fi
 		done
 
