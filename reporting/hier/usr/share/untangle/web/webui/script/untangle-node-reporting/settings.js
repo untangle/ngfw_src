@@ -242,6 +242,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 }
                             }, {
                             	border : false,
+                            	cls: 'description',
                             	html : this.i18n._('This makes emailed reports larger, but includes information about each incident/violation.')
                             }]
                         }]
@@ -251,6 +252,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     labelWidth: 150,
                 	items : [{
                 		border : false,
+                		cls: 'description',
                 		html : this.i18n._('Daily Reports are generated at midnight and covers events from the previous 24 hours, up to, but not including the day of generation.')
                 	},  {
                         xtype : 'checkbox',
@@ -271,6 +273,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     labelWidth: 150,
                     items : [{
                         border : false,
+                        cls: 'description',
                         html : this.i18n._('Weekly Reports are generated at midnight and covers events from the previous 7 days, up to, but not including the day of generation.')
                     },  {
                         xtype : 'checkbox',
@@ -333,6 +336,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     labelWidth: 150,
                     items : [{
                         border : false,
+                        cls: 'description',
                         html : this.i18n._('Monthly Reports are generated at midnight and covers events from the previous 30 days, up to, but not including the day of generation.')
                     },  {
                         xtype : 'radiogroup',
@@ -398,6 +402,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     labelWidth: 150,
                     items : [{
                         border : false,
+                        cls: 'description',
                         html : this.i18n._("Limits data retention to one week, this allows reports to run faster on high traffic sites.")
                     },  {
                         xtype : 'checkbox',

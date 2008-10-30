@@ -107,6 +107,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         }
                     }]
                 }, {
+                	cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
                             this.i18n._("Unknown"))
@@ -390,6 +391,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         }
                     }]
                 }, {
+                	cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
                             this.i18n._("Unknown"))
@@ -539,6 +541,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         }]
                     }]
                 }, {
+                	cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
                             this.i18n._("Unknown"))

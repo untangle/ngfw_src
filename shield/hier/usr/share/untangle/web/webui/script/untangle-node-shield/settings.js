@@ -41,6 +41,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     xtype : 'fieldset',
                     title : this.i18n._('Note'),
                     autoHeight : true,
+                    cls: 'description',
                     html : this.i18n
                             ._('Attack Blocker is a heuristic based intrusion prevention and requires no configuration. Users can modify the treatment of certain IP and/or networks on the exception tab.')
                 }]

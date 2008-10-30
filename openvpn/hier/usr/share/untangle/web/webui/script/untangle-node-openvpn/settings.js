@@ -168,13 +168,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     html : '<h2 class="wizardTitle">'+i18n._("Welcome to the OpenVPN Setup Wizard!")+'</h2>'
                 },{
                     html : this.i18n._('This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Client.'),
-                    bodyStyle : 'padding:10px 10px 10px 10px;',
+                    cls: 'description',
+                    bodyStyle : 'padding-bottom:10px',
                     border : false
                 },{
                     html : this.i18n._('Warning: Completing this wizard will overwrite any previous OpenVPN settings with new settings. All previous settings will be lost!'),
                     
-                    bodyStyle : 'padding:10px 10px 10px 10px;',
-                    cls: 'warning', 
+                    cls: 'description warning',
                     border : false
                 }]
             })
@@ -195,6 +195,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype : 'label',
                     html : '<h2 class="wizardTitle">'+i18n._("Download Configuration")+'</h2>'
                 },{
+                    cls: 'description',
+                    border : false,
                     html : this.i18n
                         ._('Please specify where your VPN Client configuration should come from.')
                 },{
@@ -420,8 +422,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype : 'label',
                         html : '<h2 class="wizardTitle">'+i18n._("Finished!")+'</h2>'
                     }, {
+                        cls: 'description',
+                        border : false,
                         html : this.i18n._('Congratulations! OpenVPN is configured as a VPN Client.')
                     },{
+                        cls: 'description',
+                        border : false,
                         html : this.i18n._('If necessary, you can change the configuration of OpenVPN by launching the Setup Wizard again.')
                 }]
             });
@@ -583,6 +589,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         html : this.i18n
                                 ._("This configures OpenVPN so remote users and networks can connect and access exported hosts and networks."),
                         bodyStyle : 'padding:10px 10px 10px 10px;',
+                        cls: 'description',
                         border : false
                     }, {
                         xtype : "button",
@@ -600,6 +607,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         html : this.i18n
                                 ._("This configures OpenVPN so it connects to a remote OpenVPN Server and can access exported hosts and networks."),
                         bodyStyle : 'padding:10px 10px 10px 10px;',
+                        cls: 'description',
                         border : false
                     }]
                 }]
@@ -1797,13 +1805,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }, {
                         html : this.i18n
                                 ._('This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Routing Server.'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        bodyStyle : 'padding-bottom:20px;',
+                        cls: 'description',
                         border : false
                     }, {
                         html : this.i18n
                                 ._('Warning: Completing this wizard will overwrite any previous OpenVPN settings with new settings. All previous settings will be lost!'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
-                        cls: 'warning',
+                        cls: 'description warning',
                         border : false
                     }]
                 },
@@ -1841,7 +1849,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }, {
                         html : this.i18n
                                 ._('Please specify some information about your location. This information will be used to generate a secure digital certificate.'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        cls: 'description',
                         border : false
                     }, {
                         xtype : 'fieldset',
@@ -1938,11 +1946,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         html : '<h2 class="wizardTitle">'+i18n._("Step 2 - Exports")+'</h2>'
                     }, {
                         html : this.i18n._('Please complete the list of exports. This is a list of hosts and networks which remote VPN users and networks will be able to contact.'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        cls: 'description',
+                        bodyStyle: 'padding-bottom:10px',
                         border : false
                     }, {
                         html : "<i>" + this.i18n._('By default the entire internal network is exported.') + "</i>",
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        cls: 'description',
                         border : false
                     }, gridExports]
                 },
@@ -1980,16 +1989,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         html : '<h2 class="wizardTitle">'+i18n._("Finished!")+'</h2>'
                     }, {
                         html : this.i18n._('Congratulations!'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        cls: 'description',
                         border : false
                     }, {
                         html : this.i18n._('You are now ready to begin adding remote clients and sites you wish to have access to your VPN.'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        cls: 'description',
                         border : false
                     }, {
                         html : this.i18n
                                 ._('To add remote users, click on the Clients tab and add to the VPN Clients table.<br/>To add remote networks, click on the Clients tab and add to the VPN Sites table.'),
-                        bodyStyle : 'padding:10px 10px 10px 10px;',
+                        cls: 'description',
                         border : false
                     }]
                 },

@@ -186,6 +186,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     xtype : 'fieldset',
                     title : this.i18n._('Note'),
                     autoHeight : true,
+                    cls: 'description',
                     html : this.i18n._('Phish Blocker email signatures were last updated')
                             + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n
@@ -222,6 +223,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     xtype : 'fieldset',
                     title : this.i18n._('Note'),
                     autoHeight : true,
+                    cls: 'description',
                     html : this.i18n._('Phish Blocker web signatures were last updated ')
                             + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n
