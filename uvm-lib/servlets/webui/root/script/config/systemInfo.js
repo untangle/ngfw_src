@@ -129,15 +129,13 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 },
                     
                 items : [{
+                	title : this.i18n._( 'Please provide administrator contact info.' ),
                     defaultType : 'textfield',
                     defaults : {
                         validationEvent : 'blur',
                         msgTarget : 'side'
                     },
                     items : [{
-                        xtype : 'label',
-                        html : '<b>'+this.i18n._( 'Please provide administrator contact info.' )+'</b>'
-                    },{
                         fieldLabel : '<span class="requiredstar">*</span>'+this.i18n._('Email'),
                         name : 'emailAddr',
                         width : 200,
@@ -157,12 +155,9 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         allowBlank : false	
                     }]
                 },{
+                	title : this.i18n._( 'Answering these questions will help us build a better product - for you!' ),
                     defaultType : 'textfield',
                     items : [{
-                        xtype : 'label',
-                        html : '<b>'+this.i18n._( 'Answering these questions will help us build a better product - for you!' )+'</b>',
-                        border : false
-                    },{
                         fieldLabel : this.i18n._('Where will you be using Untangle'),
                         name : "environment",
                         xtype : 'combo',
