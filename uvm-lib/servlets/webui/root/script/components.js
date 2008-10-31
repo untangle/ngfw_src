@@ -2154,6 +2154,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 }
             }.createDelegate(this));
         }
+        this.makeSelectable();
     },
     // get selected repository
     getSelectedRepository : function() {
@@ -2163,6 +2164,12 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             result = selObj.options[selObj.selectedIndex].value;
         }
         return result;
+    },
+    makeSelectable : function() {
+        var elems=Ext.DomQuery.select("div[unselectable=on]", this.dom);
+        for(var i=0, len=elems.length; i<len; i++){
+            elems[i].unselectable = "off";
+        }
     },
     // Refresh the events list
     refreshCallback : function(result, exception) {
@@ -2178,6 +2185,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             });
         }
         Ext.MessageBox.hide();
+        this.makeSelectable();
     },
     refreshList : function() {
         if (this.hasRepositories) {
@@ -2950,7 +2958,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         }
         if (this.hasReorder) {
             this.enableDragDrop = true;
-            this.selModel= new Ext.grid.RowSelectionModel({singleSelect:true});
+            this.selModel= new Ext.grid.RowSelectionModel();
             this.dropConfig= {
                 appendOnly:true
             };
