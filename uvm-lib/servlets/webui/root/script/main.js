@@ -684,13 +684,13 @@ Ung.Main.prototype = {
     // load Config
     loadConfig: function() {
         this.config =
-            [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"iconConfigNetwork","helpSource":"networking_config"},
-            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"iconConfigAdmin","helpSource":"administration_config"},
-            {"name":"email","displayName":i18n._("Email"),"iconClass":"iconConfigEmail","helpSource":"email_config"},
-            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"iconConfigDirectory","helpSource":"local_directory_config"},
-            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"iconConfigUpgrade","helpSource":"upgrade_config"},
-            {"name":"system","displayName":i18n._("System"),"iconClass":"iconConfigSetup","helpSource":"system_config"},
-            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport","helpSource":"system_info_config"}];
+            [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"iconConfigNetwork","helpSource":"networking_config",handler : main.openNetworking},
+            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"iconConfigAdmin","helpSource":"administration_config", className:"Ung.Administration", scriptFile:"administration.js", handler : main.openConfig},
+            {"name":"email","displayName":i18n._("Email"),"iconClass":"iconConfigEmail","helpSource":"email_config", className:"Ung.Email", scriptFile:"email.js", handler : main.openConfig},
+            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"iconConfigDirectory","helpSource":"local_directory_config", className:"Ung.LocalDirectory", scriptFile:"localDirectory.js", handler : main.openConfig},
+            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"iconConfigUpgrade","helpSource":"upgrade_config", className:"Ung.Upgrade", scriptFile:"upgrade.js", handler : main.openConfig},
+            {"name":"system","displayName":i18n._("System"),"iconClass":"iconConfigSetup","helpSource":"system_config", className:"Ung.System", scriptFile:"system.js", handler : main.openConfig},
+            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport","helpSource":"system_info_config", className:"Ung.SystemInfo", scriptFile:"systemInfo.js", handler : main.openConfig}];
         this.buildConfig();
     },
     // build config buttons
@@ -716,62 +716,27 @@ Ung.Main.prototype = {
             }
         }.createDelegate(this),true);
     },
-    // click Config Button
-    clickConfig: function(configItem) {
-        switch(configItem.name){
-            case "networking":
-                var alpacaUrl = "/alpaca/";
-                var breadcrumbs = [{
-                    title : i18n._("Configuration"),
-                    action : function() {
-                        main.iframeWin.closeActionFn();
-                    }.createDelegate(this)
-                }, {
-                    title : i18n._('Networking')
-                }];
-                
-                main.openInRightFrame(breadcrumbs, alpacaUrl);
-                break;
-            case "administration":
-                Ung.Util.loadResourceAndExecute("Ung.Administration","script/config/administration.js", function() {
-                    main.administrationWin=new Ung.Administration(configItem);
-                    main.administrationWin.show();
-                });
-                break;
-            case "email":
-                Ung.Util.loadResourceAndExecute("Ung.Email","script/config/email.js", function() {
-                    main.emailWin=new Ung.Email(configItem);
-                    main.emailWin.show();
-                });
-                break;
-            case "system":
-                Ung.Util.loadResourceAndExecute("Ung.System","script/config/system.js", function() {
-                    main.systemWin=new Ung.System(configItem);
-                    main.systemWin.show();
-                });
-                break;
-            case "systemInfo":
-                Ung.Util.loadResourceAndExecute("Ung.SystemInfo","script/config/systemInfo.js", function() {
-                    main.systemInfoWin=new Ung.SystemInfo(configItem);
-                    main.systemInfoWin.show();
-                });
-                break;
-            case "upgrade":
-                Ung.Util.loadResourceAndExecute("Ung.Upgrade","script/config/upgrade.js", function() {
-                    main.upgradeWin=new Ung.Upgrade(configItem);
-                    main.upgradeWin.show();
-                });
-                break;
-            case "localDirectory":
-                Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/localDirectory.js", function() {
-                    main.localDirectoryWin=new Ung.LocalDirectory(configItem);
-                    main.localDirectoryWin.show();
-                });
-                break;
-            default:
-                Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+configItem.name);
-                break;
-        }
+    openNetworking : function() {
+        var alpacaUrl = "/alpaca/";
+        var breadcrumbs = [{
+            title : i18n._("Configuration"),
+            action : function() {
+                main.iframeWin.closeActionFn();
+            }.createDelegate(this)
+        }, {
+            title : i18n._('Networking')
+        }];
+        
+        main.openInRightFrame(breadcrumbs, alpacaUrl);
+    
+    },
+    openConfig: function(configItem) {
+    	Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+        Ung.Util.loadResourceAndExecute.defer(1, this, [configItem.className,"script/config/"+configItem.scriptFile, function() {
+             eval('main.configWin = new ' + this.className + '(this);');
+            main.configWin.show();
+            Ext.MessageBox.hide();
+        }.createDelegate(configItem)]);
     },
 
     destoyNodes: function () {
@@ -811,6 +776,17 @@ Ung.Main.prototype = {
         	main.startNode(nodeWidget)
         }
     },
+    /*
+    addNodePreview: function (mackageDesc) {
+        var nodeWidget=new Ung.NodePreview(node);
+        var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
+        var position=this.getNodePosition(place,node.md.viewPosition);
+        nodeWidget.render(place,position);
+        Ung.AppItem.updateStateForNode(node.name, "installed");
+        if(startNode) {
+            main.startNode(nodeWidget)
+        }
+    },*/
     startNode : function(nodeWidget) {
         if(nodeWidget.name!="untangle-node-openvpn") {
             nodeWidget.start();

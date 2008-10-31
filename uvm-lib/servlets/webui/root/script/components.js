@@ -430,7 +430,11 @@ Ung.ConfigItem = Ext.extend(Ext.Component, {
         if (e!=null) {
             e.stopEvent();
         }
-        main.clickConfig(this.item);
+        if(this.item.handler!=null) {
+            this.item.handler.call(this,this.item);
+        } else {
+        	Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+this.item.name);
+        }
     },
     setIconCls: function(iconCls) {
     	this.getEl().child("div[name=iconCls]").dom.className=iconCls;
@@ -1094,6 +1098,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         });
         this.settingsWin.show();
         Ext.MessageBox.hide();
+        //this.settingsWin.cancelAction();
     },
 
     // remove node

@@ -53,6 +53,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         rpc.toolboxManager.upgradable(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             Ext.MessageBox.hide();
+                            if(!this.isVisible()) return;
                             var upgradeList = result;
                             if (upgradeList.length > 0) {
                             	Ext.getCmp("configItem_upgrade").setIconCls("iconConfigUpgradeAvailable");

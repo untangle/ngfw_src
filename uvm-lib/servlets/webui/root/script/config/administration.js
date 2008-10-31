@@ -1613,12 +1613,18 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
             adminSkinsStore.load({
             	callback : function() {
-            		Ext.getCmp('administration_admin_client_skin_combo').setValue(this.getSkinSettings().administrationClientSkin)
+                    var skinCombo=Ext.getCmp('administration_admin_client_skin_combo');
+                    if(skinCombo!=null) {
+                        skinCombo.setValue(this.getSkinSettings().administrationClientSkin);
+                    }
             	}.createDelegate(this)
             });
             userFacingSkinsStore.load({
                 callback : function() {
-                    Ext.getCmp('administration_user_pages_skin_combo').setValue(this.getSkinSettings().userPagesSkin)
+                    var skinCombo=Ext.getCmp('administration_user_pages_skin_combo');
+                    if(skinCombo!=null) {
+                        skinCombo.setValue(this.getSkinSettings().userPagesSkin);
+                    }
                 }.createDelegate(this)
             });
         },
