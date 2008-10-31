@@ -75,7 +75,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Version'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 items : [{
                     title : this.i18n._('System Info'),
@@ -193,7 +193,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 helpSource : 'license_agreement',
                 parentId : this.getId(),
                 title : this.i18n._('License Agreement'),
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 items: [ new Ext.form.TextArea({
                     name : 'License Agreement',
                     hideLabel : true,

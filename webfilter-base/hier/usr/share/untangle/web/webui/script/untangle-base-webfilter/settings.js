@@ -29,7 +29,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 
                 title : this.i18n._('Block Lists'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',

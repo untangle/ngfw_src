@@ -187,7 +187,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 defaults: {
                 	anchor: '98%'
                 },
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 items : [this.gridAdminAccounts=new Ung.EditorGrid({
                     settingsCmp : this,
@@ -514,7 +514,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
                 title : this.i18n._('Public Address'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 items: {
                     xtype: 'fieldset',
@@ -643,7 +643,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 
                 title : this.i18n._('Certificates'),
                 layout : "anchor",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                 	anchor: '98%',
@@ -984,7 +984,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 anchor: "100% 100%",
                 title : this.i18n._('Generate a Self-Signed Certificate'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 items: {
                     xtype: 'fieldset',
@@ -1051,7 +1051,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 anchor: "100% 100%",
                 title : this.i18n._('Generate a Certificate Signature Request'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 items: [{
                 	cls: 'description',
@@ -1078,7 +1078,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 anchor: "100% 100%",
                 title : this.i18n._('Import Signed Certificate'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                     items : [{
                     	cls: 'description',
@@ -1131,7 +1131,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
                 title : this.i18n._('Monitoring'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -1469,7 +1469,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Skins'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -1630,7 +1630,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Branding'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',

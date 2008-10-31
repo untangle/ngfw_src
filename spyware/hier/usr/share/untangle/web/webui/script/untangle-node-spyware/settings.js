@@ -30,7 +30,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 parentId : this.getId(),
 
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',

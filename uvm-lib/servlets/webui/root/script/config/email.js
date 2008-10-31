@@ -150,7 +150,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Outgoing Server'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 
                 onEmailTest : function(saveBefore) {
@@ -413,7 +413,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 parentId : this.getId(),
                 title : this.i18n._('From-Safe List'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 items : [this.gridSafelistGlobal = new Ung.EditorGrid({
                         name : 'Global',
@@ -623,7 +623,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Quarantine'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',

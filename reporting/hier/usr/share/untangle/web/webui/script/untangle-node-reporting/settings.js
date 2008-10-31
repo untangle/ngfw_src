@@ -46,7 +46,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 helpSource : 'status',
                 layout : "form",
                 autoScroll : true,
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 items: [{
                     title : this.i18n._('Status'),
                     xtype : 'fieldset',
@@ -174,7 +174,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Generation'),
                 layout : "anchor",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                 	anchor: "98%",

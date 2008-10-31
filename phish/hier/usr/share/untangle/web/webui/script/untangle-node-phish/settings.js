@@ -52,7 +52,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 helpSource : 'email',
                 layout : "form",
                 autoScroll : true,
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 items : [{
                     xtype : 'fieldset',
                     title : this.i18n._('SMTP'),
@@ -201,7 +201,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 helpSource : 'web',
                 layout : "form",
                 autoScroll : true,
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 items : [{
                     xtype : 'fieldset',
                     autoHeight : true,

@@ -207,7 +207,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Upgrade Setup'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',

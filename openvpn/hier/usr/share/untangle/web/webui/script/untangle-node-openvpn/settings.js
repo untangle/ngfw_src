@@ -104,7 +104,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
 
             this.panel = new Ext.FormPanel({
-            	bodyStyle : 'padding:5px 5px 0px 5px;',
+            	cls: 'ungPanel',
                 items : [{
                     cls : 'u-form-panel',
                     xtype : 'fieldset',
@@ -549,7 +549,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 parentId : this.getId(),
 
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -1301,7 +1301,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 parentId : this.getId(),
 
                 layout : "anchor",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                 	anchor:"98%",

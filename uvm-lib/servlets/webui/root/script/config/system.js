@@ -160,7 +160,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Support'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 items : [{
                     xtype : 'fieldset',
@@ -239,7 +239,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Backup'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 onBackupToFile: function() {
                 	// A two step process: first asks the server for permission to download the file (the outer ajax request) 
@@ -327,7 +327,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Restore'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 onRestoreFromFileFile: function() {
                 	var prova = Ext.getCmp('upload_restore_file_form');
@@ -794,7 +794,7 @@ if (!Ung.hasResource["Ung.System"]) {
 
                 title : this.i18n._('Protocol Settings'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -823,7 +823,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Regional Settings'),
                 layout : "form",
-                bodyStyle : 'padding:5px 5px 0px 5px;',
+                cls: 'ungPanel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
