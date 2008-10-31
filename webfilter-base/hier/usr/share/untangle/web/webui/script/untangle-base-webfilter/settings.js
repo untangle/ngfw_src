@@ -104,9 +104,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     	this.items.push({
                             items: {
                                 xtype : 'checkbox',
-                                boxLabel : settingsCmp.i18n._('Scan HTTP'),
+                                boxLabel : settingsCmp.i18n._('Scan HTTPS'),
                                 hideLabel : true,
-                                name : 'Scan HTTP',
+                                name : 'Scan HTTPS',
                                 checked : settingsCmp.getBaseSettings().enableHttps,
                                 listeners : {
                                     "check" : {
