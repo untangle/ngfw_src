@@ -153,6 +153,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         
         buildAdministration : function() {
+            // keep initial access and address settings
+            this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings());
+            this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings());
+        	
             // read-only is a check column
             var readOnlyColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("read-only"),
@@ -2068,6 +2072,29 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         // save function
         saveAction : function() {
+            /* A hook for doing something in a node before attempting to save */
+            
+            //check to see if the remote administrative settings were changed in order to inform the user
+            var remoteChanges = this.initialAccessSettings.isOutsideAdministrationEnabled && !this.getAccessSettings().isOutsideAdministrationEnabled 
+                    || this.initialAddressSettings.httpsPort != this.getAddressSettings().httpsPort;
+            if (remoteChanges) {
+                Ext.Msg.show({
+                    title : this.i18n._("Warning"),
+                    msg : String.format(this.i18n._("Changing the external administration settings may disconnect you from the {0} box."), 
+                        main.getBrandingBaseSettings().companyName),
+                    buttons : Ext.Msg.OKCANCEL,
+                    icon : Ext.MessageBox.WARNING, 
+                    fn : function (btn, text) {
+                        if (btn == 'ok'){
+                            this.completeSaveAction();
+                        }
+                    }.createDelegate(this)
+                });
+            } else {
+            	this.completeSaveAction();
+            }
+        },
+        completeSaveAction : function() {
             if (this.validate()) {
             	this.saveSemaphore = 6;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
@@ -2083,11 +2110,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.afterSave();
                 }.createDelegate(this), this.getAdminSettings());
 
-               rpc.networkManager.setAccessSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
-                }.createDelegate(this), this.getAccessSettings());
-                
                delete this.getAddressSettings().publicAddress;
                rpc.networkManager.setAddressSettings(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
@@ -2110,7 +2132,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }.createDelegate(this), this.getSkinSettings());
                 
                 if (!this.isBrandingExpired()) {
-                	this.saveSemaphore++;
                     main.getBrandingManager().setBaseSettings(function(result, exception) {
                         Ext.MessageBox.hide();
                         if(Ung.Util.handleException(exception)) return;
@@ -2122,29 +2143,37 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             this.afterSave();
                         }.createDelegate(this));
                     }.createDelegate(this), this.getBrandingBaseSettings());
-                }
-                
+                } else {
+                    this.afterSave();
+                }                
             }
         },
         afterSave : function() {
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
-                var needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
-                if (!this.isBrandingExpired()) {
-                	needRefresh = needRefresh 
-                	       || this.initialBrandingBaseSettings.defaultLogo != this.getBrandingBaseSettings().defaultLogo
-                           || this.initialBrandingBaseSettings.companyName != this.getBrandingBaseSettings().companyName
-                           || this.initialBrandingBaseSettings.companyUrl != this.getBrandingBaseSettings().companyUrl
-                           || this.initialBrandingBaseSettings.contactName != this.getBrandingBaseSettings().contactName
-                           || this.initialBrandingBaseSettings.contactEmail != this.getBrandingBaseSettings().contactEmail;
-                }
-                Ext.MessageBox.hide();
-                this.cancelAction();
-                if (needRefresh) {
-                	Ung.Util.goToStartPage();
-                }
+                // access settings should be saved last as saving these changes may disconnect the user from the Untangle box 
+                rpc.networkManager.setAccessSettings(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    this.finalizeSave();
+                }.createDelegate(this), this.getAccessSettings());
             }
-        }        
+        },
+        finalizeSave : function() {
+            var needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
+            if (!this.isBrandingExpired()) {
+                needRefresh = needRefresh 
+                       || this.initialBrandingBaseSettings.defaultLogo != this.getBrandingBaseSettings().defaultLogo
+                       || this.initialBrandingBaseSettings.companyName != this.getBrandingBaseSettings().companyName
+                       || this.initialBrandingBaseSettings.companyUrl != this.getBrandingBaseSettings().companyUrl
+                       || this.initialBrandingBaseSettings.contactName != this.getBrandingBaseSettings().contactName
+                       || this.initialBrandingBaseSettings.contactEmail != this.getBrandingBaseSettings().contactEmail;
+            }
+            Ext.MessageBox.hide();
+            this.cancelAction();
+            if (needRefresh) {
+                Ung.Util.goToStartPage();
+            }
+        }
     });
     
     // certificate generation window
