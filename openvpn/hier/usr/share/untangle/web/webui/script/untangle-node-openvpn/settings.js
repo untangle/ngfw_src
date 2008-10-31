@@ -1871,7 +1871,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             fieldLabel : this.i18n._("Country"),
                             allowBlank : false,
                             value : country,
-                            width : 200
+                            width : 200,
+                            validator : function(fieldValue) {
+                                if (fieldValue.length != 2) {
+                                    return this.i18n._("The country code must be 2 characters long.");
+                                }
+                                return true;
+                            }.createDelegate(this)
                         }, {
                             xtype : "textfield",
                             id : 'openvpn_server_wizard_state',
