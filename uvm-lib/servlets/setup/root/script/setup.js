@@ -1581,7 +1581,7 @@ Ung.Setup = {
         
         /* Initialize the timezone data */
         for ( var i = 0; i < Ung.TimeZoneData.length; i++) {
-            Ung.SetupWizard.TimeZoneStore.push([Ung.TimeZoneData[i][0], "(" + Ung.TimeZoneData[i][0] + ") " + Ung.TimeZoneData[i][1]]);
+            Ung.SetupWizard.TimeZoneStore.push([Ung.TimeZoneData[i][2], "(" + Ung.TimeZoneData[i][0] + ") " + Ung.TimeZoneData[i][1]]);
         }
 
         /* Initialize the netmask data */
