@@ -607,7 +607,6 @@ Ung.Main.prototype = {
         if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Please wait")) {
             Ext.MessageBox.hide.defer(30,Ext.MessageBox);
         }
-        this.checkForUpgrades.defer(10,this);
     },
     // load the rack view for current policy
     loadRackView: function() {
@@ -709,6 +708,7 @@ Ung.Main.prototype = {
             	item:item
             });
         }
+        this.checkForUpgrades.defer(700,this);
     },
     checkForUpgrades: function () {
         //check for upgrades
