@@ -26,6 +26,14 @@ Ung.Main.prototype = {
     upgradeLastCheckTime: null,
     // init function
     init: function() {
+        if (Ext.isGecko)  {
+            document.onkeypress = function(e) {
+                if (e.keyCode==27) {
+                    return false;
+                }
+                return true;
+            }
+        }
     	this.debugMode=debugMode;
     	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         this.initSemaphore=10;
