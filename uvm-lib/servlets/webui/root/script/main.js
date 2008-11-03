@@ -596,20 +596,19 @@ Ung.Main.prototype = {
                 rpc.rackView.runStates.map[nodeDesc.tid.id]);
             this.nodes.push(node);
         }
+        this.updateSeparator();
         for(var i=0;i<this.nodes.length;i++) {
             var node=this.nodes[i];
-            this.addNode(node);
+            this.addNode.defer(1,this,[node]);
         }
-        this.updateSeparator();
         if(!main.disableThreads) {
             Ung.MessageManager.start(true);
         }
         if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Please wait")) {
-            Ext.MessageBox.hide();
+            Ext.MessageBox.hide.defer(30,Ext.MessageBox);
         }
-
+        this.checkForUpgrades.defer(10,this);
     },
-
     // load the rack view for current policy
     loadRackView: function() {
     	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
@@ -710,10 +709,12 @@ Ung.Main.prototype = {
             	item:item
             });
         }
-            //check for upgrades
+    },
+    checkForUpgrades: function () {
+        //check for upgrades
         rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
             if(Ung.Util.handleException(exception, function() {
-            	main.upgradeLastCheckTime=(new Date()).getTime();
+                main.upgradeLastCheckTime=(new Date()).getTime();
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function () {
                     main.upgradeStatus={};
                 }.createDelegate(this));
