@@ -143,6 +143,9 @@ if (!Ung.hasResource["Ung.Email"]) {
         
         
         buildOutgoingServer : function() {
+            // keep initial mail settings
+            this.initialMailSettings = Ung.Util.clone(this.getMailSettings());
+        	
             this.panelOutgoingServer = new Ext.Panel({
                 // private fields
                 name : 'Outgoing Server',
@@ -341,21 +344,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                         iconCls : 'testIcon',
                         name: "emailTestButton",
                         handler : function() {
-                        	var enabledCmp = Ext.getCmp('email_smtpEnabled'); 
-                            var hostCmp = Ext.getCmp('email_smtpHost');
-                            var portCmp = Ext.getCmp('email_smtpPort');
-                            var loginCmp = Ext.getCmp('email_smtpLogin');
-                            var passwordCmp = Ext.getCmp('email_smtpPassword');
-                            var fromAddressCmp = Ext.getCmp('email_fromAddress');
-                            
-                            var settingsChanged = enabledCmp.isDirty() 
-                                        || hostCmp.isDirty()
-                                        || portCmp.isDirty()
-                                        || loginCmp.isDirty()
-                                        || passwordCmp.isDirty()
-                                        || fromAddressCmp.isDirty();
+                            var mailSettingsChanged = this.initialMailSettings.useMxRecords != this.getMailSettings().useMxRecords 
+                                        || this.initialMailSettings.smtpHost != this.getMailSettings().smtpHost
+                                        || this.initialMailSettings.smtpPort != this.getMailSettings().smtpPort
+                                        || this.initialMailSettings.authUser != this.getMailSettings().authUser
+                                        || this.initialMailSettings.authPass != this.getMailSettings().authPass
+                                        || this.initialMailSettings.fromAddress != this.getMailSettings().fromAddress;
                                     
-                            if (settingsChanged) {
+                            if (mailSettingsChanged) {
                                 Ext.Msg.show({
                                    title:this.i18n._('Save Changes?'),
                                    msg: String.format(this.i18n._("Your current settings have not been saved yet.{0}Would you like to save your settings before executing the test?"), '<br>'),
@@ -368,13 +364,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                                                 main.getMailSender().setMailSettings(function(result, exception) {
                                                     if(Ung.Util.handleException(exception)) return;
                                                     Ext.MessageBox.hide();
-                                                    // update original values
-                                                    enabledCmp.originalValue = enabledCmp.getValue();
-                                                    hostCmp.originalValue = hostCmp.getValue();
-                                                    portCmp.originalValue = portCmp.getValue();
-                                                    loginCmp.originalValue = loginCmp.getValue();
-                                                    passwordCmp.originalValue = passwordCmp.getValue();
-                                                    fromAddressCmp.originalValue = fromAddressCmp.getValue();
+                                                    // update original value for mail settings
+                                                    this.initialMailSettings = Ung.Util.clone(this.getMailSettings());
                                                     // send test mail
                                                     this.panelOutgoingServer.onEmailTest();
                                                 }.createDelegate(this), this.getMailSettings());
