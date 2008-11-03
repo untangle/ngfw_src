@@ -189,8 +189,8 @@ class UrlBlacklist extends Blacklist
     {
         List<String> all = urlDatabase.findAllBlacklisted("http", dom, uri);
 
-        if (null == all) {
-            return null;
+        if (null == all || 0 == all.size()) {
+            return BlacklistCategory.UNCATEGORIZED;
         } else {
 
             for (int ai = 0; ai < all.size(); ai++) {

@@ -279,7 +279,7 @@ public abstract class Blacklist
              }
         }
 
-        return BlacklistCategory.UNCATEGORIZED;
+        return null;
     }
 
     // private methods --------------------------------------------------------
