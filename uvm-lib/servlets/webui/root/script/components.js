@@ -422,7 +422,7 @@ Ung.ConfigItem = Ext.extend(Ext.Component, {
             'iconCls' : this.item.iconClass,
             'text' : this.item.displayName
         });
-        this.getEl().insertHtml("afterBegin", html);
+        this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
         this.getEl().addClass("appItem");
         this.getEl().on("click", this.onClick, this);
     },
@@ -443,6 +443,7 @@ Ung.ConfigItem = Ext.extend(Ext.Component, {
 Ung.ConfigItem.template = new Ext.Template(
     '<div class="icon"><div name="iconCls" class="{iconCls}"></div></div>', '<div class="text textCenter">{text}</div>');
 
+    
 Ung.AppItem = Ext.extend(Ext.Component, {
     libItem: null,
     node : null,
@@ -502,7 +503,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             'imageHtml' : imageHtml,
             'text' : this.item.displayName
         });
-        this.getEl().insertHtml("afterBegin", html);
+        this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
         this.getEl().addClass("appItem");
 
         this.progressBar = new Ext.ProgressBar({
@@ -661,6 +662,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 });
 Ung.AppItem.template = new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>',
         '<div id="buttonBuy_{id}"></div>', '<div id="action_{id}" class="action"></div>', '<div class="statePos" id="state_{id}"></div>');
+Ung.AppItem.buttonTemplate = new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="appItemLeft">&nbsp;</td><td class="appItemCenter">{content}</td><td class="appItemRight">&nbsp;</td></tr></tbody></table>');        
 // update node state for the app with a node name
 Ung.AppItem.updateStateForNode = function(nodeName, state, options) {
     var app = Ung.AppItem.getAppForNode(nodeName);
