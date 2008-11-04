@@ -916,8 +916,8 @@ Ung.Node = Ext.extend(Ext.Component, {
                 dismissDelay : 0,
                 hideDelay : 0
             }));
-            this.updateRunState(this.runState);
         }
+        this.updateRunState(this.runState);
         this.initBlingers();
     },
     // is runState "RUNNING"
@@ -926,7 +926,9 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     setState : function(state) {
         this.state = state;
-        document.getElementById('nodeState_' + this.getId()).className = "nodeState iconState" + this.state;
+        if(this.hasPowerButton) {
+            document.getElementById('nodeState_' + this.getId()).className = "nodeState iconState" + this.state;
+        }
     },
     setPowerOn : function(powerOn) {
         this.powerOn = powerOn;
