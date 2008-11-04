@@ -1559,8 +1559,8 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numCpus)+"%";
         var txSpeed=Math.round(stats.map.txBps/10)/100;
         var rxSpeed=Math.round(stats.map.rxBps/10)/100;
-        this.getEl().child("div[class=tx_value]").dom.innerHTML=txSpeed+"KB/sec";
-        this.getEl().child("div[class=rx_value]").dom.innerHTML=rxSpeed+"KB/sec";
+        this.getEl().child("div[class=tx_value]").dom.innerHTML=txSpeed+"KB/s";
+        this.getEl().child("div[class=rx_value]").dom.innerHTML=rxSpeed+"KB/s";
         var memoryFree=Ung.Util.bytesToMBs(stats.map.MemFree)
         var memoryUsed=Ung.Util.bytesToMBs(stats.map.MemTotal-stats.map.MemFree);
         this.getEl().child("div[class=free_value]").dom.innerHTML=memoryFree+" MBs";
