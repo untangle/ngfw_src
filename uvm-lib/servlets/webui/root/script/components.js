@@ -851,13 +851,13 @@ Ung.Node = Ext.extend(Ext.Component, {
         var trialFlag = "";
         var trialDays = "";
         if(this.licenseStatus.trial) {
-        	trialFlag = i18n._("Trial");
+        	//trialFlag = i18n._("Free Trial");
         	if(this.licenseStatus.expired) {
-        		trialDays = i18n._("Trial expired");
+        		trialDays = i18n._("Free Trial Ended");
         	} else {
         		var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
                 if (!isNaN(daysRemain)) {
-                    trialDays = String.format(i18n._("{0} days remain"), daysRemain);
+                    trialDays = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
                 }
         	}
         }
@@ -878,13 +878,13 @@ Ung.Node = Ext.extend(Ext.Component, {
             buttonAlign: "left",
             layout:'table',
             layoutConfig: {
-                columns: 2
+                columns: 3
             },
             buttons : [{
             	xtype: "button",
                 name : "Show Settings",
                 iconCls : 'nodeSettingsIcon',
-                text : i18n._('Show Settings'),
+                text : i18n._('Settings'),
                 handler : function() {
                     this.onSettingsAction();
                 }.createDelegate(this)
@@ -896,6 +896,15 @@ Ung.Node = Ext.extend(Ext.Component, {
                 handler : function() {
                     this.onHelpAction();
                 }.createDelegate(this)
+            
+            },
+            {
+                xtype: "button",
+                name : "Buy",
+                iconCls : 'iconBuy',
+                ctCls:'buy-button-text',
+                text : i18n._('Buy Now'),
+                handler : this.onBuyNowAction.createDelegate(this)
             
             }]
         });
@@ -1006,6 +1015,11 @@ Ung.Node = Ext.extend(Ext.Component, {
     	this.fnCallback=fnCallback;
         this.loadSettings();
     },
+    //on Buy Now Action
+    onBuyNowAction :function(){
+        alert('This should open the corporate product page');
+        //this should open the corporate product page.
+    },    
     getNodeContext: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
         if (this.nodeContext === undefined) {
@@ -1183,13 +1197,13 @@ Ung.Node = Ext.extend(Ext.Component, {
     	var trialFlag = "";
         var trialDays = "";
         if(this.licenseStatus && this.licenseStatus.trial) {
-            trialFlag = i18n._("Trial");
+            //trialFlag = i18n._("Trial");
             if(this.licenseStatus.expired) {
-                trialDays = i18n._("Trial expired");
+                trialDays = i18n._("Free Trial Ended");
             } else {
                 var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
                 if (!isNaN(daysRemain)) {
-                    trialDays = String.format(i18n._("{0} days remain"), daysRemain);
+                    trialDays = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
                 }
             }
         }
@@ -2154,7 +2168,6 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 }
             }.createDelegate(this));
         }
-        this.makeSelectable();
     },
     // get selected repository
     getSelectedRepository : function() {

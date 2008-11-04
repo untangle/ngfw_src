@@ -498,10 +498,8 @@ Ung.Main.prototype = {
             items:[{
                 title: i18n._('Apps'),
                 helpSource: 'apps',
-                tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],
                 html:'<div id="appsItems"></div>',name:'Apps'},
                 {title:i18n._('Config'),
-                tbar : [{xtype: 'tbtext', text: i18n._("Click to learn more")}],   
                 html:'<div id="configItems"></div>',
                 helpSource: 'config',
                 name:'Config'}
