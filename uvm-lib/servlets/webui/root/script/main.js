@@ -168,6 +168,7 @@ Ung.Main.prototype = {
                     buttons: Ext.Msg.OKCANCEL,
                     fn: function (btn, text) {
                         if (btn == 'ok'){
+                            main.leftTabs.activate('leftTabConfig');
                             Ext.getCmp("configItem_upgrade").onClick();
                         }
                     },
@@ -225,10 +226,12 @@ Ung.Main.prototype = {
                             defaults:{autoScroll: true},
                             items:[{
                                 title: i18n._('Apps'),
+                                id:'leftTabApps',
                                 helpSource: 'apps',
                                 html:'<div id="appsItems"></div>',name:'Apps'
                             },{
                                 title:i18n._('Config'),
+                                id:'leftTabConfig',
                                 html:'<div id="configItems"></div>',
                                 helpSource: 'config',
                                 name:'Config'
