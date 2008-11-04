@@ -3644,7 +3644,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         xtype: "button",
                         name : 'Open Local Directory',
                         text : i18n._("Open Local Directory"),
-                        disabled : !this.loadLocalDirectoryUsers,
+                        hidden : !this.loadLocalDirectoryUsers,
                         handler : function() {
                             Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/localDirectory.js", function() {
                                 main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
@@ -3657,7 +3657,8 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         xtype: "button",
                         name : 'Open Active Directory',
                         text : i18n._("Open Active Directory"),
-                        disabled : !this.loadActiveDirectoryUsers || !main.isNodeRunning('untangle-node-adconnector'),
+                        hidden : !this.loadActiveDirectoryUsers,
+                        disabled : !main.isNodeRunning('untangle-node-adconnector'),
                         handler : function() {
                             var node = main.getNode('untangle-node-adconnector');
                             if (node != null) {
