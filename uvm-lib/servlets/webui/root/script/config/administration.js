@@ -981,6 +981,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
         
         // Generate Self-Signed certificate
         buildGenerateSelfSignedCertificate : function() {
+            this.countryStore = [];
+
+            for ( var i = 0 ; i < Ung.CountryData.length ; i++ ) {
+                this.countryStore.push([ Ung.CountryData[i][0], i18n._( Ung.CountryData[i][1] )]);
+            }
+
             this.panelGenerateSelfSignedCertificate = new Ext.Panel({
                 name : 'panelGenerateSelfSignedCertificate',
                 // private fields
@@ -1028,10 +1034,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         allowBlank : false,
                         blankText : this.i18n._("You must specify a state.")
                     },{
-                        xtype : 'textfield',
+                        xtype : 'combo',
                         fieldLabel : this.i18n._('Country') + " (C)",
                         name : 'country',
                         id: 'administration_country',
+                        width : 200,
+                        listWidth : 205,
+                        store : this.countryStore,
+                        mode : 'local',
+                        triggerAction : 'all',
                         allowBlank : false,
                         blankText : this.i18n._("You must specify a country.")
                     },{
