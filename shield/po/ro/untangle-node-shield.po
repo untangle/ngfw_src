@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-28 18:29+0300\n"
+"POT-Creation-Date: 2008-11-04 11:30-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,24 +17,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:22
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:33
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:20
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:32
 msgid "Status"
 msgstr "Stare"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:29
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:28
 msgid "Statistics"
 msgstr "Statistici"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:36
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
 msgid "active"
 msgstr "activ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:36
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
 msgid "inactive"
 msgstr "inactiv"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:42
 msgid "Note"
 msgstr "Notă"
 
@@ -62,83 +62,85 @@ msgstr "utilizatori"
 msgid "unlimited"
 msgstr "nelimitat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:72
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:73
 msgid "[no description]"
 msgstr "[fără descriere]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:74
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:75
 msgid "Exceptions"
 msgstr "Excepţii"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:103
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:100
 msgid "address"
 msgstr "adresă"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:113
-msgid "user"
-msgstr "utilizatori"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:110
+#, fuzzy
+msgid "user count"
+msgstr "Total Utilizatori"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:113
-msgid "count"
-msgstr "total"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:139
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:136
 msgid "description"
 msgstr "descriere"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:153
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:150
 msgid "Enable"
 msgstr "Activat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:157
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:154
 msgid "Address"
 msgstr "Adresă"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:164
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:161
 msgid "User Count"
 msgstr "Total Utilizatori"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:179
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:176
 msgid "Description"
 msgstr "Descriere"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:210
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:212
 msgid "timestamp"
 msgstr "moment de timp"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:218
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:223
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:220
 msgid "source"
 msgstr "sursă"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:223
-msgid "interface"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:226
+#, fuzzy
+msgid "source interface"
 msgstr "interfaţă"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:228
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:231
 msgid "reputation"
 msgstr "reputaţie"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:236
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:239
 msgid "limited"
 msgstr "limitat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:244
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:247
 msgid "dropped"
 msgstr "eliminat"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:252
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:255
 msgid "reject"
 msgstr "respins"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:267
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:270
 msgid "Saving..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:267
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:270
 msgid "Please wait"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
-msgid "Failed"
-msgstr "Eşuat"
+#~ msgid "user"
+#~ msgstr "utilizatori"
+
+#~ msgid "count"
+#~ msgstr "total"
+
+#~ msgid "Failed"
+#~ msgstr "Eşuat"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-30 16:54+0300\n"
+"POT-Creation-Date: 2008-11-04 11:30-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,215 +17,211 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:28
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:130
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:159
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:30
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:133
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:162
 msgid "Web"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:40
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:42
 msgid "Scan HTTP"
 msgstr "Scanează HTTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:53
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:353
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:55
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:355
 msgid "Advanced Settings"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:60
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:135
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:194
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:62
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:138
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:197
 msgid "File Extensions"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:68
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:164
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:266
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:70
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:167
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:268
 msgid "MIME Types"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:75
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:77
 msgid "Disable HTTP Resume"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:88
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:90
 msgid "Scan trickle rate (1-99)"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:108
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:392
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:538
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:111
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:395
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:545
 msgid "Virus Blocker signatures were last updated"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:110
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:394
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:540
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:113
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:397
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:547
 msgid "Unknown"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:180
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:252
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:183
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:254
 msgid "scan"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:192
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:264
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:195
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:266
 msgid "[no description]"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:211
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:213
 msgid "file type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:219
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:291
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:221
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:292
 msgid "description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:233
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:235
 msgid "File Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:239
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:311
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:241
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:312
 msgid "Scan"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:243
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:315
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:245
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:316
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:283
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:284
 msgid "MIME type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:305
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:306
 msgid "MIME Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:328
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:330
 msgid "FTP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:340
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:342
 msgid "Scan FTP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:359
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:361
 msgid "Disable FTP Resume"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:372
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:374
 msgid "Scan trickle rate"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:406
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:410
 msgid "Email"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:423
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:429
 msgid "Scan SMTP"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:436
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:442
 msgid "Scan POP3"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:449
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:455
 msgid "Scan IMAP"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:469
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:493
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:516
-msgid "Action"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:475
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:499
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:522
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:596
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:605
+msgid "Action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:481
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:505
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:528
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:583
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:592
 msgid "pass message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:476
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:500
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:523
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:599
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:607
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:482
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:506
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:529
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:586
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:594
 msgid "remove infection"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:477
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:610
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:597
 msgid "block message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:567
-msgid "timestamp"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:575
-msgid "action"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:585
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:572
 msgid "clean"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:587
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:574
 msgid "cleaned"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:590
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:577
 msgid "blocked"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:617
-msgid "client"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:625
-msgid "traffic"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:630
-msgid "reason for action"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:635
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:619
 msgid "virus found"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:635
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:619
 msgid "no virus found"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:638
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:624
+msgid "timestamp"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:632
+msgid "action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:637
+msgid "client"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:644
+msgid "traffic"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:649
+msgid "reason for action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:654
 msgid "server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:655
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:670
 msgid "Warning"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:655
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:670
 msgid "Scan trickle rate should be between 1 and 99!"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:667
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:682
 msgid "Saving..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:667
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:682
 msgid "Please wait"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:671
-msgid "Failed"
 msgstr ""
 
 #: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:86

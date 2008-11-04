@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-11 13:45+0300\n"
+"POT-Creation-Date: 2008-11-04 11:30-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -130,8 +130,10 @@ msgstr ""
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:186
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:113
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:55
+#: ../api/com/untangle/gui/install/InstallWizard.java:55
+#: ../api/com/untangle/gui/install/InstallWizard.java:79
 #: ../api/com/untangle/gui/install/InstallWizard.java:107
-msgid "Install Wizard"
+msgid "Installation Wizard"
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:186
@@ -171,9 +173,8 @@ msgstr ""
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:173
 msgid ""
 "<html>This list shows the boot disks that were found.  <font "
-"color='#FF0000'>Please choose a disk for the Untangle Platform "
-"installation.  Warning, all the data on the boot disk you select will be "
-"deleted.</font></html>"
+"color='#FF0000'>Please choose a disk for installation.  Warning, all the "
+"data on the boot disk you select will be deleted.</font></html>"
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:76
@@ -181,12 +182,11 @@ msgid "Error scanning disks"
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:114
-msgid ""
-"You must select a boot disk which you would like to install Untangle onto."
+msgid "You must select a boot disk which you would like to install onto."
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:115
-msgid "Install Wizard Message"
+msgid "Installation Wizard Message"
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:115
@@ -210,7 +210,7 @@ msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:57
 #: ../api/com/untangle/gui/install/InstallWizard.java:109
-msgid "Install Wizard Warning"
+msgid "Installation Wizard Warning"
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:59
@@ -229,8 +229,8 @@ msgstr ""
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:71
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:106
 msgid ""
-"If you continue, in preparation for the Untangle Platform installation "
-"process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"
+"If you continue, in preparation for the installation process, YOUR DISK WILL "
+"BE ERASED AND ALL ITS DATA WILL BE LOST!"
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:72
@@ -241,15 +241,14 @@ msgid ""
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:116
-msgid "<html>Welcome to the<br>Untangle Platform Install Wizard!</html>"
+msgid "<html>Welcome to the<br> Installation Wizard!</html>"
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:92
 #: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:126
 msgid ""
-"<html>This wizard will take you step-by-step through<br> the Untangle "
-"Platform CD installation process.</html>"
+"<html>This wizard will take you step-by-step through<br> the CD installation "
+"process.</html>"
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:93
@@ -257,9 +256,8 @@ msgstr ""
 msgid "Language:"
 msgstr ""
 
-#: ../api/com/untangle/gui/install/InstallWizard.java:55
-#: ../api/com/untangle/gui/install/InstallWizard.java:79
-msgid "Untangle Platform Install Wizard"
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:116
+msgid "<html>Welcome to the<br>Installation Wizard!</html>"
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallWizard.java:108
