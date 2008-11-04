@@ -642,22 +642,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             return;
         }
         main.warnOnUpgrades(function() {
-        	 this.openStore();  
+            main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName));
         }.createDelegate(this));
-    },
-    openStore : function () {
-        var currentLocation = window.location;
-        var query = "&host=" + currentLocation.hostname;
-        query += "&port=" + currentLocation.port;
-        query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-        query += "&action=browse";
-        query += "&libitem=" + this.libItem.name;
-
-        var url = "../library/launcher?" + query;
-        var iframeWin = main.getIframeWin();
-        iframeWin.show();
-        iframeWin.setTitle(String.format(i18n._("More Info - {0}"),this.item.displayName));
-        window.frames["iframeWin_iframe"].location.href = url;
     },
     // install node / uninstall App
     installNodeFn : function(e) {
@@ -695,6 +681,17 @@ Ung.AppItem.getAppForNode = function(nodeName) {
         for (var i = 0; i < main.apps.length; i++) {
             var app = main.apps[i];
             if (nodeName == app.getNodeName()) {
+                return app;
+            }
+        }
+    }
+    return null;
+};
+Ung.AppItem.getAppByLibItemDisplayName = function(displayName) {
+    if (main.apps !== null) {
+        for (var i = 0; i < main.apps.length; i++) {
+            var app = main.apps[i];
+            if (app.libItem!=null && displayName == app.libItem.displayName) {
                 return app;
             }
         }
@@ -847,29 +844,43 @@ Ung.Node = Ext.extend(Ext.Component, {
         this.getEl().set({
             'name' : this.md.displayName
         });
-
-        var trialFlag = "";
-        var trialDays = "";
-        if(this.licenseStatus.trial) {
-        	//trialFlag = i18n._("Free Trial");
-        	if(this.licenseStatus.expired) {
-        		trialDays = i18n._("Free Trial Ended");
-        	} else {
-        		var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
-                if (!isNaN(daysRemain)) {
-                    trialDays = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
-                }
-        	}
+        var nodeButtons=[{
+            xtype: "button",
+            name : "Show Settings",
+            iconCls : 'nodeSettingsIcon',
+            text : i18n._('Settings'),
+            handler : function() {
+                this.onSettingsAction();
+            }.createDelegate(this)
+        }, {
+            xtype: "button",
+            name : "Help",
+            iconCls : 'iconHelp',
+            text : i18n._('Help'),
+            handler : function() {
+                this.onHelpAction();
+            }.createDelegate(this)
+        
+        }];
+        if(this.licenseStatus && this.licenseStatus.trial) {
+	        nodeButtons.push({
+                xtype: "button",
+                name : "Buy",
+                iconCls : 'iconBuy',
+                ctCls:'buy-button-text',
+                text : i18n._('Buy Now'),
+                handler : this.onBuyNowAction.createDelegate(this)
+            });
         }
         var templateHTML = Ung.Node.template.applyTemplate({
             'id' : this.getId(),
             'image' : this.image,
             'displayName' : this.md.displayName,
             'nodePowerCls': this.hasPowerButton?"nodePower":"",
-            'trialDays' : trialDays,
-            'trialFlag' : trialFlag
+            'trialInfo' : this.getTrialInfo()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
+        
         var buttonsPanel=new Ext.Panel({
             renderTo : 'nodeButtons_' + this.getId(),
             border: false, 
@@ -880,33 +891,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             layoutConfig: {
                 columns: 3
             },
-            buttons : [{
-            	xtype: "button",
-                name : "Show Settings",
-                iconCls : 'nodeSettingsIcon',
-                text : i18n._('Settings'),
-                handler : function() {
-                    this.onSettingsAction();
-                }.createDelegate(this)
-            }, {
-                xtype: "button",
-                name : "Help",
-                iconCls : 'iconHelp',
-                text : i18n._('Help'),
-                handler : function() {
-                    this.onHelpAction();
-                }.createDelegate(this)
-            
-            },
-            {
-                xtype: "button",
-                name : "Buy",
-                iconCls : 'iconBuy',
-                ctCls:'buy-button-text',
-                text : i18n._('Buy Now'),
-                handler : this.onBuyNowAction.createDelegate(this)
-            
-            }]
+            buttons : nodeButtons
         });
         this.subCmps.push(buttonsPanel);
         if(this.hasPowerButton) {
@@ -1017,8 +1002,10 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     //on Buy Now Action
     onBuyNowAction :function(){
-        alert('This should open the corporate product page');
-        //this should open the corporate product page.
+        var appItem=Ung.AppItem.getAppByLibItemDisplayName(this.md.displayName);
+        if(appItem!=null) {
+        	appItem.linkToStoreFn();
+        }
     },    
     getNodeContext: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
@@ -1027,7 +1014,6 @@ Ung.Node = Ext.extend(Ext.Component, {
                 if(Ung.Util.handleException(exception)) return;
                 this.nodeContext = result;
             }.createSequence(handler).createDelegate(this), this.Tid);
-            
         } else {
         	handler.call(this);
         }
@@ -1192,23 +1178,28 @@ Ung.Node = Ext.extend(Ext.Component, {
             }
         }
     },
-    updateLicenseStatus : function (licenseStatus) {
-    	this.licenseStatus=licenseStatus;
-    	var trialFlag = "";
-        var trialDays = "";
+    getTrialInfo : function() {
+        var trialInfo = "";
         if(this.licenseStatus && this.licenseStatus.trial) {
-            //trialFlag = i18n._("Trial");
             if(this.licenseStatus.expired) {
-                trialDays = i18n._("Free Trial Ended");
+                trialInfo = i18n._("Free Trial Ended");
             } else {
-                var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
-                if (!isNaN(daysRemain)) {
-                    trialDays = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
+                var timeRemaining=this.licenseStatus.timeRemaining;
+                if(timeRemaining=="expires today") {
+                    trialInfo = i18n._("Free Trial Expires Today");
+                } else {
+                   var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
+                   if (!isNaN(daysRemain)) {
+                        trialInfo = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
+                   }
                 }
             }
         }
-    	this.getEl().child("div[class=nodeTrial]").dom.innerHTML=trialFlag;
-        this.getEl().child("div[class=nodeTrialDays]").dom.innerHTML=trialDays;
+        return trialInfo;
+    },
+    updateLicenseStatus : function (licenseStatus) {
+    	this.licenseStatus=licenseStatus;
+        this.getEl().child("div[class=nodeTrialInfo]").dom.innerHTML=this.getTrialInfo();
     }
 });
 // Get node component by tid
@@ -1218,29 +1209,29 @@ Ung.Node.getCmp = function(tid) {
 
 Ung.Node.getStatusTip = function() {
     return [
-            '<div style="text-align: left;">',
-            i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular software product."),
-            '<BR>',
-            '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> '
-                    + i18n._('indicates that the product is "on" and operating normally.'),
-            '<BR>',
-            '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> '
-                    + i18n._('indicates that the product is "on", but that an abnormal condition has occurred.'),
-            '<BR>',
-            '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> '
-                    + i18n._('indicates that the product is saving or refreshing settings.'), '<BR>',
-            '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the product is "off", and may be turned "on" by the user.'),
-            '</div>'].join('');
+        '<div style="text-align: left;">',
+        i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular software product."),
+        '<BR>',
+        '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> '
+                + i18n._('indicates that the product is "on" and operating normally.'),
+        '<BR>',
+        '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> '
+                + i18n._('indicates that the product is "on", but that an abnormal condition has occurred.'),
+        '<BR>',
+        '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> '
+                + i18n._('indicates that the product is saving or refreshing settings.'), '<BR>',
+        '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the product is "off", and may be turned "on" by the user.'),
+        '</div>'].join('');
 }
 Ung.Node.getPowerTip = function() {
     return i18n._('The <B>Power Button</B> allows you to turn a product "on" and "off".');
 };
 Ung.Node.template = new Ext.Template('<div class="nodeImage"><img src="{image}"/></div>', '<div class="nodeLabel">{displayName}</div>',
-        '<div class="nodeTrialDays">{trialDays}</div>', '<div class="nodeTrial">{trialFlag}</div>',
-        '<div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
-        '<div class="nodeState" id="nodeState_{id}" name="State"></div>',
-        '<div class="{nodePowerCls}" id="nodePower_{id}" name="Power"></div>',
-        '<div class="nodeButtons" id="nodeButtons_{id}"></div>');
+    '<div class="nodeTrialInfo">{trialInfo}</div>', 
+    '<div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
+    '<div class="nodeState" id="nodeState_{id}" name="State"></div>',
+    '<div class="{nodePowerCls}" id="nodePower_{id}" name="Power"></div>',
+    '<div class="nodeButtons" id="nodeButtons_{id}"></div>');
 
 // Message Manager object
 Ung.MessageManager = {
@@ -1344,10 +1335,20 @@ Ung.MessageManager = {
                                 	Ung.AppItem.updateState(appItemName, "download_progress", msg);
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                 	this.resetErrorTolerance();
-                                	Ung.AppItem.updateState(appItemName, "download");
+                                	if(msg.success) {
+                                	   Ung.AppItem.updateState(appItemName, "download");
+                                    } else {
+                                    	Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemName));
+                                    	Ung.AppItem.updateState(appItemName);
+                                    }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                 	this.resetErrorTolerance();
-                                	Ung.AppItem.updateState(appItemName, "installing");
+                                    if(msg.success) {
+                                       Ung.AppItem.updateState(appItemName, "installing");
+                                    } else {
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),appItemName));
+                                        Ung.AppItem.updateState(appItemName);
+                                    }
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
                                     Ung.AppItem.updateState(appItemName, "activate_timeout");
                                 }
@@ -1380,13 +1381,24 @@ Ung.MessageManager = {
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                 	this.resetErrorTolerance();
                                 	this.upgradesComplete++;
-                                } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
+                                    if(!msg.success) {
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemName));
+                                    }
+                            	} else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                 	this.resetErrorTolerance();
-                                	this.stop();
-                                	Ext.MessageBox.alert(
-                                	   i18n._("Upgrade Successful"),
-                                	   i18n._("The Upgrade succeeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
-                                	   Ung.Util.goToStartPage);
+                                    this.stop();
+                                	if(msg.success) {
+                                    	Ext.MessageBox.alert(
+                                    	   i18n._("Upgrade Successful"),
+                                    	   i18n._("The Upgrade succeeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                    	   Ung.Util.goToStartPage);
+                                	} else {
+                                        Ext.MessageBox.alert(
+                                           i18n._("Upgrade Failed"),
+                                           i18n._("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                           Ung.Util.goToStartPage);
+                                		
+                                	}
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
                                 	this.stop();
                                     Ext.MessageBox.alert(

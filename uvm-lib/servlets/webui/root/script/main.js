@@ -18,7 +18,7 @@ Ung.Main.prototype = {
     viewport: null,
     initSemaphore: null,
     policySemaphore: null,
-    contentLeftWidth: 220,
+    contentLeftWidth: null,
     // the application build version
     version: null,
     iframeWin: null,
@@ -82,11 +82,6 @@ Ung.Main.prototype = {
             if(Ung.Util.handleException(exception)) return;
             rpc.toolboxManager=result;
             this.postinit();// 5
-//            rpc.toolboxManager.getUpgradeSettings(function (result, exception) {
-//                if(Ung.Util.handleException(exception)) return;
-//                rpc.upgradeSettings=result;
-//                this.postinit();// 5
-//            }.createDelegate(this));
         }.createDelegate(this));
         // get admin manager
         rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
@@ -190,13 +185,6 @@ Ung.Main.prototype = {
         this.initExtVTypes();
         Ext.EventManager.onWindowResize(Ung.Util.resizeWindows);
         // initialize viewport object
-        var contentLeftArr=[
-            '<div id="contentleft">',
-                '<div id="logo"><img src="/images/BrandingLogo.gif" border="0"/></div>',
-                '<div id="leftHorizontalRuler"></div>',
-                '<div id="leftTabs"></div>',
-                '<div id="help"></div>',
-            '</div>'];
         var contentRightArr=[
             '<div id="contentright">',
                 '<div id="racks" style="display:none;">',
@@ -209,15 +197,60 @@ Ung.Main.prototype = {
                     '</div>',
                 '</div>',
             '</div>'];
-
+        this.contentLeftWidth=parseInt(Ext.util.CSS.getRule(".contentleft",true).style.width);
         this.viewport = new Ext.Viewport({
             layout:'border',
             items:[{
                     region:'west',
                     id: 'west',
-                    html: contentLeftArr.join(""),
+                    buttonAlign : 'center',
+                    cls:"contentleft",
+                    border : false,
                     width: this.contentLeftWidth,
-                    border: false
+                    bodyStyle: 'background-color: transparent;',
+                    footer : false,
+                    items:[{
+                    	cls: "logo",
+                        html: '<img src="/images/BrandingLogo.gif" border="0"/>',
+                        border: false,
+                        bodyStyle: 'background-color: transparent;'
+                    }, {
+                    	layout:"fit",
+                    	border: false,
+                    	cls: "leftTabs",
+                    	items: this.leftTabs = new Ext.TabPanel({
+                            activeTab: 0,
+                            height: 400,
+                            deferredRender:false,
+                            defaults:{autoScroll: true},
+                            items:[{
+                                title: i18n._('Apps'),
+                                helpSource: 'apps',
+                                html:'<div id="appsItems"></div>',name:'Apps'
+                            },{
+                                title:i18n._('Config'),
+                                html:'<div id="configItems"></div>',
+                                helpSource: 'config',
+                                name:'Config'
+                            }],
+                            listeners : {
+                                "render" : {
+                                    fn : function() {
+                                        this.addNamesToPanels();
+                                    }
+                                }
+                            }
+                        })
+                    }],
+                    buttons:[{
+                        name: 'Help',
+                        iconCls: 'iconHelp',
+                        text: i18n._('Help'),
+                        handler: function() {
+                            var helpSource=main.leftTabs.getActiveTab().helpSource;
+                            main.openHelp(helpSource);
+                        }
+                    }]
                  },{
                     region:'center',
                     id: 'center',
@@ -231,24 +264,13 @@ Ung.Main.prototype = {
         });
         Ext.QuickTips.init();
 
-        this.buildLeftTabs();
         main.systemStats=new Ung.SystemStats({});
 
         Ext.getCmp("west").on("resize", function() {
-            var newHeight=Math.max(this.getEl().getHeight()-220,100);
+            var newHeight=Math.max(this.getEl().getHeight()-175,100);
             main.leftTabs.setHeight(newHeight);
         });
         Ext.getCmp("west").fireEvent("resize");
-        var buttonCmp=new Ext.Button({
-            name: 'Help',
-            renderTo: 'help',
-            iconCls: 'iconHelp',
-            text: i18n._('Help'),
-            handler: function() {
-            	var helpSource=main.leftTabs.getActiveTab().helpSource;
-                main.openHelp(helpSource);
-            }
-        });
         buttonCmp=new Ext.Button({
             name: 'What Apps should I use?',
             id: 'help_empty_rack',
@@ -299,6 +321,21 @@ Ung.Main.prototype = {
         iframeWin.setTitle(title);
         window.frames["iframeWin_iframe"].location.href = url;
     },
+    openStoreToLibItem : function (libItemName, title) {
+        var currentLocation = window.location;
+        var query = "&host=" + currentLocation.hostname;
+        query += "&port=" + currentLocation.port;
+        query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
+        query += "&action=browse";
+        query += "&libitem=" + libItemName;
+
+        var url = "../library/launcher?" + query;
+        var iframeWin = main.getIframeWin();
+        iframeWin.show();
+        iframeWin.setTitle(title);
+        window.frames["iframeWin_iframe"].location.href = url;
+    },
+    
     initExtI18n: function(){
         Ext.form.Field.prototype.invalidText=i18n._('The value in this field is invalid');
         Ext.form.TextField.prototype.blankText=i18n._('This field is required');
@@ -486,33 +523,6 @@ Ung.Main.prototype = {
                     }.createDelegate(this), this.name);
                 }
         }.createDelegate(mackageDesc), mackageDesc.name);
-    },
-    // build left tabs
-    buildLeftTabs: function () {
-        this.leftTabs = new Ext.TabPanel({
-            renderTo: 'leftTabs',
-            activeTab: 0,
-            height: 400,
-            deferredRender:false,
-            defaults:{autoScroll: true},
-            items:[{
-                title: i18n._('Apps'),
-                helpSource: 'apps',
-                html:'<div id="appsItems"></div>',name:'Apps'},
-                {title:i18n._('Config'),
-                html:'<div id="configItems"></div>',
-                helpSource: 'config',
-                name:'Config'}
-            ],
-            listeners : {
-                "render" : {
-                    fn : function() {
-                        this.addNamesToPanels();
-                    }
-                }
-            }
-
-        });
     },
     // open context sensitive help 
     openHelp: function(source) {
