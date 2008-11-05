@@ -316,6 +316,16 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         return tDesc;
     }
+    
+    public NodeDesc instantiateAndStart(String nodeName, Policy p)
+            throws DeployException, NodeStartException {
+        NodeDesc nd = instantiate(nodeName, p);
+        if (!nd.getNoStart()) {
+            NodeContext nc = nodeContext(nd.getTid());
+            nc.node().start();
+        }
+        return nd;
+    }
 
     public void destroy(final Tid tid) throws UndeployException
     {

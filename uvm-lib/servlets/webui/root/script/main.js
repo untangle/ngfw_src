@@ -656,7 +656,7 @@ Ung.Main.prototype = {
         		return;
         	}
             Ung.AppItem.updateStateForNode(mackageDesc.name, "installing");
-            rpc.nodeManager.instantiate(function (result, exception) {
+            rpc.nodeManager.instantiateAndStart(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
             }.createDelegate(this), mackageDesc.name, rpc.currentPolicy);
         }

@@ -135,6 +135,19 @@ public interface RemoteNodeManager
     NodeDesc instantiate(String name) throws DeployException;
 
     /**
+     * Create a new node instance under the given policy and then start it.
+     * Note that it is an error to specify a non-null policy for a service,
+     * or a null policy for a non-service.
+     *
+     * @param name of the node.
+     * @param policy the policy this instance is applied to.
+     * @return the <code>tid</code> of the instance.
+     * @exception DeployException if the instance cannot be created.
+     * @exception NodeStartException if the instance cannot be started.
+     */
+    NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException, NodeStartException;
+
+    /**
      * Remove node instance from the pipeline.
      *
      * @param tid <code>Tid</code> of instance to be destroyed.

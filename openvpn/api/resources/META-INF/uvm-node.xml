@@ -19,5 +19,5 @@
 
 <uvm-node>
   <node-desc classname="com.untangle.node.openvpn.VpnNodeImpl"
-             single-instance="true"/>
+             single-instance="true" no-start="true"/>
 </uvm-node>

@@ -25,6 +25,7 @@ import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.UndeployException;
@@ -92,6 +93,10 @@ class RemoteNodeManagerAdaptor implements RemoteNodeManager
         return nodeManager.instantiate(name);
     }
 
+    public NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException, NodeStartException {
+        return nodeManager.instantiateAndStart(nodeName, p);
+    }
+    
     public void destroy(Tid tid) throws UndeployException
     {
         nodeManager.destroy(tid);
