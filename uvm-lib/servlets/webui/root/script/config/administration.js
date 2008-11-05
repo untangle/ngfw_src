@@ -2092,17 +2092,23 @@ if (!Ung.hasResource["Ung.Administration"]) {
             /* A hook for doing something in a node before attempting to save */
             
             //check to see if the remote administrative settings were changed in order to inform the user
-            var remoteChanges = this.initialAccessSettings.isOutsideAdministrationEnabled && !this.getAccessSettings().isOutsideAdministrationEnabled 
-                    || this.initialAddressSettings.httpsPort != this.getAddressSettings().httpsPort;
+            var remoteChanges = 
+                    this.initialAccessSettings.isOutsideAdministrationEnabled && !this.getAccessSettings().isOutsideAdministrationEnabled //external administration 
+                    || this.initialAccessSettings.isInsideInsecureEnabled && !this.getAccessSettings().isInsideInsecureEnabled //internal administration 
+                    || this.initialAccessSettings.isOutsideAccessRestricted && this.getAccessSettings().isOutsideAccessRestricted 
+                        && (this.initialAccessSettings.outsideNetwork != Ext.getCmp('administration_outsideNetwork').getValue() 
+                            || this.initialAccessSettings.outsideNetmask != Ext.getCmp('administration_outsideNetmask').getValue()) //external access
+                    || this.initialAddressSettings.httpsPort != this.getAddressSettings().httpsPort //external https port
+                    || !this.initialAccessSettings.isOutsideAccessRestricted && this.getAccessSettings().isOutsideAccessRestricted; //external access
             if (remoteChanges) {
                 Ext.Msg.show({
                     title : this.i18n._("Warning"),
-                    msg : String.format(this.i18n._("Changing the external administration settings may disconnect you from the {0} box."), 
+                    msg : String.format(this.i18n._("Changing the administration settings may disconnect you from the {0} box. Do you want to proceed?"), 
                         main.getBrandingBaseSettings().companyName),
-                    buttons : Ext.Msg.OKCANCEL,
+                    buttons : Ext.Msg.YESNO,
                     icon : Ext.MessageBox.WARNING, 
                     fn : function (btn, text) {
-                        if (btn == 'ok'){
+                        if (btn == 'yes'){
                             this.completeSaveAction();
                         }
                     }.createDelegate(this)
