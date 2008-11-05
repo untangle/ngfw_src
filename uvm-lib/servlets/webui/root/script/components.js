@@ -3265,7 +3265,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     this.store.insert(0, [record]);
                 } else if ("modified" == cd.op) {
                     var recIndex = this.store.find("id", id);
-                    if (recIndex) {
+                    if (recIndex >= 0) {
                         var rec = this.store.getAt(recIndex);
                         rec.data = cd.recData;
                         rec.commit();
