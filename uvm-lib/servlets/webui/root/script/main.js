@@ -753,7 +753,7 @@ Ung.Main.prototype = {
     openConfig: function(configItem) {
     	Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
         Ung.Util.loadResourceAndExecute.defer(1, this, [configItem.className,"script/config/"+configItem.scriptFile, function() {
-             eval('main.configWin = new ' + this.className + '(this);');
+            eval('main.configWin = new ' + this.className + '(this);');
             main.configWin.show();
             Ext.MessageBox.hide();
         }.createDelegate(configItem)]);
@@ -901,15 +901,17 @@ Ung.Main.prototype = {
     // change current policy
     changePolicy: function () {
         if(this.text=='Show Policy Manager'){
-	    Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
-		main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
-		main.policyManagerWin.show();
-	    });		
-	}else{
-	    Ext.getCmp('rack_select').setText(this.text);		
-	    rpc.currentPolicy=rpc.policies[this.index];
-	    main.loadRackView();		
-	}
+        	Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.PolicyManager","script/config/policyManager.js", function() {
+                main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
+                main.policyManagerWin.show();
+                Ext.MessageBox.hide();
+            }]);		
+        }else{
+            Ext.getCmp('rack_select').setText(this.text);		
+            rpc.currentPolicy=rpc.policies[this.index];
+            main.loadRackView();		
+        }
         /*
         var rack_select=document.getElementById('rack_select');
         if(rack_select.selectedIndex>=0) {

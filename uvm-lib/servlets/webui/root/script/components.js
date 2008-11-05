@@ -3665,12 +3665,14 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         text : i18n._("Open Local Directory"),
                         hidden : !this.loadLocalDirectoryUsers,
                         handler : function() {
-                            Ung.Util.loadResourceAndExecute("Ung.LocalDirectory","script/config/localDirectory.js", function() {
+                        	Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+                            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory","script/config/localDirectory.js", function() {
                                 main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
                                     this.populate(this.record,this.fnCallback)
                                 }.createDelegate(this)});
                                 main.localDirectoryWin.show();
-                            }.createDelegate(this));
+                                Ext.MessageBox.hide();
+                            }.createDelegate(this)]);
                         }.createDelegate(this)
                     }, {
                         xtype: "button",
