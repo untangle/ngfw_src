@@ -66,6 +66,7 @@ public class UvmNodeHandler extends DefaultHandler
     private boolean singleInstance = false;
     private String displayName = null;
     private boolean hasPowerButton = true;
+    private boolean noStart = false;
 
     private StringBuilder parentBuilder;
     private StringBuilder exportBuilder;
@@ -82,7 +83,7 @@ public class UvmNodeHandler extends DefaultHandler
     {
         return new NodeDesc(tid, mackageDesc, className, guiClassName,
                             nodeBase, exports, parents, uvmResources,
-                            singleInstance, hasPowerButton);
+                            singleInstance, hasPowerButton, noStart);
     }
 
     // DefaultHandler methods -------------------------------------------------
@@ -156,6 +157,8 @@ public class UvmNodeHandler extends DefaultHandler
                 nodeBase = v;
             } else if (n.equals("power-button")) {
                 hasPowerButton = Boolean.parseBoolean(v);
+            } else if (n.equals("no-start")) {
+                noStart = Boolean.parseBoolean(v);
             } else {
                 logger.warn("skipping unknown attribute: " + n);
             }

@@ -43,6 +43,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -50,6 +51,7 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.NodeStateChange;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
@@ -403,6 +405,11 @@ public abstract class NodeBase implements Node
             if (NodeState.RUNNING == ts) {
                 wasStarted = true;
             }
+
+            LocalMessageManager mm = LocalUvmContextFactory.context()
+                .localMessageManager();
+            NodeStateChange nsc = new NodeStateChange(nodeContext.getNodeDesc(), ts);
+            mm.submitMessage(nsc);
 
             NodeStateChangeEvent te = new NodeStateChangeEvent(this, ts, args);
             synchronized (nodeListeners) {

@@ -53,8 +53,8 @@ import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.Application;
@@ -347,7 +347,14 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     for (String nn : nodes) {
                         try {
                             register(nn);
-                            tm.instantiate(nn, p);
+                            NodeDesc nd = tm.instantiate(nn, p);
+                            if (!nd.getNoStart()) {
+                                NodeContext nc = tm.nodeContext(nd.getTid());
+                                //nc.node().start();
+                            }
+//                         } catch (NodeStartException exn) {
+//                             // XXX send out error message
+//                             logger.warn("could not start", exn);
                         } catch (DeployException exn) {
                             // XXX send out error message
                             logger.warn("could not deploy", exn);

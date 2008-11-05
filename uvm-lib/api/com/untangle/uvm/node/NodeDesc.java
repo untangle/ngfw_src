@@ -61,6 +61,7 @@ public class NodeDesc implements Serializable
     private final String syslogName;
 
     private final boolean hasPowerButton;
+    private final boolean noStart;
 
     private final List<String> exports;
     private final List<String> parents;
@@ -75,7 +76,7 @@ public class NodeDesc implements Serializable
                     String guiClassName, String nodeBase,
                     List<String> exports, List<String> parents,
                     List<String> uvmResources, boolean singleInstance,
-                    boolean hasPowerButton)
+                    boolean hasPowerButton, boolean noStart)
     {
         this.tid = tid;
         this.mackageDesc = mackageDesc;
@@ -92,6 +93,7 @@ public class NodeDesc implements Serializable
         String n = mackageDesc.getDisplayName();
         this.syslogName = null == n ? null : n.replaceAll("\\p{Space}", "_");
         this.hasPowerButton = hasPowerButton;
+        this.noStart = noStart;
     }
 
     // accessors --------------------------------------------------------------
@@ -248,6 +250,14 @@ public class NodeDesc implements Serializable
     public boolean getHasPowerButton()
     {
         return hasPowerButton;
+    }
+
+    /**
+     * True if this node should be started automatically.
+     */
+    public boolean getNoStart()
+    {
+        return noStart;
     }
 
     // Object methods ---------------------------------------------------------
