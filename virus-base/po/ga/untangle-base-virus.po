@@ -1,0 +1,265 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; null;\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:30
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:133
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:162
+msgid "Web"
+msgstr "beW"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:42
+msgid "Scan HTTP"
+msgstr "nacS PTTH"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:55
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:355
+msgid "Advanced Settings"
+msgstr "decnavdA sgnitteS"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:62
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:138
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:197
+msgid "File Extensions"
+msgstr "eliF snoisnetxE"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:70
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:167
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:268
+msgid "MIME Types"
+msgstr "EMIM sepyT"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:77
+msgid "Disable HTTP Resume"
+msgstr "elbasiD PTTH emuseR"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:90
+msgid "Scan trickle rate (1-99)"
+msgstr "nacS elkcirt etar )99-1("
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:111
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:395
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:545
+msgid "Virus Blocker signatures were last updated"
+msgstr "suriV rekcolB serutangis erew tsal detadpu"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:113
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:397
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:547
+msgid "Unknown"
+msgstr "nwonknU"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:183
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:254
+msgid "scan"
+msgstr "nacs"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:195
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:266
+msgid "[no description]"
+msgstr "on[ ]noitpircsed"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:213
+msgid "file type"
+msgstr "elif epyt"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:221
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:292
+msgid "description"
+msgstr "noitpircsed"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:235
+msgid "File Type"
+msgstr "eliF epyT"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:241
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:312
+msgid "Scan"
+msgstr "nacS"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:245
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:316
+msgid "Description"
+msgstr "noitpircseD"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:284
+msgid "MIME type"
+msgstr "EMIM epyt"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:306
+msgid "MIME Type"
+msgstr "EMIM epyT"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:330
+msgid "FTP"
+msgstr "PTF"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:342
+msgid "Scan FTP"
+msgstr "nacS PTF"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:361
+msgid "Disable FTP Resume"
+msgstr "elbasiD PTF emuseR"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:374
+msgid "Scan trickle rate"
+msgstr "nacS elkcirt etar"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:410
+msgid "Email"
+msgstr "liamE"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:429
+msgid "Scan SMTP"
+msgstr "nacS PTMS"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:442
+msgid "Scan POP3"
+msgstr "nacS 3POP"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:455
+msgid "Scan IMAP"
+msgstr "nacS PAMI"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:475
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:499
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:522
+msgid "Action"
+msgstr "noitcA"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:481
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:505
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:528
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:583
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:592
+msgid "pass message"
+msgstr "ssap egassem"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:482
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:506
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:529
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:586
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:594
+msgid "remove infection"
+msgstr "evomer noitcefni"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:597
+msgid "block message"
+msgstr "kcolb egassem"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:572
+msgid "clean"
+msgstr "naelc"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:574
+msgid "cleaned"
+msgstr "denaelc"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:577
+msgid "blocked"
+msgstr "dekcolb"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:619
+msgid "virus found"
+msgstr "suriv dnuof"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:619
+msgid "no virus found"
+msgstr "on suriv dnuof"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:624
+msgid "timestamp"
+msgstr "pmatsemit"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:632
+msgid "action"
+msgstr "noitca"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:637
+msgid "client"
+msgstr "tneilc"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:644
+msgid "traffic"
+msgstr "ciffart"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:649
+msgid "reason for action"
+msgstr "nosaer rof noitca"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:654
+msgid "server"
+msgstr "revres"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:670
+msgid "Warning"
+msgstr "gninraW"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:670
+msgid "Scan trickle rate should be between 1 and 99!"
+msgstr "nacS elkcirt etar dluohs eb neewteb 1 dna !99"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:682
+msgid "Saving..."
+msgstr "...gnivaS"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:682
+msgid "Please wait"
+msgstr "esaelP tiaw"
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:86
+#, java-format
+msgid "{0} | {1} Warning"
+msgstr "{0} | {1} gninraW"
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:98
+#, java-format
+msgid "{0} Virus Blocker"
+msgstr "{0} suriV rekcolB"
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:110
+#, java-format
+msgid "{0}This file was blocked{1} because it contained a virus."
+msgstr "{0}This elif saw blocked{1} esuaceb ti deniatnoc a .suriv"
+
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#, java-format
+msgid "If you have any questions, Please contact {0}."
+msgstr "fI uoy evah yna ,snoitseuq esaelP tcatnoc {0}."
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+msgid "Host:"
+msgstr ":tsoH"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+msgid "URL:"
+msgstr ":LRU"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+msgid "Reason:"
+msgstr ":nosaeR"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+msgid "Unblock For Now"
+msgstr "kcolbnU roF woN"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+msgid "Unblock Permanently"
+msgstr "kcolbnU yltnenamreP"
