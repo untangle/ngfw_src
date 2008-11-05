@@ -20,6 +20,7 @@ case `head -1 $ETC_ISSUE | awk "{ print \\$$i }"` in
   7.04*) REPOSITORY=feisty SOURCES_LIST=${SOURCES_LIST_NEW} ;;
   7.10*) REPOSITORY=gutsy SOURCES_LIST=${SOURCES_LIST_NEW} ;;
   8.04*|hardy) REPOSITORY=hardy SOURCES_LIST=${SOURCES_LIST_NEW} ;;
+  8.10*|intrepid) REPOSITORY=intrepid SOURCES_LIST=${SOURCES_LIST_NEW} ;;
   # FIMXE !!!
   *) REPOSITORY=etch SOURCES_LIST=${SOURCES_LIST_NEW} ;;
 esac

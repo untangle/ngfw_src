@@ -20,12 +20,16 @@ PLATFORMS = { :sarge    => 0,
               :sid      => 2,
               :feisty   => 3,
               :gutsy    => 4,
-              :hardy    => 5 }
+              :hardy    => 5,
+              :intrepid => 6,
+              :lenny    => 7 }
 
 VERSIONS = { :hardware => 1,
-             :cd       => 2,
-             :lite     => 3,
-             :windows  => 4,
+             :iso      => 2,
+             :pkgs     => 3,
+             :win      => 4,
+             :mac      => 5,
+             :lin      => 6,
              :ubuntu   => 9 }
 
 # workaround for <1.0 gpgme
@@ -140,13 +144,17 @@ end
 
 def getVersion
   if !getPackageVersion('untangle-windows-installer').nil? 
-    :windows
+    :win
+  elsif !getPackageVersion('untangle-mac-installer').nil? 
+    :mac
+  elsif !getPackageVersion('untangle-linux-installer').nil? 
+    :lin
   elsif !getPackageVersion('untangle').nil? 
     :ubuntu
   elsif getPackageVersion('untangle-gateway').nil?
-    :lite
+    :pkgs
   elsif getPackageVersion('untangle-hardware-support').nil?
-    :cd
+    :iso
   else
     :hardware
   end
