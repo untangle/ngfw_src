@@ -975,9 +975,8 @@ Ung.Node = Ext.extend(Ext.Component, {
             this.setState("Attention");
             this.nodeContext.rpcNode.start(function(result, exception) {
             	if(Ung.Util.handleException(exception, function() {
-            	   this.updateRunState("INITIALIZED");
+            	   //this.updateRunState("INITIALIZED");
             	}.createDelegate(this),"alert")) return;
-                this.updateRunState("RUNNING");
             }.createDelegate(this));
     	}.createDelegate(this));
     },
@@ -989,7 +988,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             this.setPowerOn(false);
             this.setState("Attention");
             this.nodeContext.rpcNode.stop(function(result, exception) {
-                this.updateRunState("INITIALIZED");
+                //this.updateRunState("INITIALIZED");
                 this.resetBlingers();
                 if(Ung.Util.handleException(exception)) return;
             }.createDelegate(this));
@@ -1304,7 +1303,12 @@ Ung.MessageManager = {
                     }
                    for(var i=0;i<messageQueue.messages.list.length;i++) {
                        var msg=messageQueue.messages.list[i];
-                        if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
+                        if(msg.javaClass.indexOf("NodeStateChange") >= 0) {
+                        	var node=Ung.Node.getCmp(msg.nodeDesc.tid.id);
+                        	if(node!=null) {
+                        		node.updateRunState(msg.nodeState);
+                        	}
+                        }else if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
                         	if(!msg.installed) {
                                 var policy=null;
                                 policy = rpc.currentPolicy;
@@ -1321,9 +1325,8 @@ Ung.MessageManager = {
                             if(!node) {
                                 var node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
                                 main.nodes.push(node);
-                                main.addNode(node, true);
+                                main.addNode(node);
                             }
-                            main.startNode(Ung.Node.getCmp(node.tid));
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                         	refreshApps=true;
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {

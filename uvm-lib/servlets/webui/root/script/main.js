@@ -786,15 +786,12 @@ Ung.Main.prototype = {
         }
         return position;
     },
-    addNode: function (node, startNode) {
+    addNode: function (node) {
         var nodeWidget=new Ung.Node(node);
         var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
         var position=this.getNodePosition(place,node.md.viewPosition);
         nodeWidget.render(place,position);
         Ung.AppItem.updateStateForNode(node.name, "installed");
-        if(startNode) {
-        	main.startNode(nodeWidget)
-        }
     },
     /*
     addNodePreview: function (mackageDesc) {
@@ -803,17 +800,15 @@ Ung.Main.prototype = {
         var position=this.getNodePosition(place,node.md.viewPosition);
         nodeWidget.render(place,position);
         Ung.AppItem.updateStateForNode(node.name, "installed");
-        if(startNode) {
-            main.startNode(nodeWidget)
-        }
     },*/
+    /*
     startNode : function(nodeWidget) {
         if(nodeWidget.name!="untangle-node-openvpn") {
             nodeWidget.start();
         } else {
         	Ext.MessageBox.alert(i18n._("OpenVPN warning"), i18n._("OpenVPN can not be automatically turned on.<br>Please configure its settings first."));
         }
-    },
+    },*/
     getNode : function(nodeName) {
     	if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
