@@ -31,4 +31,9 @@ public class WebFilterImpl extends WebFilterBase
     {
         return "untangle";
     }
+
+    public String getNodeTitle()
+    {
+        return "Web Filter";
+    }
 }

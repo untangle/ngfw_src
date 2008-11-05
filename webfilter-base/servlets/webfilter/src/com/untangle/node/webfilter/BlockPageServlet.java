@@ -76,18 +76,18 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the page title (in the window bar) of the page */
         public String getPageTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0} | Web Filter Warning", bs.getCompanyName(), i18n_map);
+            return I18nUtil.tr("{0} | {1} Warning", new String[] { bs.getCompanyName(), this.blockDetails.getNodeTitle() }, i18n_map);
         }
 
         /* Retrieve the title (top of the pae) of the page */
         public String getTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return "Web Filter";
+            return this.blockDetails.getNodeTitle();
         }
 
         public String getFooter( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0} Web Filter", bs.getCompanyName(), i18n_map);
+            return bs.getCompanyName() + " " + this.blockDetails.getNodeTitle();
         }
 
         /* Return the name of the script file to load, or null if there is not a script. */

@@ -185,7 +185,8 @@ public abstract class Blacklist
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
-                     "host name is an IP address (" + host + ")", clientIp);
+                     "host name is an IP address (" + host + ")", clientIp,
+                     node.getNodeTitle());
                 return node.generateNonce(bd);
             }
         }
@@ -211,7 +212,8 @@ public abstract class Blacklist
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
-                     "extension (" + exn + ")", clientIp);
+                     "extension (" + exn + ")", clientIp,
+                     node.getNodeTitle());
                 return node.generateNonce(bd);
             }
         }
@@ -242,7 +244,8 @@ public abstract class Blacklist
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
-                     "Mime-Type (" + contentType + ")", clientIp);
+                     "Mime-Type (" + contentType + ")", clientIp,
+                     node.getNodeTitle());
                 return node.generateNonce(bd);
             }
         }
@@ -348,7 +351,8 @@ public abstract class Blacklist
             if ((null != bc && bc.getBlock())
                 || (null != stringRule && stringRule.isLive())) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
-                    (settings, host, uri, null == bc ? category : bc.getDisplayName(), clientIp);
+                    (settings, host, uri, null == bc ? category : bc.getDisplayName(), clientIp,
+                     node.getNodeTitle());
                 return node.generateNonce(bd);
             } else {
                 return null;

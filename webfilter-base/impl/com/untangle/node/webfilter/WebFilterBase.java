@@ -364,6 +364,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     protected abstract String getVendor();
 
+    public abstract String getNodeTitle();
+
     // Node methods ------------------------------------------------------
 
     @Override
