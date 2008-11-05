@@ -350,11 +350,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                             NodeDesc nd = tm.instantiate(nn, p);
                             if (!nd.getNoStart()) {
                                 NodeContext nc = tm.nodeContext(nd.getTid());
-                                //nc.node().start();
+                                nc.node().start();
                             }
-//                         } catch (NodeStartException exn) {
-//                             // XXX send out error message
-//                             logger.warn("could not start", exn);
+                         } catch (NodeStartException exn) {
+                             // XXX send out error message
+                             logger.warn("could not start", exn);
                         } catch (DeployException exn) {
                             // XXX send out error message
                             logger.warn("could not deploy", exn);
