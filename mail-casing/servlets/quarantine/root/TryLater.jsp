@@ -31,40 +31,45 @@ String companyUrl = bs.getCompanyUrl();
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <style type="text/css">
 /* <![CDATA[ */
-@import url(/images/base.css);
+@import url(/ext/resources/css/ext-all.css);
 /* ]]> */
 </style>
+<link href="/skins/default/css/ext-skin.css" rel="stylesheet" type="text/css">
+<link href="/skins/default/css/user.css" rel="stylesheet" type="text/css">
 </head>
-<body>
-<div id="main">
- <!-- Box Start -->
- <div class="main-top-left"></div><div class="main-top-right"></div><div class="main-mid-left"><div class="main-mid-right"><div class="main-mid">
- <!-- Content Start -->
-	
-	<div class="page_head">
-        <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%> logo"/></a> <div>Quarantine service error</div>
-	</div>
-	
-    <hr />
-          
-  	<center>
-	<div style="padding: 10px 0; margin: 0 auto; width: 440px;">
+<body class="quarantine">
+<div id="content" class="service-error-height">
+	<div id="header"><a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%> logo"/></a><div class="title">Quarantine Service Error</div></div>
 
-        The <%=company%> Server has encountered an error.
-        Please try later.
-        Thanks and sorry.
+	<div id="main">
+	 <!-- Box Start -->
+	 <!-- Content Start -->
+		<!--
+		<div class="page_head">
+	        <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%> logo"/></a> <div>Quarantine service error</div>
+		</div>
+		
+	    <hr />
+	          
+	  	<center>
+		-->
+		<div style="padding: 7em 0 0 10px;  ">
 
-    </div>
-    </center>        
-        
-    <address>Powered by Untangle&trade; Server</address>
-        
-	<hr />
-	
- <!-- Content End -->
- </div></div></div><div class="main-bot-left"></div><div class="main-bot-right"></div>
- <!-- Box End -->
-</div>	
+	        The <%=company%> Server has encountered an error.
+	        Please try later.
+	        Thanks and sorry.
+
+	    </div>
+	<!--
+	    </center>        
+	        
+	    <address>Powered by Untangle&trade; Server</address>
+	        
+		<hr />
+	-->	
+	 <!-- Content End -->
+	</div>	
+</div>
 
 </body>
 </html>

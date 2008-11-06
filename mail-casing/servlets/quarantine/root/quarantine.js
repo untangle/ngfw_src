@@ -165,17 +165,20 @@ Ung.Quarantine.prototype = {
 
         this.releaseButton= new Ext.Button( {
             handler : function() { this.releaseOrDelete( quarantine.rpc.releaseMessages ) }.createDelegate( this ),
+			iconCls:'iconMoveMails',
             text : i18n._( "Move to Inbox" ),
             disabled : true
                     } );
 
         this.deleteButton = new Ext.Button( {
             handler : function() { this.releaseOrDelete( quarantine.rpc.purgeMessages ) }.createDelegate( this ),
+			iconCls:'iconDeleteRow',			
             text : i18n._( "Delete Messages" ),
             disabled : true
                 } );
         
         this.safelistButton = new Ext.Button( {
+			iconCls:'iconSafeList',
             handler : function() { this.safelist() }.createDelegate( this ),
             text : i18n._( "Add Sender(s) to Safelist" ),
             disabled : true
@@ -559,7 +562,7 @@ function completeInit()
     safelist.init();
     remaps.init();
 
-    var message = String.format( i18n._( "The messages below were quarantined and will be deleted after {0} days." ), inboxDetails.quarantineDays );
+    var message = String.format( i18n._( "Your Remote Access Portal login has been configured without an email address or with an incorrect email address." ), inboxDetails.quarantineDays );
 
     var panels = [];
 

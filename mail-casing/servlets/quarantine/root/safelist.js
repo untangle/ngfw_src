@@ -55,6 +55,7 @@ Ung.Safelist.prototype = {
         });
 
         this.addButton = new Ext.Button( {
+			iconCls:'iconAddRow',
             text : i18n._( "Add" ),
             handler : function() {
                 var window = this.getAddWindow();
@@ -66,6 +67,7 @@ Ung.Safelist.prototype = {
         this.deleteButton = new Ext.Button( {
             text : i18n._( "Delete Addresses" ),
             disabled : true,
+			iconCls:'iconDeleteRow',						
             handler : function() {
                 var addresses = [];
                 this.selectionModel.each( function( record ) {

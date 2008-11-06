@@ -46,6 +46,7 @@
   </c:set>
   
   <c:set var="content" scope="request">
+  <!--
     <p>
       Your Remote Access Portal login has been configured without an
       email address or with an incorrect email address.
@@ -75,7 +76,7 @@
       quarantined email page from your browser to release or delete
       your quarantined emails.
     </p>
-
+	-->
     <div id="quarantine-request-digest"><!-- jspx --></div>
   </c:set>
   

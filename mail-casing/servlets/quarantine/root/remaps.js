@@ -52,6 +52,7 @@ Ung.Remaps.prototype = {
 
 
         this.deleteButton = new Ext.Button( {
+			iconCls:'iconDeleteRow',					
             text : i18n._( "Delete Addresses" ),
             disabled : true,
             handler : function() {
