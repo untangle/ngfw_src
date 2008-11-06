@@ -116,12 +116,16 @@ def getPlatform
     :etch
   when /3\.1/
     :sarge
+  when /5\.0/
+    :lenny
   when /(7\.04|feisty)/
     :feisty
   when /(7\.10|gutsy)/
     :gutsy
   when /(8\.04|hardy)/
     :hardy
+  when /(8\.10|intrepid)/
+    :intrepid
   else
     raise "Couldn't get your platform."
   end
