@@ -50,4 +50,9 @@ public class Affinity
     {
         this.affinity = affinity;
     }
+
+    public String toString()
+    {
+        return affinity;
+    }
 }

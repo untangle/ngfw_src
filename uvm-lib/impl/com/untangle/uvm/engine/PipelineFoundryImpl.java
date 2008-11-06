@@ -213,7 +213,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
         Fitting f = sps.getFitting();
 
-        List l = (List)mPipes.get(f);
+        List<MPipe> l = mPipes.get(f);
 
         if (null == l) {
             l = new ArrayList();

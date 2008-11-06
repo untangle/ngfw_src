@@ -186,6 +186,14 @@ public class SoloPipeSpec extends PipeSpec
         }
     }
 
+    // Object methods ---------------------------------------------------------
+
+    @Override
+    public String toString()
+    {
+        return "[SoloPipeSpec A: " + affinity + " S: " + strength + "]";
+    }
+
     // static initialization --------------------------------------------------
 
     static {

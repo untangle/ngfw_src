@@ -72,9 +72,9 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final WebFilterFactory factory = new WebFilterFactory(this);
+    protected final WebFilterFactory factory = new WebFilterFactory(this);
 
-    protected final PipeSpec httpPipeSpec = new SoloPipeSpec
+    private final PipeSpec httpPipeSpec = new SoloPipeSpec
         ("http-blocker", this, new TokenAdaptor(this, factory), Fitting.HTTP_TOKENS,
          Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipeSpec };
@@ -369,7 +369,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     // Node methods ------------------------------------------------------
 
     @Override
-        protected PipeSpec[] getPipeSpecs()
+    protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
     }
