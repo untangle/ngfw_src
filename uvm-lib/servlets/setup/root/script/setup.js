@@ -1293,7 +1293,10 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 handler : this.emailTest.createDelegate( this ),
                 iconCls : ' email-tester',
                 cls : 'spacingMargin1 email-tester'
-            },{
+            },
+            
+            /*
+            {
                 name : 'advanced',
                 xtype : 'checkbox',
                 ctCls : 'spacingMargin2',
@@ -1307,109 +1310,125 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                         }.createDelegate( this )
                     }
                 }
-            },{
-                name : 'from-address',
-                xtype : "fieldset",
-                defaults : {
-                    validationEvent : 'blur',
-                    msgTarget : 'side'
-                },
-                items : [{
-                    name : 'from-address-label',
-                    xtype : 'label',
-                    html : i18n._( "<b>Please choose a <i>From Address</i> for emails originating from the Untangle Server</b>" )
-                },{
-                    xtype : 'textfield',
-                    name : 'from-address-textfield',
-                    fieldLabel : i18n._("From Address"),
-                    width : 200,
-                    itemCls : 'spacingMargin1',
-                    vtype : 'emailAddressCheck',
-                    allowBlank : false
-                }]
-            },{
-                name : 'smtp-server-config',
-                xtype : "fieldset",
-                defaultType : 'textfield',
-                defaults : {
-                    msgTarget : 'side',
-                    validationEvent : 'blur'
-                },
-                items : [{
-                    name : 'smtp-message',
-                    xtype : 'label',
-                    html : i18n._( "<b>SMTP Configuration</b>" )
-                },{
-                    xtype : 'radio',
-                    name : 'smtp-send-directly',
-                    checked : true,
-                    inputValue : "directly",
-                    boxLabel : i18n._( 'Send Email Directly (default).' ),
-                    ctCls : 'wizardlabelmargin5',
-                    hideLabel : 'true',
-                    listeners : {
-                        check : {
-                            fn : function( checkbox, checked ) {
-                                if ( checked ) this.onSetSendDirectly( true );
-                            }.createDelegate( this )
-                        }
+            },
+                    */
+            {   
+                name:'advanced',
+                xtype:'fieldset',
+                title:i18n._("Advanced Email Configuration"),
+                collapsible:true,
+                collapsed:true,
+                autoHeight:true,
+                items:[
+                    {
+                        name : 'from-address',
+                        xtype : "fieldset",
+                        autoHeight:true,
+
+                        defaults : {
+                            validationEvent : 'blur',
+                            msgTarget : 'side'
+                        },
+                        items : [{
+                            name : 'from-address-label',
+                            xtype : 'label',
+                            html : i18n._( "<b>Please choose a <i>From Address</i> for emails originating from the Untangle Server</b>" )
+                        },{
+                            xtype : 'textfield',
+                            name : 'from-address-textfield',
+                            fieldLabel : i18n._("From Address"),
+                            width : 200,
+                            itemCls : 'spacingMargin1',
+                            vtype : 'emailAddressCheck',
+                            allowBlank : false
+                        }]
+                    },{
+                        name : 'smtp-server-config',
+                        xtype : "fieldset",
+                        defaultType : 'textfield',
+                        autoHeight:true,
+                        defaults : {
+                            msgTarget : 'side',
+                            validationEvent : 'blur'
+                        },
+                        items : [{
+                            name : 'smtp-message',
+                            xtype : 'label',
+                            html : i18n._( "<b>SMTP Configuration</b>" )
+                        },{
+                            xtype : 'radio',
+                            name : 'smtp-send-directly',
+                            checked : true,
+                            inputValue : "directly",
+                            boxLabel : i18n._( 'Send Email Directly (default).' ),
+                            ctCls : 'wizardlabelmargin5',
+                            hideLabel : 'true',
+                            listeners : {
+                                check : {
+                                    fn : function( checkbox, checked ) {
+                                        if ( checked ) this.onSetSendDirectly( true );
+                                    }.createDelegate( this )
+                                }
+                            }
+                        },{
+                            xtype : 'radio',
+                            name : 'smtp-send-directly',
+                            inputValue : "smtp-server",
+                            boxLabel : i18n._( 'Send Email using the specified SMTP server.' ),
+                            hideLabel : 'true',
+                            ctCls : 'wizardlabelmargin5',
+                            listeners : {
+                                check : {
+                                    fn : function( checkbox, checked ) {
+                                        if ( checked ) this.onSetSendDirectly( false );
+                                    }.createDelegate( this )
+                                }
+                            }
+                        },{
+                            name : 'smtp-server-addr',
+                            fieldLabel : i18n._( "SMTP Server" ),
+        		    maskRe : /[-/_0-9A-Za-z.]/,					
+        		    vtype : 'hostname',
+        		    allowBlank : false
+                        },{
+                            name : 'smtp-server-port',
+                            xtype : 'numberfield',
+                            minValue : 0,
+                            maxValue : 65536,
+                            allowDecimals : false,
+                            fieldLabel : i18n._( 'Port' ),
+        		    allowBlank : false					
+                        },{
+                            name : 'smtp-server-requires-auth',
+                            xtype : 'checkbox',
+                            hideLabel : true,
+                            value : false,
+        		    ctCls : 'wizardlabelmargin7 spacingMargin1',
+                            boxLabel : i18n._("Server Requires Authentication."),
+                            listeners : {
+                                check : {
+                                    fn : function( checkbox, checked ) {
+                                        this.onSetRequiresAuth( checked );
+                                    }.createDelegate( this )
+                                }
+                            }
+                        },{
+                            xtype : 'textfield',
+                            name : 'smtp-server-username',
+                            fieldLabel : i18n._( "Username" ),
+                            itemCls : 'wizardlabelmargin8',
+                            allowBlank : false
+        	        },{
+                            name : 'smtp-server-password',
+                            inputType : 'password',
+                            fieldLabel : i18n._( "Password" ),
+                            itemCls : 'wizardlabelmargin8',
+                            allowBlank : false
+        	        }]
                     }
-                },{
-                    xtype : 'radio',
-                    name : 'smtp-send-directly',
-                    inputValue : "smtp-server",
-                    boxLabel : i18n._( 'Send Email using the specified SMTP server.' ),
-                    hideLabel : 'true',
-                    ctCls : 'wizardlabelmargin5',
-                    listeners : {
-                        check : {
-                            fn : function( checkbox, checked ) {
-                                if ( checked ) this.onSetSendDirectly( false );
-                            }.createDelegate( this )
-                        }
-                    }
-                },{
-                    name : 'smtp-server-addr',
-                    fieldLabel : i18n._( "SMTP Server" ),
-		    maskRe : /[-/_0-9A-Za-z.]/,					
-		    vtype : 'hostname',
-		    allowBlank : false
-                },{
-                    name : 'smtp-server-port',
-                    xtype : 'numberfield',
-                    minValue : 0,
-                    maxValue : 65536,
-                    allowDecimals : false,
-                    fieldLabel : i18n._( 'Port' ),
-		    allowBlank : false					
-                },{
-                    name : 'smtp-server-requires-auth',
-                    xtype : 'checkbox',
-                    hideLabel : true,
-                    value : false,
-		    ctCls : 'wizardlabelmargin7 spacingMargin1',
-                    boxLabel : i18n._("Server Requires Authentication."),
-                    listeners : {
-                        check : {
-                            fn : function( checkbox, checked ) {
-                                this.onSetRequiresAuth( checked );
-                            }.createDelegate( this )
-                        }
-                    }
-                },{
-                    xtype : 'textfield',
-                    name : 'smtp-server-username',
-                    fieldLabel : i18n._( "Username" ),
-                    itemCls : 'wizardlabelmargin8',
-                    allowBlank : false
-	        },{
-                    name : 'smtp-server-password',
-                    inputType : 'password',
-                    fieldLabel : i18n._( "Password" ),
-                    itemCls : 'wizardlabelmargin8',
-                    allowBlank : false
-	        }]
-            }]
+                ]
+            }
+            ]
         });
 
         var field = null;
@@ -1432,7 +1451,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         field = this.panel.find( "name", "smtp-server-password" )[0];
         this.authArray.push( field );
 
-        this.onSetMode( false );
+        //this.onSetMode( false );
         this.onSetSendDirectly( true );
 
         this.emailTester = new Ung.SetupWizard.EmailTester();
@@ -1660,7 +1679,7 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
         
-        if ( false ) {
+        if ( true ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
                 this.wizard.goToPage( 6 );
