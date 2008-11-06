@@ -2582,11 +2582,14 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     show : function() {
         Ung.UpdateWindow.superclass.show.call(this);
         var objPosition = this.grid.getPosition();
-        this.setPosition(objPosition);
         if (this.sizeToGrid) {
             var objSize = this.grid.getSize();
             this.setSize(objSize);
+            if (objPosition[1] + objSize.height > main.viewport.getSize().height) {
+            	objPosition[1] = Math.max(main.viewport.getSize().height - objSize.height,0);
+            }
         }
+        this.setPosition(objPosition);
     },
     // populate is called whent a record is edited, tot populate the edit window
     populate : function(record, addMode) {
