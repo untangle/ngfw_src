@@ -1,6 +1,72 @@
 if (!Ung.hasResource["Ung.Administration"]) {
     Ung.hasResource["Ung.Administration"] = true;
 
+    Ext.namespace("Ung");
+    Ext.namespace("Ung.Config");
+    Ext.namespace("Ung.Config.Administration");
+    
+    Ung.Config.Administration.SkinManager = Ext.extend( Object, {
+        constructor : function( config )
+        {
+            /* List of stores to be refreshed, dynamically generated. */
+            this.refreshList = [];
+            this.i18n = config.i18n;
+        },
+
+        addRefreshableStore : function( store )
+        {
+            this.refreshList.push( store );
+        },
+        
+        uploadSkin : function( cmp, form )
+        {
+            form.submit({
+                parentId : cmp.getId(),
+                waitMsg : this.i18n._('Please wait while your skin is uploaded...'),
+                success : this.uploadSkinSuccess.createDelegate( this ),
+                failure : this.uploadSkinFailure.createDelegate( this )
+            });
+        },
+
+        uploadSkinSuccess : function( form, action )
+        {
+            this.storeSemaphore = this.refreshList.length;
+
+            var handler = function() {
+                this.storeSemaphore--;
+                if (this.storeSemaphore == 0) {                    
+                    Ext.MessageBox.alert( this.i18n._("Succeeded"), this.i18n._("Upload Skin Succeeded"));
+                    var field = form.findField( "upload_skin_textfield" );
+                    if ( field != null ) field.reset();
+                }
+            }.createDelegate(this);
+            
+            for ( var c = 0 ; c < this.storeSemaphore ; c++ ) this.refreshList[c].load({callback:handler});
+        },
+
+        uploadSkinFailure : function( form, action )
+        {
+            var cmp = Ext.getCmp(action.options.parentId);
+            var errorMsg = cmp.i18n._("Upload Skin Failed");
+            if (action.result && action.result.msg) {
+                switch (action.result.msg) {
+                case 'Invalid Skin' : 
+                    errorMsg = cmp.i18n._("Invalid Skin");
+                    break;
+                case 'The default skin can not be overwritten' : 
+                    errorMsg = cmp.i18n._("The default skin can not be overwritten");
+                    break;
+                case 'Error creating skin folder' : 
+                    errorMsg = cmp.i18n._("Error creating skin folder");
+                    break;
+                default :
+                    errorMsg = cmp.i18n._("Upload Skin Failed");
+                }
+            }
+            Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
+        }
+    });
+
     Ung.Administration = Ext.extend(Ung.ConfigWin, {
         panelAdministration : null,
         panelPublicAddress : null,
@@ -13,9 +79,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 action : function() {
                     this.cancelAction();
                 }.createDelegate(this)
-            }, {
+            },{
                 title : i18n._('Administration')
             }];
+            this.skinManager = new Ung.Config.Administration.SkinManager({ 'i18n' :  i18n });
             this.buildAdministration();
             this.buildPublicAddress();
             this.buildCertificates();
@@ -1444,8 +1511,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
         },
         buildSkins : function() {
-        	// keep initial skin settings
-        	this.initialSkinSettings = Ung.Util.clone(this.getSkinSettings());
+            // keep initial skin settings
+            this.initialSkinSettings = Ung.Util.clone(this.getSkinSettings());
         	
             var adminSkinsStore = new Ext.data.Store({
                 proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [true, false], false),
@@ -1462,20 +1529,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 })
             });
             
-            var userFacingSkinsStore = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [false, true], false),
-                reader : new Ext.data.JsonReader({
-                    root : 'list',
-                    fields: [{
-                        name: 'name'
-                    },{
-                        name: 'displayName',
-                        convert : function(v) {
-                            return this.i18n._(v)
-                        }.createDelegate(this)
-                    }]                    
-                })
-            });
+            this.skinManager.addRefreshableStore( adminSkinsStore );
             
             this.panelSkins = new Ext.Panel({
                 name : "panelSkins",
@@ -1519,35 +1573,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }
                         }
                     }]
-                }, {
-                    title : this.i18n._('Block Page Skin'),
-                    items : [{
-                    	cls: 'description',
-                        border : false,
-                        html : this.i18n._("This skin will used in the user pages like quarantine and block pages")
-                    }, {
-                        xtype : 'combo',
-                        name : "userPagesSkin",
-                        id : "administration_user_pages_skin_combo",
-                        store : userFacingSkinsStore,
-                        displayField : 'displayName',
-                        valueField : 'name',
-                        forceSelection : true,
-                        typeAhead : true,
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        hideLabel : true,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getSkinSettings().userPagesSkin = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }]
-                }, {
+                },{
                     title : this.i18n._('Upload New Skin'),
                     items : {
                         fileUpload : true,
@@ -1557,18 +1583,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         border : false,
                         items : [{
                             fieldLabel : 'File',
-                            name : 'file',
-                            id : 'upload_skin_file_textfield',
+                            name : 'upload_skin_textfield',
                             inputType : 'file',
                             xtype : 'textfield',
                             allowBlank : false
-                        }, {
+                        },{
                             xtype : 'button',
                             text : this.i18n._("Upload"),
                             handler : function() {
                                 this.panelSkins.onUpload();
                             }.createDelegate(this)
-                        }, {
+                        },{
                             xtype : 'hidden',
                             name : 'type',
                             value : 'skin'
@@ -1578,48 +1603,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 onUpload : function() {
                     var prova = Ext.getCmp('upload_skin_form');
                     var cmp = Ext.getCmp(this.parentId);
-
                     var form = prova.getForm();
-                    form.submit({
-                        parentId : cmp.getId(),
-                        waitMsg : cmp.i18n._('Please wait while your skin is uploaded...'),
-                        success : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
-                        	cmp.storeSemaphore = 2;
-                        	var handler = function() {
-                                this.storeSemaphore--;
-                        		if (this.storeSemaphore == 0) {
-                                    Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Upload Skin Succeeded"),
-                                        function() {
-                                            Ext.getCmp('upload_skin_file_textfield').reset();
-                                        } 
-                                    );
-                        		}
-                        	}.createDelegate(cmp)
-                            adminSkinsStore.load({callback:handler});
-                            userFacingSkinsStore.load({callback:handler});
-                        },
-                        failure : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
-                            var errorMsg = cmp.i18n._("Upload Skin Failed");
-                            if (action.result && action.result.msg) {
-                                switch (action.result.msg) {
-                                    case 'Invalid Skin' : 
-                                        errorMsg = cmp.i18n._("Invalid Skin");
-                                    break;
-                                    case 'The default skin can not be overwritten' : 
-                                        errorMsg = cmp.i18n._("The default skin can not be overwritten");
-                                    break;
-                                    case 'Error creating skin folder' : 
-                                        errorMsg = cmp.i18n._("Error creating skin folder");
-                                    break;
-                                    default :
-                                        errorMsg = cmp.i18n._("Upload Skin Failed");
-                                }
-                            }
-                            Ext.MessageBox.alert(cmp.i18n._("Failed"), errorMsg);
-                        }
-                    });
+
+                    cmp.skinManager.uploadSkin( cmp, form );
                 }
             });
             adminSkinsStore.load({
@@ -1630,20 +1616,30 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }
             	}.createDelegate(this)
             });
-            userFacingSkinsStore.load({
-                callback : function() {
-                    var skinCombo=Ext.getCmp('administration_user_pages_skin_combo');
-                    if(skinCombo!=null) {
-                        skinCombo.setValue(this.getSkinSettings().userPagesSkin);
-                    }
-                }.createDelegate(this)
-            });
         },
 
         buildBranding : function() {
             // keep initial branding settings
             this.initialBrandingBaseSettings = Ung.Util.clone(this.getBrandingBaseSettings());
             var brandingBaseSettings = this.getBrandingBaseSettings();
+
+            var userFacingSkinsStore = new Ext.data.Store({
+                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [false, true], false),
+                reader : new Ext.data.JsonReader({
+                    root : 'list',
+                    fields: [{
+                        name: 'name'
+                    },{
+                        name: 'displayName',
+                        convert : function(v) {
+                            return this.i18n._(v)
+                        }.createDelegate(this)
+                    }]                    
+                })
+            });
+
+            this.skinManager.addRefreshableStore( userFacingSkinsStore );
+            
             this.panelBranding = new Ext.Panel({
                 // private fields
                 name : 'Branding',
@@ -1667,7 +1663,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         } else {
                             formItem.items.get(0).disable();
                             formItem.items.get(1).disable();
-
+                            
                         }
                     } catch (e) {
                     }
@@ -1676,10 +1672,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     items : [{
                         cls: 'description',
                         border : false,
-                        html : this.i18n
-                                ._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
+                        html : this.i18n._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
                     }]
-                }, {
+                },{
                     title : this.i18n._('Logo'),
                     items : [{
                         xtype : 'radio',
@@ -1699,7 +1694,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }, {
+                    },{
                         xtype : 'radio',
                         name : 'Logo',
                         hideLabel : true,
@@ -1716,7 +1711,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }, {
+                    },{
                         fileUpload : true,
                         xtype : 'form',
                         bodyStyle : 'padding:0px 0px 0px 25px',
@@ -1732,7 +1727,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             xtype : 'textfield',
                             disabled : brandingBaseSettings.defaultLogo,
                             allowBlank : false
-                        }, {
+                        },{
                             id : 'upload_logo_file_button',
                             xtype : 'button',
                             text : this.i18n._("Upload"),
@@ -1740,14 +1735,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 this.panelBranding.onUpload();
                             }.createDelegate(this),
                             disabled : (brandingBaseSettings.defaultLogo)
-                        }, {
+                        },{
                             xtype : 'hidden',
                             name : 'type',
                             value : 'logo'
                         }]
                     }]
-
-                }, {
+                },{
                     title : this.i18n._('Contact Information'),
                     defaults : {
                         width : 300
@@ -1766,7 +1760,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }, {
+                    },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Company URL'),
                         name : 'Company URL',
@@ -1780,7 +1774,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }, {
+                    },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Contact Name'),
                         name : 'Contact Name',
@@ -1794,7 +1788,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }, {
+                    },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Contact Email'),
                         name : 'Contact Email',
@@ -1809,8 +1803,65 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }
                         }
                     }]
+                },{
+                    xtype : 'fieldset',
+                    title : this.i18n._('Block Page Skin'),
+                    items : [{
+                    	cls: 'description',
+                        border : false,
+                        html : this.i18n._("This skin will used in the user pages like quarantine and block pages")
+                    },{
+                        xtype : 'combo',
+                        name : "userPagesSkin",
+                        id : "administration_user_pages_skin_combo",
+                        store : userFacingSkinsStore,
+                        displayField : 'displayName',
+                        valueField : 'name',
+                        forceSelection : true,
+                        typeAhead : true,
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small',
+                        selectOnFocus : true,
+                        hideLabel : true,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                        this.getSkinSettings().userPagesSkin = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                },{
 
+                    xtype : 'fieldset',
+                    title : this.i18n._('Upload New Skin'),
+                    items : {
+                        fileUpload : true,
+                        xtype : 'form',
+                        id : 'upload_branding_skin_form',
+                        url : 'upload',
+                        border : false,
+                        items : [{
+                            fieldLabel : 'File',
+                            name : 'upload_skin_textfield',
+                            inputType : 'file',
+                            xtype : 'textfield',
+                            allowBlank : false
+                        },{
+                            xtype : 'button',
+                            text : this.i18n._("Upload"),
+                            handler : function() {
+                                this.panelBranding.onUploadSkin();
+                            }.createDelegate(this)
+                        },{
+                            xtype : 'hidden',
+                            name : 'type',
+                            value : 'skin'
+                        }]
+                    }
                 }],
+                         
                 onUpload : function() {
                     var prova = Ext.getCmp('upload_logo_form');
                     var cmp = Ext.getCmp(this.parentId);
@@ -1836,8 +1887,24 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Logo Failed"));
                         }
                     });
+                },
 
+                onUploadSkin : function() {
+                    var prova = Ext.getCmp('upload_branding_skin_form');
+                    var cmp = Ext.getCmp(this.parentId);
+                    var form = prova.getForm();
+                    
+                    cmp.skinManager.uploadSkin( cmp, form, 'upload_branding_skin_file_textfield' );
                 }
+            });
+
+            userFacingSkinsStore.load({
+                callback : function() {
+                    var skinCombo=Ext.getCmp('administration_user_pages_skin_combo');
+                    if(skinCombo!=null) {
+                        skinCombo.setValue(this.getSkinSettings().userPagesSkin);
+                    }
+                }.createDelegate(this)
             });
         },
         

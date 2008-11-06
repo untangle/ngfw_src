@@ -42,6 +42,7 @@ import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
+import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -57,7 +58,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     private static final String DEFAULT_SKIN = "default";
     private static final String DEFAULT_ADMIN_SKIN = DEFAULT_SKIN;
     private static final String DEFAULT_USER_SKIN = DEFAULT_SKIN;
-	private static final int BUFFER = 2048; 
+    private static final int BUFFER = 2048; 
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -68,70 +69,80 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     	this.uvmContext = uvmContext;    	
     	
         TransactionWork tw = new TransactionWork()
-        {
-            public boolean doWork(Session s)
             {
-                Query q = s.createQuery("from SkinSettings");
-                settings = (SkinSettings)q.uniqueResult();
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from SkinSettings");
+                    settings = (SkinSettings)q.uniqueResult();
 
-                if (null == settings) {
+                    if (null == settings) {
                 	settings = new SkinSettings();
                 	settings.setAdministrationClientSkin(DEFAULT_ADMIN_SKIN);
                 	settings.setUserPagesSkin(DEFAULT_USER_SKIN);
-                    s.save(settings);
-                }
+                        s.save(settings);
+                    }
                 
-                return true;
-            }
-        };
+                    return true;
+                }
+            };
         uvmContext.runTransaction(tw);
     }
 
     // public methods ---------------------------------------------------------
 
-	public SkinSettings getSkinSettings() {
-		return settings;
-	}
+    public SkinSettings getSkinSettings() {
+        return settings;
+    }
 
-	public void setSkinSettings(SkinSettings settings) {
+    public void setSkinSettings(SkinSettings settings) {
         /* delete whatever is in the db, and just make a fresh settings object */
         SkinSettings copy = new SkinSettings();
         settings.copy(copy);
+
+        boolean isExpired = uvmContext.remoteLicenseManager().
+            getLicenseStatus( ProductIdentifier.BRANDING_MANAGER ).isExpired();
+            
+        if ( isExpired ) {
+            String userSkin = this.settings.getUserPagesSkin();
+            if ( userSkin == null || userSkin.length() == 0 ) userSkin = DEFAULT_USER_SKIN;
+            settings.setUserPagesSkin( userSkin );
+        }
+        
         saveSettings(copy);
         this.settings = copy;
-	}
+    }
 	
     public void uploadSkin(FileItem item) throws UvmException {
-	    try {
-	        BufferedOutputStream dest = null;
-			ZipEntry entry = null;
+        try {
+            BufferedOutputStream dest = null;
+            ZipEntry entry = null;
             File defaultSkinDir = new File(SKINS_DIR + File.separator + DEFAULT_SKIN);
             File skinDir = new File(SKINS_DIR);
             List<File> processedSkinFolders = new ArrayList<File>();
 			
-			//validate skin
-		    if (!item.getName().endsWith(".zip")) {
-				throw new UvmException("Invalid Skin");
-		    }
+            //validate skin
+            if (!item.getName().endsWith(".zip")) {
+                throw new UvmException("Invalid Skin");
+            }
 			
-	        // Open the ZIP file
-		    InputStream uploadedStream = item.getInputStream();
-		    ZipInputStream zis = new ZipInputStream(uploadedStream);
-			while ((entry = zis.getNextEntry()) != null) {
-			    //validate default skin
-		        String tokens[] = entry.getName().split(File.separator);
-	            if (tokens.length >= 1) {
+            // Open the ZIP file
+            InputStream uploadedStream = item.getInputStream();
+            ZipInputStream zis = new ZipInputStream(uploadedStream);
+            while ((entry = zis.getNextEntry()) != null) {
+                //validate default skin
+                String tokens[] = entry.getName().split(File.separator);
+                if (tokens.length >= 1) {
                     File dir = new File(SKINS_DIR + File.separator + tokens[0]);
                     if (dir.equals(defaultSkinDir)) {
                         throw new UvmException("The default skin can not be overwritten");
                     }
-	            }
+                }
 			    
-				if (entry.isDirectory()) {
+                if (entry.isDirectory()) {
                     File dir = new File(SKINS_DIR + File.separator + entry.getName());
-					processSkinFolder(dir, processedSkinFolders);
-				} else {
-				    File file = new File(SKINS_DIR + File.separator + entry.getName());
+                    processSkinFolder(dir, processedSkinFolders);
+                } else {
+                    File file = new File(SKINS_DIR + File.separator + entry.getName());
                     File parentDir = file.getParentFile();
                     if (parentDir.equals(skinDir)) {
                         // invalid entry; skip it
@@ -140,24 +151,24 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
                         processSkinFolder(parentDir, processedSkinFolders);
                     }
                     
-					int count;
-					byte data[] = new byte[BUFFER];
-					// write the files to the disk
-					FileOutputStream fos = new FileOutputStream(SKINS_DIR + File.separator + entry.getName());
-					dest = new BufferedOutputStream(fos, BUFFER);
-					while ((count = zis.read(data, 0, BUFFER)) != -1) {
-						dest.write(data, 0, count);
-					}
-					dest.flush();
-					dest.close();
-				}
-			}
-			zis.close();		    	
-		    uploadedStream.close();
-	    } catch (IOException e) {
-	    	logger.error(e);
-			throw new UvmException("Upload Skin Failed");
-	    }
+                    int count;
+                    byte data[] = new byte[BUFFER];
+                    // write the files to the disk
+                    FileOutputStream fos = new FileOutputStream(SKINS_DIR + File.separator + entry.getName());
+                    dest = new BufferedOutputStream(fos, BUFFER);
+                    while ((count = zis.read(data, 0, BUFFER)) != -1) {
+                        dest.write(data, 0, count);
+                    }
+                    dest.flush();
+                    dest.close();
+                }
+            }
+            zis.close();		    	
+            uploadedStream.close();
+        } catch (IOException e) {
+            logger.error(e);
+            throw new UvmException("Upload Skin Failed");
+        }
     }
 
     public List<SkinInfo> getSkinsList(boolean fetchAdminSkins, boolean fetchUserFacingSkins) {
@@ -167,32 +178,32 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     	
         File[] children = dir.listFiles();
         if (children == null) {
-        	logger.warn("Skin dir \""+SKINS_DIR+"\" does not exist");
+            logger.warn("Skin dir \""+SKINS_DIR+"\" does not exist");
         } else {
-        	XStream xstream = new XStream();
-        	xstream.alias("skin", SkinInfo.class);
+            XStream xstream = new XStream();
+            xstream.alias("skin", SkinInfo.class);
             for (int i=0; i<children.length; i++) {
                 File file = children[i];
                 if (file.isDirectory() && !file.getName().startsWith(".")) {
-                	File[] skinFiles = file.listFiles(new FilenameFilter(){
-                		public boolean accept(File dir, String name) {
-                			return name.equals("skin.xml");
-                		}
+                    File[] skinFiles = file.listFiles(new FilenameFilter(){
+                            public boolean accept(File dir, String name) {
+                                return name.equals("skin.xml");
+                            }
                 	});
-                	if (skinFiles.length < 1) {
+                    if (skinFiles.length < 1) {
                     	logger.warn("Skin folder \""+file.getName()+"\" does not have skin info file - skin.xml");
-                	} else {
+                    } else {
                     	SkinInfo skinInfo;
-						try {
-							skinInfo = (SkinInfo)xstream.fromXML(new FileInputStream(skinFiles[0]));
-							if(fetchAdminSkins && skinInfo.isAdminSkin() ||
-									fetchUserFacingSkins && skinInfo.isUserFacingSkin()) {
-		                    	skins.add(skinInfo);
-							} 
-						} catch (FileNotFoundException e) {
-	                    	logger.error("Error reading skin info from skin foder \"" + file.getName() + "\"");
-						}
-                	}
+                        try {
+                            skinInfo = (SkinInfo)xstream.fromXML(new FileInputStream(skinFiles[0]));
+                            if(fetchAdminSkins && skinInfo.isAdminSkin() ||
+                               fetchUserFacingSkins && skinInfo.isUserFacingSkin()) {
+                                skins.add(skinInfo);
+                            } 
+                        } catch (FileNotFoundException e) {
+                            logger.error("Error reading skin info from skin foder \"" + file.getName() + "\"");
+                        }
+                    }
                 }
             }
         }    	
@@ -206,7 +217,8 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
         this.settings = saver.saveData(settings);
     }
     
-    private void processSkinFolder(File dir, List<File> processedSkinFolders) throws IOException, UvmException {
+    private void processSkinFolder(File dir, List<File> processedSkinFolders)
+        throws IOException, UvmException {
         if (processedSkinFolders.contains(dir)){
             return;
         }
