@@ -43,6 +43,12 @@
   <c:set var="javascript" scope="request">
     <uvm:script src="request.js"/>
     <uvm:script src="/script/i18n.js"/>
+
+    <uvm:inlineScript>
+      <![CDATA[
+               var requestMessageCode = '${requestMessageCode}';
+      ]]>
+    </uvm:inlineScript>
   </c:set>
   
   <c:set var="content" scope="request">

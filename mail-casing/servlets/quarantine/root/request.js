@@ -5,61 +5,65 @@ Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 
 var i18n;
 var qr;
-var message = null;
 Ung.QuarantineRequest = function() {
 }
 
-Ung.QuarantineRequest.prototype =  {
+Ung.QuarantineRequest.prototype = {
     init : function()
     {
         this.rpc = new JSONRpcClient("/quarantine/JSON-RPC").Quarantine;
-		message = i18n._('Your Remote Access Portal login has been configured without an email address or with an incorrect email address.');
-        this.requestForm  = new Ext.FormPanel({
+        /* Dynamically add the items to conditionally add the warning message. */
+        var items = [];
 
+        if ( requestMessageCode == 'INVALID_PORTAL_EMAIL' ) {
+	    items.push({
+                xtype:'label',
+                text : i18n._( 'Your Remote Access Portal login is not configured with a valid email address.' ),
+                region : "north", 
+                cls : 'message-2',
+                ctCls : 'message-container',
+                margins:'4 4 4 4'
+            });
+        }
+        
+        items = items.concat([{
+            xtype : 'fieldset',
+            title : this.singleSelectUser ? i18n._('Select User') : i18n._('Enter the email address for which you would like the Quarantine Digest'),
+            autoHeight : true,
+	    buttonAlign : 'left',				
+	    buttons : [{
+		text : i18n._( "Request" ),
+		cls:'quarantine-left-indented-2',
+		handler : function() {
+		    var field = this.requestForm.find( "name", "email_address" )[0];
+		    var email = field.getValue();
+		    field.disable();
+		    this.rpc.requestDigest( this.requestEmail.createDelegate( this ), email );
+		},
+		scope : this
+	    }],				
+	    
+	    items : [{
+		xtype:'textfield',
+	        fieldLabel : i18n._( "Email Address" ),
+	        name : "email_address",
+	        width: '350'
+	    }]
+	}]);
+
+        this.requestForm  = new Ext.FormPanel({
             border : false,
-            bodyStyle : 'padding:10px 10px 0px 10px;',
+            bodyStyle : 'padding : 10px 10px 0px 10px;',
             autoScroll: true,
             defaults : {
                 selectOnFocus : true,
                 msgTarget : 'side'
-            },			
-			//title:'Request Quarantine Digest Email',
+            },
+	    //title:'Request Quarantine Digest Email',
             //border: true,
-			//frame:true,
-            bodyStyle : 'background-color: white;',
-            items : [
-					{ xtype:'label',text : message, region : "north", cls:'message-2',ctCls:'message-container' ,margins:'4 4 4 4'},
-			
-			{
-                xtype : 'fieldset',
-                title : this.singleSelectUser ? i18n._('Select User') : i18n._('Enter the email address for which you would like the Quarantine Digest'),
-                autoHeight : true,
-				buttonAlign : 'left',				
-				buttons : [{
-								text : i18n._( "Request" ),
-								cls:'quarantine-left-indented-2',
-								handler : function() {
-									var field = this.requestForm.find( "name", "email_address" )[0];
-									var email = field.getValue();
-									field.disable();
-									this.rpc.requestDigest( this.requestEmail.createDelegate( this ), 
-															email );
-								},
-								scope : this
-							}]	,				
-				
-				items:[
-				
-					{
-					xtype:'textfield',
-	                fieldLabel : i18n._( "Email Address" ),
-	                name : "email_address",
-	                width: '350'
-					},
-				]
-			}
-			],
-            
+	    //frame:true,
+            bodyStyle : 'background-color : white;',
+            items : items
         });
     },
 
@@ -104,7 +108,3 @@ Ext.onReady( function(){
       params : { module : 'untangle-casing-mail' }
     });
 });
-
-
-
-

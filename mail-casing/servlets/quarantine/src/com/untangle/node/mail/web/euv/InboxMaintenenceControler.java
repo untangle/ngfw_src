@@ -118,9 +118,13 @@ public class InboxMaintenenceControler extends HttpServlet
                     false == account.contains("@") ||
                     true == account.equalsIgnoreCase("user@localhost")) {
                     log("[MaintenenceControlerBase] (quarantine access through portal) email address is invalid: " + account);
-                    req.getRequestDispatcher(Constants.INVALID_PORTAL_EMAIL).forward(req, resp);
+                    req.setAttribute( "requestMessageCode", "INVALID_PORTAL_EMAIL" );
+                    req.getRequestDispatcher(Constants.REQ_DIGEST_VIEW).forward(req, resp);
                     return;
                 }
+
+                
+                authTkn = QuarantineEnduserServlet.instance().getMailNode().createAuthToken(account);
             } else {
                 account = quarantine.getAccountFromToken(authTkn);
             }

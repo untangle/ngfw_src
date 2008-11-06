@@ -94,6 +94,21 @@ public class QuarantineEnduserServlet
     }
 
     /**
+     * Access the remote references to the QuarantineNodeView
+     *
+     * @return the Quarantine node view.
+     */
+    public MailNode getMailNode()
+    {
+        if(m_safelist == null) {
+            initRemoteRefs();
+        }
+        
+        return m_mailNode;
+    }
+    
+
+    /**
      * Access the remote reference to the QuarantineUserView.  If this
      * method returns null, the caller should not attempt to fix
      * the situation (i.e. you're hosed).

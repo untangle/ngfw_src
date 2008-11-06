@@ -88,12 +88,14 @@ Ung.QuarantineProxy = function(rpcFn, paginated, totalRecords){
 };
 
 Ext.extend(Ung.QuarantineProxy, Ext.data.DataProxy, {
-    setTotalRecords : function( totalRecords ) {
+    setTotalRecords : function( totalRecords )
+    {
         this.totalRecords = totalRecords;
     },
 
 	//load function for Proxy class
-    load : function(params, reader, callback, scope, arg) {
+    load : function(params, reader, callback, scope, arg)
+    {
     	var obj={};
     	obj.params=params;
     	obj.reader=reader;
@@ -102,25 +104,30 @@ Ext.extend(Ung.QuarantineProxy, Ext.data.DataProxy, {
     	obj.arg=arg;
     	obj.totalRecords=this.totalRecords;
     	var sortColumns=[];
-
+        
         var token = inboxDetails.token;
         var start = params.start ? params.start : 0;
         var limit = params.limit ? params.limit : -1;
         var sort = params.sort ? params.sort : null;
         var isAscending = params.dir == "ASC";
     	if (this.paginated){
-	    	this.rpcFn(this.errorHandler.createDelegate(obj), token, start, limit, sort, isAscending );
+	    this.rpcFn(this.errorHandler.createDelegate(obj), token, start, limit, sort, isAscending );
     	} else {
-    		this.rpcFn(this.errorHandler.createDelegate(obj));
+    	    this.rpcFn(this.errorHandler.createDelegate(obj));
     	}
+    },
 
-        
-	},
-
-	errorHandler: function (result, exception) {
+    errorHandler: function (result, exception)
+    {
         if(exception) {
-            Ext.MessageBox.alert("Failed",exception.message); 
-            this.callback.call(this.scope, null, this.arg, false);
+            var message = exception.message;
+            if ( exception.name == "com.untangle.node.mail.papi.quarantine.NoSuchInboxException" ) {
+                
+                message = String.format( i18n._( "The account {0} doesn't have any quarantined messages." ), inboxDetails.address );
+            }
+            
+            Ext.MessageBox.alert("Failed",message); 
+            this.callback.call(this.scope, null, this.arg, true);
             return;
         }
         var res=null;
@@ -131,10 +138,10 @@ Ext.extend(Ung.QuarantineProxy, Ext.data.DataProxy, {
             }
             this.callback.call(this.scope, res, this.arg, true);
         }catch(e){
-            this.callback.call(this.scope, null, this.arg, false);
+            this.callback.call(this.scope, null, this.arg, true);
             return;
         }
-	}
+    }
 });
 
 var quarantineTabPanel = null;
@@ -157,32 +164,32 @@ Ung.Quarantine.prototype = {
     addresses : new Ung.CountingHash(),
 
     init: function() {
-		//get JSONRpcClient
+	//get JSONRpcClient
         // 
-		this.rpc = new JSONRpcClient("/quarantine/JSON-RPC").Quarantine;
+	this.rpc = new JSONRpcClient("/quarantine/JSON-RPC").Quarantine;
         this.store = new Ung.QuarantineStore( { quarantine : this } );
         this.selectionModel = new Ung.QuarantineSelectionModel( { quarantine : this } );
 
         this.releaseButton= new Ext.Button( {
             handler : function() { this.releaseOrDelete( quarantine.rpc.releaseMessages ) }.createDelegate( this ),
-			iconCls:'iconMoveMails',
+	    iconCls : 'iconMoveMails',
             text : i18n._( "Move to Inbox" ),
             disabled : true
                     } );
 
         this.deleteButton = new Ext.Button( {
             handler : function() { this.releaseOrDelete( quarantine.rpc.purgeMessages ) }.createDelegate( this ),
-			iconCls:'iconDeleteRow',			
+	    iconCls:'iconDeleteRow',			
             text : i18n._( "Delete Messages" ),
             disabled : true
                 } );
         
         this.safelistButton = new Ext.Button( {
-			iconCls:'iconSafeList',
+	    iconCls:'iconSafeList',
             handler : function() { this.safelist() }.createDelegate( this ),
             text : i18n._( "Add Sender(s) to Safelist" ),
             disabled : true
-                } );
+        } );
 
         /* This is used to show messages when they are available */
         this.messageDisplayTip = new Ext.Tip({
@@ -276,21 +283,21 @@ Ung.Quarantine.prototype = {
         if ( result.purgeCount > 0 ) {
             messages.push( i18n.pluralise( i18n._( "Deleted one Message" ), 
                                           String.format( i18n._( "Deleted {0} Messages" ),
-                                                        result.purgeCount ),
-                                          result.purgeCount ));
+                                                         result.purgeCount ),
+                                           result.purgeCount ));
         }
 
         if ( result.releaseCount > 0 ) {
             messages.push( i18n.pluralise( i18n._( "Released one Message" ), 
                                           String.format( i18n._( "Released {0} Messages" ), 
-                                                        result.releaseCount ),
+                                                         result.releaseCount ),
                                           result.releaseCount ));
         }
 
         if ( result.safelistCount > 0 ) {
             messages.push( i18n.pluralise( i18n._( "Safelisted one Address" ), 
                                           String.format( i18n._( "Safelisted {0} Addresses" ), 
-                                                        result.safelistCount ),
+                                                         result.safelistCount ),
                                           result.safelistCount ));            
         }
 
@@ -501,7 +508,8 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
                      this.quarantine.safelistButton ]});
         
         config.store = this.quarantine.store;
-        config.sm = this.quarantine.selectionModel;
+        config.sm = this.quarantine.selectionModel;        
+        
         Ung.QuarantineGrid.superclass.constructor.apply(this, arguments);
     },
     trackMouseOver:false,
