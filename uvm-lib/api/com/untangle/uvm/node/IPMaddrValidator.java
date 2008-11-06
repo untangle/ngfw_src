@@ -23,25 +23,24 @@ public class IPMaddrValidator implements Validator {
 
     public static final String ERR_CODE_INVALID_IPMADDR = "INVALID_IPMADDR";
 
-	public ValidationResult validate(Object data) {
-
-		try {
-			if (data != null) {
-				for (String ipMaddrString : (List<String>) data) {
-					try {
-						IPMaddr.parse(ipMaddrString);
-					} catch (Exception e) {
-						return new ValidationResult(false,
-						        ERR_CODE_INVALID_IPMADDR, ipMaddrString);
-					}
-				}
-
-			}
-		} catch (Exception e) {
-			return new ValidationResult(false, e.getMessage(), e);
-		}
-
-		return new ValidationResult(true);
-	}
-
+    public ValidationResult validate(Object data) {
+        
+        try {
+            if (data != null) {
+                for (String ipMaddrString : (List<String>) data) {
+                    try {
+                        IPMaddr.parse(ipMaddrString);
+                    } catch (Exception e) {
+                        return new ValidationResult(false,
+                                                    ERR_CODE_INVALID_IPMADDR, ipMaddrString);
+                    }
+                }
+                
+            }
+        } catch (Exception e) {
+            return new ValidationResult(false, e.getMessage(), e);
+        }
+        
+        return new ValidationResult(true);
+    }
 }

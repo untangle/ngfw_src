@@ -344,19 +344,21 @@ public class IPMaddr implements Serializable, Comparable
         if (addrString.equalsIgnoreCase("any"))
             return new IPMaddr(ANY_ADDRESS, ANY_ADDRESS);
 
+        addrString = addrString.trim();
+
         int sl = addrString.indexOf('/');
         if (sl > 0) {
             // Looks like ipaddr/maskbits
-            if (sl == addrString.length() - 1)
+            if (sl == (addrString.length() - 1))
                 throw new IllegalArgumentException("IPMaddr.parse(): empty maskbits");
-            String maskbits = addrString.substring(sl + 1);
+            String maskbits = addrString.substring(sl + 1).trim();
             try {
                 int numbits = Integer.parseInt(maskbits);
                 if (numbits < 0 || numbits > 32)
                     throw new IllegalArgumentException("IPMaddr.parse(): out of range maskbits: " + maskbits);
                 long lmask = 0xffffffff << (32 - numbits);
 
-                String ipaddr = addrString.substring(0, sl);
+                String ipaddr = addrString.substring(0, sl).trim();
                 addr = canonicalizeHostAddress(ipaddr);
 
                 return new IPMaddr(addr, longToMask(lmask));
@@ -367,7 +369,7 @@ public class IPMaddr implements Serializable, Comparable
 
         int ma = addrString.indexOf(" mask ");
         if (ma > 0) {
-            String maskstr = addrString.substring(ma + 6);
+            String maskstr = addrString.substring(ma + 6).trim();
             if (maskstr.startsWith("0x") || maskstr.startsWith("0X")) {
                 // Hex mask
                 try {
@@ -375,7 +377,7 @@ public class IPMaddr implements Serializable, Comparable
                     long lmask = Long.parseLong(maskstr.substring( 2 ), 16);
                     if (lmask > 0xffffffffl)
                         throw new IllegalArgumentException("IPMaddr.parse(): out of range mask: " + maskstr);
-                    String ipaddr = addrString.substring(0, ma);
+                    String ipaddr = addrString.substring(0, ma).trim();
                     addr = canonicalizeHostAddress(ipaddr);
                     return new IPMaddr(addr, longToMask(lmask));
                 } catch (NumberFormatException x) {
@@ -384,7 +386,7 @@ public class IPMaddr implements Serializable, Comparable
             } else {
                 // Dotted mask.  Currently must have three dots. XXX
                 String mask = canonicalizeHostAddress(maskstr);
-                String ipaddr = addrString.substring(0, ma);
+                String ipaddr = addrString.substring(0, ma).trim();
                 addr = canonicalizeHostAddress(ipaddr);
                 return new IPMaddr(addr, mask);
             }
