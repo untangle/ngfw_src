@@ -12,6 +12,7 @@ Ung.Main.prototype = {
     leftTabs: null,
     appsSemaphore: null,
     apps: null,
+    appsLastState: null,
     config: null,
     nodes: null,
     // the Ext.Viewport object for the application
@@ -34,6 +35,7 @@ Ung.Main.prototype = {
                 return true;
             }
         }
+        this.appsLastState={};
     	this.debugMode=debugMode;
     	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         this.initSemaphore=10;
@@ -178,6 +180,16 @@ Ung.Main.prototype = {
             }
 		}
         handler.call(this);
+    },
+    resetAppLastState: function(displayName) {
+    	main.appsLastState[displayName]=null
+    },
+    setAppLastState: function(displayName,state,options) {
+    	if(state==null) {
+    		main.appsLastState[displayName]=null;
+    	} else {
+    		main.appsLastState[displayName]={state:state, options:options};
+    	}
     },
     startApplication: function() {
     	Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
@@ -516,6 +528,7 @@ Ung.Main.prototype = {
                     Ung.AppItem.updateStateForNode(this.name,"unactivating");
                     rpc.toolboxManager.uninstall(function (result, exception) {
                        if(Ung.Util.handleException(exception)) return;
+                       main.setAppLastState(this.displayName);
                        main.loadApps();
                         /*
                         rpc.toolboxManager.unregister(function (result, exception) {
@@ -791,7 +804,7 @@ Ung.Main.prototype = {
         var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
         var position=this.getNodePosition(place,node.md.viewPosition);
         nodeWidget.render(place,position);
-        Ung.AppItem.updateStateForNode(node.name, "installed");
+        Ung.AppItem.updateStateForNode(node.name, null);
     },
     /*
     addNodePreview: function (mackageDesc) {
@@ -799,7 +812,7 @@ Ung.Main.prototype = {
         var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
         var position=this.getNodePosition(place,node.md.viewPosition);
         nodeWidget.render(place,position);
-        Ung.AppItem.updateStateForNode(node.name, "installed");
+        Ung.AppItem.updateStateForNode(node.name, null);
     },*/
     /*
     startNode : function(nodeWidget) {

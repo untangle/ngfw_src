@@ -547,6 +547,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             return;
             // error
         }
+        var appsLastState=main.appsLastState[this.item.displayName]
+        if(appsLastState!=null) {
+        	this.setState(appsLastState.state,appsLastState.options);
+        };
     },
     // get the node name associated with the App
     getNodeName : function() {
@@ -557,21 +561,16 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         return nodeName;
     },
     setState : function(newState, options) {
+    	main.setAppLastState(this.item.displayName, newState, options);
         switch (newState) {
-            case "unactivated" :
             case null:
+            case "installed" :
                 this.displayButtonsOrProgress(true);
                 break;
             case "unactivating" :
                 this.displayButtonsOrProgress(false);
                 this.progressBar.reset();
                 this.progressBar.waitDefault(i18n._("Unactivating..."));
-                break;
-            case "activated" :
-                this.displayButtonsOrProgress(true);
-                break;
-            case "installed" :
-                this.displayButtonsOrProgress(true);
                 break;
             case "installing" :
                 this.displayButtonsOrProgress(false);
@@ -601,10 +600,6 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             case "activate_timeout" :
                 this.displayButtonsOrProgress(false);
                 this.progressBar.waitDefault(i18n._("Activate timeout."));
-                break;
-            case "waiting" :
-                this.displayButtonsOrProgress(false);
-                this.progressBar.waitDefault(i18n._("..."));
                 break;
         }
         this.state = newState;
@@ -1329,6 +1324,7 @@ Ung.MessageManager = {
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                         	refreshApps=true;
+                        	Ung.AppItem.updateState(msg.requestingName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                         	main.loadLicenseStatus();
                         } else {
