@@ -292,7 +292,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     	inputType: 'password',
                         name : "Password",
                         dataIndex : "clearPassword",
-                        id : 'administration_rowEditor_password',
+                        id : 'administration_rowEditor_password_'+this.getId(),
                         fieldLabel : this.i18n._("Password"),
                         width : 200,
                         minLength : 3,
@@ -302,7 +302,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : "Confirm Password",
                         dataIndex : "clearPassword",
                         vtype: 'password',
-                        initialPassField: 'administration_rowEditor_password', // id of the initial password field
+                        initialPassField: 'administration_rowEditor_password_'+this.getId(), // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
                         width : 200
                     })],
@@ -311,7 +311,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         inputType: 'password',
                         name : "Password",
                         dataIndex : "clearPassword",
-                        id : 'administration_rowEditor1_password',
+                        id : 'administration_rowEditor1_password_'+ this.getId(),
                         fieldLabel : this.i18n._("Password"),
                         width : 200,
                         minLength : 3,
@@ -321,7 +321,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : "Confirm Password",
                         dataIndex : "clearPassword",
                         vtype: 'password',
-                        initialPassField: 'administration_rowEditor1_password', // id of the initial password field
+                        initialPassField: 'administration_rowEditor1_password_'+ this.getId(), // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
                         width : 200
                     })]
