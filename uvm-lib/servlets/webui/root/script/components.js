@@ -2081,7 +2081,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // default is getEventManager() from settingsCmp
     eventManagerFn : null,
     // Records per page
-    recordsPerPage : 20,
+    recordsPerPage : 25,
     // fields for the Store
     fields : null,
     // columns for the column model
@@ -2928,7 +2928,7 @@ Ext.grid.ReorderColumn.prototype = {
 // Editor Grid class
 Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     // record per page
-    recordsPerPage : 20,
+    recordsPerPage : 25,
     // the minimum number of records for pagination
     minPaginateCount : 60,
     // the total number of records

@@ -462,6 +462,7 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
                 header: "<div class='quarantine-attachment-header'>&nbsp</div>",
                 dataIndex: 'attachmentCount',
                 width: 60,
+                tooltip : i18n._( "Number of Attachments in the email." ),
                 align : 'center'
             },{
                 header: i18n._( "Score" ),
@@ -475,13 +476,13 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
             },{
                 header: i18n._( "Date" ),
                 dataIndex: 'quarantinedDate',
-                width: 100,
+                width: 135,
                 renderer : function( value ) {
                     var date = new Date();
                     date.setTime( value.time );
                     d = Ext.util.Format.date( date, 'm/d/Y' );
                     t = Ext.util.Format.date( date, 'g:i a' );
-                    return d + '<br/>' + t;
+                    return d + ' ' + t;
                 }
             },{
                 header: i18n._( "Size (KB)" ),
