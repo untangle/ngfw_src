@@ -859,43 +859,32 @@ Ung.Main.prototype = {
     },
     // build policies select box
     buildPolicies: function () {
-		Ext.get('rack_select_container').dom.innerHTML = '';
-        var out=[];
+		if(main.rackSelect!=null) {
+			Ext.destroy(main.rackSelect);
+			Ext.get('rack_select_container').dom.innerHTML = '';
+		}
+        var items=[];
 		var selVirtualRackIndex = 0;
 		for(var i=0;i<rpc.policies.length;i++) {
             selVirtualRackIndex = rpc.policies[i]["default"]===true ? i :selVirtualRackIndex;
-			out.push({text:i18n._(rpc.policies[i].name),value:rpc.policies[i].id,index:i,handler:main.changePolicy});//function(){Ung.Main.changePolicy(arguments)}
+			items.push({text:i18n._(rpc.policies[i].name),value:rpc.policies[i].id,index:i,handler:main.changePolicy, hideDelay :0});
 
             if(rpc.policies[i]["default"]===true) {
                 rpc.currentPolicy=rpc.policies[i];
             }
         }
-		out.push('-');
-		out.push({text:'Show Policy Manager',value:'SHOW_POLICY_MANAGER',handler:main.changePolicy});
-		var RackSelect = new Ext.SplitButton({
+		items.push('-');
+		items.push({text:'Show Policy Manager',value:'SHOW_POLICY_MANAGER',handler:main.changePolicy, hideDelay :0});
+		main.rackSelect = new Ext.SplitButton({
 			renderTo: 'rack_select_container', // the container id
-		   	text: out[selVirtualRackIndex].text,
+		   	text: items[selVirtualRackIndex].text,
 			id:'rack_select',
 		   	//handler: Ung.Main.changePolicy, // handle a click on the button itself
 		   	menu: new Ext.menu.Menu({
-		        items: out//testss
+		   		hideDelay: 0,
+		        items: items
 		   	})
 		});
-        /*
-        var out=[];
-        out.push('<select id="rack_select" onchange="main.changePolicy()">');
-        for(var i=0;i<rpc.policies.length;i++) {
-            var selVirtualRack=rpc.policies[i]["default"]===true?"selected":"";
-
-            if(rpc.policies[i]["default"]===true) {
-                rpc.currentPolicy=rpc.policies[i];
-            }
-            out.push('<option value="'+rpc.policies[i].id+'" '+selVirtualRack+'>'+i18n._(rpc.policies[i].name)+'</option>');
-        }
-        out.push('<option value="SHOW_POLICY_MANAGER" class="ungButton">Policy Manager</option>');
-        out.push('</select>');
-        Ext.get("rack_select_container").dom.innerHTML=out.join('');
-        */
         this.loadRackView();
     },
     // change current policy
@@ -912,26 +901,5 @@ Ung.Main.prototype = {
             rpc.currentPolicy=rpc.policies[this.index];
             main.loadRackView();		
         }
-        /*
-        var rack_select=document.getElementById('rack_select');
-        if(rack_select.selectedIndex>=0) {
-        	if(rack_select.value == "SHOW_POLICY_MANAGER") {
-        		//select previous value
-				for (index = 0; index < rack_select.options.length; index++) {
-					if (rack_select.options[index].value == rpc.currentPolicy.id) {
-						rack_select.options[index].selected = true;
-						break;
-					}
-				}
-                Ung.Util.loadResourceAndExecute("Ung.PolicyManager","script/config/policyManager.js", function() {
-                    main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
-                    main.policyManagerWin.show();
-                });
-	       	} else {
-	            rpc.currentPolicy=rpc.policies[rack_select.selectedIndex];
-	            this.loadRackView();
-        	}
-        }
-        */
     }
 };
