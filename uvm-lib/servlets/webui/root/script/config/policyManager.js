@@ -128,9 +128,12 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     xtype : 'button',
                     text : this.i18n._( "More Info" ),
                     handler : function() {
-			var app = Ung.AppItem.getApp("untangle-libitem-policy");
-			if (app != null && app.libItem != null) app.linkToStoreFn();
-                    }
+            			var app = Ung.AppItem.getApp("untangle-libitem-policy");
+            			if (app != null && app.libItem != null) {
+            				this.cancelAction();
+                            app.linkToStoreFn();
+            			}
+                    }.createDelegate(this)
                 }];
             } else {
                 items = [{
