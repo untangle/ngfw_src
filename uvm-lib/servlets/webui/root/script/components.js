@@ -878,7 +878,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             'id' : this.getId(),
             'image' : this.image,
             'displayName' : this.md.displayName,
-            'nodePowerCls': this.hasPowerButton?"nodePower":"",
+            'nodePowerCls': this.hasPowerButton?(this.licenseStatus && this.licenseStatus.trial && this.licenseStatus.expired)?"nodePowerExpired":"nodePower":"",
             'trialInfo' : this.getTrialInfo()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
