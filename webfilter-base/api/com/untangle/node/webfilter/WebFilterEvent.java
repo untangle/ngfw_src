@@ -81,12 +81,14 @@ import org.hibernate.annotations.Type;
         }
 
         public WebFilterEvent(RequestLine requestLine, Action action,
-                              Reason reason, String category)
+                              Reason reason, String category,
+                              String vendorName)
         {
             this.requestLine = requestLine;
             this.action = action;
             this.reason = reason;
             this.category = category;
+            this.vendorName = vendorName;
         }
 
         // public methods ------------------------------------------------------
@@ -167,7 +169,7 @@ import org.hibernate.annotations.Type;
          * @return the vendor
          */
         @Column(name="vendor_name")
-            public String getVendorName()
+        public String getVendorName()
         {
             return vendorName;
         }

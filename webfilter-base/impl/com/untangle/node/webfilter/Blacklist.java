@@ -144,7 +144,7 @@ public abstract class Blacklist
         if (null != passCategory) {
             WebFilterEvent hbe = new WebFilterEvent
                 (requestLine.getRequestLine(), Action.PASS, Reason.PASS_CLIENT,
-                 passCategory);
+                 passCategory, node.getVendor());
             logger.info(hbe);
             return null;
         } else {
@@ -153,7 +153,8 @@ public abstract class Blacklist
             if (isUserWhitelistedDomain(dom, clientIp)) {
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.PASS,
-                     Reason.PASS_URL, "unblocked temporarily");
+                     Reason.PASS_URL, "unblocked temporarily",
+                     node.getVendor());
                 node.log(hbe);
 
                 return null;
@@ -166,7 +167,7 @@ public abstract class Blacklist
                     if (null != category) {
                         WebFilterEvent hbe = new WebFilterEvent
                             (requestLine.getRequestLine(), Action.PASS,
-                             Reason.PASS_URL, category);
+                             Reason.PASS_URL, category, node.getVendor());
                         node.log(hbe);
 
                         return null;
@@ -180,7 +181,7 @@ public abstract class Blacklist
             if (null == host || IP_PATTERN.matcher(host).matches()) {
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
-                     Reason.BLOCK_IP_HOST, host);
+                     Reason.BLOCK_IP_HOST, host, node.getVendor());
                 node.log(hbe);
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
@@ -207,7 +208,7 @@ public abstract class Blacklist
                 }
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
-                     Reason.BLOCK_EXTENSION, exn);
+                     Reason.BLOCK_EXTENSION, exn, node.getVendor());
                 node.log(hbe);
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
@@ -237,7 +238,7 @@ public abstract class Blacklist
             if (rule.isLive() && mt.matches(contentType)) {
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
-                     Reason.BLOCK_MIME, contentType);
+                     Reason.BLOCK_MIME, contentType, node.getVendor());
                 node.log(hbe);
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri().normalize();
@@ -340,11 +341,13 @@ public abstract class Blacklist
             if (null != bc) {
                 Action a = bc.getBlock() ? Action.BLOCK : Action.PASS;
                 WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), a, reason, bc.getDisplayName());
+                    (requestLine.getRequestLine(), a, reason,
+                     bc.getDisplayName(), node.getVendor());
                 node.log(hbe);
             } else if (null == stringRule || stringRule.getLog()) {
                 WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), Action.BLOCK, reason, category);
+                    (requestLine.getRequestLine(), Action.BLOCK, reason,
+                     category, node.getVendor());
                 node.log(hbe);
             }
 

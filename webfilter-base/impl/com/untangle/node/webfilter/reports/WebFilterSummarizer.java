@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -51,10 +51,13 @@ public class WebFilterSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM n_webfilter_evt_blk WHERE time_stamp >= ? AND time_stamp < ?";
+            String vendor = (String)extraParams.get("vendor");
+
+            sql = "SELECT COUNT(*) FROM n_webfilter_evt_blk WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, vendor);
             rs = ps.executeQuery();
             rs.first();
             logCount = rs.getLong(1);

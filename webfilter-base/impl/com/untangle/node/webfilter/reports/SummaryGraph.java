@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,13 +18,12 @@
 
 package com.untangle.node.webfilter.reports;
 
-import com.untangle.uvm.reporting.*;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.sql.*;
 import java.util.*;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
+
+import com.untangle.uvm.reporting.*;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -72,6 +71,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
     protected JFreeChart doChart(Connection con) throws JRScriptletException, SQLException
     {
+
         final int seriesA = 0; // datasetA (primary, first)
         final int seriesB = 1; // datasetB
         //final int seriesC = 2; // datasetC
@@ -118,9 +118,9 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         PreparedStatement stmt;
         ResultSet rs;
 
-        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts, COUNT(*)" 
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts, COUNT(*)"
             + " FROM n_http_evt_req"
-            + " WHERE time_stamp >= ? AND time_stamp < ?"
+            + " WHERE time_stamp >= ? AND time_stamp < ? "
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";
 
@@ -143,7 +143,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             // GET RESULTS
             eventDate = rs.getTimestamp(1);
             countC = rs.getLong(2);
-            
+
             // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
             eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
             realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
@@ -154,10 +154,12 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         }
         try { stmt.close(); } catch (SQLException x) { }
 
+        String vendor = (String)extraParams.get("vendor");
+
         // count includes both blocked and clean/passed events
-        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts, COUNT(*)" 
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts, COUNT(*)"
             + " FROM n_webfilter_evt_blk"
-            + " WHERE time_stamp >= ? AND time_stamp < ?"
+            + " WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?"
             + " GROUP BY trunc_ts"
             + " ORDER BY trunc_ts";
 
@@ -165,6 +167,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         stmt = con.prepareStatement(sql);
         stmt.setTimestamp(sidx++, startTimestamp);
         stmt.setTimestamp(sidx++, endTimestamp);
+        stmt.setString(sidx++, vendor);
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
         totalProcessTime = System.currentTimeMillis();
@@ -176,7 +179,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             // GET RESULTS
             eventDate = rs.getTimestamp(1);
             countB = rs.getLong(2);
-            
+
             // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
             eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
             realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
@@ -228,11 +231,11 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         }
         totalProcessTime = System.currentTimeMillis() - totalProcessTime;
         System.out.println("====== RESULTS ======");
-        System.out.println("TOTAL query time:   " 
-                           + totalQueryTime/1000 + "s" 
+        System.out.println("TOTAL query time:   "
+                           + totalQueryTime/1000 + "s"
                            + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
-        System.out.println("TOTAL process time: " 
-                           + totalProcessTime/1000 + "s" 
+        System.out.println("TOTAL process time: "
+                           + totalProcessTime/1000 + "s"
                            + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
         System.out.println("=====================");
 

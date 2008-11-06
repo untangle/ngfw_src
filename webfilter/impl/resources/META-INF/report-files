@@ -7,4 +7,5 @@ reports/HttpBlockHNameDetail.jasper:Web_Content_Control--HName_Logged_Violations
 com.untangle.node.webfilter.reports.WebFilterSummarizer:summarizer:Summarizer
 com.untangle.node.webfilter.reports.SummaryGraph:summaryGraph:Web_Content_Control--Summary_Graph
 reportTitlePrefix:parameter:none
+vendor:parameter:untangle
 REPORT_MAX_COUNT:parameter:5000

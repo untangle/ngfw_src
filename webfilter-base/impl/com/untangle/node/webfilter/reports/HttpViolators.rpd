@@ -3,6 +3,9 @@ REPORT_MAX_LENGTH=15
 REPORT_NAME=HttpViolations
 REPORT_TITLE=Top @REPORT_MAX_LENGTH@ Logged Violators
 
+EXTRA_PARAM_1.name=vendor
+EXTRA_PARAM_1.type=java.lang.String
+
 FIELD_1.name=name
 FIELD_1.type=String
 FIELD_2.name=count
@@ -20,6 +23,7 @@ SELECT name, count, top_count, all_count \
                JOIN reports.webpages page USING (request_id) \
           WHERE (blk.time_stamp >= $P{startTime} \
             AND blk.time_stamp < $P{endTime} \
+            AND blk.vendor_name = $P{vendor} \
             AND blk.action = 'B') \
           GROUP BY name \
           ORDER BY count DESC \
@@ -31,6 +35,7 @@ SELECT name, count, top_count, all_count \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (blk.time_stamp >= $P{startTime} \
                     AND blk.time_stamp < $P{endTime} \
+                    AND blk.vendor_name = $P{vendor} \
                     AND blk.action = 'B') \
                   GROUP BY name \
                   ORDER BY count DESC \
@@ -42,6 +47,7 @@ SELECT name, count, top_count, all_count \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (blk.time_stamp >= $P{startTime} \
                     AND blk.time_stamp < $P{endTime} \
+                    AND blk.vendor_name = $P{vendor} \
                     AND blk.action = 'B') \
                   GROUP BY name \
                   ORDER BY count DESC) AS foo4) AS foo5 \

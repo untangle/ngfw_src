@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,9 +191,8 @@ class UrlBlacklist extends Blacklist
         List<String> all = urlDatabase.findAllBlacklisted("http", dom, uri);
 
         if (null == all || 0 == all.size()) {
-            return BlacklistCategory.UNCATEGORIZED;
+            all = Collections.singletonList(BlacklistCategory.UNCATEGORIZED);
         } else {
-
             for (int ai = 0; ai < all.size(); ai++) {
                 String dbName = all.get(ai);
 
@@ -208,7 +208,8 @@ class UrlBlacklist extends Blacklist
                 }
             }
 
-            return mostSpecificCategory(all);
         }
+
+        return mostSpecificCategory(all);
     }
 }
