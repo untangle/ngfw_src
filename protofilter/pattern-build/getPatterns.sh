@@ -34,6 +34,7 @@ rm skypetoskype.pat
 rm tsp.pat
 rm whois.pat
 rm bgp.pat
+rm rtp.pat
 
 # don't even work:
 rm skypeout.pat

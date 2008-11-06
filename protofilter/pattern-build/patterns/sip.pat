@@ -7,6 +7,8 @@
 #
 # Thanks to Ankit Desai for this pattern.
 #
+# SIP typically uses port 5060.
+#
 # This pattern is based on SIP request format as per RFC 3261. I'm not
 # sure about the version part. The RFC doesn't say anything about it, so
 # I have allowed version ranging from 0.x to 2.x.
