@@ -364,7 +364,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                 },{
                     xtype : 'label',
                     cls : 'info-detail',
-		    html : i18n._('Approximate')
+		    html : i18n._('(Approximate)')
                 }]
             },{
                 defaultType : 'textfield',
@@ -488,7 +488,11 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             ddGroup : 'interfaceDND',
             ddText : '',
             height : 300,
+			width:505,
             tbar : [ refreshButton ],
+			viewConfig:{
+				forceFit:true
+			},
             cm : new Ext.grid.ColumnModel([
             {
                header : i18n._( "Name" ),
@@ -664,7 +668,13 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     completeRefreshInterfaces : function( result, exception )
     {
         if ( exception ) {
-            Ext.MessageBox.alert( i18n._( "Unable to refresh the interfaces." ), exception.message );
+            Ext.MessageBox.show({
+                title:i18n._( "Unable to refresh the interfaces." ),
+                msg:exception.message,
+                width:300,
+                buttons:Ext.MessageBox.OK,
+                icon:Ext.MessageBox.INFO
+            });        
             return;
         }
         
@@ -996,7 +1006,13 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
     complete : function( result, exception, foo, handler )
     {
         if(exception) {
-            Ext.MessageBox.alert( i18n._( "Network Settings" ),exception.message); 
+            Ext.MessageBox.show({
+                title:i18n._( "Network Settings" ),
+                msg:exception.message,
+                width:300,
+                buttons:Ext.MessageBox.OK,
+                icon:Ext.MessageBox.INFO
+            });        
             return;
         }
 
@@ -1038,7 +1054,13 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
     completeConnectivityTest : function( result, exception )
     {
         if ( exception ) {
-            Ext.MessageBox.alert( i18n._( "Network Settings" ),exception.message); 
+            Ext.MessageBox.show({
+                title:i18n._( "Network Settings" ),
+                msg:exception.message,
+                width:300,
+                buttons:Ext.MessageBox.OK,
+                icon:Ext.MessageBox.INFO
+            });        
             return;
         }
 
@@ -1053,8 +1075,14 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         } else {
             message = i18n._( "Success!" );
         }
-
-        Ext.MessageBox.alert( i18n._( "Internet Status" ), message ); 
+        Ext.MessageBox.show({
+            title:i18n._( "Internet Status" ),
+            msg:message,
+            width:300,
+            buttons:Ext.MessageBox.OK,
+            icon:Ext.MessageBox.INFO
+        });
+        //Ext.MessageBox.alert( i18n._( "Internet Status" ), message ); 
     },
 
     /* This does not reload the settings, it just updates what is
@@ -1162,8 +1190,9 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     xtype : 'checkbox',
                     hideLabel : true,
                     checked : true,
+                    disabled : true,                    
                     name : 'enableDhcpServer',
-                    itemCls : 'wizardlabelmargin6',
+                    itemCls : 'wizardlabelmargin9',
                     boxLabel : i18n._("Enable DHCP Server (default)")
                 },{
                     xtype : 'label',
@@ -1181,7 +1210,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
         }
     },
     onSetRouter : function(isSet){
-        var ar = [this.panel.find('name','network')[0],this.panel.find('name','netmask')[0]];
+        var ar = [this.panel.find('name','network')[0],this.panel.find('name','netmask')[0],this.panel.find('name','enableDhcpServer')[0]];
         for(var i=0;i<ar.length;i++){
             ar[i].setDisabled(!isSet); 
         }
@@ -1267,7 +1296,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             },{
                 name : 'advanced',
                 xtype : 'checkbox',
-                ctCls : 'spacingMargin1',
+                ctCls : 'spacingMargin2',
                 hideLabel : true,
                 value : false,
                 boxLabel : i18n._("Advanced Email Configuration."),
@@ -1358,7 +1387,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     xtype : 'checkbox',
                     hideLabel : true,
                     value : false,
-		    ctCls : 'wizardlabelmargin6 spacingMargin1',
+		    ctCls : 'wizardlabelmargin7 spacingMargin1',
                     boxLabel : i18n._("Server Requires Authentication."),
                     listeners : {
                         check : {
@@ -1371,13 +1400,13 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     xtype : 'textfield',
                     name : 'smtp-server-username',
                     fieldLabel : i18n._( "Username" ),
-                    itemCls : 'wizardlabelmargin4',
+                    itemCls : 'wizardlabelmargin8',
                     allowBlank : false
 	        },{
                     name : 'smtp-server-password',
                     inputType : 'password',
                     fieldLabel : i18n._( "Password" ),
-                    itemCls : 'wizardlabelmargin4',
+                    itemCls : 'wizardlabelmargin8',
                     allowBlank : false
 	        }]
             }]
