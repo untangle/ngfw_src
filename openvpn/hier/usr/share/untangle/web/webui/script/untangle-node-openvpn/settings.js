@@ -535,9 +535,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             } else if (this.configState == "CLIENT") {
                 statusLabel = String.format(this.i18n._("VPN Client: Connected to {0}"), this.getVpnServerAddress());
                 clientButtonDisabled = true;
+                serverButtonDisabled = true;
             } else if (this.configState == "SERVER_ROUTE") {
                 statusLabel = this.i18n._("VPN Server");
-                serverButtonDisabled=true;
+                clientButtonDisabled = true;
+                serverButtonDisabled = true;              
             } else {
                 clientButtonDisabled = true;
                 serverButtonDisabled = true;
