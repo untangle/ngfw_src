@@ -266,16 +266,14 @@ Ung.Main.prototype = {
                             var helpSource=main.leftTabs.getActiveTab().helpSource;
                             main.openHelp(helpSource);
                         }
-						},
-						{
+					},{
                         name: 'Logout',
                         iconCls: 'iconLogout',
                         text: i18n._('Logout'),
                         handler: function() {
-                            document.location = '/auth/logout?url=/webui&realm=Administrator';
+                            window.location.href = '/auth/logout?url=/webui&realm=Administrator';
                         }
-						}
-                    ]
+					}]
                  },{
                     region:'center',
                     id: 'center',
