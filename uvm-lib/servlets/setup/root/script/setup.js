@@ -1,6 +1,8 @@
 Ext.namespace('Ung');
 Ext.namespace('Ung.SetupWizard');
 
+Ung.SetupWizard.BOGUS_ADDRESS = "192.0.2.1";
+
 // The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 // the main internationalization object
@@ -1017,6 +1019,14 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         }
 
         Ung.SetupWizard.CurrentValues.networkSettings = result;
+
+        if ( result.host == Ung.SetupWizard.BOGUS_ADDRESS ) {
+            Ung.SetupWizard.CurrentValues.networkSettings.host = "";
+            Ung.SetupWizard.CurrentValues.networkSettings.netmask = "";
+            Ung.SetupWizard.CurrentValues.networkSettings.gateway = "";
+            Ung.SetupWizard.CurrentValues.networkSettings.dns1 = "";
+            Ung.SetupWizard.CurrentValues.networkSettings.dns2 = "";
+        }
 
         this.refreshNetworkSettings();
 
