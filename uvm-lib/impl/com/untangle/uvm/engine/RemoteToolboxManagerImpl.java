@@ -365,7 +365,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     }
 
                     LocalMessageManager mm = mctx.localMessageManager();
-                    Message m = new InstallAndInstantiateComplete(name);
+                    MackageDesc mackageDesc = mackageDesc(name);
+                    Message m = new InstallAndInstantiateComplete(mackageDesc);
                     mm.submitMessage(m);
 
                 }

@@ -45,17 +45,17 @@ public class InstallAndInstantiateComplete extends Message
 {
     private static final long serialVersionUID = 1562132446777632430L;
 
-    private final String requestingName;
+    private final MackageDesc requestingMackage;
 
-    public InstallAndInstantiateComplete(String requestingName)
+    public InstallAndInstantiateComplete(MackageDesc requestingMackage)
     {
-        this.requestingName = requestingName;
+        this.requestingMackage = requestingMackage;
     }
 
     // accessors --------------------------------------------------------------
 
-    public String getRequestingName()
+    public MackageDesc getRequestingMackage()
     {
-        return requestingName;
+        return requestingMackage;
     }
 }

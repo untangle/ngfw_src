@@ -465,10 +465,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         this.subCmps=[];
         this.isValid=true;
         if(config.libItem!=null) {
-            name=config.libItem.name;
+            name=config.libItem.displayName;
             this.item=config.libItem;
         } else if(config.node!=null) {
-            name=config.node.name;
+            name=config.node.displayName;
             this.item=config.node;
         } else {
            Ext.MessageBox.alert(i18n._("Apps Error"), i18n._("Error in Rack View applications list."));
@@ -561,7 +561,6 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         return nodeName;
     },
     setState : function(newState, options) {
-    	main.setAppLastState(this.item.displayName, newState, options);
         switch (newState) {
             case null:
             case "installed" :
@@ -575,11 +574,6 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             case "installing" :
                 this.displayButtonsOrProgress(false);
                 this.progressBar.waitDefault(i18n._("Installing..."));
-                break;
-            case "uninstalling" :
-                this.show();
-                this.displayButtonsOrProgress(false);
-                this.progressBar.waitDefault(i18n._("Uninstalling..."));
                 break;
             case "download_progress" :
                 this.displayButtonsOrProgress(false);
@@ -658,47 +652,18 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 Ung.AppItem.template = new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>',
         '<div id="buttonBuy_{id}"></div>', '<div id="action_{id}" class="action"></div>', '<div class="statePos" id="state_{id}"></div>');
 Ung.AppItem.buttonTemplate = new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="appItemLeft">&nbsp;</td><td class="appItemCenter">{content}</td><td class="appItemRight">&nbsp;</td></tr></tbody></table>');        
-// update node state for the app with a node name
-Ung.AppItem.updateStateForNode = function(nodeName, state, options) {
-    var app = Ung.AppItem.getAppForNode(nodeName);
+// update state for the app with a displayName
+Ung.AppItem.updateState = function(displayName, state, options) {
+	main.setAppLastState(displayName, state, options);
+    var app = Ung.AppItem.getApp(displayName);
     if (app != null) {
         app.setState(state, options);
     }
 }
-// update state for the app with a node name
-Ung.AppItem.updateState = function(itemName, state, options) {
-    var app = Ung.AppItem.getApp(itemName);
-    if (app != null) {
-        app.setState(state, options);
-    }
-}
-// get the app item having a node name
-Ung.AppItem.getAppForNode = function(nodeName) {
-    if (main.apps !== null) {
-        for (var i = 0; i < main.apps.length; i++) {
-            var app = main.apps[i];
-            if (nodeName == app.getNodeName()) {
-                return app;
-            }
-        }
-    }
-    return null;
-};
-Ung.AppItem.getAppByLibItemDisplayName = function(displayName) {
-    if (main.apps !== null) {
-        for (var i = 0; i < main.apps.length; i++) {
-            var app = main.apps[i];
-            if (app.libItem!=null && displayName == app.libItem.displayName) {
-                return app;
-            }
-        }
-    }
-    return null;
-};
 // get the app item having a item name
-Ung.AppItem.getApp = function(itemName) {
+Ung.AppItem.getApp = function(displayName) {
     if (main.apps !== null) {
-        return Ext.getCmp("appItem_" + itemName);
+        return Ext.getCmp("appItem_" + displayName);
     }
     return null;
 };
@@ -1000,7 +965,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     //on Buy Now Action
     onBuyNowAction :function(){
-        var appItem=Ung.AppItem.getAppByLibItemDisplayName(this.md.displayName);
+        var appItem=Ung.AppItem.getApp(this.md.displayName);
         if(appItem!=null) {
         	appItem.linkToStoreFn();
         }
@@ -1113,8 +1078,8 @@ Ung.Node = Ext.extend(Ext.Component, {
 
     completeRemoveAction : function()
     {
-        var message = this.md.displayName
-                + " is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?";
+        var message = String.format(
+                i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"),this.md.displayName);
         Ext.Msg.confirm(i18n._("Warning:"), message, function(btn, text) {
             if (btn == 'yes') {
                 if (this.settingsWin) {
@@ -1122,7 +1087,6 @@ Ung.Node = Ext.extend(Ext.Component, {
                 }
                 this.setState("Attention");
                 this.getEl().mask();
-                Ung.AppItem.updateStateForNode(this.name, "uninstalling");
                 rpc.nodeManager.destroy(function(result, exception) {
                     if(Ung.Util.handleException(exception, function() {
                         this.getEl().unmask();
@@ -1307,8 +1271,7 @@ Ung.MessageManager = {
                         	if(!msg.installed) {
                                 var policy=null;
                                 policy = rpc.currentPolicy;
-                                var appItemName=msg.mackageDesc.type=="TRIAL"?msg.mackageDesc.fullVersion:msg.mackageDesc.name
-                                Ung.AppItem.updateState(appItemName, "download");
+                                Ung.AppItem.updateState(msg.mackageDesc.displayName, "download");
                                 this.resetErrorTolerance();
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
@@ -1324,36 +1287,37 @@ Ung.MessageManager = {
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                         	refreshApps=true;
-                        	Ung.AppItem.updateState(msg.requestingName, null);
+                        	var appItemDisplayName=msg.requestingMackage.displayName;
+                        	Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                         	main.loadLicenseStatus();
                         } else {
                         	if(msg.upgrade==false) {
-                        		var appItemName=msg.requestingMackage.type=="TRIAL"?msg.requestingMackage.fullVersion:msg.requestingMackage.name; 
+                        		var appItemDisplayName=msg.requestingMackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                 	this.resetErrorTolerance();
-                                	Ung.AppItem.updateState(appItemName, "download");
+                                	Ung.AppItem.updateState(appItemDisplayName, "download");
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
                                 	this.resetErrorTolerance();
-                                	Ung.AppItem.updateState(appItemName, "download_progress", msg);
+                                	Ung.AppItem.updateState(appItemDisplayName, "download_progress", msg);
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                 	this.resetErrorTolerance();
                                 	if(msg.success) {
-                                	   Ung.AppItem.updateState(appItemName, "download");
+                                	   Ung.AppItem.updateState(appItemDisplayName, "download");
                                     } else {
-                                    	Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemName));
-                                    	Ung.AppItem.updateState(appItemName);
+                                    	Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemDisplayName));
+                                    	Ung.AppItem.updateState(appItemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                 	this.resetErrorTolerance();
                                     if(msg.success) {
-                                       Ung.AppItem.updateState(appItemName, "installing");
+                                       Ung.AppItem.updateState(appItemDisplayName, "installing");
                                     } else {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),appItemName));
-                                        Ung.AppItem.updateState(appItemName);
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),appItemDisplayName));
+                                        Ung.AppItem.updateState(appItemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
-                                    Ung.AppItem.updateState(appItemName, "activate_timeout");
+                                    Ung.AppItem.updateState(appItemDisplayName, "activate_timeout");
                                 }
                         	} else if(msg.upgrade==true) {
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
@@ -1385,7 +1349,7 @@ Ung.MessageManager = {
                                 	this.resetErrorTolerance();
                                 	this.upgradesComplete++;
                                     if(!msg.success) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemName));
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemDisplayName));
                                     }
                             	} else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                 	this.resetErrorTolerance();

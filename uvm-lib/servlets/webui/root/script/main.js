@@ -533,7 +533,7 @@ Ung.Main.prototype = {
                     String.format(i18n._("{0} cannot be removed because it is being used by the following rack:{1}You must remove the product from all racks first."), this.displayName,"<br><b>"+tids[0].policy.name+"</b><br><br>"));
                     return;
                 } else {
-                    Ung.AppItem.updateStateForNode(this.name,"unactivating");
+                    Ung.AppItem.updateState(this.displayName,"unactivating");
                     rpc.toolboxManager.uninstall(function (result, exception) {
                        if(Ung.Util.handleException(exception)) return;
                        main.setAppLastState(this.displayName);
@@ -676,7 +676,7 @@ Ung.Main.prototype = {
         		appItem.hide();
         		return;
         	}
-            Ung.AppItem.updateStateForNode(mackageDesc.name, "installing");
+            Ung.AppItem.updateState(mackageDesc.displayName, "installing");
             rpc.nodeManager.instantiateAndStart(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
             }.createDelegate(this), mackageDesc.name, rpc.currentPolicy);
@@ -812,24 +812,8 @@ Ung.Main.prototype = {
         var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
         var position=this.getNodePosition(place,node.md.viewPosition);
         nodeWidget.render(place,position);
-        Ung.AppItem.updateStateForNode(node.name, null);
+        Ung.AppItem.updateState(node.displayName, null);
     },
-    /*
-    addNodePreview: function (mackageDesc) {
-        var nodeWidget=new Ung.NodePreview(node);
-        var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
-        var position=this.getNodePosition(place,node.md.viewPosition);
-        nodeWidget.render(place,position);
-        Ung.AppItem.updateStateForNode(node.name, null);
-    },*/
-    /*
-    startNode : function(nodeWidget) {
-        if(nodeWidget.name!="untangle-node-openvpn") {
-            nodeWidget.start();
-        } else {
-        	Ext.MessageBox.alert(i18n._("OpenVPN warning"), i18n._("OpenVPN can not be automatically turned on.<br>Please configure its settings first."));
-        }
-    },*/
     getNode : function(nodeName) {
     	if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
