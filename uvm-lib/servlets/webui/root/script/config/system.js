@@ -804,6 +804,9 @@ if (!Ung.hasResource["Ung.System"]) {
             });
         },
         buildRegionalSettings : function() {
+            // keep initial language settings
+            this.initialLanguageSettings = Ung.Util.clone(this.getLanguageSettings());
+            
             var languagesStore = new Ext.data.Store({
                 proxy : new Ung.RpcProxy(rpc.languageManager.getLanguagesList, null, false),
                 reader : new Ext.data.JsonReader({
@@ -882,8 +885,6 @@ if (!Ung.hasResource["Ung.System"]) {
                             "select" : {
                                 fn : function(elem, record) {
                                     this.getLanguageSettings().language = record.data.code;
-                                    Ext.MessageBox.alert(this.i18n._("Info"), this.i18n
-                                            ._("Please note that you have to refresh the application after saving for the new language to take effect."));
                                 }.createDelegate(this)
                             },
                             "render" : {
@@ -1110,8 +1111,12 @@ if (!Ung.hasResource["Ung.System"]) {
         afterSave : function() {
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
-            	Ext.MessageBox.hide();
+                var needRefresh = this.initialLanguageSettings.language != this.getLanguageSettings().language;
+                Ext.MessageBox.hide();
                 this.cancelAction();
+                if (needRefresh) {
+                    Ung.Util.goToStartPage();
+                }
             }
         }
 
