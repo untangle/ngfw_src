@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-07 16:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -193,6 +193,18 @@ msgstr ""
 #: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
 #, java-format
 msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: ../impl/com/untangle/node/phish/PhishHttpAllFilter.java:38
+msgid "All Phish HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/phish/PhishHttpBlockedFilter.java:27
+msgid "Blocked Phish HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/phish/PhishHttpPassedFilter.java:38
+msgid "Passed Phish HTTP Traffic"
 msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-07 17:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -134,6 +134,10 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:270
 msgid "Please wait"
+msgstr ""
+
+#: ../impl/com/untangle/node/shield/LogIteration.java:194
+msgid "type"
 msgstr ""
 
 #~ msgid "user"

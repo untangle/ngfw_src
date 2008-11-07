@@ -25,6 +25,8 @@ import java.util.Map;
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.util.I18nUtil;
+
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -42,7 +44,7 @@ public class WebFilterAllFilter implements ListEventFilter<WebFilterEvent>
     private final String evtQuery;
 
     private static final RepositoryDesc REPO_DESC
-        = new RepositoryDesc("All HTTP Traffic");
+        = new RepositoryDesc(I18nUtil.marktr("All HTTP Traffic"));
 
     private final String vendorName;
 

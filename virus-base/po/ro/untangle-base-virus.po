@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-07 17:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -242,6 +242,66 @@ msgstr ""
 #: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
 #, java-format
 msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusAllFilter.java:33
+msgid "All Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusHttpFilter.java:33
+msgid "HTTP Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusInfectedFilter.java:33
+msgid "Infected Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusLogFilter.java:33
+msgid "FTP Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusMailFilter.java:33
+msgid "POP/IMAP Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:223
+msgid "Scan Message"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:223
+msgid "SCAN"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
+msgid "Block Message"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
+msgid "BLOCK"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
+msgid "Pass Message"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
+msgid "PASS"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
+msgid "Remove Message"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
+msgid "REMOVE"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:227
+msgid "Passed Infected Message"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusSmtpFilter.java:33
+msgid "SMTP Events"
 msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48

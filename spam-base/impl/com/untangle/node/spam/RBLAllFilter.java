@@ -20,10 +20,11 @@ package com.untangle.node.spam;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class RBLAllFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
 
     private final String rblQuery;
 

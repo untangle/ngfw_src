@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-07 17:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -294,14 +294,9 @@ msgid "Please wait"
 msgstr ""
 
 #: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:79
-#, java-format
-msgid "{0} | Web Filter Warning"
+#, fuzzy, java-format
+msgid "{0} | {1} Warning"
 msgstr "{0} | Web Filter Alerta"
-
-#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:90
-#, java-format
-msgid "{0} Web Filter"
-msgstr "{0} Web Filter"
 
 #: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:102
 #, java-format
@@ -314,6 +309,46 @@ msgstr ""
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "Daca aveti intrebari, va rog contactati {0}"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterAllFilter.java:47
+msgid "All HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:114
+msgid "Scan Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:114
+msgid "SCAN"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:115
+msgid "Block Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:115
+msgid "BLOCK"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:116
+msgid "Pass Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:116
+msgid "PASS"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBlockedFilter.java:36
+msgid "Blocked HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterPassedFilter.java:47
+msgid "Passed HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterWhitelistFilter.java:36
+msgid "Whitelisted HTTP Traffic"
+msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
 msgid "Host:"
@@ -334,3 +369,6 @@ msgstr "Deblocheaza Pentru Moment"
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
 msgid "Unblock Permanently"
 msgstr "Deblocheaza permanent"
+
+#~ msgid "{0} Web Filter"
+#~ msgstr "{0} Web Filter"

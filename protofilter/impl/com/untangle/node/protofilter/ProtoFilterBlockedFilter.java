@@ -20,10 +20,11 @@ package com.untangle.node.protofilter;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class ProtoFilterBlockedFilter implements SimpleEventFilter<ProtoFilterLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Protocol Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Protocol Events"));
 
     private static final String WARM_QUERY
         = "FROM ProtoFilterLogEvent evt WHERE blocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";

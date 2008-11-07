@@ -20,11 +20,12 @@ package com.untangle.node.openvpn;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class ClientConnectEventAllFilter
     implements SimpleEventFilter<ClientConnectEvent> {
 
-    public static final String REPOSITORY_NAME = "Closed Sessions";
+    public static final String REPOSITORY_NAME = I18nUtil.marktr("Closed Sessions");
 
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc(REPOSITORY_NAME);
 

@@ -22,10 +22,11 @@ package com.untangle.node.router;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class RouterRedirectFilter implements SimpleEventFilter<LogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("NAT Redirect Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("NAT Redirect Events"));
 
     private static final String WARM_QUERY
         = "FROM RedirectEvent evt ORDER BY evt.timeStamp DESC";

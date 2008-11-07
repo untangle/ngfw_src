@@ -20,10 +20,11 @@ package com.untangle.node.protofilter;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class ProtoFilterAllFilter implements SimpleEventFilter<ProtoFilterLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Protocol Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Protocol Events"));
 
     private static final String WARM_QUERY
         = "FROM ProtoFilterLogEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";

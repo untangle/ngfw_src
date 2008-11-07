@@ -20,6 +20,7 @@ package com.untangle.node.virus;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Filter for all virus events.
@@ -29,7 +30,7 @@ import com.untangle.uvm.logging.SimpleEventFilter;
  */
 public class VirusAllFilter implements SimpleEventFilter<VirusEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
 
     private final String httpQuery;
     private final String ftpQuery;

@@ -20,10 +20,11 @@ package com.untangle.node.spyware;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class SpywareAllFilter implements SimpleEventFilter<SpywareEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
 
     private static final String ACCESS_QUERY
         = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";

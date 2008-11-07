@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-07 16:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,4 +127,36 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:217
 msgid "Please wait"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterAllFilter.java:27
+msgid "Protocol Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterBlockedFilter.java:27
+msgid "Blocked Protocol Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+msgid "Scan Protocol"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+msgid "SCAN"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "Block Protocol"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "BLOCK"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
+msgid "Detect Protocol"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
+msgid "DETECT"
 msgstr ""

@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.node.http.RequestLine;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
@@ -34,7 +35,7 @@ public class PhishHttpPassedFilter implements ListEventFilter<PhishHttpEvent>
     private static final String RL_QUERY = "FROM RequestLine rl ORDER BY rl.httpRequestEvent.timeStamp DESC";
     private static final String EVT_QUERY = "FROM PhishHttpEvent evt WHERE evt.requestLine = :requestLine";
 
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Passed Phish HTTP Traffic");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Passed Phish HTTP Traffic"));
 
     public RepositoryDesc getRepositoryDesc()
     {

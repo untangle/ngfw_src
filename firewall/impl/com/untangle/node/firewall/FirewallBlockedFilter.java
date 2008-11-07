@@ -20,10 +20,11 @@ package com.untangle.node.firewall;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class FirewallBlockedFilter implements SimpleEventFilter<FirewallEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Firewall Block Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Firewall Block Events"));
 
     private static final String WARM_QUERY
         = "FROM FirewallEvent evt WHERE evt.wasBlocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";

@@ -20,10 +20,11 @@ package com.untangle.node.spam;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class RBLSkippedFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Skipped Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Skipped Events"));
 
     private final String skippedQuery;
 

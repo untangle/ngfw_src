@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-07 16:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,4 +175,24 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:376
 msgid "Please wait"
+msgstr ""
+
+#: ../impl/com/untangle/node/ips/IpsBlockedFilter.java:27
+msgid "Blocked Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/ips/IpsLogFilter.java:27
+msgid "All Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:96
+msgid "Scan Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:96
+msgid "SCAN"
+msgstr ""
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+msgid "IPS Attempts Logged"
 msgstr ""

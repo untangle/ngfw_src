@@ -20,12 +20,13 @@ package com.untangle.node.spam;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class SpamSpamFilter implements SimpleEventFilter<SpamEvent>
 {
-    private static final RepositoryDesc SPAM_REPO_DESC = new RepositoryDesc("Spam Events");
+    private static final RepositoryDesc SPAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Spam Events"));
     // XXX Hack - specify clamphish label here
-    private static final RepositoryDesc CLAM_REPO_DESC = new RepositoryDesc("Identity Theft Events");
+    private static final RepositoryDesc CLAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Identity Theft Events"));
 
     private final String logQuery;
     private final String smtpQuery;

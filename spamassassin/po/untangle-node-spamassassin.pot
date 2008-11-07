@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-07 16:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -210,4 +210,69 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:578
 msgid "Please wait"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/RBLAllFilter.java:27
+#: ../../spam-base/impl/com/untangle/node/spam/SpamAllFilter.java:27
+msgid "All Events"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/RBLSkippedFilter.java:27
+msgid "Skipped Events"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+msgid "Pass Message"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+msgid "PASS"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+msgid "Block Message"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+msgid "BLOCK"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+msgid "Mark Message"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+msgid "MARK"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+msgid "Quarantine Message"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+msgid "QUARANTINE"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:159
+msgid "Spam Detected"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:160
+msgid "Email Received"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamLogFilter.java:27
+msgid "POP/IMAP Events"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamSmtpFilter.java:27
+msgid "SMTP Events"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:27
+msgid "Spam Events"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:29
+msgid "Identity Theft Events"
 msgstr ""

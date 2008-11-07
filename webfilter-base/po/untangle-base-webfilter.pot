@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-07 17:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -295,12 +295,7 @@ msgstr ""
 
 #: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:79
 #, java-format
-msgid "{0} | Web Filter Warning"
-msgstr ""
-
-#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:90
-#, java-format
-msgid "{0} Web Filter"
+msgid "{0} | {1} Warning"
 msgstr ""
 
 #: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:102
@@ -311,6 +306,46 @@ msgstr ""
 #: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
 #, java-format
 msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterAllFilter.java:47
+msgid "All HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:114
+msgid "Scan Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:114
+msgid "SCAN"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:115
+msgid "Block Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:115
+msgid "BLOCK"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:116
+msgid "Pass Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:116
+msgid "PASS"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBlockedFilter.java:36
+msgid "Blocked HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterPassedFilter.java:47
+msgid "Passed HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/webfilter/WebFilterWhitelistFilter.java:36
+msgid "Whitelisted HTTP Traffic"
 msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48

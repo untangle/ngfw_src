@@ -21,6 +21,7 @@ package com.untangle.node.webfilter;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Selects Blocked HTTP traffic.
@@ -32,7 +33,7 @@ public class WebFilterBlockedFilter
     implements SimpleEventFilter<WebFilterEvent>
 {
     private static final RepositoryDesc REPO_DESC
-        = new RepositoryDesc("Blocked HTTP Traffic");
+        = new RepositoryDesc(I18nUtil.marktr("Blocked HTTP Traffic"));
 
     private final String warmQuery;
 

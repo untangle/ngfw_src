@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-07 16:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -269,6 +269,62 @@ msgstr ""
 #: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
 #, java-format
 msgid "If you have any questions, Please contact {0}."
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareAccessFilter.java:27
+msgid "Access Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareActiveXFilter.java:27
+msgid "ActiveX Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareAllFilter.java:27
+msgid "All Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareBlacklistFilter.java:27
+msgid "Blacklist Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareBlockedFilter.java:27
+msgid "Blocked Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareCookieFilter.java:27
+msgid "Cookie Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+msgid "Scan Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+msgid "SCAN"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+msgid "Block Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+msgid "BLOCK"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+msgid "Pass Connection"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+msgid "PASS"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:216
+msgid "Spyware Pages Detected"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:216
+msgid "SPYDETECTED"
 msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48

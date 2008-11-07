@@ -45,6 +45,8 @@ import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.util.I18nUtil;
+
 import org.apache.log4j.Logger;
 
 
@@ -88,8 +90,8 @@ class OpenVpnMonitor implements Runnable
     private static final int PROCNET_STAT_TX_BYTES   = 8;
     private static final int PROCNET_STAT_TX_PACKETS = 9;
 
-    private static final String ACTIVE_SESSIONS_REPO_NAME = "Active Sessions";
-    private static final String ALL_SESSIONS_REPO_NAME = "All Sessions";
+    private static final String ACTIVE_SESSIONS_REPO_NAME = I18nUtil.marktr("Active Sessions");
+    private static final String ALL_SESSIONS_REPO_NAME = I18nUtil.marktr("All Sessions");
 
     private final EventLogger<ClientConnectEvent> clientConnectLogger;
     private final EventLogger<VpnStatisticEvent> vpnStatsDistLogger;

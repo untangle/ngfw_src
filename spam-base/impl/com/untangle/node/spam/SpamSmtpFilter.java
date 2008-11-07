@@ -20,10 +20,11 @@ package com.untangle.node.spam;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class SpamSmtpFilter implements SimpleEventFilter<SpamEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("SMTP Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("SMTP Events"));
     private final String warmQuery;
 
     public SpamSmtpFilter(String vendor)

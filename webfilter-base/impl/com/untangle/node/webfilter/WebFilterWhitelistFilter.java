@@ -21,6 +21,7 @@ package com.untangle.node.webfilter;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Matches whitelisted traffic.
@@ -32,7 +33,7 @@ public class WebFilterWhitelistFilter
     implements SimpleEventFilter<WebFilterEvent>
 {
     private static final RepositoryDesc REPO_DESC
-        = new RepositoryDesc("Whitelisted HTTP Traffic");
+        = new RepositoryDesc(I18nUtil.marktr("Whitelisted HTTP Traffic"));
 
     private final String warmQuery;
 

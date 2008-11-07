@@ -20,10 +20,11 @@ package com.untangle.node.ips;
 
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.util.I18nUtil;
 
 public class IpsLogFilter implements SimpleEventFilter<IpsLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
 
     private static final String WARM_QUERY = "FROM IpsLogEvent evt "
         + "WHERE evt.pipelineEndpoints.policy = :policy "

@@ -20,10 +20,11 @@ package com.untangle.node.spyware;
 
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.util.I18nUtil;
 
 public class SpywareCookieFilter implements SimpleEventFilter<SpywareEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Cookie Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Cookie Events"));
 
     private static final String WARM_QUERY
         = "FROM SpywareCookieEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
