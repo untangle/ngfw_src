@@ -481,7 +481,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             store : this.interfaceStore,
             loadMask : true,
             stripeRows : true,
-			baseCls : 'smallTopMargin',
+	    baseCls : 'smallTopMargin',
             enableColumnResize : false,
             autoResizeColumn : 2,
             disableSelection : false,
@@ -490,37 +490,37 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             ddGroup : 'interfaceDND',
             ddText : '',
             height : 300,
-			width:505,
+	    width : 505,
             tbar : [ refreshButton ],
-			viewConfig:{
-				forceFit:true
-			},
-            cm : new Ext.grid.ColumnModel([
-            {
-               header : i18n._( "Name" ),
-               dataIndex : 'name',
-               sortable : false,
-               fixed : true,
-               width : 100
+	    viewConfig : {
+		forceFit : true
+	    },
+            cm : new Ext.grid.ColumnModel([{
+                header : i18n._( "Name" ),
+                dataIndex : 'name',
+                sortable : false,
+                fixed : true,
+                width : 100
             },{
-               header : i18n._( "Status" ),
-               dataIndex : 'status',
-               sortable : false,
-               renderer : function( value ) {
-                   var divClass = "draggable-disabled-interface";
-                   var status = i18n._( "unknown" );
-                   
-                   if ( value[1] == "connected" ) {
-                       status = i18n._( "connected" );
-                       divClass = "draggable-enabled-interface";
-                   }
-                   
-                   return "<div class='" + divClass + "'>" + value[0] + " : " + status + "</div>";
-               },
-               width : 400
+                header : i18n._( "Status" ),
+                dataIndex : 'status',
+                sortable : false,
+                renderer : function( value ) {
+                    var divClass = "draggable-disabled-interface";
+                    var status = i18n._( "unknown" );
+                    
+                    if ( value[1] == "connected" ) {
+                        status = i18n._( "connected" );
+                        divClass = "draggable-enabled-interface";
+                    }
+                    
+                    /* Fix for Firefox 1.5 which only allows you to drag over text. */
+                    return "<div class='" + divClass + "'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value[0] + " : " + status + "</div>";
+                },
+                width : 400
             }])
         });
-    
+        
         var panel = new Ext.Panel({
 	    defaults : { cls : 'noborder' },
             items : [{
