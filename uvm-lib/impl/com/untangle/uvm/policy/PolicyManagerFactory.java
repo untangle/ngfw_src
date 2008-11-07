@@ -33,7 +33,7 @@ public class PolicyManagerFactory
     /** The premium address book */
     private LocalPolicyManager premium = null;
 
-    /** remote address book */
+    /** remote policy manager */
     private RemotePolicyManager remote = new RemotePolicyManagerAdaptor(limited);
 
     private PolicyManagerFactory()

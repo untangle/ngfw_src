@@ -1523,7 +1523,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         name: 'displayName',
                         convert : function(v) {
-                            return this.i18n._(v)
+                            if ( v == "Default" ) return this.i18n._("Default");
+                            return v;
                         }.createDelegate(this)
                     }]                    
                 })
@@ -1632,7 +1633,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         name: 'displayName',
                         convert : function(v) {
-                            return this.i18n._(v)
+                            if ( v == "Default" ) return this.i18n._("Default");
+                            return v;
                         }.createDelegate(this)
                     }]                    
                 })
