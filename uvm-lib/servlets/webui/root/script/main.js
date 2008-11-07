@@ -222,6 +222,7 @@ Ung.Main.prototype = {
                     width: this.contentLeftWidth,
                     bodyStyle: 'background-color: transparent;',
                     footer : false,
+					buttonAlign:'left',
                     items:[{
                     	cls: "logo",
                         html: '<img src="/images/BrandingLogo.gif" border="0"/>',
@@ -265,7 +266,16 @@ Ung.Main.prototype = {
                             var helpSource=main.leftTabs.getActiveTab().helpSource;
                             main.openHelp(helpSource);
                         }
-                    }]
+						},
+						{
+                        name: 'Logout',
+                        iconCls: 'iconLogout',
+                        text: i18n._('Logout'),
+                        handler: function() {
+                            document.location = '/auth/logout?url=/webui&realm=Administrator';
+                        }
+						}
+                    ]
                  },{
                     region:'center',
                     id: 'center',
