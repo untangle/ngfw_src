@@ -21,17 +21,15 @@ package com.untangle.node.mail.impl.quarantine;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.CronJob;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.Period;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressList;
 import com.untangle.node.mail.impl.GlobEmailAddressMapper;
@@ -55,17 +53,16 @@ import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.node.mail.papi.quarantine.QuarantineEjectionHandler;
 import com.untangle.node.mail.papi.quarantine.QuarantineMaintenenceView;
-import com.untangle.node.mail.papi.quarantine.QuarantineManipulation;
-import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
+import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.node.mime.EmailAddress;
-import com.untangle.node.mime.MIMEMessage;
-import com.untangle.node.util.ByteBufferInputStream;
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.CronJob;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.Period;
 
 /**
  *
@@ -523,6 +520,33 @@ public class Quarantine
         return new InboxRecordArray(index.getAllRecords(), index.size());
     }
 
+    public List<InboxRecord> getInboxRecords( String account, int start, int limit, String... sortColumns)
+        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        
+        String sortColumn = null;
+        boolean isAscending = true;
+        if (0 < sortColumns.length) {
+            sortColumn = sortColumns[0];
+            if (sortColumn.startsWith("+")) {
+                isAscending = true;
+                sortColumn = sortColumn.substring(1);
+            } else if (sortColumn.startsWith("-")) {
+                isAscending = false;
+                sortColumn = sortColumn.substring(1);
+            } else {
+                isAscending = true;
+            }
+        }
+        
+        InboxRecordArray inboxRecordArray = getInboxRecordArray(account, start, limit, sortColumn, isAscending);
+        return Arrays.asList(inboxRecordArray.getInboxRecords());
+    }
+    
+    public int getInboxTotalRecords( String account)
+        throws NoSuchInboxException, QuarantineUserActionFailedException {
+        return getInboxRecordArray(account).getTotalRecords();
+    }
+    
     public void test() {
         //Do nothing.
     }
