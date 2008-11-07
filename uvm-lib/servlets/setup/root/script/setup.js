@@ -966,20 +966,25 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.cardPanel.layout.activeItem.saveData( handler );
     },
 
-    saveDHCP : function( handler )
+    saveDHCP : function( handler, hideWindow )
     {
+        if ( hideWindow == null ) hideWindow = true;
+
         var ns = Ung.SetupWizard.CurrentValues.networkSettings;
         ns.dhcpEnabled = true;
         ns.PPPoESettings.live = false;
-        /* There is really no need to save the address settings again. */
-        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ), ns );
+
+        var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
+        rpc.networkManager.setSetupSettings( complete, ns );
     },
     
-    saveStatic : function( handler )
+    saveStatic : function( handler, hideWindow )
     {
         var ns = Ung.SetupWizard.CurrentValues.networkSettings;
         ns.dhcpEnabled = false;
         ns.PPPoESettings.live = false;
+
+        if ( hideWindow == null ) hideWindow = true;
 
         ns.host = this.staticPanel.find( "name", "ip" )[0].getValue();
         ns.netmask = this.staticPanel.find( "name", "netmask" )[0].getRawValue();
@@ -990,22 +995,26 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         if ( dns2.length > 0 ) ns.dns2 = dns2;
         else ns.dns2 = null;
 
-        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ), ns );
+        var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
+        rpc.networkManager.setSetupSettings( complete, ns );
     },
 
-    savePPPoE : function( handler )
+    savePPPoE : function( handler, hideWindow )
     {
         var ns = Ung.SetupWizard.CurrentValues.networkSettings;
         ns.dhcpEnabled = true;
         ns.PPPoESettings.live = true;
 
+        if ( hideWindow == null ) hideWindow = true;
+
         ns.PPPoESettings.username = this.pppoePanel.find( "name", "username" )[0].getValue();
         ns.PPPoESettings.password = this.pppoePanel.find( "name", "password" )[0].getValue();
-        
-        rpc.networkManager.setSetupSettings( this.complete.createDelegate( this, [ handler ], true ), ns );
+
+        var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );        
+        rpc.networkManager.setSetupSettings( complete, ns );
     },
 
-    complete : function( result, exception, foo, handler )
+    complete : function( result, exception, foo, handler, hideWindow )
     {
         if(exception) {
             Ext.MessageBox.show({
@@ -1021,16 +1030,16 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         Ung.SetupWizard.CurrentValues.networkSettings = result;
 
         if ( result.host == Ung.SetupWizard.BOGUS_ADDRESS ) {
-            Ung.SetupWizard.CurrentValues.networkSettings.host = "";
-            Ung.SetupWizard.CurrentValues.networkSettings.netmask = "";
-            Ung.SetupWizard.CurrentValues.networkSettings.gateway = "";
-            Ung.SetupWizard.CurrentValues.networkSettings.dns1 = "";
-            Ung.SetupWizard.CurrentValues.networkSettings.dns2 = "";
+            Ung.SetupWizard.CurrentValues.networkSettings.host = null;
+            Ung.SetupWizard.CurrentValues.networkSettings.netmask = null;
+            Ung.SetupWizard.CurrentValues.networkSettings.gateway = null;
+            Ung.SetupWizard.CurrentValues.networkSettings.dns1 = null;
+            Ung.SetupWizard.CurrentValues.networkSettings.dns2 = null;
         }
 
         this.refreshNetworkSettings();
 
-        Ext.MessageBox.hide();
+        if ( hideWindow || ( hideWindow == null )) Ext.MessageBox.hide();
         
         handler();
     },
@@ -1053,7 +1062,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         
         var handler = this.execConnectivityTest.createDelegate( this );
 
-        this.cardPanel.layout.activeItem.saveData( handler );        
+        this.cardPanel.layout.activeItem.saveData( handler, false );
     },
     
     execConnectivityTest : function()
@@ -1329,116 +1338,113 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 collapsible:true,
                 collapsed:true,
                 autoHeight:true,
-                items:[
-                    {
-                        name : 'from-address',
-                        xtype : "fieldset",
-                        autoHeight:true,
-
-                        defaults : {
-                            validationEvent : 'blur',
-                            msgTarget : 'side'
-                        },
-                        items : [{
-                            name : 'from-address-label',
-                            xtype : 'label',
-                            html : i18n._( "<b>Please choose a <i>From Address</i> for emails originating from the Untangle Server</b>" )
-                        },{
-                            xtype : 'textfield',
-                            name : 'from-address-textfield',
-                            fieldLabel : i18n._("From Address"),
-                            width : 200,
-                            itemCls : 'spacingMargin1',
-                            vtype : 'emailAddressCheck',
-                            allowBlank : false
-                        }]
+                items:[{
+                    name : 'from-address',
+                    xtype : "fieldset",
+                    autoHeight:true,
+                    
+                    defaults : {
+                        validationEvent : 'blur',
+                        msgTarget : 'side'
+                    },
+                    items : [{
+                        name : 'from-address-label',
+                        xtype : 'label',
+                        html : i18n._( "<b>Please choose a <i>From Address</i> for emails originating from the Untangle Server</b>" )
                     },{
-                        name : 'smtp-server-config',
-                        xtype : "fieldset",
-                        defaultType : 'textfield',
-                        autoHeight:true,
-                        defaults : {
-                            msgTarget : 'side',
-                            validationEvent : 'blur'
-                        },
-                        items : [{
-                            name : 'smtp-message',
-                            xtype : 'label',
-                            html : i18n._( "<b>SMTP Configuration</b>" )
-                        },{
-                            xtype : 'radio',
-                            name : 'smtp-send-directly',
-                            checked : true,
-                            inputValue : "directly",
-                            boxLabel : i18n._( 'Send Email Directly (default).' ),
-                            ctCls : 'wizardlabelmargin5',
-                            hideLabel : 'true',
-                            listeners : {
-                                check : {
-                                    fn : function( checkbox, checked ) {
-                                        if ( checked ) this.onSetSendDirectly( true );
-                                    }.createDelegate( this )
-                                }
+                        xtype : 'textfield',
+                        name : 'from-address-textfield',
+                        fieldLabel : i18n._("From Address"),
+                        width : 200,
+                        itemCls : 'spacingMargin1',
+                        vtype : 'emailAddressCheck',
+                        allowBlank : false
+                    }]
+                },{
+                    name : 'smtp-server-config',
+                    xtype : "fieldset",
+                    defaultType : 'textfield',
+                    autoHeight:true,
+                    defaults : {
+                        msgTarget : 'side',
+                        validationEvent : 'blur'
+                    },
+                    items : [{
+                        name : 'smtp-message',
+                        xtype : 'label',
+                        html : i18n._( "<b>SMTP Configuration</b>" )
+                    },{
+                        xtype : 'radio',
+                        name : 'smtp-send-directly',
+                        checked : true,
+                        inputValue : "directly",
+                        boxLabel : i18n._( 'Send Email Directly (default).' ),
+                        ctCls : 'wizardlabelmargin5',
+                        hideLabel : 'true',
+                        listeners : {
+                            check : {
+                                fn : function( checkbox, checked ) {
+                                    if ( checked ) this.onSetSendDirectly( true );
+                                }.createDelegate( this )
                             }
-                        },{
-                            xtype : 'radio',
-                            name : 'smtp-send-directly',
-                            inputValue : "smtp-server",
-                            boxLabel : i18n._( 'Send Email using the specified SMTP server.' ),
-                            hideLabel : 'true',
-                            ctCls : 'wizardlabelmargin5',
-                            listeners : {
-                                check : {
-                                    fn : function( checkbox, checked ) {
-                                        if ( checked ) this.onSetSendDirectly( false );
-                                    }.createDelegate( this )
-                                }
+                        }
+                    },{
+                        xtype : 'radio',
+                        name : 'smtp-send-directly',
+                        inputValue : "smtp-server",
+                        boxLabel : i18n._( 'Send Email using the specified SMTP server.' ),
+                        hideLabel : 'true',
+                        ctCls : 'wizardlabelmargin5',
+                        listeners : {
+                            check : {
+                                fn : function( checkbox, checked ) {
+                                    if ( checked ) this.onSetSendDirectly( false );
+                                }.createDelegate( this )
                             }
-                        },{
-                            name : 'smtp-server-addr',
-                            fieldLabel : i18n._( "SMTP Server" ),
-        		    maskRe : /[-/_0-9A-Za-z.]/,					
-        		    vtype : 'hostname',
-        		    allowBlank : false
-                        },{
-                            name : 'smtp-server-port',
-                            xtype : 'numberfield',
-                            minValue : 0,
-                            maxValue : 65536,
-                            allowDecimals : false,
-                            fieldLabel : i18n._( 'Port' ),
-        		    allowBlank : false					
-                        },{
-                            name : 'smtp-server-requires-auth',
-                            xtype : 'checkbox',
-                            hideLabel : true,
-                            value : false,
-        		    ctCls : 'wizardlabelmargin7 spacingMargin1',
-                            boxLabel : i18n._("Server Requires Authentication."),
-                            listeners : {
-                                check : {
-                                    fn : function( checkbox, checked ) {
-                                        this.onSetRequiresAuth( checked );
-                                    }.createDelegate( this )
-                                }
+                        }
+                    },{
+                        name : 'smtp-server-addr',
+                        fieldLabel : i18n._( "SMTP Server" ),
+        		maskRe : /[-/_0-9A-Za-z.]/,					
+        		vtype : 'hostname',
+        		allowBlank : false
+                    },{
+                        name : 'smtp-server-port',
+                        xtype : 'numberfield',
+                        minValue : 0,
+                        maxValue : 65536,
+                        allowDecimals : false,
+                        fieldLabel : i18n._( 'Port' ),
+        		allowBlank : false					
+                    },{
+                        name : 'smtp-server-requires-auth',
+                        xtype : 'checkbox',
+                        hideLabel : true,
+                        value : false,
+        		ctCls : 'wizardlabelmargin7 spacingMargin1',
+                        boxLabel : i18n._("Server Requires Authentication."),
+                        listeners : {
+                            check : {
+                                fn : function( checkbox, checked ) {
+                                    this.onSetRequiresAuth( checked );
+                                }.createDelegate( this )
                             }
-                        },{
-                            xtype : 'textfield',
-                            name : 'smtp-server-username',
-                            fieldLabel : i18n._( "Username" ),
-                            itemCls : 'wizardlabelmargin8',
-                            allowBlank : false
-        	        },{
-                            name : 'smtp-server-password',
-                            inputType : 'password',
-                            fieldLabel : i18n._( "Password" ),
-                            itemCls : 'wizardlabelmargin8',
-                            allowBlank : false
-        	        }]
-                    }
-                ]
-            }
-            ]
+                        }
+                    },{
+                        xtype : 'textfield',
+                        name : 'smtp-server-username',
+                        fieldLabel : i18n._( "Username" ),
+                        itemCls : 'wizardlabelmargin8',
+                        allowBlank : false
+        	    },{
+                        name : 'smtp-server-password',
+                        inputType : 'password',
+                        fieldLabel : i18n._( "Password" ),
+                        itemCls : 'wizardlabelmargin8',
+                        allowBlank : false
+        	    }]
+                }]
+            }]
         });
 
         var field = null;
@@ -1689,7 +1695,7 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
         
-        if ( true ) {
+        if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
                 this.wizard.goToPage( 6 );
