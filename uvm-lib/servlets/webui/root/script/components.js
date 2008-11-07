@@ -1206,6 +1206,7 @@ Ung.MessageManager = {
     upgradeUpdateTime:1000,
     upgradeSummary: null, 
     upgradesComplete: 0,
+    historyMaxSize:100,
     messageHistory:[], // for debug info
     errorToleranceTime: null,
     
@@ -1257,8 +1258,10 @@ Ung.MessageManager = {
                 var messageQueue=result;
                 if(messageQueue.messages.list!=null && messageQueue.messages.list.length>0) {
                    var refreshApps=false;
-                    if(main.debugMode) {
-                        Ung.MessageManager.messageHistory.push(messageQueue.messages.list); 
+                    Ung.MessageManager.messageHistory.push(messageQueue.messages.list);
+                    
+                    if(Ung.MessageManager.messageHistory.length>Ung.MessageManager.historyMaxSize) {
+                    	Ung.MessageManager.messageHistory.shift();
                     }
                    for(var i=0;i<messageQueue.messages.list.length;i++) {
                        var msg=messageQueue.messages.list[i];
