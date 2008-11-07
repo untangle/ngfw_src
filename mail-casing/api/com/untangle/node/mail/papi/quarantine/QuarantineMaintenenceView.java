@@ -59,7 +59,13 @@ public interface QuarantineMaintenenceView
     
     public InboxRecordArray getInboxRecordArray( String account)
         throws NoSuchInboxException, QuarantineUserActionFailedException;
-
+    
+    public List<InboxRecord> getInboxRecords( String account, int start, int limit, String... sortColumns)
+        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    
+    public int getInboxTotalRecords( String account)
+        throws NoSuchInboxException, QuarantineUserActionFailedException;
+    
     /**
      * Total size of the entire store
      * (in kilobytes (inMB = false) or megabytes (inMB = true))

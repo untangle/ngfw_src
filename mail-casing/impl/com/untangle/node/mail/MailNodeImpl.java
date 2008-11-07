@@ -32,6 +32,7 @@ import com.untangle.node.mail.papi.quarantine.Inbox;
 import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.untangle.node.mail.papi.quarantine.InboxArray;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
+import com.untangle.node.mail.papi.quarantine.InboxRecord;
 import com.untangle.node.mail.papi.quarantine.InboxRecordArray;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
@@ -460,11 +461,25 @@ public class MailNodeImpl extends AbstractNode
             return s_quarantine.getInboxRecordArray( account, start, limit, sortColumn, isAscending );
         }
 
-        public InboxRecordArray getInboxRecordArray( String account)
-        throws NoSuchInboxException, QuarantineUserActionFailedException
-        {
-        return s_quarantine.getInboxRecordArray( account );
-}
+        public InboxRecordArray getInboxRecordArray(String account)
+                throws NoSuchInboxException,
+                QuarantineUserActionFailedException {
+            return s_quarantine.getInboxRecordArray(account);
+        }
+
+        public List<InboxRecord> getInboxRecords(String account, int start,
+                int limit, String... sortColumns) throws NoSuchInboxException,
+                QuarantineUserActionFailedException {
+            return s_quarantine.getInboxRecords(account, start, limit,
+                    sortColumns);
+        }
+
+        public int getInboxTotalRecords(String account)
+                throws NoSuchInboxException,
+                QuarantineUserActionFailedException {
+            return s_quarantine.getInboxTotalRecords(account);
+        }
+        
         public String getFormattedInboxesTotalSize(boolean inMB) {
             return s_quarantine.getFormattedInboxesTotalSize(inMB);
         }

@@ -132,13 +132,12 @@ if (!Ung.hasResource["Ung.Email"]) {
             return hh + ":" + mm;
         },
         loadQuarantinesDetails : function() {
-            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            this.getQuarantineMaintenenceView().getInboxRecordArray(
-                function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    this.userQuarantinesDetailsGrid.store.loadData(result.inboxRecords);
-                }.createDelegate(this), this.quarantinesDetailsWin.account)
+        	var account = this.quarantinesDetailsWin.account;
+            var totalRecords = this.getQuarantineMaintenenceView().getInboxTotalRecords(account);
+        	
+            this.userQuarantinesDetailsGrid.store.proxy.rpcFnArgs = [account];
+            this.userQuarantinesDetailsGrid.setTotalRecords(totalRecords);
+            this.userQuarantinesDetailsGrid.loadPage(0);
         },
         
         
@@ -941,7 +940,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 hasEdit : false,
                 hasAdd : false,
                 hasDelete : false,
-                paginated : false,
+                //paginated : false,
                 autoGenerateId : true,
                 
                 tbar : [{
@@ -962,6 +961,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                         Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
                         this.getQuarantineMaintenenceView().purge(function(result, exception) {
+                            Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
                             //load Quarantines Details
                             this.loadQuarantinesDetails();
@@ -987,6 +987,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                         Ext.MessageBox.wait(this.i18n._("Releasing..."), this.i18n._("Please wait"));
                         this.getQuarantineMaintenenceView().rescue(function(result, exception) {
+                            Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
                             //load Quarantines Details
                             this.loadQuarantinesDetails();
@@ -994,26 +995,40 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                         this.userQuarantinesGrid.store.load();
                     }.createDelegate(this)
-                }], 
+                }],
+                proxyRpcFn : this.getQuarantineMaintenenceView().getInboxRecords,
+                initialLoad : function() {}, //do nothing here
                 fields : [{
                     name : 'mailID'
                 }, {
-                    name : 'internDateAsDate'
+                    name : 'quarantinedDate',
+                    mapping : 'internDateAsDate'
                 }, {
                     name : 'size'
                 }, {
-                    name : 'mailSummary'
+                    name : 'sender',
+                    mapping : 'mailSummary'
+                }, {
+                    name : 'subject',
+                    mapping : 'mailSummary'
+                }, {
+                    name : 'category',
+                    mapping : 'mailSummary'
+                }, {
+                    name : 'quarantineDetail',
+                    mapping : 'mailSummary'
                 }],
                 columns : [smUserQuarantinesDetails, {
                     id : 'mailID',
                     header : this.i18n._("MailID"),
                     width : 150,
-                    dataIndex : 'mailID'
+                    dataIndex : 'mailID',
+                    sortable : false
                 }, {
-                    id : 'internDateAsDate',
+                    id : 'quarantinedDate',
                     header : this.i18n._("Date"),
                     width : 150,
-                    dataIndex : 'internDateAsDate',
+                    dataIndex : 'quarantinedDate',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
@@ -1021,7 +1036,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     id : 'sender',
                     header : this.i18n._("Sender"),
                     width : 150,
-                    dataIndex : 'mailSummary',
+                    dataIndex : 'sender',
                     renderer : function(value) {
                         return value.sender;
                     }
@@ -1029,7 +1044,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     id : 'subject',
                     header : this.i18n._("Subject"),
                     width : 150,
-                    dataIndex : 'mailSummary',
+                    dataIndex : 'subject',
                     renderer : function(value) {
                         return value.subject;
                     }
@@ -1046,7 +1061,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                     id : 'category',
                     header : this.i18n._("Category"),
                     width : 85,
-                    dataIndex : 'mailSummary',
+                    dataIndex : 'category',
+                    sortable : false,
                     renderer : function(value) {
                         return value.quarantineCategory;
                     }
@@ -1054,7 +1070,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     id : 'detail',
                     header : this.i18n._("Detail"),
                     width : 85,
-                    dataIndex : 'mailSummary',
+                    dataIndex : 'quarantineDetail',
                     renderer : function(value) {
                     	var detail = value.quarantineDetail;
                         if (isNaN(parseFloat(detail))) {
@@ -1067,11 +1083,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                         return detail;
                     }
                 }],
-//                sortField : 'internDateAsDate',
+                sortField : 'quarantinedDate',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'subject',
-                data : [],
-                dataRoot: null
+                autoExpandColumn : 'subject'
             });
         },
         
