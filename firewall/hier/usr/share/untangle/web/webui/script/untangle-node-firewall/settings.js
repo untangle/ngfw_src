@@ -107,83 +107,102 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         columnsDefaultSortable : false,
                         autoExpandColumn : 'description',
                         plugins : [liveColumn],
+                        rowEditorLabelWidth:120,
                         rowEditorInputLines : [new Ext.form.Checkbox({
                             name : "Enable Rule",
                             dataIndex: "live",
-                            fieldLabel : this.i18n._("Enable Rule")
+                            fieldLabel : this.i18n._("Enable Rule"),
+                            itemCls:'firewall-spacing-1',
+                        }),
+                        new Ext.form.TextField({
+                            name : "Description",
+                            dataIndex: "description",
+                            fieldLabel : this.i18n._("Description"),
+                            itemCls:'firewall-spacing-1',                            
+                            width : 400
                         }), new Ext.form.ComboBox({
                             name : "Action",
                             dataIndex: "action",
                             fieldLabel : this.i18n._("Action"),
-	                        store : new Ext.data.SimpleStore({
-	                            fields : ['key', 'name'],
-	                            data : actionData
-	                        }),
-	                        displayField : 'name',
-	                        valueField : 'key',
+                            store : new Ext.data.SimpleStore({
+                                fields : ['key', 'name'],
+                                data : actionData
+                            }),
+                            displayField : 'name',
+                            valueField : 'key',
                             forceSelection : true,
-	                        typeAhead : true,
-	                        mode : 'local',
-	                        triggerAction : 'all',
-	                        listClass : 'x-combo-list-small',
-	                        selectOnFocus : true
+                            typeAhead : true,
+                            mode : 'local',
+                            triggerAction : 'all',
+                            listClass : 'x-combo-list-small',
+                            itemCls:'firewall-spacing-1',                                                        
+                            selectOnFocus : true
                         }), new Ext.form.Checkbox({
                             name : "Log",
                             dataIndex: "log",
+                            itemCls:'firewall-spacing-1',                                                        
                             fieldLabel : this.i18n._("Log")
-                        }), new Ung.Util.ProtocolCombo({
-                            name : "Traffic Type",
-                            dataIndex: "protocol",
-                            fieldLabel : this.i18n._("Traffic Type"),
-                            width : 100
-                        }), new Ung.Util.InterfaceCombo({
-                            name : "Source Interface",
-                            dataIndex: "srcIntf",
-                            fieldLabel : this.i18n._("Source Interface"),
-                            width : 150
-                        }), new Ung.Util.InterfaceCombo({
-                            name : "Destination Interface",
-                            dataIndex: "dstIntf",
-                            fieldLabel : this.i18n._("Destination Interface"),
-                            width : 150
-                        }), new Ext.form.TextField({
-                            name : "Source Address",
-                            dataIndex: "srcAddress",
-                            fieldLabel : this.i18n._("Source Address"),
-                            allowBlank : false,
-                            width : 150
-                        }), new Ext.form.TextField({
-                            name : "Destination Address",
-                            dataIndex: "dstAddress",
-                            fieldLabel : this.i18n._("Destination Address"),
-                            allowBlank : false,
-                            width : 150
-                        }), new Ext.form.TextField({
-                            name : "Source Port",
-                            dataIndex: "srcPort",
-                            fieldLabel : this.i18n._("Source Port"),
-                            width : 150,
-                            allowBlank : false
-                        }), new Ext.form.TextField({
-                            name : "Destination Port",
-                            dataIndex: "dstPort",
-                            fieldLabel : this.i18n._("Destination Port"),
-                            allowBlank : false,
-                            width : 150
-                        }), new Ext.form.TextField({
+                        }), 
+                        new Ext.form.FieldSet({
+                            title : i18n._('Rule') ,
+                            cls:'firewall-spacing-2',
+                            autoHeight : true,  
+                            items:[                                
+                                new Ung.Util.ProtocolCombo({
+                                    name : "Traffic Type",
+                                    dataIndex: "protocol",
+                                    itemCls:'firewall-spacing-3',                                                        
+                                    fieldLabel : this.i18n._("Traffic Type"),
+                                    width : 100
+                                }), new Ung.Util.InterfaceCombo({
+                                    name : "Source Interface",
+                                    dataIndex: "srcIntf",
+                                    fieldLabel : this.i18n._("Source Interface"),
+                                    width : 150
+                                }), new Ung.Util.InterfaceCombo({
+                                    name : "Destination Interface",
+                                    dataIndex: "dstIntf",
+                                    itemCls:'firewall-spacing-3',                                                        
+                                    fieldLabel : this.i18n._("Destination Interface"),
+                                    width : 150
+                                }), new Ext.form.TextField({
+                                    name : "Source Address",
+                                    dataIndex: "srcAddress",
+                                    fieldLabel : this.i18n._("Source Address"),
+                                    allowBlank : false,
+                                    width : 150
+                                }), new Ext.form.TextField({
+                                    name : "Destination Address",
+                                    dataIndex: "dstAddress",
+                                    itemCls:'firewall-spacing-3',                                                                                            
+                                    fieldLabel : this.i18n._("Destination Address"),
+                                    allowBlank : false,
+                                    width : 150
+                                }), new Ext.form.TextField({
+                                    name : "Source Port",
+                                    dataIndex: "srcPort",
+                                    fieldLabel : this.i18n._("Source Port"),
+                                    width : 150,
+                                    allowBlank : false
+                                }), new Ext.form.TextField({
+                                    name : "Destination Port",
+                                    dataIndex: "dstPort",
+                                    fieldLabel : this.i18n._("Destination Port"),
+                                    allowBlank : false,
+                                    width : 150
+                                })                           
+                            ]
+                        })
+                       /*, new Ext.form.TextField({
                             name : "Category",
                             dataIndex: "category",
                             fieldLabel : this.i18n._("Category"),
                             width : 150
-                        }), new Ext.form.TextField({
-                            name : "Description",
-                            dataIndex: "description",
-                            fieldLabel : this.i18n._("Description"),
-                            width : 400
-                        })]
+                        })*/]
                     }),{
                         xtype : 'fieldset',
                         autoHeight : true,
+                        cls:'firewall-top-margin-1',
                         title : this.i18n._('Default Action'),
                         items : [{
 	                        xtype : 'radio',
