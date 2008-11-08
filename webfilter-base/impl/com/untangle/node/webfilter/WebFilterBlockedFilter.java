@@ -39,7 +39,7 @@ public class WebFilterBlockedFilter
 
     WebFilterBlockedFilter(WebFilterBase node)
     {
-        warmQuery = "FROM WebFilterEvent evt WHERE evt.vendor_name = '"
+        warmQuery = "FROM WebFilterEvent evt WHERE evt.vendorName = '"
             + node.getVendor()
             + "' AND evt.action = 'B' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     }
