@@ -34,6 +34,7 @@
 package com.untangle.uvm.message;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +57,7 @@ public class Counters
         = new HashMap<String, BlingBlinger>();
 
     private final Map<String, BlingBlinger> activities
-        = new HashMap<String, BlingBlinger>();
+        = new LinkedHashMap<String, BlingBlinger>();
 
     private final Map<String, LoadMaster> loads
         = new HashMap<String, LoadMaster>();
