@@ -832,7 +832,7 @@ Depends: untangle-vm
 Conflicts: reporting-transform
 Provides: reporting-transform
 Replaces: reporting-transform
-XB-Display-Name: Untangle Reports
+XB-Display-Name: Reports
 XB-Untangle-Type: service
 XB-View-Position: 1022
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -876,8 +876,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  WwQ0GApTDRXBYDC023HOZtKqibu2sozMdlB1LaRE+9F05hSRpEQlyMjQIQzRdKfG6kArlTJF
  Gwe/++1vGj/fcKBvrfF6FVHvq8rfvQzlN83+/j9Ov3D2DdYAKX9oYI1fKPoxJMDBwSCGhg9j
  9KkxvPWjn6ofxP4nwAB2T5Rklk6b3gAAAABJRU5ErkJggg==
-Description: Untangle Reports
- The Untangle Reports product.
+Description: Reports
+ The Reports product.
 
 Package: untangle-base-virus
 Architecture: all
