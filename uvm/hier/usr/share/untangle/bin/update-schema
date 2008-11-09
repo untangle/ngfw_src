@@ -304,10 +304,14 @@ SQL
 end
 
 def pre60_hacks(dbh)
-  ps = dbh.execute(<<SQL)
+  begin
+    ps = dbh.execute(<<SQL)
 UPDATE settings.split_schema_ver SET component = 'untangle-base-webfilter'
 WHERE component = 'untangle-node-webfilter'
 SQL
+  rescue DBI::DatabaseError => e
+    SqlHelper.log_sql_error("Could not do 6.0 hacks", e)
+  end
 end
 
 def setup_schema(dbh)
