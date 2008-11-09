@@ -45,12 +45,12 @@ import com.untangle.uvm.message.Message;
 public class MackageInstallRequest extends Message
 {
     private final MackageDesc mackageDesc;
-    private final boolean isInstalled;
+    private final boolean installed;
 
-    public MackageInstallRequest(MackageDesc mackageDesc, boolean isInstalled)
+    public MackageInstallRequest(MackageDesc mackageDesc, boolean installed)
     {
         this.mackageDesc = mackageDesc;
-        this.isInstalled = isInstalled;
+        this.installed = installed;
     }
 
     public MackageDesc getMackageDesc()
@@ -60,6 +60,6 @@ public class MackageInstallRequest extends Message
 
     public boolean isInstalled()
     {
-        return this.isInstalled;
+        return installed;
     }
 }

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -125,6 +126,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private volatile boolean removing = false;
 
     private long lastTailKey = System.currentTimeMillis();
+
+    private List<String> beingInstalled = new ArrayList<String>();
 
     private RemoteToolboxManagerImpl()
     {
@@ -338,23 +341,55 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     {
         Runnable r = new Runnable()
             {
+	        // Now keeps a record of which nodes are being installed (globally), and
+		// which ones are being installed by this run.
                 public void run()
                 {
-                    List<String> nodes = predictNodeInstall(name);
+		 UvmContextImpl mctx = UvmContextImpl.getInstance();
+		 NodeManagerImpl tm = mctx.nodeManager();
+		 List<String> nodes = null;
+
+		 // List of mackages that we will try to install in this run
+		 List<String> willInstall = new ArrayList<String>();
+
+		 try {
+		    if (isInstalled(name)) {
+			logger.warn("mackage " + name + " already installed, debouncing");
+			return;
+		    }
+		    synchronized (beingInstalled) {
+			if (beingInstalled.contains(name)) {
+			    logger.warn("mackage " + name + " being installed, debouncing");
+			    return;
+			}
+			beingInstalled.add(name);
+			willInstall.add(name);
+			nodes = predictNodeInstall(name);
+			for (Iterator<String> iter = nodes.iterator(); iter.hasNext();) {
+			    String newNode = iter.next();
+			    if (beingInstalled.contains(newNode)) {
+				logger.warn("mackage " + newNode + " being subinstalled, debouncing");
+				// Let the other guy install it.
+				iter.remove();
+			    } else {
+				beingInstalled.add(newNode);
+				willInstall.add(newNode);
+			    }
+			}
+		    }
+			
                     install(name, false);
-                    UvmContextImpl mctx = UvmContextImpl.getInstance();
-                    NodeManagerImpl tm = mctx.nodeManager();
                     for (String nn : nodes) {
                         try {
                             register(nn);
                             NodeDesc nd = tm.instantiate(nn, p);
-                            if (!nd.getNoStart()) {
+                            if (nd != null && !nd.getNoStart()) {
                                 NodeContext nc = tm.nodeContext(nd.getTid());
                                 nc.node().start();
                             }
-                         } catch (NodeStartException exn) {
-                             // XXX send out error message
-                             logger.warn("could not start", exn);
+			} catch (NodeStartException exn) {
+			    // XXX send out error message
+			    logger.warn("could not start", exn);
                         } catch (DeployException exn) {
                             // XXX send out error message
                             logger.warn("could not deploy", exn);
@@ -363,12 +398,17 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                             logger.warn("could not register", e);
                         }
                     }
+		 } finally {
+		     synchronized (beingInstalled) {
+			 for (String newNode : willInstall)
+			     beingInstalled.remove(newNode);
+		     }
+		 }
 
                     LocalMessageManager mm = mctx.localMessageManager();
                     MackageDesc mackageDesc = mackageDesc(name);
                     Message m = new InstallAndInstantiateComplete(mackageDesc);
                     mm.submitMessage(m);
-
                 }
             };
         LocalUvmContextFactory.context().newThread(r).start();
@@ -515,10 +555,21 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         MackageInstallRequest mir = new MackageInstallRequest(md,isInstalled(mackageName));
-
-        logger.info("requestInstall: " + mackageName);
         LocalMessageManager mm = LocalUvmContextFactory.context()
             .localMessageManager();
+
+	// Make sure there isn't an existing outstanding install request for this mackage.
+	for (Message msg : mm.getMessages()) {
+	    if (msg instanceof MackageInstallRequest) {
+		MackageInstallRequest existingMir = (MackageInstallRequest) msg;
+		if (existingMir.getMackageDesc() == md) {
+		    logger.warn("requestInstall(" + mackageName  + "): ignoring request; install request already pending");
+		    return;
+		}
+	    }
+	}
+		    
+        logger.info("requestInstall: " + mackageName);
         mm.submitMessage(mir);
     }
 
@@ -984,9 +1035,17 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;
             while (null != (line = br.readLine())) {
-                if (line.contains("-node-")) {
-                    l.add(line);
-                }
+		MackageDesc md = packageMap.get(line);
+		if (md == null) {
+		    logger.debug("Ignoring non-mackage: " + line);
+		    continue;
+		}
+		MackageDesc.Type mdType = md.getType();
+		if (mdType != MackageDesc.Type.NODE && mdType != MackageDesc.Type.SERVICE) {
+		    logger.debug("Ignoring non-node/service mackage: " + line);
+		    continue;
+		}
+		l.add(line);
             }
         } catch (IOException exn) {
             logger.warn("could not predict node install: " + mkg, exn);
