@@ -754,7 +754,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     xtype : 'button',
                     text : i18n._( 'Test Connectivity' ),
 		    cls : 'test-connectivity',
-                    handler : this.test-connectivity.createDelegate( this ),
+                    handler : this.testConnectivity.createDelegate( this ),
                     disabled : false
                 }]
              }]}));
@@ -809,7 +809,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     xtype : 'button',
                     text : i18n._( 'Test Connectivity' ),
 		    cls : 'test-connectivity-2',
-                    handler : this.test-connectivity.createDelegate( this ),
+                    handler : this.testConnectivity.createDelegate( this ),
                     disabled : false
                 }]
 	    }]}));
@@ -879,7 +879,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     xtype : 'button',
                     text : i18n._( 'Test Connectivity' ),
 		    cls : 'test-connectivity',				
-                    handler : this.test-connectivity.createDelegate( this ),
+                    handler : this.testConnectivity.createDelegate( this ),
                     disabled : false
                	}]
              }]}));
@@ -1056,7 +1056,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.cardPanel.layout.activeItem.saveData( handler );
     },
 
-    test-connectivity : function()
+    testConnectivity : function()
     {
         Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please wait"));
         

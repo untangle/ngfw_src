@@ -70,10 +70,10 @@
     <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
     <div id="extra-div-1"><span><!-- jspx --></span></div>
     <div id="extra-div-2"><span><!-- jspx --></span></div>
-    <div id="extraDiv3"><span><!-- jspx --></span></div>
-    <div id="extraDiv4"><span><!-- jspx --></span></div>
-    <div id="extraDiv5"><span><!-- jspx --></span></div>
-    <div id="extraDiv6"><span><!-- jspx --></span></div>
+    <div id="extra-div-3"><span><!-- jspx --></span></div>
+    <div id="extra-div-4"><span><!-- jspx --></span></div>
+    <div id="extra-div-5"><span><!-- jspx --></span></div>
+    <div id="extra-div-6"><span><!-- jspx --></span></div>
   </body>
 
 
