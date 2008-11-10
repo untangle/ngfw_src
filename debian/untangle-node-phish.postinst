@@ -5,9 +5,6 @@ rm -fr /usr/share/untangle/db/phish/
 
 /usr/bin/mcli -t 30 register untangle-node-phish 2>/dev/null || true
 
-# touch so the java client will know there is a newer version and throw out cache
-/bin/touch /usr/share/untangle/web/webstart/untangle-node-phish-gui.jar > /dev/null 2>&1
-
 /etc/init.d/apache2 reload
 
 exit 0
