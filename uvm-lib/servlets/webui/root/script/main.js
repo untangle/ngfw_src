@@ -331,6 +331,7 @@ Ung.Main.prototype = {
         this.loadConfig();
         this.loadPolicies();
     },
+    
     openStore : function (action,title) {
         var currentLocation = window.location;
         var query = "host=" + currentLocation.hostname;
