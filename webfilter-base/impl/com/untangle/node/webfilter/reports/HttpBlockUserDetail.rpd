@@ -13,9 +13,9 @@ FIELD_2.name=uname
 FIELD_2.type=String
 FIELD_3.name=hname
 FIELD_3.type=String
-FIELD_4.name=host
+FIELD_4.name=category
 FIELD_4.type=String
-FIELD_5.name=uri
+FIELD_5.name=url
 FIELD_5.type=String
 FIELD_6.name=c_client_addr
 FIELD_6.type=String
@@ -24,7 +24,7 @@ FIELD_7.type=String
 
 QUERY=\
 SELECT blk.time_stamp, page.uid AS uname, page.hname AS hname, \
-       page.host, line.uri, page.c_client_addr, page.c_server_addr \
+       blk.category, 'http://' || page.host || line.uri as url, page.c_client_addr, page.c_server_addr \
   FROM n_webfilter_evt_blk blk \
        JOIN reports.webpages page USING (request_id) \
        JOIN n_http_req_line line USING (request_id) \
@@ -36,16 +36,16 @@ SELECT blk.time_stamp, page.uid AS uname, page.hname AS hname, \
 
 TOPLEFT.label=Timestamp
 TOPLMID.label=User
-TOPRMID.label=Host
+TOPRMID.label=Category
 TOPRIGHT.label=Server IP
 BOTLMID.label=Client name
-BOTRMID.label=URI
+BOTRMID.label=URL
 BOTRIGHT.label=Client IP
 
 TOPLEFT.expr=$F{time_stamp}
 TOPLMID.expr=$F{uname} == null ? "" : $F{uname}
-TOPRMID.expr=$F{host}
+TOPRMID.expr=$F{category}
 TOPRIGHT.expr=$F{c_server_addr}
 BOTLMID.expr=$F{hname}
-BOTRMID.expr=$F{uri}
+BOTRMID.expr=$F{url}
 BOTRIGHT.expr=$F{c_client_addr}
