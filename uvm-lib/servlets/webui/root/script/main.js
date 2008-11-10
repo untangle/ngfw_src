@@ -9,7 +9,7 @@ Ung.Main.prototype = {
 	debugMode: false,
     disableThreads: false, // in development environment is useful to disable
                             // threads.
-    left-tabs: null,
+    leftTabs: null,
     appsSemaphore: null,
     apps: null,
     appsLastState: null,
@@ -170,7 +170,7 @@ Ung.Main.prototype = {
                     buttons: Ext.Msg.OKCANCEL,
                     fn: function (btn, text) {
                         if (btn == 'ok'){
-                            main.left-tabs.activate('leftTabConfig');
+                            main.leftTabs.activate('leftTabConfig');
                             Ext.getCmp("configItem_upgrade").onClick();
                         }
                     },
@@ -232,7 +232,7 @@ Ung.Main.prototype = {
                     	layout:"fit",
                     	border: false,
                     	cls: "left-tabs",
-                    	items: this.left-tabs = new Ext.TabPanel({
+                    	items: this.leftTabs = new Ext.TabPanel({
                             activeTab: 0,
                             height: 400,
                             deferredRender:false,
@@ -263,7 +263,7 @@ Ung.Main.prototype = {
                         iconCls: 'icon-help',
                         text: i18n._('Help'),
                         handler: function() {
-                            var helpSource=main.left-tabs.getActiveTab().helpSource;
+                            var helpSource=main.leftTabs.getActiveTab().helpSource;
                             main.openHelp(helpSource);
                         }
 					},{
@@ -287,11 +287,11 @@ Ung.Main.prototype = {
         });
         Ext.QuickTips.init();
 
-        main.system-stats=new Ung.SystemStats({});
+        main.systemStats=new Ung.SystemStats({});
 
         Ext.getCmp("west").on("resize", function() {
             var newHeight=Math.max(this.getEl().getHeight()-175,100);
-            main.left-tabs.setHeight(newHeight);
+            main.leftTabs.setHeight(newHeight);
         });
         Ext.getCmp("west").fireEvent("resize");
         buttonCmp=new Ext.Button({
@@ -666,10 +666,10 @@ Ung.Main.prototype = {
         }.createDelegate(this), rpc.currentPolicy);
     },
 
-    installNode: function(mackageDesc, app-item) {
+    installNode: function(mackageDesc, appItem) {
         if(mackageDesc!==null) {
         	if(main.getNode(mackageDesc.name)!=null) {
-        		app-item.hide();
+        		appItem.hide();
         		return;
         	}
             Ung.AppItem.updateState(mackageDesc.displayName, "installing");
@@ -732,7 +732,7 @@ Ung.Main.prototype = {
         var out=[];
         for(var i=0;i<this.config.length;i++) {
             var item=this.config[i];
-            var app-itemCmp=new Ung.ConfigItem({
+            var appItemCmp=new Ung.ConfigItem({
             	item:item
             });
         }

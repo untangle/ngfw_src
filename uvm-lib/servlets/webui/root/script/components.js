@@ -456,7 +456,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     autoEl : 'div',
     state : null,
     // buy button
-    button-buy : null,
+    buttonBuy : null,
     // progress bar component
     progressBar : null,
     subCmps:null,
@@ -522,8 +522,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             }
         });
 
-        this.button-buy = Ext.get("button-buy_" + this.getId());
-        this.button-buy.setVisible(false);
+        this.buttonBuy = Ext.get("button-buy_" + this.getId());
+        this.buttonBuy.setVisible(false);
         this.actionEl = Ext.get("action_" + this.getId());
         this.progressBar.hide();
         if(this.libItem!=null && this.node==null) { // libitem
@@ -537,11 +537,11 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             this.actionEl.insertHtml("afterBegin", this.libItem==null?i18n._("Install"):i18n._("Trial Install"));
             this.actionEl.addClass("icon-arrow-right");
             if(this.libItem!=null) { // libitem and trial node
-                this.button-buy.setVisible(true);
-                this.button-buy.insertHtml("afterBegin", i18n._("Buy"));
-                this.button-buy.on("click", this.linkToStoreFn, this);
-                this.button-buy.addClass("button-buy");
-                this.button-buy.addClass("icon-arrow-down");
+                this.buttonBuy.setVisible(true);
+                this.buttonBuy.insertHtml("afterBegin", i18n._("Buy"));
+                this.buttonBuy.on("click", this.linkToStoreFn, this);
+                this.buttonBuy.addClass("button-buy");
+                this.buttonBuy.addClass("icon-arrow-down");
             }
         } else {
             return;
@@ -602,7 +602,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // before Destroy
     beforeDestroy : function() {
         this.actionEl.removeAllListeners();
-        this.button-buy.removeAllListeners();
+        this.buttonBuy.removeAllListeners();
         this.progressBar.reset(true);
         this.progressBar.destroy();
         Ext.each(this.subCmps, Ext.destroy);
@@ -612,14 +612,14 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // display Buttons xor Progress barr
     displayButtonsOrProgress : function(displayButtons) {
         this.actionEl.setVisible(displayButtons);
-        this.button-buy.setVisible(displayButtons);
+        this.buttonBuy.setVisible(displayButtons);
         if (displayButtons) {
             this.getEl().unmask();
-            this.button-buy.unmask();
+            this.buttonBuy.unmask();
             this.progressBar.reset(true);
         } else {
             this.getEl().mask();
-            this.button-buy.mask();
+            this.buttonBuy.mask();
             this.progressBar.show();
         }
     },
@@ -759,7 +759,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     // --------------------------------
     hasPowerButton: null,
     // node state
-    state : null, // On, Off, Attention, Stopped
+    state : null, // on, off, attention, stopped
     // is powered on,
     powerOn : null,
     // running state
@@ -773,8 +773,8 @@ Ung.Node = Ext.extend(Ext.Component, {
     settingsClassName : null,
     // last blinger data received
     stats : null,
-    activity-blinger: null,
-    system-blinger: null,
+    activityBlinger: null,
+    systemBlinger: null,
     subCmps : null,
     fnCallback: null,
     constructor : function(config) {
@@ -806,7 +806,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         this.getEl().set({
             'name' : this.md.displayName
         });
-        var node-buttons=[{
+        var nodeButtons=[{
             xtype: "button",
             name : "Show Settings",
             iconCls : 'node-settings-icon',
@@ -825,7 +825,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 
         }];
         if(this.licenseStatus && this.licenseStatus.trial) {
-            node-buttons.push({
+            nodeButtons.push({
                 xtype: "button",
                 name : "Buy",
                 iconCls : 'icon-buy',
@@ -838,7 +838,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             'id' : this.getId(),
             'image' : this.image,
             'displayName' : this.md.displayName,
-            'node-powerCls': this.hasPowerButton?(this.licenseStatus && this.licenseStatus.trial && this.licenseStatus.expired)?"node-power-expired":"node-power":"",
+            'nodePowerCls': this.hasPowerButton?(this.licenseStatus && this.licenseStatus.trial && this.licenseStatus.expired)?"node-power-expired":"node-power":"",
             'trialInfo' : this.getTrialInfo()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
@@ -853,7 +853,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             layoutConfig: {
                 columns: 3
             },
-            buttons : node-buttons
+            buttons : nodeButtons
         });
         this.subCmps.push(buttonsPanel);
         if(this.hasPowerButton) {
@@ -887,7 +887,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     setState : function(state) {
         this.state = state;
         if(this.hasPowerButton) {
-            document.getElementById('node-state_' + this.getId()).className = "node-state iconState" + this.state;
+            document.getElementById('node-state_' + this.getId()).className = "node-state icon-state-" + this.state;
         }
     },
     setPowerOn : function(powerOn) {
@@ -897,26 +897,26 @@ Ung.Node = Ext.extend(Ext.Component, {
         this.runState = runState;
         var isRunning = this.isRunning();
         this.setPowerOn(isRunning);
-        this.setState(isRunning ? "On" : "Off");
+        this.setState(isRunning ? "on" : "off");
     },
     updateBlingers : function() {
         if (this.powerOn && this.stats) {
-            if(this.activity-blinger!=null) {
-                this.activity-blinger.update(this.stats);
+            if(this.activityBlinger!=null) {
+                this.activityBlinger.update(this.stats);
             }
-            if(this.system-blinger!=null) {
-                this.system-blinger.update(this.stats);
+            if(this.systemBlinger!=null) {
+                this.systemBlinger.update(this.stats);
             }
         } else {
             this.resetBlingers();
         }
     },
     resetBlingers : function() {
-        if(this.activity-blinger!=null) {
-            this.activity-blinger.reset();
+        if(this.activityBlinger!=null) {
+            this.activityBlinger.reset();
         }
-        if(this.system-blinger!=null) {
-            this.system-blinger.reset();
+        if(this.systemBlinger!=null) {
+            this.systemBlinger.reset();
         }
     },
     onPowerClick : function() {
@@ -927,12 +927,12 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
     },
     start : function () {
-        if(this.state=="Attention") {
+        if(this.state=="attention") {
             return
         }
         this.loadNodeContext(function() {
             this.setPowerOn(true);
-            this.setState("Attention");
+            this.setState("attention");
             this.nodeContext.rpcNode.start(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {
                    //this.updateRunState("INITIALIZED");
@@ -941,12 +941,12 @@ Ung.Node = Ext.extend(Ext.Component, {
         }.createDelegate(this));
     },
     stop : function () {
-        if(this.state=="Attention") {
+        if(this.state=="attention") {
             return
         }
         this.loadNodeContext(function() {
             this.setPowerOn(false);
-            this.setState("Attention");
+            this.setState("attention");
             this.nodeContext.rpcNode.stop(function(result, exception) {
                 //this.updateRunState("INITIALIZED");
                 this.resetBlingers();
@@ -965,9 +965,9 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     //on Buy Now Action
     onBuyNowAction :function(){
-        var app-item=Ung.AppItem.getApp(this.md.displayName);
-        if(app-item!=null) {
-            app-item.linkToStoreFn();
+        var appItem=Ung.AppItem.getApp(this.md.displayName);
+        if(appItem!=null) {
+            appItem.linkToStoreFn();
         }
     },
     getNodeContext: function(handler) {
@@ -1085,7 +1085,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                 if (this.settingsWin) {
                     this.settingsWin.cancelAction();
                 }
-                this.setState("Attention");
+                this.setState("attention");
                 this.getEl().mask();
                 rpc.nodeManager.destroy(function(result, exception) {
                     if(Ung.Util.handleException(exception, function() {
@@ -1114,12 +1114,12 @@ Ung.Node = Ext.extend(Ext.Component, {
     initBlingers : function() {
         if (this.blingers !== null) {
             if(this.blingers.activityDescs!=null && this.blingers.activityDescs.list.length>0) {
-                this.activity-blinger=new Ung.ActivityBlinger({
+                this.activityBlinger=new Ung.ActivityBlinger({
                    parentId : this.getId(),
                    bars: this.blingers.activityDescs.list
                 });
-                this.activity-blinger.render('node-blingers_' + this.getId());
-                this.subCmps.push(this.activity-blinger);
+                this.activityBlinger.render('node-blingers_' + this.getId());
+                this.subCmps.push(this.activityBlinger);
             }
             var dispMetricDescs=[];
             if(this.blingers.metricDescs!=null) {
@@ -1131,12 +1131,12 @@ Ung.Node = Ext.extend(Ext.Component, {
             }
             this.blingers.dispMetricDescs=dispMetricDescs;
             if(this.blingers.dispMetricDescs.length>0) {
-                this.system-blinger=new Ung.SystemBlinger({
+                this.systemBlinger=new Ung.SystemBlinger({
                    parentId : this.getId(),
                    metric: this.blingers.dispMetricDescs
                 });
-                this.system-blinger.render('node-blingers_' + this.getId());
-                this.subCmps.push(this.system-blinger);
+                this.systemBlinger.render('node-blingers_' + this.getId());
+                this.subCmps.push(this.systemBlinger);
             }
         }
     },
@@ -1192,7 +1192,7 @@ Ung.Node.template = new Ext.Template('<div class="node-image"><img src="{image}"
     '<div class="node-trial-info">{trialInfo}</div>',
     '<div class="node-blingers" id="node-blingers_{id}"></div>',
     '<div class="node-state" id="node-state_{id}" name="State"></div>',
-    '<div class="{node-powerCls}" id="node-power_{id}" name="Power"></div>',
+    '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
     '<div class="node-buttons" id="node-buttons_{id}"></div>');
 
 // Message Manager object
@@ -1268,7 +1268,7 @@ Ung.MessageManager = {
                         if(msg.javaClass.indexOf("NodeStateChange") >= 0) {
                             var node=Ung.Node.getCmp(msg.nodeDesc.tid.id);
                             if(node!=null) {
-                                node.updateRunState(msg.node-state);
+                                node.updateRunState(msg.nodeState);
                             }
                         }else if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
                             if(!msg.installed) {
@@ -1290,37 +1290,37 @@ Ung.MessageManager = {
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
-                            var app-itemDisplayName=msg.requestingMackage.displayName;
-                            Ung.AppItem.updateState(app-itemDisplayName, null);
+                            var appItemDisplayName=msg.requestingMackage.displayName;
+                            Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                             main.loadLicenseStatus();
                         } else {
                             if(msg.upgrade==false) {
-                                var app-itemDisplayName=msg.requestingMackage.displayName;
+                                var appItemDisplayName=msg.requestingMackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     this.resetErrorTolerance();
-                                    Ung.AppItem.updateState(app-itemDisplayName, "download");
+                                    Ung.AppItem.updateState(appItemDisplayName, "download");
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
                                     this.resetErrorTolerance();
-                                    Ung.AppItem.updateState(app-itemDisplayName, "download_progress", msg);
+                                    Ung.AppItem.updateState(appItemDisplayName, "download_progress", msg);
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                     this.resetErrorTolerance();
                                     if(msg.success) {
-                                       Ung.AppItem.updateState(app-itemDisplayName, "download");
+                                       Ung.AppItem.updateState(appItemDisplayName, "download");
                                     } else {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),app-itemDisplayName));
-                                        Ung.AppItem.updateState(app-itemDisplayName);
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemDisplayName));
+                                        Ung.AppItem.updateState(appItemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                     this.resetErrorTolerance();
                                     if(msg.success) {
-                                       Ung.AppItem.updateState(app-itemDisplayName, "installing");
+                                       Ung.AppItem.updateState(appItemDisplayName, "installing");
                                     } else {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),app-itemDisplayName));
-                                        Ung.AppItem.updateState(app-itemDisplayName);
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),appItemDisplayName));
+                                        Ung.AppItem.updateState(appItemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
-                                    Ung.AppItem.updateState(app-itemDisplayName, "activate_timeout");
+                                    Ung.AppItem.updateState(appItemDisplayName, "activate_timeout");
                                 }
                             } else if(msg.upgrade==true) {
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
@@ -1352,7 +1352,7 @@ Ung.MessageManager = {
                                     this.resetErrorTolerance();
                                     this.upgradesComplete++;
                                     if(!msg.success) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),app-itemDisplayName));
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemDisplayName));
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                     this.resetErrorTolerance();
@@ -1390,7 +1390,7 @@ Ung.MessageManager = {
                 }
                 if(!Ung.MessageManager.upgradeMode) {
                     // update system stats
-                    main.system-stats.update(messageQueue.system-stats)
+                    main.systemStats.update(messageQueue.systemStats)
                     // upgrade nodes blingers
                     for (var i = 0; i < main.nodes.length; i++) {
                         var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
@@ -1618,7 +1618,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
         this.getEl().addClass("activity-blinger")
         var templateHTML = Ung.ActivityBlinger.template.applyTemplate({
             'id' : this.getId(),
-            'blinger-name' : i18n._("activity")
+            'blingerName' : i18n._("activity")
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
         this.lastValues = [];
@@ -1665,7 +1665,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
     }
 
 });
-Ung.ActivityBlinger.template = new Ext.Template('<div class="blinger-name">{blinger-name}</div>',
+Ung.ActivityBlinger.template = new Ext.Template('<div class="blinger-name">{blingerName}</div>',
         '<div class="activity-blinger-box" id="blingerBox_{id}"></div>');
 Ung.ActivityBlinger.decayFactor = Math.pow(0.94, Ung.MessageManager.updateTime / 1000);
 Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
@@ -1699,7 +1699,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         this.getEl().addClass("system-blinger")
         var templateHTML = Ung.SystemBlinger.template.applyTemplate({
             'id' : this.getId(),
-            'blinger-name' : i18n._("system")
+            'blingerName' : i18n._("system")
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
 
@@ -1896,7 +1896,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         }
 }
 });
-Ung.SystemBlinger.template = new Ext.Template('<div class="blinger-name">{blinger-name}</div>',
+Ung.SystemBlinger.template = new Ext.Template('<div class="blinger-name">{blingerName}</div>',
         '<div class="system-blinger-box" id="blingerBox_{id}"></div>',
         '<div class="systemStatSettings" id="systemStatSettings_{id}"></div>');
 Ext.ComponentMgr.registerType('ungSystemBlinger', Ung.SystemBlinger);
