@@ -69,7 +69,7 @@
 </c:if>
 	<script type="text/javascript">
         var debugMode=${isDebug};
-        var storeWindowName='store-window-${storeWindowId}';
+        var storeWindowName='store_window_${storeWindowId}';
 		function init() {
 			main=new Ung.Main();
 			main.init();

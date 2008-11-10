@@ -339,19 +339,19 @@ Ung.Main.prototype = {
         query += "&action="+action;
 
         var url = "../library/launcher?" + query;
-        var w = window.open( url, storeWindowName, "location=0" );
+        var w = window.open( url, storeWindowName, "location=0, resizable=1" );
         if ( w ) w.focus();
     },
     openStoreToLibItem : function (libItemName, title) {
         var currentLocation = window.location;
-        var query = "&host=" + currentLocation.hostname;
+        var query = "host=" + currentLocation.hostname;
         query += "&port=" + currentLocation.port;
         query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
         query += "&action=browse";
         query += "&libitem=" + libItemName;
 
         var url = "../library/launcher?" + query;
-        var w = window.open( url, storeWindowName, "location=0" );
+        var w = window.open( url, storeWindowName, "location=0, resizable=1" );
         if ( w ) w.focus();
     },
     
