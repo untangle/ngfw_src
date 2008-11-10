@@ -414,8 +414,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         
         /* Make a synchronous request */
         Exception e = retryAlpacaCall( "wizard_internal_interface_nat", null,
-                                       address.toString(), netmask.toString(),
-                                       enableDhcpServer );
+                                       address.toString(), netmask.toString(), enableDhcpServer );
 
         if ( e != null ) {
             logger.warn( "unable to setup system for NAT in wizard.", e );
@@ -742,9 +741,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
                     Thread.sleep( ALPACA_RETRY_DELAY_MS );
                 }
 
-                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
-                                                     "wizard_internal_interface_nat", callback,
-                                                     params );
+                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, method, callback, params );
 
                 return null;
             } catch ( XmlRpcException e ) {
