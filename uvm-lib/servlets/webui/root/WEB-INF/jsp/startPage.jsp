@@ -68,7 +68,8 @@
     <script type="text/javascript" src="script/config/policyManager.js"></script>
 </c:if>
 	<script type="text/javascript">
-        var debugMode=<c:out value="${isDebug}"/>;
+        var debugMode=${isDebug};
+        var storeWindowName='store-window-${storeWindowId}';
 		function init() {
 			main=new Ung.Main();
 			main.init();

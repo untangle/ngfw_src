@@ -128,7 +128,7 @@ Ung.Main.prototype = {
     },
     postinit: function() {
         this.initSemaphore--;
-        if(this.initSemaphore!==0) {
+        if(this.initSemaphore!=0) {
             return;
         }
        	this.startApplication()
@@ -339,10 +339,8 @@ Ung.Main.prototype = {
         query += "&action="+action;
 
         var url = "../library/launcher?" + query;
-        var iframeWin = main.getIframeWin();
-        iframeWin.show();
-        iframeWin.setTitle(title);
-        window.frames["iframeWin_iframe"].location.href = url;
+        var w = window.open( url, storeWindowName, "location=0" );
+        if ( w ) w.focus();
     },
     openStoreToLibItem : function (libItemName, title) {
         var currentLocation = window.location;
@@ -353,10 +351,8 @@ Ung.Main.prototype = {
         query += "&libitem=" + libItemName;
 
         var url = "../library/launcher?" + query;
-        var iframeWin = main.getIframeWin();
-        iframeWin.show();
-        iframeWin.setTitle(title);
-        window.frames["iframeWin_iframe"].location.href = url;
+        var w = window.open( url, storeWindowName, "location=0" );
+        if ( w ) w.focus();
     },
     
     initExtI18n: function(){

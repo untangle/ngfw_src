@@ -1,6 +1,7 @@
 package com.untangle.uvm.webui.servlet;
 
 import java.io.IOException;
+import java.util.Random;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -19,6 +20,9 @@ import com.untangle.uvm.LocalUvmContextFactory;
  */
 public class StartPageServlet extends HttpServlet
 {
+    /* ??? Perhaps this should live in a global place. */
+    private static final int STORE_WINDOW_ID = new Random().nextInt();
+
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
@@ -28,6 +32,8 @@ public class StartPageServlet extends HttpServlet
         BrandingBaseSettings bbs = LocalUvmContextFactory.context().remoteContext().
             brandingManager().getBaseSettings();
         req.setAttribute( "bbs", bbs );
+        req.setAttribute( "storeWindowId", STORE_WINDOW_ID );
         rd.forward(req, resp);
     }
+
 }
