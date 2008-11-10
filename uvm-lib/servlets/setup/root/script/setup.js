@@ -1290,6 +1290,8 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
 Ung.SetupWizard.Email = Ext.extend( Object, {
     constructor : function( config )
     {
+        this.isAdvanced = false;
+
         this.panel = new Ext.FormPanel({
             defaultType : 'textfield',
             defaults : {
@@ -1312,33 +1314,18 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 handler : this.emailTest.createDelegate( this ),
                 iconCls : ' email-tester',
                 cls : 'spacing-margin-1 email-tester'
-            },
-            
-            /*
-            {
-                name : 'advanced',
-                xtype : 'checkbox',
-                ctCls : 'spacing-margin-2',
-                hideLabel : true,
-                value : false,
-                boxLabel : i18n._("Advanced Email Configuration."),
-                listeners : {
-                    check : {
-                        fn : function( checkbox, enabled ) {
-                            this.onSetMode( enabled );
-                        }.createDelegate( this )
-                    }
-                }
-            },
-                    */
-            {   
+            },{
                 name:'advanced',
                 xtype:'fieldset',
                 title:i18n._("Advanced Email Configuration"),
-                collapsible:true,
-                collapsed:true,
-                autoHeight:true,
-                items:[{
+                collapsible : true,
+                collapsed : !this.isAdvanced,
+                autoHeight : true,
+                listeners : {
+                    beforecollapse : this.onBeforeCollapse.createDelegate( this ),
+                    beforeexpand : this.onBeforeExpand.createDelegate( this )
+                },
+                items : [{
                     name : 'from-address',
                     xtype : "fieldset",
                     autoHeight:true,
@@ -1467,7 +1454,6 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         field = this.panel.find( "name", "smtp-server-password" )[0];
         this.authArray.push( field );
 
-        //this.onSetMode( false );
         this.onSetSendDirectly( true );
 
         this.emailTester = new Ung.SetupWizard.EmailTester();
@@ -1504,7 +1490,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
     validateEmailConfiguration : function()
     {
 	var rv = true;
-	if(this.panel.find('name','advanced')[0].getValue()){//advanced email config checked
+	if(this.isAdvanced){//advanced email config checked
 	    if(!_validate(this.panel.find('name','from-address')[0].items.items)) {
                 rv = !rv;
             }
@@ -1522,16 +1508,6 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
 	}
         
 	return rv;	
-    },
-    onSetMode : function( isAdvanced )
-    {	
-	var length = this.advancedArray.length;
-        for ( var c = 0 ; c < length ; c++ ) {
-            this.advancedArray[c].setDisabled( !isAdvanced );
-	    if(!isAdvanced){
-		_invalidate(this.advancedArray[c].items.items);
-	    }		
-        }
     },
 
     onSetSendDirectly : function( isSendDirectly )
@@ -1558,6 +1534,18 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
 	}		
     },
 
+    onBeforeCollapse : function( panel, animate )
+    {
+        this.isAdvanced = false;
+      	return true;
+    },
+
+    onBeforeExpand : function( panel, animate )
+    {
+        this.isAdvanced = true;
+       	return true;
+    },
+
     saveSettings : function( handler )
     {
         Ext.MessageBox.wait( i18n._( "Saving Email Settings" ), i18n._( "Please wait" ));
@@ -1570,7 +1558,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         settings.authUser = "";
         settings.authPass = "";
 
-        if ( this.panel.find( "name", "advanced" )[0].getValue()) {
+        if ( this.isAdvanced ) {
             settings.fromAddress = this.panel.find( "name", "from-address-textfield" )[0].getValue();
             
             if ( this.panel.find( "name", "smtp-send-directly" )[0].getGroupValue() == "smtp-server" ) {
