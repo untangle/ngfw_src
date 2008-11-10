@@ -401,39 +401,35 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
 
     public void setWizardNatEnabled( IPaddr address, IPaddr netmask, boolean enableDhcpServer )
+        throws NetworkException
     {
-        try{
-            logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
-            logger.debug( "use-dhcp: " + enableDhcpServer );
-            
-            /* Make a synchronous request */
-            try {
-                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
-                                                     "wizard_internal_interface_nat", null,
-                                                     address.toString(), netmask.toString(),
-                                                     enableDhcpServer );
-            } catch ( Exception e ) {
-                logger.warn( "Unable to enable NAT.", e );
-            }
-        }
-        catch(Exception e){
-            logger.error( "Error setting up NAT in wizard", e );
+        logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
+        logger.debug( "use-dhcp: " + enableDhcpServer );
+        
+        /* Make a synchronous request */
+        try {
+            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
+                                                 "wizard_internal_interface_nat", null,
+                                                 address.toString(), netmask.toString(),
+                                                 enableDhcpServer );
+        } catch(Exception e) {
+            logger.warn( "Error setting up NAT in wizard", e );
+            throw new NetworkException( "Unable to enable nat settings.", e );
         }
     }
 
-    public void setWizardNatDisabled()
+    public void setWizardNatDisabled() throws NetworkException
     {
-        logger.debug( "disabling nat as requested by setup wizard: " );
+        logger.debug( "disabling nat in setup wizard: " );
 
         /* Make a synchronous request */
         try {
             XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
                                                  "wizard_internal_interface_bridge", null );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to disable NAT for wizard", e );
+        }  catch ( Exception e ) {
+            logger.warn( "Unable to disable NAT in wizard", e );
+            throw new NetworkException( "Unable to disable NAT.", e );            
         }
-
-        // We no longer uninstall the router if nat is disabled.
     }
 
     /* Returns true if address is local to the edgeguard */
