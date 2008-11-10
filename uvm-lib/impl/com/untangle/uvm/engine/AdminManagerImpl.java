@@ -46,6 +46,7 @@ import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
 import com.untangle.uvm.util.FormUtil;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.node.util.SimpleExec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -330,10 +331,29 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
         }
     }
 
+    public static String getFullVersionAndRevision()
+    {
+	try {
+	    SimpleExec.SimpleExecResult result = SimpleExec.exec(
+								 "/usr/share/untangle/bin/version_newest.sh",
+								 null,
+								 null,
+								 null,
+								 true,
+								 true,
+								 1000*20);
+	    
+	    if(result.exitCode==0) {
+		return new String(result.stdOut);
+	    }
+	} catch (Exception e) { }
+	return "";
+    }
+
     public SystemInfo getSystemInfo()
     {
         String activationKey = uvmContext.getActivationKey();
-        String fullVersion = uvmContext.getFullVersion();
+        String fullVersion = getFullVersionAndRevision();
         String javaVersion = System.getProperty("java.version");
 
         return new SystemInfo(activationKey, fullVersion, javaVersion);
