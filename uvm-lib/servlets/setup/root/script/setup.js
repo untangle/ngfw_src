@@ -1479,7 +1479,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         if ( !this.isInitialized ) {
             var hostname = Ung.SetupWizard.CurrentValues.addressSettings.hostName;
             if ( hostname == null ) hostname = "example.com";
-            this.panel.find( "name", "from-address-textfield" )[0].setValue( "gateway@" + hostname );
+            this.panel.find( "name", "from-address-textfield" )[0].setValue( "untangle@" + hostname );
         }
 
         this.isInitialized = true;
