@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.client.AsyncCallback;
+
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -65,6 +68,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
+
+    private static final long ALPACA_RETRY_COUNT = 3;
+    private static final long ALPACA_RETRY_DELAY_MS = 6000;
 
     /* A flag for devel environments, used to determine whether or not
      * the etc files actually are written, this enables/disables reconfiguring networking */
@@ -390,9 +396,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
 
         /* Make a synchronous request */
-        try {
-            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, method, null, args );
-        } catch ( Exception e ) {
+        Exception e = retryAlpacaCall( method, null, args );
+        if ( e != null ) {
+            logger.warn( "Unable to configure the external interface.", e );
             throw new NetworkException( "Unable to configure the external interface.", e );
         }
 
@@ -407,13 +413,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
         logger.debug( "use-dhcp: " + enableDhcpServer );
         
         /* Make a synchronous request */
-        try {
-            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
-                                                 "wizard_internal_interface_nat", null,
-                                                 address.toString(), netmask.toString(),
-                                                 enableDhcpServer );
-        } catch(Exception e) {
-            logger.warn( "Error setting up NAT in wizard", e );
+        Exception e = retryAlpacaCall( "wizard_internal_interface_nat", null,
+                                       address.toString(), netmask.toString(),
+                                       enableDhcpServer );
+
+        if ( e != null ) {
+            logger.warn( "unable to setup system for NAT in wizard.", e );
             throw new NetworkException( "Unable to enable nat settings.", e );
         }
     }
@@ -423,12 +428,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
         logger.debug( "disabling nat in setup wizard: " );
 
         /* Make a synchronous request */
-        try {
-            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
-                                                 "wizard_internal_interface_bridge", null );
-        }  catch ( Exception e ) {
+        Exception e = retryAlpacaCall( "wizard_internal_interface_bridge", null );
+        if ( e != null ) {
             logger.warn( "Unable to disable NAT in wizard", e );
-            throw new NetworkException( "Unable to disable NAT.", e );            
+            throw new NetworkException( "Unable to disable NAT.", e );
         }
     }
 
@@ -726,6 +729,38 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         IPaddr address = internal.getPrimaryAddress().getNetwork();
         this.internalAddress = address.getAddr();
+    }
+
+    /* Retry a call to the alpaca in case it was restarted. */
+    private Exception retryAlpacaCall( String method, AsyncCallback callback, Object ... params )
+    {
+        /* Make a synchronous request */
+        for ( int c = 0 ; c < ALPACA_RETRY_COUNT ; c++ ) {
+            try {
+                if ( c != 0 ) {
+                    logger.warn( "sleeping then, retrying connection to alpaca." );
+                    Thread.sleep( ALPACA_RETRY_DELAY_MS );
+                }
+
+                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM,
+                                                     "wizard_internal_interface_nat", callback,
+                                                     params );
+
+                return null;
+            } catch ( XmlRpcException e ) {
+                String message = e.getMessage();
+                /* XXX Reading the message is not a valid way to test exceptions XXX */
+                if ( message != null && message.contains( "Connection refused" )) {
+                    logger.warn( "unable to communicate with the alpaca." );
+                    continue;
+                }
+                return e;
+            } catch(Exception e) {
+                return e;
+            }            
+        }
+
+        return null;
     }
 
     /* Create a networking manager, this is a first come first serve
