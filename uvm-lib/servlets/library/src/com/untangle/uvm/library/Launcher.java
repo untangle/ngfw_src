@@ -59,10 +59,13 @@ public class Launcher extends HttpServlet
     {
         try {
 
-        // Special workaround for Java6 JNLP showDocument() bug.  Our bug 4419.
-        String userAgent = request.getHeader(HTTP_USER_AGENT);
-        if (userAgent != null && userAgent.startsWith("JNLP"))
-        response.setHeader(HTTP_CONTENT_TYPE, "text/html");
+	    // Special workaround for Java6 JNLP showDocument() bug.  Our bug 4419.
+	    String userAgent = request.getHeader(HTTP_USER_AGENT);
+	    if (userAgent != null && userAgent.startsWith("JNLP"))
+		response.setHeader(HTTP_CONTENT_TYPE, "text/html");
+
+	    if (logger.isDebugEnabled())
+		logger.debug("req: " + request.getRequestURI() + "?" + request.getQueryString());
 
             URL redirect;
             String action = request.getParameter( FIELD_ACTION );
@@ -149,22 +152,23 @@ public class Launcher extends HttpServlet
             String v = request.getParameter( FIELD_PORT );
             if ( v != null ) port = Integer.valueOf( v );
         } catch ( Exception e ) {
-            logger.warn( "Request is missing the host, using the request[" + port + "]" );
+            logger.info( "Request has malformed port request[" +
+			 request.getParameter( FIELD_PORT ) + "]" );
         }
 
         if ( protocol == null ) {
             protocol = request.getScheme();
-            logger.warn( "Request is missing the protocol, using the request[" + protocol + "]" );
+            logger.info( "Request is missing the protocol, using the protocol[" + protocol + "]" );
         }
 
         if ( host == null ) {
             host = request.getServerName();
-            logger.warn( "Request is missing the host, using the request[" + host + "]" );
+            logger.info( "Request is missing the host, using the host[" + host + "]" );
         }
 
         if ( port == null ) {
             port = request.getServerPort();
-            logger.warn( "Request is missing the host, using the request[ " + port + "]" );
+            logger.info( "Request is missing the port, using the port[ " + port + "]" );
         }
 
         String query = "boxkey=" + URLEncoder.encode( context.getActivationKey());
