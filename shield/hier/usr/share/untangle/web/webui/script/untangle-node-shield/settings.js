@@ -22,7 +22,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 helpSource : 'status',
                 layout : "form",
                 autoScroll : true,
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 items : [{
                     xtype : 'fieldset',
                     title : this.i18n._('Statistics'),

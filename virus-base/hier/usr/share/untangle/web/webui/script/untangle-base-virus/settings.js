@@ -29,7 +29,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
 
                 title : this.i18n._('Web'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -329,7 +329,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
 
                 title : this.i18n._('FTP'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -416,7 +416,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 	autoScroll: true,
                     buttonAlign : 'left'
                 },
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 items : [{
                 	layout:'column',

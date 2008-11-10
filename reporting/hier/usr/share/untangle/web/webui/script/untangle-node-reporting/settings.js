@@ -46,7 +46,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 helpSource : 'status',
                 layout : "form",
                 autoScroll : true,
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 items: [{
                     title : this.i18n._('Status'),
                     xtype : 'fieldset',
@@ -59,7 +59,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             xtype : 'button',
                             text : this.i18n._('View Reports'),
                             name : 'View Reports',
-                            iconCls : 'actionIcon',
+                            iconCls : 'action-icon',
                             handler : function() {
                                 var viewReportsUrl = "../reports/";
                                 var breadcrumbs = [{
@@ -87,7 +87,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             xtype : 'button',
                             text : this.i18n._('Archived Reports'),
                             name : 'Archived Reports',
-                            iconCls : 'actionIcon',
+                            iconCls : 'action-icon',
                             handler : function() {
                                 var viewReportsUrl = "../reports/archive";
                                 var breadcrumbs = [{
@@ -174,7 +174,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Generation'),
                 layout : "anchor",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                 	anchor: "98%",

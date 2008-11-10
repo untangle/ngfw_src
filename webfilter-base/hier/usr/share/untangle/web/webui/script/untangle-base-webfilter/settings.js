@@ -29,7 +29,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 
                 title : this.i18n._('Block Lists'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -301,7 +301,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     fieldLabel : this.i18n._("Category"),
                     allowBlank : false,
                     width : 200,
-                    ctCls: "fixedPos"
+                    ctCls: "fixed-pos"
                 }), new Ext.form.Checkbox({
                     name : "Block",
                     dataIndex : "block",

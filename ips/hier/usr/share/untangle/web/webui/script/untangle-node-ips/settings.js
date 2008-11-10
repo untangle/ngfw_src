@@ -26,7 +26,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 
                 title : this.i18n._('Status'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -93,7 +93,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     autoWidth: true,
                     autoScroll: true
                 },
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 items : [this.gridRules = new Ung.EditorGrid({
 		                name : 'Rules',
 		                settingsCmp : this,

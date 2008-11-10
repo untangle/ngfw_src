@@ -40,7 +40,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 },
                 autoScroll : true,
                 border : false,
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 items : [this.gridRules = new Ung.EditorGrid({
                         name : 'Rules',
                         settingsCmp : this,

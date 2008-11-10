@@ -75,7 +75,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Version'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 items : [{
                     title : this.i18n._('System Info'),
@@ -136,7 +136,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         msgTarget : 'side'
                     },
                     items : [{
-                        fieldLabel : '<span class="requiredstar">*</span>'+this.i18n._('Email'),
+                        fieldLabel : '<span class="required-star">*</span>'+this.i18n._('Email'),
                         name : 'emailAddr',
                         width : 200,
                         allowBlank : false,
@@ -149,7 +149,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         xtype : 'numberfield',
                         minValue : 0,
                         allowDecimals : false,
-                        fieldLabel : '<span class="requiredstar">*</span>'+this.i18n._('Number of PCs on your network'),
+                        fieldLabel : '<span class="required-star">*</span>'+this.i18n._('Number of PCs on your network'),
                         name : 'numSeats',
                         value : info.numSeats,
                         allowBlank : false	
@@ -182,8 +182,8 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     }]
                 },{
                     xtype : 'label',
-                    html : this.i18n._( '<span class="requiredstar">*</span> Required' ),
-                    cls : 'requiredInfo'
+                    html : this.i18n._( '<span class="required-star">*</span> Required' ),
+                    cls : 'required-info'
                 }]
             });
         },
@@ -193,7 +193,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 helpSource : 'license_agreement',
                 parentId : this.getId(),
                 title : this.i18n._('License Agreement'),
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 items: [ new Ext.form.TextArea({
                     name : 'License Agreement',
                     hideLabel : true,

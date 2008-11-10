@@ -152,7 +152,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Outgoing Server'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 
                 onEmailTest : function(saveBefore) {
@@ -340,7 +340,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     },{
                     	xtype : 'button',
                         text : this.i18n._("Email Test"),
-                        iconCls : 'testIcon',
+                        iconCls : 'test-icon',
                         name: "emailTestButton",
                         handler : function() {
                             var mailSettingsChanged = this.initialMailSettings.useMxRecords != this.getMailSettings().useMxRecords 
@@ -387,7 +387,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             var showDetailColumn = new Ext.grid.IconColumn({
                 header : this.i18n._("Show Detail"),
                 width : 100,
-                iconClass : 'iconDetailRow',
+                iconClass : 'icon-detail-row',
                 handle : function(record, index) {
                     // select current row
                     this.grid.getSelectionModel().selectRow(index);
@@ -403,7 +403,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 parentId : this.getId(),
                 title : this.i18n._('From-Safe List'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 items : [this.gridSafelistGlobal = new Ung.EditorGrid({
                         name : 'Global',
@@ -461,7 +461,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         tbar : [{
                             text : this.i18n._('Purge Selected'),
                             tooltip : this.i18n._('Purge Selected'),
-                            iconCls : 'purgeIcon',
+                            iconCls : 'purge-icon',
                             name : 'Purge Selected',
                             parentId : this.getId(),
                             handler : function() {
@@ -551,7 +551,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 tbar : [{
                     text : this.i18n._('Purge Selected'),
                     tooltip : this.i18n._('Purge Selected'),
-                    iconCls : 'purgeIcon',
+                    iconCls : 'purge-icon',
                     name : 'Purge Selected',
                     parentId : this.getId(),
                     handler : function() {
@@ -598,7 +598,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             var showDetailColumn = new Ext.grid.IconColumn({
                 header : this.i18n._("Show Detail"),
                 width : 100,
-                iconClass : 'iconDetailRow',
+                iconClass : 'icon-detail-row',
                 handle : function(record, index) {
                     // select current row
                     this.grid.getSelectionModel().selectRow(index);
@@ -613,7 +613,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Quarantine'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -680,7 +680,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         tbar : [{
                             text : this.i18n._('Purge Selected'),
                             tooltip : this.i18n._('Purge Selected'),
-                            iconCls : 'purgeIcon',
+                            iconCls : 'purge-icon',
                             name : 'Purge Selected',
                             parentId : this.getId(),
                             handler : function() {
@@ -705,7 +705,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }, {
                             text : this.i18n._('Release Selected'),
                             tooltip : this.i18n._('Release Selected'),
-                            iconCls : 'releaseIcon',
+                            iconCls : 'release-icon',
                             name : 'Release Selected',
                             parentId : this.getId(),
                             handler : function() {
@@ -946,7 +946,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 tbar : [{
                     text : this.i18n._('Purge Selected'),
                     tooltip : this.i18n._('Purge Selected'),
-                    iconCls : 'purgeIcon',
+                    iconCls : 'purge-icon',
                     name : 'Purge Selected',
                     parentId : this.getId(),
                     handler : function() {
@@ -972,7 +972,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }, {
                     text : this.i18n._('Release Selected'),
                     tooltip : this.i18n._('Release Selected'),
-                    iconCls : 'releaseIcon',
+                    iconCls : 'release-icon',
                     name : 'Release Selected',
                     parentId : this.getId(),
                     handler : function() {
@@ -1231,14 +1231,14 @@ if (!Ung.hasResource["Ung.Email"]) {
         initComponent : function() {
             this.bbar= ['->',{
                 name : 'Cancel',
-                iconCls : 'cancelIcon',
+                iconCls : 'cancel-icon',
                 text : i18n._('Cancel'),
                 handler : function() {
                     this.cancelAction();
                 }.createDelegate(this)
             },'-',{
                 name : 'Help',
-                iconCls : 'iconHelp',
+                iconCls : 'icon-help',
                 text : this.settingsCmp.i18n._('Help'),
                 handler : function() {
                     this.settingsCmp.helpAction();

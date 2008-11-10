@@ -57,7 +57,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     autoScroll: true
                 },
                 autoScroll : true,
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 items : [{
                     xtype : 'fieldset',
                     title : this.i18n._('SMTP'),

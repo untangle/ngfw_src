@@ -423,7 +423,7 @@ Ung.ConfigItem = Ext.extend(Ext.Component, {
             'text' : this.item.displayName
         });
         this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
-        this.getEl().addClass("appItem");
+        this.getEl().addClass("app-item");
         this.getEl().on("click", this.onClick, this);
     },
     onClick: function(e) {
@@ -441,7 +441,7 @@ Ung.ConfigItem = Ext.extend(Ext.Component, {
     }
 });
 Ung.ConfigItem.template = new Ext.Template(
-    '<div class="icon"><div name="iconCls" class="{iconCls}"></div></div>', '<div class="text textCenter">{text}</div>');
+    '<div class="icon"><div name="iconCls" class="{iconCls}"></div></div>', '<div class="text text-center">{text}</div>');
 
 
 Ung.AppItem = Ext.extend(Ext.Component, {
@@ -456,7 +456,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     autoEl : 'div',
     state : null,
     // buy button
-    buttonBuy : null,
+    button-buy : null,
     // progress bar component
     progressBar : null,
     subCmps:null,
@@ -475,7 +475,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
            this.isValid=false;
            // error
         }
-        this.id = "appItem_" + name;
+        this.id = "app-item_" + name;
         Ung.AppItem.superclass.constructor.apply(this, arguments);
     },
     onRender : function(container, position) {
@@ -504,7 +504,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             'text' : this.item.displayName
         });
         this.getEl().insertHtml("afterBegin", Ung.AppItem.buttonTemplate.applyTemplate({content:html}));
-        this.getEl().addClass("appItem");
+        this.getEl().addClass("app-item");
 
         this.progressBar = new Ext.ProgressBar({
             text : '',
@@ -522,26 +522,26 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             }
         });
 
-        this.buttonBuy = Ext.get("buttonBuy_" + this.getId());
-        this.buttonBuy.setVisible(false);
+        this.button-buy = Ext.get("button-buy_" + this.getId());
+        this.button-buy.setVisible(false);
         this.actionEl = Ext.get("action_" + this.getId());
         this.progressBar.hide();
         if(this.libItem!=null && this.node==null) { // libitem
             this.getEl().on("click", this.linkToStoreFn, this);
             // this.actionEl.on("click", this.linkToStoreFn, this);
             this.actionEl.insertHtml("afterBegin", i18n._("More Info"));
-            this.actionEl.addClass("iconInfo");
+            this.actionEl.addClass("icon-info");
         } else if(this.node!=null) { // node
             this.getEl().on("click", this.installNodeFn, this);
             // this.actionEl.on("click", this.installNodeFn, this);
             this.actionEl.insertHtml("afterBegin", this.libItem==null?i18n._("Install"):i18n._("Trial Install"));
-            this.actionEl.addClass("iconArrowRight");
+            this.actionEl.addClass("icon-arrow-right");
             if(this.libItem!=null) { // libitem and trial node
-                this.buttonBuy.setVisible(true);
-                this.buttonBuy.insertHtml("afterBegin", i18n._("Buy"));
-                this.buttonBuy.on("click", this.linkToStoreFn, this);
-                this.buttonBuy.addClass("buttonBuy");
-                this.buttonBuy.addClass("iconArrowDown");
+                this.button-buy.setVisible(true);
+                this.button-buy.insertHtml("afterBegin", i18n._("Buy"));
+                this.button-buy.on("click", this.linkToStoreFn, this);
+                this.button-buy.addClass("button-buy");
+                this.button-buy.addClass("icon-arrow-down");
             }
         } else {
             return;
@@ -602,7 +602,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // before Destroy
     beforeDestroy : function() {
         this.actionEl.removeAllListeners();
-        this.buttonBuy.removeAllListeners();
+        this.button-buy.removeAllListeners();
         this.progressBar.reset(true);
         this.progressBar.destroy();
         Ext.each(this.subCmps, Ext.destroy);
@@ -612,14 +612,14 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // display Buttons xor Progress barr
     displayButtonsOrProgress : function(displayButtons) {
         this.actionEl.setVisible(displayButtons);
-        this.buttonBuy.setVisible(displayButtons);
+        this.button-buy.setVisible(displayButtons);
         if (displayButtons) {
             this.getEl().unmask();
-            this.buttonBuy.unmask();
+            this.button-buy.unmask();
             this.progressBar.reset(true);
         } else {
             this.getEl().mask();
-            this.buttonBuy.mask();
+            this.button-buy.mask();
             this.progressBar.show();
         }
     },
@@ -650,8 +650,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 
 });
 Ung.AppItem.template = new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>',
-        '<div id="buttonBuy_{id}"></div>', '<div id="action_{id}" class="action"></div>', '<div class="statePos" id="state_{id}"></div>');
-Ung.AppItem.buttonTemplate = new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="appItemLeft">&nbsp;</td><td class="appItemCenter">{content}</td><td class="appItemRight">&nbsp;</td></tr></tbody></table>');
+        '<div id="button-buy_{id}"></div>', '<div id="action_{id}" class="action"></div>', '<div class="state-pos" id="state_{id}"></div>');
+Ung.AppItem.buttonTemplate = new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left">&nbsp;</td><td class="app-item-center">{content}</td><td class="app-item-right">&nbsp;</td></tr></tbody></table>');
 // update state for the app with a displayName
 Ung.AppItem.updateState = function(displayName, state, options) {
     main.setAppLastState(displayName, state, options);
@@ -663,7 +663,7 @@ Ung.AppItem.updateState = function(displayName, state, options) {
 // get the app item having a item name
 Ung.AppItem.getApp = function(displayName) {
     if (main.apps !== null) {
-        return Ext.getCmp("appItem_" + displayName);
+        return Ext.getCmp("app-item_" + displayName);
     }
     return null;
 };
@@ -691,7 +691,7 @@ Ung.Button = Ext.extend(Ext.Component, {
     // private
     onRender : function(container, position) {
         Ung.Button.superclass.onRender.call(this, container, position);
-        this.getEl().addClass("ungButton");
+        this.getEl().addClass("ung-button");
         var imageHtml = null;
         if (this.iconSrc != null) {
             imageHtml = '<img src="' + this.iconSrc + '" style="vertical-align: middle;"/>';
@@ -717,13 +717,13 @@ Ung.Button = Ext.extend(Ext.Component, {
     // private
     onMouseOver : function(e) {
         if (!this.disabled) {
-            this.getEl().addClass("ungButtonHover");
+            this.getEl().addClass("ung-button-hover");
             this.fireEvent('mouseover', this, e);
         }
     },
     // private
     onMouseOut : function(e) {
-        this.getEl().removeClass("ungButtonHover");
+        this.getEl().removeClass("ung-button-hover");
         this.fireEvent('mouseout', this, e);
     },
     onClick : function(e) {
@@ -744,7 +744,7 @@ Ung.Button = Ext.extend(Ext.Component, {
 Ung.Button.template = new Ext.Template('<table border="0" width="{width}" height="{height}"><tr>',
         '<td width="1%" style="text-align: left;vertical-align: middle;">{imageHtml}</td>',
         '<td style="text-align: left;vertical-align: middle;padding-left:5px;font-size: 14px;">{text}</td>', '</tr></table>');
-Ext.ComponentMgr.registerType('ungButton', Ung.Button);
+Ext.ComponentMgr.registerType('ung-button', Ung.Button);
 
 // Node Class
 Ung.Node = Ext.extend(Ext.Component, {
@@ -773,8 +773,8 @@ Ung.Node = Ext.extend(Ext.Component, {
     settingsClassName : null,
     // last blinger data received
     stats : null,
-    activityBlinger: null,
-    systemBlinger: null,
+    activity-blinger: null,
+    system-blinger: null,
     subCmps : null,
     fnCallback: null,
     constructor : function(config) {
@@ -793,7 +793,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
         Ext.each(this.subCmps, Ext.destroy);
         if(this.hasPowerButton) {
-            Ext.get('nodePower_' + this.getId()).removeAllListeners();
+            Ext.get('node-power_' + this.getId()).removeAllListeners();
         }
         Ung.Node.superclass.beforeDestroy.call(this);
     },
@@ -806,10 +806,10 @@ Ung.Node = Ext.extend(Ext.Component, {
         this.getEl().set({
             'name' : this.md.displayName
         });
-        var nodeButtons=[{
+        var node-buttons=[{
             xtype: "button",
             name : "Show Settings",
-            iconCls : 'nodeSettingsIcon',
+            iconCls : 'node-settings-icon',
             text : i18n._('Settings'),
             handler : function() {
                 this.onSettingsAction();
@@ -817,7 +817,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         }, {
             xtype: "button",
             name : "Help",
-            iconCls : 'iconHelp',
+            iconCls : 'icon-help',
             text : i18n._('Help'),
             handler : function() {
                 this.onHelpAction();
@@ -825,10 +825,10 @@ Ung.Node = Ext.extend(Ext.Component, {
 
         }];
         if(this.licenseStatus && this.licenseStatus.trial) {
-            nodeButtons.push({
+            node-buttons.push({
                 xtype: "button",
                 name : "Buy",
-                iconCls : 'iconBuy',
+                iconCls : 'icon-buy',
                 ctCls:'buy-button-text',
                 text : i18n._('Buy Now'),
                 handler : this.onBuyNowAction.createDelegate(this)
@@ -838,13 +838,13 @@ Ung.Node = Ext.extend(Ext.Component, {
             'id' : this.getId(),
             'image' : this.image,
             'displayName' : this.md.displayName,
-            'nodePowerCls': this.hasPowerButton?(this.licenseStatus && this.licenseStatus.trial && this.licenseStatus.expired)?"nodePowerExpired":"nodePower":"",
+            'node-powerCls': this.hasPowerButton?(this.licenseStatus && this.licenseStatus.trial && this.licenseStatus.expired)?"node-power-expired":"node-power":"",
             'trialInfo' : this.getTrialInfo()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
 
         var buttonsPanel=new Ext.Panel({
-            renderTo : 'nodeButtons_' + this.getId(),
+            renderTo : 'node-buttons_' + this.getId(),
             border: false,
             bodyStyle : 'background-color: transparent;',
             width: 290,
@@ -853,14 +853,14 @@ Ung.Node = Ext.extend(Ext.Component, {
             layoutConfig: {
                 columns: 3
             },
-            buttons : nodeButtons
+            buttons : node-buttons
         });
         this.subCmps.push(buttonsPanel);
         if(this.hasPowerButton) {
-            Ext.get('nodePower_' + this.getId()).on('click', this.onPowerClick, this);
+            Ext.get('node-power_' + this.getId()).on('click', this.onPowerClick, this);
             this.subCmps.push(new Ext.ToolTip({
                 html : Ung.Node.getStatusTip(),
-                target : 'nodeState_' + this.getId(),
+                target : 'node-state_' + this.getId(),
                 autoWidth : true,
                 autoHeight : true,
                 showDelay : 20,
@@ -869,7 +869,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             }));
             this.subCmps.push(new Ext.ToolTip({
                 html : Ung.Node.getPowerTip(),
-                target : 'nodePower_' + this.getId(),
+                target : 'node-power_' + this.getId(),
                 autoWidth : true,
                 autoHeight : true,
                 showDelay : 20,
@@ -887,7 +887,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     setState : function(state) {
         this.state = state;
         if(this.hasPowerButton) {
-            document.getElementById('nodeState_' + this.getId()).className = "nodeState iconState" + this.state;
+            document.getElementById('node-state_' + this.getId()).className = "node-state iconState" + this.state;
         }
     },
     setPowerOn : function(powerOn) {
@@ -901,22 +901,22 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     updateBlingers : function() {
         if (this.powerOn && this.stats) {
-            if(this.activityBlinger!=null) {
-                this.activityBlinger.update(this.stats);
+            if(this.activity-blinger!=null) {
+                this.activity-blinger.update(this.stats);
             }
-            if(this.systemBlinger!=null) {
-                this.systemBlinger.update(this.stats);
+            if(this.system-blinger!=null) {
+                this.system-blinger.update(this.stats);
             }
         } else {
             this.resetBlingers();
         }
     },
     resetBlingers : function() {
-        if(this.activityBlinger!=null) {
-            this.activityBlinger.reset();
+        if(this.activity-blinger!=null) {
+            this.activity-blinger.reset();
         }
-        if(this.systemBlinger!=null) {
-            this.systemBlinger.reset();
+        if(this.system-blinger!=null) {
+            this.system-blinger.reset();
         }
     },
     onPowerClick : function() {
@@ -965,9 +965,9 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     //on Buy Now Action
     onBuyNowAction :function(){
-        var appItem=Ung.AppItem.getApp(this.md.displayName);
-        if(appItem!=null) {
-            appItem.linkToStoreFn();
+        var app-item=Ung.AppItem.getApp(this.md.displayName);
+        if(app-item!=null) {
+            app-item.linkToStoreFn();
         }
     },
     getNodeContext: function(handler) {
@@ -1114,12 +1114,12 @@ Ung.Node = Ext.extend(Ext.Component, {
     initBlingers : function() {
         if (this.blingers !== null) {
             if(this.blingers.activityDescs!=null && this.blingers.activityDescs.list.length>0) {
-                this.activityBlinger=new Ung.ActivityBlinger({
+                this.activity-blinger=new Ung.ActivityBlinger({
                    parentId : this.getId(),
                    bars: this.blingers.activityDescs.list
                 });
-                this.activityBlinger.render('nodeBlingers_' + this.getId());
-                this.subCmps.push(this.activityBlinger);
+                this.activity-blinger.render('node-blingers_' + this.getId());
+                this.subCmps.push(this.activity-blinger);
             }
             var dispMetricDescs=[];
             if(this.blingers.metricDescs!=null) {
@@ -1131,12 +1131,12 @@ Ung.Node = Ext.extend(Ext.Component, {
             }
             this.blingers.dispMetricDescs=dispMetricDescs;
             if(this.blingers.dispMetricDescs.length>0) {
-                this.systemBlinger=new Ung.SystemBlinger({
+                this.system-blinger=new Ung.SystemBlinger({
                    parentId : this.getId(),
                    metric: this.blingers.dispMetricDescs
                 });
-                this.systemBlinger.render('nodeBlingers_' + this.getId());
-                this.subCmps.push(this.systemBlinger);
+                this.system-blinger.render('node-blingers_' + this.getId());
+                this.subCmps.push(this.system-blinger);
             }
         }
     },
@@ -1161,7 +1161,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     updateLicenseStatus : function (licenseStatus) {
         this.licenseStatus=licenseStatus;
-        this.getEl().child("div[class=nodeTrialInfo]").dom.innerHTML=this.getTrialInfo();
+        this.getEl().child("div[class=node-trial-info]").dom.innerHTML=this.getTrialInfo();
     }
 });
 // Get node component by tid
@@ -1188,12 +1188,12 @@ Ung.Node.getStatusTip = function() {
 Ung.Node.getPowerTip = function() {
     return i18n._('The <B>Power Button</B> allows you to turn a product "on" and "off".');
 };
-Ung.Node.template = new Ext.Template('<div class="nodeImage"><img src="{image}"/></div>', '<div class="nodeLabel">{displayName}</div>',
-    '<div class="nodeTrialInfo">{trialInfo}</div>',
-    '<div class="nodeBlingers" id="nodeBlingers_{id}"></div>',
-    '<div class="nodeState" id="nodeState_{id}" name="State"></div>',
-    '<div class="{nodePowerCls}" id="nodePower_{id}" name="Power"></div>',
-    '<div class="nodeButtons" id="nodeButtons_{id}"></div>');
+Ung.Node.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
+    '<div class="node-trial-info">{trialInfo}</div>',
+    '<div class="node-blingers" id="node-blingers_{id}"></div>',
+    '<div class="node-state" id="node-state_{id}" name="State"></div>',
+    '<div class="{node-powerCls}" id="node-power_{id}" name="Power"></div>',
+    '<div class="node-buttons" id="node-buttons_{id}"></div>');
 
 // Message Manager object
 Ung.MessageManager = {
@@ -1268,7 +1268,7 @@ Ung.MessageManager = {
                         if(msg.javaClass.indexOf("NodeStateChange") >= 0) {
                             var node=Ung.Node.getCmp(msg.nodeDesc.tid.id);
                             if(node!=null) {
-                                node.updateRunState(msg.nodeState);
+                                node.updateRunState(msg.node-state);
                             }
                         }else if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
                             if(!msg.installed) {
@@ -1290,37 +1290,37 @@ Ung.MessageManager = {
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
-                            var appItemDisplayName=msg.requestingMackage.displayName;
-                            Ung.AppItem.updateState(appItemDisplayName, null);
+                            var app-itemDisplayName=msg.requestingMackage.displayName;
+                            Ung.AppItem.updateState(app-itemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                             main.loadLicenseStatus();
                         } else {
                             if(msg.upgrade==false) {
-                                var appItemDisplayName=msg.requestingMackage.displayName;
+                                var app-itemDisplayName=msg.requestingMackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     this.resetErrorTolerance();
-                                    Ung.AppItem.updateState(appItemDisplayName, "download");
+                                    Ung.AppItem.updateState(app-itemDisplayName, "download");
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
                                     this.resetErrorTolerance();
-                                    Ung.AppItem.updateState(appItemDisplayName, "download_progress", msg);
+                                    Ung.AppItem.updateState(app-itemDisplayName, "download_progress", msg);
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                     this.resetErrorTolerance();
                                     if(msg.success) {
-                                       Ung.AppItem.updateState(appItemDisplayName, "download");
+                                       Ung.AppItem.updateState(app-itemDisplayName, "download");
                                     } else {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemDisplayName));
-                                        Ung.AppItem.updateState(appItemDisplayName);
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),app-itemDisplayName));
+                                        Ung.AppItem.updateState(app-itemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                     this.resetErrorTolerance();
                                     if(msg.success) {
-                                       Ung.AppItem.updateState(appItemDisplayName, "installing");
+                                       Ung.AppItem.updateState(app-itemDisplayName, "installing");
                                     } else {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),appItemDisplayName));
-                                        Ung.AppItem.updateState(appItemDisplayName);
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),app-itemDisplayName));
+                                        Ung.AppItem.updateState(app-itemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
-                                    Ung.AppItem.updateState(appItemDisplayName, "activate_timeout");
+                                    Ung.AppItem.updateState(app-itemDisplayName, "activate_timeout");
                                 }
                             } else if(msg.upgrade==true) {
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
@@ -1352,7 +1352,7 @@ Ung.MessageManager = {
                                     this.resetErrorTolerance();
                                     this.upgradesComplete++;
                                     if(!msg.success) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemDisplayName));
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),app-itemDisplayName));
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                     this.resetErrorTolerance();
@@ -1390,7 +1390,7 @@ Ung.MessageManager = {
                 }
                 if(!Ung.MessageManager.upgradeMode) {
                     // update system stats
-                    main.systemStats.update(messageQueue.systemStats)
+                    main.system-stats.update(messageQueue.system-stats)
                     // upgrade nodes blingers
                     for (var i = 0; i < main.nodes.length; i++) {
                         var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
@@ -1408,22 +1408,22 @@ Ung.MessageManager = {
 };
 Ung.SystemStats = Ext.extend(Ext.Component, {
     autoEl : 'div',
-    renderTo: "rack_list",
+    renderTo: "rack-list",
     constructor : function(config) {
         this.id = "system_stats";
         Ung.SystemStats.superclass.constructor.apply(this, arguments);
     },
     onRender : function(container, position) {
         Ung.SystemStats.superclass.onRender.call(this, container, position);
-        this.getEl().addClass("systemStats");
+        this.getEl().addClass("system-stats");
         var contentSystemStatsArr=[
             '<div class="label" style="width:100px;left:0px;">'+i18n._("Network")+'</div>',
             '<div class="label" style="width:70px;left:103px;">'+i18n._("CPU Load")+'</div>',
             '<div class="label" style="width:75px;left:180px;">'+i18n._("Memory")+'</div>',
             '<div class="label" style="width:40px;right:-5px;">'+i18n._("Disk")+'</div>',
-            '<div class="network"><div class="tx">'+i18n._("Tx:")+'<div class="tx_value"></div></div><div class="rx">'+i18n._("Rx:")+'<div class="rx_value"></div></div></div>',
+            '<div class="network"><div class="tx">'+i18n._("Tx:")+'<div class="tx-value"></div></div><div class="rx">'+i18n._("Rx:")+'<div class="rx-value"></div></div></div>',
             '<div class="cpu"></div>',
-            '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free_value"></div></div><div class="used">'+i18n._("U:")+'<div class="used_value"></div></div></div>',
+            '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free-value"></div></div><div class="used">'+i18n._("U:")+'<div class="used-value"></div></div></div>',
             '<div class="disk"><div name="disk_value"></div></div>'
         ];
         this.getEl().insertHtml("afterBegin", contentSystemStatsArr.join(''));
@@ -1440,7 +1440,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             dismissDelay:0,
             hideDelay :400,
             width: 330,
-            cls: 'extendedStats',
+            cls: 'extended-stats',
             html: networkArr.join(''),
             show : function(){
                 this.showBy("system_stats","tl-bl?");
@@ -1472,7 +1472,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             dismissDelay:0,
             hideDelay :400,
             width: 330,
-            cls: 'extendedStats',
+            cls: 'extended-stats',
             html: cpuArr.join(''),
             show : function(){
                 this.showBy("system_stats","tl-bl?");
@@ -1503,7 +1503,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             dismissDelay:0,
             hideDelay :400,
             width: 330,
-            cls: 'extendedStats',
+            cls: 'extended-stats',
             html: memoryArr.join(''),
             show : function(){
                 this.showBy("system_stats","tl-bl?");
@@ -1527,7 +1527,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             dismissDelay:0,
             hideDelay :400,
             width: 330,
-            cls: 'extendedStats',
+            cls: 'extended-stats',
             html: diskArr.join(''),
             show : function(){
                 this.showBy("system_stats","tl-bl?");
@@ -1540,12 +1540,12 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numCpus)+"%";
         var txSpeed=Math.round(stats.map.txBps/10)/100;
         var rxSpeed=Math.round(stats.map.rxBps/10)/100;
-        this.getEl().child("div[class=tx_value]").dom.innerHTML=txSpeed+"KB/s";
-        this.getEl().child("div[class=rx_value]").dom.innerHTML=rxSpeed+"KB/s";
+        this.getEl().child("div[class=tx-value]").dom.innerHTML=txSpeed+"KB/s";
+        this.getEl().child("div[class=rx-value]").dom.innerHTML=rxSpeed+"KB/s";
         var memoryFree=Ung.Util.bytesToMBs(stats.map.MemFree)
         var memoryUsed=Ung.Util.bytesToMBs(stats.map.MemTotal-stats.map.MemFree);
-        this.getEl().child("div[class=free_value]").dom.innerHTML=memoryFree+" MBs";
-        this.getEl().child("div[class=used_value]").dom.innerHTML=memoryUsed+" MBs";
+        this.getEl().child("div[class=free-value]").dom.innerHTML=memoryFree+" MBs";
+        this.getEl().child("div[class=used-value]").dom.innerHTML=memoryUsed+" MBs";
         var diskPercent=Math.round((1-stats.map.freeDiskSpace/stats.map.totalDiskSpace)*20 )*5;
         this.getEl().child("div[name=disk_value]").dom.className="disk"+diskPercent;
         if(this.networkToolTip.rendered) {
@@ -1615,10 +1615,10 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
     },
     onRender : function(container, position) {
         Ung.ActivityBlinger.superclass.onRender.call(this, container, position);
-        this.getEl().addClass("activityBlinger")
+        this.getEl().addClass("activity-blinger")
         var templateHTML = Ung.ActivityBlinger.template.applyTemplate({
             'id' : this.getId(),
-            'blingerName' : i18n._("activity")
+            'blinger-name' : i18n._("activity")
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
         this.lastValues = [];
@@ -1630,8 +1630,8 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
                 var top = 3 + i * 15;
                 this.lastValues.push(null);
                 this.decays.push(0);
-                out.push('<div class="blingerText activityBlingerText" style="top:' + top + 'px;">' + i18n._(bar) + '</div>');
-                out.push('<div class="activityBlingerBar" style="top:' + top + 'px;width:0px;display:none;" id="activityBar_'
+                out.push('<div class="blinger-text activity-blinger-text" style="top:' + top + 'px;">' + i18n._(bar) + '</div>');
+                out.push('<div class="activity-blinger-bar" style="top:' + top + 'px;width:0px;display:none;" id="activityBar_'
                         + this.getId() + '_' + i + '"></div>');
             }
             Ext.get("blingerBox_" + this.getId()).insertHtml("afterBegin", out.join(""));
@@ -1665,8 +1665,8 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
     }
 
 });
-Ung.ActivityBlinger.template = new Ext.Template('<div class="blingerName">{blingerName}</div>',
-        '<div class="activityBlingerBox" id="blingerBox_{id}"></div>');
+Ung.ActivityBlinger.template = new Ext.Template('<div class="blinger-name">{blinger-name}</div>',
+        '<div class="activity-blinger-box" id="blingerBox_{id}"></div>');
 Ung.ActivityBlinger.decayFactor = Math.pow(0.94, Ung.MessageManager.updateTime / 1000);
 Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
     if (lastValue !== null && newValue != lastValue) {
@@ -1696,18 +1696,18 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
 
     onRender : function(container, position) {
         Ung.SystemBlinger.superclass.onRender.call(this, container, position);
-        this.getEl().addClass("systemBlinger")
+        this.getEl().addClass("system-blinger")
         var templateHTML = Ung.SystemBlinger.template.applyTemplate({
             'id' : this.getId(),
-            'blingerName' : i18n._("system")
+            'blinger-name' : i18n._("system")
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
 
         var out = [];
         for (var i = 0; i < 4; i++) {
             var top = 1 + i * 15;
-            out.push('<div class="blingerText systemBlingerLabel" style="top:' + top + 'px;" id="systemName_' + this.getId() + '_' + i + '"></div>');
-            out.push('<div class="blingerText systemBlingerValue" style="top:' + top + 'px;" id="systemValue_' + this.getId() + '_' + i + '"></div>');
+            out.push('<div class="blinger-text system-blinger-label" style="top:' + top + 'px;" id="systemName_' + this.getId() + '_' + i + '"></div>');
+            out.push('<div class="blinger-text system-blinger-value" style="top:' + top + 'px;" id="systemValue_' + this.getId() + '_' + i + '"></div>');
         }
         var blingerBoxEl=Ext.get("blingerBox_" + this.getId());
         blingerBoxEl.insertHtml("afterBegin", out.join(""));
@@ -1896,8 +1896,8 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         }
 }
 });
-Ung.SystemBlinger.template = new Ext.Template('<div class="blingerName">{blingerName}</div>',
-        '<div class="systemBlingerBox" id="blingerBox_{id}"></div>',
+Ung.SystemBlinger.template = new Ext.Template('<div class="blinger-name">{blinger-name}</div>',
+        '<div class="system-blinger-box" id="blingerBox_{id}"></div>',
         '<div class="systemStatSettings" id="systemStatSettings_{id}"></div>');
 Ext.ComponentMgr.registerType('ungSystemBlinger', Ung.SystemBlinger);
 
@@ -2097,7 +2097,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             text : i18n._('Refresh'),
             name : "Refresh",
             tooltip : i18n._('Refresh'),
-            iconCls : 'iconRefresh',
+            iconCls : 'icon-refresh',
             handler : function() {
                 Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
                 this.refreshList();
@@ -2292,7 +2292,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             this.bbar=['-',{
                 name : "Remove",
                 id : this.getId() + "_removeBtn",
-                iconCls : 'nodeRemoveIcon',
+                iconCls : 'node-remove-icon',
                 text : i18n._('Remove'),
                 handler : function() {
                     this.removeAction();
@@ -2300,7 +2300,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             },'-',{
                 name : 'Help',
                 id : this.getId() + "_helpBtn",
-                iconCls : 'iconHelp',
+                iconCls : 'icon-help',
                 text : i18n._('Help'),
                 handler : function() {
                     this.helpAction();
@@ -2308,7 +2308,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             },'->',{
                 name : "Cancel",
                 id : this.getId() + "_cancelBtn",
-                iconCls : 'cancelIcon',
+                iconCls : 'cancel-icon',
                 text : i18n._('Cancel'),
                 handler : function() {
                     this.cancelAction();
@@ -2316,7 +2316,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
             },'-',{
                 name : "Save",
                 id : this.getId() + "_saveBtn",
-                iconCls : 'saveIcon',
+                iconCls : 'save-icon',
                 text : i18n._('Save'),
                 handler : function() {
                     this.saveAction.defer(1, this);
@@ -2375,7 +2375,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             this.bbar=['-',{
                 name : 'Help',
                 id : this.getId() + "_helpBtn",
-                iconCls : 'iconHelp',
+                iconCls : 'icon-help',
                 text : i18n._('Help'),
                 handler : function() {
                     this.helpAction();
@@ -2383,7 +2383,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             },'->',{
                 name : 'Cancel',
                 id : this.getId() + "_cancelBtn",
-                iconCls : 'cancelIcon',
+                iconCls : 'cancel-icon',
                 text : i18n._('Cancel'),
                 handler : function() {
                     this.cancelAction();
@@ -2391,7 +2391,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
             },'-',{
                 name : 'Save',
                 id : this.getId() + "_saveBtn",
-                iconCls : 'saveIcon',
+                iconCls : 'save-icon',
                 text : i18n._('Save'),
                 handler : function() {
                     this.saveAction.defer(1, this);;
@@ -2449,14 +2449,14 @@ Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
         if(this.bbar==null) {
             this.bbar=['->',{
                 name : 'Cancel',
-                iconCls : 'cancelIcon',
+                iconCls : 'cancel-icon',
                 text : i18n._('Cancel'),
                 handler : function() {
                     this.cancelAction();
                 }.createDelegate(this)
             },'-',{
                 name : 'Update',
-                iconCls : 'saveIcon',
+                iconCls : 'save-icon',
                 text : i18n._('Update'),
                 handler : function() {
                     this.updateAction();
@@ -2834,7 +2834,7 @@ Ext.grid.EditColumn=Ext.extend(Ext.grid.IconColumn, {
         }
         Ext.grid.EditColumn.superclass.constructor.call(this);
     },
-    iconClass: 'iconEditRow',
+    iconClass: 'icon-edit-row',
     handle : function(record) {
         this.grid.editHandler(record);
     }
@@ -2850,7 +2850,7 @@ Ext.grid.DeleteColumn=Ext.extend(Ext.grid.IconColumn, {
         }
         Ext.grid.DeleteColumn.superclass.constructor.call(this);
     },
-    iconClass: 'iconDeleteRow',
+    iconClass: 'icon-delete-row',
     handle : function(record) {
         this.grid.deleteHandler(record);
     }
@@ -2884,7 +2884,7 @@ Ext.grid.ReorderColumn.prototype = {
     },
 
     renderer : function(value, metadata, record) {
-        return '<div class="iconDrag">&nbsp;</div>';
+        return '<div class="icon-drag">&nbsp;</div>';
     }
 };
 
@@ -3064,7 +3064,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
              * positioning if(Ext.isGecko && !Ext. isGecko3) { for(var i=0;i<this.rowEditorInputLines.length;i++) {
              * var xtype=this.rowEditorInputLines[i].xtype if(xtype=="textfield" ||
              * xtype=="textarea" || xtype=="numberfield" || xtype=="timefield") {
-             * this.rowEditorInputLines[i].ctCls="fixedPos"; } } }
+             * this.rowEditorInputLines[i].ctCls="fixed-pos"; } } }
              */
             this.rowEditor = new Ung.RowEditorWindow({
                 grid : this,
@@ -3080,7 +3080,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.tbar = [{
                 text : i18n._('Add'),
                 tooltip : i18n._('Add New Row'),
-                iconCls : 'iconAddRow',
+                iconCls : 'icon-add-row',
                 name : 'Add',
                 parentId : this.getId(),
                 handler : this.addHandler.createDelegate(this)
@@ -3438,19 +3438,19 @@ Ung.Breadcrumbs = Ext.extend(Ext.Component, {
         if (this.elements != null) {
             for (var i = 0; i < this.elements.length; i++) {
                 if (i > 0) {
-                    this.getEl().insertHtml('beforeEnd', '<span class="iconBreadcrumbsSeparator">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+                    this.getEl().insertHtml('beforeEnd', '<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
                 }
                 var crumb = this.elements[i];
                 if (crumb.action) {
                     var crumbEl = document.createElement("span");;
-                    crumbEl.className = 'breadcrumbLink';
+                    crumbEl.className = 'breadcrumb-link';
                     crumbEl.innerHTML = crumb.title;
                     crumbEl = Ext.get(crumbEl);
                     crumbEl.on("click", crumb.action, this);
                     this.getEl().appendChild(crumbEl);
 
                 } else {
-                    this.getEl().insertHtml('beforeEnd', '<span class="breadcrumbText" >' + crumb.title + '</span>')
+                    this.getEl().insertHtml('beforeEnd', '<span class="breadcrumb-text" >' + crumb.title + '</span>')
                 }
 
             }
@@ -3491,7 +3491,7 @@ Ext.grid.ButtonColumn.prototype = {
     },
 
     onMouseDown : function(e, t) {
-        if (t.className && t.className.indexOf('ungButton') != -1) {
+        if (t.className && t.className.indexOf('ung-button') != -1) {
             e.stopEvent();
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
@@ -3503,18 +3503,18 @@ Ext.grid.ButtonColumn.prototype = {
     },
     // private
     onMouseOver : function(e,t) {
-        if (t.className && t.className.indexOf('ungButton') != -1) {
-            t.className="ungButton buttonColumn ungButtonHover";
+        if (t.className && t.className.indexOf('ung-button') != -1) {
+            t.className="ung-button button-column ung-button-hover";
         }
     },
     // private
     onMouseOut : function(e,t) {
-        if (t.className && t.className.indexOf('ungButton') != -1) {
-            t.className="ungButton buttonColumn";
+        if (t.className && t.className.indexOf('ung-button') != -1) {
+            t.className="ung-button button-column";
         }
     },
     renderer : function(value, metadata, record) {
-        return '<div class="ungButton buttonColumn">'+value+'</div>';
+        return '<div class="ung-button button-column">'+value+'</div>';
     }
 };
 

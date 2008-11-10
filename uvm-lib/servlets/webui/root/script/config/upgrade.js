@@ -56,7 +56,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             if(!this.isVisible()) return;
                             var upgradeList = result;
                             if (upgradeList.length > 0) {
-                            	Ext.getCmp("configItem_upgrade").setIconCls("iconConfigUpgradeAvailable");
+                            	Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
                                 Ext.getCmp("config_start_upgrade_button").enable();
                                 var upgradeData = [];
                                 var somethingVisibleAdded = false;
@@ -178,7 +178,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     id : 'config_start_upgrade_button',
                     text : i18n._('Upgrade'),
                     name : "Upgrade",
-                    iconCls : 'iconUpgrade',
+                    iconCls : 'icon-upgrade',
                     disabled : true,
                     handler : function() {
                         main.upgrade();
@@ -208,7 +208,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Upgrade Setup'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',

@@ -39,8 +39,8 @@
   <body class="wizard">
     <div id="container">
       <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
-      <div id="extraDiv1"><span></span></div>
-      <div id="extraDiv2"><span></span></div>
+      <div id="extra-div-1"><span></span></div>
+      <div id="extra-div-2"><span></span></div>
       <div id="extraDiv3"><span></span></div>
       <div id="extraDiv4"><span></span></div>
       <div id="extraDiv5"><span></span></div>

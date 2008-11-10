@@ -172,20 +172,20 @@ Ung.Quarantine.prototype = {
 
         this.releaseButton= new Ext.Button( {
             handler : function() { this.releaseOrDelete( quarantine.rpc.releaseMessages ) }.createDelegate( this ),
-	    iconCls : 'iconMoveMails',
+	    iconCls : 'icon-move-mails',
             text : i18n._( "Move to Inbox" ),
             disabled : true
                     } );
 
         this.deleteButton = new Ext.Button( {
             handler : function() { this.releaseOrDelete( quarantine.rpc.purgeMessages ) }.createDelegate( this ),
-	    iconCls:'iconDeleteRow',			
+	    iconCls:'icon-delete-row',			
             text : i18n._( "Delete Messages" ),
             disabled : true
                 } );
         
         this.safelistButton = new Ext.Button( {
-	    iconCls:'iconSafeList',
+	    iconCls:'icon-safe-list',
             handler : function() { this.safelist() }.createDelegate( this ),
             text : i18n._( "Add Sender(s) to Safelist" ),
             disabled : true

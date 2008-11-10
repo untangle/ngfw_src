@@ -234,7 +234,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             var changePasswordColumn = new Ext.grid.IconColumn({
                 header : this.i18n._("change password"),
                 width : 100,
-                iconClass : 'iconEditRow',
+                iconClass : 'icon-edit-row',
                 handle : function(record, index) {
                     // populate row editor
                     this.grid.rowEditorChangePass.populate(record);
@@ -258,7 +258,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 defaults: {
                 	anchor: '98%'
                 },
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 items : [this.gridAdminAccounts=new Ung.EditorGrid({
                     settingsCmp : this,
@@ -585,7 +585,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
                 title : this.i18n._('Public Address'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 items: {
                     xtype: 'fieldset',
@@ -714,7 +714,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 
                 title : this.i18n._('Certificates'),
                 layout : "anchor",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                 	anchor: '98%',
@@ -774,7 +774,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 text : String.format(this.i18n._('Generate a {0}Self-Signed Certificate{1}'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
-                                iconCls : 'actionIcon',
+                                iconCls : 'action-icon',
                                 handler : function() {
                                     this.panelCertificates.onGenerateSelfSignedCertificate();
                                 }.createDelegate(this)
@@ -799,7 +799,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 text : String.format(this.i18n._('Generate a {0}CSR{1}'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
-                                iconCls : 'actionIcon',
+                                iconCls : 'action-icon',
                                 handler : function() {
                                     this.panelCertificates.onGenerateCertGenTrusted();
                                 }.createDelegate(this)
@@ -824,7 +824,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 text : String.format(this.i18n._('Import a {0}Signed Certificate{1}'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
-                                iconCls : 'actionIcon',
+                                iconCls : 'action-icon',
                                 handler : function() {
                                     this.panelCertificates.onCertImportTrusted();
                                 }.createDelegate(this)
@@ -1061,7 +1061,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 anchor: "100% 100%",
                 title : this.i18n._('Generate a Self-Signed Certificate'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 items: {
                     xtype: 'fieldset',
@@ -1133,7 +1133,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 anchor: "100% 100%",
                 title : this.i18n._('Generate a Certificate Signature Request'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 items: [{
                 	cls: 'description',
@@ -1160,7 +1160,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 anchor: "100% 100%",
                 title : this.i18n._('Import Signed Certificate'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                     items : [{
                     	cls: 'description',
@@ -1213,7 +1213,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
                 title : this.i18n._('Monitoring'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -1539,7 +1539,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Skins'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -1649,7 +1649,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Branding'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -2274,14 +2274,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
         	var settingsCmp = Ext.getCmp(this.items.parentId);
             this.bbar= ['->',{
                 name : 'Cancel',
-                iconCls : 'cancelIcon',
+                iconCls : 'cancel-icon',
                 text : i18n._('Cancel'),
                 handler : function() {
                     this.cancelAction();
                 }.createDelegate(this)
             },{
                 name : 'Proceed',
-                iconCls : 'saveIcon',
+                iconCls : 'save-icon',
                 text : settingsCmp.i18n._('Proceed'),
                 handler : function() {
                     this.proceedAction();

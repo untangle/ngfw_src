@@ -104,7 +104,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
 
             this.panel = new Ext.FormPanel({
-            	cls: 'ungPanel',
+            	cls: 'ung-panel',
                 items : [{
                     cls : 'u-form-panel',
                     xtype : 'fieldset',
@@ -136,7 +136,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     '->',
                 {
                     name : 'close',
-                    iconCls : 'cancelIcon',
+                    iconCls : 'cancel-icon',
                     text : this.i18n._('Close'),
                     handler : this.hide.createDelegate( this )
                 }],
@@ -165,7 +165,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.panel = new Ext.FormPanel({
                 items : [{
                     xtype : 'label',
-                    html : '<h2 class="wizardTitle">'+i18n._("Welcome to the OpenVPN Setup Wizard!")+'</h2>'
+                    html : '<h2 class="wizard-title">'+i18n._("Welcome to the OpenVPN Setup Wizard!")+'</h2>'
                 },{
                     html : this.i18n._('This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Client.'),
                     cls: 'description',
@@ -193,7 +193,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 fileUpload : true,
                 items : [{
                     xtype : 'label',
-                    html : '<h2 class="wizardTitle">'+i18n._("Download Configuration")+'</h2>'
+                    html : '<h2 class="wizard-title">'+i18n._("Download Configuration")+'</h2>'
                 },{
                     cls: 'description',
                     border : false,
@@ -420,7 +420,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.panel = new Ext.FormPanel({
                 items : [{
                         xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Finished!")+'</h2>'
+                        html : '<h2 class="wizard-title">'+i18n._("Finished!")+'</h2>'
                     }, {
                         cls: 'description',
                         border : false,
@@ -551,7 +551,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 parentId : this.getId(),
 
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -578,7 +578,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype : "button",
                         name : 'Configure as VPN Server',
                         text : this.i18n._("Configure as VPN Server"),
-                        iconCls : "actionIcon",
+                        iconCls : "action-icon",
                         disabled : serverButtonDisabled,
                         handler : function() {
                             this.getRpcNode().startConfig(function(result, exception) {
@@ -597,7 +597,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype : "button",
                         name : 'Configure as VPN Client',
                         text : this.i18n._("Configure as VPN Client"),
-                        iconCls : "actionIcon",
+                        iconCls : "action-icon",
                         disabled : clientButtonDisabled,
                         handler : function() {
                             this.getRpcNode().startConfig(function(result, exception) {
@@ -713,7 +713,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 renderer : function(value, metadata, record) {
                     var out= '';
                     if(record.data.id>=0) {
-                    	out= '<div class="ungButton buttonColumn" style="text-align:center;" >' + i18n._("Distribute Client") + '</div>';
+                    	out= '<div class="ung-button button-column" style="text-align:center;" >' + i18n._("Distribute Client") + '</div>';
                     }
                     return out;
                 }
@@ -1303,7 +1303,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 parentId : this.getId(),
 
                 layout : "anchor",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                 	anchor:"98%",
@@ -1760,7 +1760,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     items : [clientWizard],
                     border : false,
                     autoScroll : true,
-                    cls : 'windowBackground',
+                    cls : 'window-background',
                     bodyStyle : 'background-color: transparent;'
                 }],
                     endAction : function() {
@@ -1803,7 +1803,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype : 'form',
                     items : [{
                         xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Welcome to the OpenVPN Setup Wizard!")+'</h2>'
+                        html : '<h2 class="wizard-title">'+i18n._("Welcome to the OpenVPN Setup Wizard!")+'</h2>'
                     }, {
                         html : this.i18n
                                 ._('This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Routing Server.'),
@@ -1847,7 +1847,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype : 'form',
                     items : [{
                         xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Step 1 - Certificate")+'</h2>'
+                        html : '<h2 class="wizard-title">'+i18n._("Step 1 - Certificate")+'</h2>'
                     }, {
                         html : this.i18n
                                 ._('Please specify some information about your location. This information will be used to generate a secure digital certificate.'),
@@ -1951,7 +1951,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype : 'form',
                     items : [{
                         xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Step 2 - Exports")+'</h2>'
+                        html : '<h2 class="wizard-title">'+i18n._("Step 2 - Exports")+'</h2>'
                     }, {
                         html : this.i18n._('Please complete the list of exports. This is a list of hosts and networks which remote VPN users and networks will be able to contact.'),
                         cls: 'description',
@@ -1994,7 +1994,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype : 'form',
                     items : [{
                         xtype : 'label',
-                        html : '<h2 class="wizardTitle">'+i18n._("Finished!")+'</h2>'
+                        html : '<h2 class="wizard-title">'+i18n._("Finished!")+'</h2>'
                     }, {
                         html : this.i18n._('Congratulations!'),
                         cls: 'description',
@@ -2036,7 +2036,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     items : [serverWizard],
                     border : false,
                     autoScroll : true,
-                    cls : 'windowBackground',
+                    cls : 'window-background',
                     bodyStyle : 'background-color: transparent;'
                 }],
                 endAction : function() {

@@ -9,7 +9,7 @@ Ung.Main.prototype = {
 	debugMode: false,
     disableThreads: false, // in development environment is useful to disable
                             // threads.
-    leftTabs: null,
+    left-tabs: null,
     appsSemaphore: null,
     apps: null,
     appsLastState: null,
@@ -163,14 +163,14 @@ Ung.Main.prototype = {
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
                 return;
             } else if(upgradeStatus.upgradesAvailable){
-            	Ext.getCmp("configItem_upgrade").setIconCls("iconConfigUpgradeAvailable");
+            	Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
             	Ext.Msg.show({
                     title:i18n._("Upgrades warning"),
                     msg: i18n._("Upgrades are available. You must perform all possible upgrades before downloading from the library. Please click OK to open Upgrade panel."),
                     buttons: Ext.Msg.OKCANCEL,
                     fn: function (btn, text) {
                         if (btn == 'ok'){
-                            main.leftTabs.activate('leftTabConfig');
+                            main.left-tabs.activate('leftTabConfig');
                             Ext.getCmp("configItem_upgrade").onClick();
                         }
                     },
@@ -199,25 +199,25 @@ Ung.Main.prototype = {
         Ext.EventManager.onWindowResize(Ung.Util.resizeWindows);
         // initialize viewport object
         var contentRightArr=[
-            '<div id="contentright">',
+            '<div id="content-right">',
                 '<div id="racks" style="display:none;">',
-                    '<div id="rack_list"><div id="rack_select_container"></div>',
+                    '<div id="rack-list"><div id="rack-select-container"></div>',
                     '</div>',
-                    '<div id="rack_nodes">',
+                    '<div id="rack-nodes">',
                         '<div id="security_nodes"></div>',
-                        '<div id="nodes_separator" style="display:none;"><div id="nodes_separator_text"></div></div>',
+                        '<div id="nodes-separator" style="display:none;"><div id="nodes-separator-text"></div></div>',
                         '<div id="other_nodes"></div>',
                     '</div>',
                 '</div>',
             '</div>'];
-        this.contentLeftWidth=parseInt(Ext.util.CSS.getRule(".contentleft",true).style.width);
+        this.contentLeftWidth=parseInt(Ext.util.CSS.getRule(".content-left",true).style.width);
         this.viewport = new Ext.Viewport({
             layout:'border',
             items:[{
                     region:'west',
                     id: 'west',
                     buttonAlign : 'center',
-                    cls:"contentleft",
+                    cls:"content-left",
                     border : false,
                     width: this.contentLeftWidth,
                     bodyStyle: 'background-color: transparent;',
@@ -231,8 +231,8 @@ Ung.Main.prototype = {
                     }, {
                     	layout:"fit",
                     	border: false,
-                    	cls: "leftTabs",
-                    	items: this.leftTabs = new Ext.TabPanel({
+                    	cls: "left-tabs",
+                    	items: this.left-tabs = new Ext.TabPanel({
                             activeTab: 0,
                             height: 400,
                             deferredRender:false,
@@ -260,15 +260,15 @@ Ung.Main.prototype = {
                     }],
                     buttons:[{
                         name: 'Help',
-                        iconCls: 'iconHelp',
+                        iconCls: 'icon-help',
                         text: i18n._('Help'),
                         handler: function() {
-                            var helpSource=main.leftTabs.getActiveTab().helpSource;
+                            var helpSource=main.left-tabs.getActiveTab().helpSource;
                             main.openHelp(helpSource);
                         }
 					},{
                         name: 'Logout',
-                        iconCls: 'iconLogout',
+                        iconCls: 'icon-logout',
                         text: i18n._('Logout'),
                         handler: function() {
                             window.location.href = '/auth/logout?url=/webui&realm=Administrator';
@@ -279,7 +279,7 @@ Ung.Main.prototype = {
                     id: 'center',
                     html: contentRightArr.join(""),
                     border: false,
-                    cls: 'centerRegion',
+                    cls: 'center-region',
                     bodyStyle: 'background-color: transparent;',
                     autoScroll: true
                 }
@@ -287,22 +287,22 @@ Ung.Main.prototype = {
         });
         Ext.QuickTips.init();
 
-        main.systemStats=new Ung.SystemStats({});
+        main.system-stats=new Ung.SystemStats({});
 
         Ext.getCmp("west").on("resize", function() {
             var newHeight=Math.max(this.getEl().getHeight()-175,100);
-            main.leftTabs.setHeight(newHeight);
+            main.left-tabs.setHeight(newHeight);
         });
         Ext.getCmp("west").fireEvent("resize");
         buttonCmp=new Ext.Button({
             name: 'What Apps should I use?',
             id: 'help_empty_rack',
-            renderTo: 'contentright',
-            iconCls: 'iconHelp',
+            renderTo: 'content-right',
+            iconCls: 'icon-help',
             text: i18n._('What Apps should I use?'),
             show : function() {
             	Ung.Button.prototype.show.call(this);
-                this.getEl().alignTo("contentright","c-c");
+                this.getEl().alignTo("content-right","c-c");
             }, 
             handler: function() {
     	        main.warnOnUpgrades(function() {
@@ -666,10 +666,10 @@ Ung.Main.prototype = {
         }.createDelegate(this), rpc.currentPolicy);
     },
 
-    installNode: function(mackageDesc, appItem) {
+    installNode: function(mackageDesc, app-item) {
         if(mackageDesc!==null) {
         	if(main.getNode(mackageDesc.name)!=null) {
-        		appItem.hide();
+        		app-item.hide();
         		return;
         	}
             Ung.AppItem.updateState(mackageDesc.displayName, "installing");
@@ -718,13 +718,13 @@ Ung.Main.prototype = {
     // load Config
     loadConfig: function() {
         this.config =
-            [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"iconConfigNetwork","helpSource":"networking_config",handler : main.openNetworking},
-            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"iconConfigAdmin","helpSource":"administration_config", className:"Ung.Administration", scriptFile:"administration.js", handler : main.openConfig},
-            {"name":"email","displayName":i18n._("Email"),"iconClass":"iconConfigEmail","helpSource":"email_config", className:"Ung.Email", scriptFile:"email.js", handler : main.openConfig},
-            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"iconConfigDirectory","helpSource":"local_directory_config", className:"Ung.LocalDirectory", scriptFile:"localDirectory.js", handler : main.openConfig},
-            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"iconConfigUpgrade","helpSource":"upgrade_config", className:"Ung.Upgrade", scriptFile:"upgrade.js", handler : main.openConfig},
-            {"name":"system","displayName":i18n._("System"),"iconClass":"iconConfigSetup","helpSource":"system_config", className:"Ung.System", scriptFile:"system.js", handler : main.openConfig},
-            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"iconConfigSupport","helpSource":"system_info_config", className:"Ung.SystemInfo", scriptFile:"systemInfo.js", handler : main.openConfig}];
+            [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"icon-config-network","helpSource":"networking_config",handler : main.openNetworking},
+            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"icon-config-admin","helpSource":"administration_config", className:"Ung.Administration", scriptFile:"administration.js", handler : main.openConfig},
+            {"name":"email","displayName":i18n._("Email"),"iconClass":"icon-config-email","helpSource":"email_config", className:"Ung.Email", scriptFile:"email.js", handler : main.openConfig},
+            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"icon-config-directory","helpSource":"local_directory_config", className:"Ung.LocalDirectory", scriptFile:"localDirectory.js", handler : main.openConfig},
+            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"icon-config-upgrade","helpSource":"upgrade_config", className:"Ung.Upgrade", scriptFile:"upgrade.js", handler : main.openConfig},
+            {"name":"system","displayName":i18n._("System"),"iconClass":"icon-config-setup","helpSource":"system_config", className:"Ung.System", scriptFile:"system.js", handler : main.openConfig},
+            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"icon-config-support","helpSource":"system_info_config", className:"Ung.SystemInfo", scriptFile:"systemInfo.js", handler : main.openConfig}];
         this.buildConfig();
     },
     // build config buttons
@@ -732,7 +732,7 @@ Ung.Main.prototype = {
         var out=[];
         for(var i=0;i<this.config.length;i++) {
             var item=this.config[i];
-            var appItemCmp=new Ung.ConfigItem({
+            var app-itemCmp=new Ung.ConfigItem({
             	item:item
             });
         }
@@ -749,7 +749,7 @@ Ung.Main.prototype = {
             }.createDelegate(this),"noAlert")) return;
             main.upgradeStatus=result;
             if(main.upgradeStatus.upgradesAvailable) {
-                Ext.getCmp("configItem_upgrade").setIconCls("iconConfigUpgradeAvailable");
+                Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
             }
         }.createDelegate(this),true);
     },
@@ -849,8 +849,8 @@ Ung.Main.prototype = {
             	   }
             	}
             }
-            document.getElementById("nodes_separator_text").innerHTML=(hasService && hasUtil)?i18n._("Services & Utilities"):hasService?i18n._("Services"):"";
-            document.getElementById("nodes_separator").style.display= hasService?"":"none";
+            document.getElementById("nodes-separator-text").innerHTML=(hasService && hasUtil)?i18n._("Services & Utilities"):hasService?i18n._("Services"):"";
+            document.getElementById("nodes-separator").style.display= hasService?"":"none";
             if(hasService) {
                 document.getElementById("racks").style.backgroundPosition="0px 100px";
             } else {
@@ -862,7 +862,7 @@ Ung.Main.prototype = {
     buildPolicies: function () {
 		if(main.rackSelect!=null) {
 			Ext.destroy(main.rackSelect);
-			Ext.get('rack_select_container').dom.innerHTML = '';
+			Ext.get('rack-select-container').dom.innerHTML = '';
 		}
         var items=[];
 		var selVirtualRackIndex = 0;
@@ -877,9 +877,9 @@ Ung.Main.prototype = {
 		items.push('-');
 		items.push({text:'Show Policy Manager',value:'SHOW_POLICY_MANAGER',handler:main.changePolicy, hideDelay :0});
 		main.rackSelect = new Ext.SplitButton({
-			renderTo: 'rack_select_container', // the container id
+			renderTo: 'rack-select-container', // the container id
 		   	text: items[selVirtualRackIndex].text,
-			id:'rack_select',
+			id:'rack-select',
 		   	//handler: Ung.Main.changePolicy, // handle a click on the button itself
 		   	menu: new Ext.menu.Menu({
 		   		hideDelay: 0,
@@ -898,7 +898,7 @@ Ung.Main.prototype = {
                 Ext.MessageBox.hide();
             }]);		
         }else{
-            Ext.getCmp('rack_select').setText(this.text);		
+            Ext.getCmp('rack-select').setText(this.text);		
             rpc.currentPolicy=rpc.policies[this.index];
             main.loadRackView();		
         }

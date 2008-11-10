@@ -16,7 +16,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 this.bbar=['-',{
                     name : "Remove",
                     id : this.getId() + "_removeBtn",
-                    iconCls : 'nodeRemoveIcon',
+                    iconCls : 'node-remove-icon',
                     text : i18n._('Remove'),
                     handler : function() {
                     	if(this.node && this.node.settingsWin) {
@@ -26,7 +26,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 },'-',{
                     name : 'Help',
                     id : this.getId() + "_helpBtn",
-                    iconCls : 'iconHelp',
+                    iconCls : 'icon-help',
                     text : i18n._('Help'),
                     handler : function() {
                         this.helpAction();
@@ -34,7 +34,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 },'->',{
                     name : "Cancel",
                     id : this.getId() + "_cancelBtn",
-                    iconCls : 'cancelIcon',
+                    iconCls : 'cancel-icon',
                     text : i18n._('Cancel'),
                     handler : function() {
                         this.cancelAction();
@@ -42,7 +42,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 },'-',{
                     name : "Save",
                     id : this.getId() + "_saveBtn",
-                    iconCls : 'saveIcon',
+                    iconCls : 'save-icon',
                     text : i18n._('Save'),
                     handler : function() {
                         this.saveAction.defer(1, this);

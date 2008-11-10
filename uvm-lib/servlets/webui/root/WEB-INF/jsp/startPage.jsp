@@ -79,6 +79,6 @@
  </head>
 <body>
 <div id="container" style="margin:0px 0px 0px 0px;"></div>
-<div id="extraDiv1" style="display:none;"><span></span></div>
+<div id="extra-div-1" style="display:none;"><span></span></div>
 </body>
 </html>

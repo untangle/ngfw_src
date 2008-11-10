@@ -160,7 +160,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Support'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 items : [{
                     xtype : 'fieldset',
@@ -210,7 +210,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : 'button',
                         text : this.i18n._('Reboot'),
                         name : 'View Reports',
-                        iconCls : 'rebootIcon',
+                        iconCls : 'reboot-icon',
                         handler : function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),this.i18n._("You are about to manually reboot.  This will interrupt normal network operations<br>" +
                              "until the Untangle Server is finished automatically restarting.<br>" +
@@ -239,7 +239,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Backup'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 onBackupToFile: function() {
                 	// A two step process: first asks the server for permission to download the file (the outer ajax request) 
@@ -327,7 +327,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Restore'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 onRestoreFromFileFile: function() {
                 	var prova = Ext.getCmp('upload_restore_file_form');
@@ -794,7 +794,7 @@ if (!Ung.hasResource["Ung.System"]) {
 
                 title : this.i18n._('Protocol Settings'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
@@ -826,7 +826,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 parentId : this.getId(),
                 title : this.i18n._('Regional Settings'),
                 layout : "form",
-                cls: 'ungPanel',
+                cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',

@@ -34,7 +34,7 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
             },
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizardTitle">'+i18n._( "Language Selection" )+'</h2>',
+                html : '<h2 class="wizard-title">'+i18n._( "Language Selection" )+'</h2>',
             },{
                 defaults : {
 					validationEvent : 'blur',
@@ -52,7 +52,7 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-					ctCls : 'smallTopMargin'
+					ctCls : 'small-top-margin'
                 }]
             }]
         });
