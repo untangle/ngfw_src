@@ -425,11 +425,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         cls: 'description',
                         border : false,
                         html : this.i18n._('Congratulations! OpenVPN is configured as a VPN Client.')
-                    },{
-                        cls: 'description',
-                        border : false,
-                        html : this.i18n._('If necessary, you can change the configuration of OpenVPN by launching the Setup Wizard again.')
-                }]
+                    }]
             });
 
             this.onNext = this.completeWizard.createDelegate( this );
@@ -1110,7 +1106,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 columns : [liveColumn, {
                     id : 'name',
                     header : this.i18n._("host/network name"),
-                    width : 180,
+                    width : 250,
                     dataIndex : 'name',
                     // this is a simple text editor
                     editor : new Ext.form.TextField({})
@@ -1741,7 +1737,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             var clientWizard = new Ung.Wizard({
                 height : 450,
-                width : 800,
+                width : 'auto',
                 modalFinish: true,
                 hasCancel: true,
                 cardDefaults : {
@@ -2016,7 +2012,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             };
             var serverWizard = new Ung.Wizard({
                 height : 450,
-                width : 800,
+                width : 'auto',
                 modalFinish: true,
                 hasCancel: true,
                 cardDefaults : {
