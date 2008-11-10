@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-07 16:46+0200\n"
+"POT-Creation-Date: 2008-11-10 11:22-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,9 +138,8 @@ msgid "Blocked Protocol Events"
 msgstr "Evenimente Protocoale Blocate"
 
 #: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
-#, fuzzy
-msgid "Scan Protocol"
-msgstr "Protocol"
+msgid "Sessions scanned"
+msgstr ""
 
 #: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
 msgid "SCAN"
@@ -148,21 +147,32 @@ msgstr ""
 
 #: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
 #, fuzzy
-msgid "Block Protocol"
-msgstr "Evenimente Protocoale Blocate"
+msgid "Sessions blocked"
+msgstr "blocat"
 
 #: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
 msgid "BLOCK"
 msgstr ""
 
 #: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
-#, fuzzy
-msgid "Detect Protocol"
-msgstr "Protocol"
+msgid "Sessions logged"
+msgstr ""
 
 #: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
 msgid "DETECT"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Scan Protocol"
+#~ msgstr "Protocol"
+
+#, fuzzy
+#~ msgid "Block Protocol"
+#~ msgstr "Evenimente Protocoale Blocate"
+
+#, fuzzy
+#~ msgid "Detect Protocol"
+#~ msgstr "Protocol"
 
 #~ msgid "Failed"
 #~ msgstr "Eşuat"

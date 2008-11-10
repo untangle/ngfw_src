@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-07 16:34+0200\n"
+"POT-Creation-Date: 2008-11-10 11:22-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,12 +21,12 @@ msgid "Enable"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:203
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:222
 msgid "Pass"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:190
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:209
 msgid "Block"
 msgstr ""
 
@@ -48,119 +48,123 @@ msgid "[no description]"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:103
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:181
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:120
 msgid "Description"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:113
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:114
 msgid "Enable Rule"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:117
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:126
 msgid "Action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:133
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:144
 msgid "Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:137
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
+msgid "Rule"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:155
 msgid "Traffic Type"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:142
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:160
 msgid "Source Interface"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:166
 msgid "Destination Interface"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:152
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:171
 msgid "Source Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:158
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:178
 msgid "Destination Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:164
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:184
 msgid "Source Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:170
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:190
 msgid "Destination Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:176
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:199
 msgid "Category"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:187
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:206
 msgid "Default Action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:233
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:252
 msgid "blocked"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:233
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:252
 msgid "passed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:247
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:266
 msgid "timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:255
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:274
 msgid "action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:260
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:279
 msgid "client"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:267
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:286
 msgid "reason for action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:272
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:291
 msgid "rule #{0}"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:275
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:294
 msgid "server"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:327
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:346
 msgid "Invalid address specified for Source Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:330
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:349
 msgid "Invalid address specified for Destination Address"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:333
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:352
 msgid "Invalid port specified for Source Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:336
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:355
 msgid "Invalid port specified for Destination Port"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:341
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:360
 msgid "Validation failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:345
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:364
 msgid "Failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:355
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:374
 msgid "Saving..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:355
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:374
 msgid "Please wait"
 msgstr ""
 
@@ -173,7 +177,7 @@ msgid "Firewall Block Events"
 msgstr ""
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:93
-msgid "Block Request"
+msgid "Sessions blocked"
 msgstr ""
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:93
@@ -181,7 +185,7 @@ msgid "BLOCK"
 msgstr ""
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:94
-msgid "Pass Request"
+msgid "Sessions passed"
 msgstr ""
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:94
@@ -189,5 +193,5 @@ msgid "PASS"
 msgstr ""
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:95
-msgid "Request Logged"
+msgid "Sessions logged"
 msgstr ""

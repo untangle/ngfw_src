@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-07 18:40+0200\n"
+"POT-Creation-Date: 2008-11-10 11:22-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,18 +24,18 @@ msgstr ""
 #: ../servlets/webui/root/script/main.js:53
 #: ../servlets/webui/root/script/main.js:143
 #: ../servlets/webui/root/script/main.js:195
-#: ../servlets/webui/root/script/main.js:440
-#: ../servlets/webui/root/script/main.js:563
-#: ../servlets/webui/root/script/main.js:639
-#: ../servlets/webui/root/script/main.js:645
-#: ../servlets/webui/root/script/main.js:775
-#: ../servlets/webui/root/script/main.js:898
+#: ../servlets/webui/root/script/main.js:437
+#: ../servlets/webui/root/script/main.js:560
+#: ../servlets/webui/root/script/main.js:636
+#: ../servlets/webui/root/script/main.js:642
+#: ../servlets/webui/root/script/main.js:772
+#: ../servlets/webui/root/script/main.js:895
 #: ../servlets/webui/root/script/components.js:66
 #: ../servlets/webui/root/script/components.js:1018
 #: ../servlets/webui/root/script/components.js:1328
-#: ../servlets/webui/root/script/components.js:2105
-#: ../servlets/webui/root/script/components.js:3634
-#: ../servlets/webui/root/script/components.js:3672
+#: ../servlets/webui/root/script/components.js:2102
+#: ../servlets/webui/root/script/components.js:3631
+#: ../servlets/webui/root/script/components.js:3669
 #: ../servlets/setup/root/script/setup.js:230
 #: ../servlets/setup/root/script/setup.js:423
 #: ../servlets/setup/root/script/setup.js:635
@@ -77,7 +77,7 @@ msgstr ""
 
 #: ../servlets/webui/root/script/main.js:148
 #: ../servlets/webui/root/script/main.js:163
-#: ../servlets/webui/root/script/main.js:750
+#: ../servlets/webui/root/script/main.js:747
 #: ../servlets/webui/root/script/components.js:74
 #: ../servlets/webui/root/script/components.js:87
 #: ../servlets/webui/root/script/components.js:91
@@ -88,10 +88,10 @@ msgstr ""
 #: ../servlets/webui/root/script/components.js:1311
 #: ../servlets/webui/root/script/components.js:1319
 #: ../servlets/webui/root/script/components.js:1355
-#: ../servlets/webui/root/script/components.js:1726
-#: ../servlets/webui/root/script/components.js:1773
-#: ../servlets/webui/root/script/components.js:3686
-#: ../servlets/webui/root/script/components.js:3699
+#: ../servlets/webui/root/script/components.js:1723
+#: ../servlets/webui/root/script/components.js:1770
+#: ../servlets/webui/root/script/components.js:3683
+#: ../servlets/webui/root/script/components.js:3696
 #: ../servlets/setup/root/script/setup.js:34
 #: ../servlets/webui/root/script/config/administration.js:66
 #: ../servlets/webui/root/script/config/administration.js:914
@@ -136,8 +136,8 @@ msgstr ""
 
 #: ../servlets/webui/root/script/main.js:264
 #: ../servlets/webui/root/script/components.js:821
-#: ../servlets/webui/root/script/components.js:2307
-#: ../servlets/webui/root/script/components.js:2382
+#: ../servlets/webui/root/script/components.js:2304
+#: ../servlets/webui/root/script/components.js:2379
 #: ../servlets/webui/root/script/config/email.js:1242
 #: ../servlets/webui/root/script/config/policyManager.js:30
 msgid "Help"
@@ -157,20 +157,20 @@ msgstr ""
 msgid "My Account"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:363
+#: ../servlets/webui/root/script/main.js:360
 msgid "The value in this field is invalid"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:364
+#: ../servlets/webui/root/script/main.js:361
 msgid "This field is required"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:403
-#: ../servlets/webui/root/script/main.js:410
+#: ../servlets/webui/root/script/main.js:400
+#: ../servlets/webui/root/script/main.js:407
 msgid "Invalid IP Address."
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:418
+#: ../servlets/webui/root/script/main.js:415
 #: ../servlets/webui/root/script/config/administration.js:1983
 #: ../servlets/webui/root/script/config/administration.js:2038
 #: ../servlets/webui/root/script/config/administration.js:2097
@@ -179,24 +179,24 @@ msgstr ""
 msgid "The port must be an integer number between {0} and {1}."
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:426
+#: ../servlets/webui/root/script/main.js:423
 msgid ""
 "The port must be an integer number between {0} and {1} or one of the "
 "following values: any, all, n/a, none."
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:436
+#: ../servlets/webui/root/script/main.js:433
 msgid "Passwords do not match"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:440
+#: ../servlets/webui/root/script/main.js:437
 #: ../servlets/webui/root/script/components.js:1328
 msgid "Downloading updates..."
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:532
-#: ../servlets/webui/root/script/components.js:2601
-#: ../servlets/webui/root/script/components.js:3769
+#: ../servlets/webui/root/script/main.js:529
+#: ../servlets/webui/root/script/components.js:2598
+#: ../servlets/webui/root/script/components.js:3766
 #: ../servlets/webui/root/script/config/administration.js:1915
 #: ../servlets/webui/root/script/config/administration.js:1941
 #: ../servlets/webui/root/script/config/administration.js:1958
@@ -235,23 +235,23 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:533
+#: ../servlets/webui/root/script/main.js:530
 msgid ""
 "{0} cannot be removed because it is being used by the following rack:{1}You "
 "must remove the product from all racks first."
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:563
-#: ../servlets/webui/root/script/main.js:645
+#: ../servlets/webui/root/script/main.js:560
+#: ../servlets/webui/root/script/main.js:642
 msgid "Loading Rack..."
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:725
-#: ../servlets/webui/root/script/main.js:768
+#: ../servlets/webui/root/script/main.js:722
+#: ../servlets/webui/root/script/main.js:765
 msgid "Networking"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:726
+#: ../servlets/webui/root/script/main.js:723
 #: ../servlets/webui/root/script/config/administration.js:83
 #: ../servlets/webui/root/script/config/administration.js:256
 #: ../servlets/webui/root/script/config/administration.js:858
@@ -260,7 +260,7 @@ msgstr ""
 msgid "Administration"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:727
+#: ../servlets/webui/root/script/main.js:724
 #: ../servlets/setup/root/script/setup.js:341
 #: ../servlets/setup/root/script/setup.js:1476
 #: ../servlets/webui/root/script/config/administration.js:356
@@ -269,31 +269,31 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:728
+#: ../servlets/webui/root/script/main.js:725
 #: ../servlets/webui/root/script/config/localDirectory.js:14
 #: ../servlets/webui/root/script/config/localDirectory.js:31
 msgid "Local Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:729
+#: ../servlets/webui/root/script/main.js:726
 #: ../servlets/webui/root/script/config/upgrade.js:14
 #: ../servlets/webui/root/script/config/upgrade.js:116
 #: ../servlets/webui/root/script/config/upgrade.js:179
 msgid "Upgrade"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:730
+#: ../servlets/webui/root/script/main.js:727
 #: ../servlets/webui/root/script/config/system.js:17
 msgid "System"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:731
+#: ../servlets/webui/root/script/main.js:728
 #: ../servlets/webui/root/script/config/systemInfo.js:15
 #: ../servlets/webui/root/script/config/systemInfo.js:81
 msgid "System Info"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:763
+#: ../servlets/webui/root/script/main.js:760
 #: ../servlets/webui/root/script/config/administration.js:78
 #: ../servlets/webui/root/script/config/administration.js:852
 #: ../servlets/webui/root/script/config/administration.js:931
@@ -306,17 +306,17 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:775
-#: ../servlets/webui/root/script/main.js:898
-#: ../servlets/webui/root/script/components.js:3634
+#: ../servlets/webui/root/script/main.js:772
+#: ../servlets/webui/root/script/main.js:895
+#: ../servlets/webui/root/script/components.js:3631
 msgid "Loading Config..."
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:856
+#: ../servlets/webui/root/script/main.js:853
 msgid "Services & Utilities"
 msgstr ""
 
-#: ../servlets/webui/root/script/main.js:856
+#: ../servlets/webui/root/script/main.js:853
 msgid "Services"
 msgstr ""
 
@@ -657,81 +657,73 @@ msgid "inactive"
 msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1495
-msgid "cached"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1495
-msgid "buffers"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1496
 msgid "VM Statistics:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1497
+#: ../servlets/webui/root/script/components.js:1496
 msgid "pageins"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1497
+#: ../servlets/webui/root/script/components.js:1496
 msgid "pageouts"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1498
+#: ../servlets/webui/root/script/components.js:1497
 msgid "page faults"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1499
+#: ../servlets/webui/root/script/components.js:1498
 msgid "Swap Files:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1500
+#: ../servlets/webui/root/script/components.js:1499
 msgid "total swap space"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1500
+#: ../servlets/webui/root/script/components.js:1499
 msgid "used"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1517
+#: ../servlets/webui/root/script/components.js:1516
 msgid "Total Disk Space:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1519
+#: ../servlets/webui/root/script/components.js:1518
 msgid "Free Disk Space:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1521
+#: ../servlets/webui/root/script/components.js:1520
 msgid "Data read:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1523
+#: ../servlets/webui/root/script/components.js:1522
 msgid "Data write:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1624
+#: ../servlets/webui/root/script/components.js:1621
 msgid "activity"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1705
+#: ../servlets/webui/root/script/components.js:1702
 msgid "system"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1726
+#: ../servlets/webui/root/script/components.js:1723
 msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1773
+#: ../servlets/webui/root/script/components.js:1770
 msgid "Please set up to four items."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1813
+#: ../servlets/webui/root/script/components.js:1810
 msgid "Ok"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1820
-#: ../servlets/webui/root/script/components.js:2315
-#: ../servlets/webui/root/script/components.js:2390
-#: ../servlets/webui/root/script/components.js:2456
+#: ../servlets/webui/root/script/components.js:1817
+#: ../servlets/webui/root/script/components.js:2312
+#: ../servlets/webui/root/script/components.js:2387
+#: ../servlets/webui/root/script/components.js:2453
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:36
 #: ../servlets/webui/root/script/config/administration.js:2278
 #: ../servlets/webui/root/script/config/email.js:1235
@@ -739,164 +731,164 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2062
+#: ../servlets/webui/root/script/components.js:2059
 msgid "Event Log"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2100
-#: ../servlets/webui/root/script/components.js:2102
+#: ../servlets/webui/root/script/components.js:2097
+#: ../servlets/webui/root/script/components.js:2099
 #: ../servlets/setup/root/script/setup.js:476
 #: ../servlets/setup/root/script/setup.js:749
 #: ../servlets/setup/root/script/setup.js:874
 msgid "Refresh"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2105
+#: ../servlets/webui/root/script/components.js:2102
 #: ../servlets/setup/root/script/setup.js:1050
 msgid "Refreshing..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2299
+#: ../servlets/webui/root/script/components.js:2296
 #: ../servlets/webui/root/script/config/policyManager.js:20
 msgid "Remove"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2323
-#: ../servlets/webui/root/script/components.js:2398
+#: ../servlets/webui/root/script/components.js:2320
+#: ../servlets/webui/root/script/components.js:2395
 #: ../servlets/webui/root/script/config/policyManager.js:46
 msgid "Save"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2463
+#: ../servlets/webui/root/script/components.js:2460
 msgid "Update"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2524
-#: ../servlets/webui/root/script/components.js:2833
+#: ../servlets/webui/root/script/components.js:2521
+#: ../servlets/webui/root/script/components.js:2830
 msgid "Edit"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2601
+#: ../servlets/webui/root/script/components.js:2598
 #: ../servlets/webui/root/script/config/policyManager.js:639
 msgid "The form is not valid!"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2849
+#: ../servlets/webui/root/script/components.js:2846
 msgid "Delete"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2868
+#: ../servlets/webui/root/script/components.js:2865
 msgid "Reorder"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2955
+#: ../servlets/webui/root/script/components.js:2952
 msgid "Loading ..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3060
+#: ../servlets/webui/root/script/components.js:3057
 msgid "Displaying topics {0} - {1} of {2}"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3061
+#: ../servlets/webui/root/script/components.js:3058
 msgid "No topics to display"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3084
+#: ../servlets/webui/root/script/components.js:3081
 msgid "Add"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3085
+#: ../servlets/webui/root/script/components.js:3082
 msgid "Add New Row"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3544
+#: ../servlets/webui/root/script/components.js:3541
 msgid "Portal Question"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3548
+#: ../servlets/webui/root/script/components.js:3545
 #: ../servlets/webui/root/script/config/policyManager.js:730
 #: ../servlets/webui/root/script/config/policyManager.js:741
 msgid "Users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3575
+#: ../servlets/webui/root/script/components.js:3572
 msgid "Active Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3577
+#: ../servlets/webui/root/script/components.js:3574
 msgid "Local"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3579
+#: ../servlets/webui/root/script/components.js:3576
 msgid "UNKNOWN"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3591
+#: ../servlets/webui/root/script/components.js:3588
 #: ../servlets/webui/root/script/config/administration.js:1453
 #: ../servlets/webui/root/script/config/policyManager.js:282
 msgid "user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3611
+#: ../servlets/webui/root/script/components.js:3608
 msgid "Select User"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3611
+#: ../servlets/webui/root/script/components.js:3608
 msgid "Select Users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3616
+#: ../servlets/webui/root/script/components.js:3613
 msgid ""
 "You may choose user ID/Login that exists in the User Directory (either local "
 "or remote Active Directory), or you can add a new user to the User "
 "Directory, and then choose that user."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3617
+#: ../servlets/webui/root/script/components.js:3614
 msgid ""
 "You may choose user IDs/Logins that exist in the User Directory (either "
 "local or remote Active Directory), or you can add a new user to the User "
 "Directory, and then choose that user."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3620
+#: ../servlets/webui/root/script/components.js:3617
 msgid "Select an existing user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3620
+#: ../servlets/webui/root/script/components.js:3617
 msgid "Select an existing user or users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3625
+#: ../servlets/webui/root/script/components.js:3622
 msgid "Add a new user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3631
+#: ../servlets/webui/root/script/components.js:3628
 msgid "Open Local Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3646
+#: ../servlets/webui/root/script/components.js:3643
 msgid "Open Active Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3672
+#: ../servlets/webui/root/script/components.js:3669
 #: ../servlets/webui/root/script/config/email.js:523
 msgid "Loading..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3686
+#: ../servlets/webui/root/script/components.js:3683
 msgid ""
 "There was a problem refreshing Active Directory users.  Please check your "
 "Active Directory settings and then try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3699
+#: ../servlets/webui/root/script/components.js:3696
 msgid ""
 "There was a problem refreshing Local Directory users.  Please check your "
 "Local Directory settings and try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3769
+#: ../servlets/webui/root/script/components.js:3766
 msgid "Please choose a user id/login or press Cancel!"
 msgstr ""
 
@@ -1107,7 +1099,7 @@ msgstr ""
 
 #: ../servlets/setup/root/script/setup.js:402
 #: ../servlets/webui/root/script/config/systemInfo.js:185
-msgid "<span class=\"requiredstar\">*</span> Required"
+msgid "<span class=\"required-star\">*</span> Required"
 msgstr ""
 
 #: ../servlets/setup/root/script/setup.js:423
@@ -3447,66 +3439,69 @@ msgid "Error"
 msgstr ""
 
 #: ../impl/com/untangle/uvm/engine/Dispatcher.java:264
-msgid "UDP Sessions"
+msgid "UDP sessions"
 msgstr ""
 
 #: ../impl/com/untangle/uvm/engine/Dispatcher.java:266
-msgid "TCP Sessions"
+msgid "TCP sessions"
 msgstr ""
 
 #: ../impl/com/untangle/uvm/engine/Dispatcher.java:268
-msgid "UDP Session Requests"
+msgid "UDP session requests"
 msgstr ""
 
 #: ../impl/com/untangle/uvm/engine/Dispatcher.java:271
-msgid "TCP Session Requests"
+msgid "TCP session requests"
 msgstr ""
 
 #: ../localapi/com/untangle/uvm/vnet/NodeBase.java:95
 #: ../localapi/com/untangle/uvm/vnet/NodeBase.java:98
-msgid "Server to Node Chunks"
+msgid "Server to node chunks"
 msgstr ""
 
 #: ../localapi/com/untangle/uvm/vnet/NodeBase.java:96
-msgid "Client to Node Chunks"
+msgid "Client to node chunks"
 msgstr ""
 
 #: ../localapi/com/untangle/uvm/vnet/NodeBase.java:97
-msgid "Node to Server Chunks"
+msgid "Node to server chunks"
 msgstr ""
 
 #: ../localapi/com/untangle/uvm/vnet/NodeBase.java:99
-msgid "Server to Node Bytes"
+msgid "Server to node bytes"
 msgstr ""
 
 #: ../localapi/com/untangle/uvm/vnet/NodeBase.java:100
-msgid "Client to Node Bytes"
+msgid "Client to node bytes"
 msgstr ""
 
 #: ../localapi/com/untangle/uvm/vnet/NodeBase.java:101
-msgid "Node to Server Bytes"
+msgid "Node to server bytes"
 msgstr ""
 
 #: ../localapi/com/untangle/uvm/vnet/NodeBase.java:102
-msgid "Node to Client Bytes"
+msgid "Node to client bytes"
 msgstr ""
 
 #: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:93
-msgid "Block Request"
+#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:99
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "Sessions blocked"
 msgstr ""
 
 #: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:93
+#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:99
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:128
 #: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
 #: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:214
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:224
-#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:115
+#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:116
 msgid "BLOCK"
 msgstr ""
 
 #: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:94
-msgid "Pass Request"
+msgid "Sessions passed"
 msgstr ""
 
 #: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:94
@@ -3514,80 +3509,60 @@ msgstr ""
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 #: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:215
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:225
-#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:116
+#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:117
 msgid "PASS"
 msgstr ""
 
 #: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:95
-msgid "Request Logged"
-msgstr ""
-
-#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:96
-#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:213
-#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:114
-msgid "Scan Connection"
-msgstr ""
-
-#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:96
-#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
-#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:213
-#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:223
-#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:114
-msgid "SCAN"
+#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:98
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
+msgid "Sessions logged"
 msgstr ""
 
 #: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:97
-msgid "IPS Attempts Logged"
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+msgid "Sessions scanned"
+msgstr ""
+
+#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:97
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:223
+#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:115
+msgid "SCAN"
+msgstr ""
+
+#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:98
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
+msgid "DETECT"
 msgstr ""
 
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:128
-#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:214
-#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:115
-msgid "Block Connection"
+msgid "Clients blocked"
 msgstr ""
 
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:129
-#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:215
-#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:116
-msgid "Pass Connection"
+msgid "Clients passed"
 msgstr ""
 
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
-msgid "Connect"
+msgid "Clients connected"
 msgstr ""
 
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
 msgid "CONNECT"
 msgstr ""
 
-#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
-msgid "Scan Protocol"
-msgstr ""
-
-#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
-msgid "Block Protocol"
-msgstr ""
-
-#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
-msgid "Detect Protocol"
-msgstr ""
-
-#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
-msgid "DETECT"
-msgstr ""
-
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
-#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:225
-msgid "Pass Message"
+msgid "Messages passed"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
-#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:224
-msgid "Block Message"
+msgid "Messages blocked"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
-msgid "Mark Message"
+msgid "Messages marked"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
@@ -3595,7 +3570,7 @@ msgid "MARK"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
-msgid "Quarantine Message"
+msgid "Messages quarantined"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
@@ -3603,27 +3578,42 @@ msgid "QUARANTINE"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:159
-msgid "Spam Detected"
+msgid "Spam detected"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:160
-msgid "Email Received"
+msgid "Messages received"
 msgstr ""
 
-#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:216
-msgid "Spyware Pages Detected"
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:115
+msgid "Pages scanned"
 msgstr ""
 
-#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:216
-msgid "SPYDETECTED"
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:116
+msgid "Pages blocked"
+msgstr ""
+
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:215
+#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:117
+msgid "Pages passed"
 msgstr ""
 
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:223
-msgid "Scan Message"
+msgid "Documents scanned"
+msgstr ""
+
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:224
+msgid "Documents blocked"
+msgstr ""
+
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:225
+msgid "Documents passed"
 msgstr ""
 
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:226
-msgid "Remove Message"
+msgid "Infections removed"
 msgstr ""
 
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:226
@@ -3631,7 +3621,8 @@ msgid "REMOVE"
 msgstr ""
 
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:227
-msgid "Passed Infected Message"
+#: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:118
+msgid "Passed by policy"
 msgstr ""
 
 msgid "decimal_sep"

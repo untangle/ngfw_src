@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-07 16:56+0200\n"
+"POT-Creation-Date: 2008-11-10 11:22-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -228,7 +228,7 @@ msgid "Skipped Events"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
-msgid "Pass Message"
+msgid "Messages passed"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
@@ -236,7 +236,7 @@ msgid "PASS"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
-msgid "Block Message"
+msgid "Messages blocked"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
@@ -244,9 +244,8 @@ msgid "BLOCK"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
-#, fuzzy
-msgid "Mark Message"
-msgstr "mesaj in carantină"
+msgid "Messages marked"
+msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
 msgid "MARK"
@@ -254,19 +253,19 @@ msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
 #, fuzzy
-msgid "Quarantine Message"
-msgstr "mesaj in carantină"
+msgid "Messages quarantined"
+msgstr "Carantina"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
 msgid "QUARANTINE"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:159
-msgid "Spam Detected"
+msgid "Spam detected"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:160
-msgid "Email Received"
+msgid "Messages received"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamLogFilter.java:27
@@ -284,3 +283,11 @@ msgstr ""
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:29
 msgid "Identity Theft Events"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Mark Message"
+#~ msgstr "mesaj in carantină"
+
+#, fuzzy
+#~ msgid "Quarantine Message"
+#~ msgstr "mesaj in carantină"

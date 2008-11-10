@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-07 16:58+0200\n"
+"POT-Creation-Date: 2008-11-10 11:22-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -302,7 +302,7 @@ msgid "Cookie Events"
 msgstr "Cookies"
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
-msgid "Scan Connection"
+msgid "Pages scanned"
 msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
@@ -310,7 +310,7 @@ msgid "SCAN"
 msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
-msgid "Block Connection"
+msgid "Pages blocked"
 msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
@@ -318,19 +318,11 @@ msgid "BLOCK"
 msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
-msgid "Pass Connection"
+msgid "Pages passed"
 msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
 msgid "PASS"
-msgstr ""
-
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:216
-msgid "Spyware Pages Detected"
-msgstr ""
-
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:216
-msgid "SPYDETECTED"
 msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
