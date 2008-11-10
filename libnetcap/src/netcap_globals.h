@@ -70,9 +70,6 @@
 #ifndef IP_SADDR
 #define IP_SADDR	20
 #endif
-#ifndef IP_DEVICE
-#define IP_DEVICE	21
-#endif
 #ifndef IP_RECVNFMARK
 #define IP_RECVNFMARK	22
 #endif
