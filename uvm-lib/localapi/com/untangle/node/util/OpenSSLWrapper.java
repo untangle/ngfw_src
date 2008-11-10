@@ -408,6 +408,11 @@ public class OpenSSLWrapper {
             subject.append(cn);
         }
 
+	return createCSR(subject.toString(), keyFile);
+    }
+    public static byte[] createCSR(String subject,
+                                   File keyFile)
+        throws IOException {
 
         SimpleExec.SimpleExecResult result = SimpleExec.exec(
                                                              "openssl",
@@ -417,7 +422,7 @@ public class OpenSSLWrapper {
                                                                  "-key",
                                                                  keyFile.getAbsolutePath(),
                                                                  "-subj",
-                                                                 subject.toString()
+                                                                 subject
                                                              },
                                                              null,
                                                              null,

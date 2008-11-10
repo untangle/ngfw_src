@@ -274,15 +274,11 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public byte[] generateCSR()
     {
-        String eHost = getFQDN();
-
         try {
-        return OpenSSLWrapper.createCSR(eHost,
-                        // get them from dn
-                        "FIXME org",
-                        "US",
-                        "CA",
-                        "FIXME city",
+	    byte[] oldCert = getCurrentServerCert();
+            CertInfo ci = OpenSSLWrapper.getCertInfo(oldCert);
+            RFC2253Name currentDN = ci.subjectDN;
+	    return OpenSSLWrapper.createCSR("/"+currentDN.toString().replace(",","/"),
                         new File(APACHE_PEM_FILE));
         } catch (Exception ex) {
             logger.error("Exception generating a CSR", ex);
