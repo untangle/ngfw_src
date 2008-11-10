@@ -340,11 +340,15 @@ public abstract class Blacklist
 
             if (null != bc) {
                 Action a = bc.getBlock() ? Action.BLOCK : Action.PASS;
+		if (!bc.getBlock())
+		    node.incrementPassLogCount();
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), a, reason,
                      bc.getDisplayName(), node.getVendor());
                 node.log(hbe);
             } else if (null == stringRule || stringRule.getLog()) {
+		if (!stringRule.isLive())
+		    node.incrementPassLogCount();
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK, reason,
                      category, node.getVendor());

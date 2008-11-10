@@ -226,20 +226,20 @@ public class IpsRuleSignatureImpl
             // Can't happen right now.
             log.warn("Alert: "+classification + ", " + message);
             ips.statisticManager.incrLogged();
-            // engine.updateUICount(DETECT_COUNTER); XXX
+            engine.incrementDetectCount();
             break;
 
         case IpsRule.LOG:
             log.debug("Log: "+classification + ", " + message);
             ips.statisticManager.incrLogged();
-            // engine.updateUICount(DETECT_COUNTER); XXX
+            engine.incrementDetectCount();
             break;
 
         case IpsRule.BLOCK:
             log.info("Block: "+classification + ", " + message);
             blocked = true;
             ips.statisticManager.incrBlocked();
-            // engine.updateUICount(BLOCK_COUNTER); XXX
+            engine.incrementBlockCount();
             info.blockSession();
             break;
         }

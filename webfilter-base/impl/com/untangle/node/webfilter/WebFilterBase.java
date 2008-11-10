@@ -91,6 +91,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     private final BlingBlinger scanBlinger;
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
+    private final BlingBlinger passLogBlinger;
 
     // constructors -----------------------------------------------------------
 
@@ -111,10 +112,11 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Scan Connection"), null, I18nUtil.marktr("SCAN"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Connection"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Connection"), null, I18nUtil.marktr("PASS"));
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger);
+        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
+        passLogBlinger = c.addMetric("log", I18nUtil.marktr("Passed by policy"), null);
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, passLogBlinger);
     }
 
     // WebFilter methods ------------------------------------------------------
@@ -647,6 +649,11 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     void incrementPassCount()
     {
         passBlinger.increment();
+    }
+
+    void incrementPassLogCount()
+    {
+        passLogBlinger.increment();
     }
 
     // private methods --------------------------------------------------------

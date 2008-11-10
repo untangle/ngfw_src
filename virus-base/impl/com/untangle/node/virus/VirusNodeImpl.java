@@ -220,11 +220,11 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Scan Message"), null, I18nUtil.marktr("SCAN"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Message"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Message"), null, I18nUtil.marktr("PASS"));
-        removeBlinger = c.addActivity("remove", I18nUtil.marktr("Remove Message"), null, I18nUtil.marktr("REMOVE"));
-        passedInfectedMessageBlinger = c.addMetric("infected", I18nUtil.marktr("Passed Infected Message"), null);
+        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Documents scanned"), null, I18nUtil.marktr("SCAN"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Documents blocked"), null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Documents passed"), null, I18nUtil.marktr("PASS"));
+        removeBlinger = c.addActivity("remove", I18nUtil.marktr("Infections removed"), null, I18nUtil.marktr("REMOVE"));
+        passedInfectedMessageBlinger = c.addMetric("infected", I18nUtil.marktr("Passed by policy"), null);
         lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
     }
 

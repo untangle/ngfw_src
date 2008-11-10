@@ -92,14 +92,14 @@ public abstract class NodeBase implements Node
         tid = nodeContext.getTid();
 
         Counters c = uvm.localMessageManager().getCounters(tid);
-        c.addMetric("s2nChunks", I18nUtil.marktr("Server to Node Chunks"), null, false);
-        c.addMetric("c2nChunks", I18nUtil.marktr("Client to Node Chunks"), null, false);
-        c.addMetric("n2sChunks", I18nUtil.marktr("Node to Server Chunks"), null, false);
-        c.addMetric("n2cChunks", I18nUtil.marktr("Server to Node Chunks"), null, false);
-        c.addMetric("s2nBytes", I18nUtil.marktr("Server to Node Bytes"), "byte", false);
-        c.addMetric("c2nBytes", I18nUtil.marktr("Client to Node Bytes"), "byte", false);
-        c.addMetric("n2sBytes", I18nUtil.marktr("Node to Server Bytes"), "byte", false);
-        c.addMetric("n2cBytes", I18nUtil.marktr("Node to Client Bytes"), "byte", false);
+        c.addMetric("s2nChunks", I18nUtil.marktr("Server to node chunks"), null, false);
+        c.addMetric("c2nChunks", I18nUtil.marktr("Client to node chunks"), null, false);
+        c.addMetric("n2sChunks", I18nUtil.marktr("Node to server chunks"), null, false);
+        c.addMetric("n2cChunks", I18nUtil.marktr("Server to node chunks"), null, false);
+        c.addMetric("s2nBytes", I18nUtil.marktr("Server to node bytes"), "byte", false);
+        c.addMetric("c2nBytes", I18nUtil.marktr("Client to node bytes"), "byte", false);
+        c.addMetric("n2sBytes", I18nUtil.marktr("Node to server bytes"), "byte", false);
+        c.addMetric("n2cBytes", I18nUtil.marktr("Node to client bytes"), "byte", false);
 
         runState = NodeState.LOADED;
     }

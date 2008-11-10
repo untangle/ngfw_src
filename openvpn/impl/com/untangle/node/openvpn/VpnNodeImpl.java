@@ -125,9 +125,9 @@ public class VpnNodeImpl extends AbstractNode
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Connection"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Connection"), null, I18nUtil.marktr("PASS"));
-        connectBlinger = c.addActivity("connect", I18nUtil.marktr("Connect"), null, I18nUtil.marktr("CONNECT"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Clients blocked"), null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Clients passed"), null, I18nUtil.marktr("PASS"));
+        connectBlinger = c.addActivity("connect", I18nUtil.marktr("Clients connected"), null, I18nUtil.marktr("CONNECT"));
         lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger, connectBlinger);
     }
 

@@ -90,9 +90,9 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Request"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Request"), null, I18nUtil.marktr("PASS"));
-        loggedBlinger = c.addMetric("logged", I18nUtil.marktr("Request Logged"), null);
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Sessions passed"), null, I18nUtil.marktr("PASS"));
+        loggedBlinger = c.addMetric("log", I18nUtil.marktr("Sessions logged"), null);
         lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger, loggedBlinger);
     }
 
@@ -245,7 +245,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
     void log(FirewallEvent logEvent)
     {
         eventLogger.log(logEvent);
-	loggedBlinger.increment();
     }
 
     FirewallSettings getDefaultSettings()
@@ -370,6 +369,11 @@ public class FirewallImpl extends AbstractNode implements Firewall
     public void incrementPassCount() 
     {
 	passBlinger.increment();
+    }
+
+    public void incrementLogCount() 
+    {
+	loggedBlinger.increment();
     }
 
 }

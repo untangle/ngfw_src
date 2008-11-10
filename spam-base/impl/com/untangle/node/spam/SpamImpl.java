@@ -152,12 +152,12 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Message"), null, I18nUtil.marktr("PASS"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Message"), null, I18nUtil.marktr("BLOCK"));
-        markBlinger = c.addActivity("mark", I18nUtil.marktr("Mark Message"), null, I18nUtil.marktr("MARK"));
-        quarantineBlinger = c.addActivity("quarantine", I18nUtil.marktr("Quarantine Message"), null, I18nUtil.marktr("QUARANTINE"));
-        spamDetectedBlinger = c.addMetric("spam", I18nUtil.marktr("Spam Detected"), null);
-        emailReceivedBlinger = c.addMetric("email", I18nUtil.marktr("Email Received"), null);
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Messages passed"), null, I18nUtil.marktr("PASS"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Messages blocked"), null, I18nUtil.marktr("BLOCK"));
+        markBlinger = c.addActivity("mark", I18nUtil.marktr("Messages marked"), null, I18nUtil.marktr("MARK"));
+        quarantineBlinger = c.addActivity("quarantine", I18nUtil.marktr("Messages quarantined"), null, I18nUtil.marktr("QUARANTINE"));
+        spamDetectedBlinger = c.addMetric("spam", I18nUtil.marktr("Spam detected"), null);
+        emailReceivedBlinger = c.addMetric("email", I18nUtil.marktr("Messages received"), null);
         lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
     }
 

@@ -83,6 +83,16 @@ public class IpsDetectionEngine
             classifications.put(rc.getName(), rc);
     }
 
+    public void incrementDetectCount()
+    {
+        node.incrementDetectCount();
+    }
+
+    public void incrementBlockCount()
+    {
+        node.incrementBlockCount();
+    }
+
     public IpsSettings getSettings()
     {
         return settings;

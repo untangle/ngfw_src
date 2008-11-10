@@ -136,6 +136,7 @@ class EventHandler extends AbstractEventHandler
             /* If necessary log the event */
             if (log) {
                 request.attach(new FirewallEvent(request.pipelineEndpoints(), reject, ruleIndex));
+		node.incrementLogCount(); 
             }
 
         } else {
@@ -152,6 +153,7 @@ class EventHandler extends AbstractEventHandler
             /* If necessary log the event */
             if (log) {
                 request.attach(new FirewallEvent(request.pipelineEndpoints(), reject, ruleIndex));
+		node.incrementLogCount(); 
             }
         }
 

@@ -257,18 +257,18 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             .localMessageManager();
         Counters c = lmm.getCounters(node.getTid());
         udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter",
-                                                  "UDP Sessions");
+                                                  "UDP sessions");
         tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter",
-                                                  "TCP Sessions");
+                                                  "TCP sessions");
         udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter",
-                                             I18nUtil.marktr("UDP Sessions"), null, false);
+                                             I18nUtil.marktr("UDP sessions"), null, false);
         tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter",
-                                        I18nUtil.marktr("TCP Sessions"), null, false);
+                                        I18nUtil.marktr("TCP sessions"), null, false);
         udpTotalSessionRequestCounter = c
-            .addMetric("udpTotalSessionRequestCounter", I18nUtil.marktr("UDP Session Requests"),
+            .addMetric("udpTotalSessionRequestCounter", I18nUtil.marktr("UDP session requests"),
                        null, false);
         tcpTotalSessionRequestCounter = c
-            .addMetric("tcpTotalSessionRequestCounter", I18nUtil.marktr("TCP Session Requests"),
+            .addMetric("tcpTotalSessionRequestCounter", I18nUtil.marktr("TCP session requests"),
                        null, false);
     }
 

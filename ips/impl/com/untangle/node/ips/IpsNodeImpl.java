@@ -69,7 +69,8 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     private final IpsRuleHandler ruleHandler = new IpsRuleHandler();
 
     private final BlingBlinger scanBlinger;
-    private final BlingBlinger loggedBlinger;
+    private final BlingBlinger detectBlinger;
+    private final BlingBlinger blockBlinger;
 
     public IpsNodeImpl() {
         engine = new IpsDetectionEngine(this);
@@ -93,9 +94,10 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Scan Connection"), null, I18nUtil.marktr("SCAN"));
-        loggedBlinger = c.addMetric("logged", I18nUtil.marktr("IPS Attempts Logged"), null);
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, loggedBlinger);
+        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Sessions scanned"), null, I18nUtil.marktr("SCAN"));
+        detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("DETECT"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, detectBlinger, blockBlinger);
     }
 
     @Override
@@ -263,7 +265,6 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     void log(IpsLogEvent ile)
     {
         eventLogger.log(ile);
-	loggedBlinger.increment();
     }
 
     // private methods ---------------------------------------------------------
@@ -381,6 +382,16 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     public void incrementScanCount() 
     {
 	scanBlinger.increment();
+    }
+
+    public void incrementDetectCount() 
+    {
+	detectBlinger.increment();
+    }
+
+    public void incrementBlockCount() 
+    {
+	blockBlinger.increment();
     }
 }
 

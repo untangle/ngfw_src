@@ -135,7 +135,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private final BlingBlinger scanBlinger;
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
-    private final BlingBlinger spyPagesDetectedBlinger;
+    // private final BlingBlinger spyPagesDetectedBlinger;
 
     private volatile SpywareSettings settings;
 
@@ -210,11 +210,12 @@ public class SpywareImpl extends AbstractNode implements Spyware
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Scan Connection"), null, I18nUtil.marktr("SCAN"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Block Connection"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pass Connection"), null, I18nUtil.marktr("PASS"));
-        spyPagesDetectedBlinger = c.addActivity("spydetected", I18nUtil.marktr("Spyware Pages Detected"), null, I18nUtil.marktr("SPYDETECTED"));
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, spyPagesDetectedBlinger);
+        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
+	// What was this supposed to be?
+        // spyPagesDetectedBlinger = c.addMetric("spydetected", I18nUtil.marktr("Spyware Pages Detected"), null);
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger);
     }
 
     // SpywareNode methods -----------------------------------------------------
@@ -471,7 +472,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
     void incrementHttpBlockedDomain()
     {
         blockBlinger.increment();
-    spyPagesDetectedBlinger.increment();
     }
 
     void incrementHttpPassed()
