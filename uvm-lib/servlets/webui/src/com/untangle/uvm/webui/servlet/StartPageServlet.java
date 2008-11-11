@@ -21,7 +21,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 public class StartPageServlet extends HttpServlet
 {
     /* ??? Perhaps this should live in a global place. */
-    private static final int STORE_WINDOW_ID = new Random().nextInt();
+    private static final int STORE_WINDOW_ID = new Random().nextInt(Integer.MAX_VALUE);
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
