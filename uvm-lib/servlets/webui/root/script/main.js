@@ -210,7 +210,10 @@ Ung.Main.prototype = {
                     '</div>',
                 '</div>',
             '</div>'];
-        this.contentLeftWidth=parseInt(Ext.util.CSS.getRule(".content-left",true).style.width);
+
+        var cssRule = Ext.util.CSS.getRule(".content-left",true);
+        this.contentLeftWidth = ( cssRule ) ? parseInt( cssRule.style.width ) : 214;
+
         this.viewport = new Ext.Viewport({
             layout:'border',
             items:[{
@@ -339,9 +342,7 @@ Ung.Main.prototype = {
         query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
         query += "&action="+action;
 
-        var url = "../library/launcher?" + query;
-        var w = window.open( url, storeWindowName, "location=0, resizable=1" );
-        if ( w ) w.focus();
+        this.openWindow( query, storeWindowName, title );
     },
     openStoreToLibItem : function (libItemName, title) {
         var currentLocation = window.location;
@@ -351,9 +352,42 @@ Ung.Main.prototype = {
         query += "&action=browse";
         query += "&libitem=" + libItemName;
 
+        this.openWindow( query, storeWindowName, title );
+    },
+
+    openWindow : function( query, windowName, title )
+    {
         var url = "../library/launcher?" + query;
-        var w = window.open( url, storeWindowName, "location=0, resizable=1" );
-        if ( w ) w.focus();
+
+        /* browser specific code ... we has it. */
+        if ( this.isRunningOnConsole()) {
+            this.openIFrame( url, title );
+            return;
+        }
+        
+        var w = window.open( url, windowName, "location=0, resizable=1" );
+        
+        var m = String.format( i18n._( "Click {1}here{2} or disable your pop-up blocker and try again." ),
+                               '<br/>', "<a href='" + url + "' target='" + windowName + "'>", '</a>' );
+        
+        if ( w == null ) {
+            Ext.MessageBox.show({
+                title : i18n._( "Unable to open a new window" ),
+                msg : m,
+                buttons : Ext.MessageBox.OK,
+                icon : Ext.MessageBox.INFO
+            });
+        } else {
+            if ( w ) w.focus();
+        }
+    },
+    
+    openIFrame : function( url, title )
+    {
+        var iframeWin = main.getIframeWin();
+        iframeWin.show();
+        iframeWin.setTitle(title);
+        window.frames["iframeWin_iframe"].location.href = url;
     },
     
     initExtI18n: function(){
@@ -710,9 +744,9 @@ Ung.Main.prototype = {
         } else { // the title represents breadcrumbs
             iframeWin.setTitle('<span id="title_' + iframeWin.getId() + '"></span>');
             iframeWin.breadcrumbs = new Ung.Breadcrumbs({
-				renderTo : 'title_' + iframeWin.getId(),
-				elements : title
-			})            
+		renderTo : 'title_' + iframeWin.getId(),
+		elements : title
+	    })            
         }
         window.frames["iframeWin_iframe"].location.href=url;
     },
@@ -903,5 +937,15 @@ Ung.Main.prototype = {
             rpc.currentPolicy=rpc.policies[this.index];
             main.loadRackView();		
         }
+    },
+
+    /* browser specific code ... we has it. */
+    isRunningOnConsole : function()
+    {
+        if ( navigator.userAgent == "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.7) Gecko/20060830 Firefox/1.5.0.7 (Debian-1.5.dfsg+1.5.0.7-2~bpo.1)" ) {
+            return true;
+        }
+
+        return false;
     }
 };

@@ -88,7 +88,7 @@ class ArgumentParser(object):
         return args
 
 def printUsage():
-    print """\
+    sys.stderr.write( """\
 %s Usage:
   optional args:
     -h hostname
@@ -151,7 +151,7 @@ def printUsage():
     ucli restartCliServer
   debugging commands:
     ucli aptTail
-""" % sys.argv[0]
+""" % sys.argv[0] )
 
 def make_proxy( parser, timeout=30 ):
     handler = CurlRequestHandler( timeout )
@@ -178,7 +178,7 @@ proxy = make_proxy( parser, parser.timeout )
 remoteContext = proxy.RemoteUvmContext
 
 if ( parser.policy_name != None ):
-        Manager.policy = remoteContext.policyManager().getPolicy(parser.policy_name)
+    Manager.policy = remoteContext.policyManager().getPolicy(parser.policy_name)
 
 Manager.verbosity = parser.verbosity
 
@@ -201,10 +201,10 @@ for manager in Manager.managers:
         remoteManager = manager(remoteContext)
         getattr( remoteManager, "api_" + method )( *script_args )
     except JSONRPCException, e:
-        print "Unable to make the request: ", e.error
+        sys.stderr.write( "Unable to make the request: (%s)\n" % e.error )
     break
 
 if not calledMethod:
-    print "Unable to find method: ", method
+    sys.stderr.write( "Unable to find method: (%s)\n" % method )
     printUsage()
     sys.exit(1)

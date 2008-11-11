@@ -1278,6 +1278,7 @@ Ung.MessageManager = {
                                 this.resetErrorTolerance();
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
+                                    if ( main.isRunningOnConsole()) main.getIframeWin().hide();
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
                             }
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {

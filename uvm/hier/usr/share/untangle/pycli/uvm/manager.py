@@ -14,7 +14,7 @@ class Manager(object):
         return "untangle-node-" + shortName
 
     def doAptTailLog(self, key ):
-        print "Implement me!"
+        print "Operation started, please apt.log for more information"
 
     def buildTid(self,tid):
         tid = int( tid )
