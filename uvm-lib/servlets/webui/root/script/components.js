@@ -1338,8 +1338,7 @@ Ung.MessageManager = {
                                     }
                                     var msgTitle=i18n._("Updating... Please wait");
                                     if(!Ext.MessageBox.isVisible() || Ext.MessageBox.getDialog().title!=msgTitle) {
-                                        Ext.MessageBox.progress(msgTitle);
-                                        alert(1);
+                                        Ext.MessageBox.progress(msgTitle, text);
                                     }
                                     var progressIndex = msg.size!=0?parseFloat(msg.bytesDownloaded/ msg.size):0;
                                     Ext.MessageBox.updateProgress(progressIndex, "", text);
