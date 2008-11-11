@@ -306,7 +306,7 @@ public class NodeReporter
         String mktName = tctx.getNodeDesc().getDisplayName();
         // HACK O RAMA XXXXXXXXX
         if (mktName.startsWith("Untangle Reports"))
-            mktName = "Untangle Platform";
+            mktName = "Platform";
         logger.debug("Writing node name: " + mktName);
         fos = new FileOutputStream(new File(nodeDir, "name"));
         PrintWriter pw = new PrintWriter(fos);

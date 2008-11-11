@@ -71,7 +71,11 @@ public class Stats implements Serializable
     {
         Map<String, CounterStats> m = new HashMap<String, CounterStats>(stats.size());
         for (String s : stats.keySet()) {
-            m.put(s, new FixedCounts(stats.get(s)));
+            CounterStats cs = stats.get(s);
+            if ( cs == null ) {
+                continue;
+            }
+            m.put(s, new FixedCounts(cs));
         }
 
         return Collections.unmodifiableMap(m);

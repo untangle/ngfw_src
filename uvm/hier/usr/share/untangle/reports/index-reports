@@ -439,7 +439,7 @@ EOF
 
 cat >> $main_index <<EOF
                   <tr><td>
-                    &gt; <a href="#Untangle Platform">Untangle Platform</a>
+                    &gt; <a href="#Platform">Platform</a>
                   </td></tr>
 EOF
 
@@ -479,7 +479,7 @@ tran_dir=$1
 ls $tran_dir/name >/dev/null 2>&1 || return
 tran_name=$(cat $tran_dir/name)
 
-if [ "$tran_name" = "Untangle Platform" ]; then
+if [ "$tran_name" = "Platform" ]; then
     return;
 fi
 
@@ -519,18 +519,18 @@ EOF
 
 generate_summary_entry ()
 {
-# true allows you to print only non Untangle Platform software, false
-# allows you to print only Untangle Platform software
+# true allows you to print only non Platform software, false
+# allows you to print only Platform software
 tran_dir=$1
 ls $tran_dir/name >/dev/null 2>&1 || return
 tran_name=$(cat $tran_dir/name)
 
 if [ "$2" = false ]; then
-    if [ "$tran_name" != "Untangle Platform" ]; then
+    if [ "$tran_name" != "Platform" ]; then
     return
     fi
 else
-    if [ "$tran_name" = "Untangle Platform" ]; then
+    if [ "$tran_name" = "Platform" ]; then
     return
     fi
 fi
@@ -652,7 +652,7 @@ generate_visual_summary ()
 cat >>$main_index <<EOF
 <!-- VISUAL SUMMARY -->
 <center>
-<img src="$rel_dir/$graph_name--${period}.png" width="600" height="200" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from the Untangle Platform."/>
+<img src="$rel_dir/$graph_name--${period}.png" width="600" height="200" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from the Platform."/>
 </center>
 <!-- END VISUAL SUMMARY -->
 EOF
