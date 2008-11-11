@@ -1,3 +1,4 @@
+Ext.namespace('Ung');
 // Global Variables
 // the main object instance
 var main=null;
@@ -556,15 +557,16 @@ Ung.Main.prototype = {
     },
 
     unactivateNode: function(mackageDesc) {
+    	Ung.AppItem.updateState(mackageDesc.displayName,"unactivating");
         rpc.nodeManager.nodeInstances(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 var tids=result;
                 if(tids.length>0) {
+                	Ung.AppItem.updateState(this.displayName);
                     Ext.MessageBox.alert(this.name+" "+i18n._("Warning"),
                     String.format(i18n._("{0} cannot be removed because it is being used by the following rack:{1}You must remove the product from all racks first."), this.displayName,"<br><b>"+tids[0].policy.name+"</b><br><br>"));
                     return;
                 } else {
-                    Ung.AppItem.updateState(this.displayName,"unactivating");
                     rpc.toolboxManager.uninstall(function (result, exception) {
                        if(Ung.Util.handleException(exception)) return;
                        main.setAppLastState(this.displayName);
@@ -645,6 +647,16 @@ Ung.Main.prototype = {
         } else {
         	Ext.getCmp("my_account_button").show();
         }
+    },
+    findLibItemDisplayName: function(libItemName) {
+        if(main.apps!=null) {
+            for(var i=0; i<main.apps.length; i++) {
+                if(main.apps[i].libItem!=null && main.apps[i].libItem.name==libItemName) {
+                	return main.apps[i].libItem.displayName
+                }
+            }
+        }
+    	return null;
     },
     buildNodes: function() {
         //build nodes

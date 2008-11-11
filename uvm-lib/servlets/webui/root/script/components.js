@@ -1087,6 +1087,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                 }
                 this.setState("attention");
                 this.getEl().mask();
+                Ung.MessageManager.resetErrorTolerance();
                 rpc.nodeManager.destroy(function(result, exception) {
                     if(Ung.Util.handleException(exception, function() {
                         this.getEl().unmask();
@@ -1274,7 +1275,8 @@ Ung.MessageManager = {
                             if(!msg.installed) {
                                 var policy=null;
                                 policy = rpc.currentPolicy;
-                                Ung.AppItem.updateState(msg.mackageDesc.displayName, "download");
+                                var appItemDisplayName=msg.mackageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.mackageDesc.fullVersion):msg.mackageDesc.displayName;
+                                Ung.AppItem.updateState(appItemDisplayName, "download");
                                 this.resetErrorTolerance();
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
@@ -1291,13 +1293,13 @@ Ung.MessageManager = {
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
-                            var appItemDisplayName=msg.requestingMackage.displayName;
+                            var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
                             Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                             main.loadLicenseStatus();
                         } else {
                             if(msg.upgrade==false) {
-                                var appItemDisplayName=msg.requestingMackage.displayName;
+                                var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     this.resetErrorTolerance();
                                     Ung.AppItem.updateState(appItemDisplayName, "download");
@@ -1334,21 +1336,13 @@ Ung.MessageManager = {
                                     if(this.upgradeSummary) {
                                         text+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
                                     }
-
-                                    Ext.MessageBox.show({
-                                               title : i18n._("Updating... Please wait"),
-                                               msg : text,
-                                               closable: true,
-                                               modal : true,
-                                               progress: true,
-                                               wait: msg.size==0,
-                                               progressText : ""
-                                            });
-                                    if(msg.size!=0) {
-                                        var currentPercentComplete = msg.bytesDownloaded/ msg.size;
-                                        var progressIndex = parseFloat(currentPercentComplete);
-                                        Ext.MessageBox.updateProgress(progressIndex, "");
+                                    var msgTitle=i18n._("Updating... Please wait");
+                                    if(!Ext.MessageBox.isVisible() || Ext.MessageBox.getDialog().title!=msgTitle) {
+                                        Ext.MessageBox.progress(msgTitle);
+                                        alert(1);
                                     }
+                                    var progressIndex = msg.size!=0?parseFloat(msg.bytesDownloaded/ msg.size):0;
+                                    Ext.MessageBox.updateProgress(progressIndex, "", text);
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                     this.resetErrorTolerance();
                                     this.upgradesComplete++;
