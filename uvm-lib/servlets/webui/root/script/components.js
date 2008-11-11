@@ -792,6 +792,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     stats : null,
     activityBlinger: null,
     systemBlinger: null,
+    buttonsPanel: null,
     subCmps : null,
     fnCallback: null,
     constructor : function(config) {
@@ -839,18 +840,16 @@ Ung.Node = Ext.extend(Ext.Component, {
             handler : function() {
                 this.onHelpAction();
             }.createDelegate(this)
-
+        },{
+            xtype: "button",
+            name : "Buy",
+            id: 'node-buy-button_'+this.getId(),
+            iconCls : 'icon-buy',
+            hidden : !(this.licenseStatus && this.licenseStatus.trial), 
+            ctCls:'buy-button-text',
+            text : i18n._('Buy Now'),
+            handler : this.onBuyNowAction.createDelegate(this)
         }];
-        if(this.licenseStatus && this.licenseStatus.trial) {
-            nodeButtons.push({
-                xtype: "button",
-                name : "Buy",
-                iconCls : 'icon-buy',
-                ctCls:'buy-button-text',
-                text : i18n._('Buy Now'),
-                handler : this.onBuyNowAction.createDelegate(this)
-            });
-        }
         var templateHTML = Ung.Node.template.applyTemplate({
             'id' : this.getId(),
             'image' : this.image,
@@ -860,7 +859,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
 
-        var buttonsPanel=new Ext.Panel({
+        this.buttonsPanel=new Ext.Panel({
             renderTo : 'node-buttons_' + this.getId(),
             border: false,
             bodyStyle : 'background-color: transparent;',
@@ -872,7 +871,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             },
             buttons : nodeButtons
         });
-        this.subCmps.push(buttonsPanel);
+        this.subCmps.push(this.buttonsPanel);
         if(this.hasPowerButton) {
             Ext.get('node-power_' + this.getId()).on('click', this.onPowerClick, this);
             this.subCmps.push(new Ext.ToolTip({
@@ -1180,6 +1179,14 @@ Ung.Node = Ext.extend(Ext.Component, {
     updateLicenseStatus : function (licenseStatus) {
         this.licenseStatus=licenseStatus;
         this.getEl().child("div[class=node-trial-info]").dom.innerHTML=this.getTrialInfo();
+        var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
+        if(nodeBuyButton) {
+            if(this.licenseStatus && this.licenseStatus.trial) {
+                nodeBuyButton.show();
+            } else {
+            	nodeBuyButton.hide()
+            }
+        }
     }
 });
 // Get node component by tid
