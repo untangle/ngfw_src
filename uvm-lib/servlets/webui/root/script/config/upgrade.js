@@ -63,33 +63,45 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                 var totalSize=0;
                                 for (var i = 0; i < upgradeList.length; i++) {
                                     var md = upgradeList[i];
+				    var mtype;
                                     totalSize+=md.size;
-                                    if (md.type != "CASING" && md.type != "LIB_ITEM" && md.type != "TRIAL" && md.type != "BASE") {
-                                        somethingVisibleAdded = true;
-                                        upgradeData.push({
-                                            image : "image?name=" + md.name,
-                                            name : md.name,
-                                            displayName : md.displayName,
-                                            availableVersion : md.availableVersion,
-                                            type : md.type == "LIBRARY" ? this.i18n._("System Component") : md.type == "NODE"
-                                                    ? this.i18n._("Product")
-                                                    : this.i18n._("Unknown"),
-                                            size : Math.round(md.size / 1000)
-                                        })
-                                    }
+				    // Leave out only libitems
+				    switch (md.type) {
+				    case "LIB_ITEM":
+				    case "TRIAL":
+				      // Skip
+				      continue;
+				    case "LIBRARY":
+				    case "BASE":
+				    case "CASING":
+				      mtype = this.i18n._("System Component");
+				      break;
+				    case "NODE":
+				    case "SERVICE":
+				      mtype = this.i18n._("Product");
+				      break;
+				    case "UNKNOWN":
+				      mtype = this.i18n._("System Component");
+				      break;
+				    }
+				    somethingVisibleAdded = true;
+				    upgradeData.push({
+				      image : "image?name=" + md.name,
+				      name : md.name,
+				      displayName : md.displayName == null ? md.name : md.displayName,
+				      availableVersion : md.availableVersion,
+				      type : mtype,
+				      size : Math.round(md.size / 1000)
+				    });
                                 }
                                 if (!somethingVisibleAdded) {
-                                    var size = 0;
-                                    for (var i = 0; i < upgradeList.length; i++) {
-                                        size += upgradeList[i].size;
-                                    }
                                     upgradeData.push({
                                         image : "image?name=unknown",
                                         name : md.name,
                                         displayName : this.i18n._("Various Updates"),
                                         availableVersion : this.i18n._("N/A"),
                                         type : this.i18n._("Misc."),
-                                        size : Math.round(md.size / 1000)
+                                        size : Math.round(totalSize / 1000)
                                     });
                                 }
                                 this.gridUpgrade.getTopToolbar().items.get(0).getEl().innerHTML=String.format(i18n._("Upgrades are available. There are {0} packages. Total size is {1} MBs."),upgradeList.length,Ung.Util.bytesToMBs(totalSize));
