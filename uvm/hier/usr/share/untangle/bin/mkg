@@ -44,10 +44,12 @@ puts <<STR
   mkg installed
   mkg available
   mkg install <mackage>
+  mkg remove
+  mkg predictInstall
   mkg update
   mkg upgrade
-  mkg remove
 STR
+  return 1
 end
 
 def log(str)
@@ -359,4 +361,6 @@ exit case ARGV.shift
        end
      when 'predictInstall'
        mkg.predictInstall(ARGV.shift)
+     else
+         printusage()
      end
