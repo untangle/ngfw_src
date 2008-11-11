@@ -1282,7 +1282,7 @@ Ung.MessageManager = {
 
                     var refreshApps=false;
                     var startUpgradeMode=false;
-                    var lastUpgradeMsg=null;
+                    var lastUpgradeDownloadProgressMsg=null;
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
                         if(msg.javaClass.indexOf("NodeStateChange") >= 0) {
@@ -1318,7 +1318,7 @@ Ung.MessageManager = {
                             main.loadLicenseStatus();
                         } else {
                             if(msg.upgrade==false) {
-                                var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
+                            	var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     this.resetErrorTolerance();
                                     Ung.AppItem.updateState(appItemDisplayName, "download");
@@ -1345,62 +1345,70 @@ Ung.MessageManager = {
                                     Ung.AppItem.updateState(appItemDisplayName, "activate_timeout");
                                 }
                             } else if(msg.upgrade==true) {
-                            	lastUpgradeMsg=msg;
+                            	if(startUpgradeMode!="stop" && !this.upgradeMode) {
+                            	   startUpgradeMode=true;
+                            	}
+                                if(msg.javaClass.indexOf("DownloadSummary") != -1) {
+                                    this.resetErrorTolerance();
+                                    if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Downloading updates...")) {
+                                        Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
+                                    }
+                                    this.upgradeSummary=msg;
+                                } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
+                                	if(lastUpgradeDownloadProgressMsg!="stop") {
+                                		lastUpgradeDownloadProgressMsg=msg;
+                                	}
+                                } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
+                                    this.upgradesComplete++;
+                                    if(!msg.success) {
+                                    	lastUpgradeDownloadProgressMsg="stop";
+                                    	startUpgradeMode="stop";
+                                        Ext.MessageBox.alert(i18n._("Failed"), i18n._("Error downloading packages. Install Aborted."));
+                                    }
+                                } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
+                            		lastUpgradeDownloadProgressMsg="stop";
+                                    startUpgradeMode="stop";
+                                    this.resetErrorTolerance();
+                                    this.stop();
+                                    if(msg.success) {
+                                        Ext.MessageBox.alert(
+                                           i18n._("Upgrade Successful"),
+                                           i18n._("The Upgrade succeeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                           Ung.Util.goToStartPage);
+                                    } else {
+                                        Ext.MessageBox.alert(
+                                           i18n._("Upgrade Failed"),
+                                           i18n._("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                           Ung.Util.goToStartPage);
+                                    }
+                                } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
+                                    lastUpgradeDownloadProgressMsg="stop";
+                                    startUpgradeMode="stop";
+                                    this.stop();
+                                    Ext.MessageBox.alert(
+                                       i18n._("Upgrade Timeout"),
+                                       i18n._("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                       Ung.Util.goToStartPage);
+                                }
                             }
                         }
                     }
-                    if(lastUpgradeMsg!=null) {
-                    	var msg=lastUpgradeMsg;
-            	        startUpgradeMode=!this.upgradeMode;
-                        if(msg.javaClass.indexOf("DownloadSummary") != -1) {
-                            this.resetErrorTolerance();
-                            Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
-                            this.upgradeSummary=msg;
-                        } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                            this.resetErrorTolerance();
-                            var text=String.format(i18n._("Downloading {0}. <br/>Status: {1} KB/{2} KB downloaded. <br/>Speed: {3}."),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
-                            if(this.upgradeSummary) {
-                                text+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
-                            }
-                            var msgTitle=i18n._("Updating... Please wait");
-                            if(!Ext.MessageBox.isVisible() || Ext.MessageBox.getDialog().title!=msgTitle) {
-                                Ext.MessageBox.progress(msgTitle, text);
-                            }
-                            var progressIndex = msg.size!=0?parseFloat(msg.bytesDownloaded/ msg.size):0;
-                            Ext.MessageBox.updateProgress(progressIndex, "", text);
-                        } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
-                            this.resetErrorTolerance();
-                            this.upgradesComplete++;
-                            if(!msg.success) {
-                                Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemDisplayName));
-                            }
-                        } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
-                            this.resetErrorTolerance();
-                            startUpgradeMode=false;
-                            this.stop();
-                            if(msg.success) {
-                                Ext.MessageBox.alert(
-                                   i18n._("Upgrade Successful"),
-                                   i18n._("The Upgrade succeeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
-                                   Ung.Util.goToStartPage);
-                            } else {
-                                Ext.MessageBox.alert(
-                                   i18n._("Upgrade Failed"),
-                                   i18n._("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
-                                   Ung.Util.goToStartPage);
-
-                            }
-                        } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
-                            startUpgradeMode=false;
-                            this.stop();
-                            Ext.MessageBox.alert(
-                               i18n._("Upgrade Timeout"),
-                               i18n._("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
-                               Ung.Util.goToStartPage);
+                    if(lastUpgradeDownloadProgressMsg!=null && lastUpgradeDownloadProgressMsg!="stop") {
+                    	var msg=lastUpgradeDownloadProgressMsg;
+                        this.resetErrorTolerance();
+                        var text=String.format(i18n._("Downloading {0}. <br/>Status: {1} KB/{2} KB downloaded. <br/>Speed: {3}."),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
+                        if(this.upgradeSummary) {
+                            text+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
                         }
-                        if(startUpgradeMode) {
-                            this.startUpgradeMode();
+                        var msgTitle=i18n._("Updating... Please wait");
+                        if(!Ext.MessageBox.isVisible() || Ext.MessageBox.getDialog().title!=msgTitle) {
+                            Ext.MessageBox.progress(msgTitle, text);
                         }
+                        var progressIndex = msg.size!=0?parseFloat(msg.bytesDownloaded/ msg.size):0;
+                        Ext.MessageBox.updateProgress(progressIndex, "", text);
+                    }
+                    if(startUpgradeMode==true) {
+                        this.startUpgradeMode();
                     }
                     if(refreshApps && this.upgradeMode) {
                         main.updateSeparator();
