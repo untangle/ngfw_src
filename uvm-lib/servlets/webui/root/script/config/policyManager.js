@@ -131,7 +131,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     xtype : 'button',
                     text : this.i18n._( "More Info" ),
                     handler : function() {
-            			var app = Ung.AppItem.getApp("untangle-libitem-policy");
+            			var app = Ung.AppItem.getAppByLibItem("untangle-libitem-policy");
             			if (app != null && app.libItem != null) {
             				this.cancelAction();
                             app.linkToStoreFn();
@@ -243,7 +243,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 		    buttons: {ok:this.i18n._('More Info'), cancel:true},
 		    fn: function(btn){
 			if(btn=='ok'){
-			    var app = Ung.AppItem.getApp("untangle-libitem-policy");
+			    var app = Ung.AppItem.getAppByLibItem("untangle-libitem-policy");
 			    if (app != null && app.libItem != null) {
 				app.linkToStoreFn();
 			    }

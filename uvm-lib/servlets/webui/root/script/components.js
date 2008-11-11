@@ -674,7 +674,17 @@ Ung.AppItem.getApp = function(displayName) {
     }
     return null;
 };
-
+// get the app item having a libitem name
+Ung.AppItem.getAppByLibItem = function(libItemName) {
+    if(main.apps!=null) {
+        for(var i=0; i<main.apps.length; i++) {
+            if(main.apps[i].libItem!=null && main.apps[i].libItem.name==libItemName) {
+                return main.apps[i];
+            }
+        }
+    }
+    return null;
+};
 // Button component class
 Ung.Button = Ext.extend(Ext.Component, {
     autoEl : 'div',
