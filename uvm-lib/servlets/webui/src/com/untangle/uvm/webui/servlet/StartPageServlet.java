@@ -33,6 +33,7 @@ public class StartPageServlet extends HttpServlet
             brandingManager().getBaseSettings();
         req.setAttribute( "bbs", bbs );
         req.setAttribute( "storeWindowId", STORE_WINDOW_ID );
+        req.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
         rd.forward(req, resp);
     }
 

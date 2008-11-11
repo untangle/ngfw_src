@@ -436,7 +436,7 @@ class ServletBuilder < Target
     File.open(tmp.path) do |tmp|
       File.open(webXmlFilename, 'w') do |webXml|
         tmp.each_line do |l|
-          webXml.puts(l.sub(/@JSP_PRE_COMPILED_SERVLETS@/, repl))
+          webXml.puts(l.sub(/@JSP_PRE_COMPILED_SERVLETS@/, repl).sub(/@BUILD_STAMP@/, Time.now.to_i.to_s))
         end
       end
     end

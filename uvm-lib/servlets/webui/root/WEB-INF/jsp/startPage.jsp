@@ -72,6 +72,7 @@
         var storeWindowName='store_window_${storeWindowId}';
 		function init() {
 			main=new Ung.Main();
+		    main.buildStamp='${buildStamp}';
 			main.init();
 		}
 		Ext.onReady(init);

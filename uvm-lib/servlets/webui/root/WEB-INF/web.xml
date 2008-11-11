@@ -9,6 +9,10 @@
   <servlet>
     <servlet-name>StartPageServlet</servlet-name>
     <servlet-class>com.untangle.uvm.webui.servlet.StartPageServlet</servlet-class>
+    <init-param>
+      <param-name>buildStamp</param-name>
+      <param-value>@BUILD_STAMP@</param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

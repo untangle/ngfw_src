@@ -117,12 +117,19 @@ Ung.Util= {
         }
         return msg;
     },
+    addBuildStampToUrl: function(url){
+    	if (url.indexOf("?") >= 0) {
+    		return url + "&" + main.buildStamp;
+    	} else {
+    		return url + "?" + main.buildStamp;
+    	}
+    },
     // Load css file Dynamically
     loadCss: function(filename) {
         var fileref=document.createElement("link");
         fileref.setAttribute("rel", "stylesheet");
         fileref.setAttribute("type", "text/css");
-        fileref.setAttribute("href", filename);
+        fileref.setAttribute("href", Ung.Util.addBuildStampToUrl(filename));
         document.getElementsByTagName("head")[0].appendChild(fileref);
     },
     // Load script file Dynamically
@@ -133,7 +140,7 @@ Ung.Util= {
                 var req = new XMLHttpRequest();
             else
                 var req = new ActiveXObject("Microsoft.XMLHTTP");
-            req.open("GET",sScriptSrc,false);
+            req.open("GET",Ung.Util.addBuildStampToUrl(sScriptSrc),false);
             req.send(null);
             if( window.execScript)
                 window.execScript(req.responseText);
