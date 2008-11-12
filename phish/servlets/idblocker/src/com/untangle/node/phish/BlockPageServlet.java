@@ -18,7 +18,10 @@
 
 package com.untangle.node.phish;
 
+import java.io.IOException;
+
 import java.util.Map;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,20 +42,41 @@ public class BlockPageServlet extends HttpServlet
     // HttpServlet methods ----------------------------------------------------
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException
+        throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         LocalNodeManager nm = uvm.nodeManager();
-        
-        Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
-        
-        Phish node = (Phish)nm.nodeContext( tid ).node();
-        String nonce = request.getParameter("nonce");
 
-        PhishHandler handler = new PhishHandler( node.getBlockDetails(nonce), node.getUserWhitelistMode());
-                                                         
-        BlockPageUtil.getInstance().handle( request, response, this, handler );        
+        Map<String,String> i18n_map = LocalUvmContextFactory.context().
+            languageManager().getTranslations( "untangle-node-phish" );
+
+        Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
+
+        Object oNode = nm.nodeContext( tid ).node();
+        PhishBlockDetails blockDetails = null;
+        UserWhitelistMode whitelistMode = null;
+
+        if ( !(oNode instanceof Phish) || ( oNode == null )) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            return;
+        }
+        Phish node = (Phish)oNode;
+        String nonce = request.getParameter("nonce");
+        
+        blockDetails = node.getBlockDetails(nonce);
+        if (blockDetails == null) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            return;
+        }
+
+        whitelistMode = node.getUserWhitelistMode();
+
+        PhishHandler handler = new PhishHandler(blockDetails, whitelistMode);
+
+        BlockPageUtil.getInstance().handle(request, response, this, handler);
     }
     
     private static class PhishHandler implements BlockPageUtil.Handler

@@ -536,7 +536,7 @@ Ung.Main.prototype = {
 
     getAppAddressBook : function(forceReload) {
         if (forceReload || rpc.appAddressBook === undefined) {
-        	try {
+            try {
                 rpc.appAddressBook = rpc.jsonrpc.RemoteUvmContext.appAddressBook();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);

@@ -18,6 +18,7 @@
 
 package com.untangle.node.spyware;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -39,22 +40,42 @@ public class BlockPageServlet extends HttpServlet
     // HttpServlet methods ----------------------------------------------------
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException
+        throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         LocalNodeManager nm = uvm.nodeManager();
-        
-        Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
-        
-        Spyware node = (Spyware)nm.nodeContext( tid ).node();
-        String nonce = request.getParameter("nonce");
 
-        SpywareHandler handler = new SpywareHandler( node.getBlockDetails(nonce), 
-                                                     node.getUserWhitelistMode());
-        BlockPageUtil.getInstance().handle( request, response, this, handler );        
+        Map<String,String> i18n_map = LocalUvmContextFactory.context().
+            languageManager().getTranslations( "untangle-node-spyware" );
+
+        Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
+
+        Object oNode = nm.nodeContext( tid ).node();
+        SpywareBlockDetails blockDetails = null;
+        UserWhitelistMode whitelistMode = null;
+
+        String reason = null;
+        if ( !(oNode instanceof Spyware) || ( oNode == null )) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            return;
+        }
+        Spyware node = (Spyware)oNode;
+        String nonce = request.getParameter("nonce");
+        
+        blockDetails = node.getBlockDetails(nonce);
+        if (blockDetails == null) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "This request has expired.", i18n_map ));
+            return;
+        }
+        whitelistMode = node.getUserWhitelistMode();
+
+        SpywareHandler handler = new SpywareHandler(blockDetails, whitelistMode);
+
+        BlockPageUtil.getInstance().handle(request, response, this, handler);
     }
-    
     
     private static class SpywareHandler implements BlockPageUtil.Handler
     {

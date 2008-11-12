@@ -64,10 +64,6 @@ public class BlockPageUtil
         request.setAttribute( "bd", bd );
 
         /* Everything below here can be moved into a parent class, + i18n should go into an interface */
-        if ( null == bd ) value = "javascript:history.back()";
-        else value = "'" + bd.getFormattedUrl() + "'";
-        request.setAttribute( "url", value );
-
         request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", bs.getContactHtml(), i18n_map));
 
         UserWhitelistMode mode = handler.getUserWhitelistMode();

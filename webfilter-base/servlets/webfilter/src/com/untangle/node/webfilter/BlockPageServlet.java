@@ -18,7 +18,10 @@
 
 package com.untangle.node.webfilter;
 
+
+import java.io.IOException;
 import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,22 +41,42 @@ public class BlockPageServlet extends HttpServlet
     // HttpServlet methods ----------------------------------------------------
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException
+        throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         LocalNodeManager nm = uvm.nodeManager();
 
+        Map<String,String> i18n_map = LocalUvmContextFactory.context().
+            languageManager().getTranslations( "untangle-base-webfilter" );
+
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
 
-        WebFilter node = (WebFilter)nm.nodeContext( tid ).node();
+        Object oNode = nm.nodeContext( tid ).node();
+        WebFilterBlockDetails blockDetails = null;
+        UserWhitelistMode whitelistMode = null;
+
+        if ( !(oNode instanceof WebFilter) || ( oNode == null )) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            return;
+        }
+        WebFilter node = (WebFilter)oNode;
         String nonce = request.getParameter("nonce");
+        
+        blockDetails = node.getDetails(nonce);
+        if (blockDetails == null) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "This request has expired.", i18n_map ));
+            return;
+        }
 
-        WebFilterBlockDetails blockDetails = node.getDetails(nonce);
+        whitelistMode = node.getUserWhitelistMode();
+
         request.setAttribute( "reason", blockDetails.getReason());
-        WebFilterHandler handler = new WebFilterHandler( blockDetails, node.getUserWhitelistMode());
+        WebFilterHandler handler = new WebFilterHandler(blockDetails, whitelistMode);
 
-        BlockPageUtil.getInstance().handle( request, response, this, handler );
+        BlockPageUtil.getInstance().handle(request, response, this, handler);
     }
 
     private static class WebFilterHandler implements BlockPageUtil.Handler
@@ -112,5 +135,5 @@ public class BlockPageServlet extends HttpServlet
         {
             return this.userWhitelistMode;
         }
-    }
+    }    
 }

@@ -17,9 +17,9 @@
     
     <uvm:inlineScript>
       <![CDATA[
-               var nonce = '${param.nonce}';
-               var tid = '${param.tid}';
-               var url = ${url};
+          var nonce = '${param.nonce}';
+          var tid = '${param.tid}';
+          var url = '${bd.url}';
       ]]>
     </uvm:inlineScript>
     
