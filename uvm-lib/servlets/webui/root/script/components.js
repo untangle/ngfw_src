@@ -542,13 +542,13 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             this.getEl().on("click", this.installNodeFn, this);
             // this.actionEl.on("click", this.installNodeFn, this);
             this.actionEl.insertHtml("afterBegin", this.libItem==null?i18n._("Install"):i18n._("Trial Install"));
-            this.actionEl.addClass("icon-arrow-right");
+            this.actionEl.addClass("icon-arrow-install");
             if(this.libItem!=null) { // libitem and trial node
                 this.buttonBuy.setVisible(true);
                 this.buttonBuy.insertHtml("afterBegin", i18n._("Buy"));
                 this.buttonBuy.on("click", this.linkToStoreFn, this);
                 this.buttonBuy.addClass("button-buy");
-                this.buttonBuy.addClass("icon-arrow-down");
+                this.buttonBuy.addClass("icon-arrow-buy");
             }
         } else {
             return;
