@@ -1822,6 +1822,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var companyName="";
             var state="";
             var city="";
+            
+            var countryStore = [];
+            for ( var i = 0 ; i < Ung.CountryData.length ; i++ ) {
+                countryStore.push([ Ung.CountryData[i][0], this.i18n._( Ung.CountryData[i][1] )]);
+            }
+            
             if(registrationInfo!=null) {
                 if(registrationInfo.misc!=null && registrationInfo.misc.map!=null && registrationInfo.misc.map.country!=null) {
                     country=registrationInfo.misc.map.country;
@@ -1863,19 +1869,17 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             value: companyName,
                             width : 200
                         }, {
-                            xtype : "textfield",
+                            fieldLabel : this.i18n._('Country'),
                             id : 'openvpn_server_wizard_country',
                             name : "Country",
-                            fieldLabel : this.i18n._("Country"),
-                            allowBlank : false,
-                            value : country,
+                            xtype : 'combo',
                             width : 200,
-                            validator : function(fieldValue) {
-                                if (fieldValue.length != 2) {
-                                    return this.i18n._("The country code must be 2 characters long.");
-                                }
-                                return true;
-                            }.createDelegate(this)
+                            listWidth : 205,
+                            store : countryStore,
+                            mode : 'local',
+                            triggerAction : 'all',
+                            listClass : 'x-combo-list-small',
+                            value : country
                         }, {
                             xtype : "textfield",
                             id : 'openvpn_server_wizard_state',
@@ -1903,14 +1907,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     if(organization.length==0) {
                     	Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must fill out the name of your organization."));
                     	return;
-                    }
-                    if(country.length==0) {
-                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must fill out the name of your country."));
-                        return;
-                    }
-                    if(country.length!=2) {
-                        Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("The country code must be 2 characters long."));
-                        return;
                     }
                     if(state.length==0) {
                         Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("You must fill out the name of your state."));
