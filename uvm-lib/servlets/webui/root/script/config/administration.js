@@ -731,7 +731,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         id : 'administration_status_notBefore',
                         value : this.getCurrentServerCertInfo() == null ? "" : i18n.timestampFormat(this.getCurrentServerCertInfo().notBefore),
                         disabled : true,
-                        width: 300
+                        anchor:'100%'
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Valid until'),
@@ -739,23 +739,25 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         id : 'administration_status_notAfter',
                         value : this.getCurrentServerCertInfo() == null ? "" : i18n.timestampFormat(this.getCurrentServerCertInfo().notAfter),
                         disabled : true,
-                        width: 300
+                        anchor:'100%'                        
                     },{
-                        xtype : 'textfield',
+                        xtype : 'textarea',
                         fieldLabel : this.i18n._('Subject DN'),
                         labelStyle: 'font-weight:bold',
                         id : 'administration_status_subjectDN',
                         value : this.getCurrentServerCertInfo() == null ? "" : this.getCurrentServerCertInfo().subjectDN,
                         disabled : true,
-                        width: 300
+                        anchor:'100%',
+                        height : 40
                     },{
-                        xtype : 'textfield',
+                        xtype : 'textarea',
                         fieldLabel : this.i18n._('Issuer DN'),
                         labelStyle: 'font-weight:bold',
                         id : 'administration_status_issuerDN',
                         value : this.getCurrentServerCertInfo() == null ? "" : this.getCurrentServerCertInfo().issuerDN,
                         disabled : true,
-                        width: 300
+                        anchor:'100%',
+                        height : 40
                     }]
                 }, {
                     title: this.i18n._('Generation'),
