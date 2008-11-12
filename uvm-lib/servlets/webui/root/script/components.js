@@ -1417,7 +1417,7 @@ Ung.MessageManager = {
                     if(startUpgradeMode==true) {
                         this.startUpgradeMode();
                     }
-                    if(refreshApps && this.upgradeMode) {
+                    if(refreshApps && !this.upgradeMode) {
                         main.updateSeparator();
                         main.loadApps();
                     }
