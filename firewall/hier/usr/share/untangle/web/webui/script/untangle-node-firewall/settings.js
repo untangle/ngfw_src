@@ -112,7 +112,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             name : "Enable Rule",
                             dataIndex: "live",
                             fieldLabel : this.i18n._("Enable Rule"),
-                            itemCls:'firewall-spacing-1',
+                            itemCls:'firewall-spacing-1'
                         }),
                         new Ext.form.TextField({
                             name : "Description",
