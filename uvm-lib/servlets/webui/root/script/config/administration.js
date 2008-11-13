@@ -73,6 +73,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         panelCertificates : null,
         panelMonitoring : null,
         panelSkins : null,
+        uploadedCustomLogo : false,
         initComponent : function() {
             this.breadcrumbs = [{
                 title : i18n._("Configuration"),
@@ -1879,6 +1880,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                     Ext.getCmp('upload_logo_file_textfield').reset();
                                 } 
                             );
+                            cmp.uploadedCustomLogo = true;
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
@@ -2247,9 +2249,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
         },
         finalizeSave : function() {
-            var needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
+            this.needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
             if (!this.isBrandingExpired()) {
-                needRefresh = needRefresh 
+                this.needRefresh = this.needRefresh 
                        || this.initialBrandingBaseSettings.defaultLogo != this.getBrandingBaseSettings().defaultLogo
                        || this.initialBrandingBaseSettings.companyName != this.getBrandingBaseSettings().companyName
                        || this.initialBrandingBaseSettings.companyUrl != this.getBrandingBaseSettings().companyUrl
@@ -2258,10 +2260,19 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             Ext.MessageBox.hide();
             this.cancelAction();
-            if (needRefresh) {
+        },
+        
+        cancelAction : function() {
+        	Ung.Administration.superclass.cancelAction.call(this);
+            if (!this.isBrandingExpired()) {
+                this.needRefresh = this.needRefresh 
+                       || !this.initialBrandingBaseSettings.defaultLogo && !this.getBrandingBaseSettings().defaultLogo && this.uploadedCustomLogo;
+            }
+            if (this.needRefresh) {
                 Ung.Util.goToStartPage();
             }
         }
+        
     });
     
     // certificate generation window
