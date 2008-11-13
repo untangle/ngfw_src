@@ -737,7 +737,7 @@ Ung.Main.prototype = {
                 closeAction:'closeActionFn',
                 closeActionFn: function() {
                     this.hide();
-                    window.frames["iframeWin_iframe"].location.href="about:blank";
+                    window.frames["iframeWin_iframe"].location.href="/webui/blank.html";
                     if (this.breadcrumbs){
                         Ext.destroy(this.breadcrumbs);
                     }
