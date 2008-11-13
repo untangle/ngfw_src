@@ -1,4 +1,4 @@
--- settings schema for release-5.0
+-- settings schema for release-6.0
 -- $HeadURL$
 -- Copyright (c) 2003-2007 Untangle, Inc.
 --
@@ -30,6 +30,7 @@ CREATE TABLE settings.n_mail_settings (
     pop_timeout int8 NOT NULL,
     imap_timeout int8 NOT NULL,
     quarantine_settings int8,
+    smtp_allow_tls bool NOT NULL,
     PRIMARY KEY (settings_id));
 
 -- com.untangle.tran.mail.papi.quarantine.QuarantineSettings

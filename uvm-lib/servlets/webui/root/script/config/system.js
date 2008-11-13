@@ -682,6 +682,32 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }.createDelegate(this)
                             }
                         }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : String.format(this.i18n._('{0}Allow TLS{1} encryption over SMTP.'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'AllowTLS',
+                        checked : this.getMailSettings().smtpAllowTLS,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getMailSettings().smtpAllowTLS = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'radio',
+                        boxLabel : String.format(this.i18n._('{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)'), '<b>', '</b>'), 
+                        hideLabel : true,
+                        name : 'AllowTLS',
+                        checked : !this.getMailSettings().smtpAllowTLS,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getMailSettings().smtpAllowTLS = !checked;
+                                }.createDelegate(this)
+                            }
+                        }
                     }]
                 }));
                 protocolSettingsItems.push(new Ext.form.FieldSet({

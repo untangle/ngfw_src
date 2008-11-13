@@ -78,6 +78,7 @@ public class MailNodeSettings implements Serializable
     private long imapTimeout;
     private QuarantineSettings quarantineSettings;
     private List<SafelistSettings> safelistSettings;
+    private boolean smtpAllowTLS;
 
     // constructors -----------------------------------------------------------
 
@@ -160,6 +161,23 @@ public class MailNodeSettings implements Serializable
     public void setSmtpTimeout(long smtpTimeout)
     {
         this.smtpTimeout = smtpTimeout;
+    }
+
+    /**
+     * Whether or not to allow TLS.  Currently this controls both the extensions advertised
+     * by the server, and commands allowed by the client.
+     *
+     * @return true if TLS is allowed, false if not allowed
+     */
+    @Column(name="smtp_allow_tls", nullable=false)
+    public boolean getSmtpAllowTLS()
+    {
+        return smtpAllowTLS;
+    }
+
+    public void setSmtpAllowTLS(boolean smtpAllowTLS)
+    {
+         this.smtpAllowTLS = smtpAllowTLS;
     }
 
     /**

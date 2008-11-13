@@ -301,6 +301,7 @@ public class MailNodeImpl extends AbstractNode
                         settings.setSmtpTimeout(1000*60*4);
                         settings.setPopTimeout(1000*30);
                         settings.setImapTimeout(1000*30);
+			settings.setSmtpAllowTLS(false);
                         shouldSave = true;
                     }
 

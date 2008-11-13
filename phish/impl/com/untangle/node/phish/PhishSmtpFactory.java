@@ -67,7 +67,8 @@ public class PhishSmtpFactory implements TokenHandlerFactory
                                                 m_phishImpl,
                                                 spamConfig,
                                                 m_quarantine,
-                                                m_safelist));
+                                                m_safelist),
+			   casingSettings.getSmtpAllowTLS());
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

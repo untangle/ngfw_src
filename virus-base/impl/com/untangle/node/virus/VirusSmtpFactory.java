@@ -54,7 +54,8 @@ public class VirusSmtpFactory
                                                   casingSettings.getSmtpTimeout(),
                                                   casingSettings.getSmtpTimeout(),
                                                   m_virusImpl,
-                                                  virusConfig));
+                                                  virusConfig),
+			   casingSettings.getSmtpAllowTLS());
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
