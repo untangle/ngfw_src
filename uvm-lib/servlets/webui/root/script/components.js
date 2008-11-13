@@ -1179,6 +1179,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     updateLicenseStatus : function (licenseStatus) {
         this.licenseStatus=licenseStatus;
         this.getEl().child("div[class=node-trial-info]").dom.innerHTML=this.getTrialInfo();
+        document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.licenseStatus && this.licenseStatus.trial && this.licenseStatus.expired)?"node-power-expired":"node-power":"";
         var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
         if(nodeBuyButton) {
             if(this.licenseStatus && this.licenseStatus.trial) {
@@ -1316,6 +1317,8 @@ Ung.MessageManager = {
                                 var node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
                                 main.nodes.push(node);
                                 main.addNode(node);
+                            } else {
+                            	main.loadLicenseStatus();
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
