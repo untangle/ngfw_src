@@ -306,12 +306,6 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
 Ung.SetupWizard.Registration = Ext.extend( Object, {
     constructor : function( config )
     {
-        this.countryStore = [];
-        
-        for ( var i = 0 ; i < Ung.CountryData.length ; i++ ) {
-            this.countryStore.push([ Ung.CountryData[i][0], i18n._( Ung.CountryData[i][1] )]);
-        }
-        
         this.environmentStore = [
             i18n._( "My Business" ),
             i18n._( "A Client's Business" ),
@@ -391,7 +385,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     xtype : 'combo',
                     width : 200,
                     listWidth : 205,
-                    store : this.countryStore,
+                    store : Ung.Country.getCountryStore(i18n),
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
@@ -428,7 +422,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
         this.setRegistrationValue( "numSeats", info, true );
 
         this.setRegistrationValue( "environment", misc, false );
-        this.setRegistrationValue( "country", misc, false );
+        misc.country = Ung.Country.getCountryName(this.form.find( "name", "country" )[0].getValue());        
 
         info.misc.map = misc;
 

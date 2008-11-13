@@ -1831,14 +1831,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var state="";
             var city="";
             
-            var countryStore = [];
-            for ( var i = 0 ; i < Ung.CountryData.length ; i++ ) {
-                countryStore.push([ Ung.CountryData[i][0], this.i18n._( Ung.CountryData[i][1] )]);
-            }
-            
             if(registrationInfo!=null) {
                 if(registrationInfo.misc!=null && registrationInfo.misc.map!=null && registrationInfo.misc.map.country!=null) {
-                    country=registrationInfo.misc.map.country;
+                    country=Ung.Country.getCountryCode(registrationInfo.misc.map.country);
+                    if (country == null) {
+                    	country="US";
+                    }
                 }
                 if( registrationInfo.companyName!=null) {
                     companyName=registrationInfo.companyName;
@@ -1883,7 +1881,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             xtype : 'combo',
                             width : 200,
                             listWidth : 205,
-                            store : countryStore,
+                            store : Ung.Country.getCountryStore(this.i18n),
                             mode : 'local',
                             triggerAction : 'all',
                             listClass : 'x-combo-list-small',

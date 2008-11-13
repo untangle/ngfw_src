@@ -105,12 +105,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
 
             if ( misc == null ) misc = {};
 
-            this.countryStore = [];
-            
-            for ( var i = 0 ; i < Ung.CountryData.length ; i++ ) {
-                this.countryStore.push([ Ung.CountryData[i][0], this.i18n._( Ung.CountryData[i][1] )]);
-            }
-            
             this.environmentStore = [
                 this.i18n._( "My Business" ),
                 this.i18n._( "A Client's Business" ),
@@ -174,11 +168,11 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         xtype : 'combo',
                         width : 200,
                         listWidth : 205,
-                        store : this.countryStore,
+                        store : Ung.Country.getCountryStore(i18n),
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : misc.country
+                        value : Ung.Country.getCountryCode(misc.country)
                     }]
                 },{
                     xtype : 'label',
@@ -222,7 +216,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             info.numSeats    = this.panelRegistration.find( "name", "numSeats" )[0].getValue();
             
             misc.environment = this.panelRegistration.find( "name", "environment" )[0].getRawValue();
-            misc.country     = this.panelRegistration.find( "name", "country" )[0].getRawValue();
+            misc.country     = Ung.Country.getCountryName(this.panelRegistration.find( "name", "country" )[0].getValue());
 
             info.misc.map = misc;
             
