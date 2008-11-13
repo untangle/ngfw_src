@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=LoginDetail
-REPORT_TITLE=Untangle Platform - Administrative Logins
+REPORT_TITLE=Platform - Administrative Logins
 
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String

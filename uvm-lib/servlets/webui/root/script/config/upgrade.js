@@ -41,14 +41,14 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             return this.rpc.upgradeSettings;
         },
         loadGridUpgrade : function() {
-        	Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
             rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 var upgradeStatus=result;
                 if(upgradeStatus.upgrading) {
-                	Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
+                    Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
                 } else {
-                	rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
+                    rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         rpc.toolboxManager.upgradable(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
@@ -114,7 +114,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             };
                             this.gridUpgrade.getStore().load();
                         }.createDelegate(this));
-                	}.createDelegate(this),true);
+                    }.createDelegate(this),true);
                 }
             }.createDelegate(this), false);
 
