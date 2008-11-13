@@ -33,6 +33,7 @@ import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -52,10 +53,17 @@ public class BlockPageServlet extends HttpServlet
 
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
 
-        Object oNode = nm.nodeContext( tid ).node();
+        NodeContext nodeContext = nm.nodeContext( tid );
+        if ( nodeContext == null ) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            return;
+        }
+        
         WebFilterBlockDetails blockDetails = null;
         UserWhitelistMode whitelistMode = null;
 
+        Object oNode = nodeContext.node();
         if ( !(oNode instanceof WebFilter) || ( oNode == null )) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
                                 I18nUtil.tr( "Feature is not installed.", i18n_map ));

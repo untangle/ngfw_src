@@ -34,6 +34,8 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 
 import  com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeContext;
+
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -47,20 +49,42 @@ public class BlockPageServlet extends HttpServlet
     // HttpServlet methods ----------------------------------------------------
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException
+        throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         LocalNodeManager nm = uvm.nodeManager();
+
+        Map<String,String> i18n_map = LocalUvmContextFactory.context().
+            languageManager().getTranslations( "untangle-base-virus" );
         
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
         
-        VirusNodeImpl node = (VirusNodeImpl)nm.nodeContext( tid ).node();
+        NodeContext nodeContext = nm.nodeContext( tid );
+        if ( nodeContext == null ) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            return;
+        }
+
+        Object oNode = nodeContext.node();
+        if ( !(oNode instanceof VirusNodeImpl) || ( oNode == null )) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            return;
+        }
+
+        VirusNodeImpl node = (VirusNodeImpl)nodeContext.node();
         String nonce = request.getParameter("nonce");
 
         VirusBlockDetails blockDetails = node.getDetails(nonce);
+        if (blockDetails == null) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+                                I18nUtil.tr( "This request has expired.", i18n_map ));
+            return;
+        }
         request.setAttribute( "reason", blockDetails.getReason());
-        VirusHandler handler = new VirusHandler( blockDetails );
+        VirusHandler handler = new VirusHandler( nodeContext.getNodeDesc().getDisplayName(), blockDetails );
                                                          
         BlockPageUtil.getInstance().handle( request, response, this, handler );        
     }
@@ -68,9 +92,11 @@ public class BlockPageServlet extends HttpServlet
     private static class VirusHandler implements BlockPageUtil.Handler
     {
         private final VirusBlockDetails blockDetails;
+        private final String nodeTitle;
 
-        public VirusHandler( VirusBlockDetails blockDetails )
+        public VirusHandler( String nodeTitle, VirusBlockDetails blockDetails )
         {
+            this.nodeTitle = nodeTitle;
             this.blockDetails = blockDetails;
         }
 
@@ -84,13 +110,13 @@ public class BlockPageServlet extends HttpServlet
         public String getPageTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
             return I18nUtil.tr("{0} | {1} Warning", 
-                    new Object[]{bs.getCompanyName(), this.blockDetails.getVendor()}, i18n_map);
+                               new Object[]{bs.getCompanyName(), this.blockDetails.getVendor()}, i18n_map);
         }
         
         /* Retrieve the title (top of the pae) of the page */
         public String getTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return "Virus Blocker";
+            return this.nodeTitle;
         }
         
         public String getFooter( BrandingBaseSettings bs, Map<String,String> i18n_map )

@@ -34,6 +34,7 @@ import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -52,8 +53,10 @@ public class BlockPageServlet extends HttpServlet
             languageManager().getTranslations( "untangle-node-phish" );
 
         Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
+        
+        NodeContext nodeContext = nm.nodeContext( tid );
 
-        Object oNode = nm.nodeContext( tid ).node();
+        Object oNode = nodeContext.node();
         PhishBlockDetails blockDetails = null;
         UserWhitelistMode whitelistMode = null;
 
