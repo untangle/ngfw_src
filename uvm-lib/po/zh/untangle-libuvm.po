@@ -1,0 +1,3393 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-09-11 16:59+0300\n"
+"PO-Revision-Date: 2008-11-06 11:14-0500\n"
+"Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-Country: CHINA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: ../servlets/webui/root/script/main.js:163
+#: ../servlets/webui/root/script/components.js:986
+#: ../servlets/webui/root/script/components.js:2494
+#: ../servlets/webui/root/script/components.js:2553
+#: ../servlets/webui/root/script/config/email.js:1248
+msgid "Help"
+msgstr "帮助"
+
+#: ../servlets/webui/root/script/main.js:173
+msgid "What Apps should I use?"
+msgstr "我应该用什么样的应用程序？"
+
+#: ../servlets/webui/root/script/main.js:198
+msgid "My Account"
+msgstr "我的帐户"
+
+#: ../servlets/webui/root/script/main.js:222
+msgid "The value in this field is invalid"
+msgstr "该栏中的值无效"
+
+#: ../servlets/webui/root/script/main.js:223
+msgid "This field is required"
+msgstr "该栏必填"
+
+#: ../servlets/webui/root/script/main.js:262
+#: ../servlets/webui/root/script/main.js:269
+msgid "Invalid IP Address."
+msgstr "无效IP地址"
+
+#: ../servlets/webui/root/script/main.js:277
+#: ../servlets/webui/root/script/config/administration.js:1803
+#: ../servlets/webui/root/script/config/administration.js:1858
+#: ../servlets/webui/root/script/config/administration.js:1917
+#: ../servlets/webui/root/script/config/administration.js:1960
+#: ../servlets/webui/root/script/config/email.js:1089
+msgid "The port must be an integer number between {0} and {1}."
+msgstr "端口必须是一个{0}和{1}之间的整数。"
+
+#: ../servlets/webui/root/script/main.js:285
+msgid "The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."
+msgstr "端口必须是一个{0}和{1}之间的整数，或者在any, all, n/a, none之中选择一个值。"
+
+#: ../servlets/webui/root/script/main.js:295
+msgid "Passwords do not match"
+msgstr "密码不匹配"
+
+#: ../servlets/webui/root/script/main.js:343
+#: ../servlets/webui/root/script/main.js:355
+#: ../servlets/webui/root/script/main.js:360
+#: ../servlets/webui/root/script/main.js:409
+#: ../servlets/webui/root/script/main.js:480
+#: ../servlets/webui/root/script/main.js:490
+#: ../servlets/webui/root/script/main.js:500
+#: ../servlets/webui/root/script/main.js:527
+#: ../servlets/webui/root/script/main.js:633
+#: ../servlets/webui/root/script/components.js:292
+#: ../servlets/webui/root/script/components.js:307
+#: ../servlets/webui/root/script/components.js:332
+#: ../servlets/webui/root/script/components.js:345
+#: ../servlets/webui/root/script/components.js:381
+#: ../servlets/webui/root/script/components.js:396
+#: ../servlets/webui/root/script/components.js:421
+#: ../servlets/webui/root/script/components.js:433
+#: ../servlets/webui/root/script/components.js:502
+#: ../servlets/webui/root/script/components.js:729
+#: ../servlets/webui/root/script/components.js:735
+#: ../servlets/webui/root/script/components.js:1040
+#: ../servlets/webui/root/script/components.js:1050
+#: ../servlets/webui/root/script/components.js:1131
+#: ../servlets/webui/root/script/components.js:1234
+#: ../servlets/webui/root/script/components.js:1254
+#: ../servlets/webui/root/script/components.js:1312
+#: ../servlets/webui/root/script/components.js:1663
+#: ../servlets/webui/root/script/components.js:1710
+#: ../servlets/webui/root/script/components.js:1807
+#: ../servlets/webui/root/script/components.js:2167
+#: ../servlets/webui/root/script/components.js:2207
+#: ../servlets/webui/root/script/components.js:2795
+#: ../servlets/webui/root/script/components.js:3789
+#: ../servlets/webui/root/script/components.js:3800
+#: ../servlets/setup/root/script/setup.js:32
+#: ../servlets/webui/root/script/config/administration.js:782
+#: ../servlets/webui/root/script/config/administration.js:799
+#: ../servlets/webui/root/script/config/administration.js:837
+#: ../servlets/webui/root/script/config/administration.js:850
+#: ../servlets/webui/root/script/config/administration.js:892
+#: ../servlets/webui/root/script/config/administration.js:909
+#: ../servlets/webui/root/script/config/administration.js:1532
+#: ../servlets/webui/root/script/config/administration.js:1708
+#: ../servlets/webui/root/script/config/administration.js:1725
+#: ../servlets/webui/root/script/config/administration.js:1993
+#: ../servlets/webui/root/script/config/administration.js:2001
+#: ../servlets/webui/root/script/config/administration.js:2010
+#: ../servlets/webui/root/script/config/administration.js:2018
+#: ../servlets/webui/root/script/config/administration.js:2026
+#: ../servlets/webui/root/script/config/administration.js:2034
+#: ../servlets/webui/root/script/config/administration.js:2045
+#: ../servlets/webui/root/script/config/email.js:124
+#: ../servlets/webui/root/script/config/email.js:176
+#: ../servlets/webui/root/script/config/email.js:459
+#: ../servlets/webui/root/script/config/email.js:510
+#: ../servlets/webui/root/script/config/email.js:555
+#: ../servlets/webui/root/script/config/email.js:685
+#: ../servlets/webui/root/script/config/email.js:713
+#: ../servlets/webui/root/script/config/email.js:954
+#: ../servlets/webui/root/script/config/email.js:982
+#: ../servlets/webui/root/script/config/email.js:1171
+#: ../servlets/webui/root/script/config/email.js:1182
+#: ../servlets/webui/root/script/config/email.js:1196
+#: ../servlets/webui/root/script/config/localDirectory.js:240
+#: ../servlets/webui/root/script/config/policyManager.js:794
+#: ../servlets/webui/root/script/config/policyManager.js:805
+#: ../servlets/webui/root/script/config/policyManager.js:819
+#: ../servlets/webui/root/script/config/policyManager.js:823
+#: ../servlets/webui/root/script/config/policyManager.js:872
+#: ../servlets/webui/root/script/config/policyManager.js:886
+#: ../servlets/webui/root/script/config/system.js:310
+#: ../servlets/webui/root/script/config/system.js:348
+#: ../servlets/webui/root/script/config/system.js:943
+#: ../servlets/webui/root/script/config/system.js:1040
+#: ../servlets/webui/root/script/config/system.js:1049
+#: ../servlets/webui/root/script/config/system.js:1059
+#: ../servlets/webui/root/script/config/system.js:1072
+#: ../servlets/webui/root/script/config/system.js:1085
+#: ../servlets/webui/root/script/config/system.js:1097
+#: ../servlets/webui/root/script/config/systemInfo.js:297
+#: ../servlets/webui/root/script/config/upgrade.js:42
+#: ../servlets/webui/root/script/config/upgrade.js:181
+#: ../servlets/webui/root/script/config/upgrade.js:381
+#: ../servlets/webui/root/script/config/upgrade.js:426
+msgid "Failed"
+msgstr "失败"
+
+#: ../servlets/webui/root/script/main.js:348
+#: ../servlets/webui/root/script/components.js:2728
+#: ../servlets/webui/root/script/components.js:3869
+#: ../servlets/webui/root/script/config/administration.js:1735
+#: ../servlets/webui/root/script/config/administration.js:1761
+#: ../servlets/webui/root/script/config/administration.js:1778
+#: ../servlets/webui/root/script/config/administration.js:1788
+#: ../servlets/webui/root/script/config/administration.js:1803
+#: ../servlets/webui/root/script/config/administration.js:1816
+#: ../servlets/webui/root/script/config/administration.js:1826
+#: ../servlets/webui/root/script/config/administration.js:1848
+#: ../servlets/webui/root/script/config/administration.js:1858
+#: ../servlets/webui/root/script/config/administration.js:1880
+#: ../servlets/webui/root/script/config/administration.js:1895
+#: ../servlets/webui/root/script/config/administration.js:1906
+#: ../servlets/webui/root/script/config/administration.js:1917
+#: ../servlets/webui/root/script/config/administration.js:1950
+#: ../servlets/webui/root/script/config/administration.js:1960
+#: ../servlets/webui/root/script/config/email.js:1089
+#: ../servlets/webui/root/script/config/email.js:1100
+#: ../servlets/webui/root/script/config/email.js:1109
+#: ../servlets/webui/root/script/config/email.js:1120
+#: ../servlets/webui/root/script/config/email.js:1131
+#: ../servlets/webui/root/script/config/localDirectory.js:176
+#: ../servlets/webui/root/script/config/localDirectory.js:186
+#: ../servlets/webui/root/script/config/localDirectory.js:195
+#: ../servlets/webui/root/script/config/localDirectory.js:204
+#: ../servlets/webui/root/script/config/localDirectory.js:213
+#: ../servlets/webui/root/script/config/policyManager.js:546
+#: ../servlets/webui/root/script/config/system.js:922
+#: ../servlets/webui/root/script/config/system.js:963
+#: ../servlets/webui/root/script/config/system.js:978
+#: ../servlets/webui/root/script/config/system.js:993
+#: ../servlets/webui/root/script/config/system.js:1008
+#: ../servlets/webui/root/script/config/system.js:1023
+#: ../servlets/webui/root/script/config/systemInfo.js:217
+#: ../servlets/webui/root/script/config/systemInfo.js:229
+#: ../servlets/webui/root/script/config/systemInfo.js:241
+#: ../servlets/webui/root/script/config/systemInfo.js:253
+#: ../servlets/webui/root/script/config/systemInfo.js:265
+msgid "Warning"
+msgstr "警告"
+
+#: ../servlets/webui/root/script/main.js:349
+msgid "{0} cannot be removed because it is being used by the following rack:{1}You must remove the product from all racks first."
+msgstr "{0}无法被移除，因为它正在机架{1}上被使用。您必须首先从所有机架上把它移除。"
+
+#: ../servlets/webui/root/script/main.js:378
+msgid "Apps"
+msgstr "应用程序"
+
+#: ../servlets/webui/root/script/main.js:379
+#: ../servlets/webui/root/script/main.js:382
+msgid "Click to learn more"
+msgstr "点击->了解更多"
+
+#: ../servlets/webui/root/script/main.js:381
+msgid "Config"
+msgstr "配置"
+
+#: ../servlets/webui/root/script/main.js:562
+#: ../servlets/webui/root/script/main.js:594
+msgid "Networking"
+msgstr "联网"
+
+#: ../servlets/webui/root/script/main.js:563
+#: ../servlets/webui/root/script/config/administration.js:17
+#: ../servlets/webui/root/script/config/administration.js:147
+#: ../servlets/webui/root/script/config/administration.js:744
+#: ../servlets/webui/root/script/config/administration.js:822
+#: ../servlets/webui/root/script/config/administration.js:873
+msgid "Administration"
+msgstr "管理"
+
+#: ../servlets/webui/root/script/main.js:564
+#: ../servlets/setup/root/script/setup.js:343
+#: ../servlets/setup/root/script/setup.js:1363
+#: ../servlets/webui/root/script/config/administration.js:242
+#: ../servlets/webui/root/script/config/email.js:24
+#: ../servlets/webui/root/script/config/systemInfo.js:177
+msgid "Email"
+msgstr "电子邮件"
+
+#: ../servlets/webui/root/script/main.js:565
+#: ../servlets/webui/root/script/config/localDirectory.js:15
+#: ../servlets/webui/root/script/config/localDirectory.js:41
+msgid "Local Directory"
+msgstr "本地目录"
+
+#: ../servlets/webui/root/script/main.js:566
+#: ../servlets/webui/root/script/config/upgrade.js:14
+#: ../servlets/webui/root/script/config/upgrade.js:99
+#: ../servlets/webui/root/script/config/upgrade.js:159
+msgid "Upgrade"
+msgstr "升级"
+
+#: ../servlets/webui/root/script/main.js:567
+#: ../servlets/webui/root/script/config/system.js:17
+msgid "System"
+msgstr "系统"
+
+#: ../servlets/webui/root/script/main.js:568
+#: ../servlets/webui/root/script/config/systemInfo.js:15
+#: ../servlets/webui/root/script/config/systemInfo.js:79
+msgid "System Info"
+msgstr "系统信息"
+
+#: ../servlets/webui/root/script/main.js:709
+msgid "Services & Utilities"
+msgstr "服务和工具"
+
+#: ../servlets/webui/root/script/main.js:709
+msgid "Services"
+msgstr "服务"
+
+#: ../servlets/webui/root/script/components.js:104
+msgid "TODO"
+msgstr "待办"
+
+#: ../servlets/webui/root/script/components.js:112
+msgid "any"
+msgstr "任何"
+
+#: ../servlets/webui/root/script/components.js:113
+msgid "External"
+msgstr "外部"
+
+#: ../servlets/webui/root/script/components.js:114
+msgid "VPN"
+msgstr "虚拟专用网(VPN)"
+
+#: ../servlets/webui/root/script/components.js:115
+msgid "Internal"
+msgstr "内部"
+
+#: ../servlets/webui/root/script/components.js:116
+msgid "More Trusted"
+msgstr "更多可信的"
+
+#: ../servlets/webui/root/script/components.js:117
+msgid "Less Trusted"
+msgstr "更少可信的"
+
+#: ../servlets/webui/root/script/components.js:129
+msgid "TCP & UDP"
+msgstr "TCP和UDP"
+
+#: ../servlets/webui/root/script/components.js:130
+msgid "UDP"
+msgstr "UDP"
+
+#: ../servlets/webui/root/script/components.js:131
+msgid "TCP"
+msgstr "TCP"
+
+#: ../servlets/webui/root/script/components.js:132
+msgid "ANY"
+msgstr "任何"
+
+#: ../servlets/webui/root/script/components.js:554
+msgid "Apps Error"
+msgstr "应用程序错误"
+
+#: ../servlets/webui/root/script/components.js:554
+msgid "Error in Rack View applications list."
+msgstr "在机架视图的应用程序列表中出错。"
+
+#: ../servlets/webui/root/script/components.js:614
+#: ../servlets/webui/root/script/config/policyManager.js:151
+msgid "More Info"
+msgstr "更多信息"
+
+#: ../servlets/webui/root/script/components.js:619
+msgid "Install"
+msgstr "安装"
+
+#: ../servlets/webui/root/script/components.js:619
+msgid "Trial Install"
+msgstr "试用安装"
+
+#: ../servlets/webui/root/script/components.js:623
+msgid "Buy"
+msgstr "购买"
+
+#: ../servlets/webui/root/script/components.js:650
+msgid "Unactivating..."
+msgstr "正在反激活。。。"
+
+#: ../servlets/webui/root/script/components.js:660
+msgid "Installing..."
+msgstr "正在安装。。。"
+
+#: ../servlets/webui/root/script/components.js:665
+msgid "Uninstalling..."
+msgstr "正在卸载。。。"
+
+#: ../servlets/webui/root/script/components.js:671
+msgid "Downloading..."
+msgstr "正在下载。。。"
+
+#: ../servlets/webui/root/script/components.js:678
+msgid "Downloading file "
+msgstr "下载文件"
+
+#: ../servlets/webui/root/script/components.js:687
+msgid "Activating..."
+msgstr "正在激活。。。"
+
+#: ../servlets/webui/root/script/components.js:691
+msgid "..."
+msgstr "。。。"
+
+#: ../servlets/webui/root/script/components.js:935
+msgid "Trial"
+msgstr "试用"
+
+#: ../servlets/webui/root/script/components.js:937
+msgid "Trial expired"
+msgstr "已过试用期"
+
+#: ../servlets/webui/root/script/components.js:941
+msgid "{0} days remain"
+msgstr "还有{0}天"
+
+#: ../servlets/webui/root/script/components.js:977
+msgid "Show Settings"
+msgstr "显示设置"
+
+#: ../servlets/webui/root/script/components.js:1122
+msgid "Warning:"
+msgstr "警告："
+
+#: ../servlets/webui/root/script/components.js:1183
+msgid "The <B>Status Indicator</B> shows the current operating condition of a particular software product."
+msgstr "<B>状态指示器</B> 显示出相对应软件的当前工作状态。"
+
+#: ../servlets/webui/root/script/components.js:1185
+msgid "Green"
+msgstr "绿色"
+
+#: ../servlets/webui/root/script/components.js:1186
+msgid "indicates that the product is \"on\" and operating normally."
+msgstr "指示出该产品处于开机状态并且运行正常。"
+
+#: ../servlets/webui/root/script/components.js:1188
+msgid "Red"
+msgstr "红色"
+
+#: ../servlets/webui/root/script/components.js:1189
+msgid "indicates that the product is \"on\", but that an abnormal condition has occurred."
+msgstr "指示出该产品处于开机状态，但有异常情况发生。"
+
+#: ../servlets/webui/root/script/components.js:1191
+msgid "Yellow"
+msgstr "黄色"
+
+#: ../servlets/webui/root/script/components.js:1192
+msgid "indicates that the product is saving or refreshing settings."
+msgstr "指示出该产品正在保存或刷新设置。"
+
+#: ../servlets/webui/root/script/components.js:1193
+msgid "Clear"
+msgstr "无"
+
+#: ../servlets/webui/root/script/components.js:1193
+msgid "indicates that the product is \"off\", and may be turned \"on\" by the user."
+msgstr "指示出该产品处于关机状态，并处于可开机状态。"
+
+#: ../servlets/webui/root/script/components.js:1197
+msgid "The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
+msgstr "<B>电源按钮</B>允许您启动和关闭一个产品。"
+
+#: ../servlets/webui/root/script/components.js:1347
+#: ../servlets/setup/root/script/setup.js:1115
+msgid "Network"
+msgstr "网络"
+
+#: ../servlets/webui/root/script/components.js:1348
+msgid "CPU Load"
+msgstr "CPU负载"
+
+#: ../servlets/webui/root/script/components.js:1349
+msgid "Memory"
+msgstr "内存"
+
+#: ../servlets/webui/root/script/components.js:1350
+msgid "Disk"
+msgstr "磁盘"
+
+#: ../servlets/webui/root/script/components.js:1351
+msgid "Tx:"
+msgstr "发送："
+
+#: ../servlets/webui/root/script/components.js:1351
+msgid "Rx:"
+msgstr "接收："
+
+#: ../servlets/webui/root/script/components.js:1353
+msgid "F:"
+msgstr "F:"
+
+#: ../servlets/webui/root/script/components.js:1353
+msgid "U:"
+msgstr "U:"
+
+#: ../servlets/webui/root/script/components.js:1360
+msgid "RX Speed:"
+msgstr "接收速度："
+
+#: ../servlets/webui/root/script/components.js:1362
+msgid "TX Speed:"
+msgstr "发送速度："
+
+#: ../servlets/webui/root/script/components.js:1364
+msgid "Data received (since last start):"
+msgstr "接收的数据（从最后一次启动以来）："
+
+#: ../servlets/webui/root/script/components.js:1366
+msgid "Data sent (since last start):"
+msgstr "发送的数据（从最后一次启动以来）："
+
+#: ../servlets/webui/root/script/components.js:1368
+msgid "Total Throughput:"
+msgstr "总数据吞吐量："
+
+#: ../servlets/webui/root/script/components.js:1386
+msgid "Number of Processors / Type / Speed:"
+msgstr "处理器个数/类型/速度："
+
+#: ../servlets/webui/root/script/components.js:1388
+msgid "Uptime:"
+msgstr "持续运行时间："
+
+#: ../servlets/webui/root/script/components.js:1390
+msgid "Tasks (Processes) /Threads:"
+msgstr "任务数（处理器）/线程数："
+
+#: ../servlets/webui/root/script/components.js:1392
+msgid "CPU Utilization by User:"
+msgstr "CPU占用率（用户）："
+
+#: ../servlets/webui/root/script/components.js:1394
+msgid "CPU Utilization by System:"
+msgstr "CPU占用率（系统）："
+
+#: ../servlets/webui/root/script/components.js:1396
+msgid "Load average (1 min / 5 min / 15 min):"
+msgstr "平均负载（1分钟/5分钟/15分钟）："
+
+#: ../servlets/webui/root/script/components.js:1415
+msgid "Total Memory:"
+msgstr "总内存："
+
+#: ../servlets/webui/root/script/components.js:1417
+msgid "Memory Used:"
+msgstr "内存使用："
+
+#: ../servlets/webui/root/script/components.js:1419
+msgid "Memory Free:"
+msgstr "内存空闲："
+
+#: ../servlets/webui/root/script/components.js:1421
+msgid "Memory Pages:"
+msgstr "内存页面数："
+
+#: ../servlets/webui/root/script/components.js:1422
+msgid "active"
+msgstr "活动的"
+
+#: ../servlets/webui/root/script/components.js:1422
+msgid "wired"
+msgstr "连线的"
+
+#: ../servlets/webui/root/script/components.js:1423
+msgid "inactive"
+msgstr "非活动的"
+
+#: ../servlets/webui/root/script/components.js:1423
+msgid "free"
+msgstr "空闲的"
+
+#: ../servlets/webui/root/script/components.js:1424
+msgid "cached"
+msgstr "缓存的"
+
+#: ../servlets/webui/root/script/components.js:1424
+msgid "buffers"
+msgstr "缓冲器"
+
+#: ../servlets/webui/root/script/components.js:1425
+msgid "VM Statistics:"
+msgstr "虚拟机统计："
+
+#: ../servlets/webui/root/script/components.js:1426
+msgid "pageins"
+msgstr "进页面数"
+
+#: ../servlets/webui/root/script/components.js:1426
+msgid "pageouts"
+msgstr "出页面数"
+
+#: ../servlets/webui/root/script/components.js:1427
+msgid "page faults"
+msgstr "页面出错"
+
+#: ../servlets/webui/root/script/components.js:1428
+msgid "Swap Files:"
+msgstr "交换文件数："
+
+#: ../servlets/webui/root/script/components.js:1429
+msgid "swap files at peak usage"
+msgstr "高峰时交换文件数"
+
+#: ../servlets/webui/root/script/components.js:1430
+msgid "total swap space"
+msgstr "总交换空间"
+
+#: ../servlets/webui/root/script/components.js:1430
+msgid "used"
+msgstr "使用的"
+
+#: ../servlets/webui/root/script/components.js:1447
+msgid "Total Disk Space:"
+msgstr "总磁盘空间："
+
+#: ../servlets/webui/root/script/components.js:1449
+msgid "Free Disk Space:"
+msgstr "空闲磁盘空间："
+
+#: ../servlets/webui/root/script/components.js:1451
+msgid "Disk Reads In:"
+msgstr "磁盘读取入："
+
+#: ../servlets/webui/root/script/components.js:1453
+msgid "Disk Reads Out:"
+msgstr "磁盘读取出："
+
+#: ../servlets/webui/root/script/components.js:1455
+msgid "Data read:"
+msgstr "数据读取："
+
+#: ../servlets/webui/root/script/components.js:1457
+msgid "Data write:"
+msgstr "数据写入："
+
+#: ../servlets/webui/root/script/components.js:1561
+msgid "activity"
+msgstr "活动"
+
+#: ../servlets/webui/root/script/components.js:1642
+msgid "system"
+msgstr "系统"
+
+#: ../servlets/webui/root/script/components.js:1663
+msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
+msgstr "节点{0}有{1}个跃距。最大跃距数是{2}。"
+
+#: ../servlets/webui/root/script/components.js:1710
+msgid "Please set up to four items."
+msgstr "请设置不超过4个项目。"
+
+#: ../servlets/webui/root/script/components.js:1750
+msgid "Ok"
+msgstr "确定"
+
+#: ../servlets/webui/root/script/components.js:1757
+#: ../servlets/webui/root/script/components.js:2398
+#: ../servlets/webui/root/script/components.js:2504
+#: ../servlets/webui/root/script/components.js:2563
+#: ../servlets/webui/root/script/config/administration.js:2088
+#: ../servlets/webui/root/script/config/email.js:1239
+msgid "Cancel"
+msgstr "取消"
+
+#: ../servlets/webui/root/script/components.js:2053
+msgid "timestamp"
+msgstr "年-月-日 g:i:s a"
+
+#: ../servlets/webui/root/script/components.js:2061
+msgid "action"
+msgstr "行动"
+
+#: ../servlets/webui/root/script/components.js:2066
+msgid "blocked"
+msgstr "已阻止"
+
+#: ../servlets/webui/root/script/components.js:2066
+msgid "passed"
+msgstr "已通过"
+
+#: ../servlets/webui/root/script/components.js:2069
+msgid "client"
+msgstr "客户端"
+
+#: ../servlets/webui/root/script/components.js:2077
+msgid "request"
+msgstr "请求"
+
+#: ../servlets/webui/root/script/components.js:2082
+msgid "reason for action"
+msgstr "行动原因"
+
+#: ../servlets/webui/root/script/components.js:2087
+msgid "blocked in block list"
+msgstr "在阻止列表中被阻止"
+
+#: ../servlets/webui/root/script/components.js:2087
+msgid "not blocked in block list"
+msgstr "未在阻止列表中被阻止"
+
+#: ../servlets/webui/root/script/components.js:2090
+msgid "server"
+msgstr "服务器"
+
+#: ../servlets/webui/root/script/components.js:2107
+msgid "Event Log"
+msgstr "事件日志"
+
+#: ../servlets/webui/root/script/components.js:2144
+#: ../servlets/webui/root/script/components.js:2146
+#: ../servlets/setup/root/script/setup.js:466
+#: ../servlets/setup/root/script/setup.js:717
+#: ../servlets/setup/root/script/setup.js:839
+msgid "Refresh"
+msgstr "刷新"
+
+#: ../servlets/webui/root/script/components.js:2388
+msgid "Remove"
+msgstr "移除"
+
+#: ../servlets/webui/root/script/components.js:2408
+#: ../servlets/webui/root/script/components.js:2514
+msgid "Save"
+msgstr "保存"
+
+#: ../servlets/webui/root/script/components.js:2572
+msgid "Update"
+msgstr "更新"
+
+#: ../servlets/webui/root/script/components.js:2645
+#: ../servlets/webui/root/script/components.js:2957
+msgid "Edit"
+msgstr "编辑"
+
+#: ../servlets/webui/root/script/components.js:2728
+#: ../servlets/webui/root/script/config/policyManager.js:546
+msgid "The form is not valid!"
+msgstr "该表格无效！"
+
+#: ../servlets/webui/root/script/components.js:2973
+msgid "Delete"
+msgstr "删除"
+
+#: ../servlets/webui/root/script/components.js:2992
+msgid "Reorder"
+msgstr "记录器"
+
+#: ../servlets/webui/root/script/components.js:3074
+msgid "Loading ..."
+msgstr "加载中。。。"
+
+#: ../servlets/webui/root/script/components.js:3179
+msgid "Displaying topics {0} - {1} of {2}"
+msgstr "正在显示主题{0} - 在{2}中的第{1}个主题"
+
+#: ../servlets/webui/root/script/components.js:3180
+msgid "No topics to display"
+msgstr "没有可显示主题"
+
+#: ../servlets/webui/root/script/components.js:3194
+msgid "Add"
+msgstr "添加"
+
+#: ../servlets/webui/root/script/components.js:3195
+msgid "Add New Row"
+msgstr "添加新行"
+
+#: ../servlets/webui/root/script/components.js:3645
+msgid "Portal Question"
+msgstr "入口问题"
+
+#: ../servlets/webui/root/script/components.js:3656
+#: ../servlets/webui/root/script/config/policyManager.js:636
+#: ../servlets/webui/root/script/config/policyManager.js:647
+msgid "Users"
+msgstr "用户"
+
+#: ../servlets/webui/root/script/components.js:3683
+msgid "Active Directory"
+msgstr "活动目录"
+
+#: ../servlets/webui/root/script/components.js:3685
+msgid "Local"
+msgstr "本地"
+
+#: ../servlets/webui/root/script/components.js:3687
+msgid "UNKNOWN"
+msgstr "<b>未知</b>"
+
+#: ../servlets/webui/root/script/components.js:3699
+#: ../servlets/webui/root/script/config/administration.js:1307
+#: ../servlets/webui/root/script/config/policyManager.js:190
+msgid "user"
+msgstr "用户"
+
+#: ../servlets/webui/root/script/components.js:3720
+msgid "Select User"
+msgstr "选择用户"
+
+#: ../servlets/webui/root/script/components.js:3720
+msgid "Select Users"
+msgstr "选择用户"
+
+#: ../servlets/webui/root/script/components.js:3725
+msgid "You may choose user ID/Login that exists in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user."
+msgstr "您可以选择在用户目录（本地或远程活动目录）中现有的用户登录帐号，您也可以向用户目录中添加一个新用户然后选择该用户。"
+
+#: ../servlets/webui/root/script/components.js:3726
+msgid "You may choose user IDs/Logins that exist in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user."
+msgstr "您可以选择在用户目录（本地或远程活动目录）中现有的多个用户登录帐号，您也可以向用户目录中添加一个新用户然后选择该用户。"
+
+#: ../servlets/webui/root/script/components.js:3729
+msgid "Select an existing user"
+msgstr "选择一个现有的用户"
+
+#: ../servlets/webui/root/script/components.js:3729
+msgid "Select an existing user or users"
+msgstr "选择一个现有的用户或多个用户"
+
+#: ../servlets/webui/root/script/components.js:3734
+msgid "Add a new user"
+msgstr "添加一个新用户"
+
+#: ../servlets/webui/root/script/components.js:3740
+msgid "Open Local Directory"
+msgstr "打开本地目录"
+
+#: ../servlets/webui/root/script/components.js:3752
+msgid "Open Active Directory"
+msgstr "打开活动目录"
+
+#: ../servlets/webui/root/script/components.js:3776
+#: ../servlets/webui/root/script/config/email.js:119
+#: ../servlets/webui/root/script/config/email.js:505
+msgid "Loading..."
+msgstr "加载中。。。"
+
+#: ../servlets/webui/root/script/components.js:3776
+#: ../servlets/setup/root/script/setup.js:990
+#: ../servlets/setup/root/script/setup.js:1001
+#: ../servlets/webui/root/script/config/administration.js:754
+#: ../servlets/webui/root/script/config/administration.js:832
+#: ../servlets/webui/root/script/config/administration.js:883
+#: ../servlets/webui/root/script/config/administration.js:1983
+#: ../servlets/webui/root/script/config/email.js:119
+#: ../servlets/webui/root/script/config/email.js:456
+#: ../servlets/webui/root/script/config/email.js:505
+#: ../servlets/webui/root/script/config/email.js:552
+#: ../servlets/webui/root/script/config/email.js:682
+#: ../servlets/webui/root/script/config/email.js:710
+#: ../servlets/webui/root/script/config/email.js:951
+#: ../servlets/webui/root/script/config/email.js:979
+#: ../servlets/webui/root/script/config/email.js:1159
+#: ../servlets/webui/root/script/config/localDirectory.js:229
+#: ../servlets/webui/root/script/config/policyManager.js:883
+#: ../servlets/webui/root/script/config/system.js:209
+#: ../servlets/webui/root/script/config/system.js:220
+#: ../servlets/webui/root/script/config/system.js:1035
+#: ../servlets/webui/root/script/config/systemInfo.js:293
+#: ../servlets/webui/root/script/config/upgrade.js:178
+#: ../servlets/webui/root/script/config/upgrade.js:375
+msgid "Please wait"
+msgstr "请等候"
+
+#: ../servlets/webui/root/script/components.js:3789
+msgid "There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."
+msgstr "刷新活动目录用户时产生问题，请检查您的活动目录设置然后再试。"
+
+#: ../servlets/webui/root/script/components.js:3800
+msgid "There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."
+msgstr "刷新本地目录用户时产生问题，请检查您的本地目录设置然后再试。"
+
+#: ../servlets/webui/root/script/components.js:3869
+msgid "Please choose a user id/login or press Cancel!"
+msgstr "请选择一个用户登录帐号或点击“取消”！"
+
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:33
+msgid "{0} Previous"
+msgstr "{0}上一步"
+
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:39
+msgid "Next {0}"
+msgstr "下一步{0}"
+
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:220
+#: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:221
+msgid "Step {0}"
+msgstr "步骤{0}"
+
+#: ../servlets/setup/root/script/setup.js:23
+#: ../servlets/webui/root/script/config/email.js:144
+msgid "Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct."
+msgstr "输入一个您希望发送测试邮件的电子邮件地址然后点击“进行”。运行测试后您应该在短时间内收到一封电子邮件。如果没有的话，您的电子邮件设置可能不正确。"
+
+#: ../servlets/setup/root/script/setup.js:36
+#: ../servlets/webui/root/script/config/email.js:179
+msgid "Test email sent."
+msgstr "测试邮件发送完成。"
+
+#: ../servlets/setup/root/script/setup.js:37
+#: ../servlets/webui/root/script/config/email.js:179
+msgid "Warning!  Test failed.  Check your settings."
+msgstr "警告！测试失败。检查您的设置。"
+
+#: ../servlets/setup/root/script/setup.js:47
+#: ../servlets/webui/root/script/config/email.js:170
+msgid "Sending..."
+msgstr "发送中。。。"
+
+#: ../servlets/setup/root/script/setup.js:57
+#: ../servlets/webui/root/script/config/email.js:148
+#: ../servlets/webui/root/script/config/email.js:159
+#: ../servlets/webui/root/script/config/email.js:182
+#: ../servlets/webui/root/script/config/email.js:332
+#: ../servlets/webui/root/script/config/email.js:340
+msgid "Email Test"
+msgstr "电子邮件测试"
+
+#: ../servlets/setup/root/script/setup.js:59
+#: ../servlets/webui/root/script/config/email.js:150
+#: ../servlets/webui/root/script/config/email.js:162
+#: ../servlets/webui/root/script/config/email.js:185
+msgid "Close"
+msgstr "关闭"
+
+#: ../servlets/setup/root/script/setup.js:60
+#: ../servlets/webui/root/script/config/administration.js:2097
+#: ../servlets/webui/root/script/config/email.js:151
+#: ../servlets/webui/root/script/config/email.js:163
+#: ../servlets/webui/root/script/config/email.js:186
+msgid "Proceed"
+msgstr "进行"
+
+#: ../servlets/setup/root/script/setup.js:114
+#: ../servlets/setup/root/script/setup.js:129
+msgid "Thanks for using Untangle"
+msgstr "感谢您使用Untangle"
+
+#: ../servlets/setup/root/script/setup.js:120
+msgid "This wizard will guide you through the initial setup and configuration of your Untangle Server."
+msgstr "本向导将会指导您完成Untangle服务器的初始设置和配置。"
+
+#: ../servlets/setup/root/script/setup.js:122
+msgid "Click {0}Next{1} to get started."
+msgstr "点击{0}下一步{1}开始。"
+
+#: ../servlets/setup/root/script/setup.js:128
+msgid "Welcome"
+msgstr "欢迎"
+
+#: ../servlets/setup/root/script/setup.js:147
+#: ../servlets/setup/root/script/setup.js:213
+msgid "Configure your Server"
+msgstr "配置您的服务器"
+
+#: ../servlets/setup/root/script/setup.js:159
+msgid "<b>Choose a password for the admin account</b>"
+msgstr "<b>为管理员帐号选择一个密码</b>"
+
+#: ../servlets/setup/root/script/setup.js:164
+#: ../servlets/webui/root/script/config/administration.js:225
+#: ../servlets/webui/root/script/config/email.js:298
+msgid "Login"
+msgstr "登录"
+
+#: ../servlets/setup/root/script/setup.js:173
+#: ../servlets/setup/root/script/setup.js:805
+#: ../servlets/setup/root/script/setup.js:1328
+#: ../servlets/webui/root/script/config/administration.js:249
+#: ../servlets/webui/root/script/config/administration.js:268
+#: ../servlets/webui/root/script/config/email.js:307
+#: ../servlets/webui/root/script/config/localDirectory.js:155
+msgid "Password"
+msgstr "密码"
+
+#: ../servlets/setup/root/script/setup.js:178
+#, python-format
+msgid "The password is shorter than the minimum %d characters."
+msgstr "密码少于最少要求的%d个字符。"
+
+#: ../servlets/setup/root/script/setup.js:181
+#: ../servlets/webui/root/script/config/administration.js:259
+#: ../servlets/webui/root/script/config/administration.js:278
+msgid "Confirm Password"
+msgstr "确认密码"
+
+#: ../servlets/setup/root/script/setup.js:191
+msgid "<b>Select a timezone</b>"
+msgstr "<b>选择您的时区</b>"
+
+#: ../servlets/setup/root/script/setup.js:212
+msgid "Settings"
+msgstr "设置"
+
+#: ../servlets/setup/root/script/setup.js:249
+msgid "Unable to save the admin password"
+msgstr "无法保存管理员密码"
+
+#: ../servlets/setup/root/script/setup.js:293
+msgid "Unable to save password."
+msgstr "无法保存密码"
+
+#: ../servlets/setup/root/script/setup.js:309
+msgid "My Business"
+msgstr "我的业务"
+
+#: ../servlets/setup/root/script/setup.js:310
+msgid "A Client's Business"
+msgstr "客户的业务"
+
+#: ../servlets/setup/root/script/setup.js:311
+msgid "School"
+msgstr "学校"
+
+#: ../servlets/setup/root/script/setup.js:312
+msgid "Home"
+msgstr "家庭"
+
+#: ../servlets/setup/root/script/setup.js:323
+#: ../servlets/setup/root/script/setup.js:401
+#: ../servlets/setup/root/script/setup.js:402
+#: ../servlets/webui/root/script/config/systemInfo.js:107
+#: ../servlets/webui/root/script/config/systemInfo.js:111
+msgid "Registration"
+msgstr "注册"
+
+#: ../servlets/setup/root/script/setup.js:334
+msgid "<span class=\"requiredstar\">*</span> indicates Required Information"
+msgstr "<span class=\"requiredstar\">*</span>为必填信息"
+
+#: ../servlets/setup/root/script/setup.js:340
+msgid "Please provide administrator contact info."
+msgstr "请提供管理员联系信息"
+
+#: ../servlets/setup/root/script/setup.js:351
+msgid "Confirm Email"
+msgstr "确认电子邮件"
+
+#: ../servlets/setup/root/script/setup.js:358
+#: ../servlets/setup/root/script/setup.js:486
+#: ../servlets/webui/root/script/config/policyManager.js:106
+msgid "Name"
+msgstr "姓名"
+
+#: ../servlets/setup/root/script/setup.js:364
+msgid "Number of PCs on your network"
+msgstr "您网络上的个人电脑数量"
+
+#: ../servlets/setup/root/script/setup.js:372
+msgid "Answering these questions will help us build a better product - for you!"
+msgstr "回答这些问题可以帮助我们为您开发出更好的产品"
+
+#: ../servlets/setup/root/script/setup.js:375
+msgid "Where will you be using Untangle"
+msgstr "您将会在什么地方使用Untangle"
+
+#: ../servlets/setup/root/script/setup.js:386
+#: ../servlets/webui/root/script/config/administration.js:981
+msgid "Country"
+msgstr "国家"
+
+#: ../servlets/setup/root/script/setup.js:492
+#: ../servlets/webui/root/script/config/administration.js:604
+msgid "Status"
+msgstr "状况"
+
+#: ../servlets/setup/root/script/setup.js:506
+msgid "Identify Network Cards"
+msgstr "标识网卡"
+
+#: ../servlets/setup/root/script/setup.js:511
+msgid "This step can help you identify your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. You can also drag and drop the interfaces to remap them at this time."
+msgstr "这一步可以帮助您标识出您的外部、内部和其它网卡。将一根良好连接在网络上的网线分次插入各个网卡插口，通过点击刷新您可以确定网卡的一一对应关系。您也可以在这个时候通过拖放接口去重新映射它们。"
+
+#: ../servlets/setup/root/script/setup.js:519
+msgid "Network Cards"
+msgstr "网卡"
+
+#: ../servlets/setup/root/script/setup.js:633
+msgid "Unable to remap the interfaces."
+msgstr "无法重映射接口。"
+
+#: ../servlets/setup/root/script/setup.js:648
+msgid "Unable to refresh the interfaces."
+msgstr "无法刷新接口。"
+
+#: ../servlets/setup/root/script/setup.js:655
+msgid "New interfaces"
+msgstr "新接口"
+
+#: ../servlets/setup/root/script/setup.js:655
+msgid "There are new interfaces, please restart the wizard."
+msgstr "这些是新的接口，请重新启动向导。"
+
+#: ../servlets/setup/root/script/setup.js:678
+msgid "Dynamic (DHCP)"
+msgstr "动态(DHCP)"
+
+#: ../servlets/setup/root/script/setup.js:679
+msgid "Static"
+msgstr "静态"
+
+#: ../servlets/setup/root/script/setup.js:680
+msgid "PPPoE"
+msgstr "PPPoE"
+
+#: ../servlets/setup/root/script/setup.js:692
+msgid "DHCP Settings"
+msgstr "DHCP设置"
+
+#: ../servlets/setup/root/script/setup.js:702
+#: ../servlets/setup/root/script/setup.js:751
+#: ../servlets/setup/root/script/setup.js:812
+msgid "IP"
+msgstr "IP"
+
+#: ../servlets/setup/root/script/setup.js:705
+#: ../servlets/setup/root/script/setup.js:755
+#: ../servlets/setup/root/script/setup.js:817
+#: ../servlets/setup/root/script/setup.js:1124
+msgid "Netmask"
+msgstr "网络掩码"
+
+#: ../servlets/setup/root/script/setup.js:708
+#: ../servlets/setup/root/script/setup.js:760
+#: ../servlets/setup/root/script/setup.js:823
+msgid "Gateway"
+msgstr "网关"
+
+#: ../servlets/setup/root/script/setup.js:711
+#: ../servlets/setup/root/script/setup.js:764
+#: ../servlets/setup/root/script/setup.js:828
+msgid "Primary DNS"
+msgstr "基本DNS"
+
+#: ../servlets/setup/root/script/setup.js:714
+#: ../servlets/setup/root/script/setup.js:768
+#: ../servlets/setup/root/script/setup.js:833
+msgid "Secondary DNS"
+msgstr "第二DNS"
+
+#: ../servlets/setup/root/script/setup.js:723
+#: ../servlets/setup/root/script/setup.js:772
+#: ../servlets/setup/root/script/setup.js:845
+msgid "Test Connectivity"
+msgstr "测试连接性"
+
+#: ../servlets/setup/root/script/setup.js:739
+msgid "Static Settings"
+msgstr "静态设置"
+
+#: ../servlets/setup/root/script/setup.js:756
+msgid "Invalid Netmask Value"
+msgstr "无效的网络掩码"
+
+#: ../servlets/setup/root/script/setup.js:789
+msgid "PPPoE Settings"
+msgstr "PPPoE设置"
+
+#: ../servlets/setup/root/script/setup.js:796
+#: ../servlets/setup/root/script/setup.js:1322
+msgid "Username"
+msgstr "用户名"
+
+#: ../servlets/setup/root/script/setup.js:872
+msgid "Configure your Internet Connection"
+msgstr "配置您的Internet互联网连接"
+
+#: ../servlets/setup/root/script/setup.js:876
+msgid "Configuration Type"
+msgstr "配置类型"
+
+#: ../servlets/setup/root/script/setup.js:906
+msgid "Internet Connection"
+msgstr "Internet连接"
+
+#: ../servlets/setup/root/script/setup.js:976
+#: ../servlets/setup/root/script/setup.js:1016
+msgid "Network Settings"
+msgstr "网络设置"
+
+#: ../servlets/setup/root/script/setup.js:990
+msgid "Refreshing..."
+msgstr "刷新中。。。"
+
+#: ../servlets/setup/root/script/setup.js:1001
+msgid "Testing Connectivity..."
+msgstr "测试连接性中。。。"
+
+#: ../servlets/setup/root/script/setup.js:1023
+msgid "Warning! Internet and DNS failed."
+msgstr "警告！Internet和DNS失败。"
+
+#: ../servlets/setup/root/script/setup.js:1025
+msgid "Warning! DNS succeeded, but Internet failed."
+msgstr "警告！DNS无问题，但Internet失败。"
+
+#: ../servlets/setup/root/script/setup.js:1027
+msgid "Warning! Internet succeeded, but DNS failed."
+msgstr "警告！Internet无问题，但DNS失败。"
+
+#: ../servlets/setup/root/script/setup.js:1029
+msgid "Success!"
+msgstr "成功！"
+
+#: ../servlets/setup/root/script/setup.js:1032
+msgid "Internet Status"
+msgstr "Internet状态"
+
+#: ../servlets/setup/root/script/setup.js:1072
+msgid "Configure your Internal Network Interface"
+msgstr "配置您的内部网络接口"
+
+#: ../servlets/setup/root/script/setup.js:1074
+#: ../servlets/setup/root/script/setup.js:1080
+msgid "Transparent Bridge"
+msgstr "透明网桥"
+
+#: ../servlets/setup/root/script/setup.js:1085
+msgid "This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP."
+msgstr "建议，如果外部接口连接到了防火墙/路由器。应该桥接内部和外部并禁用DHCP功能。"
+
+#: ../servlets/setup/root/script/setup.js:1096
+msgid "Router"
+msgstr "路由器"
+
+#: ../servlets/setup/root/script/setup.js:1108
+msgid "This is recommended if the external port is plugged into your internet  connection. This enables NAT on the Internal Interface and DHCP."
+msgstr "建议，如果外部接口连接到您的Internet连接。应该在内部接口上启用NAT以及DHCP。"
+
+#: ../servlets/setup/root/script/setup.js:1116
+msgid "Please enter a valid Network  Address"
+msgstr "请输入一个有效的网络地址"
+
+#: ../servlets/setup/root/script/setup.js:1125
+msgid "Please enter a valid Netmask Value"
+msgstr "请输入一个有效的网络掩码值"
+
+#: ../servlets/setup/root/script/setup.js:1135
+msgid "Internal Network"
+msgstr "内部网络"
+
+#: ../servlets/setup/root/script/setup.js:1171
+msgid "Select a value"
+msgstr "选择一个值"
+
+#: ../servlets/setup/root/script/setup.js:1171
+msgid "Please choose bridge or router."
+msgstr "请选择网桥或路由器。"
+
+#: ../servlets/setup/root/script/setup.js:1188
+msgid "Local Network"
+msgstr "本地网络"
+
+#: ../servlets/setup/root/script/setup.js:1188
+msgid "Unable to save Local Network Settings"
+msgstr "无法保存本地网络设置"
+
+#: ../servlets/setup/root/script/setup.js:1208
+#: ../servlets/setup/root/script/setup.js:1364
+msgid "Email Configuration"
+msgstr "电子邮件配置"
+
+#: ../servlets/setup/root/script/setup.js:1212
+msgid "Your Untangle Server sends email for Quarantine Digests, Reports, etc."
+msgstr "您的Untangle服务器为隔离摘要、报告等，发送电子邮件。"
+
+#: ../servlets/setup/root/script/setup.js:1216
+msgid "Send Test Email"
+msgstr "发送测试电子邮件"
+
+#: ../servlets/setup/root/script/setup.js:1225
+msgid "Advanced Email Configuration."
+msgstr "高级电子邮件配置"
+
+#: ../servlets/setup/root/script/setup.js:1243
+msgid "<b>Please choose a <i>From Address</i> for emails originating from the Untangle Server</b>"
+msgstr "<b>请为源于Untangle服务器的电子邮件选择一个<i>发件地址</i></b>"
+
+#: ../servlets/setup/root/script/setup.js:1247
+msgid "From Address"
+msgstr "发件地址"
+
+#: ../servlets/setup/root/script/setup.js:1263
+msgid "<b>SMTP Configuration</b>"
+msgstr "<b>SMTP配置</b>"
+
+#: ../servlets/setup/root/script/setup.js:1269
+msgid "Send Email Directly (default)."
+msgstr "直接发送邮件(默认)"
+
+#: ../servlets/setup/root/script/setup.js:1282
+msgid "Send Email using the specified SMTP server."
+msgstr "通过指定的SMTP服务器发送邮件。"
+
+#: ../servlets/setup/root/script/setup.js:1293
+msgid "SMTP Server"
+msgstr "SMTP服务器"
+
+#: ../servlets/setup/root/script/setup.js:1303
+#: ../servlets/webui/root/script/config/administration.js:571
+#: ../servlets/webui/root/script/config/administration.js:1223
+#: ../servlets/webui/root/script/config/administration.js:1284
+#: ../servlets/webui/root/script/config/policyManager.js:621
+msgid "Port"
+msgstr "端口"
+
+#: ../servlets/setup/root/script/setup.js:1311
+msgid "Server Requires Authentication."
+msgstr "服务器要求身份认证。"
+
+#: ../servlets/setup/root/script/setup.js:1466
+msgid "Mail Settings"
+msgstr "邮件设置"
+
+#: ../servlets/setup/root/script/setup.js:1466
+msgid "Unable to save settings."
+msgstr "无法保存设置。"
+
+#: ../servlets/setup/root/script/setup.js:1480
+msgid "Congrats!"
+msgstr "恭喜您！"
+
+#: ../servlets/setup/root/script/setup.js:1483
+msgid "<b>Your Untangle Server is now configured.</b><br/><br/>You are now ready to login and download some applications."
+msgstr "<b>您的Untangle服务器已经配置完成</b><br/><br/>您现在可以登录并下载应用程序了。"
+
+#: ../servlets/setup/root/script/setup.js:1489
+msgid "Finished"
+msgstr "完成"
+
+#: ../servlets/setup/root/script/setup.js:1490
+msgid "Congratulations!"
+msgstr "恭喜您！"
+
+#: ../servlets/webui/root/script/config/administration.js:12
+#: ../servlets/webui/root/script/config/administration.js:738
+#: ../servlets/webui/root/script/config/administration.js:816
+#: ../servlets/webui/root/script/config/administration.js:867
+#: ../servlets/webui/root/script/config/email.js:19
+#: ../servlets/webui/root/script/config/localDirectory.js:10
+#: ../servlets/webui/root/script/config/system.js:12
+#: ../servlets/webui/root/script/config/systemInfo.js:10
+#: ../servlets/webui/root/script/config/upgrade.js:9
+msgid "Configuration"
+msgstr "配置"
+
+#: ../servlets/webui/root/script/config/administration.js:121
+msgid "read-only"
+msgstr "只读"
+
+#: ../servlets/webui/root/script/config/administration.js:127
+msgid "change password"
+msgstr "改密码"
+
+#: ../servlets/webui/root/script/config/administration.js:152
+msgid "Admin Accounts"
+msgstr "管理员帐号"
+
+#: ../servlets/webui/root/script/config/administration.js:160
+msgid "[no login]"
+msgstr "【无登录】"
+
+#: ../servlets/webui/root/script/config/administration.js:161
+#: ../servlets/webui/root/script/config/email.js:797
+#: ../servlets/webui/root/script/config/email.js:866
+#: ../servlets/webui/root/script/config/policyManager.js:74
+#: ../servlets/webui/root/script/config/policyManager.js:224
+msgid "[no description]"
+msgstr "【无描述】"
+
+#: ../servlets/webui/root/script/config/administration.js:163
+#: ../servlets/webui/root/script/config/localDirectory.js:53
+msgid "[no email]"
+msgstr "【无邮件】"
+
+#: ../servlets/webui/root/script/config/administration.js:193
+msgid "login"
+msgstr "登录"
+
+#: ../servlets/webui/root/script/config/administration.js:198
+#: ../servlets/webui/root/script/config/administration.js:227
+msgid "The login name cannot be blank."
+msgstr "登录名不能为空"
+
+#: ../servlets/webui/root/script/config/administration.js:202
+#: ../servlets/webui/root/script/config/email.js:821
+#: ../servlets/webui/root/script/config/policyManager.js:96
+#: ../servlets/webui/root/script/config/policyManager.js:437
+msgid "description"
+msgstr "描述"
+
+#: ../servlets/webui/root/script/config/administration.js:210
+msgid "email"
+msgstr "电子邮件"
+
+#: ../servlets/webui/root/script/config/administration.js:232
+#: ../servlets/webui/root/script/config/email.js:846
+#: ../servlets/webui/root/script/config/email.js:916
+#: ../servlets/webui/root/script/config/policyManager.js:117
+#: ../servlets/webui/root/script/config/policyManager.js:768
+msgid "Description"
+msgstr "描述"
+
+#: ../servlets/webui/root/script/config/administration.js:238
+msgid "Read-only"
+msgstr "只读"
+
+#: ../servlets/webui/root/script/config/administration.js:252
+#: ../servlets/webui/root/script/config/administration.js:271
+msgid "The password is shorter than the minimum {0} characters."
+msgstr "密码少于最低要求的{0}个字符。"
+
+#: ../servlets/webui/root/script/config/administration.js:283
+msgid "External Administration"
+msgstr "外部管理"
+
+#: ../servlets/webui/root/script/config/administration.js:288
+msgid "Enable External Administration."
+msgstr "启用外部管理"
+
+#: ../servlets/webui/root/script/config/administration.js:301
+msgid "Enable External Report Viewing."
+msgstr "启用外部报告查看"
+
+#: ../servlets/webui/root/script/config/administration.js:314
+msgid "Enable External Quarantine Viewing."
+msgstr "启用外部隔离查看"
+
+#: ../servlets/webui/root/script/config/administration.js:329
+msgid "External HTTPS port"
+msgstr "外部HTTPS端口"
+
+#: ../servlets/webui/root/script/config/administration.js:338
+#: ../servlets/webui/root/script/config/administration.js:579
+#: ../servlets/webui/root/script/config/administration.js:1231
+#: ../servlets/webui/root/script/config/administration.js:1292
+msgid "You must provide a valid port."
+msgstr "您必须提供一个有效端口。"
+
+#: ../servlets/webui/root/script/config/administration.js:352
+msgid "Allow external access from any IP address."
+msgstr "允许来自任何IP地址的外部访问。"
+
+#: ../servlets/webui/root/script/config/administration.js:369
+msgid "Restrict external access to these external IP address(es)."
+msgstr "限制来自这些外部IP地址的外部访问。"
+
+#: ../servlets/webui/root/script/config/administration.js:393
+#: ../servlets/webui/root/script/config/administration.js:562
+#: ../servlets/webui/root/script/config/email.js:840
+#: ../servlets/webui/root/script/config/policyManager.js:600
+msgid "Address"
+msgstr "地址"
+
+#: ../servlets/webui/root/script/config/administration.js:398
+msgid "A \"IP Address\" must be specified."
+msgstr "必须指定一个“IP地址”。"
+
+#: ../servlets/webui/root/script/config/administration.js:413
+msgid "A \"Netmask\" must be specified."
+msgstr "必须指定一个“网络掩码”。"
+
+#: ../servlets/webui/root/script/config/administration.js:420
+msgid "Internal Administration"
+msgstr "内部管理"
+
+#: ../servlets/webui/root/script/config/administration.js:424
+msgid "Enable HTTP administration inside the local network (default)"
+msgstr "启用来自本地网络内部的HTTP管理(默认)。"
+
+#: ../servlets/webui/root/script/config/administration.js:437
+msgid "Disable HTTP administration inside the local network"
+msgstr "禁用来自本地网络内部的HTTP管理。"
+
+#: ../servlets/webui/root/script/config/administration.js:450
+msgid "Note: HTTPS administration is always enabled internally"
+msgstr "注意：来自本地网络内部的HTTPS管理总是启用的"
+
+#: ../servlets/webui/root/script/config/administration.js:473
+msgid "Public Address"
+msgstr "公共地址"
+
+#: ../servlets/webui/root/script/config/administration.js:481
+msgid "The Public Address is the address or hostname that provides a public routable address for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails."
+msgstr "该公共地址或主机名为{0}服务器提供了一个公共的可路由的地址。并将会在{0}服务器发出的邮件中被用于链接回{0}服务器提供的服务，诸如：隔离摘要和OpenVPN客户的邮件。"
+
+#: ../servlets/webui/root/script/config/administration.js:487
+msgid "Use External IP address (default)"
+msgstr "使用外部IP地址(默认)"
+
+#: ../servlets/webui/root/script/config/administration.js:503
+msgid "This works if your {0} Server has a public static IP address."
+msgstr "该项工作在当您的{0}服务器有个公共静态IP地址时。"
+
+#: ../servlets/webui/root/script/config/administration.js:509
+msgid "Use Hostname"
+msgstr "使用主机名"
+
+#: ../servlets/webui/root/script/config/administration.js:525
+msgid "This is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally."
+msgstr "如果{0}服务器的全称域名可以在内部和外部同时查找到其IP地址时推荐该项。"
+
+#: ../servlets/webui/root/script/config/administration.js:530
+msgid "Current Hostname: {0}"
+msgstr "当前主机名：{0}"
+
+#: ../servlets/webui/root/script/config/administration.js:535
+msgid "Use Manually Specified IP"
+msgstr "使用手工指定的IP"
+
+#: ../servlets/webui/root/script/config/administration.js:551
+msgid "This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified IP that redirects traffic to the {0} Server."
+msgstr "如果{0}服务器安装在另外一个带有从指定IP端口转发并重定向数据传输到{0}服务器的防火墙背后时推荐该项。"
+
+#: ../servlets/webui/root/script/config/administration.js:567
+#: ../servlets/webui/root/script/config/administration.js:1848
+msgid "You must provide a valid IP Address."
+msgstr "您必须提供一个有效的IP地址。"
+
+#: ../servlets/webui/root/script/config/administration.js:595
+msgid "Certificates"
+msgstr "证书"
+
+#: ../servlets/webui/root/script/config/administration.js:607
+msgid "Current Certificate Type"
+msgstr "当前证书形式"
+
+#: ../servlets/webui/root/script/config/administration.js:610
+#: ../servlets/webui/root/script/config/administration.js:1072
+msgid "Self-Signed"
+msgstr "自签名"
+
+#: ../servlets/webui/root/script/config/administration.js:610
+#: ../servlets/webui/root/script/config/administration.js:1072
+msgid "Signed / Trusted"
+msgstr "已签名/被信任的"
+
+#: ../servlets/webui/root/script/config/administration.js:618
+msgid "Valid starting"
+msgstr "有效的开始"
+
+#: ../servlets/webui/root/script/config/administration.js:626
+msgid "Valid until"
+msgstr "有效截止与"
+
+#: ../servlets/webui/root/script/config/administration.js:634
+msgid "Subject DN"
+msgstr "主题DN"
+
+#: ../servlets/webui/root/script/config/administration.js:642
+msgid "Issuer DN"
+msgstr "签发者DN"
+
+#: ../servlets/webui/root/script/config/administration.js:650
+msgid "Generation"
+msgstr "生成"
+
+#: ../servlets/webui/root/script/config/administration.js:663
+msgid "Generate a {0}Self-Signed Certificate{1}"
+msgstr "创建一个{0}自签名证书{1}"
+
+#: ../servlets/webui/root/script/config/administration.js:676
+msgid "Click this button if you have been using a signed certificate, and you want to go back to using a self-signed certificate."
+msgstr "如果您使用已签名的证书并且希望返回到使用自签名证书，请点击该按钮"
+
+#: ../servlets/webui/root/script/config/administration.js:687
+msgid "Generate a {0}Certificate Signature Request{1}"
+msgstr "创建一个{0}证书签名请求{1}"
+
+#: ../servlets/webui/root/script/config/administration.js:700
+msgid "Click this button to generate a certificate signature request, which you can then copy and paste for use by certificate authorities such as Thawte, Verisign, etc."
+msgstr "点击该按钮并创建一个证书签名请求，您可通过拷贝并粘贴该请求来取得诸如Thawte, Verisign等证书授权者的认证。"
+
+#: ../servlets/webui/root/script/config/administration.js:711
+msgid "Import a {0}Signed Certificate{1}"
+msgstr "导入一个{0}已签名证书{1}"
+
+#: ../servlets/webui/root/script/config/administration.js:724
+msgid "Click this button to import a signed certificate which has been generated by a certificate authority, and was based on a previous signature request from {0}."
+msgstr "点击按钮导入由证书授权者生成的基于上一步签名请求表{0}的已签名证书。"
+
+#: ../servlets/webui/root/script/config/administration.js:749
+#: ../servlets/webui/root/script/config/administration.js:937
+msgid "Generate a Self-Signed Certificate"
+msgstr "生成一个自签名证书"
+
+#: ../servlets/webui/root/script/config/administration.js:754
+#: ../servlets/webui/root/script/config/administration.js:832
+msgid "Generating Certificate..."
+msgstr "生成证书中。。。"
+
+#: ../servlets/webui/root/script/config/administration.js:762
+#: ../servlets/webui/root/script/config/administration.js:957
+msgid "You must specify an organization."
+msgstr "您必须指定一个组织。"
+
+#: ../servlets/webui/root/script/config/administration.js:763
+#: ../servlets/webui/root/script/config/administration.js:964
+msgid "You must specify an organization unit."
+msgstr "您必须指定一个组织容器。"
+
+#: ../servlets/webui/root/script/config/administration.js:764
+#: ../servlets/webui/root/script/config/administration.js:971
+msgid "You must specify a city."
+msgstr "您必须指定一个城市。"
+
+#: ../servlets/webui/root/script/config/administration.js:765
+#: ../servlets/webui/root/script/config/administration.js:978
+msgid "You must specify a state."
+msgstr "您必须指定一个州（省）。"
+
+#: ../servlets/webui/root/script/config/administration.js:766
+#: ../servlets/webui/root/script/config/administration.js:985
+msgid "You must specify a country."
+msgstr "您必须指定一个国家"
+
+#: ../servlets/webui/root/script/config/administration.js:792
+#: ../servlets/webui/root/script/config/administration.js:843
+#: ../servlets/webui/root/script/config/administration.js:902
+#: ../servlets/webui/root/script/config/administration.js:1508
+#: ../servlets/webui/root/script/config/administration.js:1717
+#: ../servlets/webui/root/script/config/system.js:924
+msgid "Succeeded"
+msgstr "成功"
+
+#: ../servlets/webui/root/script/config/administration.js:792
+msgid "Certificate Successfully Generated"
+msgstr "成功创建证书"
+
+#: ../servlets/webui/root/script/config/administration.js:799
+msgid "Error generating self-signed certificate"
+msgstr "创建自签名证书时出错"
+
+#: ../servlets/webui/root/script/config/administration.js:827
+#: ../servlets/webui/root/script/config/administration.js:1005
+msgid "Generate a Certificate Signature Request"
+msgstr "创建一个证书签名请求"
+
+#: ../servlets/webui/root/script/config/administration.js:843
+msgid "Certificate Signature Request Successfully Generated"
+msgstr "证书签名请求创建成功"
+
+#: ../servlets/webui/root/script/config/administration.js:850
+msgid "Error generating certificate signature request"
+msgstr "证书签名请求创建出错"
+
+#: ../servlets/webui/root/script/config/administration.js:878
+#: ../servlets/webui/root/script/config/administration.js:1035
+msgid "Import Signed Certificate"
+msgstr "导入已签名证书"
+
+#: ../servlets/webui/root/script/config/administration.js:883
+msgid "Importing Certificate..."
+msgstr "正在导入证书。。。"
+
+#: ../servlets/webui/root/script/config/administration.js:902
+msgid "Certificate Successfully Imported"
+msgstr "证书导入成功"
+
+#: ../servlets/webui/root/script/config/administration.js:909
+msgid "Error importing certificate"
+msgstr "证书导入出错"
+
+#: ../servlets/webui/root/script/config/administration.js:948
+msgid "Please fill out the following fields, which will be used to generate your self-signed certificate."
+msgstr "请填写下面的项目以帮助创建您的自签名证书"
+
+#: ../servlets/webui/root/script/config/administration.js:953
+msgid "Organization"
+msgstr "组织"
+
+#: ../servlets/webui/root/script/config/administration.js:960
+msgid "Organization Unit"
+msgstr "组织部门"
+
+#: ../servlets/webui/root/script/config/administration.js:967
+#: ../servlets/webui/root/script/config/systemInfo.js:157
+msgid "City"
+msgstr "城市"
+
+#: ../servlets/webui/root/script/config/administration.js:974
+#: ../servlets/webui/root/script/config/systemInfo.js:162
+msgid "State"
+msgstr "省份"
+
+#: ../servlets/webui/root/script/config/administration.js:988
+msgid "Hostname"
+msgstr "主机名"
+
+#: ../servlets/webui/root/script/config/administration.js:1013
+msgid "Click the Proceed button to generate a signature below. Copy the signature (Control-C), and paste it into the necessary form from your Certificate Authority (Verisign, Thawte, etc.)."
+msgstr "点击下面的“进行”按钮创建一个签名。拷贝签名(Control-C)并粘贴到您的证书授权(Verisign, Thawte等)的相关表格中。"
+
+#: ../servlets/webui/root/script/config/administration.js:1040
+msgid "When your Certificate Authority (Verisign, Thawte, etc.) "
+msgstr "当您的证书授权(Verisign, Thawte等) "
+
+#: ../servlets/webui/root/script/config/administration.js:1041
+msgid "has sent your Signed Certificate, copy and paste it below (Control-V), "
+msgstr "发给您了已签名证书，拷贝并粘贴(Control-V)到下面，"
+
+#: ../servlets/webui/root/script/config/administration.js:1042
+msgid "then press the Proceed button."
+msgstr "然后点击“进行”按钮。"
+
+#: ../servlets/webui/root/script/config/administration.js:1053
+msgid "If your Certificate Authority (Verisign, Thawte, etc.) "
+msgstr "如果您的证书授权(Verisign, Thawte等) "
+
+#: ../servlets/webui/root/script/config/administration.js:1054
+msgid "also send you an Intermediate Certificate, paste it below.  "
+msgstr "也发给您了一个中间证书，粘贴到下面。"
+
+#: ../servlets/webui/root/script/config/administration.js:1055
+msgid "Otherwise, do not paste anything below."
+msgstr "否则，请不要在下面粘贴任何东西。"
+
+#: ../servlets/webui/root/script/config/administration.js:1086
+msgid "Monitoring"
+msgstr "监视"
+
+#: ../servlets/webui/root/script/config/administration.js:1095
+msgid "SNMP"
+msgstr "简单网络管理协议(SNMP)"
+
+#: ../servlets/webui/root/script/config/administration.js:1098
+msgid "{0}Disable{1} SNMP Monitoring. (This is the default setting.)"
+msgstr "{0}禁用{1}SNMP监视。(默认设置)"
+
+#: ../servlets/webui/root/script/config/administration.js:1121
+msgid "{0}Enable{1} SNMP Monitoring."
+msgstr "{0}启用{1}SNMP监视。"
+
+#: ../servlets/webui/root/script/config/administration.js:1147
+#: ../servlets/webui/root/script/config/administration.js:1207
+msgid "Community"
+msgstr "公共组"
+
+#: ../servlets/webui/root/script/config/administration.js:1152
+#: ../servlets/webui/root/script/config/administration.js:1880
+msgid "An SNMP \"Community\" must be specified."
+msgstr "必须指定一个SNMP“公共组”。"
+
+#: ../servlets/webui/root/script/config/administration.js:1155
+msgid "System Contact"
+msgstr "系统联系人"
+
+#: ../servlets/webui/root/script/config/administration.js:1162
+msgid "System Location"
+msgstr "系统位置"
+
+#: ../servlets/webui/root/script/config/administration.js:1171
+msgid "{0}Disable Traps{1} so no trap events are generated.  (This is the default setting.)"
+msgstr "{0}禁用陷阱{1}将没有陷阱事件产生。(默认设置)"
+
+#: ../servlets/webui/root/script/config/administration.js:1189
+msgid "{0}Enable Traps{1} so trap events are sent when they are generated."
+msgstr "{0}启用陷阱{1}当有陷阱事件发生时将被发送出来。"
+
+#: ../servlets/webui/root/script/config/administration.js:1212
+#: ../servlets/webui/root/script/config/administration.js:1895
+msgid "An Trap \"Community\" must be specified."
+msgstr "必须指定一个陷阱“公共组”。"
+
+#: ../servlets/webui/root/script/config/administration.js:1215
+#: ../servlets/webui/root/script/config/administration.js:1276
+msgid "Host"
+msgstr "主机"
+
+#: ../servlets/webui/root/script/config/administration.js:1220
+#: ../servlets/webui/root/script/config/administration.js:1906
+msgid "An Trap \"Host\" must be specified."
+msgstr "必须指定一个陷阱“主机”。"
+
+#: ../servlets/webui/root/script/config/administration.js:1235
+msgid "Syslog"
+msgstr "系统日志"
+
+#: ../servlets/webui/root/script/config/administration.js:1238
+msgid "{0}Disable{1} Syslog Monitoring. (This is the default setting.)"
+msgstr "{0}禁用{1}系统日志监视。(默认设置)"
+
+#: ../servlets/webui/root/script/config/administration.js:1257
+msgid "{0}Enable{1} Syslog Monitoring."
+msgstr "{0}启用{1}系统日志监视。"
+
+#: ../servlets/webui/root/script/config/administration.js:1281
+#: ../servlets/webui/root/script/config/administration.js:1950
+msgid "A \"Host\" must be specified."
+msgstr "必须指定一个“主机”。"
+
+#: ../servlets/webui/root/script/config/administration.js:1299
+msgid "Facility"
+msgstr "设备"
+
+#: ../servlets/webui/root/script/config/administration.js:1306
+msgid "kernel"
+msgstr "核心"
+
+#: ../servlets/webui/root/script/config/administration.js:1308
+msgid "mail"
+msgstr "邮件"
+
+#: ../servlets/webui/root/script/config/administration.js:1309
+msgid "daemon"
+msgstr "后台监控"
+
+#: ../servlets/webui/root/script/config/administration.js:1310
+msgid "security 0"
+msgstr "安全 0"
+
+#: ../servlets/webui/root/script/config/administration.js:1311
+msgid "syslog"
+msgstr "系统日志"
+
+#: ../servlets/webui/root/script/config/administration.js:1312
+msgid "printer"
+msgstr "打印机"
+
+#: ../servlets/webui/root/script/config/administration.js:1313
+msgid "news"
+msgstr "新消息"
+
+#: ../servlets/webui/root/script/config/administration.js:1314
+msgid "UUCP"
+msgstr "Unix到Unix的拷贝(UUCP)"
+
+#: ../servlets/webui/root/script/config/administration.js:1315
+msgid "clock 0"
+msgstr "时钟 0"
+
+#: ../servlets/webui/root/script/config/administration.js:1316
+msgid "security 1"
+msgstr "安全 1"
+
+#: ../servlets/webui/root/script/config/administration.js:1317
+#: ../servlets/webui/root/script/config/system.js:582
+msgid "FTP"
+msgstr "文件传输协议(FTP)"
+
+#: ../servlets/webui/root/script/config/administration.js:1318
+msgid "NTP"
+msgstr "网络终端协议(NTP)"
+
+#: ../servlets/webui/root/script/config/administration.js:1319
+msgid "log audit"
+msgstr "日志审计"
+
+#: ../servlets/webui/root/script/config/administration.js:1320
+msgid "log alert"
+msgstr "日志警报"
+
+#: ../servlets/webui/root/script/config/administration.js:1321
+msgid "clock 1"
+msgstr "时钟 1"
+
+#: ../servlets/webui/root/script/config/administration.js:1322
+msgid "local 0"
+msgstr "本地 0"
+
+#: ../servlets/webui/root/script/config/administration.js:1323
+msgid "local 1"
+msgstr "本地 1"
+
+#: ../servlets/webui/root/script/config/administration.js:1324
+msgid "local 2"
+msgstr "本地 2"
+
+#: ../servlets/webui/root/script/config/administration.js:1325
+msgid "local 3"
+msgstr "本地 3"
+
+#: ../servlets/webui/root/script/config/administration.js:1326
+msgid "local 4"
+msgstr "本地 4"
+
+#: ../servlets/webui/root/script/config/administration.js:1327
+msgid "local 5"
+msgstr "本地 5"
+
+#: ../servlets/webui/root/script/config/administration.js:1328
+msgid "local 6"
+msgstr "本地 6"
+
+#: ../servlets/webui/root/script/config/administration.js:1329
+msgid "local 7"
+msgstr "本地 7"
+
+#: ../servlets/webui/root/script/config/administration.js:1340
+msgid "Threshold"
+msgstr "阈值"
+
+#: ../servlets/webui/root/script/config/administration.js:1347
+msgid "emergency"
+msgstr "紧急事件"
+
+#: ../servlets/webui/root/script/config/administration.js:1348
+msgid "alert"
+msgstr "警报"
+
+#: ../servlets/webui/root/script/config/administration.js:1349
+msgid "critical"
+msgstr "关键的"
+
+#: ../servlets/webui/root/script/config/administration.js:1350
+msgid "error"
+msgstr "错误"
+
+#: ../servlets/webui/root/script/config/administration.js:1351
+msgid "warning"
+msgstr "警告"
+
+#: ../servlets/webui/root/script/config/administration.js:1352
+msgid "notice"
+msgstr "注意"
+
+#: ../servlets/webui/root/script/config/administration.js:1353
+msgid "informational"
+msgstr "报告的"
+
+#: ../servlets/webui/root/script/config/administration.js:1354
+msgid "debug"
+msgstr "调试"
+
+#: ../servlets/webui/root/script/config/administration.js:1401
+msgid "Skins"
+msgstr "皮肤"
+
+#: ../servlets/webui/root/script/config/administration.js:1411
+msgid "Administration Skin"
+msgstr "管理皮肤"
+
+#: ../servlets/webui/root/script/config/administration.js:1415
+msgid "This skin will used in the administration client"
+msgstr "该皮肤将用于管理客户端"
+
+#: ../servlets/webui/root/script/config/administration.js:1434
+#: ../servlets/webui/root/script/config/administration.js:1591
+#: ../servlets/webui/root/script/config/system.js:861
+msgid "Info"
+msgstr "信息"
+
+#: ../servlets/webui/root/script/config/administration.js:1435
+msgid "Please note that you have to refresh the application after saving for the new skin to take effect."
+msgstr "请注意，您需要在保存后刷新程序以使新皮肤生效。"
+
+#: ../servlets/webui/root/script/config/administration.js:1441
+msgid "Block Page Skin"
+msgstr "阻止页面皮肤"
+
+#: ../servlets/webui/root/script/config/administration.js:1445
+msgid "This skin will used in the user pages like quarantine and block pages"
+msgstr "该皮肤将被用于隔离和阻止页面类的用户页面"
+
+#: ../servlets/webui/root/script/config/administration.js:1469
+msgid "Upload New Skin"
+msgstr "上传新皮肤"
+
+#: ../servlets/webui/root/script/config/administration.js:1490
+#: ../servlets/webui/root/script/config/administration.js:1635
+#: ../servlets/webui/root/script/config/system.js:903
+msgid "Upload"
+msgstr "上传"
+
+#: ../servlets/webui/root/script/config/administration.js:1503
+msgid "Please wait while your skin is uploaded..."
+msgstr "请等待您的皮肤上传完毕。。。"
+
+#: ../servlets/webui/root/script/config/administration.js:1508
+msgid "Upload Skin Succeeded"
+msgstr "上传皮肤成功"
+
+#: ../servlets/webui/root/script/config/administration.js:1516
+#: ../servlets/webui/root/script/config/administration.js:1529
+msgid "Upload Skin Failed"
+msgstr "上传皮肤失败"
+
+#: ../servlets/webui/root/script/config/administration.js:1520
+msgid "Invalid Skin"
+msgstr "无效的皮肤"
+
+#: ../servlets/webui/root/script/config/administration.js:1523
+msgid "The default skin can not be overwritten"
+msgstr "无法复写默认的皮肤"
+
+#: ../servlets/webui/root/script/config/administration.js:1526
+msgid "Error creating skin folder"
+msgstr "创建皮肤目录出错"
+
+#: ../servlets/webui/root/script/config/administration.js:1545
+msgid "Branding"
+msgstr "自定商标"
+
+#: ../servlets/webui/root/script/config/administration.js:1573
+msgid "The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports)."
+msgstr "自定商标设置用于设置将被用户看到的徽标和联系信息(如：报告等)。"
+
+#: ../servlets/webui/root/script/config/administration.js:1576
+msgid "Logo"
+msgstr "徽标"
+
+#: ../servlets/webui/root/script/config/administration.js:1592
+msgid "Please note that you have to refresh the application after saving for the new logo to take effect."
+msgstr "请注意，您需要在保存后刷新程序以使新徽标生效。"
+
+#: ../servlets/webui/root/script/config/administration.js:1644
+msgid "Contact Information"
+msgstr "联系信息"
+
+#: ../servlets/webui/root/script/config/administration.js:1650
+#: ../servlets/webui/root/script/config/systemInfo.js:128
+msgid "Company Name"
+msgstr "公司名称"
+
+#: ../servlets/webui/root/script/config/administration.js:1663
+msgid "Company URL"
+msgstr "公司网站(URL)"
+
+#: ../servlets/webui/root/script/config/administration.js:1676
+msgid "Contact Name"
+msgstr "联系人"
+
+#: ../servlets/webui/root/script/config/administration.js:1689
+msgid "Contact Email"
+msgstr "电子邮件"
+
+#: ../servlets/webui/root/script/config/administration.js:1708
+msgid "Please select an image to upload."
+msgstr "请选择一个要上传的图片。"
+
+#: ../servlets/webui/root/script/config/administration.js:1714
+msgid "Please wait while your logo image is uploaded..."
+msgstr "请等待您的徽标上传完毕。。。"
+
+#: ../servlets/webui/root/script/config/administration.js:1717
+msgid "Upload Logo Succeeded"
+msgstr "上传徽标成功"
+
+#: ../servlets/webui/root/script/config/administration.js:1725
+msgid "Upload Logo Failed"
+msgstr "上传徽标失败"
+
+#: ../servlets/webui/root/script/config/administration.js:1761
+msgid "The login name: \"{0}\" in row: {1}  already exists."
+msgstr "行{1}中的登录名“{0}”已经存在。"
+
+#: ../servlets/webui/root/script/config/administration.js:1778
+msgid "There must always be at least one valid account."
+msgstr "这里必须至少有一个有效的账户。"
+
+#: ../servlets/webui/root/script/config/administration.js:1788
+msgid "There must always be at least one non-read-only (writable) account."
+msgstr "这里必须至少有一个非只读（可写）的账户。"
+
+#: ../servlets/webui/root/script/config/administration.js:1816
+msgid "Invalid External Remote Administration \"IP Address\" specified."
+msgstr "指定了无效的外部远程管理的“IP地址”。"
+
+#: ../servlets/webui/root/script/config/administration.js:1826
+msgid "Invalid External Remote Administration \"Netmask\" specified."
+msgstr "指定了无效的外部远程管理的“网络掩码”。"
+
+#: ../servlets/webui/root/script/config/administration.js:1983
+#: ../servlets/webui/root/script/config/email.js:1160
+#: ../servlets/webui/root/script/config/localDirectory.js:230
+#: ../servlets/webui/root/script/config/policyManager.js:883
+#: ../servlets/webui/root/script/config/system.js:1035
+#: ../servlets/webui/root/script/config/systemInfo.js:293
+#: ../servlets/webui/root/script/config/upgrade.js:375
+msgid "Saving..."
+msgstr "保存中。。。"
+
+#: ../servlets/webui/root/script/config/email.js:137
+msgid "Outgoing Server"
+msgstr "出站服务器"
+
+#: ../servlets/webui/root/script/config/email.js:212
+msgid "Outgoing Email Server (SMTP)"
+msgstr "出站电子邮件服务器(SMTP)"
+
+#: ../servlets/webui/root/script/config/email.js:217
+msgid "The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. In most cases the default setting should work, but if not, you should specify an SMTP server that will relay mail for the {0} Server."
+msgstr "出站电子邮件服务器设置决定了{0}服务器如何发送诸如报告、隔离摘要之类的电子邮件。大多数情况下，默认设置应该是可以工作的，但如果不行的话，您应该指定一个可以帮{0}服务器传递邮件的SMTP服务器。"
+
+#: ../servlets/webui/root/script/config/email.js:223
+msgid "Send email directly (default)"
+msgstr "直接发送邮件(默认)"
+
+#: ../servlets/webui/root/script/config/email.js:253
+msgid "Send Email using the specified SMTP Server"
+msgstr "通过指定的SMTP服务器发送邮件"
+
+#: ../servlets/webui/root/script/config/email.js:265
+msgid "Server Address or Hostname"
+msgstr "服务器地址或主机名"
+
+#: ../servlets/webui/root/script/config/email.js:273
+msgid "Server Port"
+msgstr "服务器端口"
+
+#: ../servlets/webui/root/script/config/email.js:283
+msgid "Use Authentication"
+msgstr "用户身份验证"
+
+#: ../servlets/webui/root/script/config/email.js:314
+msgid "Email From Address"
+msgstr "邮件发件人地址"
+
+#: ../servlets/webui/root/script/config/email.js:318
+msgid "The {0} Server will send email from this address."
+msgstr "{0}服务器将从该地址发送邮件"
+
+#: ../servlets/webui/root/script/config/email.js:337
+msgid "The Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect."
+msgstr "电子邮件测试将按照现在的配置发送一封邮件到指定的地址。如果您没有收到测试电子邮件，您的设置就可能有问题。"
+
+#: ../servlets/webui/root/script/config/email.js:359
+#: ../servlets/webui/root/script/config/email.js:587
+msgid "Show Detail"
+msgstr "显示细节"
+
+#: ../servlets/webui/root/script/config/email.js:374
+msgid "From-Safe List"
+msgstr "安全发件人列表"
+
+#: ../servlets/webui/root/script/config/email.js:382
+msgid "Global"
+msgstr "全局"
+
+#: ../servlets/webui/root/script/config/email.js:395
+msgid "[no email address]"
+msgstr "【无电子邮件地址】"
+
+#: ../servlets/webui/root/script/config/email.js:405
+#: ../servlets/webui/root/script/config/email.js:567
+#: ../servlets/webui/root/script/config/localDirectory.js:101
+msgid "email address"
+msgstr "电子邮件地址"
+
+#: ../servlets/webui/root/script/config/email.js:414
+#: ../servlets/webui/root/script/config/localDirectory.js:148
+msgid "Email Address"
+msgstr "电子邮件地址"
+
+#: ../servlets/webui/root/script/config/email.js:428
+msgid "Per User"
+msgstr "每用户"
+
+#: ../servlets/webui/root/script/config/email.js:441
+#: ../servlets/webui/root/script/config/email.js:442
+#: ../servlets/webui/root/script/config/email.js:537
+#: ../servlets/webui/root/script/config/email.js:538
+#: ../servlets/webui/root/script/config/email.js:667
+#: ../servlets/webui/root/script/config/email.js:668
+#: ../servlets/webui/root/script/config/email.js:936
+#: ../servlets/webui/root/script/config/email.js:937
+msgid "Purge Selected"
+msgstr "已选择净化"
+
+#: ../servlets/webui/root/script/config/email.js:456
+#: ../servlets/webui/root/script/config/email.js:552
+#: ../servlets/webui/root/script/config/email.js:682
+#: ../servlets/webui/root/script/config/email.js:951
+msgid "Purging..."
+msgstr "净化中。。。"
+
+#: ../servlets/webui/root/script/config/email.js:477
+#: ../servlets/webui/root/script/config/email.js:737
+msgid "account address"
+msgstr "账户地址"
+
+#: ../servlets/webui/root/script/config/email.js:482
+msgid "safe list size"
+msgstr "安全列表大小"
+
+#: ../servlets/webui/root/script/config/email.js:499
+msgid "Email From-SafeList Details for: "
+msgstr "电子邮件安全发件人列表细节："
+
+#: ../servlets/webui/root/script/config/email.js:601
+msgid "Quarantine"
+msgstr "隔离"
+
+#: ../servlets/webui/root/script/config/email.js:614
+msgid "Maximum Holding Time (days) (max 36)"
+msgstr "最大保留时间(天)(最大36)"
+
+#: ../servlets/webui/root/script/config/email.js:619
+msgid "Maximum Holding Time must be a number in range 0-36"
+msgstr "最大保留时间必须是0～36之间的一个数字"
+
+#: ../servlets/webui/root/script/config/email.js:632
+msgid "Digest Sending Time"
+msgstr "摘要发送耗时"
+
+#: ../servlets/webui/root/script/config/email.js:652
+msgid "User Quarantines"
+msgstr "用户隔离"
+
+#: ../servlets/webui/root/script/config/email.js:695
+#: ../servlets/webui/root/script/config/email.js:696
+#: ../servlets/webui/root/script/config/email.js:964
+#: ../servlets/webui/root/script/config/email.js:965
+msgid "Release Selected"
+msgstr "已选择释放"
+
+#: ../servlets/webui/root/script/config/email.js:710
+#: ../servlets/webui/root/script/config/email.js:979
+msgid "Releasing..."
+msgstr "释放中。。。"
+
+#: ../servlets/webui/root/script/config/email.js:726
+msgid "Total Disk Space Used: {0} MB"
+msgstr "总已用磁盘空间：{0} MB"
+
+#: ../servlets/webui/root/script/config/email.js:742
+msgid "message count"
+msgstr "消息计数"
+
+#: ../servlets/webui/root/script/config/email.js:747
+msgid "data size (kB)"
+msgstr "数据大小(KB)"
+
+#: ../servlets/webui/root/script/config/email.js:767
+msgid "Email Quarantine Details for: "
+msgstr "电子邮件隔离细节："
+
+#: ../servlets/webui/root/script/config/email.js:784
+msgid "Quarantinable Addresses"
+msgstr "应隔离的地址"
+
+#: ../servlets/webui/root/script/config/email.js:788
+msgid "Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined."
+msgstr "在该列表中的电子邮件地址将会被自动隔离。其它的电子邮件将会被打上标记不会隔离。"
+
+#: ../servlets/webui/root/script/config/email.js:796
+#: ../servlets/webui/root/script/config/email.js:865
+msgid "[no category]"
+msgstr "【无分类】"
+
+#: ../servlets/webui/root/script/config/email.js:814
+msgid "quarantinable address"
+msgstr "应隔离的地址"
+
+#: ../servlets/webui/root/script/config/email.js:827
+msgid "All addresses have quarantines"
+msgstr "所有的地址都有隔离"
+
+#: ../servlets/webui/root/script/config/email.js:834
+#: ../servlets/webui/root/script/config/email.js:911
+#: ../servlets/webui/root/script/config/email.js:1042
+msgid "Category"
+msgstr "分类"
+
+#: ../servlets/webui/root/script/config/email.js:852
+msgid "Quarantine Forwards"
+msgstr "隔离转发"
+
+#: ../servlets/webui/root/script/config/email.js:856
+msgid "This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest."
+msgstr "对于该列表中的电子邮件地址，它们的隔离摘要会被转发到另一个帐号。对于不希望整个列表都收到摘要邮件来说这种分发列表是一种常用方式。"
+
+#: ../servlets/webui/root/script/config/email.js:863
+msgid "distributionlistrecipient@example.com"
+msgstr "分发列表收件人邮件地址(例：distributionlistrecipient@example.com)"
+
+#: ../servlets/webui/root/script/config/email.js:864
+msgid "quarantinelistowner@example.com"
+msgstr "隔离列表所有者邮件地址(例：quarantinelistowner@example.com)"
+
+#: ../servlets/webui/root/script/config/email.js:885
+msgid "distribution list address"
+msgstr "分发列表地址"
+
+#: ../servlets/webui/root/script/config/email.js:892
+msgid "send to address"
+msgstr "接收地址"
+
+#: ../servlets/webui/root/script/config/email.js:901
+msgid "Distribution List Address"
+msgstr "分发列表收件人邮件地址"
+
+#: ../servlets/webui/root/script/config/email.js:906
+msgid "Send To Address"
+msgstr "接收地址"
+
+#: ../servlets/webui/root/script/config/email.js:1004
+msgid "MailID"
+msgstr "邮件身份(ID)"
+
+#: ../servlets/webui/root/script/config/email.js:1009
+msgid "Date"
+msgstr "日期"
+
+#: ../servlets/webui/root/script/config/email.js:1017
+msgid "Sender"
+msgstr "发件人"
+
+#: ../servlets/webui/root/script/config/email.js:1025
+msgid "Subject"
+msgstr "主题"
+
+#: ../servlets/webui/root/script/config/email.js:1033
+msgid "Size (KB)"
+msgstr "大小(KB)"
+
+#: ../servlets/webui/root/script/config/email.js:1050
+msgid "Detail"
+msgstr "细节"
+
+#: ../servlets/webui/root/script/config/email.js:1057
+msgid "Identity Theft"
+msgstr "身份盗窃"
+
+#: ../servlets/webui/root/script/config/email.js:1100
+msgid "A \"Password\" must be specified if a \"Login\" is specified."
+msgstr "如果指定了一个“登录”也必须同时指定一个“密码”。"
+
+#: ../servlets/webui/root/script/config/email.js:1109
+msgid "A \"Login\" must be specified if a \"Password\" is specified."
+msgstr "如果指定了一个“密码”也必须同时指定一个“登录”。"
+
+#: ../servlets/webui/root/script/config/email.js:1120
+msgid "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified."
+msgstr "如果指定了“密码”或“登录”也必须同时指定一个“主机名”。"
+
+#: ../servlets/webui/root/script/config/email.js:1131
+msgid "A \"From Address\" must be specified."
+msgstr "必须指定一个“发件人地址”。"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:50
+msgid "[no ID/login]"
+msgstr "【无身份ID/登录】"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:51
+#: ../servlets/webui/root/script/config/localDirectory.js:52
+#: ../servlets/webui/root/script/config/policyManager.js:73
+msgid "[no name]"
+msgstr "【无名称】"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:78
+msgid "user/login ID"
+msgstr "用户/登录ID"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:86
+msgid "first name"
+msgstr "名"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:94
+msgid "last name"
+msgstr "姓"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:108
+msgid "password"
+msgstr "密码"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:128
+msgid "User/Login ID"
+msgstr "用户/登录ID"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:135
+#: ../servlets/webui/root/script/config/systemInfo.js:134
+msgid "First Name"
+msgstr "名"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:142
+#: ../servlets/webui/root/script/config/systemInfo.js:140
+msgid "Last Name"
+msgstr "姓"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:176
+msgid "The login name \"{0}\" at row {1} has already been taken."
+msgstr "行{1}中的登录名“{0}”已被人使用。"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:186
+msgid "The first name at row {0} must not contain any space characters."
+msgstr "行{0}的名不能包含任何空格。"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:195
+msgid "The last name at row {0} must not contain any space characters."
+msgstr "行{0}的姓不能包含任何空格。"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:204
+msgid "The password at row {0} must be at least 1 character long."
+msgstr "行{0}的密码至少要有1个字符长。"
+
+#: ../servlets/webui/root/script/config/localDirectory.js:213
+msgid "The password at row {0} must not contain any space characters."
+msgstr "行{0}的密码不能包含任何空格。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:12
+msgid "Policy Manager"
+msgstr "策略管理器"
+
+#: ../servlets/webui/root/script/config/policyManager.js:54
+msgid "Policy Management"
+msgstr "策略管理"
+
+#: ../servlets/webui/root/script/config/policyManager.js:69
+msgid "Racks"
+msgstr "机架"
+
+#: ../servlets/webui/root/script/config/policyManager.js:90
+#: ../servlets/webui/root/script/config/upgrade.js:133
+msgid "name"
+msgstr "名称"
+
+#: ../servlets/webui/root/script/config/policyManager.js:108
+msgid "The policy name cannot be blank."
+msgstr "策略名不能为空。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:149
+msgid "Professional Package Feature"
+msgstr "专业包功能"
+
+#: ../servlets/webui/root/script/config/policyManager.js:150
+msgid "Need to create network-access policies by username or time of the week? Click on \"More Info\" to learn more."
+msgstr "想通过用户名或星期时间来创建网络访问策略吗？点击“更多信息”了解详情。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:167
+msgid "> No rack"
+msgstr ">无机架"
+
+#: ../servlets/webui/root/script/config/policyManager.js:183
+msgid "live"
+msgstr "在线"
+
+#: ../servlets/webui/root/script/config/policyManager.js:205
+msgid "Policies"
+msgstr "策略"
+
+#: ../servlets/webui/root/script/config/policyManager.js:276
+msgid "<b>Use this rack</b> when the <br/>next colums are matched..."
+msgstr "当下面的栏被匹配了<br/><b>使用这个机架</b>。。。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:308
+msgid "client <br/>interface"
+msgstr "客户端<br/>界面"
+
+#: ../servlets/webui/root/script/config/policyManager.js:326
+msgid "server <br/>interface"
+msgstr "服务器<br/>界面"
+
+#: ../servlets/webui/root/script/config/policyManager.js:344
+msgid "protocol"
+msgstr "协议"
+
+#: ../servlets/webui/root/script/config/policyManager.js:362
+msgid "client <br/>address"
+msgstr "客户端<br/>地址"
+
+#: ../servlets/webui/root/script/config/policyManager.js:371
+msgid "server <br/>address"
+msgstr "服务器<br/>地址"
+
+#: ../servlets/webui/root/script/config/policyManager.js:380
+msgid "server<br/>port"
+msgstr "服务器<br/>端口"
+
+#: ../servlets/webui/root/script/config/policyManager.js:391
+msgid "start time"
+msgstr "起始时间"
+
+#: ../servlets/webui/root/script/config/policyManager.js:405
+msgid "end time"
+msgstr "结束时间"
+
+#: ../servlets/webui/root/script/config/policyManager.js:419
+msgid "dayOfWeek"
+msgstr "星期几？"
+
+#: ../servlets/webui/root/script/config/policyManager.js:451
+msgid "Policy Wizard"
+msgstr "策略向导"
+
+#: ../servlets/webui/root/script/config/policyManager.js:564
+#: ../servlets/webui/root/script/config/policyManager.js:572
+msgid "Protocol"
+msgstr "协议"
+
+#: ../servlets/webui/root/script/config/policyManager.js:568
+msgid "The protocol you would like this policy to handle."
+msgstr "您希望本策略处理的协议。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:577
+msgid "Interface"
+msgstr "界面"
+
+#: ../servlets/webui/root/script/config/policyManager.js:581
+msgid "The ethernet interface (NIC) you would like this policy to handle."
+msgstr "您希望本策略处理的以太网接口（网卡）。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:585
+#: ../servlets/webui/root/script/config/policyManager.js:609
+msgid "Client"
+msgstr "客户端"
+
+#: ../servlets/webui/root/script/config/policyManager.js:593
+#: ../servlets/webui/root/script/config/policyManager.js:615
+#: ../servlets/webui/root/script/config/policyManager.js:630
+msgid "Server"
+msgstr "服务器"
+
+#: ../servlets/webui/root/script/config/policyManager.js:604
+msgid "The IP address which you would like this policy to handle."
+msgstr "您希望本策略处理的IP地址。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:625
+msgid "The port which you would like this policy to handle."
+msgstr "您希望本策略处理的端口。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:640
+msgid "The users you would like to apply this policy to."
+msgstr "您希望应用本策略的用户。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:652
+msgid "Change Users"
+msgstr "更改用户"
+
+#: ../servlets/webui/root/script/config/policyManager.js:663
+msgid "Time of Day"
+msgstr "时间？"
+
+#: ../servlets/webui/root/script/config/policyManager.js:667
+#: ../servlets/webui/root/script/config/policyManager.js:690
+msgid "The time of day you would like this policy active."
+msgstr "您希望本策略在一天中的什么时间执行。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:673
+msgid "Start Time"
+msgstr "起始时间"
+
+#: ../servlets/webui/root/script/config/policyManager.js:680
+msgid "End Time"
+msgstr "结束时间"
+
+#: ../servlets/webui/root/script/config/policyManager.js:686
+msgid "Days of Week"
+msgstr "星期几？"
+
+#: ../servlets/webui/root/script/config/policyManager.js:695
+#: ../servlets/webui/root/script/config/upgrade.js:259
+msgid "Sunday"
+msgstr "星期天"
+
+#: ../servlets/webui/root/script/config/policyManager.js:702
+#: ../servlets/webui/root/script/config/upgrade.js:272
+msgid "Monday"
+msgstr "星期一"
+
+#: ../servlets/webui/root/script/config/policyManager.js:709
+#: ../servlets/webui/root/script/config/upgrade.js:285
+msgid "Tuesday"
+msgstr "星期二"
+
+#: ../servlets/webui/root/script/config/policyManager.js:716
+#: ../servlets/webui/root/script/config/upgrade.js:298
+msgid "Wednesday"
+msgstr "星期三"
+
+#: ../servlets/webui/root/script/config/policyManager.js:723
+#: ../servlets/webui/root/script/config/upgrade.js:311
+msgid "Thursday"
+msgstr "星期四"
+
+#: ../servlets/webui/root/script/config/policyManager.js:730
+#: ../servlets/webui/root/script/config/upgrade.js:324
+msgid "Friday"
+msgstr "星期五"
+
+#: ../servlets/webui/root/script/config/policyManager.js:737
+#: ../servlets/webui/root/script/config/upgrade.js:337
+msgid "Saturday"
+msgstr "星期六"
+
+#: ../servlets/webui/root/script/config/policyManager.js:744
+#: ../servlets/webui/root/script/config/policyManager.js:753
+msgid "Rack"
+msgstr "机架"
+
+#: ../servlets/webui/root/script/config/policyManager.js:748
+msgid "The rack you would like to use to handle this policy."
+msgstr "您希望用于运行本策略的机架。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:778
+msgid "Enable this Policy"
+msgstr "启用本策略"
+
+#: ../servlets/webui/root/script/config/policyManager.js:788
+msgid "There must always be at least one available rack."
+msgstr "必须至少要有一个可用的机架。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:794
+msgid "The rack named {0} already exists."
+msgstr "名为{0}的机架已经存在。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:805
+msgid "The rack named {0} cannot be removed because it is currently being used in \"Custom Policies\"."
+msgstr "名为{0}的机架无法被移除，因为该机架正被用于“自定义策略”。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:819
+msgid "The rack named {0} cannot be removed because it is not empty.  Please remove all products first."
+msgstr "名为{0}的机架无法被移除，因为该机架上还有产品。请先移除所有的产品。"
+
+#: ../servlets/webui/root/script/config/policyManager.js:857
+msgid "Invalid address specified for Client Address"
+msgstr "为客户端指定了无效的地址"
+
+#: ../servlets/webui/root/script/config/policyManager.js:860
+msgid "Invalid address specified for Server Address"
+msgstr "为服务器指定了无效的地址"
+
+#: ../servlets/webui/root/script/config/policyManager.js:863
+msgid "Invalid port specified for Server Port"
+msgstr "为服务器指定了无效的端口"
+
+#: ../servlets/webui/root/script/config/policyManager.js:868
+msgid "Validation failed"
+msgstr "验证失败"
+
+#: ../servlets/webui/root/script/config/system.js:125
+#: ../servlets/webui/root/script/config/system.js:135
+msgid "Support"
+msgstr "客户支持"
+
+#: ../servlets/webui/root/script/config/system.js:143
+msgid "{0}Allow{1} us to securely access your server for support purposes."
+msgstr "{0}允许{1}我们因客户支持原因安全的访问您的服务器。"
+
+#: ../servlets/webui/root/script/config/system.js:157
+msgid "{0}Send{1} us data about your server. This will send us status updates and an email if any unexpected problems occur, but will not allow us to login to your server. No personal information about your network traffic will be transmitted."
+msgstr "{0}发送{1}给我们您的服务器数据。这将会发送给我们有关状态更新和发生意外状况的电子邮件，但不会允许我们登录您的服务器。您的任何个人信息都不会被发送给我们。"
+
+#: ../servlets/webui/root/script/config/system.js:178
+msgid "Backup"
+msgstr "备份"
+
+#: ../servlets/webui/root/script/config/system.js:204
+#: ../servlets/webui/root/script/config/system.js:213
+#: ../servlets/webui/root/script/config/system.js:224
+msgid "Backup Failure Warning"
+msgstr "备份失败警告"
+
+#: ../servlets/webui/root/script/config/system.js:204
+msgid "Error:  The local file backup procedure failed.  Please try again."
+msgstr "错误：本地文件备份过程失败。请再试一次。"
+
+#: ../servlets/webui/root/script/config/system.js:209
+#: ../servlets/webui/root/script/config/system.js:220
+msgid "Backing Up..."
+msgstr "正在备份。。。"
+
+#: ../servlets/webui/root/script/config/system.js:213
+msgid "Error:  The USB Key backup procedure failed.  Contact support for further direction."
+msgstr "错误：优盘备份过程失败。联系客户支持获得更多的指导。"
+
+#: ../servlets/webui/root/script/config/system.js:215
+#: ../servlets/webui/root/script/config/system.js:226
+msgid "Backup Success"
+msgstr "备份成功"
+
+#: ../servlets/webui/root/script/config/system.js:215
+msgid "Success:  The USB Key backup procedure completed."
+msgstr "成功：优盘备份过程完成。"
+
+#: ../servlets/webui/root/script/config/system.js:224
+msgid "Error:  The Hard Disk backup procedure failed.  Contact support for further direction."
+msgstr "错误：磁盘备份过程失败。联系客户支持获得更多的指导。"
+
+#: ../servlets/webui/root/script/config/system.js:226
+msgid "Success:  The Hard Disk backup procedure completed."
+msgstr "成功：磁盘备份过程完成。"
+
+#: ../servlets/webui/root/script/config/system.js:236
+#: ../servlets/webui/root/script/config/system.js:247
+msgid "Backup to File"
+msgstr "备份到文件"
+
+#: ../servlets/webui/root/script/config/system.js:242
+msgid "You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\""
+msgstr "您可以把您当前的系统配置备份到本地计算机的一个文件以便于之后的系统恢复，即如果您想用当前的设置替换掉新的设置时。备份文件的后缀名为“.backup”"
+
+#: ../servlets/webui/root/script/config/system.js:244
+msgid "After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\"."
+msgstr "在您把当前的系统配置备份到一个文件后，您可以用本对话框选择“恢复”->“从本地文件”来恢复配置。"
+
+#: ../servlets/webui/root/script/config/system.js:254
+#: ../servlets/webui/root/script/config/system.js:269
+msgid "Backup to USB Key"
+msgstr "备份到优盘"
+
+#: ../servlets/webui/root/script/config/system.js:260
+msgid "You can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings."
+msgstr "您可以先把您当前的系统配置备份到优盘以便于之后的系统恢复，即如果您想用当前的设置替换掉新的设置时。"
+
+#: ../servlets/webui/root/script/config/system.js:262
+msgid "After backing up your current system configuration to USB Key, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."
+msgstr "在您把当前的系统配置备份到优盘后，您可以通过{0}备份和恢复工具{1}来恢复配置。访问备份和恢复工具，您必须有一个显示器和一个键盘物理性的连接到您的服务器并启动，然后在启动提示符处选择“备份和恢复工具”。"
+
+#: ../servlets/webui/root/script/config/system.js:264
+msgid "Note: You must insert your USB Key into a valid USB port on the back of your server before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete."
+msgstr "注意：您必须在按下按钮之前将优盘插入服务器可用的USB接口中。在整个执行过程结束之前请不要将优盘拔出USB接口。当整个执行过程结束后执行进度条将会通知您。"
+
+#: ../servlets/webui/root/script/config/system.js:275
+#: ../servlets/webui/root/script/config/system.js:286
+msgid "Backup to Hard Disk"
+msgstr "备份到硬盘"
+
+#: ../servlets/webui/root/script/config/system.js:281
+msgid "You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings."
+msgstr "您可以先把您当前的系统配置备份到硬盘以便于之后的系统恢复，即如果您想用当前的设置替换掉新的设置时。"
+
+#: ../servlets/webui/root/script/config/system.js:283
+msgid "After backing up your current system configuration to Hard Disk, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."
+msgstr "在您把当前的系统配置备份到硬盘后，您可以通过{0}备份和恢复工具{1}来恢复配置。访问备份和恢复工具，您必须有一个显示器和一个键盘物理性的连接到您的服务器并启动，然后在启动提示符处选择“备份和恢复工具”。"
+
+#: ../servlets/webui/root/script/config/system.js:301
+msgid "Restore"
+msgstr "恢复"
+
+#: ../servlets/webui/root/script/config/system.js:310
+msgid "Please select a file to upload."
+msgstr "请选择一个要上传的文件。"
+
+#: ../servlets/webui/root/script/config/system.js:316
+msgid "Please wait while Restoring..."
+msgstr "正在恢复请等待。。。"
+
+#: ../servlets/webui/root/script/config/system.js:319
+msgid "Restore Success"
+msgstr "恢复成功"
+
+#: ../servlets/webui/root/script/config/system.js:319
+msgid "Success:  The Local File restore procedure completed."
+msgstr "成功：本地文件恢复过程完成。"
+
+#: ../servlets/webui/root/script/config/system.js:321
+msgid "Attention"
+msgstr "注意"
+
+#: ../servlets/webui/root/script/config/system.js:322
+msgid "You must now exit this program."
+msgstr "您现在必须退出本程序。"
+
+#: ../servlets/webui/root/script/config/system.js:323
+msgid "You can log in again after a brief period."
+msgstr "您可以稍等一会再登录进入。"
+
+#: ../servlets/webui/root/script/config/system.js:324
+msgid "Do not manually shutdown or restart the {0} Server while it is upgrading!"
+msgstr "在进行升级的过程中请勿手动关闭或重启{0}服务器！"
+
+#: ../servlets/webui/root/script/config/system.js:329
+#: ../servlets/webui/root/script/config/system.js:345
+msgid "The Local File restore procedure failed."
+msgstr "本地文件恢复过程失败。"
+
+#: ../servlets/webui/root/script/config/system.js:333
+msgid "File does not seem to be valid {0} backup"
+msgstr "文件没有被有效{0}备份"
+
+#: ../servlets/webui/root/script/config/system.js:336
+msgid "Error in processing restore itself (yet file seems valid)"
+msgstr "恢复文件本身过程中出错(文件是有效的)"
+
+#: ../servlets/webui/root/script/config/system.js:339
+msgid "File is from an older version of {0} and cannot be used"
+msgstr "文件来自一个老版本的{0}，无法使用"
+
+#: ../servlets/webui/root/script/config/system.js:342
+msgid "Unknown error in local processing"
+msgstr "本地执行过程中产生未知错误"
+
+#: ../servlets/webui/root/script/config/system.js:358
+msgid "From File"
+msgstr "来自文件"
+
+#: ../servlets/webui/root/script/config/system.js:364
+msgid "You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\""
+msgstr "您可以从您本地计算机上的备份文件恢复一个以前的系统配置。备份文件的后缀名为“.backup”"
+
+#: ../servlets/webui/root/script/config/system.js:385
+msgid "Restore from File"
+msgstr "从文件恢复"
+
+#: ../servlets/webui/root/script/config/system.js:392
+msgid "From Hard Disk and USB Key"
+msgstr "从硬盘和优盘"
+
+#: ../servlets/webui/root/script/config/system.js:398
+msgid "After backing up your system configuration, you can restore that configuration through the {0}Recovery Utilities{1} on your server once it is done booting."
+msgstr "在备份了您的系统配置之后，您可以在服务器启动之后通过{0}恢复工具{1}恢复该系统配置。"
+
+#: ../servlets/webui/root/script/config/system.js:400
+msgid "To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting."
+msgstr "访问{0}恢复工具{1}，您必须有一个显示器和一个键盘物理性的连接到您的服务器并启动，然后在启动之后点击“恢复工具”条。"
+
+#: ../servlets/webui/root/script/config/system.js:411
+msgid "Warning: These settings should not be changed unless instructed to do so by support."
+msgstr "警告：除非是在客户服务的指导下，这些设置请不要轻易改变。"
+
+#: ../servlets/webui/root/script/config/system.js:416
+msgid "HTTP"
+msgstr "HTTP"
+
+#: ../servlets/webui/root/script/config/system.js:423
+msgid "Web Override"
+msgstr "互联网(Web)覆盖"
+
+#: ../servlets/webui/root/script/config/system.js:426
+msgid "{0}Enable Processing{1} of web traffic.  (This is the default setting)"
+msgstr "{0}启用{1}web数据流处理。（默认设置）"
+
+#: ../servlets/webui/root/script/config/system.js:439
+msgid "{0}Disable Processing{1} of web traffic."
+msgstr "{0}禁用{1}web数据流处理。"
+
+#: ../servlets/webui/root/script/config/system.js:452
+msgid "Long URIs"
+msgstr "长URI地址"
+
+#: ../servlets/webui/root/script/config/system.js:455
+msgid "{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)"
+msgstr "{0}启用{1}长URI地址处理。这被认为是“非HTTP”数据流。（默认设置）"
+
+#: ../servlets/webui/root/script/config/system.js:468
+msgid "{0}Disable Processing{1} of long URIs."
+msgstr "{0}禁用{1}长URI地址处理。"
+
+#: ../servlets/webui/root/script/config/system.js:481
+msgid "Max URI Length (characters)"
+msgstr "最大URI地址长度（字符）"
+
+#: ../servlets/webui/root/script/config/system.js:500
+msgid "Long Headers"
+msgstr "长报头"
+
+#: ../servlets/webui/root/script/config/system.js:503
+msgid "{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)"
+msgstr "{0}启用{1}长报头处理。这被认为是“非HTTP”数据流。（默认设置）"
+
+#: ../servlets/webui/root/script/config/system.js:516
+msgid "{0}Disable Processing{1} of long headers."
+msgstr "{0}禁用{1}长报头处理。"
+
+#: ../servlets/webui/root/script/config/system.js:529
+msgid "Max Header Length (characters)"
+msgstr "最大报头长度（字符）"
+
+#: ../servlets/webui/root/script/config/system.js:548
+msgid "Non-Http Blocking"
+msgstr "非HTTP阻止"
+
+#: ../servlets/webui/root/script/config/system.js:551
+msgid "{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)"
+msgstr "{0}允许{1}非HTTP数据流通过80端口。（默认设置）"
+
+#: ../servlets/webui/root/script/config/system.js:564
+msgid "{0}Stop{1} non-Http traffic to travel over port 80."
+msgstr "{0}禁止{1}非HTTP数据流通过80端口。"
+
+#: ../servlets/webui/root/script/config/system.js:586
+msgid "{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)"
+msgstr "{0}启用{1}文件传输数据流处理。（默认设置）"
+
+#: ../servlets/webui/root/script/config/system.js:599
+msgid "{0}Disable Processing{1} of File Transfer traffic."
+msgstr "{0}禁用{1}文件传输数据流处理。"
+
+#: ../servlets/webui/root/script/config/system.js:616
+msgid "SMTP"
+msgstr "简单邮件传输协议(SMTP)"
+
+#: ../servlets/webui/root/script/config/system.js:620
+msgid "{0}Enable SMTP{1} email processing.  (This is the default setting)"
+msgstr "{0}启用{1}电子邮件SMTP处理。（默认设置）"
+
+#: ../servlets/webui/root/script/config/system.js:633
+msgid "{0}Disable SMTP{1} email processing."
+msgstr "{0}禁用{1}电子邮件SMTP处理。"
+
+#: ../servlets/webui/root/script/config/system.js:646
+msgid "SMTP timeout (seconds)"
+msgstr "SMTP超时（秒）"
+
+#: ../servlets/webui/root/script/config/system.js:666
+msgid "POP3"
+msgstr "邮局协议3(POP3)"
+
+#: ../servlets/webui/root/script/config/system.js:670
+msgid "{0}Enable POP3{1} email processing.  (This is the default setting)"
+msgstr "{0}启用{1}电子邮件POP3处理。（默认设置）"
+
+#: ../servlets/webui/root/script/config/system.js:683
+msgid "{0}Disable POP3{1} email processing."
+msgstr "{0}禁用{1}电子邮件POP3处理。"
+
+#: ../servlets/webui/root/script/config/system.js:696
+msgid "POP3 timeout (seconds)"
+msgstr "POP3超时（秒）"
+
+#: ../servlets/webui/root/script/config/system.js:716
+msgid "IMAP"
+msgstr "互联网消息访问协议(IMAP)"
+
+#: ../servlets/webui/root/script/config/system.js:720
+msgid "{0}Enable IMAP{1} email processing.  (This is the default setting)"
+msgstr "{0}启用{1}电子邮件IMAP处理。（默认设置）"
+
+#: ../servlets/webui/root/script/config/system.js:733
+msgid "{0}Disable IMAP{1} email processing."
+msgstr "{0}禁用{1}电子邮件IMAP处理。"
+
+#: ../servlets/webui/root/script/config/system.js:746
+msgid "IMAP timeout (seconds)"
+msgstr "IMAP超时（秒）"
+
+#: ../servlets/webui/root/script/config/system.js:772
+msgid "Protocol Settings"
+msgstr "协议设置"
+
+#: ../servlets/webui/root/script/config/system.js:800
+msgid "Regional Settings"
+msgstr "区域设置"
+
+#: ../servlets/webui/root/script/config/system.js:810
+msgid "Current Time"
+msgstr "当前时间"
+
+#: ../servlets/webui/root/script/config/system.js:816
+msgid "time is automatically synced via NTP"
+msgstr "时间会自动与NTP同步"
+
+#: ../servlets/webui/root/script/config/system.js:821
+msgid "Timezone"
+msgstr "时区"
+
+#: ../servlets/webui/root/script/config/system.js:842
+msgid "Language"
+msgstr "语言"
+
+#: ../servlets/webui/root/script/config/system.js:862
+msgid "Please note that you have to refresh the application after saving for the new language to take effect."
+msgstr "请注意，您需要在保存后刷新程序以使新语言生效。"
+
+#: ../servlets/webui/root/script/config/system.js:882
+msgid "Upload New Language Pack"
+msgstr "上载新语言包"
+
+#: ../servlets/webui/root/script/config/system.js:917
+msgid "Please wait while your language pack is uploaded..."
+msgstr "您的语言包正在上传，请等待。。。"
+
+#: ../servlets/webui/root/script/config/system.js:922
+msgid "Language pack uploaded with errors"
+msgstr "语言包上传后有错误"
+
+#: ../servlets/webui/root/script/config/system.js:924
+msgid "Upload language pack succeeded"
+msgstr "语言包上传成功"
+
+#: ../servlets/webui/root/script/config/system.js:933
+#: ../servlets/webui/root/script/config/system.js:940
+msgid "Upload language pack failed"
+msgstr "语言包上传失败"
+
+#: ../servlets/webui/root/script/config/system.js:937
+msgid "Invalid language pack; not a zip file"
+msgstr "无效的语言包；不是zip文件"
+
+#: ../servlets/webui/root/script/config/system.js:963
+msgid "Max URI Length should be between 1024 and 4096!"
+msgstr "最大互联网地址(URI)长度应在1024～4096之间！"
+
+#: ../servlets/webui/root/script/config/system.js:978
+msgid "Max Header Length should be between 1024 and 8192!"
+msgstr "最大报头长度应在1024～8192之间！"
+
+#: ../servlets/webui/root/script/config/system.js:993
+msgid "SMTP timeout should be between 0 and 86400!"
+msgstr "SMTP超时应在0～86400之间！"
+
+#: ../servlets/webui/root/script/config/system.js:1008
+msgid "POP timeout should be between 0 and 86400!"
+msgstr "POP超时应在0～86400之间！"
+
+#: ../servlets/webui/root/script/config/system.js:1023
+msgid "IMAP timeout should be between 0 and 86400!"
+msgstr "IMAP超时应在0～86400之间！"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:74
+msgid "Version"
+msgstr "版本"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:91
+msgid "Summary"
+msgstr "概要"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:92
+msgid "Key"
+msgstr "密钥"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:93
+msgid "Build"
+msgstr "编译"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:94
+msgid "Java"
+msgstr "JAVA"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:147
+msgid "Address 1"
+msgstr "地址1"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:152
+msgid "Address 2"
+msgstr "地址2"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:167
+msgid "Zipcode"
+msgstr "邮政编码"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:172
+msgid "Phone #"
+msgstr "电话号码"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:184
+msgid "Number of computers{0}protected by {1}"
+msgstr "有{0}计算机受到{1}保护"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:202
+msgid "License Agreement"
+msgstr "许可协议"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:217
+msgid "You must fill out the company name."
+msgstr "您必须填写公司名称。"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:229
+msgid "You must fill out your first name."
+msgstr "您必须填写您的名。"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:241
+msgid "You must fill out the last name."
+msgstr "您必须填写您的姓。"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:253
+msgid "You must fill out the email address in the format \"user@domain.com\"."
+msgstr "您必须按照“user@domain.com”的格式填写电子邮件地址。"
+
+#: ../servlets/webui/root/script/config/systemInfo.js:265
+msgid "You must fill out the number of computers protected by {0}."
+msgstr "您必须填写受到{0}保护的计算机数量。"
+
+#: ../servlets/webui/root/script/config/upgrade.js:63
+msgid "System Component"
+msgstr "系统部件"
+
+#: ../servlets/webui/root/script/config/upgrade.js:64
+msgid "Product"
+msgstr "产品"
+
+#: ../servlets/webui/root/script/config/upgrade.js:65
+msgid "Unknown"
+msgstr "未知"
+
+#: ../servlets/webui/root/script/config/upgrade.js:78
+msgid "Various Updates"
+msgstr "不同的更新"
+
+#: ../servlets/webui/root/script/config/upgrade.js:79
+msgid "N/A"
+msgstr "不可用"
+
+#: ../servlets/webui/root/script/config/upgrade.js:80
+msgid "Misc."
+msgstr "其它"
+
+#: ../servlets/webui/root/script/config/upgrade.js:139
+msgid "new version"
+msgstr "新版本"
+
+#: ../servlets/webui/root/script/config/upgrade.js:145
+msgid "type"
+msgstr "类型"
+
+#: ../servlets/webui/root/script/config/upgrade.js:150
+msgid "size (kb)"
+msgstr "大小(KB)"
+
+#: ../servlets/webui/root/script/config/upgrade.js:178
+msgid "Downloading updates..."
+msgstr "正在下载更新。。。"
+
+#: ../servlets/webui/root/script/config/upgrade.js:197
+msgid "Upgrade Setup"
+msgstr "升级设置"
+
+#: ../servlets/webui/root/script/config/upgrade.js:207
+msgid "Automatic Upgrade"
+msgstr "自动升级"
+
+#: ../servlets/webui/root/script/config/upgrade.js:214
+msgid "Automatically Install Upgrades"
+msgstr "自动安装升级补丁"
+
+#: ../servlets/webui/root/script/config/upgrade.js:228
+msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty."
+msgstr "如果有新的升级补丁可用，系统将自动下载并安装。在升级补丁的安装过程中系统有可能会重新启动并造成短暂的连接中断。"
+
+#: ../servlets/webui/root/script/config/upgrade.js:231
+msgid "Do Not Automatically Install Upgrades"
+msgstr "不要自动安装升级补丁"
+
+#: ../servlets/webui/root/script/config/upgrade.js:245
+msgid "If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab."
+msgstr "如果有新的升级补丁可用，系统将不会自动安装。所有的升级将需要点击“升级”页面上的按钮手动进行。"
+
+#: ../servlets/webui/root/script/config/upgrade.js:247
+msgid "Note: Turning off Automatic Upgrades does not disable signature & list updates"
+msgstr "注意：禁止自动更新功能将不会影响到签名和列表的更新"
+
+#: ../servlets/webui/root/script/config/upgrade.js:251
+msgid "Upgrade Time"
+msgstr "升级时间"
+
+#: ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java:151
+msgid "could not resolve host"
+msgstr "无法解析主机"
+
+#: ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java:160
+msgid "request timed out"
+msgstr "请求超时"
+
+#: ../localapi/com/untangle/uvm/util/OutsideValve.java:113
+msgid "off-site access"
+msgstr "异地访问"
+
+#: ../localapi/com/untangle/uvm/util/OutsideValve.java:120
+msgid "standard access"
+msgstr "标准访问"
+
+#: ../localapi/com/untangle/uvm/util/ReportingOutsideAccessValve.java:54
+msgid "off-site access to reporting"
+msgstr "异地访问报告"
+
+#: ../localapi/com/untangle/uvm/util/ReportingOutsideAccessValve.java:61
+msgid "standard access to reporting"
+msgstr "标准访问报告"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:102
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:117
+#, java-format
+msgid "{0} Server"
+msgstr "{0}服务器"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:152
+msgid "Bad Request"
+msgstr "不良请求"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:155
+msgid "Unauthorized"
+msgstr "未被授权的"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:158
+msgid "Payment Required"
+msgstr "需要付费"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:161
+msgid "Forbidden"
+msgstr "禁止的"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:164
+msgid "Not Found"
+msgstr "未找到"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:167
+msgid "Method Not Allowed"
+msgstr "不允许的方法"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:170
+msgid "Not Acceptable"
+msgstr "不可接受的"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:173
+msgid "Proxy Authentication Required"
+msgstr "需要代理身份验证"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:176
+msgid "Request Timeout"
+msgstr "请求超时"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:179
+msgid "Conflict"
+msgstr "冲突"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:182
+msgid "Gone"
+msgstr "消失"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:185
+msgid "Length Required"
+msgstr "需要长度"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:188
+msgid "Precondition Failed"
+msgstr "预处理失败"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:191
+msgid "Request Entity Too Large"
+msgstr "请求的实体太大"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:194
+msgid "Request-URI Too Long"
+msgstr "请求的URI太长"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:197
+msgid "Unsupported Media Type"
+msgstr "不支持的媒体类型"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:200
+msgid "Requested Range Not Satisfiable"
+msgstr "不满足所请求的范围"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:203
+msgid "Expectation Failed"
+msgstr "预期失败"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:206
+msgid "Internal Server Error"
+msgstr "内部服务器错误"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:209
+msgid "Not Implemented"
+msgstr "尚未实现"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:212
+msgid "Bad Gateway"
+msgstr "坏网关"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:215
+msgid "Service Unavailable"
+msgstr "服务不可用"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:218
+msgid "Gateway Timeout"
+msgstr "网关超时"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:221
+msgid "HTTP Version Not Supported"
+msgstr "该HTTP版本不支持"
+
+#: ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java:224
+msgid "Error"
+msgstr "错误"
+
+#: ../impl/com/untangle/uvm/engine/Dispatcher.java:264
+msgid "UDP Sessions"
+msgstr "UDP会话"
+
+#: ../impl/com/untangle/uvm/engine/Dispatcher.java:266
+msgid "TCP Sessions"
+msgstr "TCP会话"
+
+#: ../impl/com/untangle/uvm/engine/Dispatcher.java:268
+msgid "UDP Session Requests"
+msgstr "UDP会话请求"
+
+#: ../impl/com/untangle/uvm/engine/Dispatcher.java:271
+msgid "TCP Session Requests"
+msgstr "TCP会话请求"
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:93
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:96
+msgid "Server to Node Chunks"
+msgstr "服务器到节点字节片"
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:94
+msgid "Client to Node Chunks"
+msgstr "客户端到节点字节片"
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:95
+msgid "Node to Server Chunks"
+msgstr "节点到服务器字节片"
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:97
+msgid "Server to Node Bytes"
+msgstr "服务器到节点字节"
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:98
+msgid "Client to Node Bytes"
+msgstr "客户端到节点字节"
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:99
+msgid "Node to Server Bytes"
+msgstr "节点到服务器字节"
+
+#: ../localapi/com/untangle/uvm/vnet/NodeBase.java:100
+msgid "Node to Client Bytes"
+msgstr "节点到客户端字节"
+
+#: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:92
+msgid "Block Request"
+msgstr "组织请求"
+
+#: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:92
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:121
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:223
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:116
+msgid "BLOCK"
+msgstr "阻止"
+
+#: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:93
+msgid "Pass Request"
+msgstr "通过请求"
+
+#: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:93
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:122
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:224
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:117
+msgid "PASS"
+msgstr "通过"
+
+#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:95
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:212
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:115
+msgid "Scan Connection"
+msgstr "扫描连接"
+
+#: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:95
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:89
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:212
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:222
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:115
+msgid "SCAN"
+msgstr "扫描"
+
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:121
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:116
+msgid "Block Connection"
+msgstr "阻止连接"
+
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:122
+#: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../../webfilter/impl/com/untangle/node/webfilter/WebFilterImpl.java:117
+msgid "Pass Connection"
+msgstr "通过连接"
+
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:123
+msgid "Connect"
+msgstr "连接"
+
+#: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:123
+msgid "CONNECT"
+msgstr "连接"
+
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:89
+msgid "Scan Protocol"
+msgstr "扫描协议"
+
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+msgid "Block Protocol"
+msgstr "阻止协议"
+
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "Detect Protocol"
+msgstr "探测协议"
+
+#: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "DETECT"
+msgstr "探测"
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:224
+msgid "Pass Message"
+msgstr "通过消息"
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:223
+msgid "Block Message"
+msgstr "阻止消息"
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+msgid "Mark Message"
+msgstr "标记消息"
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+msgid "MARK"
+msgstr "标记"
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+msgid "Quarantine Message"
+msgstr "隔离消息"
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+msgid "QUARANTINE"
+msgstr "隔离"
+
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:222
+msgid "Scan Message"
+msgstr "扫描消息"
+
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:225
+msgid "Remove Message"
+msgstr "移除消息"
+
+#: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:225
+msgid "REMOVE"
+msgstr "移除"
+
+msgid "decimal_sep"
+msgstr "."
+
+msgid "thousand_sep"
+msgstr ","
+
+msgid "date_fmt"
+msgstr "月/日/年"
+
+msgid "timestamp_fmt"
+msgstr "年-月-日 g:i:s a"
+

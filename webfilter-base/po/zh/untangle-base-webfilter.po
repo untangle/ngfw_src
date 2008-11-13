@@ -1,0 +1,339 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-09-01 11:34+0300\n"
+"PO-Revision-Date: 2008-09-25 17:28-0500\n"
+"Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-Country: CHINA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:30
+msgid "Block Lists"
+msgstr "阻止列表"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:42
+msgid "Block all sites except for Pass Lists"
+msgstr "阻止除了通过列表以外的所有站点"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:55
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:134
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:247
+msgid "Categories"
+msgstr "分类"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:58
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:67
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:76
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:85
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:620
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:629
+msgid "manage list"
+msgstr "管理列表"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:64
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:158
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:365
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:617
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:653
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:726
+msgid "Sites"
+msgstr "站点"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:73
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:182
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:453
+msgid "File Types"
+msgstr "文件类型"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:82
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:206
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:537
+msgid "MIME Types"
+msgstr "MIME类型"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:95
+msgid "User Bypass"
+msgstr "用户旁路"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:99
+msgid "None"
+msgstr "无"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:99
+msgid "Temporary"
+msgstr "临时"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:100
+msgid "Permanent and Global"
+msgstr "永久和全局"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:222
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:345
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:433
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:517
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:889
+msgid "block"
+msgstr "阻止"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:236
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:350
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:438
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:522
+msgid "log"
+msgstr "日志"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:270
+msgid "category"
+msgstr "分类"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:278
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:394
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:480
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:564
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:753
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:827
+msgid "description"
+msgstr "描述"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:292
+msgid "Category"
+msgstr "分类"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:298
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:416
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:500
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:584
+msgid "Block"
+msgstr "阻止"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:314
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:420
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:504
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:588
+msgid "Log"
+msgstr "日志"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:318
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:424
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:508
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:592
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:779
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:851
+msgid "Description"
+msgstr "描述"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:328
+msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
+msgstr "指定的“URL”无法阻止，因为其使用了安全HTTP(HTTPs)"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:340
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:390
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:412
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:706
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:749
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:771
+msgid "Invalid \"URL\" specified"
+msgstr "指定的“URL”无效"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:360
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:722
+msgid "[no site]"
+msgstr "【无站点】"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:363
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:451
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:535
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:724
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:800
+msgid "[no description]"
+msgstr "【无描述】"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:384
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:743
+msgid "site"
+msgstr "站点"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:408
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:767
+msgid "Site"
+msgstr "站点"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:472
+msgid "file type"
+msgstr "文件类型"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:494
+msgid "File Type"
+msgstr "文件类型"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:556
+msgid "MIME type"
+msgstr "MIME类型"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:578
+msgid "MIME Type"
+msgstr "MIME类型"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:608
+msgid "Pass Lists"
+msgstr "通过列表"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:626
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:677
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:802
+msgid "IP addresses"
+msgstr "IP地址"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:694
+msgid "\"URL\" specified cannot be passed because it uses secure http (https)"
+msgstr "指定的“URL”无法被通过，因为其使用了安全HTTP(HTTPs)"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:712
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:788
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:886
+msgid "pass"
+msgstr "通过"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:775
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:847
+msgid "Pass"
+msgstr "通过"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:819
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:841
+msgid "IP address/range"
+msgstr "IP地址/范围"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:871
+msgid "timestamp"
+msgstr "时间戳"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:879
+msgid "action"
+msgstr "动作"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:893
+msgid "client"
+msgstr "客户端"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:901
+msgid "request"
+msgstr "请求"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:909
+msgid "reason for action"
+msgstr "动作原因"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:916
+msgid "in Categories Block list"
+msgstr "在分类阻止列表中"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:918
+msgid "in URLs Block list"
+msgstr "在URLs阻止列表中"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:920
+msgid "in File Extensions Block list"
+msgstr "在文件扩展名阻止列表中"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:922
+msgid "in MIME Types Block list"
+msgstr "在MIME类型阻止列表中"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:924
+msgid "blocking all traffic"
+msgstr "阻止所有数据通信"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:926
+msgid "hostname is an IP address"
+msgstr "主机名是一个IP地址"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:928
+msgid "in URLs Pass list"
+msgstr "在URLs通过列表中"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:930
+msgid "in Clients Pass list"
+msgstr "在客户端通过列表中"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:933
+msgid "no rule applied"
+msgstr "未应用任何规则"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:937
+msgid "server"
+msgstr "服务器"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1008
+msgid "Invalid subnet specified"
+msgstr "指定的子网无效"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1016
+msgid "Validation failed"
+msgstr "验证失败"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1020
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1038
+msgid "Failed"
+msgstr "失败"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1034
+msgid "Saving..."
+msgstr "正在保存。。。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-webfilter/settings.js:1034
+msgid "Please wait"
+msgstr "请等待"
+
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:79
+#, java-format
+msgid "{0} | Web Filter Warning"
+msgstr "{0} |Web过滤警告"
+
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:90
+#, java-format
+msgid "{0} Web Filter"
+msgstr "{0}Web过滤"
+
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:102
+#, java-format
+msgid "{0}This web page was blocked{1} because it is considered inappropriate."
+msgstr "{0}该网页已被阻止{1}因为它可能是专门设计来盗取您的私人信息的。"
+
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#, java-format
+msgid "If you have any questions, Please contact {0}."
+msgstr "如果您有任何问题，请联系{0}。"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+msgid "Host:"
+msgstr "主机："
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+msgid "URL:"
+msgstr "URL："
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+msgid "Reason:"
+msgstr "原因："
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+msgid "Unblock For Now"
+msgstr "现在开始不阻止"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+msgid "Unblock Permanently"
+msgstr "永远不阻止"
+
