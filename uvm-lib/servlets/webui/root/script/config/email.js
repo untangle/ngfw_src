@@ -816,7 +816,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }, {
                             name : 'category'
                         }, {
-                            name : 'description'
+                            name : 'description',
+                            convert : function(value, rec) {
+                                return rec.address == "*" ? this.i18n._("All addresses have quarantines") : value;
+                            }.createDelegate(this)
                         }],
                         columns : [{
                             id : 'address',
@@ -831,10 +834,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             width : 200,
                             dataIndex : 'description',
                             editor : new Ext.form.TextField({
-                            }),
-                            renderer : function(value, metadata, record) {
-                                return record.data.address == "*" ? this.i18n._("All addresses have quarantines") : value;
-                            }.createDelegate(this)
+                            })
                         }],
                         autoExpandColumn : 'description',
                         rowEditorInputLines : [new Ext.form.TextField({
