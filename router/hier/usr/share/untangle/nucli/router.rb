@@ -51,4 +51,7 @@ class Router < UVMFilterNode
     HELP
   end
 
+  def get_snmp_stat_map()
+    return {};
+  end
 end

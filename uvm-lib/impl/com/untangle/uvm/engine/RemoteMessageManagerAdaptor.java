@@ -90,6 +90,11 @@ class RemoteMessageManagerAdaptor implements RemoteMessageManager
         return lbm.getStats(t);
     }
 
+    public Stats getAllStats(Tid t)
+    {
+        return lbm.getAllStats(t);
+    }
+
     public Integer getMessageKey()
     {
         return lbm.getMessageKey();

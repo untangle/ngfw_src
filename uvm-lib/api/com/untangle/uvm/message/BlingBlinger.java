@@ -70,11 +70,11 @@ public class BlingBlinger implements CounterStats, Serializable
         synchronized (this) {
             now.setTime(System.currentTimeMillis());
 
-            count++;
+            count += delta;
             if (lastUpdate.getDay() == now.getDay()
                 && lastUpdate.getMonth() == now.getMonth()
                 && lastUpdate.getYear() == now.getYear()) {
-                countSinceMidnight++;
+                countSinceMidnight += delta;
             } else {
                 countSinceMidnight = 0;
                 lastUpdate.setTime(now.getTime());

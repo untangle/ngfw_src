@@ -349,7 +349,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             mPipe.lastSessionWriteFailed(false);
             stats.wroteData(side, numWritten);
 
-            if (CLIENT == side) {
+            if (SERVER == side) {
                 n2sChunks.increment();
                 n2sBytes.increment(numWritten);
             } else {

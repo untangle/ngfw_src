@@ -282,7 +282,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
             stats.wroteData(side, numWritten);
 
-            if (CLIENT == side) {
+            if (SERVER == side) {
                 n2sChunks.increment();
                 n2sBytes.increment(numWritten);
             } else {

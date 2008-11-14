@@ -43,6 +43,7 @@ public interface LocalMessageManager
     MessageQueue getMessageQueue(Integer key, Policy p);
     StatDescs getStatDescs(Tid t);
     Stats getStats(Tid t);
+    Stats getAllStats(Tid t);
     Map<String, Object> getSystemStats();
     List<ActiveStat> getActiveMetrics(Tid tid);
     void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);

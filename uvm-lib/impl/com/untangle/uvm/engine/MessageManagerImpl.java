@@ -332,6 +332,12 @@ class MessageManagerImpl implements LocalMessageManager
         return c.getAllStats(as);
     }
 
+    public Stats getAllStats(Tid t)
+    {
+        Counters c = getCounters(t);
+        return c.getAllStats();
+    }
+
     public List<Message> getMessages(Integer key)
     {
         List<Message> l = new ArrayList<Message>();
