@@ -212,9 +212,9 @@ if (!Ung.hasResource["Ung.System"]) {
                         name : 'View Reports',
                         iconCls : 'reboot-icon',
                         handler : function() {
-                            Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),this.i18n._("You are about to manually reboot.  This will interrupt normal network operations<br>" +
-                             "until the Untangle Server is finished automatically restarting.<br>" +
-                             "This may take up to several minutes to complete."), function(btn) {
+                            Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),
+                                String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations{0}until the Untangle Server is finished automatically restarting.{1}This may take up to several minutes to complete."), "<br>", "<br>"), 
+                                function(btn) {
                                 if (btn == 'yes') {
                                     rpc.jsonrpc.RemoteUvmContext.rebootBox(function (result, exception) {
                                         if(exception) {
