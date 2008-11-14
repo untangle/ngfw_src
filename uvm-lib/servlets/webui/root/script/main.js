@@ -915,14 +915,15 @@ Ung.Main.prototype = {
 		var selVirtualRackIndex = 0;
 		for(var i=0;i<rpc.policies.length;i++) {
             selVirtualRackIndex = rpc.policies[i]["default"]===true ? i :selVirtualRackIndex;
-			items.push({text:i18n._(rpc.policies[i].name),value:rpc.policies[i].id,index:i,handler:main.changePolicy, hideDelay :0});
+			items.push({text:rpc.policies[i]["default"]===true ? i18n._("Default Rack"): i18n._(rpc.policies[i].name),
+                    value:rpc.policies[i].id,index:i,handler:main.changePolicy, hideDelay :0});
 
             if(rpc.policies[i]["default"]===true) {
                 rpc.currentPolicy=rpc.policies[i];
             }
         }
 		items.push('-');
-		items.push({text:'Show Policy Manager',value:'SHOW_POLICY_MANAGER',handler:main.changePolicy, hideDelay :0});
+		items.push({text:i18n._('Show Policy Manager'),value:'SHOW_POLICY_MANAGER',handler:main.changePolicy, hideDelay :0});
 		main.rackSelect = new Ext.SplitButton({
 			renderTo: 'rack-select-container', // the container id
 		   	text: items[selVirtualRackIndex].text,
@@ -937,7 +938,7 @@ Ung.Main.prototype = {
     },
     // change current policy
     changePolicy: function () {
-        if(this.text=='Show Policy Manager'){
+        if(this.value=='SHOW_POLICY_MANAGER'){
         	Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
             Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.PolicyManager","script/config/policyManager.js", function() {
                 main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
