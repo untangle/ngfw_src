@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-24 19:04+0300\n"
+"POT-Creation-Date: 2008-11-10 11:22-0800\n"
 "PO-Revision-Date: 2008-11-07 02:06-0500\n"
 "Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,83 +19,154 @@ msgstr ""
 "X-Poedit-Country: CHINA\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:22
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:19
 msgid "block"
 msgstr "阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:28
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:25
 msgid "log"
 msgstr "日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:40
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:38
 msgid "[no category]"
 msgstr "【无分类】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:41
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:39
 msgid "[no protocol]"
 msgstr "【无协议】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:44
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:42
 msgid "[no description]"
 msgstr "【无描述】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:43
 msgid "[no signature]"
 msgstr "【无签名】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:47
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
 msgid "Protocol List"
 msgstr "协议列表"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:85
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:77
 msgid "category"
 msgstr "分类"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:86
 msgid "protocol"
 msgstr "协议"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:102
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
 msgid "description"
 msgstr "描述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:110
-msgid "signature"
-msgstr "签名"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:108
 msgid "Category"
 msgstr "分类"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:130
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:114
 msgid "Protocol"
 msgstr "协议"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:136
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:120
 msgid "Block"
 msgstr "阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:140
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
 msgid "Log"
 msgstr "日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:128
 msgid "Description"
 msgstr "描述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:150
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:134
 msgid "Signature"
 msgstr "签名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:167
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
+#, fuzzy
+msgid "blocked"
+msgstr "阻止"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
+msgid "passed"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:147
+msgid "blocked in block list"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:147
+msgid "not blocked in block list"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:178
+msgid "timestamp"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:186
+msgid "action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:191
+msgid "client"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:197
+msgid "request"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:202
+msgid "reason for action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:207
+msgid "server"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:217
 msgid "Saving..."
 msgstr "正在保存。。。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:167
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:217
 msgid "Please wait"
 msgstr "请等待"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:171
-msgid "Failed"
-msgstr "失败"
+#: ../impl/com/untangle/node/protofilter/ProtoFilterAllFilter.java:27
+#, fuzzy
+msgid "Protocol Events"
+msgstr "协议列表"
 
+#: ../impl/com/untangle/node/protofilter/ProtoFilterBlockedFilter.java:27
+msgid "Blocked Protocol Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+msgid "Sessions scanned"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+msgid "SCAN"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "Sessions blocked"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "BLOCK"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
+msgid "Sessions logged"
+msgstr ""
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
+msgid "DETECT"
+msgstr ""
+
+#~ msgid "signature"
+#~ msgstr "签名"
+
+#~ msgid "Failed"
+#~ msgstr "失败"

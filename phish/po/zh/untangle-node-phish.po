@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-01 11:34+0300\n"
+"POT-Creation-Date: 2008-11-14 14:15+0200\n"
 "PO-Revision-Date: 2008-11-06 12:19-0500\n"
 "Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,163 +41,178 @@ msgstr "隔离"
 msgid "Email"
 msgstr "电子邮件"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:57
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:58
 msgid "SMTP"
 msgstr "SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:64
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:65
 msgid "Scan SMTP"
 msgstr "扫描SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:85
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:128
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:171
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:86
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:129
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:172
 msgid "Action"
 msgstr "动作"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:100
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:101
 msgid "POP3"
 msgstr "POP3"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:107
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:108
 msgid "Scan POP3"
 msgstr "扫描POP3"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:143
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:144
 msgid "IMAP"
 msgstr "IMAP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:150
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:151
 msgid "Scan IMAP"
 msgstr "扫描IMAP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:186
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:221
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:187
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:224
 msgid "Note"
 msgstr "注释"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:188
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:190
 msgid "Phish Blocker email signatures were last updated"
 msgstr "钓鱼防护电子邮件签名已是最后更新"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:191
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:226
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:193
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:230
 msgid "unknown"
 msgstr "未知"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:198
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:200
 msgid "Web"
 msgstr "互联网(Web)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:207
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:210
 msgid "Enable Phish web filtering"
 msgstr "启用Web钓鱼过滤"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:223
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:227
 msgid "Phish Blocker web signatures were last updated "
 msgstr "钓鱼防护Web签名已是最后更新"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:235
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:252
 msgid "Web Event Log"
 msgstr "Web事件日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:248
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:320
-msgid "timestamp"
-msgstr "时间戳"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:256
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:360
-msgid "client"
-msgstr "客户端"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:264
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:328
-msgid "action"
-msgstr "动作"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:271
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:265
 msgid "pass"
 msgstr "通过"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:274
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:268
 msgid "block"
 msgstr "阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:278
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:286
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:385
+msgid "timestamp"
+msgstr "时间戳"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:294
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:393
+msgid "action"
+msgstr "动作"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:299
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:398
+msgid "client"
+msgstr "客户端"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:305
 msgid "request"
 msgstr "请求"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:286
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:384
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:311
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:418
 msgid "server"
 msgstr "服务器"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:301
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:325
 msgid "Email Event Log"
 msgstr "电子邮件事件日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:337
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:346
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:339
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:348
 msgid "pass message"
 msgstr "通过邮件"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:340
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:348
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:342
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:350
 msgid "mark infection"
 msgstr "感染标记"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:350
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:352
 msgid "block message"
 msgstr "阻止邮件"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:353
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:355
 msgid "quarantine message"
 msgstr "隔离邮件"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:369
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:403
 msgid "subject"
 msgstr "主题"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:374
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:408
 msgid "receiver"
 msgstr "收件人"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:379
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:413
 msgid "sender"
 msgstr "发件人"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:398
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:428
 msgid "Saving..."
 msgstr "正在保存。。。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:398
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:428
 msgid "Please wait"
 msgstr "请等候"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:402
-msgid "Failed"
-msgstr "失败"
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:65
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:74
+msgid "Feature is not installed."
+msgstr ""
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:78
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:105
 #, java-format
 msgid "{0} | Phish Blocker Warning"
 msgstr "{0} |钓鱼防护警告"
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:89
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:116
 #, java-format
 msgid "{0}  Phish Blocker"
 msgstr "{0}钓鱼防护"
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:101
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:128
 #, java-format
-msgid "{0}This web page was blocked{1} because it may be designed to steal personal information."
+msgid ""
+"{0}This web page was blocked{1} because it may be designed to steal personal "
+"information."
 msgstr "{0}该网页已被阻止{1}因为它可能是专门设计来盗取您的私人信息的。"
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "如果您有任何问题，请联系{0}。"
+
+#: ../impl/com/untangle/node/phish/PhishHttpAllFilter.java:38
+msgid "All Phish HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/phish/PhishHttpBlockedFilter.java:27
+msgid "Blocked Phish HTTP Traffic"
+msgstr ""
+
+#: ../impl/com/untangle/node/phish/PhishHttpPassedFilter.java:38
+msgid "Passed Phish HTTP Traffic"
+msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
 msgid "Host:"
@@ -219,3 +234,5 @@ msgstr "现在开始不阻止"
 msgid "Unblock Permanently"
 msgstr "永远不阻止"
 
+#~ msgid "Failed"
+#~ msgstr "失败"

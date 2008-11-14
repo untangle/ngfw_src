@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-01 11:34+0300\n"
+"POT-Creation-Date: 2008-11-14 14:15+0200\n"
 "PO-Revision-Date: 2008-11-07 02:13-0500\n"
 "Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,213 +19,322 @@ msgstr ""
 "X-Poedit-Country: CHINA\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:32
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:29
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:185
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:214
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:243
 msgid "Block Lists"
 msgstr "阻止列表"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:44
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:41
 msgid "Web"
 msgstr "互联网(Web)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:62
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:59
 msgid "User Bypass"
 msgstr "用户旁路"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:66
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:63
 msgid "None"
 msgstr "无"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:66
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:63
 msgid "Temporary"
 msgstr "临时"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:67
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:64
 msgid "Permanent and Global"
 msgstr "永久和全局"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:83
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:80
 msgid "Cookies"
 msgstr "用户信息脚本(Cookies)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:100
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:136
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:159
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:97
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:133
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:156
 msgid "manage list"
 msgstr "管理列表"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:106
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:103
 msgid "ActiveX"
 msgstr "ActiveX"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:142
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:139
 msgid "Traffic"
 msgstr "数据流量"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:165
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:163
 msgid "Spyware Blocker signatures were last updated"
 msgstr "间谍软件防护签名已是最新更新"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:167
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:165
 msgid "Unknown"
 msgstr "未知"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:187
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:268
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:190
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:281
 msgid "Cookies List"
 msgstr "Cookies列表"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:211
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:326
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:219
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:338
 msgid "ActiveX List"
 msgstr "ActiveX列表"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:235
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:385
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:248
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:396
 msgid "Subnet List"
 msgstr "子网列表"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:254
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:312
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:267
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:324
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:563
 msgid "block"
 msgstr "阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:264
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:322
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:277
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:334
 msgid "[no identification]"
 msgstr "【无身份识别】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:266
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:324
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:383
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:477
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:279
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:336
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:394
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:488
 msgid "[no description]"
 msgstr "【无描述】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:285
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:343
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:297
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:354
 msgid "identification"
 msgstr "身份识别"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:299
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:357
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:311
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:368
 msgid "Identification"
 msgstr "身份识别"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:305
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:363
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:317
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:374
 msgid "Block"
 msgstr "阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:370
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:381
 msgid "log"
 msgstr "日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:381
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:392
 msgid "[no name]"
 msgstr "【无名称】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:404
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:414
 msgid "name"
 msgstr "名称"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:412
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:422
 msgid "subnet"
 msgstr "子网"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:426
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:436
 msgid "Name"
 msgstr "名称"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:432
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:442
 msgid "Subnet"
 msgstr "子网"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:438
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:448
 msgid "Log"
 msgstr "日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:446
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:456
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
 msgstr "指定的“URL”无法阻止，因为其使用了安全HTTP(HTTPs)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:458
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:504
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:526
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:468
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:515
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:537
 msgid "Invalid \"URL\" specified"
 msgstr "指定的“URL”无效"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:464
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:474
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:563
 msgid "pass"
 msgstr "通过"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:476
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:487
 msgid "[no category]"
 msgstr "【无分类】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:479
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:490
 msgid "Pass List"
 msgstr "通过列表"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:498
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:509
 msgid "site"
 msgstr "站点"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:508
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:519
 msgid "description"
 msgstr "描述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:522
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:533
 msgid "Site"
 msgstr "站点"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:530
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:541
 msgid "Pass"
 msgstr "通过"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:534
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:545
 msgid "Description"
 msgstr "描述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:608
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:588
+#, fuzzy
+msgid "in Subnet List"
+msgstr "子网列表"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:591
+#, fuzzy
+msgid "in ActiveX List"
+msgstr "ActiveX列表"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:594
+msgid "in URL List"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:597
+#, fuzzy
+msgid "in Cookie List"
+msgstr "Cookies列表"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:604
+msgid "timestamp"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:612
+msgid "action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:617
+msgid "client"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:624
+msgid "request"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:629
+msgid "reason for action"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:634
+msgid "server"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:707
 msgid "Invalid subnet specified"
 msgstr "指定的子网无效"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:616
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:715
 msgid "Validation failed"
 msgstr "验证失败"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:620
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:639
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:719
 msgid "Failed"
 msgstr "失败"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:635
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:734
 msgid "Saving..."
 msgstr "正在保存。。。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:635
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:734
 msgid "Please wait"
 msgstr "请等待"
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:79
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:58
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:69
+msgid "Feature is not installed."
+msgstr ""
+
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:78
+msgid "This request has expired."
+msgstr ""
+
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:108
 #, java-format
 msgid "{0} | Spyware Blocker Warning"
 msgstr "{0} |间谍软件防护警告"
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:90
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:119
 #, java-format
 msgid "{0} Spyware Blocker"
 msgstr "{0}间谍软件防护"
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:102
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:131
 #, java-format
-msgid "{0}This web page was blocked{1} because it may be designed to steal personal information."
+msgid ""
+"{0}This web page was blocked{1} because it may be designed to steal personal "
+"information."
 msgstr "{0}该网页已被阻止{1}因为它可能是专门设计来盗取您的私人信息的。"
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "如果您有任何问题，请联系{0}。"
+
+#: ../impl/com/untangle/node/spyware/SpywareAccessFilter.java:27
+msgid "Access Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareActiveXFilter.java:27
+#, fuzzy
+msgid "ActiveX Events"
+msgstr "ActiveX列表"
+
+#: ../impl/com/untangle/node/spyware/SpywareAllFilter.java:27
+msgid "All Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareBlacklistFilter.java:27
+msgid "Blacklist Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareBlockedFilter.java:27
+#, fuzzy
+msgid "Blocked Events"
+msgstr "阻止列表"
+
+#: ../impl/com/untangle/node/spyware/SpywareCookieFilter.java:27
+#, fuzzy
+msgid "Cookie Events"
+msgstr "用户信息脚本(Cookies)"
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+msgid "Pages scanned"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+msgid "SCAN"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+msgid "Pages blocked"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+msgid "BLOCK"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+msgid "Pages passed"
+msgstr ""
+
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+msgid "PASS"
+msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
 msgid "Host:"
@@ -246,4 +355,3 @@ msgstr "现在开始不阻止"
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
 msgid "Unblock Permanently"
 msgstr "永远不阻止"
-

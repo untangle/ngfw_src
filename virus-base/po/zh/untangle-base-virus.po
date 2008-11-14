@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-09 19:09+0300\n"
+"POT-Creation-Date: 2008-11-14 14:15+0200\n"
 "PO-Revision-Date: 2008-10-16 01:06-0500\n"
 "Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,234 +19,301 @@ msgstr ""
 "X-Poedit-Country: CHINA\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:28
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:30
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:133
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:162
 msgid "Web"
 msgstr "互联网（Web）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:40
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:42
 msgid "Scan HTTP"
 msgstr "扫描HTTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:53
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:343
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:55
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:355
 msgid "Advanced Settings"
 msgstr "高级设置"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:60
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:130
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:184
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:62
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:138
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:197
 msgid "File Extensions"
 msgstr "文件扩展名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:68
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:154
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:256
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:70
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:167
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:268
 msgid "MIME Types"
 msgstr "MIME类型"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:75
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:77
 msgid "Disable HTTP Resume"
 msgstr "禁止HTTP中断后再继续"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:88
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:90
 msgid "Scan trickle rate (1-99)"
 msgstr "扫描截流率（1-99）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:108
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:382
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:528
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:111
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:395
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:545
 msgid "Virus Blocker signatures were last updated"
 msgstr "病毒防护签名最后更新于"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:110
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:384
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:530
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:113
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:397
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:547
 msgid "Unknown"
 msgstr "未知的"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:170
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:242
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:183
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:254
 msgid "scan"
 msgstr "扫描"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:182
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:254
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:195
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:266
 msgid "[no description]"
 msgstr "【无描述】"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:201
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:213
 msgid "file type"
 msgstr "文件类型"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:209
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:281
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:221
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:292
 msgid "description"
 msgstr "描述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:223
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:235
 msgid "File Type"
 msgstr "文件类型"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:229
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:301
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:241
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:312
 msgid "Scan"
 msgstr "扫描"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:233
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:305
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:245
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:316
 msgid "Description"
 msgstr "描述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:273
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:284
 msgid "MIME type"
 msgstr "MIME类型"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:295
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:306
 msgid "MIME Type"
 msgstr "MIME类型"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:318
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:330
 msgid "FTP"
 msgstr "FTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:330
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:342
 msgid "Scan FTP"
 msgstr "扫描FTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:349
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:361
 msgid "Disable FTP Resume"
 msgstr "禁止FTP中断后再继续"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:362
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:374
 msgid "Scan trickle rate"
 msgstr "扫描截流率"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:396
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:410
 msgid "Email"
 msgstr "电子邮件"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:413
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:429
 msgid "Scan SMTP"
 msgstr "扫描SMTP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:426
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:442
 msgid "Scan POP3"
 msgstr "扫描POP3"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:439
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:455
 msgid "Scan IMAP"
 msgstr "扫描IMAP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:459
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:483
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:506
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:475
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:499
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:522
 msgid "Action"
 msgstr "动作"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:465
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:489
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:512
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:586
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:595
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:481
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:505
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:528
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:583
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:592
 msgid "pass message"
 msgstr "通过信息"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:466
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:490
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:513
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:589
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:597
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:482
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:506
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:529
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:586
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:594
 msgid "remove infection"
 msgstr "删除感染"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:467
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:600
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:597
 msgid "block message"
 msgstr "阻止信息"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:557
-msgid "timestamp"
-msgstr "时间戳"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:565
-msgid "action"
-msgstr "动作"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:575
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:572
 msgid "clean"
 msgstr "清除"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:577
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:574
 msgid "cleaned"
 msgstr "已清除"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:580
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:577
 msgid "blocked"
 msgstr "已阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:607
-msgid "client"
-msgstr "客户端"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:615
-msgid "traffic"
-msgstr "通信"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:620
-msgid "reason for action"
-msgstr "动作原因"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:625
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:619
 msgid "virus found"
 msgstr "发现病毒"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:625
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:619
 msgid "no virus found"
 msgstr "未发现病毒"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:628
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:624
+msgid "timestamp"
+msgstr "时间戳"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:632
+msgid "action"
+msgstr "动作"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:637
+msgid "client"
+msgstr "客户端"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:644
+msgid "traffic"
+msgstr "通信"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:649
+msgid "reason for action"
+msgstr "动作原因"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:654
 msgid "server"
 msgstr "服务器"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:645
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:670
 msgid "Warning"
 msgstr "警告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:645
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:670
 msgid "Scan trickle rate should be between 1 and 99!"
 msgstr "扫描截流率应在1～99之间！"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:657
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:682
 msgid "Saving..."
 msgstr "正在保存。。。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:657
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:682
 msgid "Please wait"
 msgstr "请等候"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:661
-msgid "Failed"
-msgstr "失败"
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:66
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:73
+msgid "Feature is not installed."
+msgstr ""
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:86
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:83
+msgid "This request has expired."
+msgstr ""
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:112
 #, java-format
 msgid "{0} | {1} Warning"
 msgstr "{0} | {1}警告"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:98
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:124
 #, java-format
 msgid "{0} Virus Blocker"
 msgstr "{0} 病毒保护"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:110
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:136
 #, java-format
 msgid "{0}This file was blocked{1} because it contained a virus."
 msgstr "{0} 该文件已被阻止{1} 因为其包含了一个病毒"
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "如果您有任何问题，请联系{0}。"
+
+#: ../impl/com/untangle/node/virus/VirusAllFilter.java:33
+msgid "All Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusHttpFilter.java:33
+msgid "HTTP Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusInfectedFilter.java:33
+msgid "Infected Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusLogFilter.java:33
+msgid "FTP Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusMailFilter.java:33
+msgid "POP/IMAP Events"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:223
+msgid "Documents scanned"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:223
+msgid "SCAN"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
+msgid "Documents blocked"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
+msgid "BLOCK"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
+msgid "Documents passed"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
+msgid "PASS"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
+msgid "Infections removed"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
+msgid "REMOVE"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:227
+msgid "Passed by policy"
+msgstr ""
+
+#: ../impl/com/untangle/node/virus/VirusSmtpFilter.java:33
+msgid "SMTP Events"
+msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
 msgid "Host:"
@@ -268,3 +335,5 @@ msgstr "从现在起解除阻止"
 msgid "Unblock Permanently"
 msgstr "永久性解除阻止"
 
+#~ msgid "Failed"
+#~ msgstr "失败"

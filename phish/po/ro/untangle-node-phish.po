@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-07 16:43+0200\n"
+"POT-Creation-Date: 2008-11-14 14:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -173,24 +173,29 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:78
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:65
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:74
+msgid "Feature is not installed."
+msgstr ""
+
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:105
 #, java-format
 msgid "{0} | Phish Blocker Warning"
 msgstr ""
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:89
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:116
 #, java-format
 msgid "{0}  Phish Blocker"
 msgstr ""
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:101
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:128
 #, java-format
 msgid ""
 "{0}This web page was blocked{1} because it may be designed to steal personal "
 "information."
 msgstr ""
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr ""

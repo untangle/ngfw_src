@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"POT-Creation-Date: 2008-11-14 14:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -252,24 +252,33 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:79
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:58
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:69
+msgid "Feature is not installed."
+msgstr ""
+
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:78
+msgid "This request has expired."
+msgstr ""
+
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:108
 #, java-format
 msgid "{0} | Spyware Blocker Warning"
 msgstr ""
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:90
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:119
 #, java-format
 msgid "{0} Spyware Blocker"
 msgstr ""
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:102
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:131
 #, java-format
 msgid ""
 "{0}This web page was blocked{1} because it may be designed to steal personal "
 "information."
 msgstr ""
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr ""
