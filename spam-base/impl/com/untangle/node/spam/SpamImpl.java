@@ -102,10 +102,6 @@ public class SpamImpl extends AbstractNode implements SpamNode
     private final EventLogger<SpamEvent> eventLogger;
     private final EventLogger<SpamSMTPRBLEvent> rblEventLogger;
 
-    /* the signatures are updated at startup, so using new Date() is not that far off. */
-    private Date lastSignatureUpdate = new Date();
-    private String signatureVersion;
-
     private final PartialListUtil listUtil = new PartialListUtil();
 
     private volatile SpamSettings spamSettings;
@@ -116,6 +112,8 @@ public class SpamImpl extends AbstractNode implements SpamNode
     private final BlingBlinger blockBlinger;
     private final BlingBlinger markBlinger;
     private final BlingBlinger quarantineBlinger;
+
+    private Date lastSignatureUpdate = new Date();
 
     // constructors -----------------------------------------------------------
 
@@ -379,8 +377,10 @@ public class SpamImpl extends AbstractNode implements SpamNode
         if( this.spamSettings == null ) {
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         } else {
-            spamSettings.getBaseSettings().setLastUpdate(this.lastSignatureUpdate);
-            spamSettings.getBaseSettings().setSignatureVersion(this.signatureVersion);
+            Date lastUpdate = scanner.getLastSignatureUpdate();
+            if ( lastUpdate != null ) this.lastSignatureUpdate = lastUpdate;
+            spamSettings.getBaseSettings().setLastUpdate( lastUpdate );
+            spamSettings.getBaseSettings().setSignatureVersion(scanner.getSignatureVersion());
         }
 
         return this.spamSettings;
@@ -414,8 +414,11 @@ public class SpamImpl extends AbstractNode implements SpamNode
     {
         SpamBaseSettings baseSettings = spamSettings.getBaseSettings();
 
+        Date lastUpdate = scanner.getLastSignatureUpdate();
+        if ( lastUpdate != null ) this.lastSignatureUpdate = lastUpdate;
+
         baseSettings.setLastUpdate(this.lastSignatureUpdate);
-        baseSettings.setSignatureVersion(this.signatureVersion);
+        baseSettings.setSignatureVersion(scanner.getSignatureVersion());
 
         /* XXXX Have to figure out how to calculate the version string. */
 

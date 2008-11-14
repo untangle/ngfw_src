@@ -19,10 +19,14 @@
 package com.untangle.node.phish;
 
 import java.io.File;
+import java.util.Date;
+
 import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.node.clam.ClamScannerClientLauncher;
 import com.untangle.node.spam.ReportItem;
 import com.untangle.node.spam.SpamReport;
@@ -41,6 +45,9 @@ public class PhishScanner implements SpamScanner
 
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
+
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "bunnicula.bin.dir" ) + "/phish-get-last-update";
+
 
     public PhishScanner() { }
 
@@ -81,5 +88,27 @@ public class PhishScanner implements SpamScanner
                 activeScanCount--;
             }
         }
+    }
+
+    public Date getLastSignatureUpdate()
+    {
+        try {
+            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE );
+            long timeSeconds = Long.parseLong( result.trim());
+            
+            return new Date( timeSeconds * 1000l );
+        } catch ( NodeException e ) {
+            logger.warn( "Unable to get last update.", e );
+            return null;
+        } catch ( NumberFormatException e ) {
+            logger.warn( "Unable to get last update.", e );
+            return null;
+        }
+    }
+
+    public String getSignatureVersion()
+    {
+        /* This is currently not displayed in the UI or reports */
+        return "";
     }
 }

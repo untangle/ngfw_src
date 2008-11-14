@@ -22,7 +22,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.StringTokenizer;
+
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptRunner;
 
 import com.untangle.node.virus.VirusScanner;
 import com.untangle.node.virus.VirusScannerResult;
@@ -33,6 +37,8 @@ public class ClamScanner implements VirusScanner
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final int timeout = 30000; /* XXX should be user configurable */
+
+        private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "bunnicula.bin.dir" ) + "/clam-get-last-update";
 
     private static final String VERSION_ARG = "-V";
 
@@ -96,5 +102,22 @@ public class ClamScanner implements VirusScanner
     {
         ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
         return scan.doScan(timeout);
+    }
+
+    
+    public Date getLastSignatureUpdate()
+    {
+        try {
+            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE );
+            long timeSeconds = Long.parseLong( result.trim());
+
+            return new Date( timeSeconds * 1000l );
+        } catch ( NodeException e ) {
+            logger.warn( "Unable to get last update.", e );
+            return null;
+        } catch ( NumberFormatException e ) {
+            logger.warn( "Unable to get last update.", e );
+            return null;
+        }
     }
 }

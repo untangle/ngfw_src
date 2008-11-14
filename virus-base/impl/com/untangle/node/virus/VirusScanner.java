@@ -18,6 +18,7 @@
 package com.untangle.node.virus;
 
 import java.io.File;
+import java.util.Date;
 
 import com.untangle.uvm.node.Scanner;
 
@@ -38,4 +39,6 @@ public interface VirusScanner extends Scanner
      * @return a <code>VirusScannerResult</code> value
      */
     VirusScannerResult scanFile(File msgFile);
+
+    Date getLastSignatureUpdate();
 }

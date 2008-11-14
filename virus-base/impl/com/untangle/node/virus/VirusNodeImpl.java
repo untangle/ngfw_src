@@ -124,7 +124,6 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     /* the signatures are updated at startup, so using new Date() is not that far off. */
     private Date lastSignatureUpdate = new Date();
-    private String signatureVersion;
 
     private VirusSettings settings;
 
@@ -234,8 +233,10 @@ public abstract class VirusNodeImpl extends AbstractNode
     {
         VirusBaseSettings baseSettings = settings.getBaseSettings();
 
+        Date lastUpdate = scanner.getLastSignatureUpdate();
+        if (lastUpdate != null) this.lastSignatureUpdate = lastUpdate;
         baseSettings.setLastUpdate(this.lastSignatureUpdate);
-        baseSettings.setSignatureVersion(this.signatureVersion);
+        baseSettings.setSignatureVersion(getSigVersion());
 
         return baseSettings;
     }
@@ -421,10 +422,6 @@ public abstract class VirusNodeImpl extends AbstractNode
             subscriptions.add(subscription);
         }
         pipeSpecs[POP].setSubscriptions(subscriptions);
-
-        // Update the signature version string
-        // (Not an idea place for this.)
-        this.signatureVersion = getSigVersion();
     }
 
 

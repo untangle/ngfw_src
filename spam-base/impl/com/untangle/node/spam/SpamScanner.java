@@ -19,6 +19,8 @@ package com.untangle.node.spam;
 
 import java.io.File;
 
+import java.util.Date;
+
 public interface SpamScanner
 {
 
@@ -46,4 +48,9 @@ public interface SpamScanner
      * @return an <code>int</code> value
      */
     int getActiveScanCount();
+
+    Date getLastSignatureUpdate();
+
+    String getSignatureVersion();
+        
 }
