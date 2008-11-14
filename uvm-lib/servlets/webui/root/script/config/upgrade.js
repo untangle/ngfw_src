@@ -88,7 +88,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 				    upgradeData.push({
 				      image : "image?name=" + md.name,
 				      name : md.name,
-				      displayName : md.displayName == null ? md.name : md.displayName,
+				      displayName : md.displayName == null ? md.shortDescription : md.displayName,
 				      availableVersion : md.availableVersion,
 				      type : mtype,
 				      size : Math.round(md.size / 1000)
