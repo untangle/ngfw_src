@@ -40,7 +40,7 @@ use_tty()
 parse_args "$@"
 
 if [ `use_tty` = "true" ] ; then
-    irb ${ADDITIONAL_ARGS} "$@"
+    irb1.8 ${ADDITIONAL_ARGS} "$@"
 else
     ## Call ruby directly
     ruby ${ADDITIONAL_ARGS} "$@"

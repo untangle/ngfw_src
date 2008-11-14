@@ -276,6 +276,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
             writer.write(uvmContext.version());
             writer.write("&");
             writer.write(info.toForm());
+            writer.write("\n");
             writer.close();
         } catch (IOException exn) {
             String message = "Exception during writing registration info: " + info;

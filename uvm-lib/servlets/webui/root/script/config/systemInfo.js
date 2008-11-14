@@ -26,7 +26,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         },
         getSystemInfo : function(forceReload) {
             if (forceReload || this.rpc.systemInfo === undefined) {
-            	try {
+                try {
                     this.rpc.systemInfo = rpc.adminManager.getSystemInfo();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -37,7 +37,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         },
         getRegistrationInfo : function(forceReload) {
             if (forceReload || this.rpc.registrationInfo === undefined) {
-            	try {
+                try {
                     this.rpc.registrationInfo = rpc.adminManager.getRegistrationInfo();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -48,7 +48,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         },
         hasPremiumLicense : function(forceReload) {
             if (forceReload || this.rpc.hasPremiumLicense === undefined) {
-            	try {
+                try {
                     this.rpc.hasPremiumLicense = main.getLicenseManager().hasPremiumLicense();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -59,7 +59,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         },
         getLicenseAgreement : function(forceReload) {
             if (forceReload || this.rpc.getLicenseAgreement === undefined) {
-            	try {
+                try {
                     this.rpc.getLicenseAgreement = main.getLicenseManager().getLicenseAgreement();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -80,16 +80,16 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 items : [{
                     title : this.i18n._('System Info'),
                     name : 'System Info',
-	                xtype : 'fieldset',
-	                autoHeight : true,
-	                buttonAlign : 'left',
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left',
                     items: [ new Ext.form.TextArea({
-	                    name : 'System Info',
+                        name : 'System Info',
                         hideLabel : true,
                         readOnly : true,
                         style : 'font-weight: bold;',
-	                    width : 600,
-	                    height : 400,
+                        width : 600,
+                        height : 400,
                         value : this.i18n._('Summary')+":\n"+
                             this.i18n._('Key')+": "+ this.getSystemInfo().activationKey + "\n" + 
                             this.i18n._('Build') + ": " + this.getSystemInfo().fullVersion + "\n" + 
@@ -123,7 +123,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 },
                     
                 items : [{
-                	title : this.i18n._( 'Please provide administrator contact info.' ),
+                    title : this.i18n._( 'Please provide administrator contact info.' ),
                     defaultType : 'textfield',
                     defaults : {
                         validationEvent : 'blur',
@@ -146,10 +146,10 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         fieldLabel : '<span class="required-star">*</span>'+this.i18n._('Number of PCs on your network'),
                         name : 'numSeats',
                         value : info.numSeats,
-                        allowBlank : false	
+                        allowBlank : false
                     }]
                 },{
-                	title : this.i18n._( 'Answering these questions will help us build a better product - for you!' ),
+                    title : this.i18n._( 'Answering these questions will help us build a better product - for you!' ),
                     defaultType : 'textfield',
                     items : [{
                         fieldLabel : this.i18n._('Where will you be using Untangle'),
@@ -172,7 +172,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : Ung.Country.getCountryCode(misc.country)
+                        value : misc.country
                     }]
                 },{
                     xtype : 'label',
@@ -215,8 +215,12 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             info.emailAddr   = this.panelRegistration.find( "name", "emailAddr" )[0].getValue();
             info.numSeats    = this.panelRegistration.find( "name", "numSeats" )[0].getValue();
             
-            misc.environment = this.panelRegistration.find( "name", "environment" )[0].getRawValue();
-            misc.country     = Ung.Country.getCountryName(this.panelRegistration.find( "name", "country" )[0].getValue());
+            var value = this.panelRegistration.find( "name", "environment" )[0].getRawValue();
+            if ( value != null ) misc.environment = value;
+
+
+            value = this.panelRegistration.find( "name", "country" )[0].getValue();
+            if ( value != null ) misc.country = value;
 
             info.misc.map = misc;
             
