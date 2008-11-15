@@ -500,7 +500,7 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
             store: this.quarantine.store,
             displayInfo: true,
             displayMsg: i18n._( 'Showing items {0} - {1} of {2}' ),
-            emptyMsg: i18n._( 'No messges to display' )
+            emptyMsg: i18n._( 'No messages to display' )
         });
         
         config.tbar = new Ext.Toolbar({
