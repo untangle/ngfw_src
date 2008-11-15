@@ -68,8 +68,8 @@ public class InstallWarningJPanel
     public void reloadStrings()
     {
         headerJLabel.setText(Util.tr("Warning!"));
-        subheaderJLabel.setText(Util.tr("If you continue, in preparation for the installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"));
-        messageJLabel.setText(Util.tr("If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button."));
+        subheaderJLabel.setText("<html>" + Util.tr("If you continue, in preparation for the installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!") + "</html>" );
+        messageJLabel.setText("<html>" + Util.tr("If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button.") + "</html>" );
     }
 
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
@@ -103,7 +103,7 @@ public class InstallWarningJPanel
         subheaderJLabel.setFont(new java.awt.Font("Dialog", 0, 18));
         subheaderJLabel.setForeground(java.awt.Color.red);
         subheaderJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        subheaderJLabel.setText(Util.tr("If you continue, in preparation for the installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"));
+        subheaderJLabel.setText( "<html>" + Util.tr("If you continue, in preparation for the installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!") + "</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -113,7 +113,7 @@ public class InstallWarningJPanel
         contentJPanel.add(subheaderJLabel, gridBagConstraints);
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        messageJLabel.setText(Util.tr("If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button."));
+        messageJLabel.setText("<html>" + Util.tr("If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button.")  + "</html>" );
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
