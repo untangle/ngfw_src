@@ -1697,7 +1697,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         xtype : 'radio',
                         name : 'Logo',
                         hideLabel : true,
-                        boxLabel : this.i18n._('Use Custom Logo. Maximum size is 220 x 100.'),
+                        boxLabel : this.i18n._('Use Custom Logo. Maximum size is 166 x 100.'),
                         value : 'custom',
                         checked : !brandingBaseSettings.defaultLogo,
                         listeners : {
