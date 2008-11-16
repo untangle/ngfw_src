@@ -8,11 +8,11 @@
  *
  * $Id$
  */
+
 package com.untangle.uvm.license;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.uvm.LocalUvmContextFactory;
+import org.apache.log4j.Logger;
 
 public class ProductImpl implements LicenseManager.Product
 {
@@ -22,7 +22,7 @@ public class ProductImpl implements LicenseManager.Product
     /* this will automatically retry to register if the license
      * manager wasn't available */
     private boolean isRegistered = false;
-    
+
     /* Activated until deactivated */
     private boolean isActivated = true;
 
@@ -32,7 +32,7 @@ public class ProductImpl implements LicenseManager.Product
     {
         this.identifier = identifier;
     }
-        
+
     public final String identifier()
     {
         return this.identifier;
@@ -48,7 +48,7 @@ public class ProductImpl implements LicenseManager.Product
                         LicenseManager licenseManager =
                             (LicenseManager)LocalUvmContextFactory.context().localLicenseManager();
                         licenseManager.register( this );
-                        
+
                         this.isRegistered = true;
                     }
                 }
@@ -68,7 +68,7 @@ public class ProductImpl implements LicenseManager.Product
     }
 
     public final void updateExpirationDate( long end )
-    {   
+    {
         /* only call the reactivation event if it isn't activated,
          * make sure to call this BEFORE updating the expiration date,
          * this way the product can prepare before isExpired becomes
@@ -80,7 +80,7 @@ public class ProductImpl implements LicenseManager.Product
             } catch ( Exception e ) {
                 logger.warn( "error during reactivation event.", e );
             }
-            
+
             this.isActivated = true;
         }
 
@@ -98,13 +98,13 @@ public class ProductImpl implements LicenseManager.Product
         }
 
         this.isActivated = false;
-                    
+
         /* call this after so all subsequent calls to isExpired
          * failed, this way the expire event has a chance to do its
          * thing first */
         this.expirationTimeMillis = System.currentTimeMillis() - 1000;
     }
-    
+
     /** This is the event that is sent to the product, this should be
      * overriden if you want to do something interesting on expire */
     protected void expireEvent()
