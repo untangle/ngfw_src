@@ -532,7 +532,7 @@ class TomcatManager
 
         FileWriter fw = null;
         try {
-            fw = new FileWriter("/etc/apache2/untangle-conf.d");
+            fw = new FileWriter("/etc/apache2/untangle-conf.d/uvm.conf");
             fw.write("Include " + bh + "/apache2/conf.d/*.conf\n");
         } catch (IOException exn) {
             logger.warn("could not write includes: conf.d");
