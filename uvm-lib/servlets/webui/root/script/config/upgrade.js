@@ -128,8 +128,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 title : this.i18n._('Upgrade'),
                 enableHdMenu : false,
                 enableColumnMove: false,
-                disableSelection: true,                 
-                tbar: [{xtype: 'tbtext', text: " "}],
+                disableSelection: true,
+                tbar: [{xtype: 'tbtext', text: "."}],
                 store : new Ext.data.Store({
                     proxy : new Ung.MemoryProxy({
                         root : 'list'

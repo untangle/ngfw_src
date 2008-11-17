@@ -2447,7 +2447,13 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
     // build Tab panel from an array of tab items
     buildTabPanel : function(itemsArray) {
         this.tabs = new Ext.TabPanel({
+            anchor: '100% 100%',
             autoWidth : true,
+            defaults: {
+                anchor: '100% 100%',
+                autoWidth : true,
+                autoScroll: true
+            },
             height : 400,
             activeTab : 0,
             frame : true,
