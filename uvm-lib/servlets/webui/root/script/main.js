@@ -694,6 +694,9 @@ Ung.Main.prototype = {
         }.createDelegate(this), rpc.currentPolicy);
     },
     loadApps: function() {
+    	if(Ung.MessageManager.installInProgress>0) {
+    		return;
+    	}
         rpc.toolboxManager.getRackView(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;

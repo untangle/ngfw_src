@@ -1084,7 +1084,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     removeAction : function()
     {
         /* A hook for doing something in a node before attempting to remove it */
-        if ( this.settings.preRemoveAction ) {
+        if (this.settings && this.settings.preRemoveAction ) {
             this.settings.preRemoveAction( this, this.completeRemoveAction.createDelegate( this ));
             return;
         }
@@ -1230,6 +1230,7 @@ Ung.MessageManager = {
     cycleCompleted : true,
     upgradeMode: false,
     upgradeUpdateTime:1000,
+    installInProgress:0,
     upgradeSummary: null,
     upgradesComplete: 0,
     historyMaxSize:100,
@@ -1311,17 +1312,22 @@ Ung.MessageManager = {
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
                             }
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
-                            refreshApps=true;
-                            var node=main.getNode(msg.nodeDesc.mackageDesc.name)
-                            if(!node) {
-                                var node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
-                                main.nodes.push(node);
-                                main.addNode(node);
+                            if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
+                                refreshApps=true;
+                                var node=main.getNode(msg.nodeDesc.mackageDesc.name)
+                                if(!node) {
+                                    var node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
+                                    main.nodes.push(node);
+                                    main.addNode(node);
+                                } else {
+                                	main.loadLicenseStatus();
+                                }
                             } else {
-                            	main.loadLicenseStatus();
+                            	Ung.AppItem.updateState(msg.nodeDesc.displayName, null);
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
+                            this.installInProgress--;
                             var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
                             Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
@@ -1346,6 +1352,7 @@ Ung.MessageManager = {
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                     this.resetErrorTolerance();
                                     if(msg.success) {
+                                    	this.installInProgress++;
                                        Ung.AppItem.updateState(appItemDisplayName, "installing");
                                     } else {
                                         Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),appItemDisplayName));
