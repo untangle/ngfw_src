@@ -423,17 +423,20 @@ if (!Ung.hasResource["Ung.System"]) {
             });
         },
         buildProtocolSettings : function() {
-            var protocolSettingsItems = new Array();
+            var protocolSettingsItems = [];
             
-            protocolSettingsItems.push(new Ext.form.FieldSet({
+            protocolSettingsItems.push({
                 autoHeight : true,
                 border: false,
                 cls: 'description',
                 html: this.i18n._('Warning: These settings should not be changed unless instructed to do so by support.')
-            }));
+            });
             
             if (this.isHttpLoaded()) {
-            	protocolSettingsItems.push(new Ext.form.FieldSet({
+            	protocolSettingsItems.push({
+            		xtype : 'fieldset',
+                    collapsible: true,
+                    collapsed: true,
                     title: this.i18n._('HTTP'),
                     autoHeight : true,
                     defaults : {
@@ -596,11 +599,13 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }]
                     }]
-            	}));
+            	});
             }
         	
             if (this.isFtpLoaded()) {
-                protocolSettingsItems.push( new Ext.form.FieldSet({
+                protocolSettingsItems.push({
+                    collapsible: true,
+                    collapsed: true,
                     title: this.i18n._('FTP'),
                     autoHeight : true,
                     items : [{
@@ -630,11 +635,13 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }]
-                }));
+                });
             }
             
             if (this.isMailLoaded()) {
-                protocolSettingsItems.push(new Ext.form.FieldSet({
+                protocolSettingsItems.push({
+                    collapsible: true,
+                    collapsed: true,
                     title: this.i18n._('SMTP'),
                     autoHeight : true,
                     labelWidth: 200,                      
@@ -709,8 +716,11 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }]
-                }));
-                protocolSettingsItems.push(new Ext.form.FieldSet({
+                });
+                protocolSettingsItems.push({
+                    collapsible: true,
+                    collapsed: true,
+                	xtype : 'fieldset',
                     title: this.i18n._('POP3'),
                     autoHeight : true,
                     labelWidth: 200,                      
@@ -759,8 +769,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }]
-                }));
-                protocolSettingsItems.push( new Ext.form.FieldSet({
+                });
+                protocolSettingsItems.push({
+                    collapsible: true,
+                    collapsed: true,
                     title: this.i18n._('IMAP'),
                     autoHeight : true,
                     labelWidth: 200,                      
@@ -809,7 +821,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }]
-                }));
+                });
             }            	
             
             this.panelProtocolSettings = new Ext.Panel({
