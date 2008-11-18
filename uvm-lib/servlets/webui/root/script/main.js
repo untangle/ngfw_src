@@ -366,7 +366,7 @@ Ung.Main.prototype = {
             return;
         }
         
-        var w = window.open( url, windowName, "location=0, resizable=1" );
+        var w = window.open( url, windowName, "location=0, resizable=1, scrollbars=1" );
         
         var m = String.format( i18n._( "Click {1}here{2} or disable your pop-up blocker and try again." ),
                                '<br/>', "<a href='" + url + "' target='" + windowName + "'>", '</a>' );
