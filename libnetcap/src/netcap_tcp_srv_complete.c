@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #define __FAVOR_BSD
