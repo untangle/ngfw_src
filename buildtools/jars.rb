@@ -160,7 +160,8 @@ class Jars
                               Activation, Jcifs, C3p0, Ant, JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, JRuby,
                               Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc,
-                              Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava)
+                              Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava
+                              Jnlp)
 
   # Jars for compiling the GUI, and GUI node components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
