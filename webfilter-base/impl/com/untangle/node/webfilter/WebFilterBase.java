@@ -157,6 +157,11 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return settings.getBaseSettings().getUserWhitelistMode();
     }
 
+    public boolean isHttpsEnabled()
+    {
+        return settings.getBaseSettings().getEnableHttps();
+    }
+
     public WebFilterBlockDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
@@ -231,7 +236,11 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     public WebFilterBaseSettings getBaseSettings() {
-        return settings.getBaseSettings();
+        if (settings == null) {
+            return null;
+        } else {
+            return settings.getBaseSettings();
+        }
     }
 
     public void setBaseSettings(final WebFilterBaseSettings baseSettings) {
