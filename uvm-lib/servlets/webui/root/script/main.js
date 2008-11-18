@@ -229,7 +229,7 @@ Ung.Main.prototype = {
 					buttonAlign:'left',
                     items:[{
                     	cls: "logo",
-                        html: '<img src="/images/BrandingLogo.gif" border="0"/>',
+                        html: '<img src="/images/BrandingLogo.gif?'+(new Date()).getTime()+'" border="0"/>',
                         border: false,
                         bodyStyle: 'background-color: transparent;'
                     }, {
