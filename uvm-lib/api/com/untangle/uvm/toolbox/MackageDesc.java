@@ -83,7 +83,7 @@ public class MackageDesc implements Serializable
     {
         name = m.get("package");
 
-        String ut = m.get("untangle-type");
+        String ut = m.get("untangle-pkg-type");
         Type untangleType = Type.UNKNOWN;
         if (null != ut) {
             try {

@@ -11,6 +11,8 @@ Architecture: i386 amd64
 Depends: ${misc:Depends}, libc6 (>= 2.3.2), untangle-libnetfilter-queue0 (>= 0.0.15), libsysfs1 | libsysfs2, libxml2 (>= 2.6.16), libnetfilter-conntrack1 (>= 0.0.81) | untangle-libnetfilter-conntrack1 (>= 0.0.81)
 XB-Display-Name: Untangle Core Library
 XB-Untangle-Type: library
+XB-Is-Service: true
+XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -51,6 +53,8 @@ Provides: ftp-casing
 Replaces: ftp-casing
 XB-Display-Name: File Transfer Casing
 XB-Untangle-Type: casing
+XB-Is-Service: true
+XB-Untangle-Pkg-Type: casing
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -91,6 +95,8 @@ Provides: http-casing
 Replaces: http-casing
 XB-Display-Name: Web Casing
 XB-Untangle-Type: casing
+XB-Is-Service: true
+XB-Untangle-Pkg-Type: casing
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -131,6 +137,8 @@ Provides: mail-casing
 Replaces: mail-casing
 XB-Display-Name: Email Casing
 XB-Untangle-Type: casing
+XB-Is-Service: true
+XB-Untangle-Pkg-Type: casing
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -170,8 +178,10 @@ Conflicts: airgap-transform
 Provides: airgap-transform
 Replaces: airgap-transform
 XB-Display-Name: Attack Blocker
-XB-Untangle-Type: service
+XB-Untangle-Type: node
+XB-Untangle-Pkg-Type: service
 XB-View-Position: 1020
+XB-Is-Core: true
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAJmklEQVRYhcWZWYwb
  dx3HPzOeGdtjj9f3epO92yRtjkZNQzehQlQoIkoQKlXzVCG1AgmekPoEqAJa8VAE
  T7xVFHiohBAPlVBVUYiIqlKpSUPTpE02x26O9XqT7K53be+uz/FcPHg9a6+97gYh
@@ -237,6 +247,8 @@ Replaces: spyware-transform
 XB-Display-Name: Spyware Blocker
 XB-Untangle-Type: node
 XB-View-Position: 20
+XB-Is-Security: true
+XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
  U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAjsSURBVHjaxFlrTFXZFV5XQMEHTx0G0Qgj
  M1F81EeLwYhYpVLfj3RGRKODUUmDDdUZ08Zg/KGMiRlxnKYq0XS0+mcM6ojiFAXER3V4KCAUiENB
@@ -291,6 +303,8 @@ Replaces: httpblocker-transform
 XB-Display-Name: Web Filter
 XB-Untangle-Type: node
 XB-View-Position: 30
+XB-Is-Security: true
+XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAsLSURBVHjaxFkJbJzFFf7+3f33
  dnbX8fqI4+zGcUzI4VBEAJUS0yuElqJAQaW0BCQOqSUGFVG1QqC2RA1SS6W2qUhRkZAoLVS0
@@ -358,6 +372,8 @@ Replaces: clam-transform
 XB-Display-Name: Virus Blocker
 XB-Untangle-Type: node
 XB-View-Position: 70
+XB-Is-Security: true
+XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATVSURBVHjazJhLbxxFEMerZ2Yd
  gx2/QTZBQr4TDlxyQZHhE0RBRL7hmxPFUk75BlyTG8opRw4+5hhFQlEUKUIRiMABCwNW4hC8
@@ -395,6 +411,8 @@ Replaces: protofilter-transform
 XB-Display-Name: Protocol Control
 XB-Untangle-Type: node
 XB-View-Position: 80
+XB-Is-Security: true
+XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAA+BSURBVHjalFkJlFTlmb3vvdp7
  qW56o1ma3qBRGhQzCiJijBEcPUlcIKPZZgYnQc1CxtHEHM/xzJmcGSee5MQzkrgwRDkh8ZzE
@@ -481,10 +499,12 @@ Conflicts: nat-transform
 Provides: nat-transform
 Replaces: nat-transform
 XB-Display-Name: Router
-XB-Untangle-Type: service
+XB-Untangle-Type: node
 XB-View-Position: 1000
+XB-Is-Core: true
 XB-Auto-Start: true
 XB-Invisible: true
+XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
  F2+SX8VGAAAJu0lEQVR42syYeYxV9RXHP/dtM29W3rDMDFBgKsoigywKLggaRdkCQWmkYgtd
@@ -546,6 +566,8 @@ Replaces: firewall-transform
 XB-Display-Name: Firewall
 XB-Untangle-Type: node
 XB-View-Position: 90
+XB-Is-Security: true
+XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAANjr9RwUqgAAACBjSFJNAABtmAAAc44AAPJxAACDbAAAg7sAANTIAAAx7AAA
  GbyeiMU/AAAIM0lEQVR42syZfWxdZR3HP895u70vfYWta2dbAt0rWxkTBTYRAUEZf0BiBHRg
@@ -600,6 +622,8 @@ Replaces: spamassassin-transform
 XB-Display-Name: Spam Blocker
 XB-Untangle-Type: node
 XB-View-Position: 15
+XB-Is-Security: true
+XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAA5RSURBVHjaxFlrjB3nWX7mzPXM
  uezl7P1ue7277m5ubokS2U2cEmgqBAhQFEVqRaiEgPKjQqICREH5Q0UlaBsB4QeootAKpWol
@@ -682,6 +706,7 @@ Replaces: clamphish-transform
 XB-Display-Name: Phish Blocker
 XB-Untangle-Type: node
 XB-View-Position: 17
+XB-Is-Security: true
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
  F2+SX8VGAAARDElEQVR42ryZaZCV1Z3Gf+fd7n779srtne6G7gYamk0QlAgijpqQTcxmEhJn
@@ -776,8 +801,10 @@ Conflicts: openvpn-transform
 Provides: openvpn-transform
 Replaces: openvpn-transform
 XB-Display-Name: OpenVPN
-XB-Untangle-Type: service
+XB-Untangle-Type: node
 XB-View-Position: 1019
+XB-Is-Core: true
+XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
  F2+SX8VGAAAL2ElEQVR42syYWWxc132Hv7vMypnhkJwZigpD2iRNOaSsxdqAWo3jGk7qJXYB
@@ -849,6 +876,8 @@ Replaces: ids-transform
 XB-Display-Name: Intrusion Prevention
 XB-Untangle-Type: node
 XB-View-Position: 75
+XB-Is-Security: true
+XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
  F2+SX8VGAAAMVElEQVR42qyZzY9k51XGf+e87/2oj67q7rEzH/bE8dhE+TAmikeAEzaw9F/g
@@ -920,8 +949,10 @@ Conflicts: reporting-transform
 Provides: reporting-transform
 Replaces: reporting-transform
 XB-Display-Name: Reports
-XB-Untangle-Type: service
+XB-Untangle-Type: node
 XB-View-Position: 1022
+XB-Is-Core: true
+XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAgkSURBVHjazFlJb5vHGX5mvo2k
  xEWyJceSYwtIaimwE8WOqzhpjCbNIUVTGO2lMHJ00fbSU09FUaC9BDn20nsu/QMukkPjtDFa
@@ -974,6 +1005,7 @@ Provides: virus-base
 Replaces: virus-base
 XB-Display-Name: Virus Blocker Base
 XB-Untangle-Type: base
+XB-Untangle-Pkg-Type: base
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -1014,6 +1046,7 @@ Provides: spam-base
 Replaces: spam-base
 XB-Display-Name: Spam Blocker Base
 XB-Untangle-Type: base
+XB-Untangle-Pkg-Type: base
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -1052,6 +1085,7 @@ Depends: untangle-libuvm, untangle-casing-http
 Conflicts: untangle-node-webfilter (< 5.4.2)
 XB-Display-Name: WebFilter Base
 XB-Untangle-Type: base
+XB-Untangle-Pkg-Type: base
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -1092,6 +1126,7 @@ Conflicts: metavize-client (<< 4.1)
 Replaces: metavize-client (<< 4.1)
 XB-Display-Name: Untangle Client
 XB-Untangle-Type: library
+XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -1132,6 +1167,7 @@ Provides: libuvm-thirdparty
 Replaces: libuvm-thirdparty
 XB-Display-Name: Untangle Server Thirdparty Libraries
 XB-Untangle-Type: library
+XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -1173,6 +1209,7 @@ Conflicts: mvvm, untangle-restore-tools (<< 5.1), untangle-linux-image-2.6.16-ck
 Replaces: mvvm
 XB-Display-Name: Untangle Server
 XB-Untangle-Type: library
+XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
@@ -1211,6 +1248,7 @@ Conflicts: untangle-vm (<< 5.1)
 Depends: sun-java6-jre
 XB-Display-Name: Untangle Server Libraries
 XB-Untangle-Type: library
+XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
  1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
