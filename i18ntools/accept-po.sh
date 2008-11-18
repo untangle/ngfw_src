@@ -1,13 +1,14 @@
 #!/bin/sh
 
-if [ $# -ne 3 ]; then
-    echo "usage $0 po.zip work hades"
+if [ $# -ne 4 ]; then
+    echo "usage $0 po.zip work hades internal"
     exit -1
 fi
 
 po="$1"
 work="$2"
 hades="$3"
+internal="$4"
 
 t=$(mktemp -d)
 unzip -d $t "$po"
@@ -76,6 +77,9 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-spyware)
             d=$work/src/spyware
             ;;
+        untangle-systray)
+            d=$internal/isotools/wintangle-installer
+            ;;
         *)
             echo "unknown module: $m"
     esac
@@ -87,3 +91,5 @@ for f in $(find $t -type f -name '*.po'); do
         svn add $i
     fi
 done
+
+echo "remember to run svn commit in $work, $hades, and $internal"
