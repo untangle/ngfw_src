@@ -1103,7 +1103,6 @@ Ung.Node = Ext.extend(Ext.Component, {
                 }
                 this.setState("attention");
                 this.getEl().mask();
-                Ung.MessageManager.resetErrorTolerance();
                 rpc.nodeManager.destroy(function(result, exception) {
                     if(Ung.Util.handleException(exception, function() {
                         this.getEl().unmask();
@@ -1235,7 +1234,8 @@ Ung.MessageManager = {
     upgradesComplete: 0,
     historyMaxSize:100,
     messageHistory:[], // for debug info
-    errorToleranceTime: null,
+    firstToleratedError: null,
+    errorToleranceInterval: 600000, //10 minutes
 
     start : function(now) {
         this.stop();
@@ -1244,9 +1244,6 @@ Ung.MessageManager = {
         }
         this.intervalId = window.setInterval("Ung.MessageManager.run()", this.updateTime);
         this.started = true;
-    },
-    resetErrorTolerance: function () {
-        this.errorToleranceTime=(new Date()).getTime();
     },
     startUpgradeMode: function() {
         this.stop();
@@ -1269,17 +1266,24 @@ Ung.MessageManager = {
         this.cycleCompleted = false;
         rpc.messageManager.getMessageQueue(function(result, exception) {
             if(Ung.Util.handleException(exception, function() {
-                var tolearteError=exception.code==500 && this.errorToleranceTime!=null && (new Date()).getTime()-this.errorToleranceTime<60000;
-                if(tolearteError) {
-                    //Tolerate Error 500: Internal Server Error after an install
-                    //Keep silent because apache may reload
-                    this.cycleCompleted = true;
-                    return;
-                }
-                Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
-                    this.cycleCompleted = true;
+                //Tolerate Error 500: Internal Server Error after an install
+                //Keep silent for maximum 10 minutes of sequential error messages
+            	//because apache may reload
+            	if(exception.code==500) {
+            		if(this.firstToleratedError==null) {
+            			this.firstToleratedError=(new Date()).getTime();
+                        this.cycleCompleted = true;
+                        return;
+            		} else if( (new Date()).getTime()-this.firstToleratedError<this.errorToleranceInterval) {
+                        this.cycleCompleted = true;
+                        return;
+            		} 
+            	}
+            	Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
+                            this.cycleCompleted = true;
                 }.createDelegate(this));
             }.createDelegate(this),"noAlert")) return;
+            this.firstToleratedError=null; //reset error tolerance on a good response
             this.cycleCompleted = true;
             try {
                 var messageQueue=result;
@@ -1305,7 +1309,6 @@ Ung.MessageManager = {
                                 policy = rpc.currentPolicy;
                                 var appItemDisplayName=msg.mackageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.mackageDesc.fullVersion):msg.mackageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
-                                this.resetErrorTolerance();
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                     if ( main.isRunningOnConsole()) main.getIframeWin().hide();
@@ -1336,13 +1339,10 @@ Ung.MessageManager = {
                             if(msg.upgrade==false) {
                             	var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
-                                    this.resetErrorTolerance();
                                     Ung.AppItem.updateState(appItemDisplayName, "download");
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                    this.resetErrorTolerance();
                                     Ung.AppItem.updateState(appItemDisplayName, "download_progress", msg);
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
-                                    this.resetErrorTolerance();
                                     if(msg.success) {
                                        Ung.AppItem.updateState(appItemDisplayName, "download");
                                     } else {
@@ -1350,7 +1350,6 @@ Ung.MessageManager = {
                                         Ung.AppItem.updateState(appItemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
-                                    this.resetErrorTolerance();
                                     if(msg.success) {
                                     	this.installInProgress++;
                                        Ung.AppItem.updateState(appItemDisplayName, "installing");
@@ -1366,7 +1365,6 @@ Ung.MessageManager = {
                             	   startUpgradeMode=true;
                             	}
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
-                                    this.resetErrorTolerance();
                                     if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Downloading updates...")) {
                                         Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
                                     }
@@ -1385,7 +1383,6 @@ Ung.MessageManager = {
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                             		lastUpgradeDownloadProgressMsg="stop";
                                     startUpgradeMode="stop";
-                                    this.resetErrorTolerance();
                                     this.stop();
                                     if(msg.success) {
                                         Ext.MessageBox.alert(
@@ -1412,7 +1409,6 @@ Ung.MessageManager = {
                     }
                     if(lastUpgradeDownloadProgressMsg!=null && lastUpgradeDownloadProgressMsg!="stop") {
                     	var msg=lastUpgradeDownloadProgressMsg;
-                        this.resetErrorTolerance();
                         var text=String.format(i18n._("Downloading {0}. <br/>Status: {1} KB/{2} KB downloaded. <br/>Speed: {3}."),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
                         if(this.upgradeSummary) {
                             text+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
