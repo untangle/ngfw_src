@@ -47,6 +47,8 @@ class UrlBlacklist extends Blacklist
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private boolean unconfigured = true;
+
     private static final URL BLACKLIST_HOME;
     static {
         try {
@@ -77,19 +79,22 @@ class UrlBlacklist extends Blacklist
 
     protected void doReconfigure()
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
-        Map m = new HashMap();
-        m.put("key", uvm.getActivationKey());
-        RemoteToolboxManager tm = uvm.toolboxManager();
-        Boolean rup = tm.hasPremiumSubscription();
-        m.put("premium", rup.toString());
-        m.put("client-version", uvm.getFullVersion());
+        if (unconfigured) {
+            LocalUvmContext uvm = LocalUvmContextFactory.context();
+            Map m = new HashMap();
+            m.put("key", uvm.getActivationKey());
+            RemoteToolboxManager tm = uvm.toolboxManager();
+            Boolean rup = tm.hasPremiumSubscription();
+            m.put("premium", rup.toString());
+            m.put("client-version", uvm.getFullVersion());
 
-        urlDatabase.clear();
+            urlDatabase.clear();
 
-        for (BlacklistCategory cat : getSettings().getBlacklistCategories()) {
-            String catName = cat.getName();
-            if (cat.getBlock()) {
+            for (BlacklistCategory cat : getSettings().getBlacklistCategories()) {
+                String catName = cat.getName();
+                if (catName.equals(BlacklistCategory.UNCATEGORIZED)) {
+                    continue;
+                }
                 String dbName = "ubl-" + catName + "-url";
                 try {
                     UrlList ul = new PrefixUrlList(BLACKLIST_HOME, "webfilter",
@@ -102,9 +107,10 @@ class UrlBlacklist extends Blacklist
                     logger.warn("could not open: " + dbName, exn);
                 }
             }
-        }
 
-        urlDatabase.updateAll(true);
+            urlDatabase.updateAll(true);
+            unconfigured = false;
+        }
     }
 
     protected void updateToCurrentCategories(WebFilterSettings settings)
