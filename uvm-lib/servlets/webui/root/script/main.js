@@ -361,11 +361,13 @@ Ung.Main.prototype = {
         var url = "../library/launcher?" + query;
 
         /* browser specific code ... we has it. */
-        if ( this.isRunningOnConsole()) {
+        //if ( this.isRunningOnConsole()) {
             this.openIFrame( url, title );
             return;
-        }
-        
+        //}
+       
+        /** This code is not used for now we just open in an iframe as above */
+        /* If we decide to go back to a new window for whatever then use this */ 
         var w = window.open( url, windowName, "location=0, resizable=1, scrollbars=1" );
         
         var m = String.format( i18n._( "Click {1}here{2} or disable your pop-up blocker and try again." ),
