@@ -169,7 +169,7 @@ get_dns_enabled()
 get_dns_local_domain()
 {
     if [ -f ${DNS_MASQ_CONF} ]; then
-        awk '/^domain-suffix=/ { sub( "domain-suffix=", "" ) ; print } ' ${DNS_MASQ_CONF}
+        awk '/^domain=/ { sub( "domain=", "" ) ; print } ' ${DNS_MASQ_CONF}
     fi
 }
 

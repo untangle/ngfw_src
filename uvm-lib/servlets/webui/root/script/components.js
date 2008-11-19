@@ -120,9 +120,9 @@ Ung.Util= {
     addBuildStampToUrl: function(url){
         if (url.indexOf("?") >= 0) {
             return url + "&" + main.buildStamp;
-    	} else {
+        } else {
             return url + "?" + main.buildStamp;
-    	}
+        }
     },
     // Load css file Dynamically
     loadCss: function(filename) {
@@ -662,9 +662,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             case "download_summary" :
                 this.displayButtonsOrProgress(false);
                 this.download={
-                	summary:options,
+                    summary:options,
                     completeSize:0,
-                	completePackages:0
+                    completePackages:0
                 }
                 var progressString = String.format(i18n._("{0} Packages"), this.download.summary.count);
                 this.progressBar.reset();
@@ -672,7 +672,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 break;
             case "download_complete" :
                 if(this.download!=null && this.download.summary!=null) {
-                	this.download.completePackages++;
+                    this.download.completePackages++;
                     var currentPercentComplete = parseFloat(this.download.completeSize) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size : 1);
                     var progressIndex = parseFloat(0.9 * currentPercentComplete);
                     var progressString = String.format(i18n._("Pkg {0}/{1} done"), this.download.completePackages, this.download.summary.count);
@@ -685,7 +685,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 if(this.download!=null) {
                     this.download.completeSize=options.bytesDownloaded;
                 }
-            	var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);	
+                var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
                 var progressIndex = parseFloat(0.9 * currentPercentComplete);
                 var progressString = String.format(i18n._("Get@{0}"), options.speed);
                 this.progressBar.reset();
@@ -1286,7 +1286,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             if(this.licenseStatus && this.licenseStatus.trial) {
                 nodeBuyButton.show();
             } else {
-            	nodeBuyButton.hide()
+                nodeBuyButton.hide()
             }
         }
     }
