@@ -120,9 +120,9 @@ Ung.Util= {
     addBuildStampToUrl: function(url){
         if (url.indexOf("?") >= 0) {
             return url + "&" + main.buildStamp;
-    	} else {
+        } else {
             return url + "?" + main.buildStamp;
-    	}
+        }
     },
     // Load css file Dynamically
     loadCss: function(filename) {
@@ -540,6 +540,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
     // progress bar component
     progressBar : null,
     subCmps:null,
+    download: null,
     constructor : function(config) {
         var name="";
         this.subCmps=[];
@@ -629,6 +630,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         }
         var appsLastState=main.appsLastState[this.item.displayName]
         if(appsLastState!=null) {
+            this.download=appsLastState.download;
             this.setState(appsLastState.state,appsLastState.options);
         };
     },
@@ -645,35 +647,58 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             case null:
             case "installed" :
                 this.displayButtonsOrProgress(true);
+                this.download=null;
                 break;
             case "unactivating" :
                 this.displayButtonsOrProgress(false);
                 this.progressBar.reset();
                 this.progressBar.waitDefault(i18n._("Unactivating..."));
                 break;
+            case "download" :
+                this.displayButtonsOrProgress(false);
+                this.progressBar.reset();
+                this.progressBar.updateProgress(0, i18n._("Downloading..."));
+                break;
+            case "download_summary" :
+                this.displayButtonsOrProgress(false);
+                this.download={
+                    summary:options,
+                    completeSize:0,
+                    completePackages:0
+                }
+                var progressString = String.format(i18n._("{0} Packages"), this.download.summary.count);
+                this.progressBar.reset();
+                this.progressBar.updateProgress(0, progressString);
+                break;
+            case "download_complete" :
+                if(this.download!=null && this.download.summary!=null) {
+                    this.download.completePackages++;
+                    var currentPercentComplete = parseFloat(this.download.completeSize) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size : 1);
+                    var progressIndex = parseFloat(0.9 * currentPercentComplete);
+                    var progressString = String.format(i18n._("Pkg {0}/{1} done"), this.download.completePackages, this.download.summary.count);
+                    this.progressBar.reset();
+                    this.progressBar.updateProgress(progressIndex, progressString);
+                }
+                break;
+            case "download_progress" :
+                this.displayButtonsOrProgress(false);
+                if(this.download!=null) {
+                    this.download.completeSize=options.bytesDownloaded;
+                }
+                var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
+                var progressIndex = parseFloat(0.9 * currentPercentComplete);
+                var progressString = String.format(i18n._("Get@{0}"), options.speed);
+                this.progressBar.reset();
+                this.progressBar.updateProgress(progressIndex, progressString);
+                break;
             case "installing" :
                 this.displayButtonsOrProgress(false);
                 this.progressBar.waitDefault(i18n._("Installing..."));
                 break;
-            case "download_progress" :
-                this.displayButtonsOrProgress(false);
-                if (options == null) {
-                    this.progressBar.reset();
-                    this.progressBar.updateText(i18n._("Downloading..."));
-                } else {
-                    var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
-                    var progressIndex = parseFloat(0.9 * currentPercentComplete);
-                    var progressString = String.format(i18n._("Get@{0}"), options.speed);
-                    this.progressBar.updateProgress(progressIndex, progressString);
-                }
-                break;
-            case "download" :
-                this.displayButtonsOrProgress(false);
-                this.progressBar.waitDefault(i18n._("Downloading..."));
-                break;
             case "activate_timeout" :
                 this.displayButtonsOrProgress(false);
-                this.progressBar.waitDefault(i18n._("Activate timeout."));
+                this.progressBar.reset();
+                this.progressBar.updateProgress(1, i18n._("Activate timeout."));
                 break;
         }
         this.state = newState;
@@ -700,7 +725,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         } else {
             this.getEl().mask();
             this.buttonBuy.mask();
-            this.progressBar.show();
+            if(!this.progressBar.isVisible()) {
+                this.progressBar.show();
+            }
         }
     },
     // open store page in a new frame
@@ -734,8 +761,8 @@ Ung.AppItem.template = new Ext.Template('<div class="icon">{imageHtml}</div>', '
 Ung.AppItem.buttonTemplate = new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left">&nbsp;</td><td class="app-item-center">{content}</td><td class="app-item-right">&nbsp;</td></tr></tbody></table>');
 // update state for the app with a displayName
 Ung.AppItem.updateState = function(displayName, state, options) {
-    main.setAppLastState(displayName, state, options);
     var app = Ung.AppItem.getApp(displayName);
+    main.setAppLastState(displayName, state, options, app!=null?app.download:null);
     if (app != null) {
         app.setState(state, options);
     }
@@ -966,7 +993,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                 hideDelay : 0
             }));
         }
-        this.updateRunState(this.runState);
+        this.updateRunState(this.runState, true);
         this.initBlingers();
     },
     // is runState "RUNNING"
@@ -982,11 +1009,13 @@ Ung.Node = Ext.extend(Ext.Component, {
     setPowerOn : function(powerOn) {
         this.powerOn = powerOn;
     },
-    updateRunState : function(runState) {
-        this.runState = runState;
-        var isRunning = this.isRunning();
-        this.setPowerOn(isRunning);
-        this.setState(isRunning ? "on" : "off");
+    updateRunState : function(runState, force) {
+        if(runState!=this.runState || force) {
+            this.runState = runState;
+            var isRunning = this.isRunning();
+            this.setPowerOn(isRunning);
+            this.setState(isRunning ? "on" : "off");
+        }
     },
     updateBlingers : function() {
         if (this.powerOn && this.stats) {
@@ -1257,7 +1286,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             if(this.licenseStatus && this.licenseStatus.trial) {
                 nodeBuyButton.show();
             } else {
-            	nodeBuyButton.hide()
+                nodeBuyButton.hide()
             }
         }
     }
@@ -1412,12 +1441,12 @@ Ung.MessageManager = {
                             if(msg.upgrade==false) {
                                 var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
-                                    Ung.AppItem.updateState(appItemDisplayName, "download");
+                                    Ung.AppItem.updateState(appItemDisplayName, "download_summary", msg);
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
                                     Ung.AppItem.updateState(appItemDisplayName, "download_progress", msg);
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                     if(msg.success) {
-                                       Ung.AppItem.updateState(appItemDisplayName, "download");
+                                       Ung.AppItem.updateState(appItemDisplayName, "download_complete");
                                     } else {
                                         Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemDisplayName));
                                         Ung.AppItem.updateState(appItemDisplayName);

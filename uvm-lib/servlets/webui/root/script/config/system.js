@@ -213,7 +213,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls : 'reboot-icon',
                         handler : function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),
-                                String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations{0}until the {1} Server is finished automatically restarting.{2}This may take up to several minutes to complete."), "<br>", this.companyName, "<br>"), 
+                                String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ), 
                                 function(btn) {
                                 if (btn == 'yes') {
                                     rpc.jsonrpc.RemoteUvmContext.rebootBox(function (result, exception) {

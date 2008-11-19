@@ -2,7 +2,6 @@ Ext.namespace('Ung');
 // Global Variables
 // the main object instance
 var main=null;
-
 // Main object class
 Ung.Main=function() {
 }
@@ -185,11 +184,11 @@ Ung.Main.prototype = {
     resetAppLastState: function(displayName) {
     	main.appsLastState[displayName]=null
     },
-    setAppLastState: function(displayName,state,options) {
+    setAppLastState: function(displayName,state,options,download) {
     	if(state==null) {
     		main.appsLastState[displayName]=null;
     	} else {
-    		main.appsLastState[displayName]={state:state, options:options};
+    		main.appsLastState[displayName]={state:state, options:options, download:download};
     	}
     },
     startApplication: function() {
@@ -220,6 +219,7 @@ Ung.Main.prototype = {
             items:[{
                     region:'west',
                     id: 'west',
+                    //split : true,
                     buttonAlign : 'center',
                     cls:"content-left",
                     border : false,
@@ -233,14 +233,21 @@ Ung.Main.prototype = {
                         border: false,
                         bodyStyle: 'background-color: transparent;'
                     }, {
-                    	layout:"fit",
+                    	layout:"anchor",
                     	border: false,
                     	cls: "left-tabs",
                     	items: this.leftTabs = new Ext.TabPanel({
                             activeTab: 0,
                             height: 400,
+                            anchor:"100% 100%",
+                            autoWidth : true,
+                            layoutOnTabChange : true,
                             deferredRender:false,
-                            defaults:{autoScroll: true},
+                            defaults: {
+                                anchor: '100% 100%',
+                                autoWidth : true,
+                                autoScroll: true
+                            },
                             items:[{
                                 title: i18n._('Apps'),
                                 id:'leftTabApps',
@@ -292,11 +299,11 @@ Ung.Main.prototype = {
         Ext.QuickTips.init();
 
         main.systemStats=new Ung.SystemStats({});
-
         Ext.getCmp("west").on("resize", function() {
             var newHeight=Math.max(this.getEl().getHeight()-175,100);
             main.leftTabs.setHeight(newHeight);
         });
+        
         Ext.getCmp("west").fireEvent("resize");
         buttonCmp=new Ext.Button({
             name: 'What Apps should I use?',
@@ -729,6 +736,10 @@ Ung.Main.prototype = {
 
     installNode: function(mackageDesc, appItem) {
         if(mackageDesc!==null) {
+            var iframeWin = main.getIframeWin();
+            if (iframeWin != null) {
+                iframeWin.closeAction();
+            }
             if(main.getNode(mackageDesc.name)!=null) {
         	appItem.hide();
         	return;

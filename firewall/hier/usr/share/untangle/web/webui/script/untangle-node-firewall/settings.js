@@ -107,8 +107,87 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         columnsDefaultSortable : false,
                         autoExpandColumn : 'description',
                         plugins : [liveColumn],
-                        rowEditorLabelWidth:120,
-                        rowEditorInputLines : [new Ext.form.Checkbox({
+                        
+                        initComponent : function() {
+                            this.rowEditor = new Ung.RowEditorWindow({
+                                grid : this,
+                                sizeToGrid : true,
+                                inputLines : this.customInputLines,
+                                rowEditorLabelWidth:120,
+                                populate : function(record, addMode) {
+                                    this.addMode=addMode;
+                                    this.record = record;
+                                    this.initialRecordData = Ext.encode(record.data);
+                                    for (var i = 0; i < this.inputLines.length; i++) {
+                                        var inputLine = this.inputLines[i];
+                                        if (inputLine instanceof Ext.form.Field) {
+                                        	this.populateField(inputLine, record);
+                                        } else if (inputLine instanceof Ext.Panel) {
+                                            for (var j = 0; j < inputLine.items.length; j++) {
+                                                var field = inputLine.items.get(j);
+                                                if ( field instanceof Ext.form.Field) {
+                                                    this.populateField(field, record);
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                populateField : function(field, record) {
+                                    if(field.dataIndex!=null) {
+                                        field.suspendEvents();
+                                        field.setValue(record.get(field.dataIndex));
+                                        field.resumeEvents();
+                                    }
+                                },
+                                isFormValid : function() {
+                                    for (var i = 0; i < this.inputLines.length; i++) {
+                                        var inputLine = this.inputLines[i];
+                                        if (inputLine instanceof Ext.form.Field && !inputLine.isValid()) {
+                                            return false;
+                                        } else if (inputLine instanceof Ext.Panel) {
+                                            for (var j = 0; j < inputLine.items.length; j++) {
+                                                var field = inputLine.items.get(j);
+                                                if (field instanceof Ext.form.Field && !field.isValid()) {
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    return true;
+                                },
+                                updateAction : function() {
+                                    if (this.isFormValid()) {
+                                        if (this.record !== null) {
+                                            for (var i = 0; i < this.inputLines.length; i++) {
+                                                var inputLine = this.inputLines[i];
+                                                if (inputLine instanceof Ext.form.Field) {
+                                                    this.record.set(inputLine.dataIndex, inputLine.getValue());
+                                                } else if (inputLine instanceof Ext.Panel) {
+                                                    for (var j = 0; j < inputLine.items.length; j++) {
+                                                        var field = inputLine.items.get(j);
+                                                        if (field instanceof Ext.form.Field) {
+                                                            this.record.set(field.dataIndex, field.getValue());
+                                                        }
+                                                    }
+                                                }
+                                            }
+        
+                                            if (this.addMode) {
+                                                this.grid.getStore().insert(0, [this.record]);
+                                                this.grid.updateChangedData(this.record, "added");
+                                            }
+                                        }
+                                        this.hide();
+                                    } else {
+                                        Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
+                                    }
+                                }
+                            });
+                            
+                            Ung.EditorGrid.prototype.initComponent.call(this);
+                        },
+                        
+                        customInputLines : [new Ext.form.Checkbox({
                             name : "Enable Rule",
                             dataIndex: "live",
                             fieldLabel : this.i18n._("Enable Rule"),
@@ -192,13 +271,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                     width : 150
                                 })                           
                             ]
-                        })
-                       /*, new Ext.form.TextField({
-                            name : "Category",
-                            dataIndex: "category",
-                            fieldLabel : this.i18n._("Category"),
-                            width : 150
-                        })*/]
+                        })]
                     }),{
                         xtype : 'fieldset',
                         autoHeight : true,
