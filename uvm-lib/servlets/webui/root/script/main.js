@@ -7,7 +7,7 @@ var main=null;
 Ung.Main=function() {
 }
 Ung.Main.prototype = {
-	debugMode: false,
+    debugMode: false,
     disableThreads: false, // in development environment is useful to disable
                             // threads.
     leftTabs: null,
@@ -685,26 +685,32 @@ Ung.Main.prototype = {
     },
     // load the rack view for current policy
     loadRackView: function() {
-    	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
-        rpc.toolboxManager.getRackView(function (result, exception) {
+        var callback = function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             main.buildApps();
             main.buildNodes();
-        }.createDelegate(this), rpc.currentPolicy);
+        }.createDelegate(this);
+        
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager,
+                                     [ rpc.currentPolicy ], callback, 1500, 10 );
     },
     loadApps: function() {
     	if(Ung.MessageManager.installInProgress>0) {
-    		return;
+    	    return;
     	}
-        rpc.toolboxManager.getRackView(function (result, exception) {
+        var callback = function(result,exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             main.buildApps();
-        }.createDelegate(this), rpc.currentPolicy);
+        }.createDelegate(this);
+        
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager,
+                                     [ rpc.currentPolicy ], callback, 1500, 10 );
     },
     loadLicenseStatus: function() {
-        rpc.toolboxManager.getRackView(function (result, exception) {
+        var callback = function(result,exception)
+        {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             for (var i = 0; i < main.nodes.length; i++) {
@@ -713,15 +719,18 @@ Ung.Main.prototype = {
                     nodeCmp.updateLicenseStatus(rpc.rackView.licenseStatus.map[nodeCmp.name]);
                 }
             }
-        }.createDelegate(this), rpc.currentPolicy);
+        }.createDelegate(this);
+
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager,
+                                     [ rpc.currentPolicy ], callback, 1500, 10 );
     },
 
     installNode: function(mackageDesc, appItem) {
         if(mackageDesc!==null) {
-        	if(main.getNode(mackageDesc.name)!=null) {
-        		appItem.hide();
-        		return;
-        	}
+            if(main.getNode(mackageDesc.name)!=null) {
+        	appItem.hide();
+        	return;
+            }
             Ung.AppItem.updateState(mackageDesc.displayName, "installing");
             rpc.nodeManager.instantiateAndStart(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;

@@ -118,10 +118,10 @@ Ung.Util= {
         return msg;
     },
     addBuildStampToUrl: function(url){
-    	if (url.indexOf("?") >= 0) {
-    		return url + "&" + main.buildStamp;
+        if (url.indexOf("?") >= 0) {
+            return url + "&" + main.buildStamp;
     	} else {
-    		return url + "?" + main.buildStamp;
+            return url + "?" + main.buildStamp;
     	}
     },
     // Load css file Dynamically
@@ -350,6 +350,79 @@ Ung.Util= {
         return (typeof value == 'string') ?
            value.length<1? "&#160;": Ext.util.Format.htmlEncode(value) :
            value;
+    }
+};
+
+Ung.Util.RetryHandler = {
+    /**
+     * retryFunction
+     * @param fn Remote call to execute.
+     * @param fnScope Scope to use when calling fn.
+     * @param params array of parameters to pass to fn.
+     * @param callback Callback to execute on success.
+     * @param timeout Delay to wait until retrying the call.
+     * @param count Number of retries remaining.
+     */
+    retry : function( fn, fnScope, params, callback, timeout, count )
+    {
+        var input = {
+            "fn" : fn,
+            "fnScope" : fnScope,
+            "params" : params, 
+            "callback" : callback,
+            "timeout" : timeout, 
+            "count" : count
+        };
+        
+        this.callFunction( input );
+    },
+    
+    completeRetry : function( result, exception, input )
+    {
+        var handler = this.tryAgain.createDelegate( this, [ exception, input ] );
+        var type = "noAlert";
+
+        var count = input["count"];
+
+        /* Don't retry any more */
+        if (( count == null ) || ( count < 1 )) {
+            handler = null;
+            type = null;
+        } else {
+            input["count"]--;
+        }
+        
+        if ( Ung.Util.handleException( exception, handler, type )) {
+            return;
+        }
+
+        input["callback"]( result, exception );
+    },
+    
+    tryAgain : function( exception, input )
+    {
+        if( exception.code == 500 ) {
+            /* If necessary try calling the function again. */
+            window.setTimeout( this.callFunction.createDelegate( this, [ input ] ), input["timeout"] );
+            console.debug( "Retrying the call in " + input["timeout"] + " ms." );
+            return;
+        }
+        
+        Ext.MessageBox.alert(i18n._("Failed"), exception.message );
+    },
+
+    callFunction : function( input )
+    {
+        var d = this.completeRetry.createDelegate( this, [ input ], 2 );
+        var fn = input["fn"];
+        var fnScope = input["fnScope"];
+        var params = [ d ];
+
+        if ( input["params"] != null ) {
+            params = params.concat( input["params"] );
+        }
+        
+        fn.apply( fnScope, params );
     }
 };
 
@@ -1268,19 +1341,19 @@ Ung.MessageManager = {
             if(Ung.Util.handleException(exception, function() {
                 //Tolerate Error 500: Internal Server Error after an install
                 //Keep silent for maximum 10 minutes of sequential error messages
-            	//because apache may reload
-            	if(exception.code==500) {
-            		if(this.firstToleratedError==null) {
-            			this.firstToleratedError=(new Date()).getTime();
+                //because apache may reload
+                if(exception.code==500) {
+                    if(this.firstToleratedError==null) {
+                        this.firstToleratedError=(new Date()).getTime();
                         this.cycleCompleted = true;
                         return;
-            		} else if( (new Date()).getTime()-this.firstToleratedError<this.errorToleranceInterval) {
+                    } else if(((new Date()).getTime()-this.firstToleratedError)<this.errorToleranceInterval) {
                         this.cycleCompleted = true;
                         return;
-            		} 
-            	}
-            	Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
-                            this.cycleCompleted = true;
+                    } 
+                }
+                Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
+                    this.cycleCompleted = true;
                 }.createDelegate(this));
             }.createDelegate(this),"noAlert")) return;
             this.firstToleratedError=null; //reset error tolerance on a good response
@@ -1323,10 +1396,10 @@ Ung.MessageManager = {
                                     main.nodes.push(node);
                                     main.addNode(node);
                                 } else {
-                                	main.loadLicenseStatus();
+                                    main.loadLicenseStatus();
                                 }
                             } else {
-                            	Ung.AppItem.updateState(msg.nodeDesc.displayName, null);
+                                Ung.AppItem.updateState(msg.nodeDesc.displayName, null);
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
@@ -1337,7 +1410,7 @@ Ung.MessageManager = {
                             main.loadLicenseStatus();
                         } else {
                             if(msg.upgrade==false) {
-                            	var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
+                                var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     Ung.AppItem.updateState(appItemDisplayName, "download");
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
@@ -1351,7 +1424,7 @@ Ung.MessageManager = {
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                     if(msg.success) {
-                                    	this.installInProgress++;
+                                        this.installInProgress++;
                                        Ung.AppItem.updateState(appItemDisplayName, "installing");
                                     } else {
                                         Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),appItemDisplayName));
@@ -1361,27 +1434,27 @@ Ung.MessageManager = {
                                     Ung.AppItem.updateState(appItemDisplayName, "activate_timeout");
                                 }
                             } else if(msg.upgrade==true) {
-                            	if(startUpgradeMode!="stop" && !this.upgradeMode) {
-                            	   startUpgradeMode=true;
-                            	}
+                                if(startUpgradeMode!="stop" && !this.upgradeMode) {
+                                    startUpgradeMode=true;
+                                }
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Downloading updates...")) {
                                         Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
                                     }
                                     this.upgradeSummary=msg;
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
-                                	if(lastUpgradeDownloadProgressMsg!="stop") {
-                                		lastUpgradeDownloadProgressMsg=msg;
-                                	}
+                                    if(lastUpgradeDownloadProgressMsg!="stop") {
+                                        lastUpgradeDownloadProgressMsg=msg;
+                                    }
                                 } else if(msg.javaClass.indexOf("DownloadComplete") != -1) {
                                     this.upgradesComplete++;
                                     if(!msg.success) {
-                                    	lastUpgradeDownloadProgressMsg="stop";
-                                    	startUpgradeMode="stop";
+                                        lastUpgradeDownloadProgressMsg="stop";
+                                        startUpgradeMode="stop";
                                         Ext.MessageBox.alert(i18n._("Failed"), i18n._("Error downloading packages. Install Aborted."));
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
-                            		lastUpgradeDownloadProgressMsg="stop";
+                                    lastUpgradeDownloadProgressMsg="stop";
                                     startUpgradeMode="stop";
                                     this.stop();
                                     if(msg.success) {
@@ -1408,7 +1481,7 @@ Ung.MessageManager = {
                         }
                     }
                     if(lastUpgradeDownloadProgressMsg!=null && lastUpgradeDownloadProgressMsg!="stop") {
-                    	var msg=lastUpgradeDownloadProgressMsg;
+                        var msg=lastUpgradeDownloadProgressMsg;
                         var text=String.format(i18n._("Downloading {0}. <br/>Status: {1} KB/{2} KB downloaded. <br/>Speed: {3}."),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
                         if(this.upgradeSummary) {
                             text+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
