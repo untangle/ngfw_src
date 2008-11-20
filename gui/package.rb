@@ -51,8 +51,15 @@ guiRuntimeJars = ['asm.jar', 'cglib-2.1.3.jar', 'commons-logging-1.0.4.jar' ].ma
 end
 guiRuntimeJars += Jars::Log4j;
 guiRuntimeJars << Jars.downloadTarget('hibernate-client/hibernate-client.jar')
+guiRuntimeJars << Jars::GetText
 BuildEnv::SRC.installTarget.install_jars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
 
 ms = MoveSpec.new("./gui/hier", FileList["./gui/hier/**/*"], gui.distDirectory)
 cf = CopyFiles.new(gui, ms, 'hier', BuildEnv::SRC.filterset)
 gui.registerTarget('hier', cf)
+
+JavaMsgFmtTarget.make_po_targets(gui, "#{BuildEnv::SRC.home}/gui/po",
+                                 "#{gui.distDirectory}/usr/share/untangle/lang",
+                                 'untangle-install-wizard').each do |t|
+  BuildEnv::SRC.installTarget.register_dependency(t)
+end
