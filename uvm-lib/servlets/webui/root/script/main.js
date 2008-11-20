@@ -738,7 +738,9 @@ Ung.Main.prototype = {
         if(mackageDesc!==null) {
             var iframeWin = main.getIframeWin();
             if (iframeWin != null) {
-                iframeWin.closeAction();
+                if (iframeWin.closeAction != null) {
+                    iframeWin.closeAction();
+                }
             }
             if(main.getNode(mackageDesc.name)!=null) {
         	appItem.hide();
