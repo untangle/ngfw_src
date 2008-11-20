@@ -30,5 +30,3 @@ ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py',
 cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
 uvm.registerTarget('python-jsonrpc', cf)
 
-# mo files
-MsgFmtTarget.new(uvm, './uvm/po')
