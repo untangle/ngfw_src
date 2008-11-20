@@ -111,11 +111,12 @@ public class HostCache
             if (null != s) {
                 for (CacheRecord r : getRecords(s)) {
                     if (r.isExact()) {
-                        if (domain.equals(dom) && uri.equals(r.uri)) {
+                        if (domain.equals(dom)
+                            && uri.toLowerCase().equals(r.uri.toLowerCase())) {
                             return r.getCategoryString();
                         }
                     } else {
-                        if (uri.startsWith(r.uri)) {
+                        if (uri.toLowerCase().startsWith(r.uri.toLowerCase())) {
                             return r.getCategoryString();
                         }
                     }
