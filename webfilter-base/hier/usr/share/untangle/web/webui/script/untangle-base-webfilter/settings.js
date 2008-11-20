@@ -945,7 +945,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }],
                 autoExpandColumn: 'request',
                 columns : [{
-                    header : i18n._("timestamp"),
+                    header : this.i18n._("timestamp"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'timeStamp',
@@ -953,30 +953,30 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : i18n._("action"),
+                    header : this.i18n._("action"),
                     width : 70,
                     sortable : true,
                     dataIndex : 'displayAction'
                 }, {
-                    header : i18n._("client"),
+                    header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'client',
                     renderer : asClient
                 }, {
                     id: 'request',
-                    header : i18n._("request"),
+                    header : this.i18n._("request"),
                     width : 200,
                     sortable : true,
                     dataIndex : 'request',
                     renderer : asRequest
                 }, {
-                    header : i18n._("reason for action"),
+                    header : this.i18n._("reason for action"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
-                    header : i18n._("server"),
+                    header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'server',

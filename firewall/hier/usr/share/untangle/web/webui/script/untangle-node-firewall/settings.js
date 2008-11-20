@@ -336,7 +336,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     sortType : Ung.SortTypes.asServer
                 }],
                 columns : [{
-                    header : i18n._("timestamp"),
+                    header : this.i18n._("timestamp"),
                     width : 130,
                     sortable : true,
                     dataIndex : 'timeStamp',
@@ -344,12 +344,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : i18n._("action"),
+                    header : this.i18n._("action"),
                     width : 100,
                     sortable : true,
                     dataIndex : 'action'
                 }, {
-                    header : i18n._("client"),
+                    header : this.i18n._("client"),
                     width : 165,
                     sortable : true,
                     dataIndex : 'client',
@@ -364,7 +364,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                            return String.format(this.i18n._("rule #{0}"), value);
 					}.createDelegate(this)
                 }, {
-                    header : i18n._("server"),
+                    header : this.i18n._("server"),
                     width : 165,
                     sortable : true,
                     dataIndex : 'server',

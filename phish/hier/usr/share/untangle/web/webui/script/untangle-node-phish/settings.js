@@ -283,7 +283,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }],
                 // the list of columns
                 columns : [{
-                    header : i18n._("timestamp"),
+                    header : this.i18n._("timestamp"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'timeStamp',
@@ -291,12 +291,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : i18n._("action"),
+                    header : this.i18n._("action"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'displayAction'
                 }, {
-                    header : i18n._("client"),
+                    header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'client',
@@ -308,7 +308,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     dataIndex : 'request',
                     renderer : asRequest
                 }, {
-                    header : i18n._("server"),
+                    header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'server',
@@ -382,7 +382,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }],
                 // the list of columns
                 columns : [{
-                    header : i18n._("timestamp"),
+                    header : this.i18n._("timestamp"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'timeStamp',
@@ -390,12 +390,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : i18n._("action"),
+                    header : this.i18n._("action"),
                     width : 90,
                     sortable : true,
                     dataIndex : 'displayAction'
                 }, {
-                    header : i18n._("client"),
+                    header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'client'
@@ -415,7 +415,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    header : i18n._("server"),
+                    header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'server'
