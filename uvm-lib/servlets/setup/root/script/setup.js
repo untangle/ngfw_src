@@ -85,7 +85,7 @@ Ext.apply( Ext.form.VTypes, {
         return val.match( this.emailAddressCheckRegex );
     },
 
-    emailAddressCheckRegex : new RegExp( "[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"),
+    emailAddressCheckRegex : new RegExp( "[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?"),
 
     emailAddressCheckText : 'Please enter a valid email address',
 
