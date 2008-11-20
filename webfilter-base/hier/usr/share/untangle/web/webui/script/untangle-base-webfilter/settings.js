@@ -99,7 +99,23 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }]
                 }],
                 initComponent : function () {
-                	var settingsCmp=Ext.getCmp(this.parentId);
+		    var settingsCmp=Ext.getCmp(this.parentId);
+                    this.items.push({
+		      items: {
+			xtype : 'checkbox',
+			boxLabel : settingsCmp.i18n._('Block pages from IP only hosts'),
+			hideLabel : true,
+			name : 'Block IPHost',
+			checked : settingsCmp.getBaseSettings().blockAllIpHosts,
+			listeners : {
+			  "check" : {
+			    fn : function(elem, checked) {
+			      this.getBaseSettings().blockAllIpHosts = checked;
+			    }.createDelegate(settingsCmp)
+			  }
+			}
+		      }
+		    });
                     if(settingsCmp.hasScanHTTPS) {
                     	this.items.push({
                             items: {
