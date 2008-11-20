@@ -515,13 +515,13 @@ class JavaCompilerTarget < Target
 end
 
 class JavaMsgFmtTarget < Target
-  def initialize(package, po_file, dest, basename)
+  def initialize(package, lang, po_file, dest, basename)
     @po_file = po_file
     @dest = dest
     @basename = basename
-    @lang = File.basename(@po_file, '.po')
+    @lang = lang
 
-    @filename = "#{dest}/#{@basename.gsub(/\./, '/')}_#{@lang}.class"
+    @filename = "#{dest}/#{@basename.gsub(/-/, '_')}_#{@lang}.class"
 
     super(package, [@po_file], @filename)
   end
@@ -529,8 +529,10 @@ class JavaMsgFmtTarget < Target
   def JavaMsgFmtTarget.make_po_targets(package, src, dest, basename)
     ts = []
 
-    Dir.new(src).select { |f| /\.po$/ =~ f }.each do |f|
-      ts << JavaMsgFmtTarget.new(package, "#{src}/#{f}", dest, basename)
+    Dir.new(src).select { |f| not f =~ /^\./ and File.directory?("#{src}/#{f}") }.each do |dir|
+      Dir.new("#{src}/#{dir}").select { |f| /\.po$/ =~ f }.each do |f|
+        ts << JavaMsgFmtTarget.new(package, dir, "#{src}/#{dir}/#{f}", dest, basename)
+      end
     end
 
     ts
@@ -555,16 +557,14 @@ class JavaMsgFmtTarget < Target
     ensureDirectory @dest
     raise "msgfmt failed" unless
       Kernel.system <<CMD
-msgfmt --java2 -d #{@dest} -r #{@basename} -l #{@lang} #{@po_file}
+msgfmt --java2 -d #{@dest} -r "i18n.official.#{@basename.gsub('-', '_')}" -l #{@lang} #{@po_file}
 CMD
 
-    props = "#{File.dirname(filename())}/i18n.properties"
-    unless File.exist?(props)
-      File.open(props, 'w') do |f|
-        f.puts "basename=#{@basename}"
-      end
-    end
-
+    ensureDirectory "#{@dest}/official/#{@lang}"
+    raise "msgfmt failed" unless
+      Kernel.system <<CMD
+msgfmt -o #{@dest}/official/#{@lang}/#{@basename}.mo #{@po_file}
+CMD
   end
 end
 

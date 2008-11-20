@@ -92,12 +92,11 @@ class NodeBuilder
     jt = JarTarget.build_target(node, deps, "impl", directories)
 
     po_dir = "#{home}/#{dirName}/po"
-    pkgname = "com.untangle.node.#{dirName}"
     if File.exist? po_dir
       JavaMsgFmtTarget.make_po_targets(node, po_dir,
-                                        jt.javac_dir,
-                                        "#{pkgname}.Messages").each do |t|
-        jt.register_dependency(t)
+                                       "#{node.distDirectory}/usr/share/untangle/lang",
+                                       name).each do |t|
+        buildEnv.installTarget.register_dependency(t)
       end
     end
 
