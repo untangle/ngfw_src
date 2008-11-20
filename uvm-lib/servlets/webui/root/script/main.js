@@ -737,10 +737,8 @@ Ung.Main.prototype = {
     installNode: function(mackageDesc, appItem) {
         if(mackageDesc!==null) {
             var iframeWin = main.getIframeWin();
-            if (iframeWin != null) {
-                if (iframeWin.closeAction != null) {
-                    iframeWin.closeAction();
-                }
+            if (iframeWin != null && typeof iframeWin == 'Ung.Window') {
+                iframeWin.closeAction();
             }
             if(main.getNode(mackageDesc.name)!=null) {
         	appItem.hide();
