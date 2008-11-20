@@ -64,10 +64,9 @@ public class InstallWelcomeJPanel
     public InstallWelcomeJPanel() {
         localeModel = new DefaultComboBoxModel(new Object[] {
                 Locale.ENGLISH,
-                Locale.FRENCH,
-                Locale.GERMAN,
+                new Locale("PT", "BR"),
                 new Locale("ES"),
-                new Locale("PT")
+                new Locale("ZH")
             });
 
         localeRenderer = new BasicComboBoxRenderer() {
