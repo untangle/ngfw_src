@@ -86,7 +86,7 @@ import org.hibernate.Session;
  */
 class RemoteToolboxManagerImpl implements RemoteToolboxManager
 {
-    private static final int UPDATE_TIMEOUT = 120000;
+    private static final int UPDATE_TIMEOUT = 40000;
 
     static final URL TOOLBOX_URL;
 
@@ -253,9 +253,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             if(!updating) {
                 update();
             } else {
-                int maxTries=240;
+                int maxTries=UPDATE_TIMEOUT/1000;
                 while(updating && maxTries-- > 0) {
-                    Thread.sleep(UPDATE_TIMEOUT/maxTries*2);
+                    Thread.sleep(1000);
                 }
             }
         }
