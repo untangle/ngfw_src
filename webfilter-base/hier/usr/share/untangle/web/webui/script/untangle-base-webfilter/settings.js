@@ -294,10 +294,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     id : 'displayName',
                     header : this.i18n._("category"),
                     width : 200,
-                    dataIndex : 'displayName',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+                    dataIndex : 'displayName'
                 }, liveColumn, logColumn, {
                     id : 'description',
                     header : this.i18n._("description"),
@@ -317,6 +314,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     fieldLabel : this.i18n._("Category"),
                     allowBlank : false,
                     width : 200,
+                    disabled : true, 
                     ctCls: "fixed-pos"
                 }), new Ext.form.Checkbox({
                     name : "Block",
