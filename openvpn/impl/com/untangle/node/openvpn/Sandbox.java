@@ -18,37 +18,23 @@
 
 package com.untangle.node.openvpn;
 
-import com.untangle.uvm.security.Tid;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.LinkedHashMap;
-
-
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
-
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.NetworkUtil;
-
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
-
-
 import com.untangle.uvm.node.AddressRange;
 import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.HostAddress;
@@ -56,9 +42,10 @@ import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
-
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptException;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.util.I18nUtil;
 
 /* XXX Probably want to make this an abstract class and make this a little more generic */
 class Sandbox
@@ -96,6 +83,8 @@ class Sandbox
 
     private final Map<String,VpnGroup> resolveGroupMap = new HashMap<String,VpnGroup>();
     
+    private I18nUtil i18nUtil = null;
+    
     Sandbox( VpnNode.ConfigState configState )
     {
         this.configState = configState;
@@ -104,6 +93,7 @@ class Sandbox
             this.clientList=new ClientList();
             this.siteList=new SiteList();
         }
+        i18nUtil = new I18nUtil(LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-openvpn"));
     }
 
     void installClientConfig( String path ) throws NodeException
@@ -257,8 +247,7 @@ class Sandbox
         group.setUseDNS( false );
         group.setAddress( network.getNetwork());
         group.setNetmask( network.getNetmask());
-        /* i18n. */
-        group.setName( "default" );
+        group.setName( i18nUtil.tr("default") );
         GroupList gl = new GroupList();
         List<VpnGroup> list = new LinkedList<VpnGroup>();
         list.add( group );
@@ -313,7 +302,7 @@ class Sandbox
             ssn.setNetwork( network.getNetwork());
             ssn.setNetmask( network.getNetmask());
             ssn.setLive( true );
-            ssn.setName( "internal network" );
+            ssn.setName( i18nUtil.tr("internal network") );
             networkList.add( ssn );
         }
 

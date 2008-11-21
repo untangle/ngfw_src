@@ -2181,7 +2181,7 @@ msgid "Use Default Logo"
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1700
-msgid "Use Custom Logo. Maximum size is 220 x 100."
+msgid "Use Custom Logo. Maximum size is 166 x 100."
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1744

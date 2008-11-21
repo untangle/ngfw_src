@@ -384,7 +384,7 @@ Ung.Util.RetryHandler = {
 
         var count = input["count"];
 
-        /* Don't retry any more */
+        /* Do not retry any more */
         if (( count == null ) || ( count < 1 )) {
             handler = null;
             type = null;
@@ -1940,7 +1940,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
             this.configWin=new Ung.Window({
                 blingerCmp: this,
                 modal : true,
-                title:"Set up to four",
+                title : i18n._("Set up to four"),
                 bodyStyle : "padding: 5px 5px 5px 15px;",
                 items: configItems,
                 autoScroll : true,

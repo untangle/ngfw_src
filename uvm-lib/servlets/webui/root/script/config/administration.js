@@ -1273,7 +1273,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'communityString',
                         itemCls : 'left-indent-1',
                         id: 'administration_snmp_communityString',
-                        value : this.getSnmpSettings().communityString,
+                        value : this.getSnmpSettings().communityString == 'CHANGE_ME' ? this.i18n._('CHANGE_ME') : this.getSnmpSettings().communityString,
                         allowBlank : false,
                         blankText : this.i18n._("An SNMP \"Community\" must be specified."),
                         disabled : !this.getSnmpSettings().enabled
@@ -1283,7 +1283,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('System Contact'),
                         name : 'sysContact',
                         id: 'administration_snmp_sysContact',
-                        value : this.getSnmpSettings().sysContact,
+                        value : this.getSnmpSettings().sysContact == 'MY_CONTACT_INFO' ? this.i18n._('MY_CONTACT_INFO') : this.getSnmpSettings().sysContact,
                         disabled : !this.getSnmpSettings().enabled                        
                         //vtype : 'email'
                     },{
@@ -1292,7 +1292,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('System Location'),
                         name : 'sysLocation',
                         id: 'administration_snmp_sysLocation',
-                        value : this.getSnmpSettings().sysLocation,
+                        value : this.getSnmpSettings().sysLocation == 'MY_LOCATION' ? this.i18n._('MY_LOCATION') : this.getSnmpSettings().sysLocation,
                         disabled : !this.getSnmpSettings().enabled                        
                     },{
                         xtype : 'radio',
@@ -1340,7 +1340,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('Community'),
                         name : 'trapCommunity',
                         id: 'administration_snmp_trapCommunity',
-                        value : this.getSnmpSettings().trapCommunity,
+                        value : this.getSnmpSettings().trapCommunity == 'MY_TRAP_COMMUNITY' ? this.i18n._('MY_TRAP_COMMUNITY') : this.getSnmpSettings().trapCommunity,
                         allowBlank : false,
                         blankText : this.i18n._("An Trap \"Community\" must be specified."),
                         disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
@@ -1350,7 +1350,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         itemCls : 'left-indent-2',
                         name : 'trapHost',
                         id: 'administration_snmp_trapHost',
-                        value : this.getSnmpSettings().trapHost,
+                        value : this.getSnmpSettings().trapHost == 'MY_TRAP_HOST' ? this.i18n._('MY_TRAP_HOST') : this.getSnmpSettings().trapHost,
                         allowBlank : false,
                         blankText : this.i18n._("An Trap \"Host\" must be specified."),                        
                         disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
@@ -1580,7 +1580,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         url : 'upload',
                         border : false,
                         items : [{
-                            fieldLabel : 'File',
+                            fieldLabel : this.i18n._('File'),
                             name : 'upload_skin_textfield',
                             inputType : 'file',
                             xtype : 'textfield',
@@ -1719,7 +1719,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         url : 'upload',
                         border : false,
                         items : [{
-                            fieldLabel : 'File',
+                            fieldLabel : this.i18n._('File'),
                             name : 'File',
                             id : 'upload_logo_file_textfield',
                             inputType : 'file',
@@ -1779,7 +1779,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'Contact Name',
                         id : 'administration_branding_contact_name',
                         allowBlank : true,
-                        value : brandingBaseSettings.contactName,
+                        value : this.i18n._(brandingBaseSettings.contactName),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
@@ -1842,7 +1842,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         url : 'upload',
                         border : false,
                         items : [{
-                            fieldLabel : 'File',
+                            fieldLabel : this.i18n._('File'),
                             name : 'upload_skin_textfield',
                             inputType : 'file',
                             xtype : 'textfield',
