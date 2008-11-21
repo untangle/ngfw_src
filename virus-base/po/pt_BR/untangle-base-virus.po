@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: 2008-11-13 09:01-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,22 +223,31 @@ msgstr "Salvando..."
 msgid "Please wait"
 msgstr "Aguarde"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:86
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:66
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:73
+msgid "Feature is not installed."
+msgstr ""
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:83
+msgid "This request has expired."
+msgstr ""
+
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:112
 #, java-format
 msgid "{0} | {1} Warning"
 msgstr "{0} | {1} Aviso"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:98
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:124
 #, java-format
 msgid "{0} Virus Blocker"
 msgstr "{0} Bloqueador de Vírus"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:110
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:136
 #, java-format
 msgid "{0}This file was blocked{1} because it contained a virus."
 msgstr "{0}Este arquivo foi bloqueado{1} porque continha um vírus."
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "Caso tenha perguntas, entre em contato {0}."
@@ -263,39 +272,39 @@ msgstr "Eventos FTP"
 msgid "POP/IMAP Events"
 msgstr "Eventos POP/IMAP"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:223
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:222
 msgid "Documents scanned"
 msgstr "Documentos varridos"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:223
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:222
 msgid "SCAN"
 msgstr "VARRER"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:223
 msgid "Documents blocked"
 msgstr "Documentos bloqueados"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:223
 msgid "BLOCK"
 msgstr "BLOQUEAR"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
 msgid "Documents passed"
 msgstr "Documentos passados"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
 msgid "PASS"
 msgstr "PASSAR"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
 msgid "Infections removed"
 msgstr "Infecções removidas"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
 msgid "REMOVE"
 msgstr "REMOVER"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:227
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
 msgid "Passed by policy"
 msgstr "Passado por política"
 
@@ -322,4 +331,3 @@ msgstr "Desbloquear por enquanto"
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
-

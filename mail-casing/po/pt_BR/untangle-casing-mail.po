@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-07 17:07+0200\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: 2008-11-13 09:09-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,20 +112,29 @@ msgid "Showing items {0} - {1} of {2}"
 msgstr "Mostrando itens {0} - {1} de {2}"
 
 #: ../servlets/quarantine/root/quarantine.js:503
-msgid "No messges to display"
+#, fuzzy
+msgid "No messages to display"
 msgstr "Nenhuma mensagem a exibir"
 
 #: ../servlets/quarantine/root/quarantine.js:574
-msgid "Your Remote Access Portal login has been configured without an email address or with an incorrect email address."
-msgstr "Seu login do Portal de Acesso Remoto foi configurado sem um endereço de e-mail ou com um endereço de e-mail incorreto."
+msgid ""
+"Your Remote Access Portal login has been configured without an email address "
+"or with an incorrect email address."
+msgstr ""
+"Seu login do Portal de Acesso Remoto foi configurado sem um endereço de e-"
+"mail ou com um endereço de e-mail incorreto."
 
 #: ../servlets/quarantine/root/quarantine.js:579
 msgid "Quarantined Messages"
 msgstr "Mensagens em quarentena"
 
 #: ../servlets/quarantine/root/quarantine.js:584
-msgid "You can use the Safelist to make sure that messages from these senders are never quarantined."
-msgstr "Você pode usar a lista segura para assegurar que as mensagens desses remetentes nunca entrem em quarentena."
+msgid ""
+"You can use the Safelist to make sure that messages from these senders are "
+"never quarantined."
+msgstr ""
+"Você pode usar a lista segura para assegurar que as mensagens desses "
+"remetentes nunca entrem em quarentena."
 
 #: ../servlets/quarantine/root/quarantine.js:587
 msgid "Safelist"
@@ -193,8 +202,11 @@ msgid "Delete {0} Addresses"
 msgstr "Exclua {0} endereços"
 
 #: ../servlets/quarantine/root/request.js:21
-msgid "Your Remote Access Portal login is not configured with a valid email address."
-msgstr "Seu login do Portal de Acesso Remoto não está configurado com um endereço de e-mail válido."
+msgid ""
+"Your Remote Access Portal login is not configured with a valid email address."
+msgstr ""
+"Seu login do Portal de Acesso Remoto não está configurado com um endereço de "
+"e-mail válido."
 
 #: ../servlets/quarantine/root/request.js:31
 msgid "Select User"
@@ -202,7 +214,9 @@ msgstr "Selecione usuário"
 
 #: ../servlets/quarantine/root/request.js:31
 msgid "Enter the email address for which you would like the Quarantine Digest"
-msgstr "Insira o endereço de e-mail para o qual você gostaria do Sumário de Quarentena"
+msgstr ""
+"Insira o endereço de e-mail para o qual você gostaria do Sumário de "
+"Quarentena"
 
 #: ../servlets/quarantine/root/request.js:35
 msgid "Request"
@@ -251,4 +265,3 @@ msgstr "Solicitar e-mail com Sumário de Quarentena"
 #: ../servlets/quarantine/root/request.jspx:40
 msgid "{0} | Request Quarantine Digest Email"
 msgstr "{0} | Solicitar e-mail de Sumário de Quarentena"
-

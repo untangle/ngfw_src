@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-14 14:15+0200\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: 2008-11-06 12:28-0500\n"
 "Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -723,6 +723,14 @@ msgstr "VPN客户：连接到{0}"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
 msgid "CONNECT"
+msgstr ""
+
+#: ../impl/com/untangle/node/openvpn/Sandbox.java:250
+msgid "default"
+msgstr ""
+
+#: ../impl/com/untangle/node/openvpn/Sandbox.java:305
+msgid "internal network"
 msgstr ""
 
 #~ msgid "Kbytes<br>sent"

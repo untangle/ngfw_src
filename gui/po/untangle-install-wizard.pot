@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -240,23 +240,23 @@ msgid ""
 "Otherwise, press the Finish button."
 msgstr ""
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:90
 msgid "<html>Welcome to the<br> Installation Wizard!</html>"
 msgstr ""
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:92
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:126
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:125
 msgid ""
 "<html>This wizard will take you step-by-step through<br> the CD installation "
 "process.</html>"
 msgstr ""
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:93
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:137
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:92
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:136
 msgid "Language:"
 msgstr ""
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:116
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:115
 msgid "<html>Welcome to the<br>Installation Wizard!</html>"
 msgstr ""
 

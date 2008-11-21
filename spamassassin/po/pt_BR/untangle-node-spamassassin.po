@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: 2008-11-12 23:49-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,7 +90,9 @@ msgstr "Valor de intensidade"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:242
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:345
 msgid "Strength Value must be a number. Smaller value is higher strength."
-msgstr "O valor de intensidade deve ser um número. Valor menor significa intensidade maior."
+msgstr ""
+"O valor de intensidade deve ser um número. Valor menor significa intensidade "
+"maior."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:162
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:264
@@ -220,43 +222,43 @@ msgstr "Todos os eventos"
 msgid "Skipped Events"
 msgstr "Eventos ignorados"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:153
 msgid "Messages passed"
 msgstr "Mensagens permitidas"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:153
 msgid "PASS"
 msgstr "PERMITIR"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:154
 msgid "Messages blocked"
 msgstr "Mensagens bloqueadas"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:154
 msgid "BLOCK"
 msgstr "BLOQUEAR"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 msgid "Messages marked"
 msgstr "Mensagens marcadas"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 msgid "MARK"
 msgstr "MARCAR"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
 msgid "Messages quarantined"
 msgstr "Mensagens em quarentena"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
 msgid "QUARANTINE"
 msgstr "QUARENTENA"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:159
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
 msgid "Spam detected"
 msgstr "Spam detectado"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:160
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
 msgid "Messages received"
 msgstr "Mensagens recebidas"
 
@@ -275,4 +277,3 @@ msgstr "Eventos de Spam"
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:29
 msgid "Identity Theft Events"
 msgstr "Eventos de roubo de identidade"
-

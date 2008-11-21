@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-14 14:15+0200\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,10 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:41
 msgid "Web"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:44
+msgid "Block Spyware & Ad URLs"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:59
@@ -48,6 +52,10 @@ msgstr ""
 msgid "Cookies"
 msgstr ""
 
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:83
+msgid "Block Tracking & Ad Cookies"
+msgstr ""
+
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:97
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:133
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:156
@@ -58,8 +66,20 @@ msgstr ""
 msgid "ActiveX"
 msgstr ""
 
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:106
+msgid "Block Malware ActiveX Installs"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:119
+msgid "Block All ActiveX"
+msgstr ""
+
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:139
 msgid "Traffic"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:142
+msgid "Monitor Suspicious Traffic"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:163

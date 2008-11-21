@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: 2008-09-23 22:00-0500\n"
 "Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -260,13 +260,13 @@ msgid ""
 "Otherwise, press the Finish button."
 msgstr "如果您不想继续，请点“关闭窗口”按钮。否则,请点击“完成”按钮。"
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:90
 #, fuzzy
 msgid "<html>Welcome to the<br> Installation Wizard!</html>"
 msgstr "<html>欢迎进入<br>Untangle平台安装向导！</html>"
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:92
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:126
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:125
 #, fuzzy
 msgid ""
 "<html>This wizard will take you step-by-step through<br> the CD installation "
@@ -274,12 +274,12 @@ msgid ""
 msgstr ""
 "<html>该向导将会指导您一步一步地完成<br>Untangle平台光盘的安装过程。</html>"
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:93
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:137
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:92
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:136
 msgid "Language:"
 msgstr "语言："
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:116
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:115
 #, fuzzy
 msgid "<html>Welcome to the<br>Installation Wizard!</html>"
 msgstr "<html>欢迎进入<br>Untangle平台安装向导！</html>"

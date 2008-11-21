@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: 2008-11-07 02:06-0500\n"
 "Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,45 +223,45 @@ msgstr ""
 msgid "Skipped Events"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:153
 msgid "Messages passed"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:153
 msgid "PASS"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:154
 #, fuzzy
 msgid "Messages blocked"
 msgstr "已阻止"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:154
 msgid "BLOCK"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 msgid "Messages marked"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 msgid "MARK"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
 #, fuzzy
 msgid "Messages quarantined"
 msgstr "隔离"
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
 msgid "QUARANTINE"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:159
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
 msgid "Spam detected"
 msgstr ""
 
-#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:160
+#: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
 msgid "Messages received"
 msgstr ""
 
