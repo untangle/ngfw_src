@@ -109,9 +109,10 @@ public class RegistrationInfo implements Serializable
         String[] sa = (String[]) entries.get("numSeats");
         if (sa != null && sa.length > 0 && sa[0].length() > 0) {
             try {
-                numSeats = Integer.parseInt(sa[0]);
+                numSeats = Integer.parseInt(sa[0].trim());
             } catch (NumberFormatException x) {
-                throw new IllegalArgumentException("Bad number of seats: " + sa[0]);
+                logger.warn( "Invalid number of seats: '" + sa[0].trim() + "'" );
+                numSeats = -1;
             }
         }
 
@@ -119,7 +120,7 @@ public class RegistrationInfo implements Serializable
         misc = new Hashtable<String,String>( entries.size());
         for(Object key : entries.keySet()) {
             sa = (String[])entries.get( key );
-            if (sa != null && sa.length > 0 && sa[0].length() > 0) misc.put( (String)key, sa[0] );
+            if (sa != null && sa.length > 0 && sa[0].length() > 0) misc.put( (String)key, sa[0].trim());
         }
     }
 
@@ -357,7 +358,7 @@ public class RegistrationInfo implements Serializable
     private String parseEntry(Hashtable entries,String name,String currentValue)
     {
         String[] sa = (String[]) entries.remove(name);
-        if (sa != null && sa.length > 0 && sa[0].length() > 0) return sa[0];
+        if ((sa != null) && (sa.length > 0) && (sa[0].trim().length() > 0)) return sa[0].trim();
         return currentValue;
     }
 
