@@ -77,6 +77,11 @@ class UrlBlacklist extends Blacklist
         stopUpdateTimer();
     }
 
+    protected boolean getLookupSubdomains()
+    {
+        return true;
+    }
+
     protected void doReconfigure()
     {
         if (unconfigured) {

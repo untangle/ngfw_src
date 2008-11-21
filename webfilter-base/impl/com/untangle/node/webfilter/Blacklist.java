@@ -92,6 +92,8 @@ public abstract class Blacklist
 
     protected abstract void doReconfigure();
 
+    protected abstract boolean getLookupSubdomains();
+
     // package protected methods ----------------------------------------------
 
     void addWhitelistHost(InetAddress addr, String site)
@@ -280,7 +282,7 @@ public abstract class Blacklist
                 if (null != bc && (bc.getBlock() || bc.getLog())) {
                     return catName;
                 }
-             }
+            }
         }
 
         return null;
@@ -313,6 +315,8 @@ public abstract class Blacklist
         StringRule stringRule = null;
         Reason reason = null;
 
+        boolean checkSubdomains = getLookupSubdomains();
+
         String dom = host;
         while (null == category && null != dom) {
             String url = dom + uri;
@@ -323,7 +327,9 @@ public abstract class Blacklist
             if (null != category) {
                 reason = Reason.BLOCK_URL;
             } else {
-                category = checkBlacklistDatabase(dom, port, uri);
+                if (checkSubdomains || dom.length() == host.length()) {
+                    category = checkBlacklistDatabase(dom, port, uri);
+                }
 
                 if (null != category) {
                     reason = Reason.BLOCK_CATEGORY;
@@ -340,15 +346,15 @@ public abstract class Blacklist
 
             if (null != bc) {
                 Action a = bc.getBlock() ? Action.BLOCK : Action.PASS;
-		if (!bc.getBlock())
-		    node.incrementPassLogCount();
+                if (!bc.getBlock())
+                    node.incrementPassLogCount();
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), a, reason,
                      bc.getDisplayName(), node.getVendor());
                 node.log(hbe);
             } else if (null == stringRule || stringRule.getLog()) {
-		if (!stringRule.isLive())
-		    node.incrementPassLogCount();
+                if (!stringRule.isLive())
+                    node.incrementPassLogCount();
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK, reason,
                      category, node.getVendor());
