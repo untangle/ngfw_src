@@ -59,9 +59,11 @@ require "./buildtools/node.rb"
 
 if SRC_HOME.nil?
   uvm_lib = BuildEnv::SRC['untangle-libuvm']
-  ['bootstrap', 'api', 'localapi', 'impl', 'reporting', 'taglib' ].each do |n|
+  ['bootstrap', 'api', 'localapi', 'impl', 'reporting' ].each do |n|
     InstalledJar.get(uvm_lib, "/usr/share/untangle/lib/untangle-libuvm-#{n}/")
   end
+
+  InstalledJar.get(uvm_lib, "/usr/share/java/uvm/untangle-libuvm-taglib.jar")
 
   buildutil = BuildEnv::SRC['untangle-buildutil']
   ['impl'].each do |n|
