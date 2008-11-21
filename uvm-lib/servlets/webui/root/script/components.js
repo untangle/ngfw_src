@@ -346,10 +346,20 @@ Ung.Util= {
             win.setSizeToRack();
         }
     },
-    defaultRenderer :function (value) {
+    defaultRenderer : function (value) {
         return (typeof value == 'string') ?
            value.length<1? "&#160;": Ext.util.Format.htmlEncode(value) :
            value;
+    },
+    getQueryStringParam : function(name){
+        name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var regexS = "[\\?&]"+name+"=([^&#]*)";
+        var regex = new RegExp( regexS );
+        var results = regex.exec( window.location.href );
+        if( results == null )
+            return null;
+        else
+            return results[1];
     }
 };
 

@@ -1617,7 +1617,7 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
     openUserInterface : function( handler )
     {
         Ext.MessageBox.wait( i18n._( "Loading User Interface" ), i18n._( "Please wait" ));
-        window.location.href="/webui";
+        window.location.href="/webui/startPage.do?firstTimeRun=true";
     }
 });
 
