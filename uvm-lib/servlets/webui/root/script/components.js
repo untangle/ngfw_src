@@ -1413,7 +1413,7 @@ Ung.MessageManager = {
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
-                                    if ( main.isRunningOnConsole()) main.getIframeWin().hide();
+                                    if ( main.getIframeWin() != null  ) main.getIframeWin().hide();
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
                             }
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
