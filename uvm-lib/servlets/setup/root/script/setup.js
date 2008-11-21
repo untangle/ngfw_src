@@ -1650,7 +1650,7 @@ Ung.Setup = {
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
 
-        i18n = new Ung.I18N( { "map" : Ung.SetupWizard.languageMap })
+        i18n = new Ung.I18N( { "map" : Ung.SetupWizard.CurrentValues.languageMap })
 
         document.title = i18n._( "Setup Wizard" );
 
