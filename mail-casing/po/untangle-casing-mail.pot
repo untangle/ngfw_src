@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-07 17:07+0200\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,7 +113,7 @@ msgid "Showing items {0} - {1} of {2}"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:503
-msgid "No messges to display"
+msgid "No messages to display"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:574

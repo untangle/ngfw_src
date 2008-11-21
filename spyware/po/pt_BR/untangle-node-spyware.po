@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: 2008-11-13 08:55-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,10 @@ msgstr "Listas de bloqueio"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:41
 msgid "Web"
 msgstr "Web"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:44
+msgid "Block Spyware & Ad URLs"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:59
 msgid "User Bypass"
@@ -47,6 +51,10 @@ msgstr "Permanente e Global"
 msgid "Cookies"
 msgstr "Cookies"
 
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:83
+msgid "Block Tracking & Ad Cookies"
+msgstr ""
+
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:97
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:133
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:156
@@ -57,9 +65,21 @@ msgstr "gerenciar lista"
 msgid "ActiveX"
 msgstr "ActiveX"
 
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:106
+msgid "Block Malware ActiveX Installs"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:119
+msgid "Block All ActiveX"
+msgstr ""
+
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:139
 msgid "Traffic"
 msgstr "Tráfego"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:142
+msgid "Monitor Suspicious Traffic"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:163
 msgid "Spyware Blocker signatures were last updated"
@@ -147,7 +167,9 @@ msgstr "Registro"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:456
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
-msgstr "\"URL\" especificado não pode ser bloqueado porque utiliza http seguro (https)"
+msgstr ""
+"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro "
+"(https)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:468
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:515
@@ -248,22 +270,35 @@ msgstr "Salvando..."
 msgid "Please wait"
 msgstr "Aguarde"
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:79
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:58
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:69
+msgid "Feature is not installed."
+msgstr ""
+
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:78
+msgid "This request has expired."
+msgstr ""
+
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:108
 #, java-format
 msgid "{0} | Spyware Blocker Warning"
 msgstr "{0} | Aviso de Bloqueador de Spyware"
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:90
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:119
 #, java-format
 msgid "{0} Spyware Blocker"
 msgstr "{0} Bloqueador de Spyware"
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:102
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:131
 #, java-format
-msgid "{0}This web page was blocked{1} because it may be designed to steal personal information."
-msgstr "{0}Esta página da web foi bloqueada{1} porque pode estar programada para roubar informações pessoais."
+msgid ""
+"{0}This web page was blocked{1} because it may be designed to steal personal "
+"information."
+msgstr ""
+"{0}Esta página da web foi bloqueada{1} porque pode estar programada para "
+"roubar informações pessoais."
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:71
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "Se tiver perguntas, queira entrar em contato {0}."
@@ -335,4 +370,3 @@ msgstr "Desbloquear por enquanto"
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
-

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-14 14:15+0200\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: 2008-11-06 12:19-0500\n"
 "Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -201,6 +201,26 @@ msgstr "{0}该网页已被阻止{1}因为它可能是专门设计来盗取您的
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "如果您有任何问题，请联系{0}。"
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamAllFilter.java:27
+msgid "All Events"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamLogFilter.java:27
+msgid "POP/IMAP Events"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamSmtpFilter.java:27
+msgid "SMTP Events"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:27
+msgid "Spam Events"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:29
+msgid "Identity Theft Events"
+msgstr ""
 
 #: ../impl/com/untangle/node/phish/PhishHttpAllFilter.java:38
 msgid "All Phish HTTP Traffic"

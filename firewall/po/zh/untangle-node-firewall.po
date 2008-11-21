@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"POT-Creation-Date: 2008-11-21 14:15-0800\n"
 "PO-Revision-Date: 2008-09-25 13:18-0500\n"
 "Last-Translator: Jie(Jack) Zhu <J.Zhu@Impactek.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,12 +24,12 @@ msgid "Enable"
 msgstr "启用"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:222
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:295
 msgid "Pass"
 msgstr "通过"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:209
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:282
 msgid "Block"
 msgstr "阻止"
 
@@ -51,125 +51,129 @@ msgid "[no description]"
 msgstr "【无描述】"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:103
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:120
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:199
 msgid "Description"
 msgstr "描述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:114
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:182
+msgid "Warning"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:182
+msgid "The form is not valid!"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:193
 msgid "Enable Rule"
 msgstr "启用规则"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:126
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:205
 msgid "Action"
 msgstr "动作"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:144
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:223
 msgid "Log"
 msgstr "日志"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:147
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:226
 #, fuzzy
 msgid "Rule"
 msgstr "规则"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:155
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:234
 msgid "Traffic Type"
 msgstr "数据流类型"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:160
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:239
 msgid "Source Interface"
 msgstr "源接口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:166
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:245
 msgid "Destination Interface"
 msgstr "目的接口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:171
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:250
 msgid "Source Address"
 msgstr "源地址"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:178
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:257
 msgid "Destination Address"
 msgstr "目的地址"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:184
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:263
 msgid "Source Port"
 msgstr "源端口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:190
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:269
 msgid "Destination Port"
 msgstr "目的端口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:199
-msgid "Category"
-msgstr "分类"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:206
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:279
 msgid "Default Action"
 msgstr "默认动作"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:252
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:325
 msgid "blocked"
 msgstr "已阻止"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:252
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:325
 msgid "passed"
 msgstr "已通过"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:266
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:339
 msgid "timestamp"
 msgstr "时间戳"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:274
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:347
 msgid "action"
 msgstr "动作"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:279
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:352
 msgid "client"
 msgstr "客户端"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:286
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:359
 msgid "reason for action"
 msgstr "动作原因"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:291
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:364
 #, fuzzy
 msgid "rule #{0}"
 msgstr "规则#"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:294
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:367
 msgid "server"
 msgstr "服务器"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:346
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:419
 msgid "Invalid address specified for Source Address"
 msgstr "为源地址指定了无效的地址"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:349
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:422
 msgid "Invalid address specified for Destination Address"
 msgstr "为目的地址指定了无效的地址"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:352
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:425
 msgid "Invalid port specified for Source Port"
 msgstr "为源端口指定了无效的端口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:355
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:428
 msgid "Invalid port specified for Destination Port"
 msgstr "为目的端口指定了无效的端口"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:360
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:433
 msgid "Validation failed"
 msgstr "验证失败"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:364
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:437
 msgid "Failed"
 msgstr "失败"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:374
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:447
 msgid "Saving..."
 msgstr "正在保存。。。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:374
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:447
 msgid "Please wait"
 msgstr "请等候"
 
@@ -201,3 +205,6 @@ msgstr ""
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:95
 msgid "Sessions logged"
 msgstr ""
+
+#~ msgid "Category"
+#~ msgstr "分类"
