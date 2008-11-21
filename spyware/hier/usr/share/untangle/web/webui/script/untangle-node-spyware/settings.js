@@ -41,7 +41,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     title : this.i18n._('Web'),
                     items : [{
                         xtype : 'checkbox',
-                        boxLabel : 'Block Spyware & Ad URLs',
+                        boxLabel : this.i18n._('Block Spyware & Ad URLs'),
                         hideLabel : true,
                         name : 'Block Spyware & Ad URLs',
                         checked : this.getBaseSettings().urlBlacklistEnabled,
@@ -80,7 +80,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     title : this.i18n._('Cookies'),
                     items : [{
                         xtype : 'checkbox',
-                        boxLabel : 'Block Tracking & Ad Cookies',
+                        boxLabel : this.i18n._('Block Tracking & Ad Cookies'),
                         hideLabel : true,
                         name : 'Block Tracking & Ad Cookies',
                         checked : this.getBaseSettings().cookieBlockerEnabled,
@@ -103,7 +103,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     title : this.i18n._('ActiveX'),
                     items : [{
                         xtype : 'checkbox',
-                        boxLabel : 'Block Malware ActiveX Installs',
+                        boxLabel : this.i18n._('Block Malware ActiveX Installs'),
                         hideLabel : true,
                         name : 'Block Malware ActiveX Installs',
                         checked : this.getBaseSettings().activeXEnabled,
@@ -116,7 +116,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                     }, {
                         xtype : 'checkbox',
-                        boxLabel : 'Block All ActiveX',
+                        boxLabel : this.i18n._('Block All ActiveX'),
                         hideLabel : true,
                         name : 'Block All ActiveX',
                         checked : this.getBaseSettings().blockAllActiveX,
@@ -139,7 +139,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     title : this.i18n._('Traffic'),
                     items : [{
                         xtype : 'checkbox',
-                        boxLabel : 'Monitor Suspicious Traffic',
+                        boxLabel : this.i18n._('Monitor Suspicious Traffic'),
                         hideLabel : true,
                         name : 'Monitor Suspicious Traffic',
                         checked : this.getBaseSettings().spywareEnabled,

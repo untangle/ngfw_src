@@ -38,7 +38,7 @@ Ung.Main.prototype = {
         this.appsLastState={};
     	this.debugMode=debugMode;
     	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
-        this.initSemaphore=10;
+        this.initSemaphore=11;
         rpc = {};
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
@@ -53,6 +53,13 @@ Ung.Main.prototype = {
                 Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"));
                 this.postinit();// 1
             }.createDelegate(this),"untangle-libuvm");
+            // get language settings
+            rpc.languageManager.getLanguageSettings(function (result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                rpc.languageSettings=result;
+                this.postinit();// 2
+            }.createDelegate(this));
+            
         }.createDelegate(this));
         // get skin manager
         rpc.jsonrpc.RemoteUvmContext.skinManager(function (result, exception) {
@@ -64,44 +71,44 @@ Ung.Main.prototype = {
                 var skinSettings=result;
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
-                this.postinit();// 2
+                this.postinit();// 3
             }.createDelegate(this));
         }.createDelegate(this));
         // get node manager
         rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.nodeManager=result;
-            this.postinit();// 3
+            this.postinit();// 4
         }.createDelegate(this));
         // get policy manager
         rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.policyManager=result;
-            this.postinit();// 4
+            this.postinit();// 5
         }.createDelegate(this));
         // get toolbox manager
         rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.toolboxManager=result;
-            this.postinit();// 5
+            this.postinit();// 6
         }.createDelegate(this));
         // get admin manager
         rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.adminManager=result;
-            this.postinit();// 6
+            this.postinit();// 7
         }.createDelegate(this));
         // get version
         rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.version=result;
-            this.postinit();// 7
+            this.postinit();// 8
         }.createDelegate(this));
         // get network manager
         rpc.jsonrpc.RemoteUvmContext.networkManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.networkManager=result;
-            this.postinit();// 8
+            this.postinit();// 9
         }.createDelegate(this));
         // get message manager & message key
         rpc.jsonrpc.RemoteUvmContext.messageManager(function (result, exception) {
@@ -110,7 +117,7 @@ Ung.Main.prototype = {
             rpc.messageManager.getMessageKey(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.messageKey=result;
-                this.postinit();// 9
+                this.postinit();// 10
             }.createDelegate(this));
         }.createDelegate(this));
         // get branding manager
@@ -121,7 +128,7 @@ Ung.Main.prototype = {
                 if(Ung.Util.handleException(exception)) return;
                 rpc.brandingBaseSettings=result;
                 document.title=rpc.brandingBaseSettings.companyName;
-                this.postinit();// 10
+                this.postinit();// 11
             }.createDelegate(this));
         }.createDelegate(this));
 
@@ -401,8 +408,10 @@ Ung.Main.prototype = {
     },
     
     initExtI18n: function(){
-        Ext.form.Field.prototype.invalidText=i18n._('The value in this field is invalid');
-        Ext.form.TextField.prototype.blankText=i18n._('This field is required');
+    	var locale = rpc.languageSettings.language;
+    	if(locale) {
+    	   Ung.Util.loadScript('/ext/source/locale/ext-lang-' + locale + '.js')
+    	}
     },
     initExtGlobal: function(){
     	

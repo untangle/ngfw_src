@@ -391,7 +391,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         url : 'upload',
                         border : false,
                         items : [{
-                            fieldLabel : 'File',
+                            fieldLabel : this.i18n._('File'),
                             name : 'file',
                             id : 'upload_restore_file_textfield',
                             inputType : 'file',
@@ -950,7 +950,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         url : 'upload',
                         border : false,
                         items : [{
-                            fieldLabel : 'File',
+                            fieldLabel : this.i18n._('File'),
                             name : 'file',
                             id : 'upload_language_file_textfield',
                             inputType : 'file',

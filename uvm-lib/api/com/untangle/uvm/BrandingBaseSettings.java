@@ -38,6 +38,8 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
+import com.untangle.uvm.util.I18nUtil;
+
 /**
  * Base Settings for the Branding.
  *
@@ -95,7 +97,7 @@ public class BrandingBaseSettings implements Serializable {
     @Column(name="contact_name")
     public String getContactName()
     {
-        return null == contactName ? "your network administrator" : contactName;
+        return null == contactName ? I18nUtil.marktr("your network administrator") : contactName;
     }
 
     public void setContactName(String name)
