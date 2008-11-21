@@ -25,9 +25,10 @@ Ung.Main.prototype = {
     iframeWin: null,
     upgradeStatus:null,
     upgradeLastCheckTime: null,
+    firstTimeRun: null,
     // init function
     init: function() {
-        if (Ext.isGecko)  {
+        if (Ext.isGecko) {
             document.onkeypress = function(e) {
                 if (e.keyCode==27) {
                     return false;
@@ -35,6 +36,7 @@ Ung.Main.prototype = {
                 return true;
             }
         }
+        this.firstTimeRun=Ung.Util.getQueryStringParam("firstTimeRun");
         this.appsLastState={};
     	this.debugMode=debugMode;
     	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
@@ -813,11 +815,13 @@ Ung.Main.prototype = {
             	item:item
             });
         }
-        this.checkForUpgrades.defer(700,this);
     },
-    checkForUpgrades: function () {
+    checkForUpgrades: function (handler) {
         //check for upgrades
-        rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
+        rpc.toolboxManager.getUpgradeStatus(function(result, exception,opt,handler) {
+            if(handler) {
+                handler.call(this);
+            }
             if(Ung.Util.handleException(exception, function() {
                 main.upgradeLastCheckTime=(new Date()).getTime();
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function () {
@@ -828,7 +832,7 @@ Ung.Main.prototype = {
             if(main.upgradeStatus.upgradesAvailable) {
                 Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
             }
-        }.createDelegate(this),true);
+        }.createDelegate(this,[handler],true),true);
     },
     openNetworking : function() {
         var alpacaUrl = "/alpaca/";
@@ -964,7 +968,13 @@ Ung.Main.prototype = {
 		        items: items
 		   	})
 		});
-        this.loadRackView();
+        if(this.firstTimeRun) {
+            this.checkForUpgrades(main.loadRackView);
+        } else {
+            main.loadRackView();
+            this.checkForUpgrades.defer(900,this,[null]);
+        }
+        
     },
     // change current policy
     changePolicy: function () {
