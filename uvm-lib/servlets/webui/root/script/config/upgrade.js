@@ -64,6 +64,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                 for (var i = 0; i < upgradeList.length; i++) {
                                     var md = upgradeList[i];
 				    var mtype;
+				    var displayName = md.displayNane;
                                     totalSize+=md.size;
 				    // Leave out only libitems
 				    switch (md.type) {
@@ -84,11 +85,17 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 				      mtype = this.i18n._("System Component");
 				      break;
 				    }
+				    if (displayName == null) {
+				      if (md.shortDescription != null)
+					displayName = md.shortDescription;
+				      else
+					displayName = md.name;
+				    }
 				    somethingVisibleAdded = true;
 				    upgradeData.push({
 				      image : "image?name=" + md.name,
 				      name : md.name,
-				      displayName : md.displayName == null ? md.shortDescription : md.displayName,
+				      displayName : displayName,
 				      availableVersion : md.availableVersion,
 				      type : mtype,
 				      size : Math.round(md.size / 1000)
