@@ -15,7 +15,6 @@ Ung.SetupWizard.LabelWidth2 = 214;
 Ung.SetupWizard.LabelWidth3 = 120;
 Ung.SetupWizard.LabelWidth4 = 100;
 
-
 Ung.SetupWizard.EmailTester = Ext.extend( Object,
 {
     constructor : function( config )
@@ -268,6 +267,9 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
             return;
         }
 
+        /* Cache the password to reauthenticate later */
+        Ung.SetupWizard.ReauthenticateHandler.password = this.password;
+
         Ext.Ajax.request({
             params : {
                 username : 'admin',
@@ -414,6 +416,11 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
     saveRegistrationInfo : function( handler )
     {
         Ext.MessageBox.wait( i18n._( "Saving Registration Info" ), i18n._( "Please wait" ));
+        
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+    },
+    afterReauthenticate : function( handler )
+    {
         var info = Ung.SetupWizard.CurrentValues.registrationInfo;
         var misc = {};
         this.setRegistrationValue( "name", misc, false );
@@ -627,6 +634,10 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     {
         Ext.MessageBox.wait( i18n._( "Remapping Network Interfaces" ), i18n._( "Please wait" ));
 
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+    },
+    afterReauthenticate : function( handler )
+    {
         /* Commit the store to get rid of the change marks */
         this.interfaceStore.commitChanges();
 
@@ -657,6 +668,11 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please wait" ));
 
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.arRefreshInterfaces.createDelegate( this ));
+    },
+
+    arRefreshInterfaces : function()
+    {
         rpc.networkManager.getInterfaceList( this.completeRefreshInterfaces.createDelegate( this ), true );
     },
 
@@ -955,6 +971,11 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
     saveSettings : function( handler )
     {
         Ext.MessageBox.wait( i18n._( "Configuring Internet Connection" ), i18n._( "Please wait" ));
+        
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+    },
+    afterReauthenticate : function( handler )
+    {
         this.cardPanel.layout.activeItem.saveData( handler );
     },
 
@@ -1045,7 +1066,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             Ext.MessageBox.hide();
         };
 
-        this.cardPanel.layout.activeItem.saveData( handler );
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.saveData.createDelegate( this, [ handler, false ] ));
     },
 
     testConnectivity : function()
@@ -1065,7 +1086,12 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
         var handler = this.execConnectivityTest.createDelegate( this );
 
-        this.cardPanel.layout.activeItem.saveData( handler, false );
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.saveData.createDelegate( this, [ handler, false ] ));
+    },
+
+    saveData : function( handler, hideWindow )
+    {
+        this.cardPanel.layout.activeItem.saveData( handler, hideWindow );
     },
 
     execConnectivityTest : function()
@@ -1267,7 +1293,12 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
 
         Ext.MessageBox.wait( i18n._( "Configuring Internal Network" ), i18n._( "Please wait" ));
 
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+    },
+    afterReauthenticate : function( handler )
+    {
         var delegate = this.complete.createDelegate( this, [ handler ], true );
+        var value = this.panel.find( "name", "bridgeInterfaces" )[0].getGroupValue();
         if ( value == 'bridge' ) {
             rpc.networkManager.setWizardNatDisabled( delegate );
         } else {
@@ -1552,6 +1583,11 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
     saveSettings : function( handler )
     {
         Ext.MessageBox.wait( i18n._( "Saving Email Settings" ), i18n._( "Please wait" ));
+        
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+    },
+    afterReauthenticate : function( handler )
+    {
         var settings = Ung.SetupWizard.CurrentValues.mailSettings;
 
         settings.fromAddress = "untangle@" + Ung.SetupWizard.CurrentValues.addressSettings.hostName;
@@ -1650,7 +1686,7 @@ Ung.Setup = {
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
 
-        i18n = new Ung.I18N( { "map" : Ung.SetupWizard.languageMap })
+        i18n = new Ung.I18N( { "map" : Ung.SetupWizard.CurrentValues.languageMap })
 
         document.title = i18n._( "Setup Wizard" );
 
@@ -1701,4 +1737,44 @@ Ung.Setup = {
         }
     }
 };
+
+Ung.SetupWizard.ReauthenticateHandler = {
+    username : "admin",
+    password : "",
+
+    /* Must reauthenticate in order to refresh the managers */
+    reauthenticate : function( handler )
+    {
+        Ext.Ajax.request({
+            params : {
+                username : this.username,
+                password : this.password
+            },
+            /* If it uses the default type then this will not work
+             * because the authentication handler does not like utf8 */
+            headers : {
+                'Content-Type' : "application/x-www-form-urlencoded"
+            },
+            url : '/auth/login?url=/webui/setupSettings.js&realm=Administrator',
+            callback : this.reloadManagers.createDelegate( this, [ handler ], 4 )
+        });
+    },
+
+    reloadManagers : function( options, success, response, handler )
+    {
+        if ( success ) {
+            /* It is very wrong to do this all synchronously */
+            rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
+            rpc.adminManager = rpc.jsonrpc.RemoteUvmContext.adminManager();
+            rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
+            rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getRemoteConnectivityTester();
+            rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
+            rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
+            handler();
+        } else {
+            Ext.MessageBox.alert( i18n._( "Unable to save settings." ));
+        }
+    }
+};
+
 

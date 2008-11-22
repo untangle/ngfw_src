@@ -30,16 +30,16 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
             defaultType : 'fieldset',
             defaults : { 
                 autoHeight : true,
-				cls : 'noborder'
+                cls : 'noborder'
             },
             items : [{
                 xtype : 'label',
                 html : '<h2 class="wizard-title">'+i18n._( "Language Selection" )+'</h2>'
             },{
                 defaults : {
-					validationEvent : 'blur',
-					msgTarget : 'side'
-				},
+                    validationEvent : 'blur',
+                    msgTarget : 'side'
+                },
                 items : [{
                     fieldLabel : i18n._('Please select your language'),
                     name : "language",
@@ -52,7 +52,7 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-					ctCls : 'small-top-margin'
+                    ctCls : 'small-top-margin'
                 }]
             }]
         });
@@ -61,14 +61,14 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
             title : i18n._( "Language" ),
             panel : this.panel,
             
-			onValidate : this.validateSettings.createDelegate(this)
+            onValidate : this.validateSettings.createDelegate(this)
         };
     },
 
-	validateSettings : function(){
-		var rv = _validate(this.panel.items.items);
-		return rv;
-	},
+    validateSettings : function(){
+        var rv = _validate(this.panel.items.items);
+        return rv;
+    },
 
     saveSettings : function( handler )
     {
@@ -129,5 +129,5 @@ Ung.Language = {
         /* The on next handler is always called when calling goToPage,
          * this disables it until after starting */
         language.enableHandler();
-	}
+    }
 };
