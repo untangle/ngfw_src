@@ -5,16 +5,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-13 09:42-0800\n"
-"Last-Translator: Claudia\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2008-11-21 16:50-0800\n"
+"Last-Translator: \n"
+"Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=0; null;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-Language: Portuguese\n"
 
 #: ../servlets/webui/root/script/main.js:55
 msgid "Initializing..."
@@ -116,13 +117,8 @@ msgid "Upgrades warning"
 msgstr "Aviso de atualizações"
 
 #: ../servlets/webui/root/script/main.js:178
-msgid ""
-"Upgrades are available. You must perform all possible upgrades before "
-"downloading from the library. Please click OK to open Upgrade panel."
-msgstr ""
-"Atualizações estão disponíveis. Você pode executar todas as atualizações "
-"possíveis antes de baixar da biblioteca. Clique OK para abrir o painel de "
-"atualização."
+msgid "Upgrades are available. You must perform all possible upgrades before downloading from the library. Please click OK to open Upgrade panel."
+msgstr "Atualizações estão disponíveis. Você pode executar todas as atualizações possíveis antes de baixar da biblioteca. Clique OK para abrir o painel de atualização."
 
 #: ../servlets/webui/root/script/main.js:204
 msgid "Starting..."
@@ -182,12 +178,8 @@ msgid "The port must be an integer number between {0} and {1}."
 msgstr "A porta deve ser um número inteiro entre {0} e {1}."
 
 #: ../servlets/webui/root/script/main.js:478
-msgid ""
-"The port must be an integer number between {0} and {1} or one of the "
-"following values: any, all, n/a, none."
-msgstr ""
-"A porta deve ser um número inteiro entre {0} e {1} ou um dos valores a "
-"seguir: qualquer, todos, n/a, nenhum."
+msgid "The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."
+msgstr "A porta deve ser um número inteiro entre {0} e {1} ou um dos valores a seguir: qualquer, todos, n/a, nenhum."
 
 #: ../servlets/webui/root/script/main.js:488
 msgid "Passwords do not match"
@@ -241,12 +233,8 @@ msgid "Warning"
 msgstr "Aviso"
 
 #: ../servlets/webui/root/script/main.js:587
-msgid ""
-"{0} cannot be removed because it is being used by the following rack:{1}You "
-"must remove the product from all racks first."
-msgstr ""
-"{0} não pode ser removido porque está sendo usado pelo seguinte rack:{1}Você "
-"deve primeiro remover o produto de todos os racks."
+msgid "{0} cannot be removed because it is being used by the following rack:{1}You must remove the product from all racks first."
+msgstr "{0} não pode ser removido porque está sendo usado pelo seguinte rack:{1}Você deve primeiro remover o produto de todos os racks."
 
 #: ../servlets/webui/root/script/main.js:616
 msgid "Loading Rack..."
@@ -476,8 +464,7 @@ msgid ""
 "Would you like to continue removing?"
 msgstr ""
 "{0} está para ser removido do rack.\n"
-"Suas configurações serão perdidas e irá parar o processamento de tráfego de "
-"rede.\n"
+"Suas configurações serão perdidas e irá parar o processamento de tráfego de rede.\n"
 "\n"
 "Gostaria de continuar removendo?"
 
@@ -498,12 +485,8 @@ msgid "Free Trial. {0} days remain"
 msgstr "Período de experiência gratuito. {0} dias restantes"
 
 #: ../servlets/webui/root/script/components.js:1312
-msgid ""
-"The <B>Status Indicator</B> shows the current operating condition of a "
-"particular software product."
-msgstr ""
-"O <B>Indicator de Status</B> mostra a condição de operação atual de um "
-"produto de software em particular."
+msgid "The <B>Status Indicator</B> shows the current operating condition of a particular software product."
+msgstr "O <B>Indicator de Status</B> mostra a condição de operação atual de um produto de software em particular."
 
 #: ../servlets/webui/root/script/components.js:1314
 msgid "Green"
@@ -518,9 +501,7 @@ msgid "Red"
 msgstr "Vermelho"
 
 #: ../servlets/webui/root/script/components.js:1318
-msgid ""
-"indicates that the product is \"on\", but that an abnormal condition has "
-"occurred."
+msgid "indicates that the product is \"on\", but that an abnormal condition has occurred."
 msgstr "indica que o produto está \"ativado\", mas houve uma condição anormal."
 
 #: ../servlets/webui/root/script/components.js:1320
@@ -536,17 +517,12 @@ msgid "Clear"
 msgstr "Limpar"
 
 #: ../servlets/webui/root/script/components.js:1322
-msgid ""
-"indicates that the product is \"off\", and may be turned \"on\" by the user."
-msgstr ""
-"indica que o produto está \"desativado\" e pode ser \"ativado\" pelo usuário."
+msgid "indicates that the product is \"off\", and may be turned \"on\" by the user."
+msgstr "indica que o produto está \"desativado\" e pode ser \"ativado\" pelo usuário."
 
 #: ../servlets/webui/root/script/components.js:1326
-msgid ""
-"The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
-msgstr ""
-"O <B>Botão de Alimentação</B> permite a você \"ativar\" e \"desativar\" um "
-"produto."
+msgid "The <B>Power Button</B> allows you to turn a product \"on\" and \"off\"."
+msgstr "O <B>Botão de Alimentação</B> permite a você \"ativar\" e \"desativar\" um produto."
 
 #: ../servlets/webui/root/script/components.js:1461
 msgid "Error downloading package {0}. Install Aborted."
@@ -566,15 +542,8 @@ msgid "Upgrade Successful"
 msgstr "Atualização bem-sucedida"
 
 #: ../servlets/webui/root/script/components.js:1502
-msgid ""
-"The Upgrade succeeded. You will be redirected to the start page now. After "
-"an upgrade the UVM may restart making the console temporary unavailable. So "
-"you might have to wait a few minutes before you can log in again."
-msgstr ""
-"A atualização foi bem-sucedida. Você será redirecionado agora à pagina "
-"inicial. Depois de uma atualização, o UVM pode reiniciar tornando o console "
-"temporariamente indisponível. Portanto, você poderá ter que esperar alguns "
-"minutos antes que possa fazer novamente o login."
+msgid "The Upgrade succeeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."
+msgstr "A atualização foi bem-sucedida. Você será redirecionado agora à pagina inicial. Depois de uma atualização, o UVM pode reiniciar tornando o console temporariamente indisponível. Portanto, você poderá ter que esperar alguns minutos antes que possa fazer novamente o login."
 
 #: ../servlets/webui/root/script/components.js:1506
 msgid "Upgrade Failed"
@@ -582,25 +551,16 @@ msgstr "Falha da atualização"
 
 #: ../servlets/webui/root/script/components.js:1507
 #: ../servlets/webui/root/script/components.js:1516
-msgid ""
-"The Upgrade failed. You will be redirected to the start page now. After an "
-"upgrade the UVM may restart making the console temporary unavailable. So you "
-"might have to wait a few minutes before you can log in again."
-msgstr ""
-"A atualização falhou. Você será redirecionado agora para a página inicial. "
-"Depois de uma atualização, o UVM pode reiniciar tornando o console "
-"temporariamente indisponível. Portanto, você pode ter que esperar alguns "
-"minutos antes que possa fazer novamente o login."
+msgid "The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."
+msgstr "A atualização falhou. Você será redirecionado agora para a página inicial. Depois de uma atualização, o UVM pode reiniciar tornando o console temporariamente indisponível. Portanto, você pode ter que esperar alguns minutos antes que possa fazer novamente o login."
 
 #: ../servlets/webui/root/script/components.js:1515
 msgid "Upgrade Timeout"
 msgstr "Tempo limite para a atualização"
 
 #: ../servlets/webui/root/script/components.js:1524
-msgid ""
-"Downloading {0}. <br/>Status: {1} KB/{2} KB downloaded. <br/>Speed: {3}."
-msgstr ""
-"Baixando {0}. <br/>Status: {1} KB/{2} KB baixados. <br/>Velocidade: {3}."
+msgid "Downloading {0}. <br/>Status: {1} KB/{2} KB downloaded. <br/>Speed: {3}."
+msgstr "Baixando {0}. <br/>Status: {1} KB/{2} KB baixados. <br/>Velocidade: {3}."
 
 #: ../servlets/webui/root/script/components.js:1526
 msgid "<br/>Package {0}/{1}."
@@ -889,24 +849,12 @@ msgid "Select Users"
 msgstr "Selecionar usuários"
 
 #: ../servlets/webui/root/script/components.js:3771
-msgid ""
-"You may choose user ID/Login that exists in the User Directory (either local "
-"or remote Active Directory), or you can add a new user to the User "
-"Directory, and then choose that user."
-msgstr ""
-"Você pode escolher ID/Login de usuário que exista no Diretório de Usuários "
-"(Diretório Ativo local ou remoto) ou pode adicionar um novo usuário ao "
-"Diretório de Usuário e, em seguida, escolha aquele usuário."
+msgid "You may choose user ID/Login that exists in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user."
+msgstr "Você pode escolher ID/Login de usuário que exista no Diretório de Usuários (Diretório Ativo local ou remoto) ou pode adicionar um novo usuário ao Diretório de Usuário e, em seguida, escolha aquele usuário."
 
 #: ../servlets/webui/root/script/components.js:3772
-msgid ""
-"You may choose user IDs/Logins that exist in the User Directory (either "
-"local or remote Active Directory), or you can add a new user to the User "
-"Directory, and then choose that user."
-msgstr ""
-"Você pode escolher IDs/Logins de usuário que existam no Diretório de "
-"Usuários (Diretório Ativo local ou remoto) ou pode adicionar um novo usuário "
-"ao Diretório de Usuário e, em seguida, escolha aquele usuário."
+msgid "You may choose user IDs/Logins that exist in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user."
+msgstr "Você pode escolher IDs/Logins de usuário que existam no Diretório de Usuários (Diretório Ativo local ou remoto) ou pode adicionar um novo usuário ao Diretório de Usuário e, em seguida, escolha aquele usuário."
 
 #: ../servlets/webui/root/script/components.js:3775
 msgid "Select an existing user"
@@ -934,20 +882,12 @@ msgid "Loading..."
 msgstr "Carregando..."
 
 #: ../servlets/webui/root/script/components.js:3841
-msgid ""
-"There was a problem refreshing Active Directory users.  Please check your "
-"Active Directory settings and then try again."
-msgstr ""
-"Houve um problema ao atualizar os usuários do Diretório Ativo. Verifique as "
-"configurações de seu Diretório Ativo e, em seguida, tente novamente."
+msgid "There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."
+msgstr "Houve um problema ao atualizar os usuários do Diretório Ativo. Verifique as configurações de seu Diretório Ativo e, em seguida, tente novamente."
 
 #: ../servlets/webui/root/script/components.js:3854
-msgid ""
-"There was a problem refreshing Local Directory users.  Please check your "
-"Local Directory settings and try again."
-msgstr ""
-"Houve um problema ao atualizar os usuários do Diretório Local. Verifique as "
-"configurações de seu Diretório Ativo e, em seguida, tente novamente."
+msgid "There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."
+msgstr "Houve um problema ao atualizar os usuários do Diretório Local. Verifique as configurações de seu Diretório Ativo e, em seguida, tente novamente."
 
 #: ../servlets/webui/root/script/components.js:3924
 msgid "Please choose a user id/login or press Cancel!"
@@ -980,15 +920,8 @@ msgid "Step {0}"
 msgstr "Etapa {0}"
 
 #: ../servlets/setup/root/script/setup.js:26
-msgid ""
-"Enter an email address which you would like to send a test message to, and "
-"then press \"Proceed\".  You should receive an email shortly after running "
-"the test.  If not, your email settings may not be correct."
-msgstr ""
-"Insira um endereço de e-mail para o qual gostaria de enviar uma mensagem de "
-"teste e, em seguida, pressione \"Prosseguir\".  Você deve receber um e-mail "
-"logo depois de executar o teste. Caso negativo, suas configurações de e-mail "
-"podem não ser corretas."
+msgid "Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct."
+msgstr "Insira um endereço de e-mail para o qual gostaria de enviar uma mensagem de teste e, em seguida, pressione \"Prosseguir\".  Você deve receber um e-mail logo depois de executar o teste. Caso negativo, suas configurações de e-mail podem não ser corretas."
 
 #: ../servlets/setup/root/script/setup.js:38
 #: ../servlets/webui/root/script/config/email.js:188
@@ -1028,12 +961,8 @@ msgid "Thanks for using Untangle"
 msgstr "Obrigado por usar Untangle"
 
 #: ../servlets/setup/root/script/setup.js:133
-msgid ""
-"This wizard will guide you through the initial setup and configuration of "
-"your Untangle Server."
-msgstr ""
-"Este assistente guiará você pela instalação inicial e configuração de seu "
-"Servidor Untangle."
+msgid "This wizard will guide you through the initial setup and configuration of your Untangle Server."
+msgstr "Este assistente guiará você pela instalação inicial e configuração de seu Servidor Untangle."
 
 #: ../servlets/setup/root/script/setup.js:135
 msgid "Click {0}Next{1} to get started."
@@ -1149,11 +1078,8 @@ msgstr "(Aproximado)"
 
 #: ../servlets/setup/root/script/setup.js:369
 #: ../servlets/webui/root/script/config/systemInfo.js:152
-msgid ""
-"Answering these questions will help us build a better product - for you!"
-msgstr ""
-"Responder essas perguntas irá nos ajudar a construir um produto melhor - "
-"para você!"
+msgid "Answering these questions will help us build a better product - for you!"
+msgstr "Responder essas perguntas irá nos ajudar a construir um produto melhor - para você!"
 
 #: ../servlets/setup/root/script/setup.js:372
 #: ../servlets/webui/root/script/config/systemInfo.js:155
@@ -1193,17 +1119,8 @@ msgid "Identify Network Cards"
 msgstr "Identificar placas de rede"
 
 #: ../servlets/setup/root/script/setup.js:524
-msgid ""
-"This step can help you identify your external, internal, and other network "
-"cards. Plug an active cable into each network card one at a time and hit "
-"refresh to determine which network card is which. You can also drag and drop "
-"the interfaces to remap them at this time."
-msgstr ""
-"Esta etapa pode lhe ajudar a identificar suas placas de rede externas, "
-"internas e outras. Conecte um cabo ativo em cada placa de rede, um de cada "
-"vez, e clique em atuallizar para determinar quais são as placas de rede. "
-"você pode também arrastar e largar as interfaces para remapeá-las neste "
-"momento."
+msgid "This step can help you identify your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. You can also drag and drop the interfaces to remap them at this time."
+msgstr "Esta etapa pode lhe ajudar a identificar suas placas de rede externas, internas e outras. Conecte um cabo ativo em cada placa de rede, um de cada vez, e clique em atuallizar para determinar quais são as placas de rede. você pode também arrastar e largar as interfaces para remapeá-las neste momento."
 
 #: ../servlets/setup/root/script/setup.js:532
 msgid "Network Cards"
@@ -1366,24 +1283,16 @@ msgid "Transparent Bridge"
 msgstr "Ponte transparente"
 
 #: ../servlets/setup/root/script/setup.js:1160
-msgid ""
-"This is recommended if the external port is plugged into a firewall/router. "
-"This bridges Internal and External and disables DHCP."
-msgstr ""
-"Isso é recomendado se a porta externa for conectada a um firewall/roteador. "
-"Isso une interna e externa, e desabilita DHCP."
+msgid "This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP."
+msgstr "Isso é recomendado se a porta externa for conectada a um firewall/roteador. Isso une interna e externa, e desabilita DHCP."
 
 #: ../servlets/setup/root/script/setup.js:1172
 msgid "Router"
 msgstr "Roteador"
 
 #: ../servlets/setup/root/script/setup.js:1184
-msgid ""
-"This is recommended if the external port is plugged into your internet  "
-"connection. This enables NAT on the Internal Interface and DHCP."
-msgstr ""
-"Isso é recomendado se a porta externa estiver plugada na sua conexão à "
-"internet. Isso habilita NAT na interface interna e DHCP."
+msgid "This is recommended if the external port is plugged into your internet  connection. This enables NAT on the Internal Interface and DHCP."
+msgstr "Isso é recomendado se a porta externa estiver plugada na sua conexão à internet. Isso habilita NAT na interface interna e DHCP."
 
 #: ../servlets/setup/root/script/setup.js:1189
 msgid "Internal Address"
@@ -1432,9 +1341,7 @@ msgstr "Configuração de e-mail"
 
 #: ../servlets/setup/root/script/setup.js:1309
 msgid "Your Untangle Server sends email for Quarantine Digests, Reports, etc."
-msgstr ""
-"Seu Servidor Untangle envia e-mail para Sumários de Quarentena, relatórios, "
-"etc."
+msgstr "Seu Servidor Untangle envia e-mail para Sumários de Quarentena, relatórios, etc."
 
 #: ../servlets/setup/root/script/setup.js:1313
 msgid "This test is optional"
@@ -1449,12 +1356,8 @@ msgid "Advanced Email Configuration"
 msgstr "Configuração avançada de e-mail"
 
 #: ../servlets/setup/root/script/setup.js:1343
-msgid ""
-"<b>Please choose a <i>From Address</i> for emails originating from the "
-"Untangle Server</b>"
-msgstr ""
-"<b>Escolha um <i>Do endereço</i> para e-mails que se originam do Servidor "
-"Untangle</b>"
+msgid "<b>Please choose a <i>From Address</i> for emails originating from the Untangle Server</b>"
+msgstr "<b>Escolha um <i>Do endereço</i> para e-mails que se originam do Servidor Untangle</b>"
 
 #: ../servlets/setup/root/script/setup.js:1347
 msgid "From Address"
@@ -1505,12 +1408,8 @@ msgid "Congrats!"
 msgstr "Parabéns!"
 
 #: ../servlets/setup/root/script/setup.js:1604
-msgid ""
-"<b>Your Untangle Server is now configured.</b><br/><br/>You are now ready to "
-"login and download some applications."
-msgstr ""
-"<b>Seu Servidor Untangle está agora configurado.</b><br/><br/>Você agora "
-"está pronto para fazer o login e baixar alguns aplicativos."
+msgid "<b>Your Untangle Server is now configured.</b><br/><br/>You are now ready to login and download some applications."
+msgstr "<b>Seu Servidor Untangle está agora configurado.</b><br/><br/>Você agora está pronto para fazer o login e baixar alguns aplicativos."
 
 #: ../servlets/setup/root/script/setup.js:1610
 msgid "Finished"
@@ -1699,16 +1598,8 @@ msgid "Public Address"
 msgstr "Endereço Público"
 
 #: ../servlets/webui/root/script/config/administration.js:596
-msgid ""
-"The Public Address is the address or hostname that provides a public "
-"routable address for the {0} Server. This address will be used in emails "
-"sent by the {0} Server to link back to services hosted on the {0} Server "
-"such as Quarantine Digests and OpenVPN Client emails."
-msgstr ""
-"O Endereço Público é o endereço ou nome de host que fornece um endereço de "
-"roteador público para o Servidor {0}. Esse endereço será usado em e-mails "
-"enviados pelo Servidor {0} para vincular aos serviços hospedados no Servidor "
-"{0}, tais como e-mails de Sumários de Quarantena e Cliente OpenVPN."
+msgid "The Public Address is the address or hostname that provides a public routable address for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails."
+msgstr "O Endereço Público é o endereço ou nome de host que fornece um endereço de roteador público para o Servidor {0}. Esse endereço será usado em e-mails enviados pelo Servidor {0} para vincular aos serviços hospedados no Servidor {0}, tais como e-mails de Sumários de Quarantena e Cliente OpenVPN."
 
 #: ../servlets/webui/root/script/config/administration.js:602
 msgid "Use External IP address (default)"
@@ -1716,20 +1607,15 @@ msgstr "Usar endereço IP externo (padrão)"
 
 #: ../servlets/webui/root/script/config/administration.js:618
 msgid "This works if your {0} Server has a public static IP address."
-msgstr ""
-"Isso funciona se seu Servidor {0} possuir um endereço IP público estático."
+msgstr "Isso funciona se seu Servidor {0} possuir um endereço IP público estático."
 
 #: ../servlets/webui/root/script/config/administration.js:624
 msgid "Use Hostname"
 msgstr "Usar nome de host"
 
 #: ../servlets/webui/root/script/config/administration.js:641
-msgid ""
-"This is recommended if the {0} Server's fully qualified domain name looks up "
-"to its IP address both internally and externally."
-msgstr ""
-"Isto é recomendado se o nome de domínio totalmente qualificado do Servidor "
-"{0} consulta seu endereço IP tanto internamente, quanto externamente."
+msgid "This is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally."
+msgstr "Isto é recomendado se o nome de domínio totalmente qualificado do Servidor {0} consulta seu endereço IP tanto internamente, quanto externamente."
 
 #: ../servlets/webui/root/script/config/administration.js:647
 msgid "Current Hostname: {0}"
@@ -1740,14 +1626,8 @@ msgid "Use Manually Specified IP"
 msgstr "Use IP especificado manualmente"
 
 #: ../servlets/webui/root/script/config/administration.js:669
-msgid ""
-"This is recommended if the {0} Server is installed behind another firewall "
-"with a port forward from the specified IP that redirects traffic to the {0} "
-"Server."
-msgstr ""
-"Isto é recomendado se o Servidor {0} estiver instalado por trás de outro "
-"firewall com uma porta adiante do IP especificado que redireciona tráfego ao "
-"Servidor {0}."
+msgid "This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified IP that redirects traffic to the {0} Server."
+msgstr "Isto é recomendado se o Servidor {0} estiver instalado por trás de outro firewall com uma porta adiante do IP especificado que redireciona tráfego ao Servidor {0}."
 
 #: ../servlets/webui/root/script/config/administration.js:685
 #: ../servlets/webui/root/script/config/administration.js:2026
@@ -1786,40 +1666,24 @@ msgid "Generate a {0}Self-Signed Certificate{1}"
 msgstr "Gerar um {0}Certificado Auto-Assinado{1}"
 
 #: ../servlets/webui/root/script/config/administration.js:791
-msgid ""
-"Click this button if you have been using a signed certificate, and you want "
-"to go back to using a self-signed certificate."
-msgstr ""
-"Clique neste botão se você estiver usando um certificado assinado e quiser "
-"voltar para usar um certificado auto-assinado."
+msgid "Click this button if you have been using a signed certificate, and you want to go back to using a self-signed certificate."
+msgstr "Clique neste botão se você estiver usando um certificado assinado e quiser voltar para usar um certificado auto-assinado."
 
 #: ../servlets/webui/root/script/config/administration.js:802
 msgid "Generate a {0}CSR{1}"
 msgstr "Gerar um {0}CSR{1}"
 
 #: ../servlets/webui/root/script/config/administration.js:816
-msgid ""
-"Click this button to generate a Certificate Signature Request (CSR), which "
-"you can then copy and paste for use by certificate authorities such as "
-"Thawte, Verisign, etc."
-msgstr ""
-"Clique neste botão para gerar uma Solicitação de Assinatura de Certificado "
-"(CSR), que pode então copiar e colar para uso pelas autoridades "
-"certificadores, tais como Thawte, Verisign, etc."
+msgid "Click this button to generate a Certificate Signature Request (CSR), which you can then copy and paste for use by certificate authorities such as Thawte, Verisign, etc."
+msgstr "Clique neste botão para gerar uma Solicitação de Assinatura de Certificado (CSR), que pode então copiar e colar para uso pelas autoridades certificadores, tais como Thawte, Verisign, etc."
 
 #: ../servlets/webui/root/script/config/administration.js:827
 msgid "Import a {0}Signed Certificate{1}"
 msgstr "Importar um {0}Certificado Assinado{1}"
 
 #: ../servlets/webui/root/script/config/administration.js:841
-msgid ""
-"Click this button to import a signed certificate which has been generated by "
-"a certificate authority, and was based on a previous signature request from "
-"{0}."
-msgstr ""
-"Clique neste botão para importar um certificado assinado que foi gerado por "
-"uma autoridade certificadora e foi baseada em uma solicitação de assinatura "
-"prévia de {0}."
+msgid "Click this button to import a signed certificate which has been generated by a certificate authority, and was based on a previous signature request from {0}."
+msgstr "Clique neste botão para importar um certificado assinado que foi gerado por uma autoridade certificadora e foi baseada em uma solicitação de assinatura prévia de {0}."
 
 #: ../servlets/webui/root/script/config/administration.js:871
 #: ../servlets/webui/root/script/config/administration.js:1059
@@ -1895,12 +1759,8 @@ msgid "Error importing certificate"
 msgstr "Erro ao importar certificado"
 
 #: ../servlets/webui/root/script/config/administration.js:1069
-msgid ""
-"Please fill out the following fields, which will be used to generate your "
-"self-signed certificate."
-msgstr ""
-"Preencha os seguintes campos, que serão usados para gerar seu certificado "
-"auto-assinado."
+msgid "Please fill out the following fields, which will be used to generate your self-signed certificate."
+msgstr "Preencha os seguintes campos, que serão usados para gerar seu certificado auto-assinado."
 
 #: ../servlets/webui/root/script/config/administration.js:1074
 msgid "Organization"
@@ -1923,14 +1783,8 @@ msgid "Hostname"
 msgstr "Nome de host"
 
 #: ../servlets/webui/root/script/config/administration.js:1137
-msgid ""
-"Click the Proceed button to generate a signature below. Copy the signature "
-"(Control-C), and paste it into the necessary form from your Certificate "
-"Authority (Verisign, Thawte, etc.)."
-msgstr ""
-"Clique no botão Prosseguir para gerar uma assinatura abaixo. Copie a "
-"assinatura (Control-C) e cole-a no formulário necessário da Autoridade "
-"Certificadora (Verisign, Thawte, etc.)."
+msgid "Click the Proceed button to generate a signature below. Copy the signature (Control-C), and paste it into the necessary form from your Certificate Authority (Verisign, Thawte, etc.)."
+msgstr "Clique no botão Prosseguir para gerar uma assinatura abaixo. Copie a assinatura (Control-C) e cole-a no formulário necessário da Autoridade Certificadora (Verisign, Thawte, etc.)."
 
 #: ../servlets/webui/root/script/config/administration.js:1164
 msgid "When your Certificate Authority (Verisign, Thawte, etc.) "
@@ -2003,18 +1857,12 @@ msgid "MY_LOCATION"
 msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1300
-msgid ""
-"{0}Disable Traps{1} so no trap events are generated.  (This is the default "
-"setting.)"
-msgstr ""
-"{0}Desabilitar Traps{1} para que nenhum evento trap seja gerado.  (Esta é "
-"uma configuração padrão.)"
+msgid "{0}Disable Traps{1} so no trap events are generated.  (This is the default setting.)"
+msgstr "{0}Desabilitar Traps{1} para que nenhum evento trap seja gerado.  (Esta é uma configuração padrão.)"
 
 #: ../servlets/webui/root/script/config/administration.js:1320
 msgid "{0}Enable Traps{1} so trap events are sent when they are generated."
-msgstr ""
-"{0}Habilitar Traps{1} de forma que eventos trap sejam enviados quando forem "
-"gerados. "
+msgstr "{0}Habilitar Traps{1} de forma que eventos trap sejam enviados quando forem gerados. "
 
 #: ../servlets/webui/root/script/config/administration.js:1343
 msgid "MY_TRAP_COMMUNITY"
@@ -2045,8 +1893,7 @@ msgstr "Syslog"
 
 #: ../servlets/webui/root/script/config/administration.js:1376
 msgid "{0}Disable{1} Syslog Monitoring. (This is the default setting.)"
-msgstr ""
-"{0}Desabilitar{1} monitoramento de Syslog. (Esta é uma configuração padrão.)"
+msgstr "{0}Desabilitar{1} monitoramento de Syslog. (Esta é uma configuração padrão.)"
 
 #: ../servlets/webui/root/script/config/administration.js:1395
 msgid "{0}Enable{1} Syslog Monitoring."
@@ -2233,12 +2080,8 @@ msgid "Branding"
 msgstr "Atribuição de marca"
 
 #: ../servlets/webui/root/script/config/administration.js:1674
-msgid ""
-"The Branding Settings are used to set the logo and contact information that "
-"will be seen by users (e.g. reports)."
-msgstr ""
-"As configurações de atribuição de marca são usadas para definit o logotipo e "
-"as informações de contato que serão vistas pelos usuários (ex: relatórios)."
+msgid "The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports)."
+msgstr "As configurações de atribuição de marca são usadas para definit o logotipo e as informações de contato que serão vistas pelos usuários (ex: relatórios)."
 
 #: ../servlets/webui/root/script/config/administration.js:1677
 msgid "Logo"
@@ -2279,9 +2122,7 @@ msgstr "Bloquear skin da página"
 
 #: ../servlets/webui/root/script/config/administration.js:1811
 msgid "This skin will used in the user pages like quarantine and block pages"
-msgstr ""
-"Este skin será usado nas páginas de usuário como quarentena e páginas de "
-"bloqueio"
+msgstr "Este skin será usado nas páginas de usuário como quarentena e páginas de bloqueio"
 
 #: ../servlets/webui/root/script/config/administration.js:1869
 msgid "Please select an image to upload."
@@ -2309,9 +2150,7 @@ msgstr "Deve haver sempre pelo menos uma conta válida."
 
 #: ../servlets/webui/root/script/config/administration.js:1966
 msgid "There must always be at least one non-read-only (writable) account."
-msgstr ""
-"Deve sempre haver pelo menos uma conta que não seja somente de leitura "
-"(gravável)."
+msgstr "Deve sempre haver pelo menos uma conta que não seja somente de leitura (gravável)."
 
 #: ../servlets/webui/root/script/config/administration.js:1994
 msgid "Invalid External Remote Administration \"IP Address\" specified."
@@ -2319,16 +2158,11 @@ msgstr "\"Endereço IP\" de administração remota externa inválida especificad
 
 #: ../servlets/webui/root/script/config/administration.js:2004
 msgid "Invalid External Remote Administration \"Netmask\" specified."
-msgstr ""
-"\"Máscara de rede\" de administração remota externa inválida especificada."
+msgstr "\"Máscara de rede\" de administração remota externa inválida especificada."
 
 #: ../servlets/webui/root/script/config/administration.js:2173
-msgid ""
-"Changing the administration settings may disconnect you from the {0} box. Do "
-"you want to proceed?"
-msgstr ""
-"Alterar as configurações de administração pode desconectá-lo da caixa {0}. "
-"Deseja prosseguir?"
+msgid "Changing the administration settings may disconnect you from the {0} box. Do you want to proceed?"
+msgstr "Alterar as configurações de administração pode desconectá-lo da caixa {0}. Deseja prosseguir?"
 
 #: ../servlets/webui/root/script/config/administration.js:2190
 #: ../servlets/webui/root/script/config/email.js:361
@@ -2346,32 +2180,16 @@ msgid "Outgoing Server"
 msgstr "Servidor de saída"
 
 #: ../servlets/webui/root/script/config/email.js:159
-msgid ""
-"Enter an email address which you would like to send a test message to, and "
-"then press \"Proceed\". You should receive an email shortly after running "
-"the test. If not, your email settings may not be correct."
-msgstr ""
-"Insira um endereço de e-mail para onde gostaria de enviar uma mensagem de "
-"teste, e depois pressione \"Prosseguir\". Você deve receber um e-mail logo "
-"depois de executar o teste. Caso negaativo, suas configurações de e-mail "
-"podem não estar corretas."
+msgid "Enter an email address which you would like to send a test message to, and then press \"Proceed\". You should receive an email shortly after running the test. If not, your email settings may not be correct."
+msgstr "Insira um endereço de e-mail para onde gostaria de enviar uma mensagem de teste, e depois pressione \"Prosseguir\". Você deve receber um e-mail logo depois de executar o teste. Caso negaativo, suas configurações de e-mail podem não estar corretas."
 
 #: ../servlets/webui/root/script/config/email.js:218
 msgid "Outgoing Email Server (SMTP)"
 msgstr "Servidor de e-mail de saída (SMTP)"
 
 #: ../servlets/webui/root/script/config/email.js:223
-msgid ""
-"The Outgoing Email Server settings determine how the {0} Server sends emails "
-"such as reports, quarantine digests, etc. In most cases the default setting "
-"should work, but if not, you should specify an SMTP server that will relay "
-"mail for the {0} Server."
-msgstr ""
-"As configurações do servidor de e-mail de saída determinam como o Servidor "
-"{0} envia e-mails, tais como relatórios, sumários de quarentena, etc. Na "
-"maioria dos casos, a configuração padrão deve funcionar, mas caso negativo, "
-"você deve especificar um servidor SMTP que transmitirá e-mail do Servidor "
-"{0}."
+msgid "The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. In most cases the default setting should work, but if not, you should specify an SMTP server that will relay mail for the {0} Server."
+msgstr "As configurações do servidor de e-mail de saída determinam como o Servidor {0} envia e-mails, tais como relatórios, sumários de quarentena, etc. Na maioria dos casos, a configuração padrão deve funcionar, mas caso negativo, você deve especificar um servidor SMTP que transmitirá e-mail do Servidor {0}."
 
 #: ../servlets/webui/root/script/config/email.js:229
 msgid "Send email directly (default)"
@@ -2402,26 +2220,16 @@ msgid "The {0} Server will send email from this address."
 msgstr "O Servidor {0} enviará e-mail deste endereço."
 
 #: ../servlets/webui/root/script/config/email.js:339
-msgid ""
-"The Email Test will send an email to a specified address with the current "
-"configuration. If the test email is not received your settings may be "
-"incorrect."
-msgstr ""
-"O teste de e-mail enviará um e-mail ao endereo especificado com a "
-"configuração atual. Se o teste de e-mail não for recebido, suas "
-"configurações podem estar incorretas."
+msgid "The Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect."
+msgstr "O teste de e-mail enviará um e-mail ao endereo especificado com a configuração atual. Se o teste de e-mail não for recebido, suas configurações podem estar incorretas."
 
 #: ../servlets/webui/root/script/config/email.js:355
 msgid "Save Changes?"
 msgstr "Salver alterações?"
 
 #: ../servlets/webui/root/script/config/email.js:356
-msgid ""
-"Your current settings have not been saved yet.{0}Would you like to save your "
-"settings before executing the test?"
-msgstr ""
-"Suas configurações atuais não foram salvas ainda. {0}Gostaria de salvar suas "
-"configurações antes de executar o teste?"
+msgid "Your current settings have not been saved yet.{0}Would you like to save your settings before executing the test?"
+msgstr "Suas configurações atuais não foram salvas ainda. {0}Gostaria de salvar suas configurações antes de executar o teste?"
 
 #: ../servlets/webui/root/script/config/email.js:388
 #: ../servlets/webui/root/script/config/email.js:599
@@ -2539,12 +2347,8 @@ msgid "Quarantinable Addresses"
 msgstr "Endereços que podem ser colocados em querentena"
 
 #: ../servlets/webui/root/script/config/email.js:796
-msgid ""
-"Email addresses on this list will have quarantines automatically created. "
-"All other emails will be marked and not quarantined."
-msgstr ""
-"Endereços de e-mail nesta lista terão querentenas automaticamente criadas. "
-"Todos os outros e-mails serão marcados e não entrarão em quarentena."
+msgid "Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined."
+msgstr "Endereços de e-mail nesta lista terão querentenas automaticamente criadas. Todos os outros e-mails serão marcados e não entrarão em quarentena."
 
 #: ../servlets/webui/root/script/config/email.js:805
 #: ../servlets/webui/root/script/config/email.js:875
@@ -2570,14 +2374,8 @@ msgid "Quarantine Forwards"
 msgstr "Encaminhamentos de quarentenas"
 
 #: ../servlets/webui/root/script/config/email.js:865
-msgid ""
-"This is a list of email addresses whose quarantine digest gets forwarded to "
-"another account. This is common for distribution lists where the whole list "
-"should not receive the digest."
-msgstr ""
-"Esta é uma lista de endereços de e-mail cujo sumário de quarentena é "
-"encaminhado para outra conta. Isto é comum para listas de distribuição onde "
-"a lista inteira não deve receber o sumário."
+msgid "This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest."
+msgstr "Esta é uma lista de endereços de e-mail cujo sumário de quarentena é encaminhado para outra conta. Isto é comum para listas de distribuição onde a lista inteira não deve receber o sumário."
 
 #: ../servlets/webui/root/script/config/email.js:873
 msgid "distributionlistrecipient@example.com"
@@ -2640,11 +2438,8 @@ msgid "A \"Login\" must be specified if a \"Password\" is specified."
 msgstr "Um \"Login\" deve ser especificado se \"Senha\" for especificado."
 
 #: ../servlets/webui/root/script/config/email.js:1139
-msgid ""
-"A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified."
-msgstr ""
-"Um \"Nome de host\" deve ser especificado se \"Login\" ou \"Senha\" forem "
-"especificados."
+msgid "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified."
+msgstr "Um \"Nome de host\" deve ser especificado se \"Login\" ou \"Senha\" forem especificados."
 
 #: ../servlets/webui/root/script/config/email.js:1150
 msgid "A \"From Address\" must be specified."
@@ -2730,17 +2525,12 @@ msgstr "Gerenciamento de política"
 
 #: ../servlets/webui/root/script/config/policyManager.js:129
 #: ../servlets/webui/root/script/config/policyManager.js:242
-msgid ""
-"Need to create network-access policies by username or time of the week? "
-"Click on \"More Info\" to learn more."
-msgstr ""
-"Necessidade de criar políticas de acesso de rede por nome de usuário ou "
-"horário na semana? Clique em \"More Info\" para saber mais."
+msgid "Need to create network-access policies by username or time of the week? Click on \"More Info\" to learn more."
+msgstr "Necessidade de criar políticas de acesso de rede por nome de usuário ou horário na semana? Clique em \"More Info\" para saber mais."
 
 #: ../servlets/webui/root/script/config/policyManager.js:145
 msgid "You must install the policy manager in order to add additional racks."
-msgstr ""
-"Você deve instalar o gerenciador de política para adicinar outros racks."
+msgstr "Você deve instalar o gerenciador de política para adicinar outros racks."
 
 #: ../servlets/webui/root/script/config/policyManager.js:149
 #: ../servlets/webui/root/script/config/policyManager.js:163
@@ -2774,8 +2564,7 @@ msgstr "Políticas"
 
 #: ../servlets/webui/root/script/config/policyManager.js:368
 msgid "<b>Use this rack</b> when the <br/>next colums are matched..."
-msgstr ""
-"<b>Use este rack</b> quando as <br/>próximas colunas forem correspondidas..."
+msgstr "<b>Use este rack</b> quando as <br/>próximas colunas forem correspondidas..."
 
 #: ../servlets/webui/root/script/config/policyManager.js:400
 msgid "client <br/>interface"
@@ -2942,20 +2731,12 @@ msgid "The rack named {0} already exists."
 msgstr "O rack com nome {0} já existe."
 
 #: ../servlets/webui/root/script/config/policyManager.js:899
-msgid ""
-"The rack named {0} cannot be removed because it is currently being used in "
-"\"Custom Policies\"."
-msgstr ""
-"O rack com nome {0} não pode ser removido porque está sendo atualmente "
-"utilizado em \"Políticas personalizadas\"."
+msgid "The rack named {0} cannot be removed because it is currently being used in \"Custom Policies\"."
+msgstr "O rack com nome {0} não pode ser removido porque está sendo atualmente utilizado em \"Políticas personalizadas\"."
 
 #: ../servlets/webui/root/script/config/policyManager.js:921
-msgid ""
-"The rack named {0} cannot be removed because it is not empty.  Please remove "
-"all products first."
-msgstr ""
-"O rack com nome {0} não pode ser removido porque não está vazio. Remova "
-"primeiro todos os produtos."
+msgid "The rack named {0} cannot be removed because it is not empty.  Please remove all products first."
+msgstr "O rack com nome {0} não pode ser removido porque não está vazio. Remova primeiro todos os produtos."
 
 #: ../servlets/webui/root/script/config/policyManager.js:964
 msgid "Invalid address specified for Client Address"
@@ -2983,28 +2764,16 @@ msgid "{0}Allow{1} secure access to your server for support purposes."
 msgstr "{0}Permitir{1} acesso seguro ao servidor para propósitos de suporte."
 
 #: ../servlets/webui/root/script/config/system.js:186
-msgid ""
-"{0}Send{1} data about your server for support purposes. This will send "
-"status updates and an email if any unexpected problems occur, but will not "
-"allow support secure access to your server. No personal information about "
-"the network will be transmitted."
-msgstr ""
-"{0}Enviar{1} dados sobre seu servidor para propósitos de suporte. Isto "
-"enviará atualizações de status e um e-mail se ocorrer algum problema "
-"inesperado, mas não permitirá acesso seguro de suporte ao seu servidor. "
-"Nenhuma informação pessoal sobre a rede será transmitida."
+msgid "{0}Send{1} data about your server for support purposes. This will send status updates and an email if any unexpected problems occur, but will not allow support secure access to your server. No personal information about the network will be transmitted."
+msgstr "{0}Enviar{1} dados sobre seu servidor para propósitos de suporte. Isto enviará atualizações de status e um e-mail se ocorrer algum problema inesperado, mas não permitirá acesso seguro de suporte ao seu servidor. Nenhuma informação pessoal sobre a rede será transmitida."
 
 #: ../servlets/webui/root/script/config/system.js:202
 msgid "Manual Reboot"
 msgstr "Reinicialização manual"
 
 #: ../servlets/webui/root/script/config/system.js:207
-msgid ""
-"{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily "
-"interrupting network activity."
-msgstr ""
-"{0}Aviso:{1} Clicar neste botão irá reinicializar o Servidor {2}, "
-"interrompendo temporariamente a atividade de rede."
+msgid "{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."
+msgstr "{0}Aviso:{1} Clicar neste botão irá reinicializar o Servidor {2}, interrompendo temporariamente a atividade de rede."
 
 #: ../servlets/webui/root/script/config/system.js:211
 msgid "Reboot"
@@ -3015,10 +2784,7 @@ msgid "Manual Reboot Warning"
 msgstr "Aviso de reinicialização manual"
 
 #: ../servlets/webui/root/script/config/system.js:216
-msgid ""
-"You are about to manually reboot.  This will interrupt normal network "
-"operations until the {0} Server is finished automatically restarting. This "
-"may take up to several minutes to complete."
+msgid "You are about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."
 msgstr ""
 
 #: ../servlets/webui/root/script/config/system.js:221
@@ -3044,20 +2810,15 @@ msgstr "Aviso de falha de backup"
 
 #: ../servlets/webui/root/script/config/system.js:266
 msgid "Error:  The local file backup procedure failed.  Please try again."
-msgstr ""
-"Erro: Falha do procedimento de backup de arquivo local. Tente novamente."
+msgstr "Erro: Falha do procedimento de backup de arquivo local. Tente novamente."
 
 #: ../servlets/webui/root/script/config/system.js:271
 msgid "Backing Up..."
 msgstr "Fazendo backup..."
 
 #: ../servlets/webui/root/script/config/system.js:275
-msgid ""
-"Error:  The Hard Disk backup procedure failed.  Contact support for further "
-"direction."
-msgstr ""
-"Erro: Falha do procedimento de backup do disco rígido. Entre em contato com "
-"o suporte para instruções adicionais."
+msgid "Error:  The Hard Disk backup procedure failed.  Contact support for further direction."
+msgstr "Erro: Falha do procedimento de backup do disco rígido. Entre em contato com o suporte para instruções adicionais."
 
 #: ../servlets/webui/root/script/config/system.js:277
 msgid "Backup Success"
@@ -3073,26 +2834,12 @@ msgid "Backup to File"
 msgstr "Backup para arquivo"
 
 #: ../servlets/webui/root/script/config/system.js:291
-msgid ""
-"You can backup your current system configuration to a file on your local "
-"computer for later restoration, in the event that you would like to replace "
-"new settings with your current settings.  The file name will end with \"."
-"backup\""
-msgstr ""
-"Você pode fazer o backup da configuração atual do sistema em um arquivo de "
-"seu computador local para restauração posterior, no caso de querer "
-"substituir novas configurações com as configurações atuais. O nome do "
-"arquivo terminará com  \".backup\""
+msgid "You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\""
+msgstr "Você pode fazer o backup da configuração atual do sistema em um arquivo de seu computador local para restauração posterior, no caso de querer substituir novas configurações com as configurações atuais. O nome do arquivo terminará com  \".backup\""
 
 #: ../servlets/webui/root/script/config/system.js:293
-msgid ""
-"After backing up your current system configuration to a file, you can then "
-"restore that configuration through this dialog by going to \"Restore\" -> "
-"\"From Local File\"."
-msgstr ""
-"Depois de fazer o backup das configurações atuais do sistema em um arquivo, "
-"você pode então restaurar aquela configuração através deste diálogo, indo em "
-"\"Restore\" (Restaurar) -> \"From Local File\" (De arquivo local)."
+msgid "After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\"."
+msgstr "Depois de fazer o backup das configurações atuais do sistema em um arquivo, você pode então restaurar aquela configuração através deste diálogo, indo em \"Restore\" (Restaurar) -> \"From Local File\" (De arquivo local)."
 
 #: ../servlets/webui/root/script/config/system.js:303
 #: ../servlets/webui/root/script/config/system.js:312
@@ -3100,29 +2847,12 @@ msgid "Backup to Hard Disk"
 msgstr "Backup para disco rígido"
 
 #: ../servlets/webui/root/script/config/system.js:307
-msgid ""
-"You can backup your current system configuration to Hard Disk for later "
-"restoration, in the event that you would like to replace new settings with "
-"your current settings."
-msgstr ""
-"Você pode fazer o backup da configuração atual do sistema no disco rígido "
-"para restauração posterior, no caso de querer substituir novas configurações "
-"com as configurações atuais."
+msgid "You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings."
+msgstr "Você pode fazer o backup da configuração atual do sistema no disco rígido para restauração posterior, no caso de querer substituir novas configurações com as configurações atuais."
 
 #: ../servlets/webui/root/script/config/system.js:309
-msgid ""
-"After backing up your current system configuration to Hard Disk, you can "
-"then restore that configuration through the {0}Backup and Restore Utilities"
-"{1}.  To access the Backup and Restore Utilities, you must have a monitor "
-"and keyboard physically plugged into your server when it is turned on, and "
-"then select \"Backup and Restore Utilities\" from the boot prompt."
-msgstr ""
-"Depois de fazer o backup das configurações atuais do sistema no disco "
-"rígido, você pode então restaurar aquela configuração através de {0}Backup "
-"and Restore Utilities{1} (Utilitários de backup e restauração).  Para "
-"acessar o Backup and Restore Utilities, você deve ter um monitor e teclado "
-"fisicamente plugados no seu servidor quando for ligado, depois selecione "
-"\"Backup and Restore Utilities\" a partir do prompt de inicialização."
+msgid "After backing up your current system configuration to Hard Disk, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."
+msgstr "Depois de fazer o backup das configurações atuais do sistema no disco rígido, você pode então restaurar aquela configuração através de {0}Backup and Restore Utilities{1} (Utilitários de backup e restauração).  Para acessar o Backup and Restore Utilities, você deve ter um monitor e teclado fisicamente plugados no seu servidor quando for ligado, depois selecione \"Backup and Restore Utilities\" a partir do prompt de inicialização."
 
 #: ../servlets/webui/root/script/config/system.js:328
 msgid "Restore"
@@ -3141,16 +2871,8 @@ msgid "Restore Succes"
 msgstr "Êxito de restauração"
 
 #: ../servlets/webui/root/script/config/system.js:348
-msgid ""
-"Success:  The Local File restore procedure completed. You will be redirected "
-"to the start page now. The {0} Server will restart making the console "
-"temporary unavailable. So you might have to wait a few minutes before you "
-"can log in again."
-msgstr ""
-"Sucesso: O procedimento de restauração de Arquivo Local foi concluído. Você "
-"será redirecionado agora à página inicial. O Servidor {0} irá renicializar "
-"tornando o console temporariamente indisponível. Portanto, você deve "
-"aguardar alguns minutos antes que possa fazer novamente o login."
+msgid "Success:  The Local File restore procedure completed. You will be redirected to the start page now. The {0} Server will restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."
+msgstr "Sucesso: O procedimento de restauração de Arquivo Local foi concluído. Você será redirecionado agora à página inicial. O Servidor {0} irá renicializar tornando o console temporariamente indisponível. Portanto, você deve aguardar alguns minutos antes que possa fazer novamente o login."
 
 #: ../servlets/webui/root/script/config/system.js:353
 #: ../servlets/webui/root/script/config/system.js:369
@@ -3163,9 +2885,7 @@ msgstr "O arquivo não parece ser backup de {0} válido "
 
 #: ../servlets/webui/root/script/config/system.js:360
 msgid "Error in processing restore itself (yet file seems valid)"
-msgstr ""
-"Erro no processamento de restauração de si próprio (ainda assim o arquivo "
-"parece válido)"
+msgstr "Erro no processamento de restauração de si próprio (ainda assim o arquivo parece válido)"
 
 #: ../servlets/webui/root/script/config/system.js:363
 msgid "File is from an older version of {0} and cannot be used"
@@ -3180,13 +2900,8 @@ msgid "From File"
 msgstr "Do arquivo"
 
 #: ../servlets/webui/root/script/config/system.js:386
-msgid ""
-"You can restore a previous system configuration from a backup file on your "
-"local computer.  The backup file name ends with \".backup\""
-msgstr ""
-"Você pode restaurar uma configuração de sistema anterior de um arquivo de "
-"backup no seu computador local. O nome de arquivo de backup termina com \"."
-"backup\""
+msgid "You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\""
+msgstr "Você pode restaurar uma configuração de sistema anterior de um arquivo de backup no seu computador local. O nome de arquivo de backup termina com \".backup\""
 
 #: ../servlets/webui/root/script/config/system.js:402
 msgid "Restore from File"
@@ -3197,33 +2912,16 @@ msgid "From Hard Disk"
 msgstr "Do disco rígido"
 
 #: ../servlets/webui/root/script/config/system.js:418
-msgid ""
-"After backing up your system configuration, you can restore that "
-"configuration through the {0}Recovery Utilities{1} on your server once it is "
-"done booting."
-msgstr ""
-"Depois de fazer o backup da configuração de seu sistema, você pode restaurar "
-"aquela configuração através de 0}Recovery Utilities{1} (Utilitários de "
-"Recuperação) em seu servidor quando estiver terminada a inicialização."
+msgid "After backing up your system configuration, you can restore that configuration through the {0}Recovery Utilities{1} on your server once it is done booting."
+msgstr "Depois de fazer o backup da configuração de seu sistema, você pode restaurar aquela configuração através de 0}Recovery Utilities{1} (Utilitários de Recuperação) em seu servidor quando estiver terminada a inicialização."
 
 #: ../servlets/webui/root/script/config/system.js:420
-msgid ""
-"To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard "
-"physically plugged into your server, and then click on the Recovery "
-"Utilities toolbar button when it is done booting."
-msgstr ""
-"Para acessar {0}Recovery Utilities{1}, você deve ter um monitor e teclado "
-"fisicamente plugados em seu servidor e depois clicar no botão da barra de "
-"ferramentas dos utilitários de recuperação quando estiver terminada a "
-"inicialização."
+msgid "To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting."
+msgstr "Para acessar {0}Recovery Utilities{1}, você deve ter um monitor e teclado fisicamente plugados em seu servidor e depois clicar no botão da barra de ferramentas dos utilitários de recuperação quando estiver terminada a inicialização."
 
 #: ../servlets/webui/root/script/config/system.js:432
-msgid ""
-"Warning: These settings should not be changed unless instructed to do so by "
-"support."
-msgstr ""
-"Aviso: Essas configurações não devem ser alteradas a menos que seja "
-"instruído a fazer isso pelo suporte."
+msgid "Warning: These settings should not be changed unless instructed to do so by support."
+msgstr "Aviso: Essas configurações não devem ser alteradas a menos que seja instruído a fazer isso pelo suporte."
 
 #: ../servlets/webui/root/script/config/system.js:440
 msgid "HTTP"
@@ -3235,9 +2933,7 @@ msgstr "Sobreposição da web"
 
 #: ../servlets/webui/root/script/config/system.js:451
 msgid "{0}Enable Processing{1} of web traffic.  (This is the default setting)"
-msgstr ""
-"{0}Habilitar processamento{1} de tráfego web.  (Esta é uma configuração "
-"padrão)"
+msgstr "{0}Habilitar processamento{1} de tráfego web.  (Esta é uma configuração padrão)"
 
 #: ../servlets/webui/root/script/config/system.js:464
 msgid "{0}Disable Processing{1} of web traffic."
@@ -3248,12 +2944,8 @@ msgid "Long URIs"
 msgstr "URIs longos"
 
 #: ../servlets/webui/root/script/config/system.js:481
-msgid ""
-"{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http"
-"\".  (This is the default setting)"
-msgstr ""
-"{0}Habilitar processamento{1} de URIs longos.  O tráfego é considerado \"não "
-"Http\".  (Esta é uma configuração padrão)"
+msgid "{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)"
+msgstr "{0}Habilitar processamento{1} de URIs longos.  O tráfego é considerado \"não Http\".  (Esta é uma configuração padrão)"
 
 #: ../servlets/webui/root/script/config/system.js:494
 msgid "{0}Disable Processing{1} of long URIs."
@@ -3268,12 +2960,8 @@ msgid "Long Headers"
 msgstr "Cabeçalhos longos"
 
 #: ../servlets/webui/root/script/config/system.js:529
-msgid ""
-"{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-"
-"Http\".  (This is the default setting)"
-msgstr ""
-"{0}Habilitar processamento{1} de cabeçalhos longos.  O tráfego é considerado "
-"\"não Http\".  (Esta é uma configuração padrão)"
+msgid "{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)"
+msgstr "{0}Habilitar processamento{1} de cabeçalhos longos.  O tráfego é considerado \"não Http\".  (Esta é uma configuração padrão)"
 
 #: ../servlets/webui/root/script/config/system.js:542
 msgid "{0}Disable Processing{1} of long headers."
@@ -3288,29 +2976,20 @@ msgid "Non-Http Blocking"
 msgstr "Bloqueios de não Http"
 
 #: ../servlets/webui/root/script/config/system.js:576
-msgid ""
-"{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default "
-"setting)"
-msgstr ""
-"{0}Permitir{1}que o tráfego não Http viaje pela porta 80.  (Esta é uma "
-"configuração padrão)"
+msgid "{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)"
+msgstr "{0}Permitir{1}que o tráfego não Http viaje pela porta 80.  (Esta é uma configuração padrão)"
 
 #: ../servlets/webui/root/script/config/system.js:589
 msgid "{0}Stop{1} non-Http traffic to travel over port 80."
 msgstr "{0}Parar{1}que o tráfego não Http viaje pela porta 80."
 
 #: ../servlets/webui/root/script/config/system.js:613
-msgid ""
-"{0}Enable Processing{1} of File Transfer traffic.  (This is the default "
-"setting)"
-msgstr ""
-"{0}Habilitar processamento{1} de tráfego de transferência de arquivo. (Esta "
-"é uma configuração padrão)"
+msgid "{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)"
+msgstr "{0}Habilitar processamento{1} de tráfego de transferência de arquivo. (Esta é uma configuração padrão)"
 
 #: ../servlets/webui/root/script/config/system.js:626
 msgid "{0}Disable Processing{1} of File Transfer traffic."
-msgstr ""
-"{0}Desabilitar processamento{1} de tráfego de transferência de arquivo."
+msgstr "{0}Desabilitar processamento{1} de tráfego de transferência de arquivo."
 
 #: ../servlets/webui/root/script/config/system.js:645
 msgid "SMTP"
@@ -3318,9 +2997,7 @@ msgstr "SMTP"
 
 #: ../servlets/webui/root/script/config/system.js:650
 msgid "{0}Enable SMTP{1} email processing.  (This is the default setting)"
-msgstr ""
-"{0}Habilitar{1} processamento de e-mail SMTP.  (Esta é uma configuração "
-"padrão)"
+msgstr "{0}Habilitar{1} processamento de e-mail SMTP.  (Esta é uma configuração padrão)"
 
 #: ../servlets/webui/root/script/config/system.js:663
 msgid "{0}Disable SMTP{1} email processing."
@@ -3337,9 +3014,7 @@ msgstr ""
 #: ../servlets/webui/root/script/config/system.js:707
 #, fuzzy
 msgid "{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)"
-msgstr ""
-"{0}Habilitar{1} processamento de e-mail SMTP.  (Esta é uma configuração "
-"padrão)"
+msgstr "{0}Habilitar{1} processamento de e-mail SMTP.  (Esta é uma configuração padrão)"
 
 #: ../servlets/webui/root/script/config/system.js:724
 msgid "POP3"
@@ -3347,9 +3022,7 @@ msgstr "POP3"
 
 #: ../servlets/webui/root/script/config/system.js:729
 msgid "{0}Enable POP3{1} email processing.  (This is the default setting)"
-msgstr ""
-"{0}Habilitar{1} processamento de e-mail POP3.  (Esta é uma configuração "
-"padrão)"
+msgstr "{0}Habilitar{1} processamento de e-mail POP3.  (Esta é uma configuração padrão)"
 
 #: ../servlets/webui/root/script/config/system.js:742
 msgid "{0}Disable POP3{1} email processing."
@@ -3365,9 +3038,7 @@ msgstr "IMAP"
 
 #: ../servlets/webui/root/script/config/system.js:781
 msgid "{0}Enable IMAP{1} email processing.  (This is the default setting)"
-msgstr ""
-"{0}Habilitar{1} processamento de e-mail IMAP.  (Esta é uma configuração "
-"padrão)"
+msgstr "{0}Habilitar{1} processamento de e-mail IMAP.  (Esta é uma configuração padrão)"
 
 #: ../servlets/webui/root/script/config/system.js:794
 msgid "{0}Disable IMAP{1} email processing."
@@ -3497,8 +3168,7 @@ msgstr "Misc."
 
 #: ../servlets/webui/root/script/config/upgrade.js:107
 msgid "Upgrades are available. There are {0} packages. Total size is {1} MBs."
-msgstr ""
-"Atualizações estão disponíveis. Há {0} pacotes. Tamanho total é de {1} MBs."
+msgstr "Atualizações estão disponíveis. Há {0} pacotes. Tamanho total é de {1} MBs."
 
 #: ../servlets/webui/root/script/config/upgrade.js:110
 msgid "No upgrades available."
@@ -3529,37 +3199,20 @@ msgid "Automatically Install Upgrades"
 msgstr "Instalar atualizações automaticamente"
 
 #: ../servlets/webui/root/script/config/upgrade.js:250
-msgid ""
-"If new upgrades are available at the specified upgrade time they will be "
-"automatically downloaded and installed. During the install the system may be "
-"rebooted resulting in momentary loss of connectivicty."
-msgstr ""
-"Se novas atualizações estão disponíveis no tempo de atualização "
-"especificado, elas serão baixadas e instaladas automaticamente. Durante a "
-"instalação, o sistema pode ser reinicializado, resultando em perda "
-"momentânea da conectividade."
+msgid "If new upgrades are available at the specified upgrade time they will be automatically downloaded and installed. During the install the system may be rebooted resulting in momentary loss of connectivicty."
+msgstr "Se novas atualizações estão disponíveis no tempo de atualização especificado, elas serão baixadas e instaladas automaticamente. Durante a instalação, o sistema pode ser reinicializado, resultando em perda momentânea da conectividade."
 
 #: ../servlets/webui/root/script/config/upgrade.js:253
 msgid "Do Not Automatically Install Upgrades"
 msgstr "Não instalar atualizações automaticamente"
 
 #: ../servlets/webui/root/script/config/upgrade.js:268
-msgid ""
-"If new upgrades are available at the specified upgrade time they will be not "
-"be installed. All upgrades must be manually installed using the button on "
-"the Upgrade tab."
-msgstr ""
-"Se novas atualizações estiverem disponíveis no tempo de atualização "
-"especificado, elas não serão instaladas. Todas as atualizações devem ser "
-"manualmente instaladas usando o botão na guia Atualização."
+msgid "If new upgrades are available at the specified upgrade time they will be not be installed. All upgrades must be manually installed using the button on the Upgrade tab."
+msgstr "Se novas atualizações estiverem disponíveis no tempo de atualização especificado, elas não serão instaladas. Todas as atualizações devem ser manualmente instaladas usando o botão na guia Atualização."
 
 #: ../servlets/webui/root/script/config/upgrade.js:272
-msgid ""
-"Note: Turning off Automatic Upgrades does not disable signature & list "
-"updates"
-msgstr ""
-"Nota: Desativar as atualizações automáticas não desabilita as atualizações "
-"de assinatura e lista"
+msgid "Note: Turning off Automatic Upgrades does not disable signature & list updates"
+msgstr "Nota: Desativar as atualizações automáticas não desabilita as atualizações de assinatura e lista"
 
 #: ../servlets/webui/root/script/config/upgrade.js:276
 msgid "Upgrade Time"
@@ -3894,36 +3547,30 @@ msgid "thousand_sep"
 msgstr ","
 
 msgid "date_fmt"
-msgstr "m/d/y"
+msgstr "d/m/Y"
 
 msgid "timestamp_fmt"
-msgstr "Y-m-d g:i:s a"
+msgstr "Y-m-d G:i:s"
 
 #, fuzzy
-msgid "timestamp"
-msgstr "Y-m-d g:i:s a"
-
+#~ msgid "timestamp"
+#~ msgstr "Y-m-d g:i:s a"
 #~ msgid "The value in this field is invalid"
 #~ msgstr "O valor neste campo é inválido"
-
 #~ msgid "This field is required"
 #~ msgstr "Este campo é necessário"
-
 #~ msgid "Advanced Email Configuration."
 #~ msgstr "Configuração avançada de e-mail."
-
 #~ msgid ""
 #~ "You are about to manually reboot.  This will interrupt normal network "
 #~ "operations<br>"
 #~ msgstr ""
 #~ "Você está prestes a inicializar manualmente. isto irá interromper as "
 #~ "operações normais de rede<br>"
-
 #~ msgid "until the Untangle Server is finished automatically restarting.<br>"
 #~ msgstr "até o Servidor Untangle terminar o reinício automático.<br>"
-
 #~ msgid "This may take up to several minutes to complete."
 #~ msgstr "Isto poderá levar vários minutos para completar."
-
 #~ msgid "Unknown"
 #~ msgstr "Desconhecido"
+

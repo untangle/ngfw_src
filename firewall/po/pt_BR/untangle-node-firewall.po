@@ -5,16 +5,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-12 18:16-0800\n"
-"Last-Translator: Claudia\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2008-11-21 16:52-0800\n"
+"Last-Translator: \n"
+"Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-Language: Portuguese\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:21
 msgid "Enable"
@@ -202,3 +203,4 @@ msgstr "Sessões registradas"
 
 #~ msgid "Category"
 #~ msgstr "Categoria"
+

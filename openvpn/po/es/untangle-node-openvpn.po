@@ -8,28 +8,26 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-21 17:17-0800\n"
+"PO-Revision-Date: 2008-11-21 16:23-0800\n"
 "Last-Translator: \n"
-"Language-Team: Chinese <j.zhu@impactek.com>\n"
+"Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Poedit-Language: Chinese\n"
-"X-Poedit-Country: CHINA\n"
-"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Language: Spanish\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:26
 msgid "Failure"
-msgstr "失败"
+msgstr "Fallo"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:27
 msgid "You must specify an email address to send the key to."
-msgstr "您必须指定一个接受密钥的电子邮件地址。"
+msgstr "Debe especificar la dirección de correo a la cual se debe enviar la clave."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:33
 msgid "Distributing digital key..."
-msgstr "正在分发数字密钥。。。"
+msgstr "Distribuyendo clave digital..."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:33
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:322
@@ -38,149 +36,140 @@ msgstr "正在分发数字密钥。。。"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1925
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1974
 msgid "Please wait"
-msgstr "请等待"
+msgstr "Espere"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:41
 msgid "Error saving/sending key"
-msgstr "保存/发送密钥出错"
+msgstr "Error al guardar o enviar la clave"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:42
 msgid "OpenVPN was not able to send your digital key via email.  Please try again."
-msgstr "OpenVPN无法通过电子邮件发送您的数字密钥。请再试。"
+msgstr "OpenVPN no puedo enviar su clave digital por email. Vuelva a intentarlo."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:47
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:405
 msgid "Success"
-msgstr "成功"
+msgstr "¡Terminado con éxito!"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:48
 msgid "OpenVPN successfully sent your digital key via email."
-msgstr "OpenVPN成功的通过电子邮件向您发送了您的数字密钥。"
+msgstr "OpenVPN envió su clave digital por email."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:79
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:90
-#, fuzzy
 msgid "Download Key"
-msgstr "从优盘下载"
+msgstr "Descargar clave"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:83
-#, fuzzy
 msgid "Download VPN Site configuration."
-msgstr "下载配置"
+msgstr "Configuración de descarga del sitio VPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:94
 msgid "Click here to download a key for Windows clients."
-msgstr ""
+msgstr "Haga clic aquí para descargar una clave para clientes Windows."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:98
 msgid "Click here to download a key for all other clients."
-msgstr ""
+msgstr "Haga clic aquí para descargar una clave para todos los demás clientes."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:111
 msgid "Distribute via Email"
-msgstr "通过电子邮件分发"
+msgstr "Distribuir por email"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:115
 msgid "Click \"Send Email\" to send an email to \"Email Address\" with information to retrieve the OpenVPN Client."
-msgstr ""
+msgstr "Haga clic en \"Enviar mensaje\" para enviar un mensaje a \"Dirección de email\" con información sobre cómo recuperar el cliente OpenVPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:120
 msgid "Email Address"
-msgstr "电子邮件地址"
+msgstr "Dirección de email"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:126
 msgid "Send Email"
-msgstr ""
+msgstr "Enviar mensaje"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:134
-#, fuzzy
 msgid "Distribute VPN Client"
-msgstr "分发客户端"
+msgstr "Distribuir cliente VPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:140
 msgid "Close"
-msgstr ""
+msgstr "Cerrar"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:164
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1806
 msgid "Welcome"
-msgstr "欢迎光临"
+msgstr "Bienvenido"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:168
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1811
 msgid "Welcome to the OpenVPN Setup Wizard!"
-msgstr "欢迎来到OpenVPN的安装向导！"
+msgstr "Bienvenido al Asistente de instalación de OpenVPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:170
 msgid "This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Client."
-msgstr "本向导将帮助您完成初始设置以及配置OpenVPN成为一个VPN客户。"
+msgstr "Este asistente le guiará por la instalación y configuración inicial de OpenVPN como cliente VPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:175
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1819
-#, fuzzy
 msgid "Warning: Completing this wizard will overwrite any previous OpenVPN settings with new settings. All previous settings will be lost!"
-msgstr "警告：结束本向导将导致您失去所有之前OpenVPN的设置并且会被新设置覆盖。只有在您确定要完成新设置的情况下才结束本向导。"
+msgstr "Atención: al completar este asistente sobrescribirá cualquier configuración OpenVPN anterior con la nueva. ¡Perderá todos los valores anteriores­!"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:190
-#, fuzzy
 msgid "Install Configuration"
-msgstr "下载配置"
+msgstr "Instalar configuración"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:196
 msgid "Download Configuration"
-msgstr "下载配置"
+msgstr "Descargar configuración"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:201
 msgid "Please specify where your VPN Client configuration should come from."
-msgstr ""
+msgstr "Especifique la proveniencia de su configuración de cliente VPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:210
 msgid "Download from Server"
-msgstr "从服务器下载"
+msgstr "Descargar del servidor"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:223
 msgid "Server IP Address"
-msgstr "服务器IP地址"
+msgstr "Dirección IP del servidor"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:230
 msgid "Password"
-msgstr "密码"
+msgstr "Contraseña"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:236
-#, fuzzy
 msgid "Upload Configuration"
-msgstr "下载配置"
+msgstr "Cargar configuración"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:300
-#, fuzzy
 msgid "Invalid Server Address"
-msgstr "服务器IP地址"
+msgstr "Dirección de servidor no válida"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:314
 msgid "Select a value"
-msgstr ""
+msgstr "Escoja un valor"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:314
 msgid "Please choose 'Download from Server' or 'Upload Configuration'."
-msgstr ""
+msgstr "Escoja 'Descargar del servidor' o 'Cargar configuración'."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:321
 msgid "Downloading Configuration... (This may take up to one minute)"
-msgstr "正在下载配置。。。（可能需要1分钟左右）"
+msgstr "Descargando configuración... (puede tardar hasta un minuto)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:338
-#, fuzzy
 msgid "Error downloading configuration from server."
-msgstr "从服务器下载配置时错误。"
+msgstr "Error al descargar la configuración del servidor"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:339
 msgid "Your VPN Client configuration could not be downloaded from the server.  Please try again."
-msgstr "无法从服务器下载您的VPN客户端配置。请重试。"
+msgstr "No fue posible descargar su configuración de cliente VPN del servidor. Vuelva a intentarlo."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:349
-#, fuzzy
 msgid "Uploading Configuration... (This may take up to one minute)"
-msgstr "正在下载配置。。。（可能需要1分钟左右）"
+msgstr "Cargando configuración... (puede tardar hasta un minuto)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:358
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:395
@@ -202,161 +191,162 @@ msgstr "正在下载配置。。。（可能需要1分钟左右）"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1918
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1922
 msgid "Failed"
-msgstr "失败"
+msgstr "Falló"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:358
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:401
-#, fuzzy
 msgid "Unable to load VPN Client"
-msgstr "配置成VPN客户端"
+msgstr "Imposible cargar cliente VPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:365
 msgid "Select File"
-msgstr ""
+msgstr "Escoja el archivo"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:365
 msgid "Please choose a file to upload."
-msgstr ""
+msgstr "Escoja el archivo que desea cargar."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:388
 msgid "Unable to install OpenVPN client."
-msgstr ""
+msgstr "Imposible instalar el cliente OpenVPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:390
 msgid "Unable to verify connection to server."
-msgstr ""
+msgstr "Imposible verificar la conexión con el servidor."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:392
 msgid "The selected configuration file is invalid."
-msgstr ""
+msgstr "El archivo de configuración seleccionado no es válido."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:406
 msgid "Installed OpenVPN client."
-msgstr ""
+msgstr "Se ha instalado el cliente OpenVPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:419
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:423
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1990
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1995
 msgid "Finished!"
-msgstr ""
+msgstr "¡Terminado!"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:427
 msgid "Congratulations! OpenVPN is configured as a VPN Client."
-msgstr "祝贺您！OpenVPN已经配置为一个VPN客户端。"
+msgstr "¡Felicitaciones! OpenVPN está configurado como cliente VPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:463
 msgid "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed."
-msgstr ""
+msgstr "El nombre de cliente sólo debe contener números, letras, guiones y puntos. No admite espacios."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:530
 msgid "Unconfigured: Use buttons below."
-msgstr "尚未配置：使用下面的按钮。"
+msgstr "No configurado: use los botones abajo."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:532
 msgid "VPN Client: Connected to {0}"
-msgstr "VPN客户：连接到{0}"
+msgstr "Cliente VPN: conectado a {0}"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:536
 msgid "VPN Server"
-msgstr "VPN服务器"
+msgstr "Servidor VPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:546
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:563
 msgid "Status"
-msgstr "状态"
+msgstr "Estado"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:558
 msgid "Current Mode"
-msgstr "当前模式"
+msgstr "Modo actual"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:568
 msgid "Wizard"
-msgstr "向导"
+msgstr "Asistente"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:576
 msgid "Configure as VPN Server"
-msgstr "配置成VPN服务器"
+msgstr "Configurar como servidor VPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:588
 msgid "This configures OpenVPN so remote users and networks can connect and access exported hosts and networks."
-msgstr "配置OpenVPN，远程用户和网络可以连接到输出的主机和网络。"
+msgstr "Configura OpenVPN de modo que las redes y los usuarios remotos puedan conectarse y acceder a redes y hosts exportados."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:595
 msgid "Configure as VPN Client"
-msgstr "配置成VPN客户端"
+msgstr "Configurar como cliente VPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:606
 msgid "This configures OpenVPN so it connects to a remote OpenVPN Server and can access exported hosts and networks."
-msgstr "配置OpenVPN，连接到远程OpenVPN服务器并可访问输出的主机和网络。"
+msgstr "Configura OpenVPN de modo que se conecte a un servidor OpenVPN remoto y pueda acceder a redes y hosts exportados."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:659
 msgid "start time"
-msgstr "开始时间"
+msgstr "hora de inicio"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:667
 msgid "end time"
-msgstr "结束时间"
+msgstr "hora de finalización"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:673
+#, fuzzy
 msgid "active connection"
-msgstr ""
+msgstr "Sesiones activas"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:679
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:831
 msgid "client name"
-msgstr "客户名称"
+msgstr "nombre del cliente"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:684
 msgid "client address"
-msgstr "客户地址"
+msgstr "dirección del cliente"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:689
+#, fuzzy
 msgid "KB sent"
-msgstr ""
+msgstr "kilobytes enviados"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:697
 #, fuzzy
 msgid "KB received"
-msgstr "已接收<br>千字节"
+msgstr "kilobytes recibidos"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:712
 msgid "distribute"
-msgstr "分发"
+msgstr "distribuir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:721
 msgid "Distribute Client"
-msgstr "分发客户端"
+msgstr "Cliente de distribución"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:730
 msgid "address pool"
-msgstr "地址池"
+msgstr "grupos de direcciones"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:771
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:887
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1078
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1183
 msgid "enabled"
-msgstr "已启用"
+msgstr "activado"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:797
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:914
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1093
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1206
 msgid "[no name]"
-msgstr "【无名称】"
+msgstr "[sin nombre]"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:802
 msgid "VPN Clients"
-msgstr "VPN客户"
+msgstr "Clientes VPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:840
 msgid "virtual address"
-msgstr "虚拟地址"
+msgstr "dirección virtual"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:844
 msgid "unassigned"
-msgstr "未分配"
+msgstr "no asignado"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:855
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1009
@@ -364,331 +354,320 @@ msgstr "未分配"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1269
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1367
 msgid "Enabled"
-msgstr "已启用"
+msgstr "Activado"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:860
 msgid "Client name"
-msgstr "客户名称"
+msgstr "Nombre del cliente"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:868
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1022
 msgid "Address pool"
-msgstr "地址池"
+msgstr "Grupo de direcciones"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:928
 msgid "VPN Sites"
-msgstr "VPN站点"
+msgstr "Sitios VPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:966
 msgid "site name"
-msgstr "站点名称"
+msgstr "nombre del sitio"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:976
 msgid "network address"
-msgstr "网络地址"
+msgstr "dirección de red"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:989
 msgid "network mask"
-msgstr "网络掩码"
+msgstr "máscara de red"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1014
 msgid "Site name"
-msgstr "站点名称"
+msgstr "Nombre del sitio"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1035
 msgid "Network address"
-msgstr "网络地址"
+msgstr "Dirección de red"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1043
 msgid "Network mask"
-msgstr "网络掩码"
+msgstr "Máscara de red"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1059
 msgid "Clients"
-msgstr "客户端"
+msgstr "Clientes"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1097
 msgid "Exported Hosts and Networks"
-msgstr "导出的主机和网络"
+msgstr "Redes y hosts exportados"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1117
 msgid "host/network name"
-msgstr "主机/网络名称"
+msgstr "nombre de red/host"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1124
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1161
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1244
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1281
 msgid "IP address"
-msgstr "IP地址"
+msgstr "Dirección IP"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1133
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1253
 msgid "netmask"
-msgstr "网络掩码"
+msgstr "máscara de red"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1154
 msgid "Host/network name"
-msgstr "主机/网络名称"
+msgstr "Nombre de red/host"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1168
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1289
 msgid "Netmask"
-msgstr "网络掩码"
+msgstr "Máscara de red"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1190
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1297
 msgid "export DNS"
-msgstr "导出DNS"
+msgstr "exportar DNS"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1211
 msgid "Address Pools"
-msgstr "地址池"
+msgstr "Grupos de direcciones"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1235
 msgid "pool name"
-msgstr "池名称"
+msgstr "nombre del grupo"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1274
 msgid "Pool name"
-msgstr "池名称"
+msgstr "Nombre del grupo"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1307
 msgid "Advanced"
-msgstr "高级的"
+msgstr "Avanzado"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1329
 msgid "Server Port (UDP)"
-msgstr "服务器端口(UDP)"
+msgstr "Puerto del servidor (UDP)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1337
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1449
 msgid "You must provide a valid port."
-msgstr "您必须提供一个可用的端口。"
+msgstr "Debe proporcionar un puerto válido."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1348
 msgid "Site Name"
-msgstr "站点名称"
+msgstr "Nombre del sitio"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1353
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1461
 msgid "You must enter a site name."
-msgstr "您必须输入一个站点名称。"
+msgstr "Debe introducir el nombre de un sitio."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1363
 msgid "DNS Override"
-msgstr "DNS覆写"
+msgstr "Anular DNS"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1387
 msgid "Disabled"
-msgstr "被禁用"
+msgstr "Desactivado"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1416
 msgid "Primary IP"
-msgstr "基本IP"
+msgstr "Dir. IP primaria"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1422
 msgid "A Valid Primary IP Address must be specified."
-msgstr "必须指定一个有效的基本IP。"
+msgstr "Debe especificar una dirección IP primaria válida."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1426
 msgid "Secondary IP (optional)"
-msgstr "次级IP（可选）"
+msgstr "Dir. IP secundaria (opcional):"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1473
 msgid "A valid Primary IP Address must be specified."
-msgstr "必须指定一个有效的基本IP。"
+msgstr "Debe especificar una dirección IP primaria válida."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1484
 msgid "A valid Secondary IP Address must be specified."
-msgstr "必须指定一个有效的次级IP。"
+msgstr "Debe especificar una dirección IP secundaria válida."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1509
 msgid "You must create at least one group."
-msgstr "您必须至少创建一个组。"
+msgstr "Debe crear al menos un grupo."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1524
 msgid "The group: \"{0}\" cannot be deleted because it is being used by the client: {1} in the Client To Site List."
-msgstr "无法删除组“{0}”，因为其已被在客户到站点列表中的用户：{1}使用。"
+msgstr "No se puede eliminar el grupo \"{0}\" porque está siendo utilizado por el cliente {1} en la lista Cliente a sitio."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1536
 msgid "The group: \"{0}\" cannot be deleted because it is being used by the site: {1} in the Site To Site List."
-msgstr "无法删除组“{0}”，因为其已被在站点到站点列表中的站点：{1}使用。"
+msgstr "No se puede eliminar el grupo \"{0}\" porque está siendo utilizado por el sitio {1} en la lista Sitio a sitio."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1550
 msgid "The group name: \"{0}\" in row: {1} already exists."
-msgstr "{1}行中的组名称：“{0}”已经存在。"
+msgstr "El nombre de grupo \"{0}\" de la fila {1} ya existe."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1567
-#, fuzzy
 msgid "Unable to change name once you've saved. Create a new user. Client name should be {0}."
-msgstr "您不能在密钥已经分发后更改用户名。用户名是{0}。"
+msgstr "No se puede cambiar el nombre después de guardar. Cree otro usuario. El nombre del cliente debe ser {0}."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1578
 msgid "The client name: \"{0}\" in row: {1} already exists."
-msgstr "{1}行中的用户名称：“{0}”已经存在。"
+msgstr "El nombre de cliente \"{0}\" de la fila {1} ya existe."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1596
 msgid "The site name: \"{0}\" in row: {1} already exists."
-msgstr "{1}行中的站点名称：“{0}”已经存在。"
+msgstr "El nombre de sitio \"{0}\" de la fila {1} ya existe."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1641
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1645
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1649
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1686
 msgid "The two networks: {0} and {1} cannot overlap"
-msgstr "{0}和{1}这两个网络不能重叠"
+msgstr "Las dos redes {0} y {1} no pueden solaparse."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1655
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1691
 msgid "Validation failed"
-msgstr "验证错误"
+msgstr "Error de validación"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1713
 msgid "Saving..."
-msgstr "正在保存。。。"
+msgstr "Guardando..."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1760
 msgid "OpenVPN Client Setup Wizard"
-msgstr "OpenVPN客户端安装向导"
+msgstr "Asistente de instalación de cliente OpenVPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1787
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2055
-#, fuzzy
 msgid "Setup Wizard Warning"
-msgstr "OpenVPN安装向导警告"
+msgstr "Advertencia del Asistente de instalación"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1787
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2055
-#, fuzzy
 msgid "You have not finished configuring OpenVPN. Please run the Setup Wizard again."
-msgstr "如果需要，您可以再次运行安装向导来改变OpenVPN的配置。"
+msgstr "No ha terminado de configurar OpenVPN. Vuelva a ejecutar el Asistente de instalación."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1813
 msgid "This wizard will help guide you through your initial setup and configuration of OpenVPN as a VPN Routing Server."
-msgstr "本向导将帮助您完成初始设置以及配置OpenVPN成为一个VPN路由选择服务器。"
+msgstr "Este asistente le guiará por la instalación y configuración inicial de OpenVPN como servidor de direccionamiento de VPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1853
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1858
-#, fuzzy
 msgid "Step 1 - Certificate"
-msgstr "生成证书"
+msgstr "Paso 1: Certificado"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1861
-#, fuzzy
 msgid "Please specify some information about your location. This information will be used to generate a secure digital certificate."
-msgstr "请指定有关您位置的信息用于生成一个安全的数字证书。"
+msgstr "Especifique la información sobre su localidad. Esta información se utilizará para generar un certificado digital seguro."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1868
 msgid "This information is required."
-msgstr "该信息是必须的。"
+msgstr "Esta información es obligatoria."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1873
 msgid "Organization"
-msgstr "组织"
+msgstr "Organización"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1878
 msgid "Country"
-msgstr "国家"
+msgstr "País"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1893
 msgid "State/Province"
-msgstr ""
+msgstr "Estado, región o provincia"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1901
 msgid "City"
-msgstr "城市"
+msgstr "Ciudad"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1914
 msgid "You must fill out the name of your organization."
-msgstr "您必须填写组织名称。"
+msgstr "Debe escribir el nombre de su organización."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1918
 msgid "You must fill out the name of your state."
-msgstr "您必须填写省（州）名。"
+msgstr "Debe escribir el nombre de su estado."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1922
 msgid "You must fill out the name of your locality."
-msgstr "您必须填写您的位置。"
+msgstr "Debe escribir el nombre de su localidad."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1925
 msgid "Generating Certificate..."
-msgstr "正在生成证书。。。"
+msgstr "Generando certificado..."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1947
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1952
 msgid "Step 2 - Exports"
-msgstr ""
+msgstr "Paso 2: Exportaciones"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1954
 msgid "Please complete the list of exports. This is a list of hosts and networks which remote VPN users and networks will be able to contact."
-msgstr "请完成出口列表。这是一个主机和网络列表能让远程VPN用户和网络可以联系。"
+msgstr "Complete la lista de exportaciones. Esta lista contiene las redes y los hosts con los cuales las redes y los usuarios de VPN remotos podrán comunicarse."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1959
-#, fuzzy
 msgid "By default the entire internal network is exported."
-msgstr "默认状态下，整个内部网络和DNS服务器已经导出。"
+msgstr "Toda la red interna se exporta automáticamente."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1974
 msgid "Adding Exports..."
-msgstr "正在添加出口。。。"
+msgstr "Agregar exportaciones..."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1997
-#, fuzzy
 msgid "Congratulations!"
-msgstr "祝贺您"
+msgstr "¡Felicitaciones!"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2001
 msgid "You are now ready to begin adding remote clients and sites you wish to have access to your VPN."
-msgstr ""
+msgstr "Puede comenzar a agregar los clientes y sitios remotos a los cuales desea otorgar acceso a su VPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2006
 msgid "To add remote users, click on the Clients tab and add to the VPN Clients table.<br/>To add remote networks, click on the Clients tab and add to the VPN Sites table."
-msgstr ""
+msgstr "Para agregar usuarios remotos haga clic en la pestaña Clientes y agréguelos a la tabla Clientes VPN.<br/>Para agregar redes remotas haga clic en la pestaña Clientes y agréguelas a la tabla Sitios VPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2029
-#, fuzzy
 msgid "OpenVPN Server Setup Wizard"
-msgstr "OpenVPN客户端安装向导"
+msgstr "Asistente de instalación de servidor OpenVPN"
 
 #: ../impl/com/untangle/node/openvpn/ClientConnectEventAllFilter.java:28
 msgid "Closed Sessions"
-msgstr ""
+msgstr "Sesiones cerradas"
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnMonitor.java:93
 msgid "Active Sessions"
-msgstr ""
+msgstr "Sesiones activas"
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnMonitor.java:94
 msgid "All Sessions"
-msgstr ""
+msgstr "Todas las sesiones"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:128
-#, fuzzy
 msgid "Clients blocked"
-msgstr "客户端"
+msgstr "Clientes bloqueados"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:128
 msgid "BLOCK"
-msgstr ""
+msgstr "BLOQUEAR"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:129
-#, fuzzy
 msgid "Clients passed"
-msgstr "客户名称"
+msgstr "Clientes pasados"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:129
 msgid "PASS"
-msgstr ""
+msgstr "PASAR"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
-#, fuzzy
 msgid "Clients connected"
-msgstr "VPN客户：连接到{0}"
+msgstr "Clientes conectados"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
 msgid "CONNECT"
-msgstr ""
+msgstr "CONECTAR"
 
 #: ../impl/com/untangle/node/openvpn/Sandbox.java:250
 msgid "default"
@@ -698,72 +677,14 @@ msgstr ""
 msgid "internal network"
 msgstr ""
 
-#~ msgid "Kbytes<br>sent"
-#~ msgstr "已发送<br>千字节"
-#~ msgid "OpenVPN Question..."
-#~ msgstr "OpenVPN问题。。。"
-#~ msgid "Cancel"
-#~ msgstr "取消"
-#~ msgid "Proceed"
-#~ msgstr "进行"
-#~ msgid "Question:"
-#~ msgstr "问题："
 #~ msgid ""
-#~ "Please choose how you would like to distribute your digital key. {0}Note: "
-#~ "If you choose to send via email, you must supply an email address to send "
-#~ "the email to. If you choose to download to USB key, the data will be "
-#~ "located on the key at: {1}"
+#~ "If necessary, you can change the configuration of OpenVPN by launching "
+#~ "the Setup Wizard again."
 #~ msgstr ""
-#~ "请选择您想如何分发您的数字密钥。{0}注意：如果您选择通过电子邮件，您必须提"
-#~ "供一个收件的电子邮件地址。如果您选择下载到优盘，数据将会被定位到优盘的{1}"
-#~ msgid "Distribute via USB Key"
-#~ msgstr "通过优盘分发"
-#~ msgid ""
-#~ "OpenVPN was not able to save your digital key to your USB key.  Please "
-#~ "try again."
-#~ msgstr "OpenVPN无法保存您的数字密钥到您的优盘。请再试。"
-#~ msgid "OpenVPN successfully saved your digital key to your USB key."
-#~ msgstr "OpenVPN成功的将您的数字密钥保存到了您的优盘。"
-#~ msgid ""
-#~ "Please specify where your VPN Client configuration should come from.  You "
-#~ "may specify a Server or USB Key.  If you choose USB Key, you must press "
-#~ "\"Read USB Key\" to load configurations from the key, and then choose a "
-#~ "configuration from the drop-down-list."
-#~ msgstr ""
-#~ "请指定您将从何处获得VPN客户端配置。您可以指定一个服务器或优盘。如果您选择"
-#~ "优盘，您必须点击“读取优盘”来从优盘加载配置，然后再从下拉表单选择一个配置。"
-#~ msgid "Read USB Key"
-#~ msgstr "读取优盘"
-#~ msgid ""
-#~ "The USB Key could not be read.  Please make sure the key is properly "
-#~ "inserted, and try again."
-#~ msgstr "无法读取优盘。请确保优盘正确的插入，然后再试。"
-#~ msgid "[No Configurations]"
-#~ msgstr "【无配置】"
-#~ msgid "The \"Server Address\" is not a valid IP address."
-#~ msgstr "“服务器地址”不是有效IP地址。"
-#~ msgid "Please supply a password will be used to connect to the server."
-#~ msgstr "请提供一个用于连接到服务器的密码。"
-#~ msgid "You must click \"Read USB Key\" before proceeding."
-#~ msgstr "您必须点击“读取优盘”开始进程。"
-#~ msgid ""
-#~ "You must click \"Read USB Key\", and select a valid configuration from "
-#~ "the drop-down-list before proceeding.\""
-#~ msgstr "您必须点击“读取优盘”，并且从下拉表单选择一个有效的配置开始进程。"
-#~ msgid "Error downloading config from USB key."
-#~ msgstr "从优盘下载配置时错误。"
-#~ msgid ""
-#~ "Your VPN Client configuration could not be downloaded from the USB key.  "
-#~ "Please try again."
-#~ msgstr "无法从优盘下载您的VPN客户端配置。请重试。"
-#~ msgid "State"
-#~ msgstr "省(州)"
-#~ msgid "You must fill out the name of your country."
-#~ msgstr "您必须填写国家名。"
+#~ "Si resulta necesario, puede lanzar el Asistente de instalación otra vez "
+#~ "para cambiar la configuración de OpenVPN."
 #~ msgid "The country code must be 2 characters long."
-#~ msgstr "国家代码长度必须是2位字符。"
-#~ msgid "Add Exports"
-#~ msgstr "添加出口"
-#~ msgid "Congratulations! OpenVPN is configured as a VPN Routing Server."
-#~ msgstr "祝贺您！OpenVPN已经配置为一个VPN路由选择服务器。"
+#~ msgstr "El código del país debe contener 2 caracteres."
+#~ msgid "You must fill out the name of your country."
+#~ msgstr "Debe escribir el nombre de su país."
 

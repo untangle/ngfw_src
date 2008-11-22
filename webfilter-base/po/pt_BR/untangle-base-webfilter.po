@@ -5,15 +5,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-13 09:06-0800\n"
-"Last-Translator: Claudia\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2008-11-21 16:48-0800\n"
+"Last-Translator: \n"
+"Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Portuguese\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:30
 msgid "Block Lists"
@@ -136,9 +137,7 @@ msgstr "Descrição"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:350
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
-msgstr ""
-"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro "
-"(https) "
+msgstr "\"URL\" especificado não pode ser bloqueado porque utiliza http seguro (https) "
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:362
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:411
@@ -200,8 +199,7 @@ msgstr "Endereços IP"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:714
 msgid "\"URL\" specified cannot be passed because it uses secure http (https)"
-msgstr ""
-"Especificado \"URL\" não pode passar porque utiliza http seguro (https) "
+msgstr "Especificado \"URL\" não pode passar porque utiliza http seguro (https) "
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:732
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:807
@@ -386,3 +384,4 @@ msgstr "Desbloquear por enquanto"
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
+
