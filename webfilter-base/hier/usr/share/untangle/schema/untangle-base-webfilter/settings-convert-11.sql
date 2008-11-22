@@ -20,6 +20,18 @@ ALTER TABLE settings.n_webfilter_settings ADD COLUMN enable_https bool;
 UPDATE settings.n_webfilter_settings SET enable_https = true;
 ALTER TABLE settings.n_webfilter_settings ALTER COLUMN enable_https SET NOT NULL;
 
+INSERT INTO settings.n_webfilter_blcat
+       (category_id, name, display_name,
+        description, block, log, setting_id)
+       SELECT nextval('hibernate_sequence'), 'Uncategorized', 'Uncategorized',
+       'Uncategorized', true, true, settings_id
+       FROM settings.n_webfilter_settings
+       WHERE fascist_mode = true;
+
+UPDATE settings.n_webfilter_settings
+SET block_all_ip_hosts = true
+WHERE fascist_mode = true;
+
 UPDATE settings.n_webfilter_blcat SET block = true, log = true
 WHERE setting_id IN (SELECT settings_id
                      FROM settings.n_webfilter_settings
