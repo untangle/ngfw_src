@@ -336,74 +336,88 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         install(name, true);
     }
 
+    private final Object installAndInstantiateLock = new Object();
+
     public void installAndInstantiate(final String name, final Policy p)
         throws MackageInstallException
     {
         Runnable r = new Runnable()
             {
-	        // Now keeps a record of which nodes are being installed (globally), and
-		// which ones are being installed by this run.
                 public void run()
                 {
-		 UvmContextImpl mctx = UvmContextImpl.getInstance();
-		 NodeManagerImpl tm = mctx.nodeManager();
-		 List<String> nodes = null;
+                    synchronized (installAndInstantiateLock) {
+                        doIt();
+                    }
+                }
 
-		 // List of mackages that we will try to install in this run
-		 List<String> willInstall = new ArrayList<String>();
+                // Now keeps a record of which nodes are being
+                // installed (globally), and which ones are being
+                // installed by this run.
+                public void doIt()
+                {
+                    UvmContextImpl mctx = UvmContextImpl.getInstance();
+                    NodeManagerImpl tm = mctx.nodeManager();
+                    List<String> nodes = null;
 
-		 try {
-		    if (isInstalled(name)) {
-			logger.warn("mackage " + name + " already installed, debouncing");
-			return;
-		    }
-		    synchronized (beingInstalled) {
-			if (beingInstalled.contains(name)) {
-			    logger.warn("mackage " + name + " being installed, debouncing");
-			    return;
-			}
-			beingInstalled.add(name);
-			willInstall.add(name);
-			nodes = predictNodeInstall(name);
-			for (Iterator<String> iter = nodes.iterator(); iter.hasNext();) {
-			    String newNode = iter.next();
-			    if (beingInstalled.contains(newNode)) {
-				logger.warn("mackage " + newNode + " being subinstalled, debouncing");
-				// Let the other guy install it.
-				iter.remove();
-			    } else {
-				beingInstalled.add(newNode);
-				willInstall.add(newNode);
-			    }
-			}
-		    }
-			
-                    install(name, false);
-                    for (String nn : nodes) {
-                        try {
-                            register(nn);
-                            NodeDesc nd = tm.instantiate(nn, p);
-                            if (nd != null && !nd.getNoStart()) {
-                                NodeContext nc = tm.nodeContext(nd.getTid());
-                                nc.node().start();
+                    // List of mackages that we will try to install in
+                    // this run
+                    List<String> willInstall = new ArrayList<String>();
+
+                    try {
+                        if (isInstalled(name)) {
+                            logger.warn("mackage " + name
+                                        + " already installed, debouncing");
+                            return;
+                        }
+                        synchronized (beingInstalled) {
+                            if (beingInstalled.contains(name)) {
+                                logger.warn("mackage " + name
+                                            + " being installed, debouncing");
+                                return;
                             }
-			} catch (NodeStartException exn) {
-			    // XXX send out error message
-			    logger.warn("could not start", exn);
-                        } catch (DeployException exn) {
-                            // XXX send out error message
-                            logger.warn("could not deploy", exn);
-                        } catch (MackageInstallException e) {
-                            // TODO Auto-generated catch block
-                            logger.warn("could not register", e);
+                            beingInstalled.add(name);
+                            willInstall.add(name);
+                            nodes = predictNodeInstall(name);
+                            for (Iterator<String> iter = nodes.iterator(); iter.hasNext();) {
+                                String newNode = iter.next();
+                                if (beingInstalled.contains(newNode)) {
+                                    logger.warn("mackage " + newNode
+                                                + " being subinstalled, debouncing");
+                                    // Let the other guy install it.
+                                    iter.remove();
+                                } else {
+                                    beingInstalled.add(newNode);
+                                    willInstall.add(newNode);
+                                }
+                            }
+                        }
+
+                        install(name, false);
+                        for (String nn : nodes) {
+                            try {
+                                register(nn);
+                                NodeDesc nd = tm.instantiate(nn, p);
+                                if (nd != null && !nd.getNoStart()) {
+                                    NodeContext nc = tm.nodeContext(nd.getTid());
+                                    nc.node().start();
+                                }
+                            } catch (NodeStartException exn) {
+                                // XXX send out error message
+                                logger.warn("could not start", exn);
+                            } catch (DeployException exn) {
+                                // XXX send out error message
+                                logger.warn("could not deploy", exn);
+                            } catch (MackageInstallException e) {
+                                // TODO Auto-generated catch block
+                                logger.warn("could not register", e);
+                            }
+                        }
+                    } finally {
+                        synchronized (beingInstalled) {
+                            for (String newNode : willInstall)
+                                beingInstalled.remove(newNode);
                         }
                     }
-		 } finally {
-		     synchronized (beingInstalled) {
-			 for (String newNode : willInstall)
-			     beingInstalled.remove(newNode);
-		     }
-		 }
 
                     LocalMessageManager mm = mctx.localMessageManager();
                     MackageDesc mackageDesc = mackageDesc(name);
@@ -558,17 +572,17 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         LocalMessageManager mm = LocalUvmContextFactory.context()
             .localMessageManager();
 
-	// Make sure there isn't an existing outstanding install request for this mackage.
-	for (Message msg : mm.getMessages()) {
-	    if (msg instanceof MackageInstallRequest) {
-		MackageInstallRequest existingMir = (MackageInstallRequest) msg;
-		if (existingMir.getMackageDesc() == md) {
-		    logger.warn("requestInstall(" + mackageName  + "): ignoring request; install request already pending");
-		    return;
-		}
-	    }
-	}
-		    
+        // Make sure there isn't an existing outstanding install request for this mackage.
+        for (Message msg : mm.getMessages()) {
+            if (msg instanceof MackageInstallRequest) {
+                MackageInstallRequest existingMir = (MackageInstallRequest) msg;
+                if (existingMir.getMackageDesc() == md) {
+                    logger.warn("requestInstall(" + mackageName  + "): ignoring request; install request already pending");
+                    return;
+                }
+            }
+        }
+
         logger.info("requestInstall: " + mackageName);
         mm.submitMessage(mir);
     }
@@ -640,7 +654,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         Random rand = new Random();
                         Period period = new Period(23, rand.nextInt(60), true);
                         us = new UpgradeSettings(period);
-            // only turn on auto-upgrade for full ISO install
+                        // only turn on auto-upgrade for full ISO install
                         UpstreamService upgradeSvc =
                             LocalUvmContextFactory.context().upstreamManager().getService(RemoteUpstreamManager.AUTO_UPGRADE_SERVICE_NAME);
                         if (upgradeSvc != null)
@@ -1035,17 +1049,17 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;
             while (null != (line = br.readLine())) {
-		MackageDesc md = packageMap.get(line);
-		if (md == null) {
-		    logger.debug("Ignoring non-mackage: " + line);
-		    continue;
-		}
-		MackageDesc.Type mdType = md.getType();
-		if (mdType != MackageDesc.Type.NODE && mdType != MackageDesc.Type.SERVICE) {
-		    logger.debug("Ignoring non-node/service mackage: " + line);
-		    continue;
-		}
-		l.add(line);
+                MackageDesc md = packageMap.get(line);
+                if (md == null) {
+                    logger.debug("Ignoring non-mackage: " + line);
+                    continue;
+                }
+                MackageDesc.Type mdType = md.getType();
+                if (mdType != MackageDesc.Type.NODE && mdType != MackageDesc.Type.SERVICE) {
+                    logger.debug("Ignoring non-node/service mackage: " + line);
+                    continue;
+                }
+                l.add(line);
             }
         } catch (IOException exn) {
             logger.warn("could not predict node install: " + mkg, exn);
