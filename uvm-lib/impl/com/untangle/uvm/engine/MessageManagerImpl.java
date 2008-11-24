@@ -205,7 +205,7 @@ class MessageManagerImpl implements LocalMessageManager
     public void setActiveMetrics(final Tid tid,
                                  final List<ActiveStat> activeMetrics)
     {
-        synchronized (activeMetrics) {
+        synchronized (this.activeMetrics) {
             this.activeMetrics.put(tid, activeMetrics);
         }
 
