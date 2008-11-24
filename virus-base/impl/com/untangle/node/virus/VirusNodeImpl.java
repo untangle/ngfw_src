@@ -123,7 +123,9 @@ public abstract class VirusNodeImpl extends AbstractNode
     private final PartialListUtil listUtil = new PartialListUtil();
 
     /* the signatures are updated at startup, so using new Date() is not that far off. */
+    /* Cached in the node in case the base settings lose the values during a save. */
     private Date lastSignatureUpdate = new Date();
+    private String signatureVersion = "";
 
     private VirusSettings settings;
 
@@ -228,15 +230,24 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     // VirusNode methods -------------------------------------------------
-
     public VirusBaseSettings getBaseSettings()
+    {
+        return getBaseSettings(false);
+    }
+
+    public VirusBaseSettings getBaseSettings(boolean updateScannerInfo)
     {
         VirusBaseSettings baseSettings = settings.getBaseSettings();
 
-        Date lastUpdate = scanner.getLastSignatureUpdate();
-        if (lastUpdate != null) this.lastSignatureUpdate = lastUpdate;
+        if (updateScannerInfo) {
+            Date lastSignatureUpdate = scanner.getLastSignatureUpdate();
+            if (lastSignatureUpdate != null) this.lastSignatureUpdate = lastSignatureUpdate;
+            String signatureVersion = getSigVersion();
+            if (signatureVersion != null) this.signatureVersion = signatureVersion;
+        }
+        
         baseSettings.setLastUpdate(this.lastSignatureUpdate);
-        baseSettings.setSignatureVersion(getSigVersion());
+        baseSettings.setSignatureVersion(this.signatureVersion);
 
         return baseSettings;
     }

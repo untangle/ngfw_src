@@ -41,6 +41,7 @@ import com.untangle.uvm.node.Node;
 public interface SpamNode extends Node
 {
     SpamBaseSettings getBaseSettings();
+    SpamBaseSettings getBaseSettings(boolean updateScannerInfo);
     void setBaseSettings(SpamBaseSettings baseSettings);
 
     List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns );

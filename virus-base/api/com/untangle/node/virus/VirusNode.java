@@ -50,6 +50,7 @@ public interface VirusNode extends Node
 {
     void setBaseSettings(VirusBaseSettings virusBaseSettings);
     VirusBaseSettings getBaseSettings();
+    VirusBaseSettings getBaseSettings(boolean updateScannerInfo);
     
     List<MimeTypeRule> getHttpMimeTypes(int start, int limit, String... sortColumns);
     void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified);

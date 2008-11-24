@@ -9,6 +9,17 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         emailPanel : null,
         gridEventLog : null,
         gridRBLEventLog : null,
+        // override get base settings object to reload the signature information.
+        getBaseSettings : function(forceReload) {
+            if (forceReload || this.rpc.baseSettings === undefined) {
+                try {
+                    this.rpc.baseSettings = this.getRpcNode().getBaseSettings(true);
+                } catch (e) {
+                    Ung.Util.rpcExHandler(e);
+                }
+            }
+            return this.rpc.baseSettings;
+        },
         initComponent : function() {
             this.buildEmail();
             this.buildEventLog();
