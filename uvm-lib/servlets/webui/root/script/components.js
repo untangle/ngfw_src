@@ -1497,10 +1497,17 @@ Ung.MessageManager = {
                                     startUpgradeMode="stop";
                                     this.stop();
                                     if(msg.success) {
-                                        Ext.MessageBox.alert(
-                                           i18n._("Upgrade Successful"),
-                                           i18n._("The Upgrade succeeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
-                                           Ung.Util.goToStartPage);
+                                        Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"), {
+                                            interval : 500,
+                                            increment : 60,
+                                            duration: 30000,
+                                            fn: function() {
+                                                Ext.MessageBox.alert(
+                                                   i18n._("Upgrade Successful"),
+                                                   i18n._("The Upgrade succeeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                                   Ung.Util.goToStartPage);
+                                            }
+                                        });
                                     } else {
                                         Ext.MessageBox.alert(
                                            i18n._("Upgrade Failed"),
