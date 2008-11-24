@@ -27,7 +27,7 @@ public interface Phish extends SpamNode
     EventManager<PhishHttpEvent> getPhishHttpEventManager();
 
     void setPhishBaseSettings(PhishBaseSettings phishBaseSettings);
-    PhishBaseSettings getPhishBaseSettings();
+    PhishBaseSettings getPhishBaseSettings(boolean updateInfo);
 
     PhishBlockDetails getBlockDetails(String nonce);
     boolean unblockSite(String nonce, boolean global);

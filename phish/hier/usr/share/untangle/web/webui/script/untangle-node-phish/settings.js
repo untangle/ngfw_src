@@ -13,7 +13,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         getBaseSettings : function(forceReload) {
             if (forceReload || this.rpc.baseSettings === undefined) {
             	try {
-                   this.rpc.baseSettings = this.getRpcNode().getPhishBaseSettings();
+                   this.rpc.baseSettings = this.getRpcNode().getPhishBaseSettings(true);
                 } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }

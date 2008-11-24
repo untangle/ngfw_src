@@ -30,6 +30,7 @@ import java.util.Set;
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.spam.SpamImpl;
+import com.untangle.node.spam.SpamBaseSettings;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.EncryptedUrlList;
@@ -166,11 +167,14 @@ public class PhishNode extends SpamImpl implements Phish
         setSpamSettings(phishSettings);
     }
 
-    public PhishBaseSettings getPhishBaseSettings()
+    public PhishBaseSettings getPhishBaseSettings(boolean updateInfo)
     {
         PhishBaseSettings phishBaseSettings = new PhishBaseSettings();
         PhishSettings phishSettings = getPhishSettings();
+        SpamBaseSettings spamBaseSettings = getBaseSettings(updateInfo);
         phishSettings.getBaseSettings().copy(phishBaseSettings);
+        phishBaseSettings.setLastUpdate(spamBaseSettings.getLastUpdate());
+        phishBaseSettings.setSignatureVersion(spamBaseSettings.getSignatureVersion());
         phishBaseSettings.setEnableGooglePhishList(phishSettings.getEnableGooglePhishList());
         return phishBaseSettings;
     }
