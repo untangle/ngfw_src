@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-10 11:22-0800\n"
-"PO-Revision-Date: 2008-11-12 23:49-0800\n"
+"PO-Revision-Date: 2008-11-23 23:33-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -37,15 +37,15 @@ msgstr "Quarentena"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:47
 msgid "Low"
-msgstr "Baixo"
+msgstr "Baixa"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:47
 msgid "Medium"
-msgstr "Médio"
+msgstr "Média"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:47
 msgid "High"
-msgstr "Alto"
+msgstr "Alta"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:48
 msgid "Very High"
@@ -53,11 +53,11 @@ msgstr "Muito alto"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:48
 msgid "Extreme"
-msgstr "Extremo"
+msgstr "Extrema"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:48
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "Personalizada"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:51
 msgid "Email"

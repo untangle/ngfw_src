@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-21 16:26-0800\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2008-11-22 08:51-0700\n"
+"Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,7 +30,7 @@ msgstr "Web"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:44
 msgid "Block Spyware & Ad URLs"
-msgstr ""
+msgstr "Bloquear toda URL de SW espía y publicidad"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:59
 msgid "User Bypass"
@@ -54,13 +54,13 @@ msgstr "Cookies"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:83
 msgid "Block Tracking & Ad Cookies"
-msgstr ""
+msgstr "Bloquear cookies de seguimiento y publicidad"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:97
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:133
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:156
 msgid "manage list"
-msgstr "administrar lista"
+msgstr "Administrar lista"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:103
 msgid "ActiveX"
@@ -68,11 +68,11 @@ msgstr "ActiveX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:106
 msgid "Block Malware ActiveX Installs"
-msgstr ""
+msgstr "Bloquear instalaciones ActiveX de malware"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:119
 msgid "Block All ActiveX"
-msgstr ""
+msgstr "Bloquear ActiveX completamente"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:139
 msgid "Traffic"
@@ -80,7 +80,7 @@ msgstr "Tráfico"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:142
 msgid "Monitor Suspicious Traffic"
-msgstr ""
+msgstr "Observar tráfico sospechoso"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:163
 msgid "Spyware Blocker signatures were last updated"
@@ -272,11 +272,11 @@ msgstr "Espere"
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:58
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:69
 msgid "Feature is not installed."
-msgstr ""
+msgstr "La función no está instalada."
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:78
 msgid "This request has expired."
-msgstr ""
+msgstr "Esta solicitud ha vencido."
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:108
 #, java-format
