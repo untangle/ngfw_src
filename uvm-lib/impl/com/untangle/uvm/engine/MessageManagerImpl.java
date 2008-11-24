@@ -485,7 +485,7 @@ class MessageManagerImpl implements LocalMessageManager
                         if (keepers.contains(n)) {
                             String s = matcher.group(2);
                             try {
-                                m.put(n, Integer.parseInt(s) * multiple);
+                                m.put(n, Long.parseLong(s) * multiple);
                             } catch (NumberFormatException exn) {
                                 logger.warn("could not add value for: " + n);
                             }
