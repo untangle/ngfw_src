@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-04 11:30-0800\n"
-"PO-Revision-Date: 2008-11-13 09:11-0800\n"
+"PO-Revision-Date: 2008-11-23 22:47-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:77
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:312
 msgid "These tests show you if your computer meets minimum hardware requirements."
-msgstr "Esses testes mostram a você se seu computador cumpre os requisitos mínimos de hardware."
+msgstr "Esses testes mostram a você se o seu computador cumpre os requisitos mínimos de hardware."
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:78
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:325

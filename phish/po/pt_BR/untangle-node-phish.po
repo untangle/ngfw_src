@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-21 16:53-0800\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2008-11-23 23:39-0800\n"
+"Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -77,7 +77,7 @@ msgstr "Nota"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:190
 msgid "Phish Blocker email signatures were last updated"
-msgstr "Assinaturas de e-mail do Phish Blocker foram aualizadas por último"
+msgstr "Assinaturas de e-mail do Phish Blocker foram atualizadas por último"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:193
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:230
@@ -94,7 +94,7 @@ msgstr "Habilitar filtragem web de Phish"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:227
 msgid "Phish Blocker web signatures were last updated "
-msgstr "Assinaturas web do Phish Blocker foram aualizadas por último"
+msgstr "Assinaturas web do Phish Blocker foram atualizadas por último"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:252
 msgid "Web Event Log"
@@ -177,7 +177,7 @@ msgstr "Aguarde"
 #: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:65
 #: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:74
 msgid "Feature is not installed."
-msgstr ""
+msgstr "O recurso não está instalado."
 
 #: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:105
 #, java-format
@@ -201,23 +201,23 @@ msgstr "Se tiver perguntas, queira entrar em contato {0}."
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamAllFilter.java:27
 msgid "All Events"
-msgstr ""
+msgstr "Todos os eventos"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamLogFilter.java:27
 msgid "POP/IMAP Events"
-msgstr ""
+msgstr "Eventos POP/IMAP"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSmtpFilter.java:27
 msgid "SMTP Events"
-msgstr ""
+msgstr "Eventos SMTP"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:27
 msgid "Spam Events"
-msgstr ""
+msgstr "Eventos de Spam"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:29
 msgid "Identity Theft Events"
-msgstr ""
+msgstr "Identificar eventos de roubo"
 
 #: ../impl/com/untangle/node/phish/PhishHttpAllFilter.java:38
 msgid "All Phish HTTP Traffic"

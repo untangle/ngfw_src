@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-10 11:22-0800\n"
-"PO-Revision-Date: 2008-11-20 05:44-0700\n"
+"PO-Revision-Date: 2008-11-22 09:51-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -48,11 +48,11 @@ msgstr "{0} conserva la configuración predeterminada de firmas entre actualizac
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:70
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:313
 msgid "block"
-msgstr "bloquear"
+msgstr "Bloquear"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:77
 msgid "log"
-msgstr "log"
+msgstr "Log"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:87
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:112
@@ -80,20 +80,20 @@ msgstr "[sin descripción]"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:140
 msgid "category"
-msgstr "categoría"
+msgstr "Categoría"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:148
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:267
 msgid "description"
-msgstr "descripción"
+msgstr "Descripción"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:165
 msgid "id"
-msgstr "id."
+msgstr "Id."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:171
 msgid "info"
-msgstr "información"
+msgstr "Inform."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:187
 msgid "Category"

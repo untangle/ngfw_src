@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-10 11:22-0800\n"
-"PO-Revision-Date: 2008-11-20 05:46-0700\n"
+"PO-Revision-Date: 2008-11-22 09:57-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -43,7 +43,7 @@ msgstr "[sin firma]"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
 msgid "Protocol List"
-msgstr "Lista de protocolo"
+msgstr "Lista de protocolos"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:77
 msgid "category"
