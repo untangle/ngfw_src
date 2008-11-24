@@ -80,9 +80,11 @@ class MessageManagerImpl implements LocalMessageManager
     private final Map<Tid, Counters> counters = new HashMap<Tid, Counters>();
 
     private final Random random = new Random();
-    // XXX this needs to be per client session
+
     private final Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();
     private final Map<Integer, Long> lastMessageAccess = new HashMap<Integer, Long>();
+
+    private final Map<Tid, List<ActiveStat>> activeMetrics = new HashMap<Tid, List<ActiveStat>>();
 
     private final Pulse updatePulse = new Pulse("system-stat-collector",
                                                 true,
@@ -158,39 +160,55 @@ class MessageManagerImpl implements LocalMessageManager
 
     public List<ActiveStat> getActiveMetrics(final Tid tid)
     {
-        TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
-            {
-                private List<ActiveStat> result;
+        List<ActiveStat> l = null;
 
-                public boolean doWork(Session s)
+        synchronized (activeMetrics) {
+            l = activeMetrics.get(tid);
+        }
+
+        if (null == l) {
+            TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
                 {
-                    Query q = s.createQuery
-                        ("from StatSettings bs where bs.tid = :tid");
-                    q.setParameter("tid", tid);
-                    StatSettings bs = (StatSettings)q.uniqueResult();
-                    if (null == bs) {
-                        result = null;
-                    } else {
-                        result = bs.getActiveMetrics();
+                    private List<ActiveStat> result;
+
+                    public boolean doWork(Session s)
+                    {
+                        Query q = s.createQuery
+                            ("from StatSettings bs where bs.tid = :tid");
+                        q.setParameter("tid", tid);
+                        StatSettings bs = (StatSettings)q.uniqueResult();
+                        if (null == bs) {
+                            result = null;
+                        } else {
+                            result = bs.getActiveMetrics();
+                        }
+
+                        return true;
                     }
 
-                    return true;
-                }
+                    @Override
+                    public List<ActiveStat> getResult()
+                    {
+                        return result;
+                    }
+                };
+            UvmContextImpl.getInstance().runTransaction(tw);
+            l = tw.getResult();
+            synchronized (activeMetrics) {
+                activeMetrics.put(tid, l);
+            }
+        }
 
-                @Override
-                public List<ActiveStat> getResult()
-                {
-                    return result;
-                }
-            };
-        UvmContextImpl.getInstance().runTransaction(tw);
-
-        return tw.getResult();
+        return l;
     }
 
     public void setActiveMetrics(final Tid tid,
                                  final List<ActiveStat> activeMetrics)
     {
+        synchronized (activeMetrics) {
+            this.activeMetrics.put(tid, activeMetrics);
+        }
+
         TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
             {
                 public boolean doWork(Session s)
