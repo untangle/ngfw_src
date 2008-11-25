@@ -500,7 +500,10 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                 dataIndex : 'name',
                 sortable : false,
                 fixed : true,
-                width : 100
+                width : 100,
+                renderer : function( value ) {
+                    return i18n._( value );
+                }
             },{
                 header : i18n._( "Status" ),
                 dataIndex : 'status',
@@ -624,7 +627,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
         for ( var c = 0 ; c < cleanArray.length ; c++ ) {
             var i = cleanArray[c];
-            interfaceList.push( [ i18n._( i.name ), [ i.systemName, i.connectionState, i.currentMedia ]] );
+            interfaceList.push( [ i.name, [ i.systemName, i.connectionState, i.currentMedia ]] );
         }
 
         return interfaceList;
