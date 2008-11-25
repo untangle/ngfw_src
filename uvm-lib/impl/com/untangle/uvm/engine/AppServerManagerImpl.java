@@ -330,7 +330,7 @@ class AppServerManagerImpl implements LocalAppServerManager
     private String getFQDN()
     {
         String fqdn = mctx.networkManager().getHostname().toString();
-        if (fqdn == null || fqdn.equal("")) {
+        if (fqdn == null || fqdn.equals("")) {
             return "untangle.example.com";
         }
         return fqdn;
