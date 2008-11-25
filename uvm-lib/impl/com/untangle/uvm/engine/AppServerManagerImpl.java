@@ -127,6 +127,7 @@ class AppServerManagerImpl implements LocalAppServerManager
                 {
                     String existingAlias = getCurrentServerCertInfo().getSubjectCN();
                     String currentHostname = settings.getHostName().toString();
+                    if (currentHostname == null || currentHostname.equals("")) { return; }
                     if (null == existingAlias
                         || !(existingAlias.equals(currentHostname))) {
                         hostnameChanged(currentHostname);
@@ -326,6 +327,10 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     private String getFQDN()
     {
-        return mctx.networkManager().getHostname().toString();
+        String fqdn = mctx.networkManager().getHostname().toString();
+        if (fqdn == null || fqdn.equal("")) {
+            return "untangle.example.com";
+        }
+        return fqdn;
     }
 }
