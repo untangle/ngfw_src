@@ -462,18 +462,18 @@ class MessageManagerImpl implements LocalMessageManager
             readProcFile("/proc/meminfo", MEMINFO_PATTERN, MEMINFO_KEEPERS, m,
                          1024);
 
-            Integer memFree = (Integer)m.get("MemFree");
+            Long memFree = (Long)m.get("MemFree");
             if (null == memFree) {
-                memFree = 0;
+                memFree = 0L;
             }
 
-            Integer i = (Integer)m.get("Cached");
+            Long i = (Long)m.get("Cached");
             if (null != i) {
                 memFree += i;
             }
             m.remove("Cached");
 
-            i = (Integer)m.get("Buffers");
+            i = (Long)m.get("Buffers");
             if (null != i) {
                 memFree += i;
             }
