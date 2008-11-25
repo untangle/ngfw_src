@@ -315,8 +315,9 @@ SQL
 end
 
 def setup_schema(dbh)
-  unless dbh.select_one('select schema_name from information_schema.schemata where schema_name = \'settings\'')
+  begin
     dbh.do('CREATE SCHEMA settings')
+  rescue
   end
 
   unless dbh.tables.any? { |t| 'split_schema_ver' == t }
