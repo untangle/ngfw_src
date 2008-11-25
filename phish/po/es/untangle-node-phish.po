@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-22 06:57-0700\n"
+"PO-Revision-Date: 2008-11-24 15:48-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,7 @@ msgstr "Marcar"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:46
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:48
 msgid "Pass"
-msgstr "Pasar"
+msgstr "Permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:47
 msgid "Block"
@@ -101,7 +101,7 @@ msgstr "Log de eventos de web"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:265
 msgid "pass"
-msgstr "pasar"
+msgstr "permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:268
 msgid "block"
@@ -138,7 +138,7 @@ msgstr "Log de eventos de email"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:339
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:348
 msgid "pass message"
-msgstr "pasar mensaje"
+msgstr "permitir mensaje"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:342
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:350
@@ -228,7 +228,7 @@ msgstr "Tráfico HTTP de phishing bloqueado"
 
 #: ../impl/com/untangle/node/phish/PhishHttpPassedFilter.java:38
 msgid "Passed Phish HTTP Traffic"
-msgstr "Tráfico HTTP de phishing pasado"
+msgstr "Tráfico HTTP de phishing permitido"
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
 msgid "Host:"

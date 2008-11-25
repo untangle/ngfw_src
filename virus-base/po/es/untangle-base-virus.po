@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-22 07:21-0700\n"
+"PO-Revision-Date: 2008-11-24 15:45-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -149,7 +149,7 @@ msgstr "Medida"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:583
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:592
 msgid "pass message"
-msgstr "pasar mensaje"
+msgstr "permitir mensaje"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:482
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:506
@@ -291,11 +291,11 @@ msgstr "BLOQUEAR"
 
 #: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
 msgid "Documents passed"
-msgstr "Documentos pasados"
+msgstr "Documentos permitidos"
 
 #: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
 msgid "PASS"
-msgstr "PASAR"
+msgstr "PERMITIR"
 
 #: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
 msgid "Infections removed"
@@ -307,7 +307,7 @@ msgstr "ELIMINAR"
 
 #: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
 msgid "Passed by policy"
-msgstr "Pasado por directiva"
+msgstr "Permitido por directiva"
 
 #: ../impl/com/untangle/node/virus/VirusSmtpFilter.java:33
 msgid "SMTP Events"

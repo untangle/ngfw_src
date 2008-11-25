@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-10 11:22-0800\n"
-"PO-Revision-Date: 2008-11-22 08:22-0700\n"
+"PO-Revision-Date: 2008-11-24 15:49-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -130,7 +130,7 @@ msgstr "desconocido"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:411
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:420
 msgid "pass message"
-msgstr "pasar mensaje"
+msgstr "permitir mensaje"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:414
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:422
@@ -223,11 +223,11 @@ msgstr "Eventos saltados"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 msgid "Messages passed"
-msgstr "Mensajes pasados"
+msgstr "Mensajes permitidos"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 msgid "PASS"
-msgstr "PASAR"
+msgstr "PERMITIR"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
 msgid "Messages blocked"

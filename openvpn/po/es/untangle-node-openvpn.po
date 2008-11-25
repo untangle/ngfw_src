@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-23 07:32-0700\n"
+"PO-Revision-Date: 2008-11-24 15:48-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -652,11 +652,11 @@ msgstr "BLOQUEAR"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:129
 msgid "Clients passed"
-msgstr "Clientes pasados"
+msgstr "Clientes permitidos"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:129
 msgid "PASS"
-msgstr "PASAR"
+msgstr "PERMITIR"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
 msgid "Clients connected"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-10 11:22-0800\n"
-"PO-Revision-Date: 2008-11-22 09:51-0700\n"
+"PO-Revision-Date: 2008-11-24 15:47-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -140,11 +140,11 @@ msgstr "nombre"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:259
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:316
 msgid "pass"
-msgstr "pasar"
+msgstr "permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:286
 msgid "Pass"
-msgstr "Pasar"
+msgstr "Permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:338
 msgid "timestamp"
