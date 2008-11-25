@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-22 07:22-0700\n"
+"PO-Revision-Date: 2008-11-24 15:44-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -189,7 +189,7 @@ msgstr "Tipo MIME"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:628
 msgid "Pass Lists"
-msgstr "Listas de paso"
+msgstr "Listas permitidas"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:646
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:697
@@ -199,18 +199,18 @@ msgstr "Direcciones IP"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:714
 msgid "\"URL\" specified cannot be passed because it uses secure http (https)"
-msgstr "Imposible pasar la \"URL\" especificada porque usa un servidor seguro (https)"
+msgstr "Imposible permitir la \"URL\" especificada porque usa un servidor seguro (https)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:732
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:807
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:898
 msgid "pass"
-msgstr "pasar"
+msgstr "permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:794
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:864
 msgid "Pass"
-msgstr "Pasar"
+msgstr "Permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:836
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:858
@@ -243,11 +243,11 @@ msgstr "El nombre del host es una dirección IP:"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:934
 msgid "in URLs Pass list"
-msgstr "en la lista de paso URL"
+msgstr "en la lista URL permitidas"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:936
 msgid "in Clients Pass list"
-msgstr "en la lista de paso Clientes"
+msgstr "en la lista de clientes permitidos"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:939
 msgid "no rule applied"
@@ -343,15 +343,15 @@ msgstr "BLOQUEAR"
 
 #: ../impl/com/untangle/node/webfilter/WebFilterBase.java:117
 msgid "Pages passed"
-msgstr "Páginas pasadas"
+msgstr "Páginas permitidas"
 
 #: ../impl/com/untangle/node/webfilter/WebFilterBase.java:117
 msgid "PASS"
-msgstr "PASAR"
+msgstr "PERMITIR"
 
 #: ../impl/com/untangle/node/webfilter/WebFilterBase.java:118
 msgid "Passed by policy"
-msgstr "Pasado por directiva"
+msgstr "Permitido por directiva"
 
 #: ../impl/com/untangle/node/webfilter/WebFilterBlockedFilter.java:36
 msgid "Blocked HTTP Traffic"
@@ -359,7 +359,7 @@ msgstr "Tráfico HTTP bloqueado"
 
 #: ../impl/com/untangle/node/webfilter/WebFilterPassedFilter.java:47
 msgid "Passed HTTP Traffic"
-msgstr "Tráfico HTTP pasado"
+msgstr "Tráfico HTTP permitido"
 
 #: ../impl/com/untangle/node/webfilter/WebFilterWhitelistFilter.java:36
 msgid "Whitelisted HTTP Traffic"

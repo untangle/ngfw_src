@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-23 08:09-0700\n"
+"PO-Revision-Date: 2008-11-24 15:52-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -585,11 +585,11 @@ msgstr "Disco"
 
 #: ../servlets/webui/root/script/components.js:1576
 msgid "Tx:"
-msgstr "Trnsm.:"
+msgstr "Tx:"
 
 #: ../servlets/webui/root/script/components.js:1576
 msgid "Rx:"
-msgstr "Recp.:"
+msgstr "Rx:"
 
 #: ../servlets/webui/root/script/components.js:1578
 msgid "F:"
@@ -3403,11 +3403,11 @@ msgstr "Sesiones bloqueadas"
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:223
 #: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:116
 msgid "BLOCK"
-msgstr "BLOQUEO"
+msgstr "BLOQUEAR"
 
 #: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:94
 msgid "Sessions passed"
-msgstr "Sesiones pasadas"
+msgstr "Sesiones permitidas"
 
 #: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:94
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:129
@@ -3416,7 +3416,7 @@ msgstr "Sesiones pasadas"
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:224
 #: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:117
 msgid "PASS"
-msgstr "PASO"
+msgstr "PERMITIR"
 
 #: ../../firewall/impl/com/untangle/node/firewall/FirewallImpl.java:95
 #: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:98
@@ -3435,12 +3435,12 @@ msgstr "Sesiones analizadas"
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:222
 #: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:115
 msgid "SCAN"
-msgstr "ANÁLISIS"
+msgstr "ANALIZAR"
 
 #: ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java:98
 #: ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
 msgid "DETECT"
-msgstr "DETECCIÓN"
+msgstr "DETECTAR"
 
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:128
 msgid "Clients blocked"
@@ -3448,7 +3448,7 @@ msgstr "Clientes bloqueados"
 
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:129
 msgid "Clients passed"
-msgstr "Clientes pasados"
+msgstr "Clientes permitidos"
 
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
 msgid "Clients connected"
@@ -3456,11 +3456,11 @@ msgstr "Clientes conectados"
 
 #: ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
 msgid "CONNECT"
-msgstr "CONEXIÓN"
+msgstr "CONECTAR"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:153
 msgid "Messages passed"
-msgstr "Mensajes pasados"
+msgstr "Mensajes permitidos"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:154
 msgid "Messages blocked"
@@ -3472,7 +3472,7 @@ msgstr "Mensajes marcados"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 msgid "MARK"
-msgstr "MARCADO"
+msgstr "MARCAR"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
 msgid "Messages quarantined"
@@ -3503,7 +3503,7 @@ msgstr "Páginas bloqueadas"
 #: ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java:215
 #: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:117
 msgid "Pages passed"
-msgstr "Páginas pasadas"
+msgstr "Páginas permitidas"
 
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:222
 msgid "Documents scanned"
@@ -3515,7 +3515,7 @@ msgstr "Docum. bloqueados"
 
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:224
 msgid "Documents passed"
-msgstr "Docum. pasados"
+msgstr "Docum. permitidos"
 
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:225
 msgid "Infections removed"
@@ -3523,12 +3523,12 @@ msgstr "Infecciones eliminadas"
 
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:225
 msgid "REMOVE"
-msgstr "ELIMINACIÓN"
+msgstr "ELIMINAR"
 
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:226
 #: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:118
 msgid "Passed by policy"
-msgstr "Pasadas por directiva"
+msgstr "Permitidas por directiva"
 
 msgid "decimal_sep"
 msgstr ","

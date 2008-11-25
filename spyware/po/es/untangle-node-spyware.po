@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-22 08:51-0700\n"
+"PO-Revision-Date: 2008-11-24 15:50-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -179,7 +179,7 @@ msgstr "Se ha especificado una \"URL\" no válida."
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:474
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:563
 msgid "pass"
-msgstr "pasar"
+msgstr "permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:487
 msgid "[no category]"
@@ -187,7 +187,7 @@ msgstr "[sin categoría]"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:490
 msgid "Pass List"
-msgstr "Lista de paso"
+msgstr "Lista permitida"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:509
 msgid "site"
@@ -203,7 +203,7 @@ msgstr "Sitio"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:541
 msgid "Pass"
-msgstr "Pasar"
+msgstr "Permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:545
 msgid "Description"
@@ -340,11 +340,11 @@ msgstr "BLOQUEAR"
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
 msgid "Pages passed"
-msgstr "Páginas pasadas"
+msgstr "Páginas permitidas"
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
 msgid "PASS"
-msgstr "PASAR"
+msgstr "PERMITIR"
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
 msgid "Host:"

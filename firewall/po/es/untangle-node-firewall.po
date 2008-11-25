@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-22 06:51-0700\n"
+"PO-Revision-Date: 2008-11-24 15:47-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr "Habilitar"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:295
 msgid "Pass"
-msgstr "Pasar"
+msgstr "Permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:26
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:282
@@ -115,7 +115,7 @@ msgstr "bloqueado"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:325
 msgid "passed"
-msgstr "pasado"
+msgstr "permitido"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:339
 msgid "timestamp"
@@ -191,11 +191,11 @@ msgstr "BLOQUEAR"
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:94
 msgid "Sessions passed"
-msgstr "Sesiones pasadas"
+msgstr "Sesiones permitidas"
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:94
 msgid "PASS"
-msgstr "PASAR"
+msgstr "PERMITIR"
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:95
 msgid "Sessions logged"
