@@ -124,6 +124,9 @@ Ung.Util= {
             return url + "?" + main.buildStamp;
         }
     },
+    getScriptSrc: function(sScriptSrc){
+    	return main.debugMode ? sScriptSrc : sScriptSrc.replace(/\.js$/, "-min.js");
+    },
     // Load css file Dynamically
     loadCss: function(filename) {
         var fileref=document.createElement("link");
@@ -2159,7 +2162,7 @@ Ung.Settings._nodeScripts = {};
 
 // Dynamically loads javascript file for a node
 Ung.Settings.loadNodeScript = function(settingsCmp, handler) {
-	var scriptFile = main.debugMode ? 'settings.js' : 'settings-min.js'
+	var scriptFile = Ung.Util.getScriptSrc('settings.js')
     Ung.Util.loadScript('script/' + settingsCmp.name + '/' + scriptFile, function() {
         this.settingsClassName = Ung.Settings.getClassName(this.name);
         if(!Ung.Settings.dependency[this.name]) {
@@ -3795,7 +3798,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         hidden : !this.loadLocalDirectoryUsers,
                         handler : function() {
                             Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
-                            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory","script/config/localDirectory.js", function() {
+                            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), function() {
                                 main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
                                     this.populate(this.record,this.fnCallback)
                                 }.createDelegate(this)});

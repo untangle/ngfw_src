@@ -849,7 +849,7 @@ Ung.Main.prototype = {
     },
     openConfig: function(configItem) {
     	Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
-        Ung.Util.loadResourceAndExecute.defer(1, this, [configItem.className,"script/config/"+configItem.scriptFile, function() {
+        Ung.Util.loadResourceAndExecute.defer(1, this, [configItem.className,Ung.Util.getScriptSrc("script/config/"+configItem.scriptFile), function() {
             eval('main.configWin = new ' + this.className + '(this);');
             main.configWin.show();
             Ext.MessageBox.hide();
@@ -979,7 +979,7 @@ Ung.Main.prototype = {
     changePolicy: function () {
         if(this.value=='SHOW_POLICY_MANAGER'){
         	Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
-            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.PolicyManager","script/config/policyManager.js", function() {
+            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.PolicyManager",Ung.Util.getScriptSrc("script/config/policyManager.js"), function() {
                 main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
                 main.policyManagerWin.show();
                 Ext.MessageBox.hide();
