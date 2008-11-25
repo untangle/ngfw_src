@@ -207,7 +207,9 @@ class AppServerManagerImpl implements LocalAppServerManager
     public boolean regenCert(RFC2253Name dn, int durationInDays)
     {
         try {
-	    OpenSSLWrapper.generateSelfSignedCert("/"+dn.toString().replace(",","/").replaceAll("/?CN=.*","")+"/CN="+getFQDN(), APACHE_PEM_FILE);
+            String dnString = "/"+dn.toString().replace(",","/").replaceAll("/?CN=.*","")+"/CN="+getFQDN();
+            logger.warn("Generating a new cert with dn " + dnString);
+	    OpenSSLWrapper.generateSelfSignedCert(dnString, APACHE_PEM_FILE);
             return true;
         } catch (Exception ex) {
             logger.error("Unable to regen cert", ex);
