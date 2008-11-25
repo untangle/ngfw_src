@@ -634,9 +634,6 @@ class YuiCompressorTarget < Target
   def build()
     ensureDirectory @dest
     args = [@script_file, "--type", @type, "-o", @filename]
-    puts @script_file
-    puts @filename
-    puts args
     raise "YUI compress failed" unless
       JavaCompiler.runJar([], "#{BuildEnv::downloads}/yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar", *args )
   end
