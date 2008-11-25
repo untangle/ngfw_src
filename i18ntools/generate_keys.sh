@@ -5,7 +5,7 @@ ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config
     untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
     untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote'
-OFFICIAL_LANGUAGES='ro zh pt_BR'
+OFFICIAL_LANGUAGES='zh pt_BR'
 
 function update_keys()
 {
