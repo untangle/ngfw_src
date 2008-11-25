@@ -292,6 +292,13 @@ class JavaCompiler
     raise "java #{classname} failed" unless
       Kernel.system(JavaCommand, "-cp", cp, classname, *args)
   end
+  
+  def JavaCompiler.runJar(classpath, jar, *args)
+    cp = classpath.join(':')
+    raise "java #{jar} failed" unless
+      ret = Kernel.system(JavaCommand, "-cp", cp, "-jar", jar, *args)
+    return ret
+  end
 end
 
 class MoveSpec

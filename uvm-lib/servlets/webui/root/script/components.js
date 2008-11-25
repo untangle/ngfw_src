@@ -2159,14 +2159,15 @@ Ung.Settings._nodeScripts = {};
 
 // Dynamically loads javascript file for a node
 Ung.Settings.loadNodeScript = function(settingsCmp, handler) {
-    Ung.Util.loadScript('script/' + settingsCmp.name + '/settings.js', function() {
+	var scriptFile = main.debugMode ? 'settings.js' : 'settings-min.js'
+    Ung.Util.loadScript('script/' + settingsCmp.name + '/' + scriptFile, function() {
         this.settingsClassName = Ung.Settings.getClassName(this.name);
         if(!Ung.Settings.dependency[this.name]) {
             handler.call(this);
         } else {
             var dependencyClassName=Ung.Settings.getClassName(Ung.Settings.dependency[this.name].name);
             if(!dependencyClassName) {
-                Ung.Util.loadScript('script/' + Ung.Settings.dependency[this.name].name + '/settings.js', function() {
+                Ung.Util.loadScript('script/' + Ung.Settings.dependency[this.name].name + '/' + scriptFile, function() {
                     Ung.Settings.dependency[this.name].fn.call(this);
                     handler.call(this);
                 }.createDelegate(this));

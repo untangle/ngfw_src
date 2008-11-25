@@ -38,7 +38,6 @@ Ung.Main.prototype = {
         }
         this.firstTimeRun=Ung.Util.getQueryStringParam("firstTimeRun");
         this.appsLastState={};
-    	this.debugMode=debugMode;
     	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         this.initSemaphore=11;
         rpc = {};

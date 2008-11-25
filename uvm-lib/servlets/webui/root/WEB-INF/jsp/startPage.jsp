@@ -68,10 +68,9 @@
     <script type="text/javascript" src="script/config/policyManager.js"></script>
 </c:if>
 	<script type="text/javascript">
-        var debugMode=${isDebug};
         var storeWindowName='store_window_${storeWindowId}';
 		function init() {
-			main=new Ung.Main();
+			main=new Ung.Main({debugMode:${isDebug}});
 		    main.buildStamp='${buildStamp}';
 			main.init();
 		}

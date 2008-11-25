@@ -592,6 +592,56 @@ class MsgFmtTarget < Target
   end
 end
 
+# Compresses js and css files
+class YuiCompressorTarget < Target
+  def initialize(package, script_file, src, dest, type)
+    @script_file = "#{src}/#{script_file}"
+    @dest = dest
+    @type = type
+
+    @filename = "#{dest}/#{script_file.sub(/\.#{type}/, '-min.'+type)}"
+
+    super(package, [@script_file], @filename)
+  end
+
+  def YuiCompressorTarget.make_min_targets(package, src, dest, type)
+    ts = []
+
+    Dir.new(src).select { |f| not f =~ /^\./ and File.directory?("#{src}/#{f}") }.each do |dir|
+      Dir.new("#{src}/#{dir}").select { |f| /\.#{type}$/ =~ f }.each do |f|
+        ts << YuiCompressorTarget.new(package, "#{dir}/#{f}", src, dest, type)
+      end
+    end
+
+    ts
+  end
+
+  def file?
+    true
+  end
+
+  def filename
+    @filename
+  end
+
+  protected
+
+  def make_dependencies
+    task self => @script_file
+    file filename => self
+  end
+
+  def build()
+    ensureDirectory @dest
+    args = [@script_file, "--type", @type, "-o", @filename]
+    puts @script_file
+    puts @filename
+    puts args
+    raise "YUI compress failed" unless
+      JavaCompiler.runJar([], "#{BuildEnv::downloads}/yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar", *args )
+  end
+end
+
 ## This is a JAR that must be built from Java Files
 class JarTarget < Target
   def initialize(package, deps, suffix, build_dir, registerTarget=true)
