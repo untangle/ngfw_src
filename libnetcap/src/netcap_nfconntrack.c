@@ -114,13 +114,21 @@ int  netcap_nfconntrack_get_fd( void )
 int  netcap_nfconntrack_dump_expects( void )
 {
     int family = AF_INET;
+    int ret = 0;
     if ( _netcap_nfconntrack.handle == NULL ) return errlog( ERR_CRITICAL, "Uninitialized\n" );
     
+    if ( pthread_mutex_lock( &_netcap_nfconntrack.mutex ) < 0 ) {
+        return perrlog( "pthread_mutex_lock" );
+    }
     if ( nfexp_query( _netcap_nfconntrack.exp_handle, NFCT_Q_DUMP, &family ) < 0 ) {
-        return perrlog( "nfexp_query" );
+         ret = perrlog( "nfexp_query" );
     }
 
-    return 0;
+    if ( pthread_mutex_unlock( &_netcap_nfconntrack.mutex ) < 0 ) {
+        return perrlog( "pthread_mutex_unlock" );
+    }
+
+    return ret;
 }
 
 
@@ -198,7 +206,13 @@ struct nf_conntrack *netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
     int ret;
     /* save a pointer to ct_result to TLS */
     pthread_setspecific( _netcap_nfconntrack.tls_key, &ct_result );
+    if ( pthread_mutex_lock( &_netcap_nfconntrack.mutex ) < 0 ) {
+        return perrlog( "pthread_mutex_lock" );
+    }
     ret = _critical_section();
+    if ( pthread_mutex_unlock( &_netcap_nfconntrack.mutex ) < 0 ) {
+        return perrlog( "pthread_mutex_unlock" );
+    }
     pthread_setspecific( _netcap_nfconntrack.tls_key, NULL );
 
     if ( ct != NULL ) nfct_destroy( ct );
