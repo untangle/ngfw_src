@@ -570,14 +570,12 @@ function completeInit()
     quarantine.init();
     safelist.init();
     remaps.init();
-
-    var message = String.format( i18n._( "Your Remote Access Portal login has been configured without an email address or with an incorrect email address." ), inboxDetails.quarantineDays );
-
+    
     var panels = [];
 
     panels.push( new Ext.Panel( { 
         title : i18n._("Quarantined Messages" ),
-        items : [ new Ext.form.Label( { text : message, region : "north", cls:'message',ctCls:'message-container' ,margins:'4 4 4 4'} ), quarantine.grid ],
+        items : [ quarantine.grid ],
         layout : "border"
     } ));
 
