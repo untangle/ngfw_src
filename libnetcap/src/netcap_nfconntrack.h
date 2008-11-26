@@ -35,7 +35,7 @@ typedef struct
 /**
  * Initialize the netfilter conntrack library.
  */
-int  netcap_nfconntrack_init( void );
+int  netcap_nfconntrack_init( int num_handlers );
 
 /**
  * Cleanup all of the filedescriptors associated with netfilter

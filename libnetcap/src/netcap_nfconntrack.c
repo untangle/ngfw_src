@@ -24,18 +24,36 @@
 
 #include "netcap_nfconntrack.h"
 
+/**
+ * NFConntrack has an interesting bug where sometimes the delete will
+ * take more than 9 seconds to return.  Previously all sessions
+ * completions would block on one mutex that was waiting for the entry
+ * to be deleted.  The deletion must be synchronous, so the call must
+ * block.  To get around this we splitup the connection to conntrack
+ * across N connections.  This way only 1 / N connections will ever
+ * block if the box is extemely loaded and this condition occurs.
+ */
+typedef struct 
+{
+    pthread_mutex_t mutex;
+    struct nfct_handle *handle;
+    struct nfct_handle *exp_handle;
+} _conntrack_handle_t;
+
 static struct
 {
     pthread_key_t tls_key;    
-    struct nfct_handle *handle;
-    struct nfct_handle *exp_handle;
-    pthread_mutex_t mutex;
+    pthread_mutex_t handle_mutex;
+    int num_handles;
+    int current_handle;
+    _conntrack_handle_t *handles;
 } _netcap_nfconntrack =
 {
-    .handle = NULL,
-    .exp_handle = NULL,
     .tls_key = -1,
-    .mutex = PTHREAD_MUTEX_INITIALIZER
+    .handle_mutex = PTHREAD_MUTEX_INITIALIZER,
+    .num_handles = 0,
+    .handles = NULL,
+    .current_handle = 0
 };
 
 
@@ -46,29 +64,35 @@ static int _nf_check_tuple_callback( enum nf_conntrack_msg_type type, struct nf_
 static int _nf_check_expect_callback( enum nf_conntrack_msg_type type, struct nf_expect *exp, 
                                       void *user_data );
 
+static int _initialize_handle( _conntrack_handle_t* handler );
+
+static _conntrack_handle_t* _get_handle( void );
+
 /**
  * Initialize the netfilter conntrack library.
  */
-int  netcap_nfconntrack_init( void )
+int  netcap_nfconntrack_init( int num_handles )
 {
-    if ( _netcap_nfconntrack.handle != NULL ) return errlog( ERR_CRITICAL, "Already initialized" );
+    if ( _netcap_nfconntrack.num_handles != 0 ) return errlog( ERR_CRITICAL, "Already initialized" );
 
-    debug( 2, "Initializing netcap_nfconntrack.\n" );
+    if ( num_handles <= 0 ) return errlog( ERR_CRITICAL, "Invalid number of handles. %d\n", num_handles );
+
+    debug( 2, "Initializing netcap_nfconntrack with %d handle[s].\n", num_handles );
 
     if ( pthread_key_create( &_netcap_nfconntrack.tls_key, NULL ) < 0 ) return perrlog( "pthread_key_create" );
     
-    if (( _netcap_nfconntrack.handle = nfct_open( CONNTRACK, 0 )) == NULL ) return perrlog( "nfct_open" );
-    if (( _netcap_nfconntrack.exp_handle = nfct_open( EXPECT, 0 )) == NULL ) return perrlog( "nfct_open" );
+    _netcap_nfconntrack.num_handles = 0;
+    if (( _netcap_nfconntrack.handles = calloc( num_handles, sizeof( *_netcap_nfconntrack.handles ))) == NULL ) {
+        return errlogmalloc();
+    }
+    int c;
+    for ( c = 0 ; c< num_handles ; c++ ) {
+        if ( _initialize_handle( &_netcap_nfconntrack.handles[c] ) < 0 ) {
+            return errlog( ERR_CRITICAL, "_initialize_handler\n" );
+        }
+    }
 
-    if ( nfct_callback_register( _netcap_nfconntrack.handle, NFCT_T_ALL, 
-                                 _nf_check_tuple_callback, NULL ) < 0 ) {
-        return perrlog( "nfct_callback_register" );
-    }
-    
-    if ( nfexp_callback_register( _netcap_nfconntrack.exp_handle, NFCT_T_ALL,
-                                  _nf_check_expect_callback, NULL ) < 0 ) {
-        return perrlog( "nfexp_callback_register" );
-    }
+    _netcap_nfconntrack.num_handles = num_handles;
     
     debug( 2, "Initialization completed.\n" );
     
@@ -82,30 +106,22 @@ int  netcap_nfconntrack_cleanup( void )
 {
     debug( 2, "Cleanup\n" );
 
-    if (( _netcap_nfconntrack.handle != NULL ) && ( nfct_close( _netcap_nfconntrack.handle ))) perrlog( "nfct_close" );
+    int c = 0;
 
-    if (( _netcap_nfconntrack.exp_handle != NULL ) && ( nfct_close( _netcap_nfconntrack.exp_handle ))) {
-        perrlog( "nfct_close" );
+    for ( c = 0 ; c < _netcap_nfconntrack.num_handles ; c++ ) {
+        _conntrack_handle_t* handle = &_netcap_nfconntrack.handles[c];
+        
+        if (( handle->handle != NULL ) && ( nfct_close( handle->handle ))) perrlog( "nfct_close" );
+        
+        if (( handle->exp_handle != NULL ) && ( nfct_close( handle->exp_handle ))) {
+            perrlog( "nfct_close" );
+        }
+        
+        handle->handle = NULL;
+        handle->exp_handle = NULL;
     }
-    
-    _netcap_nfconntrack.handle = NULL;
-    _netcap_nfconntrack.exp_handle = NULL;
 
     return 0;
-}
-
-/**
- * Get the file descriptor associated with the netfilter conntrack.
- */
-int  netcap_nfconntrack_get_fd( void )
-{
-    int fd;
-    
-    if ( _netcap_nfconntrack.handle == NULL ) return errlog( ERR_CRITICAL, "Uninitialized\n" );
-
-    if (( fd = nfct_fd( _netcap_nfconntrack.handle )) < 0 ) return perrlog( "nfct_fd" );
-
-    return fd;
 }
 
 /**
@@ -114,13 +130,22 @@ int  netcap_nfconntrack_get_fd( void )
 int  netcap_nfconntrack_dump_expects( void )
 {
     int family = AF_INET;
-    if ( _netcap_nfconntrack.handle == NULL ) return errlog( ERR_CRITICAL, "Uninitialized\n" );
+    int ret = 0;
+    _conntrack_handle_t* handle = NULL;
+    if (( handle = _get_handle()) == NULL ) return errlog( ERR_CRITICAL, "_get_handle\n" );
     
-    if ( nfexp_query( _netcap_nfconntrack.exp_handle, NFCT_Q_DUMP, &family ) < 0 ) {
-        return perrlog( "nfexp_query" );
+    if ( pthread_mutex_lock( &handle->mutex ) < 0 ) {
+        return perrlog( "pthread_mutex_lock" );
+    }
+    if ( nfexp_query( handle->exp_handle, NFCT_Q_DUMP, &family ) < 0 ) {
+         ret = perrlog( "nfexp_query" );
     }
 
-    return 0;
+    if ( pthread_mutex_unlock( &handle->mutex ) < 0 ) {
+        return perrlog( "pthread_mutex_unlock" );
+    }
+
+    return ret;
 }
 
 
@@ -130,10 +155,12 @@ int  netcap_nfconntrack_dump_expects( void )
  * @param direction The direction the tuple should match.
  */
 struct nf_conntrack *netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple, 
-                                                  netcap_nfconntrack_direction_t direction )
+                                                         netcap_nfconntrack_direction_t direction )
 {
     struct nf_conntrack* ct = NULL;
     struct nf_conntrack* ct_result = NULL;
+
+    _conntrack_handle_t* handle = NULL;
 
     int _critical_section() {
         if ( direction == NFCONNTRACK_DIRECTION_ORIG ) {
@@ -176,7 +203,7 @@ struct nf_conntrack *netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
         /* Actually make the query */
         errno = 0;
         errlog( ERR_WARNING, "Errno: %d\n", errno );
-        if ( nfct_query( _netcap_nfconntrack.handle, NFCT_Q_GET, ct ) < 0 ) {
+        if ( nfct_query( handle->handle, NFCT_Q_GET, ct ) < 0 ) {
             errlog( ERR_WARNING, "Errno: %d\n", errno );
             return perrlog( "nfct_query" );
         }
@@ -186,7 +213,7 @@ struct nf_conntrack *netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
 
     if ( tuple == NULL ) return errlogargs_null();
     
-    if ( _netcap_nfconntrack.handle == NULL ) return errlog_null( ERR_CRITICAL, "Unitialized\n" );
+    if (( handle = _get_handle()) == NULL ) return errlog_null( ERR_CRITICAL, "_get_handle\n" );
 
     if (( direction != NFCONNTRACK_DIRECTION_ORIG ) && ( direction != NFCONNTRACK_DIRECTION_REPLY )) {
         return errlog_null( ERR_CRITICAL, "Invalid direction %d\n", direction );
@@ -197,9 +224,17 @@ struct nf_conntrack *netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
 
     int ret;
     /* save a pointer to ct_result to TLS */
+    if ( pthread_mutex_lock( &handle->mutex ) < 0 ) {
+        return perrlog_null( "pthread_mutex_lock" );
+    }
+
     pthread_setspecific( _netcap_nfconntrack.tls_key, &ct_result );
     ret = _critical_section();
     pthread_setspecific( _netcap_nfconntrack.tls_key, NULL );
+
+    if ( pthread_mutex_unlock( &handle->mutex ) < 0 ) {
+        return perrlog_null( "pthread_mutex_unlock" );
+    }
 
     if ( ct != NULL ) nfct_destroy( ct );
 
@@ -233,6 +268,8 @@ int netcap_nfconntrack_create_entry( netcap_nfconntrack_ipv4_tuple_t* original,
                                      int ignore_exists )
 {
     struct nf_conntrack* ct = NULL;
+
+    _conntrack_handle_t* handle = NULL;
 
     int _critical_section() {
         int status = IPS_CONFIRMED | IPS_SRC_NAT_DONE | IPS_DST_NAT_DONE | IPS_SEEN_REPLY;
@@ -285,7 +322,7 @@ int netcap_nfconntrack_create_entry( netcap_nfconntrack_ipv4_tuple_t* original,
         
         /* Actually make the query */
         errno = 0;
-        if ( nfct_query( _netcap_nfconntrack.handle, NFCT_Q_CREATE, ct ) < 0 ) {
+        if ( nfct_query( handle->handle, NFCT_Q_CREATE, ct ) < 0 ) {
             /* Report the error if the error is not EEXIST or always if ignore_exists is not set */
             if (( errno != EEXIST ) || ( ignore_exists == 0 )) return perrlog( "nfct_query" );
         }
@@ -298,8 +335,8 @@ int netcap_nfconntrack_create_entry( netcap_nfconntrack_ipv4_tuple_t* original,
     if (( timeout < 0 ) || ( timeout > NETCAP_NFCONNTRACK_MAX_TIMEOUT )) {
         return errlog( ERR_CRITICAL, "Invalid timeout %d\n", timeout );
     }
-    
-    if ( _netcap_nfconntrack.handle == NULL ) return errlog( ERR_CRITICAL, "Unitialized\n" );
+
+    if (( handle = _get_handle()) == NULL ) return errlog( ERR_CRITICAL, "_get_handle\n" );
 
     /* assume the fields are zerod */
     if (( ct = nfct_new()) == NULL ) return errlog( ERR_CRITICAL, "nfct_new\n" );
@@ -324,6 +361,7 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple,
                                         int ignore_noent )
 {
     struct nf_conntrack* ct = NULL;
+    _conntrack_handle_t* handle = NULL;
 
     int _critical_section() {
         if ( direction == NFCONNTRACK_DIRECTION_ORIG ) {
@@ -368,7 +406,7 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple,
 
         /* Actually make the query */
         errno = 0;
-        if ( nfct_query( _netcap_nfconntrack.handle, NFCT_Q_DESTROY, ct ) < 0 ) {
+        if ( nfct_query( handle->handle, NFCT_Q_DESTROY, ct ) < 0 ) {
             /* Report the error if the error is not EEXIST or always if ignore_exists is not set */
             if (( errno != ENOENT ) || ( ignore_noent == 0 )) return perrlog( "nfct_query" );
 
@@ -380,7 +418,7 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple,
 
     if ( tuple == NULL ) return errlogargs();
     
-    if ( _netcap_nfconntrack.handle == NULL ) return errlog( ERR_CRITICAL, "Unitialized\n" );
+    if (( handle = _get_handle()) == NULL ) return errlog( ERR_CRITICAL, "_get_handle\n" );
 
     if (( direction != NFCONNTRACK_DIRECTION_ORIG ) && ( direction != NFCONNTRACK_DIRECTION_REPLY )) {
         return errlog( ERR_CRITICAL, "Invalid direction %d\n", direction );
@@ -390,14 +428,15 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple,
     if (( ct = nfct_new()) == NULL ) return errlog( ERR_CRITICAL, "nfct_new\n" );
 
     int ret;
-    if ( pthread_mutex_lock( &_netcap_nfconntrack.mutex ) < 0 ) {
+    if ( pthread_mutex_lock( &handle->mutex ) < 0 ) {
+        if ( ct != NULL ) nfct_destroy( ct );
         return perrlog( "pthread_mutex_lock" );
     }
     ret = _critical_section();
-    if ( pthread_mutex_unlock( &_netcap_nfconntrack.mutex ) < 0 ) {
+    if ( ct != NULL ) nfct_destroy( ct );
+    if ( pthread_mutex_unlock( &handle->mutex ) < 0 ) {
         return perrlog( "pthread_mutex_unlock" );
     }
-    if ( ct != NULL ) nfct_destroy( ct );
 
     if ( ret < 0 ) return errlog( ERR_CRITICAL, "_critical_section\n" );
 
@@ -493,6 +532,63 @@ void netcap_nfconntrack_print_expect( int level, struct nf_expect* expect )
 
     debug( level, "TIMEOUT                  = %d\n", nfexp_get_attr_u32( expect, ATTR_EXP_TIMEOUT ));
 } 
+
+static int _initialize_handle( _conntrack_handle_t* handler )
+{
+    bzero( handler, sizeof( *handler ));
+    
+    if (( handler->handle = nfct_open( CONNTRACK, 0 )) == NULL ) return perrlog( "nfct_open" );
+    if (( handler->exp_handle = nfct_open( EXPECT, 0 )) == NULL ) return perrlog( "nfct_open" );
+    
+    if ( nfct_callback_register( handler->handle, NFCT_T_ALL, _nf_check_tuple_callback, NULL ) < 0 ) {
+        return perrlog( "nfct_callback_register" );
+    }
+    
+    if ( nfexp_callback_register( handler->exp_handle, NFCT_T_ALL, _nf_check_expect_callback, NULL ) < 0 ) {
+        return perrlog( "nfexp_callback_register" );
+    }
+
+    if ( pthread_mutex_init( &handler->mutex, NULL ) < 0 ) return perrlog( "pthread_mutex_init" );
+
+    return 0;
+}
+
+static _conntrack_handle_t* _get_handle( void )
+{
+    if ( _netcap_nfconntrack.num_handles <= 0 ) {
+        return errlog_null( ERR_CRITICAL, "conntrack is not initialized.\n" );
+    }
+
+    _conntrack_handle_t* _critical_section() {
+        _netcap_nfconntrack.current_handle++;
+
+        if (( _netcap_nfconntrack.current_handle < 0 ) ||
+            ( _netcap_nfconntrack.current_handle >= _netcap_nfconntrack.num_handles )) {
+            _netcap_nfconntrack.current_handle = 0;
+        }
+
+        return &_netcap_nfconntrack.handles[_netcap_nfconntrack.current_handle];
+    }
+    
+    _conntrack_handle_t* handle = NULL;
+    if ( pthread_mutex_lock( &_netcap_nfconntrack.handle_mutex ) < 0 ) {
+        return perrlog_null( "pthread_mutex_lock" );
+    }
+    
+    handle = _critical_section();
+    if ( pthread_mutex_unlock( &_netcap_nfconntrack.handle_mutex ) < 0 ) {
+        return perrlog_null( "pthread_mutex_unlock" );
+    }
+    
+    if ( handle == NULL ) return errlog_null( ERR_CRITICAL, "_critical_section\n" );
+
+    if ( handle->handle == NULL || handle->exp_handle == NULL ) {
+        errlog_null( ERR_CRITICAL, "Handle is not initialized.\n" );
+    }
+
+    return handle;
+}
+
 
 static int _nf_check_tuple_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *conntrack,
                                      void * user_data )

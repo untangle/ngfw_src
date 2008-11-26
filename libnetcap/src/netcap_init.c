@@ -93,6 +93,10 @@ int netcap_init()
  */
 static int _netcap_init()
 {
+    int num_handles = 15;
+    char *val = getenv("CONNTRACK_NUM_HANDLES");
+    if ( val == NULL || (( num_handles = atoi( val )) < 1 )) num_handles = 15;
+
     if ( pthread_key_create( &_init.tls_key, uthread_tls_free ) != 0 )
         return perrlog( "pthread_key_create\n" );
 
@@ -118,7 +122,7 @@ static int _netcap_init()
         return perrlog("netcap_server_init");
     if (netcap_sched_init()<0)
         return perrlog("netcap_sched_init");
-    if (netcap_nfconntrack_init()<0)
+    if (netcap_nfconntrack_init(num_handles)<0)
         return errlog( ERR_CRITICAL, "netcap_nfconntrack_init\n" );
     if (netcap_virtual_interface_init( NETCAP_TUN_DEVICE_NAME ) < 0 )
         return errlog( ERR_CRITICAL, "netcap_virtual_interface_init\n" );
