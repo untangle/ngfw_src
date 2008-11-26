@@ -207,7 +207,11 @@ class AppServerManagerImpl implements LocalAppServerManager
     public boolean regenCert(RFC2253Name dn, int durationInDays)
     {
         try {
+            //The goal of this is to take the existing DN minus the hostname (leaving company, city, state, etc.)
+            // and append the current hostname
             String dnString = "/"+dn.toString().replace(",","/").replaceAll("/?CN=.*","")+"/CN="+getFQDN();
+            //if the old DN only had CN= then we get two slashes at the beginning so we should handle that case
+            dnString = dnString.replace("//","/");
             logger.warn("Generating a new cert with dn " + dnString);
 	    OpenSSLWrapper.generateSelfSignedCert(dnString, APACHE_PEM_FILE);
             return true;
