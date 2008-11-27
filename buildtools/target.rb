@@ -615,11 +615,10 @@ class YuiCompressorTarget < Target
 
   def YuiCompressorTarget.make_min_targets(package, src, dest, type)
     ts = []
-
-    Dir.new("#{src}").select { |f| /\.#{type}$/ =~ f }.each do |f|
+    YuiCompressorTarget.listFiles(src, type).each do |f|
       ts << YuiCompressorTarget.new(package, "#{f}", src, dest, type)
     end
-
+    
     ts
   end
 
@@ -639,11 +638,25 @@ class YuiCompressorTarget < Target
   end
 
   def build()
-    ensureDirectory @dest
+    ensureDirectory(File.dirname(@filename))    
     args = [@script_file, "--type", @type, "-o", @filename]
     raise "YUI compress failed" unless
       JavaCompiler.runJar([], "#{BuildEnv::downloads}/yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar", *args )
   end
+  
+  private 
+  
+  def YuiCompressorTarget.listFiles(src, type, relative_path = nil)
+    files = []
+    Dir.new("#{src}").each do |f|
+      if not f =~ /^\./ and File.directory?("#{src}/#{f}")
+        files = files + YuiCompressorTarget.listFiles("#{src}/#{f}", type, (relative_path ? "#{relative_path}/#{f}" : f))
+      end
+      files << (relative_path ? "#{relative_path}/#{f}" : f) if /\.#{type}$/ =~ f
+    end
+    files
+  end
+  
 end
 
 ## This is a JAR that must be built from Java Files
