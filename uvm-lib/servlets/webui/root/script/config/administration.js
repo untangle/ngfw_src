@@ -1161,9 +1161,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 autoScroll : true,
                     items : [{
                     	cls: 'description',
-                        html : this.i18n._('When your Certificate Authority (Verisign, Thawte, etc.) ' +
-                        		'has sent your Signed Certificate, copy and paste it below (Control-V), ' +
-                        		'then press the Proceed button.'),
+                        html : this.i18n._('When your Certificate Authority (Verisign, Thawte, etc.) has sent your Signed Certificate, copy and paste it below (Control-V) then press the Proceed button.'),
                         bodyStyle : 'padding-bottom:10px;',
                         border : false
                     },{
@@ -1175,9 +1173,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         hideLabel : true
                     },{
                     	cls: 'description',
-                        html : this.i18n._('If your Certificate Authority (Verisign, Thawte, etc.) ' +
-                        		'also send you an Intermediate Certificate, paste it below.  ' +
-                        		'Otherwise, do not paste anything below.'),
+                        html : this.i18n._('If your Certificate Authority (Verisign, Thawte, etc.) also send you an Intermediate Certificate, paste it below. Otherwise, do not paste anything below.'),
                         bodyStyle : 'padding:20px 0px 10px 0px;',
                         border : false
                     },{
