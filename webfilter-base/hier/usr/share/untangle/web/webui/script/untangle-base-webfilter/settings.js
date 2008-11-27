@@ -549,7 +549,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blockedMimeTypesLength,
                 emptyRow : {
-                    "mimeType" : "[no mime type]",
+                    "mimeType" : this.i18n._("[no mime type]"),
                     "live" : true,
                     "log" : true,
                     "name" : this.i18n._("[no description]")
