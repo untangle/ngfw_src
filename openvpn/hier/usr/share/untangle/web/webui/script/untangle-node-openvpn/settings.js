@@ -1110,6 +1110,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     name : 'netmask'
                 }],
+                autoExpandMin: 250,
                 autoExpandColumn: 'name',
                 // the list of columns for the column model
                 columns : [liveColumn, {
