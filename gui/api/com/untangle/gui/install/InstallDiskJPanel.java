@@ -87,7 +87,7 @@ public class InstallDiskJPanel
         // create buttons, put them in a group, put them in jpanel
         for( DiskInfo diskInfo : diskListCompoundSettings.getDiskInfoList() ){
             DiskJRadioButton newButton = new DiskJRadioButton(diskInfo.getName());
-            newButton.setText(diskInfo.getName() + " (size: " + diskInfo.getSize() + "GB)");
+            newButton.setText(diskInfo.getName() + " (" + Util.tr("size") + ": " + diskInfo.getSize() + "GB)");
             newButton.setOpaque(false);
             buttonGroup.add(newButton);
             diskJPanel.add(newButton);
