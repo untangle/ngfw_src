@@ -103,7 +103,7 @@ public class InstallBenchmarkJPanel
             updateJProgressBar(cpuJProgressBar, Util.tr("Checking..."), true, 0, 68, 91, 255);
             updateJProgressBar(diskJProgressBar, Util.tr("Checking..."), true, 0, 68, 91, 255);
             updateJProgressBar(nicJProgressBar, Util.tr("Checking..."), true, 0, 68, 91, 255);
-            memoryResultJLabel.setText("undetermined ");
+            memoryResultJLabel.setText(Util.tr("undetermined "));
             cpuResultJLabel.setText(Util.tr("undetermined"));
             diskResultJLabel.setText(Util.tr("undetermined"));
             nicResultJLabel.setText(Util.tr("undetermined"));
