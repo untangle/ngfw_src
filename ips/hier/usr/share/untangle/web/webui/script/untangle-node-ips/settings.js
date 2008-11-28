@@ -308,12 +308,10 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     mapping : 'blocked',
                     type : 'string',
                     convert : function(value) {
-                        switch (value) {
-                            case 1 : // BLOCKED
-                                return this.i18n._("block");
-                            default :
-                            case 0 : // PASSED
-                                return this.i18n._("pass");
+                        if (value) {
+                            return this.i18n._("block");
+                        } else {
+                            return this.i18n._("pass");
                         }
                     }.createDelegate(this)
                 }, {
