@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.untangle.node.http.HttpRequestEvent;
+import com.untangle.node.http.RequestLine;
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
@@ -624,6 +626,24 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     void log(WebFilterEvent se)
     {
         eventLogger.log(se);
+    }
+
+    void log(WebFilterEvent se, String host, int port)
+    {
+        eventLogger.log(se);
+        if (443 == port) {
+            RequestLine rl = se.getRequestLine();
+            final HttpRequestEvent e = new HttpRequestEvent(rl, host, 0);
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        s.save(e);
+                        return true;
+                    }
+                };
+            getNodeContext().runTransaction(tw);
+        }
     }
 
     String generateNonce(WebFilterBlockDetails details)
