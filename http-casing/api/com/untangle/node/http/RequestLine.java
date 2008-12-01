@@ -81,7 +81,7 @@ public class RequestLine implements Serializable
     private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
     private Date timeStamp = new Date();
 
-    // constructors ------------------------------------------------------------
+    // constructors -----------------------------------------------------------
 
     public RequestLine() { }
 
@@ -98,7 +98,7 @@ public class RequestLine implements Serializable
         this.requestUri = getUri(requestUriBytes);
     }
 
-    // business methods --------------------------------------------------------
+    // business methods -------------------------------------------------------
 
     @Transient
     public URL getUrl()
@@ -120,16 +120,16 @@ public class RequestLine implements Serializable
     @Transient
     public byte[] getUriBytes()
     {
-    	byte[] b = null;
-    	if (requestUriBytes != null) {
+        byte[] b = null;
+        if (requestUriBytes != null) {
             b = new byte[requestUriBytes.length];
             System.arraycopy(requestUriBytes, 0, b, 0,
                              requestUriBytes.length);
-    	}
+        }
         return b;
     }
 
-    // accessors ---------------------------------------------------------------
+    // accessors --------------------------------------------------------------
 
     @Id
     @Column(name="request_id")
@@ -236,7 +236,7 @@ public class RequestLine implements Serializable
         this.httpRequestEvent = httpRequestEvent;
     }
 
-    // Object methods ----------------------------------------------------------
+    // Object methods ---------------------------------------------------------
 
     public String toString()
     {
@@ -244,7 +244,7 @@ public class RequestLine implements Serializable
             + requestUri.toString().length() + " (" + super.toString() + ")";
     }
 
-    // private methods ---------------------------------------------------------
+    // private methods --------------------------------------------------------
 
     @Transient
     private URI getUri(byte[] b)

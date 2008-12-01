@@ -157,7 +157,7 @@ public abstract class Blacklist
                     (requestLine.getRequestLine(), Action.PASS,
                      Reason.PASS_URL, "unblocked temporarily",
                      node.getVendor());
-                node.log(hbe);
+                node.log(hbe, host, port);
 
                 return null;
             } else {
@@ -170,7 +170,7 @@ public abstract class Blacklist
                         WebFilterEvent hbe = new WebFilterEvent
                             (requestLine.getRequestLine(), Action.PASS,
                              Reason.PASS_URL, category, node.getVendor());
-                        node.log(hbe);
+                        node.log(hbe, host, port);
 
                         return null;
                     }
@@ -184,7 +184,7 @@ public abstract class Blacklist
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_IP_HOST, host, node.getVendor());
-                node.log(hbe);
+                node.log(hbe, host, port);
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
@@ -211,7 +211,7 @@ public abstract class Blacklist
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_EXTENSION, exn, node.getVendor());
-                node.log(hbe);
+                node.log(hbe, host, port);
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
@@ -351,14 +351,14 @@ public abstract class Blacklist
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), a, reason,
                      bc.getDisplayName(), node.getVendor());
-                node.log(hbe);
+                node.log(hbe, host, port);
             } else if (null == stringRule || stringRule.getLog()) {
                 if (!stringRule.isLive())
                     node.incrementPassLogCount();
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK, reason,
                      category, node.getVendor());
-                node.log(hbe);
+                node.log(hbe, host, port);
             }
 
             if ((null != bc && bc.getBlock())
