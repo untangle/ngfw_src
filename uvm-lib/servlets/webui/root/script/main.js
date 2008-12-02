@@ -377,10 +377,10 @@ Ung.Main.prototype = {
         var url = "../library/launcher?" + query;
 
         /* browser specific code ... we has it. */
-        //if ( this.isRunningOnConsole()) {
+        if ( this.isNotRunningIE()) {
             this.openIFrame( url, title );
             return;
-        //}
+        }
        
         /** This code is not used for now we just open in an iframe as above */
         /* If we decide to go back to a new window for whatever then use this */ 
@@ -993,9 +993,12 @@ Ung.Main.prototype = {
     },
 
     /* browser specific code ... we has it. */
-    isRunningOnConsole : function()
+    isNotRunningIE : function()
     {
-        if ( navigator.userAgent == "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.7) Gecko/20060830 Firefox/1.5.0.7 (Debian-1.5.dfsg+1.5.0.7-2~bpo.1)" ) {
+        //if ( navigator.userAgent == "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.7) Gecko/20060830 Firefox/1.5.0.7 (Debian-1.5.dfsg+1.5.0.7-2~bpo.1)" ) {
+        var re = new RegExp(".*MSIE.*Windows.*");
+        var matches =  re.exec(navigator.userAgent);
+        if ( matches == null || matches[0] == null || matches[0] == "" ) {
             return true;
         }
 
