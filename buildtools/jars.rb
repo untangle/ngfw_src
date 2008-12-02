@@ -75,7 +75,7 @@ class Jars
   GetText    = [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ]
   Slf4j      = [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'),
                  Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ]
-  YUICompressor    = Jars.downloadTarget('yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar')
+  YUICompressor    = [ Jars.downloadTarget('yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar') ]
 
   TomcatCommon = [ 'commons-el.jar',
                    'jasper-compiler.jar',

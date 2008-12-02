@@ -641,7 +641,7 @@ class YuiCompressorTarget < Target
     ensureDirectory(File.dirname(@filename))    
     args = [@script_file, "--type", @type, "-o", @filename]
     raise "YUI compress failed" unless
-      JavaCompiler.runJar([], Jars::YUICompressor.filename, *args )
+      JavaCompiler.runJar([], "#{BuildEnv::downloads}/yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar", *args )
   end
   
   private 
