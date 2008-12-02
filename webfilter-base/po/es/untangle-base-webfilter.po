@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-24 15:44-0700\n"
+"PO-Revision-Date: 2008-11-25 06:04-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -33,7 +33,7 @@ msgstr "Categorías"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:640
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:649
 msgid "manage list"
-msgstr "administrar lista"
+msgstr "Administrar lista"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:49
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:181

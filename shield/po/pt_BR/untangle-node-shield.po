@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-10 11:22-0800\n"
-"PO-Revision-Date: 2008-11-12 23:22-0800\n"
+"PO-Revision-Date: 2008-11-24 19:12-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -40,7 +40,7 @@ msgstr "Nota"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:47
 msgid "Attack Blocker is a heuristic based intrusion prevention and requires no configuration. Users can modify the treatment of certain IP and/or networks on the exception tab."
-msgstr "O Bloqueador de Ataque é uma heurística com base na prevenção da invasão e não requer qualquer configuração. Os usuários podem modificar o tratamento de certos IP e/ou redes na guia de exceção."
+msgstr "O Attack Blocker (Bloqueador de ataque) é uma prevenção da invasão baseada em heurística e não requer qualquer configuração. Os usuários podem modificar o tratamento de certos IP e/ou redes na guia de exceções."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:55
 msgid "enable"

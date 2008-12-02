@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-23 23:40-0800\n"
+"PO-Revision-Date: 2008-11-24 18:34-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -56,7 +56,7 @@ msgstr "Varrer trickle rate (1-99)"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:395
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:545
 msgid "Virus Blocker signatures were last updated"
-msgstr "Assinaturas do Bloqueador de Vírus foram atualizadas por último"
+msgstr "As assinaturas do Bloqueador de Vírus foram atualizadas por último em"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:113
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:397

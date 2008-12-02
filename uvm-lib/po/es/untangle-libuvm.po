@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-24 15:52-0700\n"
+"PO-Revision-Date: 2008-11-25 06:20-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
@@ -689,11 +689,11 @@ msgstr "usados"
 
 #: ../servlets/webui/root/script/components.js:1668
 msgid "Total Disk Space:"
-msgstr "Espacio total en el disco"
+msgstr "Espacio total en disco"
 
 #: ../servlets/webui/root/script/components.js:1670
 msgid "Free Disk Space:"
-msgstr "Espacio libre en el disco"
+msgstr "Espacio libre en disco"
 
 #: ../servlets/webui/root/script/components.js:1672
 msgid "Data read:"
@@ -2367,7 +2367,7 @@ msgstr "Reenvíos de cuarentena"
 
 #: ../servlets/webui/root/script/config/email.js:865
 msgid "This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest."
-msgstr "Ésta lista contiene las direcciones de correo cuyo resumen de cuarentena se reenvía a otra cuenta. Esto es común cuando no se desea enviar el resumen a toda una lista de distribución."
+msgstr "Esta lista contiene las direcciones de correo cuyo resumen de cuarentena se reenvía a otra cuenta. Esto es común cuando no se desea enviar el resumen a toda una lista de distribución."
 
 #: ../servlets/webui/root/script/config/email.js:873
 msgid "distributionlistrecipient@example.com"
@@ -3528,7 +3528,7 @@ msgstr "ELIMINAR"
 #: ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java:226
 #: ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java:118
 msgid "Passed by policy"
-msgstr "Permitidas por directiva"
+msgstr "Permitidas p/directiva"
 
 msgid "decimal_sep"
 msgstr ","

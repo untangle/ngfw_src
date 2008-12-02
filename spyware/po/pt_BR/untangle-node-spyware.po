@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-23 19:36-0800\n"
+"PO-Revision-Date: 2008-11-24 18:02-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -84,7 +84,7 @@ msgstr "Monitorar tráfego suspeito"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:163
 msgid "Spyware Blocker signatures were last updated"
-msgstr "Assinaturas do Bloqueador de Spyware foram atualizadas por último"
+msgstr "As assinaturas do Bloqueador de Spyware foram atualizadas por último em"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:165
 msgid "Unknown"

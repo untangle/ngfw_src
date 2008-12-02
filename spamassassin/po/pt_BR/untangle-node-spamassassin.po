@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-10 11:22-0800\n"
-"PO-Revision-Date: 2008-11-23 23:33-0800\n"
+"PO-Revision-Date: 2008-11-24 21:10-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -49,7 +49,7 @@ msgstr "Alta"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:48
 msgid "Very High"
-msgstr "Muito alto"
+msgstr "Muito alta"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:48
 msgid "Extreme"
@@ -121,7 +121,7 @@ msgstr "Nota"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:386
 msgid "Spam Blocker was last updated"
-msgstr "Bloqueador de Spam foi atualizado por último"
+msgstr "O Spam Blocker foi atualizado por último em"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:389
 msgid "unknown"
