@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-21 17:20-0800\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2008-11-21 22:21-0500\n"
+"Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -204,11 +204,11 @@ msgstr "失败"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:566
 msgid "The value of Strength Value field is invalid."
-msgstr ""
+msgstr "强度值栏的值无效。"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:578
 msgid "Saving..."
-msgstr "正在保存。。。"
+msgstr "正在保存..."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:578
 msgid "Please wait"
@@ -217,67 +217,65 @@ msgstr "请等候"
 #: ../../spam-base/impl/com/untangle/node/spam/RBLAllFilter.java:27
 #: ../../spam-base/impl/com/untangle/node/spam/SpamAllFilter.java:27
 msgid "All Events"
-msgstr ""
+msgstr "所有事件"
 
 #: ../../spam-base/impl/com/untangle/node/spam/RBLSkippedFilter.java:27
 msgid "Skipped Events"
-msgstr ""
+msgstr "已跳过事件"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:153
 msgid "Messages passed"
-msgstr ""
+msgstr "已通过信息"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:153
 msgid "PASS"
-msgstr ""
+msgstr "通过"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:154
-#, fuzzy
 msgid "Messages blocked"
-msgstr "已阻止"
+msgstr "已阻止信息"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:154
 msgid "BLOCK"
-msgstr ""
+msgstr "阻止"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 msgid "Messages marked"
-msgstr ""
+msgstr "已标记信息"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:155
 msgid "MARK"
-msgstr ""
+msgstr "标记"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
-#, fuzzy
 msgid "Messages quarantined"
-msgstr "隔离"
+msgstr "已隔离信息"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:156
 msgid "QUARANTINE"
-msgstr ""
+msgstr "隔离"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:157
 msgid "Spam detected"
-msgstr ""
+msgstr "检测到的垃圾信息"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java:158
 msgid "Messages received"
-msgstr ""
+msgstr "已收到的信息"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamLogFilter.java:27
 msgid "POP/IMAP Events"
-msgstr ""
+msgstr "POP/IMAP事件"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSmtpFilter.java:27
 msgid "SMTP Events"
-msgstr ""
+msgstr "SMTP事件"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:27
 msgid "Spam Events"
-msgstr ""
+msgstr "垃圾信息事件"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:29
 msgid "Identity Theft Events"
-msgstr ""
+msgstr "身份盗窃事件"
 
