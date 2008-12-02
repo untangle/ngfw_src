@@ -593,6 +593,7 @@ function completeInit()
 
     quarantineTabPanel.render();
         
+    quarantineTabPanel.activate(panels[0]);
     // trigger the data store load
     quarantine.store.load({params:{start:0, limit:quarantine.pageSize}});
 }
