@@ -120,6 +120,7 @@ public class MWizardJDialog
     {
         previousJButton.setText(Util.tr("Previous"));
         closeJButton.setText(Util.tr("Close"));
+        nextJButton.setText(Util.tr("Next"));
 
         for (String s : labelMap.keySet()) {
             JLabel l = labelMap.get(s);
