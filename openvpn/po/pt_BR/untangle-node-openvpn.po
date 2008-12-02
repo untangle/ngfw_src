@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-23 23:52-0800\n"
+"PO-Revision-Date: 2008-11-24 18:52-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -269,7 +269,7 @@ msgstr "Configurar como Servidor VPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:588
 msgid "This configures OpenVPN so remote users and networks can connect and access exported hosts and networks."
-msgstr "Esse configura o OpenVPN de forma que os usuários e redes remotos possam conectar e acessar redes e hosts exportados."
+msgstr "Configura o OpenVPN de forma que os usuários e redes remotos possam conectar e acessar redes e hosts exportados."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:595
 msgid "Configure as VPN Client"
@@ -277,7 +277,7 @@ msgstr "Configurar como Cliente VPN"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:606
 msgid "This configures OpenVPN so it connects to a remote OpenVPN Server and can access exported hosts and networks."
-msgstr "Esse configura o OpenVPN de forma a se conectar a um Servidor OpenVPN remoto e pode acessar redes e hosts exportados."
+msgstr "Configura o OpenVPN de forma a se conectar a um Servidor OpenVPN remoto e pode acessar redes e hosts exportados."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:659
 msgid "start time"

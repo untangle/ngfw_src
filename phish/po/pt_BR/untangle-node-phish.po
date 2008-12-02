@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-23 23:39-0800\n"
+"PO-Revision-Date: 2008-11-24 17:58-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -77,7 +77,7 @@ msgstr "Nota"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:190
 msgid "Phish Blocker email signatures were last updated"
-msgstr "Assinaturas de e-mail do Phish Blocker foram atualizadas por último"
+msgstr "As assinaturas de e-mail do Phish Blocker foram atualizadas por último em"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:193
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:230
@@ -94,7 +94,7 @@ msgstr "Habilitar filtragem web de Phish"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:227
 msgid "Phish Blocker web signatures were last updated "
-msgstr "Assinaturas web do Phish Blocker foram atualizadas por último"
+msgstr "As assinaturas web do Phish Blocker foram atualizadas por último em"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:252
 msgid "Web Event Log"

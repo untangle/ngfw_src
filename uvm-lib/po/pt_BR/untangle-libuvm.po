@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-24 00:40-0800\n"
+"PO-Revision-Date: 2008-11-24 21:12-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -110,7 +110,7 @@ msgstr "Verificando atualizações disponíveis..."
 #: ../servlets/webui/root/script/config/system.js:1006
 #: ../servlets/webui/root/script/config/upgrade.js:49
 msgid "Failed"
-msgstr "Falhou"
+msgstr "Falha"
 
 #: ../servlets/webui/root/script/main.js:177
 msgid "Upgrades warning"
@@ -1278,7 +1278,7 @@ msgstr "Ponte transparente"
 
 #: ../servlets/setup/root/script/setup.js:1160
 msgid "This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP."
-msgstr "Isso é recomendado se a porta externa for conectada a um firewall/roteador. Isso une interna e externa, e desabilita DHCP."
+msgstr "Recomendado se a porta externa for conectada a um firewall/roteador. Isso une interna e externa, e desabilita DHCP."
 
 #: ../servlets/setup/root/script/setup.js:1172
 msgid "Router"
@@ -1286,7 +1286,7 @@ msgstr "Roteador"
 
 #: ../servlets/setup/root/script/setup.js:1184
 msgid "This is recommended if the external port is plugged into your internet  connection. This enables NAT on the Internal Interface and DHCP."
-msgstr "Isso é recomendado se a porta externa estiver plugada na sua conexão à internet. Isso habilita NAT na interface interna e DHCP."
+msgstr "Recomendado se a porta externa estiver plugada na sua conexão à internet. Isso habilita NAT na interface interna e DHCP."
 
 #: ../servlets/setup/root/script/setup.js:1189
 msgid "Internal Address"
@@ -1601,7 +1601,7 @@ msgstr "Usar endereço IP externo (padrão)"
 
 #: ../servlets/webui/root/script/config/administration.js:618
 msgid "This works if your {0} Server has a public static IP address."
-msgstr "Isso funciona se seu Servidor {0} possuir um endereço IP público estático."
+msgstr "Funciona se seu Servidor {0} possuir um endereço IP público estático."
 
 #: ../servlets/webui/root/script/config/administration.js:624
 msgid "Use Hostname"
@@ -1609,7 +1609,7 @@ msgstr "Usar nome de host"
 
 #: ../servlets/webui/root/script/config/administration.js:641
 msgid "This is recommended if the {0} Server's fully qualified domain name looks up to its IP address both internally and externally."
-msgstr "Isso é recomendado se o nome de domínio totalmente qualificado do Servidor {0} consulta seu endereço IP tanto internamente, quanto externamente."
+msgstr "Recomendado se o nome de domínio totalmente qualificado do Servidor {0} consulta seu endereço IP tanto internamente, quanto externamente."
 
 #: ../servlets/webui/root/script/config/administration.js:647
 msgid "Current Hostname: {0}"
@@ -1621,7 +1621,7 @@ msgstr "Use IP especificado manualmente"
 
 #: ../servlets/webui/root/script/config/administration.js:669
 msgid "This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified IP that redirects traffic to the {0} Server."
-msgstr "Isso é recomendado se o Servidor {0} estiver instalado por trás de outro firewall com uma porta adiante do IP especificado que redireciona tráfego ao Servidor {0}."
+msgstr "Recomendado se o Servidor {0} estiver instalado por trás de outro firewall com uma porta adiante do IP especificado que redireciona tráfego ao Servidor {0}."
 
 #: ../servlets/webui/root/script/config/administration.js:685
 #: ../servlets/webui/root/script/config/administration.js:2026
@@ -1856,7 +1856,7 @@ msgstr "{0}Desabilitar Traps{1} para que nenhum evento trap seja gerado.  (Esta 
 
 #: ../servlets/webui/root/script/config/administration.js:1320
 msgid "{0}Enable Traps{1} so trap events are sent when they are generated."
-msgstr "{0}Habilitar Traps{1} de forma que eventos trap sejam enviados quando forem gerados. "
+msgstr "{0}Habilitar Traps{1} de forma que eventos trap sejam enviados quando gerados. "
 
 #: ../servlets/webui/root/script/config/administration.js:1343
 msgid "MY_TRAP_COMMUNITY"
@@ -2827,7 +2827,7 @@ msgstr "Backup para arquivo"
 
 #: ../servlets/webui/root/script/config/system.js:291
 msgid "You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\""
-msgstr "Você pode fazer o backup da configuração atual do sistema em um arquivo de seu computador local para restauração posterior, no caso de querer substituir novas configurações com as configurações atuais. O nome do arquivo terminará com  \".backup\""
+msgstr "Você pode fazer o backup da configuração atual do sistema em um arquivo de seu computador local para restauração posterior, no caso de querer substituir novas configurações com as configurações atuais. O nome do arquivo terminará com  \".backup\"."
 
 #: ../servlets/webui/root/script/config/system.js:293
 msgid "After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\"."
@@ -2893,7 +2893,7 @@ msgstr "Do arquivo"
 
 #: ../servlets/webui/root/script/config/system.js:386
 msgid "You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\""
-msgstr "Você pode restaurar uma configuração de sistema anterior de um arquivo de backup no seu computador local. O nome de arquivo de backup termina com \".backup\""
+msgstr "Você pode restaurar uma configuração de sistema anterior de um arquivo de backup no seu computador local. O nome de arquivo de backup termina com \".backup\"."
 
 #: ../servlets/webui/root/script/config/system.js:402
 msgid "Restore from File"
@@ -3065,11 +3065,11 @@ msgstr "Idioma"
 
 #: ../servlets/webui/root/script/config/system.js:945
 msgid "Upload New Language Pack"
-msgstr "Carregar novo pacote de idiomas"
+msgstr "Carregar novo pacote de idioma"
 
 #: ../servlets/webui/root/script/config/system.js:980
 msgid "Please wait while your language pack is uploaded..."
-msgstr "Aguarde enquanto seu pacote de idiomas é carregado..."
+msgstr "Aguarde enquanto seu pacote de idioma é carregado..."
 
 #: ../servlets/webui/root/script/config/system.js:985
 msgid "Language pack uploaded with errors"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-23 20:14-0800\n"
+"PO-Revision-Date: 2008-11-24 18:17-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -74,7 +74,7 @@ msgstr "Permanente e Global"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:106
 msgid "Block pages from IP only hosts"
-msgstr "Bloquear páginas de hosts de IP apenas"
+msgstr "Bloquear páginas de hosts de IP somente"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:123
 msgid "Scan HTTPS"

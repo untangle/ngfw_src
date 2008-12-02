@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-21 14:15-0800\n"
-"PO-Revision-Date: 2008-11-23 20:15-0800\n"
+"PO-Revision-Date: 2008-11-24 18:58-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -42,7 +42,7 @@ msgstr "Excluída uma mensagem"
 
 #: ../servlets/quarantine/root/quarantine.js:285
 msgid "Deleted {0} Messages"
-msgstr "Excluída {0} mensagens"
+msgstr "Excluídas {0} mensagens"
 
 #: ../servlets/quarantine/root/quarantine.js:291
 msgid "Released one Message"

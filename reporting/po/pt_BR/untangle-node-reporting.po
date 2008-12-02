@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-04 11:30-0800\n"
-"PO-Revision-Date: 2008-11-23 23:57-0800\n"
+"PO-Revision-Date: 2008-11-24 19:35-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -66,7 +66,7 @@ msgstr "Relatórios diários"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:256
 msgid "Daily Reports are generated at midnight and covers events from the previous 24 hours, up to, but not including the day of generation."
-msgstr "Relatórios diários são gerados à meia-noite e cobrem eventos das 24 horas anteriores até, mas não incluindo, o dia da geração."
+msgstr "Os relatórios diários são gerados à meia-noite e cobrem eventos das 24 horas anteriores até, mas não incluindo, o dia da geração."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:260
 msgid "Generate Daily Reports"
