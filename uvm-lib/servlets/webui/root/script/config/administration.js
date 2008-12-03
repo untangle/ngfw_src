@@ -234,7 +234,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
             var changePasswordColumn = new Ext.grid.IconColumn({
                 header : this.i18n._("change password"),
-                width : 100,
+                width : 130,
                 iconClass : 'icon-edit-row',
                 handle : function(record, index) {
                     // populate row editor

@@ -473,6 +473,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             var passColumn = new Ext.grid.CheckColumn({
                 header : "<b>" + this.i18n._("pass") + "</b>",
                 dataIndex : 'live',
+                width: 65,
                 fixed : true
             });
 
@@ -627,7 +628,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     dataIndex : 'request'
                 }, {
                     header : this.i18n._("reason for action"),
-                    width : 120,
+                    width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {

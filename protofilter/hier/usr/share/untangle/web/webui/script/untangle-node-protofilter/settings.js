@@ -184,7 +184,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     }
                 }, {
                     header : this.i18n._("action"),
-                    width : 70,
+                    width : 120,
                     sortable : true,
                     dataIndex : 'action'
                 }, {
@@ -200,7 +200,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     dataIndex : 'protocol'
                 }, {
                     header : this.i18n._("reason for action"),
-                    width : 120,
+                    width : 150,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {

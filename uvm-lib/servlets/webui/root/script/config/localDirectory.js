@@ -62,7 +62,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 columns : [{
                     id : 'UID',
                     header : this.i18n._("user/login ID"),
-                    width : 100,
+                    width : 140,
                     dataIndex : 'UID',
                     editor : new Ext.form.TextField({
                         allowBlank : false,
@@ -72,7 +72,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 }, {
                     id : 'firstName',
                     header : this.i18n._("first name"),
-                    width : 100,
+                    width : 120,
                     dataIndex : 'firstName',
                     editor : new Ext.form.TextField({
                         allowBlank : false
@@ -80,7 +80,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 }, {
                     id : 'lastName',
                     header : this.i18n._("last name"),
-                    width : 100,
+                    width : 120,
                     dataIndex : 'lastName',
                     editor : new Ext.form.TextField({
                     })

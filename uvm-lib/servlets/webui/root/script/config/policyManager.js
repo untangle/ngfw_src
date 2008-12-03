@@ -273,6 +273,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             });
             var liveColumn = new Ext.grid.CheckColumn({
                 header : "<b>" + this.i18n._("live") + "</b>",
+                tooltip : this.i18n._("live"),
                 dataIndex : 'live',
                 width : 25,
                 fixed : true
@@ -297,6 +298,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 title : this.i18n._('Policies'),
                 recordJavaClass : "com.untangle.uvm.policy.UserPolicyRule",
                 hasReorder : true,
+                configReorder:{width:35,fixed:false,tooltip:this.i18n._("Reorder")},
+                configDelete:{width:30,fixed:false,tooltip:this.i18n._("Delete")},
+                configEdit:{width:25,fixed:false,tooltip:this.i18n._("Edit")},
                 emptyRow : {
                     "live" : true,
                     "policy" : null,
@@ -366,6 +370,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }],
                 columns : [liveColumn, {
                     header : this.i18n._("<b>Use this rack</b> when the <br/>next colums are matched..."),
+                    tooltip : this.i18n._("<b>Use this rack</b> when the <br/>next colums are matched..."),
                     width : 140,
                     sortable : true,
                     dataIndex : 'policyName',
@@ -398,6 +403,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     })
                 }, {
                     header : this.i18n._("client <br/>interface"),
+                    tooltip : this.i18n._("client <br/>interface"),
                     width : 75,
                     sortable : true,
                     dataIndex : 'clientIntf',
@@ -416,6 +422,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
                 }, {
                     header : this.i18n._("server <br/>interface"),
+                    tooltip : this.i18n._("server <br/>interface"),
                     width : 75,
                     sortable : true,
                     dataIndex : 'serverIntf',
@@ -434,6 +441,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
                 }, {
                     header : this.i18n._("protocol"),
+                    tooltip : this.i18n._("protocol"),
                     width : 75,
                     sortable : true,
                     dataIndex : 'protocol',
@@ -452,6 +460,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
                 }, {
                     header : this.i18n._("client <br/>address"),
+                    tooltip: this.i18n._("client <br/>address"),
                     width : 70,
                     sortable : true,
                     dataIndex : 'clientAddr',
@@ -461,6 +470,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
                 }, {
                     header : this.i18n._("server <br/>address"),
+                    tooltip: this.i18n._("server <br/>address"),
                     width : 70,
                     sortable : true,
                     dataIndex : 'serverAddr',
@@ -470,6 +480,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
                 }, {
                     header : this.i18n._("server<br/>port"),
+                    tooltip: this.i18n._("server<br/>port"),
                     width : 45,
                     sortable : true,
                     dataIndex : 'serverPort',
@@ -481,6 +492,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 usersColumn,
                 {
                     header : this.i18n._("start time"),
+                    tooltip: this.i18n._("start time"),
                     width : 55,
                     sortable : true,
                     dataIndex : 'startTimeFormatted',
@@ -495,6 +507,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     })
                 }, {
                     header : this.i18n._("end time"),
+                    tooltip: this.i18n._("end time"),
                     width : 55,
                     sortable : true,
                     dataIndex : 'endTimeFormatted',
@@ -509,6 +522,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     })
                 }, {
                     header : this.i18n._("day of week"),
+                    tooltip: this.i18n._("day of week"),
                     width : 70,
                     sortable : true,
                     dataIndex : 'dayOfWeek',
@@ -527,6 +541,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     })*/
                 }, {
                     header : this.i18n._("description"),
+                    tooltip: this.i18n._("description"),
                     width : 75,
                     sortable : true,
                     dataIndex : 'description',

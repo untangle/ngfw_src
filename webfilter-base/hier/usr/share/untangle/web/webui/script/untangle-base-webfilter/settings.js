@@ -952,7 +952,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }
                 }, {
                     header : this.i18n._("action"),
-                    width : 70,
+                    width : 100,
                     sortable : true,
                     dataIndex : 'displayAction'
                 }, {
@@ -970,7 +970,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     renderer : asRequest
                 }, {
                     header : this.i18n._("reason for action"),
-                    width : 120,
+                    width : 150,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {

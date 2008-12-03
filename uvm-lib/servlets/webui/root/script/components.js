@@ -2920,7 +2920,7 @@ Ext.grid.CheckColumn = function(config) {
         this.id = Ext.id();
     }
     if (!this.width) {
-        this.width = 40;
+        this.width = 55;
     }
     this.renderer = this.renderer.createDelegate(this);
 };
@@ -2958,7 +2958,7 @@ Ext.grid.IconColumn = Ext.extend(Object, {
             this.id = Ext.id();
         }
         if (!this.width) {
-            this.width = 35;
+            this.width = 50;
         }
         if (this.fixed == null) {
             this.fixed = true;
@@ -2995,13 +2995,13 @@ Ext.grid.IconColumn = Ext.extend(Object, {
 // Grid edit column
 Ext.grid.EditColumn=Ext.extend(Ext.grid.IconColumn, {
     constructor : function(config) {
-        if (!this.header) {
-            this.header = i18n._("Edit");
+        if (!config.header) {
+            config.header = i18n._("Edit");
         }
-        if (!this.width) {
-            this.width = 35;
+        if (!config.width) {
+            config.width = 50;
         }
-        Ext.grid.EditColumn.superclass.constructor.call(this);
+        Ext.grid.EditColumn.superclass.constructor.call(this,config);
     },
     iconClass: 'icon-edit-row',
     handle : function(record) {
@@ -3011,13 +3011,13 @@ Ext.grid.EditColumn=Ext.extend(Ext.grid.IconColumn, {
 // Grid edit column
 Ext.grid.DeleteColumn=Ext.extend(Ext.grid.IconColumn, {
     constructor : function(config) {
-        if (!this.header) {
-            this.header = i18n._("Delete");
+        if (!config.header) {
+            config.header = i18n._("Delete");
         }
-        if (!this.width) {
-            this.width = 39;
+        if (!config.width) {
+            config.width = 55;
         }
-        Ext.grid.DeleteColumn.superclass.constructor.call(this);
+        Ext.grid.DeleteColumn.superclass.constructor.call(this,config);
     },
     iconClass: 'icon-delete-row',
     handle : function(record) {
@@ -3034,7 +3034,7 @@ Ext.grid.ReorderColumn = function(config) {
         this.header = i18n._("Reorder");
     }
     if (!this.width) {
-        this.width = 50;
+        this.width = 55;
     }
     if (this.fixed == null) {
         this.fixed = true;
@@ -3077,10 +3077,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     hasAdd : true,
     // has Edit buton on each record
     hasEdit : true,
+    configEdit: null,
     // has Delete buton on each record
     hasDelete : true,
+    configDelete: null,
     // the default Empty record for a new row
     hasReorder : false,
+    configReorder: null,
     // the default Empty record for a new row
     emptyRow : null,
     // input lines used by the row editor
@@ -3114,6 +3117,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     constructor : function(config) {
         this.subCmps=[];
         this.changedData = {};
+        this.configReorder={};
+        this.configEdit={};
+        this.configDelete={};
         Ung.EditorGrid.superclass.constructor.apply(this, arguments);
     },
     initComponent : function() {
@@ -3127,7 +3133,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 appendOnly:true
             };
 
-            var reorderColumn = new Ext.grid.ReorderColumn();
+            var reorderColumn = new Ext.grid.ReorderColumn(this.configReorder);
             if (!this.plugins) {
                 this.plugins = [];
             }
@@ -3135,7 +3141,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.columns.push(reorderColumn);
         }
         if (this.hasEdit) {
-            var editColumn = new Ext.grid.EditColumn();
+            var editColumn = new Ext.grid.EditColumn(this.configEdit);
             if (!this.plugins) {
                 this.plugins = [];
             }
@@ -3143,7 +3149,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.columns.push(editColumn);
         }
         if (this.hasDelete) {
-            var deleteColumn = new Ext.grid.DeleteColumn();
+            var deleteColumn = new Ext.grid.DeleteColumn(this.configDelete);
             if (!this.plugins) {
                 this.plugins = [];
             }

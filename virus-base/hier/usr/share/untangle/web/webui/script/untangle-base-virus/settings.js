@@ -658,7 +658,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     dataIndex : 'traffic'
                 }, {
                     header : this.i18n._("reason for action"),
-                    width : 120,
+                    width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
