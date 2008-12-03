@@ -2272,7 +2272,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
     });
     
     // certificate generation window
-    Ung.CertGenerateWindow = Ext.extend(Ung.ButtonsWindow, {
+    Ung.CertGenerateWindow = Ext.extend(Ung.Window, {
         initComponent : function() {
         	var settingsCmp = Ext.getCmp(this.items.parentId);
             this.bbar= ['->',{
@@ -2290,7 +2290,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.proceedAction();
                 }.createDelegate(this)
             }];
-            Ung.ButtonsWindow.prototype.initComponent.call(this);
+            Ung.Window.prototype.initComponent.call(this);
         },
         // the proceed actions
         // to override

@@ -1962,6 +1962,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
                 modal : true,
                 title : i18n._("Set up to four"),
                 bodyStyle : "padding: 5px 5px 5px 15px;",
+                defaults: {},
                 items: configItems,
                 autoScroll : true,
                 draggable : true,
@@ -2376,6 +2377,19 @@ Ung.Window = Ext.extend(Ext.Window, {
     subCmps : null,
     // size to rack right side on show
     sizeToRack : true,
+    layout : 'anchor',
+    defaults: {
+        anchor: '100% 100%',
+        autoScroll: true,
+        autoWidth : true
+    },
+    closeAction : 'cancelAction',
+    // the cancel action
+    // to override
+    cancelAction : function() {
+        this.hide();
+    },
+    
     constructor : function(config) {
         this.subCmps = [];
         Ung.Window.superclass.constructor.apply(this, arguments);
@@ -2422,25 +2436,9 @@ Ung.Window = Ext.extend(Ext.Window, {
     }
 
 });
-// Buttons Window
-// has the content and 3 standard buttons one in the left and 2 in the right
-Ung.ButtonsWindow = Ext.extend(Ung.Window, {
-    layout : 'anchor',
-    defaults: {
-        anchor: '100% 100%',
-        autoScroll: true,
-        autoWidth : true
-    },
-    closeAction : 'cancelAction',
-    // the cancel action
-    // to override
-    cancelAction : function() {
-        this.hide();
-    }
-});
 
 // Node Settings Window
-Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
+Ung.NodeSettingsWin = Ext.extend(Ung.Window, {
     nodeCmp : null,
     initComponent : function() {
         this.breadcrumbs = [{
@@ -2516,7 +2514,7 @@ Ung.NodeSettingsWin = Ext.extend(Ung.ButtonsWindow, {
     }
 });
 // Config Window
-Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
+Ung.ConfigWin = Ext.extend(Ung.Window, {
     // config i18n
     i18n : null,
     // holds the json rpc results for the settings classes
@@ -2613,7 +2611,7 @@ Ung.ConfigWin = Ext.extend(Ung.ButtonsWindow, {
 });
 // update window
 // has the content and 3 standard buttons: help, cancel, Update
-Ung.UpdateWindow = Ext.extend(Ung.ButtonsWindow, {
+Ung.UpdateWindow = Ext.extend(Ung.Window, {
     initComponent : function() {
         if(this.bbar==null) {
             this.bbar=['->',{

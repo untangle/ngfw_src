@@ -762,6 +762,7 @@ Ung.Main.prototype = {
                 id: 'iframeWin',
                 title:'',
                 layout: 'fit',
+                defaults: {},
                 items: {
                     html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" />'
                 },

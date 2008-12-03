@@ -130,7 +130,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 ]
             });
 
-            this.window = new Ung.ButtonsWindow({
+            this.window = new Ung.Window({
                 title : this.i18n._('Distribute VPN Client'),
                 bbar : [
                     '->',
@@ -1760,6 +1760,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.clientSetup = new Ung.Window({
                 title : this.i18n._("OpenVPN Client Setup Wizard"),
                 closeAction : "cancelAction",
+                defaults: {},
                 wizard: clientWizard,
                 items : [{
                     region : "center",
@@ -2029,6 +2030,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 gridExportsId: gridExports.getId(),
                 title : this.i18n._("OpenVPN Server Setup Wizard"),
                 closeAction : "cancelAction",
+                defaults: {},
                 wizard: serverWizard,
                 items : [{
                     region : "center",
