@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.Virus"]) {
     Ung.hasResource["Ung.Virus"] = true;
-    Ung.Settings.registerClassName('untangle-base-virus', 'Ung.Virus');
+    Ung.NodeWin.registerClassName('untangle-base-virus', 'Ung.Virus');
 
-    Ung.Virus = Ext.extend(Ung.Settings, {
+    Ung.Virus = Ext.extend(Ung.NodeWin, {
     	panelWeb:null,
     	panelEmail: null,
     	panelFtp: null,

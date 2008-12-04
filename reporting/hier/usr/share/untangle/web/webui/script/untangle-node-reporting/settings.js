@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.Reporting"]) {
     Ung.hasResource["Ung.Reporting"] = true;
-    Ung.Settings.registerClassName('untangle-node-reporting', 'Ung.Reporting');
+    Ung.NodeWin.registerClassName('untangle-node-reporting', 'Ung.Reporting');
 
-    Ung.Reporting = Ext.extend(Ung.Settings, {
+    Ung.Reporting = Ext.extend(Ung.NodeWin, {
         panelStatus : null,
         panelGeneration : null,
         gridRecipients : null,

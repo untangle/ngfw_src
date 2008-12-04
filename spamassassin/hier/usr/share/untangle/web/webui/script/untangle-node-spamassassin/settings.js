@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.SpamAssassin"]) {
     Ung.hasResource["Ung.SpamAssassin"] = true;
-    Ung.Settings.registerClassName('untangle-node-spamassassin', 'Ung.SpamAssassin');
+    Ung.NodeWin.registerClassName('untangle-node-spamassassin', 'Ung.SpamAssassin');
 
-    Ung.SpamAssassin = Ext.extend(Ung.Settings, {
+    Ung.SpamAssassin = Ext.extend(Ung.NodeWin, {
         strengthsData : null,
         smtpData : null,
         spamData : null,

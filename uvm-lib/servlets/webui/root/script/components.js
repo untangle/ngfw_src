@@ -1147,11 +1147,11 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     loadSettings : function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
-        this.settingsClassName = Ung.Settings.getClassName(this.name);
+        this.settingsClassName = Ung.NodeWin.getClassName(this.name);
         if (!this.settingsClassName) {
             // Dynamically load node javaScript
-            Ung.Settings.loadNodeScript(this, function() {
-                this.settingsClassName = Ung.Settings.getClassName(this.name);
+            Ung.NodeWin.loadNodeScript(this, function() {
+                this.settingsClassName = Ung.NodeWin.getClassName(this.name);
                 this.initSettings();
             }.createDelegate(this));
         } else {
@@ -1163,8 +1163,8 @@ Ung.Node = Ext.extend(Ext.Component, {
         this.loadNodeContext.createDelegate(this,[this.initSettingsTranslations.createDelegate(this,[this.openSettings.createDelegate(this)])]).call(this);
     },
     initSettingsTranslations : function(handler) {
-        if(Ung.Settings.dependency[this.name]) {
-            var dependencyName=Ung.Settings.dependency[this.name].name;
+        if(Ung.NodeWin.dependency[this.name]) {
+            var dependencyName=Ung.NodeWin.dependency[this.name].name;
             Ung.Util.loadModuleTranslations.call(this, dependencyName, null, function(nodeName,dependencyName) {
                 Ung.Util.loadModuleTranslations.call(this,nodeName, Ung.i18nModuleInstances[dependencyName].moduleMap,handler);
             }.createDelegate(this,[this.name, dependencyName]));
@@ -1176,23 +1176,20 @@ Ung.Node = Ext.extend(Ext.Component, {
     openSettings : function() {
         var items=null;
         if (this.settingsClassName !== null) {
-            eval('this.settings=new ' + this.settingsClassName + '({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
-            items=this.settings;
+            eval('this.settingsWin=new ' + this.settingsClassName + '({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
         } else {
-            items =[{
-                anchor: '100% 100%',
-                cls: 'description',
-                bodyStyle : "padding: 15px 5px 5px 15px;",
-                html: String.format(i18n._("Error: There is no settings class for the node '{0}'."),this.name)
-            }];
+            this.settingsWin = new Ung.NodeWin({
+                node : this,
+                items: [{
+                    anchor: '100% 100%',
+                    cls: 'description',
+                    bodyStyle : "padding: 15px 5px 5px 15px;",
+                    html: String.format(i18n._("Error: There is no settings class for the node '{0}'."),this.name)
+                }]
+            });
         }
-        this.settingsWin = new Ung.NodeSettingsWin({
-            nodeCmp : this,
-            items: items
-        });
         this.settingsWin.show();
         Ext.MessageBox.hide();
-        //this.settingsWin.cancelAction();
     },
 
     // remove node
@@ -2064,137 +2061,6 @@ Ung.SystemBlinger.template = new Ext.Template('<div class="blinger-name">{blinge
         '<div class="systemStatSettings" id="systemStatSettings_{id}"></div>');
 Ext.ComponentMgr.registerType('ungSystemBlinger', Ung.SystemBlinger);
 
-// Setting base class
-Ung.Settings = Ext.extend(Ext.Panel, {
-    layout : 'anchor',
-    anchor: '100% 100%',
-    // node i18n
-    i18n : null,
-    // node object
-    node : null,
-    // settings tabs (if the settings has tabs layout)
-    tabs : null,
-    // holds the json rpc results for the settings class like baseSettings
-    // object, repository, repositoryDesc
-    rpc : null,
-    constructor : function(config) {
-        var nodeName=config.node.name;
-        this.id = "settings_" + nodeName + "_" + rpc.currentPolicy.id;
-        config.rpc = {};
-        // initializes the node i18n instance
-        config.i18n = Ung.i18nModuleInstances[nodeName];
-        Ung.Settings.superclass.constructor.apply(this, arguments);
-    },
-    // build Tab panel from an array of tab items
-    buildTabPanel : function(itemsArray) {
-        this.tabs = new Ext.TabPanel({
-            anchor: '100% 100%',
-            autoWidth : true,
-            defaults: {
-                anchor: '100% 100%',
-                autoWidth : true,
-                autoScroll: true
-            },
-
-            height : 400,
-            activeTab : 0,
-            frame : true,
-            parentId : this.getId(),
-            items : itemsArray,
-            layoutOnTabChange : true
-        });
-        this.items=this.tabs;
-    },
-    // get nodeContext.rpcNode object
-    getRpcNode : function() {
-        return this.node.nodeContext.rpcNode;
-    },
-    // get base settings object
-    getBaseSettings : function(forceReload) {
-        if (forceReload || this.rpc.baseSettings === undefined) {
-            try {
-                this.rpc.baseSettings = this.getRpcNode().getBaseSettings();
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return this.rpc.baseSettings;
-    },
-    // get Validator object
-    getValidator : function() {
-        if (this.node.nodeContext.rpcNode.validator === undefined) {
-            try {
-                this.node.nodeContext.rpcNode.validator = this.getRpcNode().getValidator();
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return this.node.nodeContext.rpcNode.validator;
-    },
-    // get eventManager object
-    getEventManager : function() {
-        if (this.node.nodeContext.rpcNode.eventManager === undefined) {
-            try {
-                this.node.nodeContext.rpcNode.eventManager = this.node.nodeContext.rpcNode.getEventManager();
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return this.node.nodeContext.rpcNode.eventManager;
-    },
-    cancelAction : function() {
-        this.node.settingsWin.cancelAction()
-    },
-    // All settings classes must override the save method
-    saveAction : function() {
-    },
-    // validation functions
-    validateClient : function() {
-        return true;
-    },
-    validateServer : function() {
-        return true;
-    },
-    validate : function() {
-        return this.validateClient() && this.validateServer();
-    }
-});
-Ung.Settings._nodeScripts = {};
-
-// Dynamically loads javascript file for a node
-Ung.Settings.loadNodeScript = function(settingsCmp, handler) {
-	var scriptFile = Ung.Util.getScriptSrc('settings.js')
-    Ung.Util.loadScript('script/' + settingsCmp.name + '/' + scriptFile, function() {
-        this.settingsClassName = Ung.Settings.getClassName(this.name);
-        if(!Ung.Settings.dependency[this.name]) {
-            handler.call(this);
-        } else {
-            var dependencyClassName=Ung.Settings.getClassName(Ung.Settings.dependency[this.name].name);
-            if(!dependencyClassName) {
-                Ung.Util.loadScript('script/' + Ung.Settings.dependency[this.name].name + '/' + scriptFile, function() {
-                    Ung.Settings.dependency[this.name].fn.call(this);
-                    handler.call(this);
-                }.createDelegate(this));
-            } else {
-                Ung.Settings.dependency[this.name].fn.call(this);
-                handler.call(this);
-            }
-        }
-    }.createDelegate(settingsCmp));
-};
-
-Ung.Settings.classNames = {};
-Ung.Settings.dependency = {};
-// Static function get the settings class name for a node
-Ung.Settings.getClassName = function(name) {
-    var className = Ung.Settings.classNames[name];
-    return className === undefined ? null : className;
-};
-// Static function to register a settings class name for a node
-Ung.Settings.registerClassName = function(name, className) {
-    Ung.Settings.classNames[name] = className;
-};
-
 // Event Log class
 Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // the settings component
@@ -2436,132 +2302,23 @@ Ung.Window = Ext.extend(Ext.Window, {
     }
 
 });
-
-// Node Settings Window
-Ung.NodeSettingsWin = Ext.extend(Ung.Window, {
-    nodeCmp : null,
-    initComponent : function() {
-        this.breadcrumbs = [{
-            title : i18n._(rpc.currentPolicy.name),
-            action : function() {
-                this.cancelAction();
-            }.createDelegate(this)
-        }, {
-            title : this.nodeCmp.md.displayName
-        }];
-        if(this.bbar==null) {
-            this.bbar=['-',{
-                name : "Remove",
-                id : this.getId() + "_removeBtn",
-                iconCls : 'node-remove-icon',
-                text : i18n._('Remove'),
-                handler : function() {
-                    this.removeAction();
-                }.createDelegate(this)
-            },'-',{
-                name : 'Help',
-                id : this.getId() + "_helpBtn",
-                iconCls : 'icon-help',
-                text : i18n._('Help'),
-                handler : function() {
-                    this.helpAction();
-                }.createDelegate(this)
-            },'->',{
-                name : "Cancel",
-                id : this.getId() + "_cancelBtn",
-                iconCls : 'cancel-icon',
-                text : i18n._('Cancel'),
-                handler : function() {
-                    this.cancelAction();
-                }.createDelegate(this)
-            },'-',{
-                name : "Save",
-                id : this.getId() + "_saveBtn",
-                iconCls : 'save-icon',
-                text : i18n._('Save'),
-                handler : function() {
-                    this.saveAction.defer(1, this);
-                }.createDelegate(this)
-            },'-'];
-        }
-        Ung.NodeSettingsWin.superclass.initComponent.call(this);
-    },
-    helpAction : function() {
-        var helpSource=this.nodeCmp.helpSource;
-        if(this.nodeCmp.settings!=null && this.nodeCmp.settings.tabs!=null && this.nodeCmp.settings.tabs.getActiveTab()!=null) {
-            var tabHelpSource=this.nodeCmp.settings.tabs.getActiveTab().helpSource;
-            if(tabHelpSource!=null) {
-                helpSource+="_"+tabHelpSource;
-            }
-        }
-        main.openHelp(helpSource);
-    },
-
-    removeAction : function() {
-        this.nodeCmp.removeAction();
-    },
-    cancelAction : function() {
-        this.hide();
-        if(this.nodeCmp.fnCallback) {
-            this.nodeCmp.fnCallback.call();
-        }
-        Ext.destroy(this);
-    },
-    saveAction : function() {
-        if (this.nodeCmp.settings) {
-            this.nodeCmp.settings.saveAction();
-        }
-    }
-});
-// Config Window
-Ung.ConfigWin = Ext.extend(Ung.Window, {
+Ung.SettingsWin = Ext.extend(Ung.Window, {
     // config i18n
     i18n : null,
     // holds the json rpc results for the settings classes
     rpc : null,
     // tabs (if the window has tabs layout)
     tabs : null,
-    // class constructor
-    constructor : function(config) {
-        // for config elements we have the untangle-libuvm translation map
-        this.i18n = i18n;
-        this.rpc = {};
-        Ung.ConfigWin.superclass.constructor.apply(this, arguments);
-    },
-    initComponent : function() {
-        if (!this.name) {
-            this.name = "configWin_" + this.name;
-        }
-        if(this.bbar==null) {
-            this.bbar=['-',{
-                name : 'Help',
-                id : this.getId() + "_helpBtn",
-                iconCls : 'icon-help',
-                text : i18n._('Help'),
-                handler : function() {
-                    this.helpAction();
-                }.createDelegate(this)
-            },'->',{
-                name : 'Cancel',
-                id : this.getId() + "_cancelBtn",
-                iconCls : 'cancel-icon',
-                text : i18n._('Cancel'),
-                handler : function() {
-                    this.cancelAction();
-                }.createDelegate(this)
-            },'-',{
-                name : 'Save',
-                id : this.getId() + "_saveBtn",
-                iconCls : 'save-icon',
-                text : i18n._('Save'),
-                handler : function() {
-                    this.saveAction.defer(1, this);;
-                }.createDelegate(this)
-            },'-'];
-        }
-        Ung.ConfigWin.superclass.initComponent.call(this);
-    },
+    // holds the json rpc results for the settings class like baseSettings
+    // object, repository, repositoryDesc
+    rpc : null,
+    layout : 'anchor',
+    anchor: '100% 100%',
     // build Tab panel from an array of tab items
+    constructor : function(config) {
+        config.rpc = {};
+        Ung.SettingsWin.superclass.constructor.apply(this, arguments);
+    },    
     buildTabPanel : function(itemsArray) {
         this.tabs = new Ext.TabPanel({
             anchor: '100% 100%',
@@ -2571,6 +2328,7 @@ Ung.ConfigWin = Ext.extend(Ung.Window, {
                 autoWidth : true,
                 autoScroll: true
             },
+
             height : 400,
             activeTab : 0,
             frame : true,
@@ -2607,6 +2365,189 @@ Ung.ConfigWin = Ext.extend(Ung.Window, {
     },
     validate : function() {
         return this.validateClient() && this.validateServer();
+    }
+});
+// Node Settings Window
+Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
+    node : null,
+    constructor : function(config) {
+        var nodeName=config.node.name;
+        this.id = "nodeWin_" + nodeName + "_" + rpc.currentPolicy.id;
+        // initializes the node i18n instance
+        config.i18n = Ung.i18nModuleInstances[nodeName];
+        Ung.NodeWin.superclass.constructor.apply(this, arguments);
+    },
+    initComponent : function() {
+        this.breadcrumbs = [{
+            title : i18n._(rpc.currentPolicy.name),
+            action : function() {
+                this.cancelAction();
+            }.createDelegate(this)
+        }, {
+            title : this.node.md.displayName
+        }];
+        if(this.bbar==null) {
+            this.bbar=['-',{
+                name : "Remove",
+                id : this.getId() + "_removeBtn",
+                iconCls : 'node-remove-icon',
+                text : i18n._('Remove'),
+                handler : function() {
+                    this.removeAction();
+                }.createDelegate(this)
+            },'-',{
+                name : 'Help',
+                id : this.getId() + "_helpBtn",
+                iconCls : 'icon-help',
+                text : i18n._('Help'),
+                handler : function() {
+                    this.helpAction();
+                }.createDelegate(this)
+            },'->',{
+                name : "Cancel",
+                id : this.getId() + "_cancelBtn",
+                iconCls : 'cancel-icon',
+                text : i18n._('Cancel'),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            },'-',{
+                name : "Save",
+                id : this.getId() + "_saveBtn",
+                iconCls : 'save-icon',
+                text : i18n._('Save'),
+                handler : function() {
+                    this.saveAction.defer(1, this);
+                }.createDelegate(this)
+            },'-'];
+        }
+        Ung.NodeWin.superclass.initComponent.call(this);
+    },
+    removeAction : function() {
+        this.node.removeAction();
+    },
+    cancelAction : function() {
+        this.hide();
+        if(this.node.fnCallback) {
+            this.node.fnCallback.call();
+        }
+        Ext.destroy(this);
+    },
+    // get nodeContext.rpcNode object
+    getRpcNode : function() {
+        return this.node.nodeContext.rpcNode;
+    },
+    // get base settings object
+    getBaseSettings : function(forceReload) {
+        if (forceReload || this.rpc.baseSettings === undefined) {
+            try {
+                this.rpc.baseSettings = this.getRpcNode().getBaseSettings();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.rpc.baseSettings;
+    },
+    // get Validator object
+    getValidator : function() {
+        if (this.node.nodeContext.rpcNode.validator === undefined) {
+            try {
+                this.node.nodeContext.rpcNode.validator = this.getRpcNode().getValidator();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.node.nodeContext.rpcNode.validator;
+    },
+    // get eventManager object
+    getEventManager : function() {
+        if (this.node.nodeContext.rpcNode.eventManager === undefined) {
+            try {
+                this.node.nodeContext.rpcNode.eventManager = this.node.nodeContext.rpcNode.getEventManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.node.nodeContext.rpcNode.eventManager;
+    }
+});
+Ung.NodeWin._nodeScripts = {};
+
+// Dynamically loads javascript file for a node
+Ung.NodeWin.loadNodeScript = function(settingsCmp, handler) {
+    var scriptFile = Ung.Util.getScriptSrc('settings.js')
+    Ung.Util.loadScript('script/' + settingsCmp.name + '/' + scriptFile, function() {
+        this.settingsClassName = Ung.NodeWin.getClassName(this.name);
+        if(!Ung.NodeWin.dependency[this.name]) {
+            handler.call(this);
+        } else {
+            var dependencyClassName=Ung.NodeWin.getClassName(Ung.NodeWin.dependency[this.name].name);
+            if(!dependencyClassName) {
+                Ung.Util.loadScript('script/' + Ung.NodeWin.dependency[this.name].name + '/' + scriptFile, function() {
+                    Ung.NodeWin.dependency[this.name].fn.call(this);
+                    handler.call(this);
+                }.createDelegate(this));
+            } else {
+                Ung.NodeWin.dependency[this.name].fn.call(this);
+                handler.call(this);
+            }
+        }
+    }.createDelegate(settingsCmp));
+};
+
+Ung.NodeWin.classNames = {};
+Ung.NodeWin.dependency = {};
+// Static function get the settings class name for a node
+Ung.NodeWin.getClassName = function(name) {
+    var className = Ung.NodeWin.classNames[name];
+    return className === undefined ? null : className;
+};
+// Static function to register a settings class name for a node
+Ung.NodeWin.registerClassName = function(name, className) {
+    Ung.NodeWin.classNames[name] = className;
+};
+
+// Config Window
+Ung.ConfigWin = Ext.extend(Ung.SettingsWin, {
+    // class constructor
+    constructor : function(config) {
+        this.id = "configWin_" + config.name;
+        // for config elements we have the untangle-libuvm translation map
+        this.i18n = i18n;
+        Ung.ConfigWin.superclass.constructor.apply(this, arguments);
+    },
+    initComponent : function() {
+        if (!this.name) {
+            this.name = "configWin_" + this.name;
+        }
+        if(this.bbar==null) {
+            this.bbar=['-',{
+                name : 'Help',
+                id : this.getId() + "_helpBtn",
+                iconCls : 'icon-help',
+                text : i18n._('Help'),
+                handler : function() {
+                    this.helpAction();
+                }.createDelegate(this)
+            },'->',{
+                name : 'Cancel',
+                id : this.getId() + "_cancelBtn",
+                iconCls : 'cancel-icon',
+                text : i18n._('Cancel'),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            },'-',{
+                name : 'Save',
+                id : this.getId() + "_saveBtn",
+                iconCls : 'save-icon',
+                text : i18n._('Save'),
+                handler : function() {
+                    this.saveAction.defer(1, this);;
+                }.createDelegate(this)
+            },'-'];
+        }
+        Ung.ConfigWin.superclass.initComponent.call(this);
     }
 });
 // update window

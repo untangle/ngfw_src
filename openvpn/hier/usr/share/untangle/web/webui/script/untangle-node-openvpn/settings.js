@@ -3,7 +3,7 @@
  * little ridiculous. Especially a 2000 line file. XXX */
 if (!Ung.hasResource["Ung.OpenVPN"]) {
     Ung.hasResource["Ung.OpenVPN"] = true;
-    Ung.Settings.registerClassName('untangle-node-openvpn', "Ung.OpenVPN");
+    Ung.NodeWin.registerClassName('untangle-node-openvpn', "Ung.OpenVPN");
 
     Ext.namespace('Ung');
     Ext.namespace('Ung.Node');
@@ -437,7 +437,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         }
     });
 
-    Ung.OpenVPN = Ext.extend(Ung.Settings, {
+    Ung.OpenVPN = Ext.extend(Ung.NodeWin, {
         configState : null,
         groupsStore : null,
         panelStatus : null,

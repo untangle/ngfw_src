@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.Shield"]) {
     Ung.hasResource["Ung.Shield"] = true;
-    Ung.Settings.registerClassName('untangle-node-shield', 'Ung.Shield');
+    Ung.NodeWin.registerClassName('untangle-node-shield', 'Ung.Shield');
 
-    Ung.Shield = Ext.extend(Ung.Settings, {
+    Ung.Shield = Ext.extend(Ung.NodeWin, {
         gridExceptions : null,
         gridEventLog : null,
         initComponent : function(container, position) {

@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.BaseWebFilter"]) {
     Ung.hasResource["Ung.BaseWebFilter"] = true;
-    Ung.Settings.registerClassName('untangle-base-webfilter', 'Ung.BaseWebFilter');
+    Ung.NodeWin.registerClassName('untangle-base-webfilter', 'Ung.BaseWebFilter');
 
-    Ung.BaseWebFilter = Ext.extend(Ung.Settings, {
+    Ung.BaseWebFilter = Ext.extend(Ung.NodeWin, {
     	hasScanHTTPS: null,
         gridExceptions : null,
         gridEventLog : null,

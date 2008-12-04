@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.Firewall"]) {
     Ung.hasResource["Ung.Firewall"] = true;
-    Ung.Settings.registerClassName('untangle-node-firewall', 'Ung.Firewall');
+    Ung.NodeWin.registerClassName('untangle-node-firewall', 'Ung.Firewall');
 
-    Ung.Firewall = Ext.extend(Ung.Settings, {
+    Ung.Firewall = Ext.extend(Ung.NodeWin, {
     	panelRules: null,
         gridRules : null,
         gridEventLog : null,

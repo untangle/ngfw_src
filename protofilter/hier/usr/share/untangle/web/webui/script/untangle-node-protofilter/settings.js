@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.Protofilter"]) {
     Ung.hasResource["Ung.Protofilter"] = true;
-    Ung.Settings.registerClassName('untangle-node-protofilter', 'Ung.Protofilter');
+    Ung.NodeWin.registerClassName('untangle-node-protofilter', 'Ung.Protofilter');
 
-    Ung.Protofilter = Ext.extend(Ung.Settings, {
+    Ung.Protofilter = Ext.extend(Ung.NodeWin, {
         gridProtocolList : null,
         gridEventLog : null,
         initComponent : function() {

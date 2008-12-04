@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.Spyware"]) {
     Ung.hasResource["Ung.Spyware"] = true;
-    Ung.Settings.registerClassName('untangle-node-spyware', "Ung.Spyware");
+    Ung.NodeWin.registerClassName('untangle-node-spyware', "Ung.Spyware");
 
-    Ung.Spyware = Ext.extend(Ung.Settings, {
+    Ung.Spyware = Ext.extend(Ung.NodeWin, {
         gridActiveXList : null,
         gridCookiesList : null,
         gridSubnetList : null,

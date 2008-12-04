@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.Ips"]) {
     Ung.hasResource["Ung.Ips"] = true;
-    Ung.Settings.registerClassName('untangle-node-ips', 'Ung.Ips');
+    Ung.NodeWin.registerClassName('untangle-node-ips', 'Ung.Ips');
 
-    Ung.Ips = Ext.extend(Ung.Settings, {
+    Ung.Ips = Ext.extend(Ung.NodeWin, {
     	panelStatus: null,
     	panelRules: null,
         gridRules : null,

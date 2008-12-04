@@ -1,8 +1,8 @@
 if (!Ung.hasResource["Ung.Phish"]) {
     Ung.hasResource["Ung.Phish"] = true;
-    Ung.Settings.registerClassName('untangle-node-phish', 'Ung.Phish');
+    Ung.NodeWin.registerClassName('untangle-node-phish', 'Ung.Phish');
 
-    Ung.Phish = Ext.extend(Ung.Settings, {
+    Ung.Phish = Ext.extend(Ung.NodeWin, {
         smtpData : null,
         spamData : null,
         emailPanel : null,
