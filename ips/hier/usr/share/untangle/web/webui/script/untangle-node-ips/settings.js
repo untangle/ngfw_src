@@ -138,7 +138,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                columns : [{
 		                    id : 'category',
 		                    header : this.i18n._("category"),
-		                    width : 200,
+		                    width : 180,
 		                    dataIndex : 'category',
 		                    editor : new Ext.form.TextField({
 		                        allowBlank : false
@@ -169,7 +169,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                }, {
 		                    id : 'info',
 		                    header : this.i18n._("info"),
-		                    width : 50,
+		                    width : 70,
 		                    dataIndex : 'URL',
 		                    editor : null,
 		                    sortable : false,
@@ -220,7 +220,9 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    allowBlank : false,
 		                    width : 400
 		                })]
-					}),  {html : '<br>'}, this.gridVariables = new Ung.EditorGrid({
+					}),  
+                    {html : '<br>', border: false}, 
+                    this.gridVariables = new Ung.EditorGrid({
 		                name : 'Variables',
 		                settingsCmp : this,
 		                totalRecords : this.getBaseSettings().variablesLength,
@@ -249,7 +251,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                columns : [{
 		                    id : 'variable',
 		                    header : this.i18n._("name"),
-		                    width : 150,
+		                    width : 170,
 		                    dataIndex : 'variable',
 		                    editor : new Ext.form.TextField({
 		                        allowBlank : false
@@ -273,7 +275,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                }],
 		                sortField : 'variable',
 		                columnsDefaultSortable : true,
-		                autoExpandColumn : 'variable',
 		                rowEditorInputLines : [new Ext.form.TextField({
 		                    name : "Name",
 		                    dataIndex: "variable",
