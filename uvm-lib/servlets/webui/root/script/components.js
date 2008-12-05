@@ -363,6 +363,16 @@ Ung.Util= {
             return null;
         else
             return results[1];
+    },
+    maximize: function() {
+        top.window.moveTo(0,0);
+        if(Ext.isIE) {
+            top.window.resizeTo(screen.availWidth,screen.availHeight); 
+        } else {
+            top.window.outerHeight = top.screen.availHeight; 
+            top.window.outerWidth = top.screen.availWidth; 
+            
+        }
     }
 };
 

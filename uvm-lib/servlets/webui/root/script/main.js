@@ -3,9 +3,7 @@ Ext.namespace('Ung');
 // the main object instance
 var main=null;
 // Main object class
-Ung.Main=function() {
-}
-Ung.Main.prototype = {
+Ung.Main=Ext.extend(Object, {
     debugMode: false,
     disableThreads: false, // in development environment is useful to disable
                             // threads.
@@ -27,6 +25,9 @@ Ung.Main.prototype = {
     upgradeLastCheckTime: null,
     firstTimeRun: null,
     // init function
+    constructor: function(config) {
+        Ext.apply(this, config);
+    },
     init: function() {
         if (Ext.isGecko) {
             document.onkeypress = function(e) {
@@ -36,6 +37,7 @@ Ung.Main.prototype = {
                 return true;
             }
         }
+        Ung.Util.maximize();
         this.firstTimeRun=Ung.Util.getQueryStringParam("firstTimeRun");
         this.appsLastState={};
     	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
@@ -962,7 +964,6 @@ Ung.Main.prototype = {
 			renderTo: 'rack-select-container', // the container id
 		   	text: items[selVirtualRackIndex].text,
 			id:'rack-select',
-		   	//handler: Ung.Main.changePolicy, // handle a click on the button itself
 		   	menu: new Ext.menu.Menu({
 		   		hideDelay: 0,
 		        items: items
@@ -1004,4 +1005,4 @@ Ung.Main.prototype = {
 
         return false;
     }
-};
+});
