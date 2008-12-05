@@ -32,6 +32,7 @@ import org.apache.velocity.app.VelocityEngine;
 
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.util.IOUtil;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  *
@@ -47,6 +48,7 @@ class DigestGenerator {
     //with the contents of the Velocity ("*.vm") templates.
     private static final String USER_EMAIL_VV = "user_email";
     private static final String INBOX_LINK_VV = "inbox_link";
+    private static final String I18N_UTIL_VV = "i18n_util";
 
     //We save the lengths of the templates, so we can make a guestimate
     //of how large the byte[] to accumulate them need be.  Avoids
@@ -154,7 +156,7 @@ class DigestGenerator {
         }
     }
 
-    String generateMsgBody(String serverHost, String to, AuthTokenManager atm) {
+    String generateMsgBody(String serverHost, String to, AuthTokenManager atm, I18nUtil i18nUtil) {
         
         try {
             //Create the auth token
@@ -164,6 +166,7 @@ class DigestGenerator {
             VelocityContext context = new VelocityContext();
             context.put(USER_EMAIL_VV, to);
             context.put(INBOX_LINK_VV, new LinkGenerator(serverHost, authToken).generateInboxLink());
+            context.put(I18N_UTIL_VV, i18nUtil);
 
             byte[] htmlBytes = mergeTemplate(context,
                     m_htmlTemplate,

@@ -63,6 +63,7 @@ import com.untangle.node.util.Pair;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  *
@@ -719,6 +720,8 @@ public class Quarantine
     private boolean sendDigestEmail(String account,
                                     InboxIndex index) {
 
+        Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail");
+        I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String internalHost = getInternalIPAsString();
         
         if(internalHost == null) {
@@ -726,9 +729,9 @@ public class Quarantine
             return false;
         }
         String[] recipients = {account};
-        String subject = "Quarantine Digest"; 
+        String subject = i18nUtil.tr("Quarantine Digest"); 
         
-        String bodyHtml = m_digestGenerator.generateMsgBody(internalHost, account, m_atm);
+        String bodyHtml = m_digestGenerator.generateMsgBody(internalHost, account, m_atm, i18nUtil);
         
         // Attempt the send
         boolean ret = LocalUvmContextFactory.context().mailSender().sendHtmlMessage(recipients, subject, bodyHtml);

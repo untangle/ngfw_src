@@ -4,7 +4,7 @@
 
 Summary of Objects/variables referenced
 
-$user_email - the user's email address (a string)
+$user_email - the user email address (a string)
 $inbox_link - to access your spam quarantine
 
 ---------------------------------------------------------------
@@ -17,15 +17,15 @@ $inbox_link - to access your spam quarantine
 ##
 <html>
   <head>
-    <title>Quarantine Digest for $user_email</title>
+    <title>$i18n_util.tr("Quarantine Digest for {0}", $user_email)</title>
   </head>
 
   <body>
 
-  <h3>Quarantine Digest for $user_email</h3>
+  <h3>$i18n_util.tr("Quarantine Digest for {0}", $user_email)</h3>
 
-  <a href="$inbox_link">Click here to access your spam quarantine.</a>
-  From this link you can have a specific email delivered to your email account or delete an email from the quarantine.
+  <a href="$inbox_link">$i18n_util.tr("Click here to access your spam quarantine.")</a>
+  $i18n_util.tr("From this link you can have a specific email delivered to your email account or delete an email from the quarantine.")
   
   </body>
 </html>
