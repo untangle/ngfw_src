@@ -22,9 +22,11 @@ method=${4}
 isEdgeGuard=${5}
 siteName=${6}
 
-## New branding variables
-company="${7}"
-companyUri="${8}"
+## email strings
+title="${7}"
+msgBody1="${8}"
+msgBody2="${9}"
+msgBody3="${10}"
 
 ## XXX May need to do some checks to see if files exists etc.
 
@@ -96,8 +98,10 @@ buildEmail()
 
     sed -e "s|%%KEY%%|${distributionKey}|g" \
         -e "s|%%ADDRESS%%|${publicAddress}|g" \
-        -e "s|%%COMPANY%%|${company}|g" \
-        -e "s|%%COMPANY_URI%%|${companyUri}|g" \
+        -e "s|%%TITLE%%|${title}|g" \
+        -e "s|%%MSG_BODY_1%%|${msgBody1}|g" \
+        -e "s|%%MSG_BODY_2%%|${msgBody2}|g" \
+        -e "s|%%MSG_BODY_3%%|${msgBody3}|g" \
         ${t_mailTemplate} > ${t_emailFile}
 }
 

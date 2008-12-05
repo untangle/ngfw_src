@@ -30,6 +30,7 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.xnap.commons.i18n.I18nManager;
 
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContext;
@@ -361,9 +362,10 @@ public class VpnNodeImpl extends AbstractNode
         throws NodeException
     {
         try {
-            String subject = "OpenVPN Client";
             LocalUvmContext uvm = LocalUvmContextFactory.context();
             MailSender mailSender = uvm.mailSender();
+            Map<String,String> i18nMap = uvm.languageManager().getTranslations("untangle-node-openvpn");
+            String subject = I18nUtil.tr("OpenVPN Client", i18nMap);
 
             /* Read in the contents of the file */
             FileReader fileReader = new FileReader( Constants.PACKAGES_DIR + "/mail-" +

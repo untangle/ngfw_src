@@ -22,10 +22,10 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.RemoteNetworkManager;
@@ -36,6 +36,7 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.util.I18nUtil;
 
 // import static com.untangle.node.openvpn.Constants.*;
 
@@ -327,8 +328,19 @@ class OpenVpnManager
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         RemoteNetworkManager nm = uvm.networkManager();
 
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
-
+        Map<String,String> i18nMap = uvm.languageManager().getTranslations("untangle-node-openvpn");
+        I18nUtil i18nUtil = new I18nUtil(i18nMap);
+        String title = "OpenVPN";
+        String msgBody1 = "", msgBody2 = "", msgBody3 = "";
+        if (client.isUntanglePlatform()) {
+            msgBody1 = i18nUtil.tr("Please input the following information into the \"VPN Client\" wizard.");
+            msgBody2 = i18nUtil.tr("Server Address:");
+            msgBody3 = i18nUtil.tr("Passphrase:");
+        } else {
+            msgBody1 = i18nUtil.tr("Click here to download the OpenVPN client.");
+            msgBody2 = i18nUtil.tr("Or copy and paste the following link into your Web Browser.");
+        }
+        
         String publicAddress = nm.getPublicAddress();
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
@@ -346,8 +358,7 @@ class OpenVpnManager
                                              key, publicAddress, method,
                                              String.valueOf( client.isUntanglePlatform()),
                                              settings.getInternalSiteName(),
-                                             bs.getCompanyName(),
-                                             bs.getCompanyUrl());
+                                             title, msgBody1, msgBody2, msgBody3);
         } catch ( ScriptException e ) {
             logger.warn( "Unable to execute distribution script", e );
             throw e;
