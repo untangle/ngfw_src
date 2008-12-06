@@ -7,6 +7,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         gridRules : null,
         gridEventLog : null,
         initComponent : function() {
+            Ung.Util.clearInterfaceStore();
             // builds the tabs
             this.buildRules();
             this.buildEventLog();

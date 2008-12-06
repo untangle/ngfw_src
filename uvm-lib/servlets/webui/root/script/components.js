@@ -183,22 +183,42 @@ Ung.Util= {
     todo: function() {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
     },
-    interfaceStore:null,
+    interfaceStore : null,
     getInterfaceStore : function() {
         if(this.interfaceStore==null) {
+            var intfManager = main.getIntfManager();
+            var enumeration = intfManager.getIntfMatcherEnumeration();
+            var data = [];
+            for ( var c = 0 ; c < enumeration.length ; c++ ) {
+                var key =enumeration[c];
+                var name = key;
+                switch ( key ) {
+                case "any": name = i18n._("any") ; break;
+                case "0": name = i18n._("External") ; break;
+                case "1": name = i18n._("Internal") ; break;
+                case "2": name = i18n._("DMZ") ; break;
+                case "7": name = i18n._("VPN") ; break;
+                case "more_trusted": name = i18n._("More Trusted") ; break;
+                case "less_trusted": name = i18n._("Less Trusted") ; break;
+                default :
+                    /* XXX need to do something here? for interfaces like External | Internal XXX */
+                }
+
+                data[c] = [ key,name ];
+            }
+
             this.interfaceStore=new Ext.data.SimpleStore({
                 fields : ['key', 'name'],
-                data :[
-                    ["any", i18n._("any")],
-                    ["0", i18n._("External")],
-                    ["7", i18n._("VPN")],
-                    ["1", i18n._("Internal")],
-                    ["more_trusted", i18n._("More Trusted")],
-                    ["less_trusted", i18n._("Less Trusted")]
-                ]
+                data : data
             });
         }
+
         return this.interfaceStore;
+    },
+    clearInterfaceStore : function()
+    {
+        /* It will automatically reload the next time the interface store is fetched. */
+        this.interfaceStore = null;
     },
     protocolStore:null,
     getProtocolStore : function() {
