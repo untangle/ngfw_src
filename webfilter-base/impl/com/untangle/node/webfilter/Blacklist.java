@@ -311,68 +311,119 @@ public abstract class Blacklist
                                   RequestLineToken requestLine)
     {
         String uri = requestLine.getRequestUri().normalize().toString();
-        String category = null;
-        StringRule stringRule = null;
-        Reason reason = null;
+
+        BlacklistCategory category = findBestCategory(host, port, uri);
+
+        StringRule stringRule;
+        if (null == category || !category.getBlock()) {
+            stringRule = findBestRule(host, uri);
+        } else {
+            stringRule = null;
+        }
+
+        if (category != null && category.getBlock()) {
+            Action a = Action.BLOCK;
+            Reason reason = Reason.BLOCK_CATEGORY;
+            WebFilterEvent hbe = new WebFilterEvent
+                (requestLine.getRequestLine(), a, reason,
+                 category.getDisplayName(), node.getVendor());
+            node.log(hbe, host, port);
+
+            WebFilterBlockDetails bd = new WebFilterBlockDetails
+                (settings, host, uri, category.getDisplayName(), clientIp,
+                 node.getNodeTitle());
+            return node.generateNonce(bd);
+        } else if (stringRule != null && stringRule.isLive()) {
+            Action a = Action.BLOCK;
+            Reason reason = Reason.BLOCK_URL;
+            WebFilterEvent hbe = new WebFilterEvent
+                (requestLine.getRequestLine(), a, reason,
+                 stringRule.getDescription(), node.getVendor());
+            node.log(hbe, host, port);
+
+            WebFilterBlockDetails bd = new WebFilterBlockDetails
+                (settings, host, uri, stringRule.getDescription(), clientIp,
+                 node.getNodeTitle());
+            return node.generateNonce(bd);
+        } else if (category != null) {
+            Action a = Action.PASS;
+            Reason reason = Reason.BLOCK_CATEGORY;
+            WebFilterEvent hbe = new WebFilterEvent
+                (requestLine.getRequestLine(), a, reason,
+                 category.getDisplayName(), node.getVendor());
+            node.log(hbe, host, port);
+            node.incrementPassLogCount();
+            return null;
+        } else if (stringRule != null) {
+            Action a = Action.PASS;
+            Reason reason = Reason.BLOCK_URL;
+            node.incrementPassLogCount();
+            WebFilterEvent hbe = new WebFilterEvent
+                (requestLine.getRequestLine(), a, reason,
+                 stringRule.getDescription(), node.getVendor());
+            node.log(hbe, host, port);
+            return null;
+        } else {
+            return null;
+        }
+    }
+
+    private BlacklistCategory findBestCategory(String host, int port,
+                                               String uri)
+    {
+        BlacklistCategory category = null;
+        boolean blockFound = false;
 
         boolean checkSubdomains = getLookupSubdomains();
 
         String dom = host;
-        while (null == category && null != dom) {
+        while (!blockFound && null != dom) {
             String url = dom + uri;
 
-            stringRule = findCategory(blockedUrls, url,
-                                      settings.getBlockedUrls());
-            category = null == stringRule ? null : stringRule.getDescription();
-            if (null != category) {
-                reason = Reason.BLOCK_URL;
+            String sCat = checkBlacklistDatabase(dom, port, uri);
+            BlacklistCategory bc;
+            if (null != sCat) {
+                bc = settings.getBlacklistCategory(sCat);
             } else {
-                if (checkSubdomains || dom.length() == host.length()) {
-                    category = checkBlacklistDatabase(dom, port, uri);
-                }
-
-                if (null != category) {
-                    reason = Reason.BLOCK_CATEGORY;
-                }
+                bc = null;
             }
-
-            if (null == category) {
-                dom = nextHost(dom);
-            }
-        }
-
-        if (null != category) {
-            BlacklistCategory bc = settings.getBlacklistCategory(category);
 
             if (null != bc) {
-                Action a = bc.getBlock() ? Action.BLOCK : Action.PASS;
-                if (!bc.getBlock())
-                    node.incrementPassLogCount();
-                WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), a, reason,
-                     bc.getDisplayName(), node.getVendor());
-                node.log(hbe, host, port);
-            } else if (null == stringRule || stringRule.getLog()) {
-                if (!stringRule.isLive())
-                    node.incrementPassLogCount();
-                WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), Action.BLOCK, reason,
-                     category, node.getVendor());
-                node.log(hbe, host, port);
+                category = bc;
+                blockFound = category.getBlock();
             }
 
-            if ((null != bc && bc.getBlock())
-                || (null != stringRule && stringRule.isLive())) {
-                WebFilterBlockDetails bd = new WebFilterBlockDetails
-                    (settings, host, uri, null == bc ? category : bc.getDisplayName(), clientIp,
-                     node.getNodeTitle());
-                return node.generateNonce(bd);
-            } else {
-                return null;
+            if (!checkSubdomains) {
+                break;
             }
+
+            dom = nextHost(dom);
         }
 
-        return null;
+        return category;
+    }
+
+    private StringRule findBestRule(String host, String uri)
+    {
+        StringRule stringRule = null;
+        boolean blockFound = false;
+
+        String dom = host;
+        while (!blockFound && null != dom) {
+            String url = dom + uri;
+
+            StringRule sr = findCategory(blockedUrls, url,
+                                         settings.getBlockedUrls());
+
+            if (null != sr) {
+                stringRule = sr;
+                blockFound = stringRule.isLive();
+            }
+
+            dom = nextHost(dom);
+        }
+
+        return stringRule;
     }
 
     private StringRule findCategory(CharSequence[] strs, String val,
