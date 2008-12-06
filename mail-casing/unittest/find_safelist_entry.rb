@@ -23,9 +23,13 @@ safelist_end_user_view = mail.getSafelistEndUserView()
 
 mail_settings = mail.getMailNodeSettings()
 
-mail_settings["safelistSettings"]["list"].each do |safelist|
-  recipient = safelist["recipient"]["addr"]
+safelist_array = mail_settings["safelistSettings"]["list"]
 
+safelist_hash = {}
+
+safelist_array.each { |safelist| safelist_hash[safelist["recipient"]["addr"]] = safelist }
+
+safelist_hash.each do |recipient,safelist|
   safelist_end_user_view.getSafelistContents( recipient ).each do |safelisted_address|
     if ( matches.length > 0 ) 
       print_entry = false
