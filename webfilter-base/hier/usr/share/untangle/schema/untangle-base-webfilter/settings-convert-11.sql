@@ -20,6 +20,12 @@ ALTER TABLE settings.n_webfilter_settings ADD COLUMN enable_https bool;
 UPDATE settings.n_webfilter_settings SET enable_https = true;
 ALTER TABLE settings.n_webfilter_settings ALTER COLUMN enable_https SET NOT NULL;
 
+UPDATE settings.n_webfilter_blcat SET block = false, log = true
+WHERE block = true AND log = true;
+
+UPDATE settings.n_webfilter_blcat SET block = true, log = true
+WHERE block = true AND log = false;
+
 INSERT INTO settings.n_webfilter_blcat
        (category_id, name, display_name,
         description, block, log, setting_id)
