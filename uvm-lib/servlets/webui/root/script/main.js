@@ -568,13 +568,26 @@ Ung.Main=Ext.extend(Object, {
 
     getMailSender : function(forceReload) {
         if (forceReload || rpc.mailSender === undefined) {
-        	try {
+            try {
                 rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
-        	} catch (e) {
-        		Ung.Util.rpcExHandler(e);
-        	}
+            } catch (e) {
+        	Ung.Util.rpcExHandler(e);
+            }
         }
         return rpc.mailSender;
+    },
+
+    getIntfManager : function(forceReload)
+    {
+        if ( forceReload || rpc.intfManager === undefined) {
+            try {
+                rpc.intfManager = rpc.jsonrpc.RemoteUvmContext.intfManager();
+            } catch ( e ) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+
+        return rpc.intfManager;
     },
 
     unactivateNode: function(mackageDesc) {

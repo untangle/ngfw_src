@@ -40,6 +40,8 @@ import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.node.InterfaceComparator;
 
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
+
 public interface LocalIntfManager
 {
     /* Convert from an argon interface to a netcap interface */
@@ -82,5 +84,7 @@ public interface LocalIntfManager
 
     void loadInterfaceConfig() throws ArgonException;
     InterfaceComparator getInterfaceComparator();
+
+    public IntfDBMatcher[] getIntfMatcherEnumeration();
 }
 

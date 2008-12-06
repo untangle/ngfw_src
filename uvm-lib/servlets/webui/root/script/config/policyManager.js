@@ -93,6 +93,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             return this.rpc.policyManagerLicenseStatus;
         },
         buildPolicyManagement : function() {
+            Ung.Util.clearInterfaceStore();
+
             this.buildInfo();
             this.buildRacks();
             this.buildPolicies();

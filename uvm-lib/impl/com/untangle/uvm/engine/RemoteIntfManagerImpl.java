@@ -25,6 +25,7 @@ import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 
 /**
  * Passthru class for access to the api function inside of the
@@ -59,5 +60,10 @@ public class RemoteIntfManagerImpl implements RemoteIntfManager
     public InterfaceComparator getInterfaceComparator()
     {
         return this.localIntfManager.getInterfaceComparator();
+    }
+
+    public IntfDBMatcher[] getIntfMatcherEnumeration()
+    {
+        return this.localIntfManager.getIntfMatcherEnumeration();
     }
 }

@@ -37,6 +37,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.InterfaceComparator;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import org.apache.log4j.Logger;
@@ -245,6 +246,11 @@ class LocalIntfManagerImpl implements LocalIntfManager
         this.intfConverter = ArgonInterfaceConverter.makeInstance(argonInterfaceList);
         notifyDependents(prevIntfConverter);
         this.currentInterfaceOrder = interfaceOrder;
+    }
+
+    public IntfDBMatcher[] getIntfMatcherEnumeration()
+    {
+        return IntfMatcherFactory.getInstance().getEnumeration();
     }
 
     /* ----------------- Package ----------------- */
