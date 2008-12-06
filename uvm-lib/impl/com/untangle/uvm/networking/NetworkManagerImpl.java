@@ -193,6 +193,14 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public void setAccessSettings( AccessSettings access )
     {
         this.accessManager.setSettings( access );
+
+        updateAddress();
+
+        try {
+            generateRules();
+        } catch ( Exception e ) {
+            logger.warn( "Unable to generate rules.", e );
+        }
     }
 
     /**
