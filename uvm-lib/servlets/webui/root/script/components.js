@@ -86,7 +86,7 @@ Ung.Util= {
             if(exception.code==550 ||exception.code == 12029) {
                 Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
                 return true;
-            } else {
+            }else {
                 if(handler==null) {
                     Ext.MessageBox.alert(i18n._("Failed"), exception.message);
                 } else if(type==null || type== "alertCallback"){
@@ -1411,7 +1411,7 @@ Ung.MessageManager = {
                 //Tolerate Error 500: Internal Server Error after an install
                 //Keep silent for maximum 10 minutes of sequential error messages
                 //because apache may reload
-                if(exception.code==500) {
+                if(exception.code==500 || exception.code ==12031) {
                     if(this.firstToleratedError==null) {
                         this.firstToleratedError=(new Date()).getTime();
                         this.cycleCompleted = true;
