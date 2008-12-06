@@ -69,7 +69,7 @@ Ung.Util= {
     rpcExHandler: function(exception) {
         if(exception instanceof JSONRpcClient.Exception)
         {
-            if(exception.code == 550)
+            if(exception.code == 550 || exception.code == 12029)
             {
                 Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
             }
@@ -83,7 +83,7 @@ Ung.Util= {
     },
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
         if(exception) {
-            if(exception.code==550) {
+            if(exception.code==550 ||exception.code == 12029) {
                 Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
                 return true;
             } else {
