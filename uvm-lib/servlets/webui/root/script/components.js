@@ -950,7 +950,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     // before Destroy
     beforeDestroy : function() {
         if(this.settingsWin && this.settingsWin.isVisible()) {
-            this.settingsWin.cancelAction();
+            this.settingsWin.closeWindow();
         }
         Ext.each(this.subCmps, Ext.destroy);
         if(this.hasPowerButton) {
@@ -1241,7 +1241,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         Ext.Msg.confirm(i18n._("Warning:"), message, function(btn, text) {
             if (btn == 'yes') {
                 if (this.settingsWin) {
-                    this.settingsWin.cancelAction();
+                    this.settingsWin.closeWindow();
                 }
                 this.setState("attention");
                 this.getEl().mask();
@@ -2266,7 +2266,7 @@ Ung.Window = Ext.extend(Ext.Window, {
     // breadcrumbs
     breadcrumbs : null,
     // function called by close action
-    closeAction : 'hide',
+    closeAction : 'cancelAction',
     draggable : false,
     resizable : false,
     // sub componetns - used by destroy function
@@ -2278,12 +2278,6 @@ Ung.Window = Ext.extend(Ext.Window, {
         anchor: '100% 100%',
         autoScroll: true,
         autoWidth : true
-    },
-    closeAction : 'cancelAction',
-    // the cancel action
-    // to override
-    cancelAction : function() {
-        this.hide();
     },
     
     constructor : function(config) {
@@ -2329,6 +2323,28 @@ Ung.Window = Ext.extend(Ext.Window, {
         this.setPosition(viewportWidth-objSize.width, 0);
         objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
         this.setSize(objSize);
+    },
+    
+    // to override if needed
+    isDirty : function() {
+        return false;
+    },
+    cancelAction : function() {
+        if (this.isDirty()) {
+            Ext.MessageBox.confirm(i18n._('Confirm'), i18n._('Are you sure you want to do that?'), // TODO change messages as in v5.4.x 
+                function(btn) {
+                    if (btn == 'yes') {
+                        this.closeWindow();
+                    }
+                }.createDelegate(this));
+        } else {
+            this.closeWindow();
+        }
+    },
+    // the close window action
+    // to override
+    closeWindow : function() {
+        this.hide();
     }
 
 });
@@ -2378,7 +2394,7 @@ Ung.SettingsWin = Ext.extend(Ung.Window, {
         }
         main.openHelp(helpSource);
     },
-    cancelAction : function() {
+    closeWindow : function() {
         this.hide();
         Ext.destroy(this);
     },
@@ -2411,7 +2427,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
         this.breadcrumbs = [{
             title : i18n._(rpc.currentPolicy.name),
             action : function() {
-                this.cancelAction();
+                this.cancelAction(); // TODO check if we need more checking
             }.createDelegate(this)
         }, {
             title : this.node.md.displayName
@@ -2456,7 +2472,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
     removeAction : function() {
         this.node.removeAction();
     },
-    cancelAction : function() {
+    closeWindow : function() {
         this.hide();
         if(this.node.fnCallback) {
             this.node.fnCallback.call();
@@ -2618,10 +2634,13 @@ Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
         this.items=this.grid;
         Ung.ManageListWindow.superclass.initComponent.call(this);
     },
-    cancelAction : function() {
+    closeWindow : function() {
         this.grid.changedData = Ext.decode(this.initialChangedData);
         this.grid.initialLoad();
         this.hide();
+    },
+    isDirty : function() {
+    	return this.grid.isDirty();
     },
     updateAction : function() {
         this.hide();
@@ -2736,7 +2755,22 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
         }
     },
-    cancelAction : function() {
+    isDirty : function() {
+        if (this.record !== null) {
+            if (this.inputLines) {
+                for (var i = 0; i < this.inputLines.length; i++) {
+                    var inputLine = this.inputLines[i];
+                    if(inputLine.dataIndex!=null) {
+                    	if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
+                    		return true;
+                    	}
+                    }
+                }
+            }
+        }
+        return false;
+    },
+    closeWindow : function() {
         this.record.data = Ext.decode(this.initialRecordData);
         this.hide();
     }
@@ -3381,13 +3415,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }
         }
     },
-    // Test if there are changed data
-    hasChangedData : function() {
+    isDirty : function() {
+        // Test if there are changed data
         return Ung.Util.hasData(this.changedData);
     },
     // Update Changed data after an operation (modifyed, deleted, added)
     updateChangedData : function(record, currentOp) {
-        if (!this.hasChangedData()) {
+        if (!this.isDirty()) {
             var cmConfig = this.getColumnModel().config;
             for (i in cmConfig) {
                 cmConfig[i].sortable = false;
@@ -3910,7 +3944,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Please choose a user id/login or press Cancel!"));
         }
     },
-    cancelAction : function() {
+    closeWindow : function() {
         this.hide();
     }
 });
