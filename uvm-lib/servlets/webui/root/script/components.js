@@ -945,7 +945,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             config.runState="INITIALIZED";
         }
         this.subCmps = [];
-        Ung.Window.superclass.constructor.apply(this, arguments);
+        Ung.Node.superclass.constructor.apply(this, arguments);
     },
     // before Destroy
     beforeDestroy : function() {
@@ -960,6 +960,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     onRender : function(container, position) {
         Ung.Node.superclass.onRender.call(this, container, position);
+        main.removeNodePreview(this.name);
         this.getEl().addClass("node");
         this.getEl().set({
             'viewPosition' : this.md.viewPosition
@@ -967,6 +968,9 @@ Ung.Node = Ext.extend(Ext.Component, {
         this.getEl().set({
             'name' : this.md.displayName
         });
+        if(this.fadeIn) {
+            this.getEl().fadeIn({duration: 2});
+        }
         var nodeButtons=[{
             xtype: "button",
             name : "Show Settings",
@@ -1245,11 +1249,14 @@ Ung.Node = Ext.extend(Ext.Component, {
                 }
                 this.setState("attention");
                 this.getEl().mask();
+                this.getEl().fadeOut({ endOpacity: 0.1, duration: 2, remove: false, useDisplay :false});
                 rpc.nodeManager.destroy(function(result, exception) {
                     if(Ung.Util.handleException(exception, function() {
                         this.getEl().unmask();
+                        this.getEl().stopFx();
                     }.createDelegate(this),"alert")) return;
                     if (this) {
+                        this.getEl().stopFx();
                         var nodeName = this.name;
                         var cmp = this;
                         Ext.destroy(cmp);
@@ -1361,6 +1368,29 @@ Ung.Node.template = new Ext.Template('<div class="node-image"><img src="{image}"
     '<div class="node-state" id="node-state_{id}" name="State"></div>',
     '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
     '<div class="node-buttons" id="node-buttons_{id}"></div>');
+Ung.NodePreview = Ext.extend(Ext.Component, {
+    autoEl : "div",
+    constructor : function(config) {
+        this.id = "node_preview_" + config.name;
+        Ung.NodePreview.superclass.constructor.apply(this, arguments);
+    },
+    
+    onRender : function(container, position) {
+        Ung.NodePreview.superclass.onRender.call(this, container, position);
+        this.getEl().addClass("node");
+        this.getEl().set({
+            'viewPosition' : this.viewPosition
+        });
+        var templateHTML = Ung.NodePreview.template.applyTemplate({
+            'id' : this.getId(),
+            'image' : 'image?name='+this.name,
+            'displayName' : this.displayName
+        });
+        this.getEl().insertHtml("afterBegin", templateHTML);
+        this.getEl().fadeIn({ endOpacity: 0.6, duration: 5});
+    }    
+});
+Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>');
 
 // Message Manager object
 Ung.MessageManager = {
@@ -1463,7 +1493,7 @@ Ung.MessageManager = {
                                 if(!node) {
                                     var node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
                                     main.nodes.push(node);
-                                    main.addNode(node);
+                                    main.addNode(node,true);
                                 } else {
                                     main.loadLicenseStatus();
                                 }

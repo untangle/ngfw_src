@@ -11,6 +11,7 @@ Ung.Main=Ext.extend(Object, {
     appsSemaphore: null,
     apps: null,
     appsLastState: null,
+    nodePreviews: null,
     config: null,
     nodes: null,
     // the Ext.Viewport object for the application
@@ -40,6 +41,7 @@ Ung.Main=Ext.extend(Object, {
         Ung.Util.maximize();
         this.firstTimeRun=Ung.Util.getQueryStringParam("firstTimeRun");
         this.appsLastState={};
+        this.nodePreviews={};
     	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         this.initSemaphore=11;
         rpc = {};
@@ -378,7 +380,7 @@ Ung.Main=Ext.extend(Object, {
         var url = "../library/launcher?" + query;
 
         /* browser specific code ... we has it. */
-        if ( this.isNotRunningIE()) {
+        if ( Ext.isIE) {
             this.openIFrame( url, title );
             return;
         }
@@ -695,6 +697,7 @@ Ung.Main=Ext.extend(Object, {
     buildNodes: function() {
         //build nodes
         Ung.MessageManager.stop();
+        
         this.destoyNodes();
         this.nodes=[];
         for(var i=0;i<rpc.rackView.instances.list.length;i++) {
@@ -766,9 +769,13 @@ Ung.Main=Ext.extend(Object, {
         	return;
             }
             Ung.AppItem.updateState(mackageDesc.displayName, "installing");
+            main.addNodePreview(mackageDesc);
             rpc.nodeManager.instantiateAndStart(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-            }.createDelegate(this), mackageDesc.name, rpc.currentPolicy);
+                if(Ung.Util.handleException(exception)) {
+                    main.removeNodePreview(this.name);
+                    return;
+                }
+            }.createDelegate(mackageDesc), mackageDesc.name, rpc.currentPolicy);
         }
     },
     getIframeWin: function() {
@@ -883,6 +890,9 @@ Ung.Main=Ext.extend(Object, {
                 }
             }
         }
+        for(var nodeName in this.nodePreviews) {
+            main.removeNodePreview(nodeName);
+        }
     },
 
     getNodePosition: function(place, viewPosition) {
@@ -899,13 +909,31 @@ Ung.Main=Ext.extend(Object, {
         }
         return position;
     },
-    addNode: function (node) {
+    addNode: function (node, fadeIn) {
+        main.removeNodePreview(this.name);
         var nodeWidget=new Ung.Node(node);
+        nodeWidget.fadeIn=fadeIn;
         var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
         var position=this.getNodePosition(place,node.md.viewPosition);
         nodeWidget.render(place,position);
         Ung.AppItem.updateState(node.displayName, null);
     },
+    addNodePreview: function (md) {
+        var nodeWidget=new Ung.NodePreview(md);
+        var place=(md.type=="NODE")?'security_nodes':'other_nodes';
+        var position=this.getNodePosition(place,md.viewPosition);
+        nodeWidget.render(place,position);
+        main.nodePreviews[md.name]=true;
+    },
+    removeNodePreview: function(nodeName) {
+        if(main.nodePreviews[nodeName]!==undefined)
+        delete main.nodePreviews[nodeName];
+        var nodePreview=Ext.getCmp("node_preview_"+nodeName);
+        if(nodePreview) {
+            Ext.destroy(nodePreview);
+        }
+    },
+    
     getNode : function(nodeName) {
     	if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
