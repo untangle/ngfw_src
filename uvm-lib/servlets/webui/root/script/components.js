@@ -2378,8 +2378,20 @@ Ung.Window = Ext.extend(Ext.Window, {
     closeWindow : function() {
         this.hide();
     }
-
 });
+Ung.Window.cancelAction = function(dirty, closeWinFn) {
+    if (dirty) {
+        Ext.MessageBox.confirm(i18n._('Confirm'), i18n._('Are you sure you want to do that?'), // TODO change messages as in v5.4.x 
+            function(btn) {
+                if (btn == 'yes') {
+                    closeWinFn();
+                }
+            });
+    } else {
+        closeWinFn();
+    }
+};
+
 Ung.SettingsWin = Ext.extend(Ung.Window, {
     // config i18n
     i18n : null,

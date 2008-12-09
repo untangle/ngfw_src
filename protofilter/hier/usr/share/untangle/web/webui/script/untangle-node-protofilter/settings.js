@@ -212,6 +212,9 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }]
             });
         },
+        isDirty : function() {
+        	return this.gridProtocolList.isDirty();
+        },
         // save function
         saveAction : function() {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
@@ -219,7 +222,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
                 // exit settings screen
-                this.cancelAction();
+                this.closeWindow();
             }.createDelegate(this), this.gridProtocolList.getSaveList());
         }
     });

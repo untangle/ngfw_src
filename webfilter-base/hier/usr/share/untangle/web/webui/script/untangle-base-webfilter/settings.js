@@ -8,6 +8,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         gridEventLog : null,
         // called when the component is rendered
         initComponent : function() {
+            // keep initial base settings
+            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
+        	
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
@@ -145,8 +148,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelBlockLists.winBlacklistCategories.cancelAction();
-                                    this.cancelAction();
+                                	Ung.Window.cancelAction(
+                                	   this.gridBlacklistCategories.isDirty() || this.isDirty(),
+                                	   function() {
+                                            this.panelBlockLists.winBlacklistCategories.closeWindow();
+                                            this.closeWindow();
+                                	   }.createDelegate(this)
+                                	)
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -169,8 +177,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelBlockLists.winBlockedUrls.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridBlockedUrls.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelBlockLists.winBlockedUrls.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    )
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -193,8 +206,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelBlockLists.winBlockedExtensions.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridBlockedExtensions.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelBlockLists.winBlockedExtensions.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    )
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -217,8 +235,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelBlockLists.winBlockedMimeTypes.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridBlockedMimeTypes.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelBlockLists.winBlockedMimeTypes.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    )
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -661,8 +684,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelPassLists.winPassedUrls.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridPassedUrls.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelPassLists.winPassedUrls.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    )
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -685,8 +713,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelPassLists.winPassedClients.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridPassedClients.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelPassLists.winPassedClients.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    )
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -1079,7 +1112,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    this.cancelAction();
+                    this.closeWindow();
                 }.createDelegate(this), this.getBaseSettings(), this.gridPassedClients ? this.gridPassedClients.getSaveList() : null,
                         this.gridPassedUrls ? this.gridPassedUrls.getSaveList() : null,
                         this.gridBlockedUrls ? this.gridBlockedUrls.getSaveList() : null,
@@ -1087,6 +1120,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         this.gridBlockedExtensions ? this.gridBlockedExtensions.getSaveList() : null,
                         this.gridBlacklistCategories ? this.gridBlacklistCategories.getSaveList() : null);
             }
+        },
+        isDirty : function() {
+        	return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
+                || (this.gridPassedClients ? this.gridPassedClients.isDirty() : false)
+                || (this.gridPassedUrls ? this.gridPassedUrls.isDirty() : false)
+                || (this.gridBlockedUrls ? this.gridBlockedUrls.isDirty() : false)
+                || (this.gridBlockedMimeTypes ? this.gridBlockedMimeTypes.isDirty() : false)
+                || (this.gridBlockedExtensions ? this.gridBlockedExtensions.isDirty() : false)
+                || (this.gridBlacklistCategories ? this.gridBlacklistCategories.isDirty() : false);
         }
     });
 }
