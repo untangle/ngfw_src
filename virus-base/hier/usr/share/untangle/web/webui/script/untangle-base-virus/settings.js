@@ -66,7 +66,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 	title: this.i18n._('Advanced Settings'),
                     collapsible: true,
                 	collapsed: true,
-                	labelWidth: 150,
+                	labelWidth: 170,
                     items : [{
                         xtype : 'button',
                         name : 'File Extensions',
@@ -366,7 +366,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     title: this.i18n._('Advanced Settings'),
                     collapsible: true,
                     collapsed: true,
-                    labelWidth: 150,
+                    labelWidth: 170,
                     items : [{
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Disable FTP Resume'),

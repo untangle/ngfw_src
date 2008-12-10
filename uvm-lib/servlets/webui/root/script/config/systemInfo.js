@@ -118,7 +118,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 defaultType : 'fieldset',
                 defaults : { 
                     autoHeight : true,
-                    labelWidth : 200,
+                    labelWidth : 250,
                     cls : 'noborder'
                 },
                     

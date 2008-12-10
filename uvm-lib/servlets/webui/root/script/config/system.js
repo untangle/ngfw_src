@@ -445,7 +445,6 @@ if (!Ung.hasResource["Ung.System"]) {
                     },
                     items : [{
                         title: this.i18n._('Web Override'),
-                        labelWidth: 100,
                         items : [{
                             xtype : 'radio',
                             boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of web traffic.  (This is the default setting)'), '<b>', '</b>'), 
@@ -475,7 +474,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }]
                     },{
                         title: this.i18n._('Long URIs'),
-                        labelWidth: 200,                      
+                        labelWidth: 250,                      
                         items : [{
                             xtype : 'radio',
                             boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
@@ -523,7 +522,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }]
                     },{
                         title: this.i18n._('Long Headers'),
-                        labelWidth: 200,                      
+                        labelWidth: 250,                      
                         items : [{
                             xtype : 'radio',
                             boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 

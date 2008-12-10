@@ -263,8 +263,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }, {
                         xtype : 'fieldset',
                         height : 150,
-                        style : "margin-left: 75px;",
-                        labelWidth: 200,
+                        style : "margin-left: 50px;",
+                        labelWidth: 230,
                         labelAlign: 'right',                        
                         items : [{
                             xtype : 'textfield',

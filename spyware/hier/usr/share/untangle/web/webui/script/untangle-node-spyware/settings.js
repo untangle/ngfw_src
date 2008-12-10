@@ -39,6 +39,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 },
                 items : [{
                     title : this.i18n._('Web'),
+                    labelWidth: 150,
                     items : [{
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Block Spyware & Ad URLs'),

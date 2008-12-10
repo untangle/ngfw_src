@@ -1214,6 +1214,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 },
                 items: [{
                     title: this.i18n._('SNMP'),
+                    labelWidth: 150,
                     items : [{
                         xtype : 'radio',
                         boxLabel : String.format(this.i18n._('{0}Disable{1} SNMP Monitoring. (This is the default setting.)'), '<b>', '</b>'), 

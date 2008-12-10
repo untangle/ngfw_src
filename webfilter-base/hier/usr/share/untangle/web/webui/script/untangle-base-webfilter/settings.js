@@ -76,6 +76,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         }.createDelegate(this)
                     }]
                 }, {
+                    labelWidth: 150,
                     items : [{
                         xtype : 'combo',
                         editable : false,
