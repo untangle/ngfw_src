@@ -46,7 +46,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 if(Ung.Util.handleException(exception)) return;
                 var upgradeStatus=result;
                 if(upgradeStatus.upgrading) {
-                    Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
+                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Upgrade in progress."));
                 } else {
                     rpc.toolboxManager.getUpgradeStatus(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;

@@ -249,7 +249,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException
     {
-        if(!upgrading && doUpdate) {
+        if(doUpdate && !upgrading && !installing) {
             if(!updating) {
                 update();
             } else {

@@ -157,11 +157,8 @@ Ung.Main=Ext.extend(Object, {
                 	main.upgradeLastCheckTime=(new Date()).getTime();
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception, function() {
-                        Ext.MessageBox.alert(i18n._("Failed"), exception.message, function (handler) {
-                            main.upgradeStatus={};
-                            main.warnOnUpgradesCallback(main.upgradeStatus,handler);
-                        }.createDelegate(this,[handler]));
-                    }.createDelegate(this),"noAlert")) return;
+                        main.warnOnUpgradesCallback(main.upgradeStatus,handler);
+                    }.createDelegate(this))) return;
                     
                     main.upgradeStatus=result;
                     main.warnOnUpgradesCallback(main.upgradeStatus,handler);
@@ -844,14 +841,10 @@ Ung.Main=Ext.extend(Object, {
             if(handler) {
                 handler.call(this);
             }
-            if(Ung.Util.handleException(exception, function() {
-                main.upgradeLastCheckTime=(new Date()).getTime();
-                Ext.MessageBox.alert(i18n._("Failed"), exception.message, function () {
-                    main.upgradeStatus={};
-                }.createDelegate(this));
-            }.createDelegate(this),"noAlert")) return;
+            main.upgradeLastCheckTime=(new Date()).getTime();
+            if(Ung.Util.handleException(exception)) return;
             main.upgradeStatus=result;
-            if(main.upgradeStatus.upgradesAvailable) {
+            if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
                 Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
             }
         }.createDelegate(this,[handler],true),true);

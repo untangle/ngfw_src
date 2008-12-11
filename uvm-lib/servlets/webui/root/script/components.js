@@ -87,12 +87,16 @@ Ung.Util= {
                 Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
                 return true;
             }else {
+                var message=exception.message;
+                if(exception.name=="com.untangle.uvm.toolbox.MackageException" && exception.message=="mkg timed out") {
+                    message=i18n._("Service busy or timed out.");
+                }
                 if(handler==null) {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    Ext.MessageBox.alert(i18n._("Failed"), message);
                 } else if(type==null || type== "alertCallback"){
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message, handler);
+                    Ext.MessageBox.alert(i18n._("Failed"), message, handler);
                 } else if (type== "alert") {
-                    Ext.MessageBox.alert(i18n._("Failed"), exception.message);
+                    Ext.MessageBox.alert(i18n._("Failed"), message);
                     handler();
                 } else if (type== "noAlert") {
                     handler();
