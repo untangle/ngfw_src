@@ -3,8 +3,10 @@ REPORT_MAX_LENGTH=15
 REPORT_NAME=HttpViolations
 REPORT_TITLE=Top @REPORT_MAX_LENGTH@ Logged Violators
 
-EXTRA_PARAM_1.name=vendor
+EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
+EXTRA_PARAM_2.name=vendor
+EXTRA_PARAM_2.type=java.lang.String
 
 FIELD_1.name=name
 FIELD_1.type=String
