@@ -23,8 +23,12 @@ if (!Ung.hasResource["Ung.Email"]) {
             }, {
                 title : i18n._('Email')
             }];
+            // keep initial mail settings
+            this.initialMailSettings = Ung.Util.clone(this.getMailSettings());
             this.buildOutgoingServer();
             if( this.isMailLoaded() ) {
+                // keep initial mail node settings
+                this.initialMailNodeSettings = Ung.Util.clone(this.getMailNodeSettings());
                 this.buildFromSafeList();
                 this.buildQuarantine();
             }
@@ -142,9 +146,6 @@ if (!Ung.hasResource["Ung.Email"]) {
         
         
         buildOutgoingServer : function() {
-            // keep initial mail settings
-            this.initialMailSettings = Ung.Util.clone(this.getMailSettings());
-        	
             this.panelOutgoingServer = new Ext.Panel({
                 // private fields
                 name : 'Outgoing Server',
@@ -1217,8 +1218,25 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
                 Ext.MessageBox.hide();
-                this.cancelAction();
+                this.closeWindow();
             }
+        },
+        isDirty : function() {
+        	return !Ung.Util.equals(this.getMailSettings(), this.initialMailSettings)
+        	   || Ext.getCmp('email_fromAddress').getValue() != this.initialMailSettings.fromAddress
+               || !this.getMailSettings().useMxRecords && 
+                    (Ext.getCmp('email_smtpHost').getValue() != this.initialMailSettings.smtpHost
+                    || Ext.getCmp('email_smtpPort').getValue() != this.initialMailSettings.smtpPort
+                    || Ext.getCmp('email_smtpLogin').getValue() != this.initialMailSettings.authUser
+                    || Ext.getCmp('email_smtpPassword').getValue() != this.initialMailSettings.authPass
+                    )
+        	   || this.isMailLoaded() &&
+        	       (this.getMailNodeSettings().quarantineSettings.maxMailIntern != this.initialMailNodeSettings.quarantineSettings.maxMailIntern
+        	       || this.getMailNodeSettings().quarantineSettings.digestHourOfDay != this.initialMailNodeSettings.quarantineSettings.digestHourOfDay
+        	       || this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay != this.initialMailNodeSettings.quarantineSettings.digestMinuteOfDay
+        	       || this.gridSafelistGlobal.isDirty()
+        	       || this.quarantinableAddressesGrid.isDirty()
+        	       || this.quarantineForwardsGrid.isDirty());
         }
     });
     

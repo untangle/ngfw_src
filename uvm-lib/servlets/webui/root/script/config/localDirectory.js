@@ -231,13 +231,18 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
                     Ext.MessageBox.hide();
-                    this.cancelAction();
+                    this.closeWindow();
                     if(this.fnCallback) {
                         this.fnCallback.call();
                     }
                 }.createDelegate(this), this.gridUsers ? {javaClass:"java.util.ArrayList",list:this.gridUsers.getFullSaveList()} : null);
             }
+        },
+        
+        isDirty : function() {
+        	return this.gridUsers.isDirty();
         }
+        
     });
 
 }

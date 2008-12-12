@@ -99,6 +99,9 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             });
         },
         buildRegistration : function() {
+            // keep initial registration info
+            this.initialRegistrationInfo = Ung.Util.clone(this.getRegistrationInfo());
+        	
             var info = this.getRegistrationInfo();
             var misc = null;
             if ( info.misc != null ) misc = info.misc.map;
@@ -210,21 +213,22 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }
             
             var info = this.getRegistrationInfo();
-            var misc = {};
-            misc.name        = this.panelRegistration.find( "name", "name" )[0].getValue();
             info.emailAddr   = this.panelRegistration.find( "name", "emailAddr" )[0].getValue();
             info.numSeats    = this.panelRegistration.find( "name", "numSeats" )[0].getValue();
+            info.misc.map = this.getMisc();
+            
+            return true;
+        },
+        getMisc : function() {
+            var misc = {};
+            misc.name        = this.panelRegistration.find( "name", "name" )[0].getValue();
             
             var value = this.panelRegistration.find( "name", "environment" )[0].getRawValue();
             if ( value != null ) misc.environment = value;
 
-
             value = this.panelRegistration.find( "name", "country" )[0].getValue();
             if ( value != null ) misc.country = value;
-
-            info.misc.map = misc;
-            
-            return true;
+        	return misc;
         },
         // save function
         saveAction : function() {
@@ -233,9 +237,20 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 rpc.adminManager.setRegistrationInfo(function(result, exception) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
-                    this.cancelAction();
+                    this.closeWindow();
                 }.createDelegate(this), this.getRegistrationInfo());
             }
+        },
+        isDirty : function() {
+        	var misc = this.getMisc();
+            var emailAddr   = this.panelRegistration.find( "name", "emailAddr" )[0].getValue();
+            var numSeats    = this.panelRegistration.find( "name", "numSeats" )[0].getValue();
+        	
+            return emailAddr != this.initialRegistrationInfo.emailAddr
+                || numSeats != this.initialRegistrationInfo.numSeats
+                || misc.name != this.initialRegistrationInfo.misc.map.name
+                || misc.environment != this.initialRegistrationInfo.misc.map.environment
+                || misc.country != this.initialRegistrationInfo.misc.map.country;
         }
 
     });

@@ -1198,6 +1198,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         
         buildMonitoring : function() {
+            // keep initial settings
+            this.initialSnmpSettings = Ung.Util.clone(this.getSnmpSettings());
+            this.initialLoggingSettings = Ung.Util.clone(this.getLoggingSettings());
+        	
             this.panelMonitoring = new Ext.Panel({
                 name : 'panelMonitoring',
                 helpSource : 'monitoring',
@@ -2256,11 +2260,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                        || this.initialBrandingBaseSettings.contactEmail != this.getBrandingBaseSettings().contactEmail;
             }
             Ext.MessageBox.hide();
-            this.cancelAction();
+            this.closeWindow();
         },
         
-        cancelAction : function() {
-        	Ung.Administration.superclass.cancelAction.call(this);
+        closeWindow : function() {
+        	Ung.Administration.superclass.closeWindow.call(this);
             if (!this.isBrandingExpired()) {
                 this.needRefresh = this.needRefresh 
                        || !this.initialBrandingBaseSettings.defaultLogo && !this.getBrandingBaseSettings().defaultLogo && this.uploadedCustomLogo;
@@ -2268,6 +2272,35 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if (this.needRefresh) {
                 Ung.Util.goToStartPage();
             }
+        },
+        
+        isDirty : function() {
+        	return Ext.getCmp('administration_outsideNetwork').getValue() !=  this.initialAccessSettings.outsideNetwork
+                || Ext.getCmp('administration_outsideNetmask').getValue() !=  this.initialAccessSettings.outsideNetmask
+                || this.getAddressSettings().isPublicAddressEnabled &&
+                    (Ext.getCmp('administration_publicIPaddr').getValue() !=  this.initialAddressSettings.publicIPaddr
+                    || Ext.getCmp('administration_publicPort').getValue() !=  this.initialAddressSettings.publicPort)
+                || this.getSnmpSettings().enabled &&  
+                    (Ext.getCmp('administration_snmp_communityString').getValue() !=  this.initialSnmpSettings.communityString
+                    || Ext.getCmp('administration_snmp_sysContact').getValue() !=  this.initialSnmpSettings.sysContact
+                    || Ext.getCmp('administration_snmp_sysLocation').getValue() !=  this.initialSnmpSettings.sysLocation
+                    || this.getSnmpSettings().sendTraps && 
+                        (Ext.getCmp('administration_snmp_trapCommunity').getValue() !=  this.initialSnmpSettings.trapCommunity
+                        || Ext.getCmp('administration_snmp_trapHost').getValue() !=  this.initialSnmpSettings.trapHost
+                        || Ext.getCmp('administration_snmp_trapPort').getValue() !=  this.initialSnmpSettings.trapPort))
+                || this.getLoggingSettings().syslogEnabled && 
+                    (Ext.getCmp('administration_syslog_host').getValue() !=  this.initialLoggingSettings.syslogHost
+                    || Ext.getCmp('administration_syslog_port').getValue() !=  this.initialLoggingSettings.syslogPort
+                    || Ext.getCmp('administration_syslog_facility').getValue() !=  this.initialLoggingSettings.syslogFacility
+                    || Ext.getCmp('administration_syslog_threshold').getValue() !=  this.initialLoggingSettings.syslogThreshold)
+                || this.gridAdminAccounts.isDirty()
+                || !Ung.Util.equals(this.getAddressSettings(), this.initialAddressSettings)
+                || !Ung.Util.equals(this.getAccessSettings(), this.initialAccessSettings)
+                || !Ung.Util.equals(this.getSnmpSettings(), this.initialSnmpSettings)
+                || !Ung.Util.equals(this.getLoggingSettings(), this.initialLoggingSettings)
+                || !Ung.Util.equals(this.getSkinSettings(), this.initialSkinSettings)
+                || !this.isBrandingExpired() && !Ung.Util.equals(this.getBrandingBaseSettings(), this.initialBrandingBaseSettings)
+                ;
         }
         
     });

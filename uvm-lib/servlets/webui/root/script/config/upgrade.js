@@ -215,6 +215,9 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 
         },
         buildSetup : function() {
+            // keep initial upgrade settings
+            this.initialUpgradeSettings = Ung.Util.clone(this.getUpgradeSettings());
+            
         	var upgradeTime=new Date();
         	upgradeTime.setTime(0);
         	upgradeTime.setHours(this.getUpgradeSettings().period.hour);
@@ -414,9 +417,11 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
                 Ext.MessageBox.hide();
-                this.cancelAction();
+                this.closeWindow();
             }
+        },
+        isDirty : function() {
+            return !Ung.Util.equals(this.getUpgradeSettings(), this.initialUpgradeSettings);
         }
-
     });
 }

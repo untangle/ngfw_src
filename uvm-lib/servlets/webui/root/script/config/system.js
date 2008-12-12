@@ -153,6 +153,10 @@ if (!Ung.hasResource["Ung.System"]) {
             return this.rpc.timeZone;
         },
         buildSupport : function() {
+            // keep initial settings
+            this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings());
+            this.initialMiscSettings = Ung.Util.clone(this.getMiscSettings());
+            
             this.panelSupport = new Ext.Panel({
                 // private fields
                 name : 'Support',
@@ -433,6 +437,9 @@ if (!Ung.hasResource["Ung.System"]) {
             });
             
             if (this.isHttpLoaded()) {
+                // keep initial http settings
+                this.initialHttpSettings = Ung.Util.clone(this.getHttpSettings());
+            	
             	protocolSettingsItems.push({
             		xtype : 'fieldset',
                     collapsible: true,
@@ -602,6 +609,9 @@ if (!Ung.hasResource["Ung.System"]) {
             }
         	
             if (this.isFtpLoaded()) {
+                // keep initial ftp settings
+                this.initialFtpSettings = Ung.Util.clone(this.getFtpSettings());
+                
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
@@ -638,6 +648,9 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             
             if (this.isMailLoaded()) {
+                // keep initial mail settings
+                this.initialMailSettings = Ung.Util.clone(this.getMailSettings());
+                
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
@@ -841,8 +854,9 @@ if (!Ung.hasResource["Ung.System"]) {
             });
         },
         buildRegionalSettings : function() {
-            // keep initial language settings
+            // keep initial settings
             this.initialLanguageSettings = Ung.Util.clone(this.getLanguageSettings());
+            this.initialTimeZone = Ung.Util.clone(this.getTimeZone());
             
             var languagesStore = new Ext.data.Store({
                 proxy : new Ung.RpcProxy(rpc.languageManager.getLanguagesList, null, false),
@@ -886,6 +900,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         xtype : 'combo',
                         name : 'Timezone',
+                        id : 'system_timezone',
                         editable : false,
                         store : timeZones,
                         width : 350,
@@ -1150,11 +1165,20 @@ if (!Ung.hasResource["Ung.System"]) {
             if (this.saveSemaphore == 0) {
                 var needRefresh = this.initialLanguageSettings.language != this.getLanguageSettings().language;
                 Ext.MessageBox.hide();
-                this.cancelAction();
+                this.closeWindow();
                 if (needRefresh) {
                     Ung.Util.goToStartPage();
                 }
             }
+        },
+        isDirty : function() {
+            return !Ung.Util.equals(this.getLanguageSettings(), this.initialLanguageSettings)
+                || !Ung.Util.equals(this.getTimeZone(), this.initialTimeZone)
+                || !Ung.Util.equals(this.getAccessSettings(), this.initialAccessSettings)
+                || !Ung.Util.equals(this.getMiscSettings(), this.initialMiscSettings)
+                || this.isHttpLoaded() && !Ung.Util.equals(this.getHttpSettings(), this.initialHttpSettings)
+                || this.isFtpLoaded() && !Ung.Util.equals(this.getFtpSettings(), this.initialFtpSettings)
+                || this.isMailLoaded() && !Ung.Util.equals(this.getMailSettings(), this.initialMailSettings);
         }
 
     });
