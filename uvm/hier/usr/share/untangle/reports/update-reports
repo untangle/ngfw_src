@@ -99,7 +99,7 @@ function doesEventTableExist()
 REPORT_DIR=@UVM_WEB@/reports
 
 # New for 4.2 -- if we're still reporting from yesterday, just keep going.
-isrunning=$(@USR_BIN@/mcli -t 3600 isReportingRunning)
+isrunning=$(@USR_BIN@/ucli -t 3600 isReportingRunning)
 if [ "${isrunning}x" = "truex" ]; then
     echo "reports still running from yesterday, waiting for those to finish"
     exit 1
@@ -165,16 +165,16 @@ rm -rf $REPORT_DIR/current
 rm -f $REPORT_DIR/index.html
 
 # can't use shell to assign default value for unset parameter because
-# when an exception occurs in mcli,
+# when an exception occurs in ucli,
 # parameter becomes set with non-null value
-is_reporting_enabled=$(@USR_BIN@/mcli isReportingEnabled)
+is_reporting_enabled=$(@USR_BIN@/ucli isReportingEnabled)
 exitOnUvmError $? uvm
 
 # Only generate today's reports if the reporting node is running
-if [ $is_reporting_enabled == 'true' ]; then
+if [ "$is_reporting_enabled" != 'false' ]; then
 
     # Build the DHCP Merged Address Map (needed for running start-reports scripts)
-    @USR_BIN@/mcli -t 3600 prepareReports -o $REPORT_DIR -d 60 -n $midnight
+    @USR_BIN@/ucli -t 3600 prepareReports -o $REPORT_DIR -d 60 -n $midnight
     exitOnUvmError $? reporter
     # note that Reporter has just created settings.env and daystoadd
 
@@ -228,13 +228,13 @@ EOF
         rm -f $REPORT_DIR/current/uname.tmp
         rm -f $REPORT_DIR/current/hname.tmp
 
-        @USR_BIN@/mcli -t 3600 startReports
+        @USR_BIN@/ucli -t 3600 startReports
         exitOnUvmError $? reporter
 
-        is_running=$(@USR_BIN@/mcli isReportingRunning)
-        while [ $is_running != 'false' ]; do
+        is_running=$(@USR_BIN@/ucli isReportingRunning)
+        while [ "$is_running" != 'false' ]; do
             sleep 5
-            is_running=$(@USR_BIN@/mcli isReportingRunning)
+            is_running=$(@USR_BIN@/ucli isReportingRunning)
         done
 
         cp -pr $REPORT_DIR/css $REPORT_DIR/current
@@ -242,13 +242,13 @@ EOF
         cp -pr /var/www/images/BrandingLogo.gif $REPORT_DIR/current/images
 
 # generate the web viewable page
-        if [ $MV_EG_DAILY_REPORT == 'y' ]; then
+        if [ "$MV_EG_DAILY_REPORT" == 'y' ]; then
             @UVM_HOME@/reports/index-reports index.html daily false $midnight
         fi
-        if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+        if [ "$MV_EG_WEEKLY_REPORT" == 'y' ]; then
             @UVM_HOME@/reports/index-reports index_online_weekly.html weekly false $midnight
         fi
-        if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+        if [ "$MV_EG_MONTHLY_REPORT" == 'y' ]; then
             @UVM_HOME@/reports/index-reports index_online_monthly.html monthly false $midnight
         fi
 
@@ -259,35 +259,35 @@ EOF
 
 # generate the emailable page
         cd /
-        if [ $MV_EG_DAILY_REPORT == 'y' ]; then
+        if [ "$MV_EG_DAILY_REPORT" == 'y' ]; then
             generateEmail "daily"
         fi
-        if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+        if [ "$MV_EG_WEEKLY_REPORT" == 'y' ]; then
             generateEmail "weekly"
         fi
-        if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+        if [ "$MV_EG_MONTHLY_REPORT" == 'y' ]; then
             generateEmail "monthly"
         fi
 
 # email the reports to all recipients
         cd $REPORT_DIR/current
-        if [ $MV_EG_DAILY_REPORT == 'y' ]; then
+        if [ "$MV_EG_DAILY_REPORT" == 'y' ]; then
             mailReports "daily"
         fi
-        if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+        if [ "$MV_EG_WEEKLY_REPORT" == 'y' ]; then
             mailReports "weekly"
         fi
-        if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+        if [ "$MV_EG_MONTHLY_REPORT" == 'y' ]; then
             mailReports "monthly"
         fi
 
 # ensure that a base index file is present
         cd $REPORT_DIR/current
-        if [ $MV_EG_DAILY_REPORT == 'n' ]; then
+        if [ "$MV_EG_DAILY_REPORT" == 'n' ]; then
             rm -f index.html
-            if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+            if [ "$MV_EG_WEEKLY_REPORT" == 'y' ]; then
                 ln -s index_online_weekly.html index.html
-            elif [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+            elif [ "$MV_EG_MONTHLY_REPORT" == 'y' ]; then
                 ln -s index_online_monthly.html index.html
             fi
         fi
