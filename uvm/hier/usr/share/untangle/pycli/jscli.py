@@ -24,7 +24,7 @@ class CurlRequestHandler(object):
         self.__curl = pycurl.Curl()
         self.__curl.setopt( pycurl.POST, 1 )
         self.__curl.setopt( pycurl.NOSIGNAL, 1 )
-        self.__curl.setopt( pycurl.CONNECTTIMEOUT, 10 )
+        self.__curl.setopt( pycurl.CONNECTTIMEOUT, 30 )
         self.__curl.setopt( pycurl.TIMEOUT, timeout )
         self.__curl.setopt( pycurl.COOKIEFILE, "" )
         self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
