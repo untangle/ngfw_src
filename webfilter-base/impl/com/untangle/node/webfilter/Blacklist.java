@@ -275,17 +275,22 @@ public abstract class Blacklist
 
     protected String mostSpecificCategory(List<String> catNames)
     {
+        String catName = null;
+
         if (catNames != null) {
-            for (String catName : catNames) {
-                BlacklistCategory bc = getSettings().getBlacklistCategory(catName);
+            for (String cn : catNames) {
+                BlacklistCategory bc = getSettings().getBlacklistCategory(cn);
 
                 if (null != bc && (bc.getBlock() || bc.getLog())) {
-                    return catName;
+                    catName = cn;
+                    if (bc.getBlock()) {
+                        break;
+                    }
                 }
             }
         }
 
-        return null;
+        return catName;
     }
 
     // private methods --------------------------------------------------------
