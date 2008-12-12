@@ -10,6 +10,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         gridPassList : null,
         gridEventLog : null,
         initComponent : function() {
+            // keep initial base settings
+            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
+            
             this.buildBlockLists();
             this.buildPassList();
             this.buildEventLog();
@@ -174,8 +177,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelBlockLists.winCookiesList.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridCookiesList.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelBlockLists.winCookiesList.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -203,8 +211,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelBlockLists.winActiveXList.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridActiveXList.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelBlockLists.winActiveXList.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -232,8 +245,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelBlockLists.winSubnetList.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridSubnetList.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelBlockLists.winSubnetList.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -738,11 +756,18 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    this.cancelAction();
+                    this.closeWindow();
                 }.createDelegate(this), this.getBaseSettings(), this.gridActiveXList ? this.gridActiveXList.getSaveList() : null,
                         this.gridCookiesList ? this.gridCookiesList.getSaveList() : null,
                         this.gridSubnetList ? this.gridSubnetList.getSaveList() : null, this.gridPassList.getSaveList());
             }
+        },
+        isDirty : function() {
+            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
+                || (this.gridActiveXList ? this.gridActiveXList.isDirty() : false)
+                || (this.gridCookiesList ? this.gridCookiesList.isDirty() : false)
+                || (this.gridSubnetList ? this.gridSubnetList.isDirty() : false)
+                || this.gridPassList.isDirty();
         }
     });
 }

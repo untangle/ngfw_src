@@ -230,6 +230,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             items : [{
                                 xtype : 'checkbox',
                                 name : 'Include Incident Reports in emailed reports',
+                                id : 'reporting_emailDetail',
                                 boxLabel : String.format(this.i18n._('Include {0}Incident Reports{1} in emailed reports'),'<b>','</b>'),
                                 hideLabel : true,
                                 checked : this.getReportingSettings().emailDetail,
@@ -257,6 +258,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 	},  {
                         xtype : 'checkbox',
                         name : 'Generate Daily Reports',
+                        id : 'reporting_schedule_daily',
                         fieldLabel : this.i18n._('Generate Daily Reports'),
                         boxLabel : this.i18n._('Every Day'),
                         checked : this.getReportingSettings().schedule.daily,
@@ -407,6 +409,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     },  {
                         xtype : 'checkbox',
                         name : 'Limit data retention',
+                        id: 'reporting_daysToKeep',
                         fieldLabel : this.i18n._('Limit data retention'),
                         boxLabel : this.i18n._("Keep One Week's Data"),
                         checked : this.getReportingSettings().daysToKeep == 8,
@@ -582,8 +585,25 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
                 Ext.MessageBox.hide();
-                this.cancelAction();
+                this.closeWindow();
             }
-        }        
+        },
+        isDirty : function() {
+            if(this.panelGeneration.rendered) {
+                var cmpIds = ['reporting_weeklySunday', 'reporting_weeklyMonday', 'reporting_weeklyTuesday', 
+                    'reporting_weeklyWednesday', 'reporting_weeklyThursday', 'reporting_weeklyFriday', 'reporting_weeklySaturday',
+                    'reporting_monthlyNone', 'reporting_monthlyFirst', 'reporting_monthlyEveryday', 'reporting_monthlyOnce', 'reporting_monthlyOnceCombo',
+                    'reporting_emailDetail', 'reporting_schedule_daily', 'reporting_daysToKeep']
+                for (var i = 0; i < cmpIds.length; i++) {
+                    if (Ext.getCmp(cmpIds[i]).isDirty()){
+                        return true;
+                    }
+                }
+                if (this.gridRecipients.isDirty()){
+                	return true;
+                }
+            }
+            return this.gridIpMap.isDirty();
+        }
     });
 }

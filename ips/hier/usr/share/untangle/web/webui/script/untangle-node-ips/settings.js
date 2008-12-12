@@ -377,11 +377,15 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    this.cancelAction();
+                    this.closeWindow();
                 }.createDelegate(this), this.getBaseSettings(), this.gridRules ? this.gridRules.getSaveList() : null,
                         this.gridVariables ? this.gridVariables.getSaveList() : null,
                         null);
             }
-        }
+        },
+        isDirty : function() {
+            return (this.gridRules ? this.gridRules.isDirty() : false)
+                || (this.gridVariables ? this.gridVariables.isDirty() : false);
+        }        
     });
 }

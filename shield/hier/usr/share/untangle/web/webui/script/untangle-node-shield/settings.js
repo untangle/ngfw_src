@@ -273,8 +273,11 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
                 // exit settings screen
-                this.cancelAction();
+                this.closeWindow();
             }.createDelegate(this), this.gridExceptions.getSaveList());
+        },
+        isDirty : function() {
+        	return this.gridExceptions.isDirty();
         }
     });
 }

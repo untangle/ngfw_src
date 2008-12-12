@@ -8,6 +8,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         gridEventLog : null,
         initComponent : function() {
             Ung.Util.clearInterfaceStore();
+            // keep initial base settings
+            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
             // builds the tabs
             this.buildRules();
             this.buildEventLog();
@@ -108,6 +110,15 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         columnsDefaultSortable : false,
                         autoExpandColumn : 'description',
                         plugins : [liveColumn],
+
+                        // load first page initialy
+                        initialLoad : function() {
+                            this.setTotalRecords(this.totalRecords);
+                            this.loadPage(0, 
+                                function() {
+                                    this.settingsCmp.initialRules = Ung.Util.clone(this.getFullSaveList());
+                                }.createDelegate(this));
+                        },
                         
                         initComponent : function() {
                             this.rowEditor = new Ung.RowEditorWindow({
@@ -182,6 +193,30 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                     } else {
                                         Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
                                     }
+                                },
+                                isDirty : function() {
+                                    if (this.record !== null) {
+                                        if (this.inputLines) {
+                                            for (var i = 0; i < this.inputLines.length; i++) {
+                                                var inputLine = this.inputLines[i];
+                                                if(inputLine instanceof Ext.form.Field) {
+                                                    if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
+                                                        return true;
+                                                    }
+                                                } else if (inputLine instanceof Ext.Panel) {
+                                                    for (var j = 0; j < inputLine.items.length; j++) {
+                                                        var field = inputLine.items.get(j);
+                                                        if (field instanceof Ext.form.Field) {
+                                                            if (this.record.get(field.dataIndex) != field.getValue()) {
+                                                                return true;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    return false;
                                 }
                             });
                             
@@ -450,9 +485,13 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    this.cancelAction();
+                    this.closeWindow();
                 }.createDelegate(this), this.getBaseSettings(), this.gridRules ? {javaClass:"java.util.ArrayList",list:this.gridRules.getFullSaveList()} : null);
             }
+        },
+        isDirty : function() {
+        	return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
+        	   || !Ung.Util.equals(this.gridRules.getFullSaveList(), this.initialRules);
         }
     });
 }

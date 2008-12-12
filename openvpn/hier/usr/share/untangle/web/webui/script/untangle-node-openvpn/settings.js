@@ -464,6 +464,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
 
             if (this.configState == "SERVER_ROUTE") {
+                // keep initial settings
+                this.initialVpnSettings = Ung.Util.clone(this.getVpnSettings());
+                
                 this.buildClients();
                 this.buildExports();
                 this.buildAdvanced();
@@ -1716,11 +1719,23 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         Ext.MessageBox.hide();
                         if(Ung.Util.handleException(exception)) return;
                         // exit settings screen
-                        this.cancelAction();
+                        this.closeWindow();
                     }.createDelegate(this), vpnSettings);
                 }
             } else {
-                this.cancelAction();
+                this.closeWindow();
+            }
+        },
+        
+        isDirty : function() {
+            if(this.configState == "SERVER_ROUTE") {
+                return !Ung.Util.equals(this.getVpnSettings(), this.initialVpnSettings)
+                    || this.gridGroups.isDirty()
+                    || this.gridExports.isDirty()
+                    || this.gridClients.isDirty()
+                    || this.gridSites.isDirty();
+            } else {
+            	return false;
             }
         },
 
@@ -1775,7 +1790,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     Ext.destroy(this.clientSetup);
                     if(this.mustRefresh || true) {
                         var nodeWidget=this.node;
-                        nodeWidget.settingsWin.cancelAction();
+                        nodeWidget.settingsWin.closeWindow();
                         nodeWidget.onSettingsAction();
                     }
                 }.createDelegate(this),
@@ -2045,7 +2060,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     Ext.destroy(this.serverSetup);
                     if(this.mustRefresh || true) {
                         var nodeWidget=this.node;
-                        nodeWidget.settingsWin.cancelAction();
+                        nodeWidget.settingsWin.closeWindow();
                         nodeWidget.onSettingsAction();
                     }
                 }.createDelegate(this),

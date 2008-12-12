@@ -155,7 +155,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             this.panelBlockLists.winBlacklistCategories.closeWindow();
                                             this.closeWindow();
                                 	   }.createDelegate(this)
-                                	)
+                                	);
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,

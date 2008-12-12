@@ -20,6 +20,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
         },
         // called when the component is rendered
         initComponent : function() {
+            // keep initial base settings
+            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
+            
             this.buildWeb();
             this.buildEmail();
             this.buildFtp();
@@ -132,8 +135,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelWeb.winExtensions.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridExtensions.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelWeb.winExtensions.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -161,8 +169,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                    this.panelWeb.winMimeTypes.cancelAction();
-                                    this.cancelAction();
+                                    Ung.Window.cancelAction(
+                                       this.gridMimeTypes.isDirty() || this.isDirty(),
+                                       function() {
+                                            this.panelWeb.winMimeTypes.closeWindow();
+                                            this.closeWindow();
+                                       }.createDelegate(this)
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -695,11 +708,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    this.cancelAction();
+                    this.closeWindow();
                 }.createDelegate(this), this.getBaseSettings(), 
                         this.gridMimeTypes ? this.gridMimeTypes.getSaveList() : null,
                         this.gridExtensions ? this.gridExtensions.getSaveList() : null);
             }
+        },
+        isDirty : function() {
+            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
+                || (this.gridMimeTypes ? this.gridMimeTypes.isDirty() : false)
+                || (this.gridExtensions ? this.gridExtensions.isDirty() : false);
         }
     });
 }

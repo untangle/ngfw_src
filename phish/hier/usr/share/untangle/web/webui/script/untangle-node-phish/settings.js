@@ -21,6 +21,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
             return this.rpc.baseSettings;
         },
         initComponent : function() {
+            // keep initial base settings
+            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
+            // build tabs
             this.buildEmail();
             this.buildWeb();
             this.buildWebEventLog();
@@ -430,8 +433,11 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
                 // exit settings screen
-                this.cancelAction();
+                this.closeWindow();
             }.createDelegate(this), this.getBaseSettings());
+        },
+        isDirty : function() {
+            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings);
         }
     });
 }
