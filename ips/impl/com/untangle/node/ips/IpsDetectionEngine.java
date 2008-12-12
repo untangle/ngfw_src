@@ -40,9 +40,9 @@ public class IpsDetectionEngine
     public static boolean DO_PROFILING = true;
 
     // Any chunk that takes this long gets an error
-    public static final long ERROR_ELAPSED = 2000;
+    public static final long ERROR_ELAPSED = 5000;
     // Any chunk that takes this long gets a warning
-    public static final long WARN_ELAPSED = 20;
+    public static final long WARN_ELAPSED = 50;
 
     private int maxChunks = 8;
     private IpsSettings settings = null;

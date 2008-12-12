@@ -109,7 +109,7 @@ public class IpsRuleSignature
 
     static void dumpRuleTimes()
     {
-        IpsRuleSignature.dumpRuleTimes();
+        IpsRuleSignatureImpl.dumpRuleTimes();
     }
 
     // Object methods ----------------------------------------------------------
