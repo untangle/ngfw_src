@@ -37,8 +37,7 @@ import org.apache.log4j.Logger;
 
 public class HostCache
 {
-    //private final long CACHE_TTL = 604800000; // 1 week
-    private final long CACHE_TTL = 60000;
+    private final long CACHE_TTL = 604800000; // 1 week
 
     private Database db;
 
@@ -259,10 +258,13 @@ public class HostCache
                         }
                     }
 
-                    s = writeRecords(l);
-                    v.setData(s.getBytes());
-
-                    c.putCurrent(v);
+                    if (0 < l.size()) {
+                        s = writeRecords(l);
+                        v.setData(s.getBytes());
+                        c.putCurrent(v);
+                    } else {
+                        c.delete();
+                    }
                 }
             }
         } catch (DatabaseException exn) {
