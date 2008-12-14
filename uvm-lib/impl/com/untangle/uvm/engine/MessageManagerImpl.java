@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
@@ -69,7 +70,7 @@ class MessageManagerImpl implements LocalMessageManager
         = Pattern.compile("cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)");
 
     private static final Pattern NET_DEV_PATTERN
-        = Pattern.compile("\\s*(eth\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
+        = Pattern.compile("^\\s*([a-z]+\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
 
     private static final Pattern DISK_STATS_PATTERN
         = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
@@ -680,6 +681,9 @@ class MessageManagerImpl implements LocalMessageManager
             long rxBytes0 = 0, rxBytes1 = 0;
             long txBytes0 = 0, txBytes1 = 0;
 
+	    ArgonManager am = UvmContextImpl.getInstance().argonManager();
+	    String external = am.getIntfManager().getExternal().getPhysicalName();
+	    
             long currentTime = System.currentTimeMillis();
 
             BufferedReader br = null;
@@ -690,6 +694,10 @@ class MessageManagerImpl implements LocalMessageManager
                     Matcher matcher = NET_DEV_PATTERN.matcher(l);
                     if (matcher.find()) {
                         String iface = matcher.group(1);
+
+			// Restrict to only the external interface (bug 5616)
+			if (!iface.equals(external))
+			    continue;
 
                         // get stored previous values or initialize them to 0
                         Long rxbytes0 = rxtxBytes0.get("rx"+i);

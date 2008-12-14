@@ -767,7 +767,6 @@ public class UvmContextImpl extends UvmContextBase
         remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
         localMessageManager = new MessageManagerImpl();
-        localMessageManager.start();
         messageManager = new RemoteMessageManagerAdaptor(localMessageManager);
 
         // Retrieve the reporting configuration manager
@@ -789,6 +788,9 @@ public class UvmContextImpl extends UvmContextBase
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
             Argon.getInstance().run( networkManager );
         }
+
+	// Start statistic gathering
+        localMessageManager.start();
 
         this.heapMonitor = new HeapMonitor();
         String useHeapMonitor = System.getProperty(HeapMonitor.KEY_ENABLE_MONITOR);
