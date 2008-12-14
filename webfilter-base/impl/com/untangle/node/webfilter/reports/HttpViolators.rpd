@@ -25,8 +25,7 @@ SELECT name, count, top_count, all_count \
                JOIN reports.webpages page USING (request_id) \
           WHERE (blk.time_stamp >= $P{startTime} \
             AND blk.time_stamp < $P{endTime} \
-            AND blk.vendor_name = $P{vendor} \
-            AND blk.action = 'B') \
+            AND blk.vendor_name = $P{vendor}) \
           GROUP BY name \
           ORDER BY count DESC \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
@@ -37,8 +36,7 @@ SELECT name, count, top_count, all_count \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (blk.time_stamp >= $P{startTime} \
                     AND blk.time_stamp < $P{endTime} \
-                    AND blk.vendor_name = $P{vendor} \
-                    AND blk.action = 'B') \
+                    AND blk.vendor_name = $P{vendor}) \
                   GROUP BY name \
                   ORDER BY count DESC \
                   LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
@@ -49,8 +47,7 @@ SELECT name, count, top_count, all_count \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (blk.time_stamp >= $P{startTime} \
                     AND blk.time_stamp < $P{endTime} \
-                    AND blk.vendor_name = $P{vendor} \
-                    AND blk.action = 'B') \
+                    AND blk.vendor_name = $P{vendor}) \
                   GROUP BY name \
                   ORDER BY count DESC) AS foo4) AS foo5 \
   ORDER BY count DESC
