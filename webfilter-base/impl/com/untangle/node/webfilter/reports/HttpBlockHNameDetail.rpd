@@ -28,9 +28,8 @@ SELECT blk.time_stamp, page.uid AS uname, page.hname, \
   FROM n_webfilter_evt_blk blk \
        JOIN reports.webpages page USING (request_id) \
        JOIN n_http_req_line line USING (request_id) \
-  WHERE (blk.time_stamp >= $P{startTime} \
+  WHERE blk.time_stamp >= $P{startTime} \
     AND blk.time_stamp < $P{endTime} \
-    AND blk.action = 'B') \
     AND blk.vendor_name = $P{vendor} \
   ORDER BY page.hname ASC, blk.time_stamp DESC
 
