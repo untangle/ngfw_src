@@ -665,7 +665,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }]
                 }, {
                 	title : this.i18n._('User Quarantines'),
+                    layout : "anchor",
                     items : [ this.userQuarantinesGrid = new Ung.EditorGrid({
+                        anchor : "100% 100%",
                         name : 'User Quarantines',
                         sm : sm,
                         hasEdit : false,
@@ -749,12 +751,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }, {
                             id : 'numMails',
                             header : this.i18n._("message count"),
-                            width : 200,
+                            width : 185,
                             dataIndex : 'numMails'
                         }, {
                             id : 'totalSz',
                             header : this.i18n._("data size (kB)"),
-                            width : 200,
+                            width : 185,
                             dataIndex : 'totalSz',
                             renderer : function(value) {
                                 return i18n.numberFormat((value /1024.0).toFixed(3));
@@ -791,11 +793,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                     })
                 ]}, {
                 	title : this.i18n._('Quarantinable Addresses'),
+                    layout : "anchor",
                     items: [{
                         cls: 'description',
                         border : false,
                         html : this.i18n._('Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined.')
                     },  this.quarantinableAddressesGrid = new Ung.EditorGrid({
+                        anchor : "100%",
                         name : 'Quarantinable Addresses',
                         settingsCmp : this,
                         height : 250,
