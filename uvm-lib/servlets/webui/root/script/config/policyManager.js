@@ -135,8 +135,11 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     handler : function() {
             			var app = Ung.AppItem.getAppByLibItem("untangle-libitem-policy");
             			if (app != null && app.libItem != null) {
-            				this.cancelAction();
-                            app.linkToStoreFn();
+                            Ung.Window.cancelAction( this.isDirty(),
+                               function() {
+                                    app.linkToStoreFn();
+                               }
+                            );
             			}
                     }.createDelegate(this)
                 }];
@@ -656,6 +659,36 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                                 Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
                             }
                         },
+                        isDirty : function() {
+                            var initial_record_data = Ext.decode(this.initialRecordData);
+                            
+                            return Ext.getCmp("gridRules_rowEditor_protocol").getValue() != initial_record_data.protocol
+                                || Ext.getCmp("gridRules_rowEditor_client_interface").getValue() != initial_record_data.clientIntf
+                                || Ext.getCmp("gridRules_rowEditor_server_interface").getValue() != initial_record_data.serverIntf
+                                || Ext.getCmp("gridRules_rowEditor_client_address").getValue() != initial_record_data.clientAddr
+                                || Ext.getCmp("gridRules_rowEditor_server_address").getValue() != initial_record_data.serverAddr
+                                || Ext.getCmp("gridRules_rowEditor_server_port").getValue() != initial_record_data.serverPort
+                                || Ext.getCmp("gridRules_rowEditor_user").getValue() != initial_record_data.user
+                                || Ext.getCmp("gridRules_rowEditor_start_time").getValue() != initial_record_data.startTimeFormatted
+                                || Ext.getCmp("gridRules_rowEditor_end_time").getValue() != initial_record_data.endTimeFormatted
+                                || Ext.getCmp("gridRules_rowEditor_sunday").getValue() != 
+                                    (initial_record_data.dayOfWeek == "any" || initial_record_data.dayOfWeek.indexOf("Sunday") >= 0)
+                                || Ext.getCmp("gridRules_rowEditor_monday").getValue() !=
+                                    (initial_record_data.dayOfWeek == "any" || initial_record_data.dayOfWeek.indexOf("Monday") >= 0)
+                                || Ext.getCmp("gridRules_rowEditor_tuesday").getValue() != 
+                                    (initial_record_data.dayOfWeek == "any" || initial_record_data.dayOfWeek.indexOf("Tuesday") >= 0)
+                                || Ext.getCmp("gridRules_rowEditor_wednesday").getValue() != 
+                                    (initial_record_data.dayOfWeek == "any" || initial_record_data.dayOfWeek.indexOf("Wednesday") >= 0)
+                                || Ext.getCmp("gridRules_rowEditor_thursday").getValue() != 
+                                    (initial_record_data.dayOfWeek == "any" || initial_record_data.dayOfWeek.indexOf("Thursday") >= 0)
+                                || Ext.getCmp("gridRules_rowEditor_friday").getValue() != 
+                                    (initial_record_data.dayOfWeek == "any" || initial_record_data.dayOfWeek.indexOf("Friday") >= 0)
+                                || Ext.getCmp("gridRules_rowEditor_saturday").getValue() != 
+                                    (initial_record_data.dayOfWeek == "any" || initial_record_data.dayOfWeek.indexOf("Saturday") >= 0)
+                                || Ext.getCmp("gridRules_rowEditor_rack").getValue() != initial_record_data.policyName
+                                || Ext.getCmp("gridRules_rowEditor_description").getValue() != initial_record_data.description
+                                || Ext.getCmp("gridRules_rowEditor_live").getValue() != initial_record_data.live;
+                        },
                         show : function() {
                             Ung.UpdateWindow.superclass.show.call(this);
                         }
@@ -1008,17 +1041,20 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 rpc.policyManager.setPolicyConfiguration(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     Ext.MessageBox.hide();
-                    this.cancelAction();
+                    this.closeWindow();
                     main.loadPolicies.defer(1,main);
                 }.createDelegate(this), this.getPolicyConfiguration());
             }
         },
         // save function
-	cancelAction : function() {
-            Ung.PolicyManager.superclass.cancelAction.call(this);
-            if(this.fnCallback) {
-                this.fnCallback.call();
-            }
-	}
+        closeWindow : function() {
+                Ung.PolicyManager.superclass.closeWindow.call(this);
+                if(this.fnCallback) {
+                    this.fnCallback.call();
+                }
+        },
+        isDirty : function() {
+        	return this.gridRacks.isDirty() || this.gridRules.isDirty();
+        }
     });
 }
