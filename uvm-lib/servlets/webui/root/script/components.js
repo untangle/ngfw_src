@@ -2369,7 +2369,7 @@ Ung.Window = Ext.extend(Ext.Window, {
     },
     cancelAction : function() {
         if (this.isDirty()) {
-            Ext.MessageBox.confirm(i18n._('Confirm'), i18n._('Are you sure you want to do that?'), // TODO change messages as in v5.4.x 
+            Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'), 
                 function(btn) {
                     if (btn == 'yes') {
                         this.closeWindow();
@@ -2387,7 +2387,7 @@ Ung.Window = Ext.extend(Ext.Window, {
 });
 Ung.Window.cancelAction = function(dirty, closeWinFn) {
     if (dirty) {
-        Ext.MessageBox.confirm(i18n._('Confirm'), i18n._('Are you sure you want to do that?'), // TODO change messages as in v5.4.x 
+        Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'), 
             function(btn) {
                 if (btn == 'yes') {
                     closeWinFn();
