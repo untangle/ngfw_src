@@ -164,6 +164,11 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
             return eventRepository.getRepositoryDesc();
         }
 
+        public List<E> getEvents(int limit)
+        {
+            return eventRepository.getEvents(limit);
+        }
+        
         public List<E> getEvents()
         {
             return eventRepository.getEvents();

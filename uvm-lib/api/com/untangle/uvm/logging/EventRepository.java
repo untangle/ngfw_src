@@ -47,5 +47,6 @@ public interface EventRepository<E extends LogEvent>
     int CACHE_SIZE = 1000;
 
     RepositoryDesc getRepositoryDesc();
+    List<E> getEvents(int limit);
     List<E> getEvents();
 }

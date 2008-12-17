@@ -675,16 +675,20 @@ class OpenVpnMonitor implements Runnable
             return rd;
         }
 
-        public List<ClientConnectEvent> getEvents() {
+        public List<ClientConnectEvent> getEvents(int limit) {
             List<ClientConnectEvent> list = getOpenConnectionsAsEvents();
             Collections.sort(list,
                              ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
-            int maxLen = EventRepository.CACHE_SIZE;
+            int maxLen = Math.min(limit, EventRepository.CACHE_SIZE);
             if(list.size() > maxLen) {
                 list = list.subList(0, maxLen);
             }
             return new ArrayList<ClientConnectEvent>(list);
         }
+        
+        public List<ClientConnectEvent> getEvents() {
+            return getEvents(EventRepository.CACHE_SIZE);
+        }        
     }
 
     //Provides a view of all ClientConnectEvent - both active and closed
@@ -702,7 +706,7 @@ class OpenVpnMonitor implements Runnable
             return rd;
         }
 
-        public List<ClientConnectEvent> getEvents() {
+        public List<ClientConnectEvent> getEvents(int limit) {
 
             List<ClientConnectEvent> openList =
                 eventLogger.getRepository(ACTIVE_SESSIONS_REPO_NAME).getEvents();
@@ -714,11 +718,15 @@ class OpenVpnMonitor implements Runnable
             Collections.sort(openList,
                              ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
 
-            int maxLen = EventRepository.CACHE_SIZE;
+            int maxLen = Math.min(limit, EventRepository.CACHE_SIZE);
             if(openList.size() > maxLen) {
                 openList = openList.subList(0, maxLen);
             }
             return new ArrayList<ClientConnectEvent>(openList);
+        }
+        
+        public List<ClientConnectEvent> getEvents() {
+            return getEvents(EventRepository.CACHE_SIZE);
         }
     }
 }

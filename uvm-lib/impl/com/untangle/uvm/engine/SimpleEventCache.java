@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.RepositoryDesc;
@@ -80,6 +81,17 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
         }
     }
 
+    public List<E> getEvents(int limit)
+    {
+        List<E> events = getEvents();
+        int maxLen = Math.min(limit, EventRepository.CACHE_SIZE);
+        if(events.size() > maxLen) {
+            events = events.subList(0, maxLen);
+        }
+        return new ArrayList<E>(events);
+        
+    }
+    
     public RepositoryDesc getRepositoryDesc()
     {
         return eventFilter.getRepositoryDesc();
