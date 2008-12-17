@@ -2183,8 +2183,11 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         });
 
         this.pagingToolbar = new Ext.PagingToolbar({
+            y: -2,
+            height: 21,
             pageSize : this.recordsPerPage,
-            store : this.store
+            store : this.store,
+            style: "border-top:0px solid white;padding-top:1px;padding-bottom:0px;" 
         });
 
         this.bbar = [{
@@ -2201,6 +2204,25 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 this.refreshList();
             }.createDelegate(this)
         }, {
+            xtype : 'tbbutton',
+            id: "auto_refresh"+this.getId(),
+            text : i18n._('Auto Refresh'),
+            enableToggle: true,
+            pressed: false,
+            name : "Auto Refresh",
+            tooltip : i18n._('Auto Refresh'),
+            iconCls : 'icon-autorefresh',
+            handler : function() {
+                //alert("todo");
+                aaa="111";
+                var autoRefreshButton=Ext.getCmp("auto_refresh"+this.getId());
+                if(autoRefreshButton.pressed) {
+                    this.startAutoRefresh();
+                } else {
+                    this.stopAutoRefresh();
+                }
+            }.createDelegate(this)
+        }, {
             xtype : 'tbtext',
             text : '<div style="width:30px;"></div>'
         }, this.pagingToolbar];
@@ -2212,7 +2234,78 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             }
             return this.config[col].renderer;
         };
+        var cmConfig = this.getColumnModel().config;
+        for (i in cmConfig) {
+            cmConfig[i].initialSortable = cmConfig[i].sortable;
+        }
     },
+    autoRefreshEnabled:true,
+    startAutoRefresh: function(setButton) {
+        this.pagingToolbar.hide();
+        this.autoRefreshEnabled=true;
+        var columnModel=this.getColumnModel();
+        this.getStore().sort(columnModel.getDataIndex(0), "ASC");
+        var cmConfig = columnModel.config;
+        for (i in cmConfig) {
+            cmConfig[i].sortable = false;
+        }
+        if(setButton) {
+            var autoRefreshButton=Ext.getCmp("auto_refresh"+this.getId());
+            autoRefreshButton.toggle(true);
+        }
+        this.autorefreshList();
+        
+    },
+    stopAutoRefresh: function(setButton) {
+        this.autoRefreshEnabled=false;
+        this.pagingToolbar.show();
+        var cmConfig = this.getColumnModel().config;
+        for (i in cmConfig) {
+            cmConfig[i].sortable = cmConfig[i].initialSortable;
+        }
+        if(setButton) {
+            var autoRefreshButton=Ext.getCmp("auto_refresh"+this.getId());
+            autoRefreshButton.toggle(false);
+        }
+    },
+    autorefreshCallback : function(result, exception) {
+        if(Ung.Util.handleException(exception)) return;
+        var events = result;
+        if (this.settingsCmp !== null) {
+            this.getStore().proxy.data = events;
+            this.getStore().load({
+                params : {
+                    start : 0,
+                    limit : this.recordsPerPage
+                }
+            });
+        }
+        //this.makeSelectable();
+        if(this!=null && this.rendered && this.autoRefreshEnabled) {
+            if(this==this.settingsCmp.tabs.getActiveTab()) {
+                this.autorefreshList.defer(5000,this);
+            } else {
+                this.stopAutoRefresh(true);
+            }
+        }
+    },
+    autorefreshList : function() {
+        if (this.hasRepositories) {
+            var selRepository = this.getSelectedRepository();
+            if (selRepository !== null) {
+                if (this.rpc.repository[selRepository] === undefined) {
+                    this.eventManagerFn.getRepository(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        this.rpc.repository[selRepository] = result;
+                        this.rpc.repository[selRepository].getEvents(this.autorefreshCallback.createDelegate(this)/*,this.recordsPerPage*/);
+                    }.createDelegate(this),selRepository);
+                } else {
+                    this.rpc.repository[selRepository].getEvents(this.autorefreshCallback.createDelegate(this)/*,this.recordsPerPage*/);
+                }
+            }
+        }
+    },
+    
     // called when the component is rendered
     onRender : function(container, position) {
         Ung.GridEventLog.superclass.onRender.call(this, container, position);
@@ -2293,6 +2386,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             }
         }
     }
+   
 });
 
 // Standard Ung window
