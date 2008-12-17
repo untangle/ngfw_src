@@ -2571,6 +2571,9 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
         Ung.NodeWin.superclass.constructor.apply(this, arguments);
     },
     initComponent : function() {
+    	if (this.helpSource == null) {
+            this.helpSource = this.node.helpSource;
+    	};
         this.breadcrumbs = [{
             title : i18n._(rpc.currentPolicy.name),
             action : function() {
