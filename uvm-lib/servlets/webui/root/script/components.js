@@ -2195,6 +2195,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             text : '<span id="boxRepository_' + this.getId() + '_' + this.settingsCmp.node.tid + '"></span>'
         }, {
             xtype : 'tbbutton',
+            id: "refresh_"+this.getId(),
             text : i18n._('Refresh'),
             name : "Refresh",
             tooltip : i18n._('Refresh'),
@@ -2205,7 +2206,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             }.createDelegate(this)
         }, {
             xtype : 'tbbutton',
-            id: "auto_refresh"+this.getId(),
+            id: "auto_refresh_"+this.getId(),
             text : i18n._('Auto Refresh'),
             enableToggle: true,
             pressed: false,
@@ -2213,9 +2214,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             tooltip : i18n._('Auto Refresh'),
             iconCls : 'icon-autorefresh',
             handler : function() {
-                //alert("todo");
-                aaa="111";
-                var autoRefreshButton=Ext.getCmp("auto_refresh"+this.getId());
+                var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
                 if(autoRefreshButton.pressed) {
                     this.startAutoRefresh();
                 } else {
@@ -2244,15 +2243,17 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         this.pagingToolbar.hide();
         this.autoRefreshEnabled=true;
         var columnModel=this.getColumnModel();
-        this.getStore().sort(columnModel.getDataIndex(0), "ASC");
+        this.getStore().sort(columnModel.getDataIndex(0), "DESC");
         var cmConfig = columnModel.config;
         for (i in cmConfig) {
             cmConfig[i].sortable = false;
         }
         if(setButton) {
-            var autoRefreshButton=Ext.getCmp("auto_refresh"+this.getId());
+            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
             autoRefreshButton.toggle(true);
         }
+        var refreshButton=Ext.getCmp("refresh_"+this.getId());
+        refreshButton.disable();
         this.autorefreshList();
         
     },
@@ -2264,9 +2265,11 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             cmConfig[i].sortable = cmConfig[i].initialSortable;
         }
         if(setButton) {
-            var autoRefreshButton=Ext.getCmp("auto_refresh"+this.getId());
+            var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
             autoRefreshButton.toggle(false);
         }
+        var refreshButton=Ext.getCmp("refresh_"+this.getId());
+        refreshButton.enable();
     },
     autorefreshCallback : function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
