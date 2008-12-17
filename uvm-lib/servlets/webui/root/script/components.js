@@ -2297,10 +2297,10 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                     this.eventManagerFn.getRepository(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         this.rpc.repository[selRepository] = result;
-                        this.rpc.repository[selRepository].getEvents(this.autorefreshCallback.createDelegate(this)/*,this.recordsPerPage*/);
+                        this.rpc.repository[selRepository].getEvents(this.autorefreshCallback.createDelegate(this),this.recordsPerPage);
                     }.createDelegate(this),selRepository);
                 } else {
-                    this.rpc.repository[selRepository].getEvents(this.autorefreshCallback.createDelegate(this)/*,this.recordsPerPage*/);
+                    this.rpc.repository[selRepository].getEvents(this.autorefreshCallback.createDelegate(this),this.recordsPerPage);
                 }
             }
         }
