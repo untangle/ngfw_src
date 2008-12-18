@@ -298,6 +298,9 @@ if (!Ung.hasResource["Ung.Ips"]) {
         },
         // Event Log
         buildEventLog : function() {
+	  var asAction = function(value) {
+	    return value ? this.i18n._("block") : this.i18n._("pass");
+	  }.createDelegate(this);
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
@@ -307,15 +310,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     name : 'action',
                     mapping : 'blocked',
                     type : 'string',
-                    convert : function(value) {
-                        switch (value) {
-                            case 1 : // BLOCKED
-                                return this.i18n._("block");
-                            default :
-                            case 0 : // PASSED
-                                return this.i18n._("pass");
-                        }
-                    }.createDelegate(this)
+                    convert : asAction
                 }, {
                     name : 'reason',
                     mapping : 'ruleSid',
