@@ -3904,7 +3904,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 });
                 var users=this.record.get(this.userDataIndex);
                 if(users!=null) {
-                    users=users.split(",");
+                    users=users.split(";");
                 }
                 for(var i=0;i<users.length;i++) {
                     var index=store.find("UID",users[i]);
@@ -3941,7 +3941,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                       users.push(selRecs[i].get("UID"));
                     }
                 }
-                this.record.set(this.userDataIndex,users.join(","));
+                this.record.set(this.userDataIndex,users.join(";"));
                 if(this.fnCallback) {
                     this.fnCallback.call()
                 }
