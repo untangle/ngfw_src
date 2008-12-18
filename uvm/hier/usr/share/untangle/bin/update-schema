@@ -312,6 +312,14 @@ SQL
   rescue DBI::DatabaseError => e
     SqlHelper.log_sql_error("Could not do 6.0 hacks", e)
   end
+  begin
+    ps = dbh.execute(<<SQL)
+update u_user_policy_rule set user_matcher=replace(user_matcher,',',';')
+where user_matcher like '%,%'
+SQL
+  rescue DBI::DatabaseError => e
+    SqlHelper.log_sql_error("Could not do comma versus semicolon fix for user policy", e)
+  end
 end
 
 def setup_schema(dbh)
