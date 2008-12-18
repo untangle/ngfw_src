@@ -1,6 +1,6 @@
 com.untangle.node.reporting.reports.ReportingSummarizer:summarizer:Summarizer
-com.untangle.node.reporting.reports.SummaryGraph:summaryGraph:Untangle_Platform--Summary_Graph
-reports/LoginMaster.jasper:Untangle_Platform--Summary:Summary
-reports/ActivityMaster.jasper:Untangle_Platform--Activity_Summary:Activity Summary
-reports/LoginDetail.jasper:Untangle_Platform--Administrative_Logins:Administrative Logins
+com.untangle.node.reporting.reports.SummaryGraph:summaryGraph:Platform--Summary_Graph
+reports/LoginMaster.jasper:Platform--Summary:Summary
+reports/ActivityMaster.jasper:Platform--Activity_Summary:Activity Summary
+reports/LoginDetail.jasper:Platform--Administrative_Logins:Administrative Logins
 reportTitlePrefix:parameter:none
