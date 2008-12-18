@@ -321,7 +321,7 @@ Ung.Main=Ext.extend(Object, {
             iconCls: 'icon-help',
             text: i18n._('What Apps should I use?'),
             show : function() {
-            	Ung.Button.prototype.show.call(this);
+            	Ext.Button.prototype.show.call(this);
                 this.getEl().alignTo("content-right","c-c");
             }, 
             handler: function() {
@@ -338,7 +338,7 @@ Ung.Main=Ext.extend(Object, {
             renderTo: 'appsItems',
             text: i18n._("My Account"),
             show : function() {
-                Ung.Button.prototype.show.call(this);
+                Ext.Button.prototype.show.call(this);
                 this.getEl().alignTo("appsItems","c-c",[0,10]);
             }, 
             handler: function() {
