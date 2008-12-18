@@ -2753,6 +2753,7 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
         if(this.bbar==null) {
             this.bbar=['->',{
                 name : 'Cancel',
+                id: "cancel_"+this.getId(),
                 iconCls : 'cancel-icon',
                 text : i18n._('Cancel'),
                 handler : function() {
@@ -2830,8 +2831,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.rowEditorLabelWidth == null) {
             this.rowEditorLabelWidth = 100;
         }
-        this.items = new Ext.FormPanel({
+        this.items = new Ext.Panel({
             anchor: "100% 100%",
+            layout:"form",
             labelWidth : this.rowEditorLabelWidth,
             buttonAlign : 'right',
             border : false,
@@ -2857,6 +2859,13 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             }
         }
         this.setPosition(objPosition);
+        if(Ext.isIE) {
+            var cancelButton=Ext.getCmp("cancel_"+this.getId());
+            if(cancelButton) {
+                cancelButton.hide();
+                cancelButton.show();
+            }
+        }
     },
     // populate is called whent a record is edited, tot populate the edit window
     populate : function(record, addMode) {
@@ -3401,7 +3410,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             });
         }
         if(this.rowEditor!=null) {
-            this.rowEditor.render('container');
+            this.rowEditor.render();
             this.subCmps.push(this.rowEditor);
         }
         if (this.hasAdd) {
