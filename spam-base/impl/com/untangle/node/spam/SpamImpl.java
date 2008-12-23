@@ -24,10 +24,14 @@ import java.util.List;
 
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.util.I18nUtil;
@@ -40,11 +44,6 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
 
 import static com.untangle.node.util.Ascii.CRLF;
 
@@ -179,35 +178,35 @@ public class SpamImpl extends AbstractNode implements SpamNode
      * Increment the counter for blocked (SMTP only).
      */
     public void incrementBlockCount() {
-	blockBlinger.increment();
-	spamDetectedBlinger.increment();
-	emailReceivedBlinger.increment();
+    blockBlinger.increment();
+    spamDetectedBlinger.increment();
+    emailReceivedBlinger.increment();
     }
 
     /**
      * Increment the counter for messages passed
      */
     public void incrementPassCount() {
-	passBlinger.increment();
-	emailReceivedBlinger.increment();
+    passBlinger.increment();
+    emailReceivedBlinger.increment();
     }
 
     /**
      * Increment the counter for messages marked
      */
     public void incrementMarkCount() {
-	markBlinger.increment();
-	spamDetectedBlinger.increment();
-	emailReceivedBlinger.increment();
+    markBlinger.increment();
+    spamDetectedBlinger.increment();
+    emailReceivedBlinger.increment();
     }
 
     /**
      * Increment the count for messages quarantined.
      */
     public void incrementQuarantineCount() {
-	quarantineBlinger.increment();
-	spamDetectedBlinger.increment();
-	emailReceivedBlinger.increment();
+    quarantineBlinger.increment();
+    spamDetectedBlinger.increment();
+    emailReceivedBlinger.increment();
     }
 
     /**
@@ -340,6 +339,8 @@ public class SpamImpl extends AbstractNode implements SpamNode
                                              SMTPSpamMessageAction.QUARANTINE,
                                              SpamSMTPNotifyAction.NEITHER,
                                              SpamProtoConfig.DEFAULT_STRENGTH,
+                                             false,
+                                             SpamProtoConfig.DEFAULT_SUPER_STRENGTH,
                                              "Scan SMTP e-mail",
                                                          getDefaultSubjectWrapperTemplate(),
                                                          getDefaultBodyWrapperTemplate(),
@@ -355,6 +356,8 @@ public class SpamImpl extends AbstractNode implements SpamNode
             setPopConfig(new SpamPOPConfig(true,
                                            SpamMessageAction.MARK,
                                            SpamProtoConfig.DEFAULT_STRENGTH,
+                                           false,
+                                           SpamProtoConfig.DEFAULT_SUPER_STRENGTH,
                                            "Scan POP e-mail",
                                            getDefaultSubjectWrapperTemplate(),
                                            getDefaultBodyWrapperTemplate(),
@@ -366,6 +369,8 @@ public class SpamImpl extends AbstractNode implements SpamNode
             setImapConfig(new SpamIMAPConfig(true,
                                              SpamMessageAction.MARK,
                                              SpamProtoConfig.DEFAULT_STRENGTH,
+                                             false,
+                                             SpamProtoConfig.DEFAULT_SUPER_STRENGTH,
                                              "Scan IMAP e-mail",
                                              getDefaultSMTPSubjectWrapperTemplate(),
                                              getDefaultSMTPBodyWrapperTemplate(),
@@ -422,7 +427,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
             String signatureVersion = scanner.getSignatureVersion();
             if (signatureVersion != null) this.signatureVersion = signatureVersion;
         }
-        
+
         baseSettings.setLastUpdate(this.lastSignatureUpdate);
         baseSettings.setSignatureVersion(this.signatureVersion);
 

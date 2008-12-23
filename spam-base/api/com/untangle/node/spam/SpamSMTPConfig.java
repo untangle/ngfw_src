@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,13 +33,8 @@
 
 package com.untangle.node.spam;
 
-import java.io.Serializable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -75,6 +70,8 @@ public class SpamSMTPConfig extends SpamProtoConfig
                           SMTPSpamMessageAction zMsgAction,
                           SpamSMTPNotifyAction zNotifyAction,
                           int strength,
+                          boolean blockSuperSpam,
+                          int superSpamStrength,
                           String zNotes,
                           String subjectTemplate,
                           String bodyTemplate,
@@ -88,6 +85,8 @@ public class SpamSMTPConfig extends SpamProtoConfig
     {
         super(bScan,
               strength,
+              blockSuperSpam,
+              superSpamStrength,
               zNotes,
               subjectTemplate,
               bodyTemplate,

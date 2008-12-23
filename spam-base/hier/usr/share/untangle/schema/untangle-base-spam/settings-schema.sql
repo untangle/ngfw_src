@@ -1,4 +1,4 @@
--- settings schema for release-5.0.3
+-- settings schema for release-6.1
 -- $HeadURL$
 -- Copyright (c) 2003-2007 Untangle, Inc.
 --
@@ -24,6 +24,8 @@ CREATE TABLE settings.n_spam_smtp_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
     strength int4 NOT NULL,
+    block_superspam bool NOT NULL,
+    superspam_strength int4 NOT NULL,
     msg_size_limit int4 NOT NULL,
     msg_action char(1) NOT NULL,
     notify_action char(1) NOT NULL,
@@ -36,6 +38,8 @@ CREATE TABLE settings.n_spam_pop_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
     strength int4 NOT NULL,
+    block_superspam bool NOT NULL,
+    superspam_strength int4 NOT NULL,
     msg_size_limit int4 NOT NULL,
     msg_action char(1) NOT NULL,
     notes varchar(255),
@@ -45,6 +49,8 @@ CREATE TABLE settings.n_spam_imap_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
     strength int4 NOT NULL,
+    block_superspam bool NOT NULL,
+    superspam_strength int4 NOT NULL,
     msg_size_limit int4 NOT NULL,
     msg_action char(1) NOT NULL,
     notes varchar(255),

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -27,9 +27,6 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
@@ -44,8 +41,10 @@ import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEOutputStream;
 import com.untangle.node.mime.MIMEUtil;
 import com.untangle.node.util.TempFileFactory;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
-
 
 /**
  * Protocol Handler which is called-back as scanable messages
@@ -65,7 +64,7 @@ public class SmtpSessionHandler
 
     // Now we also keep the salutation to help SpamAssassin evaluate.
     private String m_receivedBy;
-    
+
     public SmtpSessionHandler(TCPSession session,
                               long maxClientWait,
                               long maxSvrWait,
@@ -152,15 +151,15 @@ public class SmtpSessionHandler
         SMTPSpamMessageAction action = m_config.getMsgAction();
 
         //Anything going out External MARK instead of QUARANTINE
-        if(action == SMTPSpamMessageAction.QUARANTINE 
-        		&& m_session.serverIntf() == IntfConstants.EXTERNAL_INTF) {
+        if(action == SMTPSpamMessageAction.QUARANTINE
+                && m_session.serverIntf() == IntfConstants.EXTERNAL_INTF) {
             //Change action now, as it'll make the event logs
             //more accurate
             m_logger.debug("Implicitly converting policy from \"QUARANTINE\"" +
                            " to \"MARK\" as we have a message going out external");
             action = SMTPSpamMessageAction.MARK;
         }
-        
+
         if(report.isSpam()) {//BEGIN SPAM
             m_logger.debug("Spam found");
 
@@ -226,14 +225,14 @@ public class SmtpSessionHandler
 
     @Override
     public void handleOpeningResponse(Response resp,
-				      com.untangle.node.mail.papi.smtp.sapi.Session.SmtpResponseActions actions) {
-	// Note the receivedBy
-	String[] rargs = resp.getArgs();
-	if (rargs == null || rargs.length < 1)
-	    m_receivedBy = null;
-	else
-	    m_receivedBy = rargs[0];
-	super.handleOpeningResponse(resp, actions);
+                      com.untangle.node.mail.papi.smtp.sapi.Session.SmtpResponseActions actions) {
+    // Note the receivedBy
+    String[] rargs = resp.getArgs();
+    if (rargs == null || rargs.length < 1)
+        m_receivedBy = null;
+    else
+        m_receivedBy = rargs[0];
+    super.handleOpeningResponse(resp, actions);
     }
 
     @Override
@@ -279,15 +278,15 @@ public class SmtpSessionHandler
         SMTPSpamMessageAction action = m_config.getMsgAction();
 
         //Anything going out External MARK instead of QUARANTINE
-        if(action == SMTPSpamMessageAction.QUARANTINE 
-        		&& m_session.serverIntf() == IntfConstants.EXTERNAL_INTF) {
+        if(action == SMTPSpamMessageAction.QUARANTINE
+                && m_session.serverIntf() == IntfConstants.EXTERNAL_INTF) {
             //Change action now, as it'll make the event logs
             //more accurate
             m_logger.debug("Implicitly converting policy from \"QUARANTINE\"" +
                            " to \"MARK\" as we have a message going out external");
             action = SMTPSpamMessageAction.MARK;
         }
-        
+
         //Check for the impossible-to-satisfy action of "REMOVE"
         if(action == SMTPSpamMessageAction.MARK) {
             //Change action now, as it'll make the event logs
@@ -387,11 +386,11 @@ public class SmtpSessionHandler
         sb.append("from ").append(getHELOEHLOName()).
             append(" (").append(clientAddr.getHostName()).
             append(" [").append(clientAddr.getHostAddress()).append("])").append(CRLF);
-	EmailAddress envFrom = tx.getFrom();
-	if (envFrom != null) {
-	    String smtpEnvFrom = envFrom.toSMTPString();
-	    sb.append("\t(envelope-from ").append(smtpEnvFrom).append(")").append(CRLF);
-	}
+    EmailAddress envFrom = tx.getFrom();
+    if (envFrom != null) {
+        String smtpEnvFrom = envFrom.toSMTPString();
+        sb.append("\t(envelope-from ").append(smtpEnvFrom).append(")").append(CRLF);
+    }
         sb.append("\tby ").append(m_receivedBy == null ? "mv-edgeguard" : m_receivedBy).append("; ").append(MIMEUtil.getRFC822Date());
 
 

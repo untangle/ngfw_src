@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,7 +34,6 @@
 package com.untangle.node.spam;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -52,13 +51,15 @@ public abstract class SpamProtoConfig implements Serializable
 {
     public static final int DEFAULT_MESSAGE_SIZE_LIMIT = 1 << 18;
     public static final String NO_NOTES = "no description";
-
     public static final int DEFAULT_STRENGTH = 43;
+    public static final int DEFAULT_SUPER_STRENGTH = 43;
     private Long id;
 
     /* settings */
     private boolean bScan = false;
     private int strength = DEFAULT_STRENGTH;
+    private int superSpamStrength = DEFAULT_SUPER_STRENGTH;
+    private boolean blockSuperSpam = false;
     private int msgSizeLimit = DEFAULT_MESSAGE_SIZE_LIMIT;
     private String zNotes = NO_NOTES;
     private transient WrappedMessageGenerator m_msgGenerator;
@@ -74,6 +75,8 @@ public abstract class SpamProtoConfig implements Serializable
 
     protected SpamProtoConfig(boolean bScan,
                               int strength,
+                              boolean blockSuperSpam,
+                              int superSpamStrength,
                               String zNotes,
                               String subjectTemplate,
                               String bodyTemplate,
@@ -82,6 +85,8 @@ public abstract class SpamProtoConfig implements Serializable
                               String isHamHeaderValue) {
         this.bScan = bScan;
         this.strength = strength;
+        this.blockSuperSpam = blockSuperSpam;
+        this.superSpamStrength = superSpamStrength;
         this.zNotes = zNotes;
         m_subjectWrapperTemplate = subjectTemplate;
         m_bodyWrapperTemplate = bodyTemplate;
@@ -232,6 +237,29 @@ public abstract class SpamProtoConfig implements Serializable
     {
         this.strength = strength;
     }
+
+    @Column(name="block_superspam", nullable=false)
+    public boolean getBlockSuperSpam()
+    {
+        return blockSuperSpam;
+    }
+
+    public void setBlockSuperSpam(boolean blockSuperSpam)
+    {
+        this.blockSuperSpam = blockSuperSpam;
+    }
+
+    @Column(name="superspam_strength", nullable=false)
+    public int getSuperSpamStrength()
+    {
+        return superSpamStrength;
+    }
+
+    public void setSuperSpamStrength(int superSpamStrength)
+    {
+        this.superSpamStrength = superSpamStrength;
+    }
+
 
     /**
      * msgSizeLimit: an integer giving scan message size limit.  Files
