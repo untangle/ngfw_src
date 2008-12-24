@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,26 +18,30 @@
 package com.untangle.node.spam;
 
 import java.io.File;
-
 import java.util.Date;
 
 public interface SpamScanner
 {
 
     /**
-     * Gets the name of the vendor of this node's spam scanner, used for logging.
+     * Gets the name of the vendor of this node's spam scanner, used
+     * for logging.
      *
-     * @return a <code>String</code> giving the name of the vendor of this scanner
+     * @return a <code>String</code> giving the name of the vendor of
+     * this scanner.
      */
     String getVendorName();
 
     /**
-     * Scans the file for Spam, producing a spam report.  Note that the contract for this
-     * requires that a report always be generated, for any problems or exceptions an
-     * empty report is generated (and the error/warning should be logged).
+     * Scans the file for Spam, producing a spam report.  Note that
+     * the contract for this requires that a report always be
+     * generated, for any problems or exceptions an empty report is
+     * generated (and the error/warning should be logged).
      *
-     * @param file the <code>File</code> containing the complete message to scan for spam
-     * @param threshold a <code>float</code> giving the spam cutoff value
+     * @param file the <code>File</code> containing the complete
+     * message to scan for spam
+     * @param threshold a <code>float</code> giving the spam cutoff
+     * value.
      * @return a <code>SpamReport</code> value
      */
     SpamReport scanFile(File file, float threshold);
@@ -52,5 +56,5 @@ public interface SpamScanner
     Date getLastSignatureUpdate();
 
     String getSignatureVersion();
-        
+
 }

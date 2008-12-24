@@ -62,6 +62,9 @@ public class SpamSMTPConfig extends SpamProtoConfig
     private String m_notifySubjectWrapperTemplate;
     private String m_notifyBodyWrapperTemplate;
 
+    private int superSpamStrength = DEFAULT_SUPER_STRENGTH;
+    private boolean blockSuperSpam = false;
+
     // constructor ------------------------------------------------------------
 
     public SpamSMTPConfig() { }
@@ -85,14 +88,14 @@ public class SpamSMTPConfig extends SpamProtoConfig
     {
         super(bScan,
               strength,
-              blockSuperSpam,
-              superSpamStrength,
               zNotes,
               subjectTemplate,
               bodyTemplate,
               headerName,
               isSpamHeaderValue,
               isHamHeaderValue);
+        this.blockSuperSpam = blockSuperSpam;
+        this.superSpamStrength = superSpamStrength;
         this.zMsgAction = zMsgAction;
         this.zNotifyAction = zNotifyAction;
         m_notifySubjectWrapperTemplate = notifySubjectTemplate;
@@ -102,7 +105,6 @@ public class SpamSMTPConfig extends SpamProtoConfig
     }
 
     // accessors --------------------------------------------------------------
-
 
 
     /**
@@ -154,6 +156,28 @@ public class SpamSMTPConfig extends SpamProtoConfig
                                                                   getNotifyBodyTemplate(),
                                                                   false);
         }
+    }
+
+    @Column(name="block_superspam", nullable=false)
+    public boolean getBlockSuperSpam()
+    {
+        return blockSuperSpam;
+    }
+
+    public void setBlockSuperSpam(boolean blockSuperSpam)
+    {
+        this.blockSuperSpam = blockSuperSpam;
+    }
+
+    @Column(name="superspam_strength", nullable=false)
+    public int getSuperSpamStrength()
+    {
+        return superSpamStrength;
+    }
+
+    public void setSuperSpamStrength(int superSpamStrength)
+    {
+        this.superSpamStrength = superSpamStrength;
     }
 
     /**

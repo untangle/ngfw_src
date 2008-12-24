@@ -132,7 +132,7 @@ public class SpamPopHandler extends PopStateMachine
     private SpamReport scanFile(File zFile) throws TokenException
     {
         try {
-            SpamReport zReport = zScanner.scanFile(zFile, strength/10.0f);
+            SpamReport zReport = zScanner.scanFile(zFile, strength / 10.0f);
             postSpamEvent(zMsgInfo, zReport, zMsgAction);
 
             try {

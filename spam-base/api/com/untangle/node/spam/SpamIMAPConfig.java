@@ -63,8 +63,6 @@ public class SpamIMAPConfig extends SpamProtoConfig
     public SpamIMAPConfig(boolean bScan,
                           SpamMessageAction zMsgAction,
                           int strength,
-                          boolean blockSuperSpam,
-                          int superSpamStrength,
                           String zNotes,
                           String subjectTemplate,
                           String bodyTemplate,
@@ -74,8 +72,6 @@ public class SpamIMAPConfig extends SpamProtoConfig
     {
         super(bScan,
               strength,
-              blockSuperSpam,
-              superSpamStrength,
               zNotes,
               subjectTemplate,
               bodyTemplate,

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,18 +20,16 @@ package com.untangle.node.phish;
 
 import java.io.File;
 import java.util.Date;
-
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.node.clam.ClamScannerClientLauncher;
 import com.untangle.node.spam.ReportItem;
 import com.untangle.node.spam.SpamReport;
 import com.untangle.node.spam.SpamScanner;
 import com.untangle.node.virus.VirusScannerResult;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
 public class PhishScanner implements SpamScanner
@@ -95,7 +93,7 @@ public class PhishScanner implements SpamScanner
         try {
             String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE );
             long timeSeconds = Long.parseLong( result.trim());
-            
+
             return new Date( timeSeconds * 1000l );
         } catch ( NodeException e ) {
             logger.warn( "Unable to get last update.", e );

@@ -296,6 +296,10 @@ public class SmtpSessionHandler
             action = SMTPSpamMessageAction.PASS;
         }
 
+        if (m_config.getBlockSuperSpam() && m_config.getSuperSpamStrength() <= report.getScore()) {
+            action = SMTPSpamMessageAction.BLOCK;
+        }
+
         if(report.isSpam()) {
             m_logger.debug("Spam");
 
@@ -438,7 +442,8 @@ public class SmtpSessionHandler
     private SpamReport scanFile(File f) {
         //Attempt scan
         try {
-            SpamReport ret = m_spamImpl.getScanner().scanFile(f, m_config.getStrength()/10.0f);
+            SpamReport ret = m_spamImpl.getScanner()
+                .scanFile(f, m_config.getStrength()/10.0f);
             if(ret == null) {
                 m_logger.error("Received ERROR SpamReport");
                 return null;

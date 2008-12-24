@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -18,15 +18,13 @@
 
 package com.untangle.node.spamassassin;
 
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.script.ScriptRunner;
-
-import com.untangle.node.spam.SpamScanner;
-import com.untangle.node.spam.SpamReport;
-
 import java.io.File;
 import java.util.Date;
 
+import com.untangle.node.spam.SpamReport;
+import com.untangle.node.spam.SpamScanner;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
 public class SpamAssassinScanner implements SpamScanner

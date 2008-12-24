@@ -28,19 +28,3 @@ ALTER TABLE settings.n_spam_smtp_config ALTER COLUMN block_superspam SET NOT NUL
 ALTER TABLE settings.n_spam_smtp_config ADD COLUMN superspam_strength int4;
 UPDATE settings.n_spam_smtp_config SET superspam_strength = 90;
 ALTER TABLE settings.n_spam_smtp_config ALTER COLUMN block_superspam SET NOT NULL;
-
-ALTER TABLE settings.n_spam_pop_config ADD COLUMN block_superspam bool;
-UPDATE settings.n_spam_pop_config SET block_superspam = false;
-ALTER TABLE settings.n_spam_pop_config ALTER COLUMN block_superspam SET NOT NULL;
-
-ALTER TABLE settings.n_spam_pop_config ADD COLUMN superspam_strength int4;
-UPDATE settings.n_spam_pop_config SET superspam_strength = 90;
-ALTER TABLE settings.n_spam_pop_config ALTER COLUMN block_superspam SET NOT NULL;
-
-ALTER TABLE settings.n_spam_imap_config ADD COLUMN block_superspam bool;
-UPDATE settings.n_spam_imap_config SET block_superspam = false;
-ALTER TABLE settings.n_spam_imap_config ALTER COLUMN block_superspam SET NOT NULL;
-
-ALTER TABLE settings.n_spam_imap_config ADD COLUMN superspam_strength int4;
-UPDATE settings.n_spam_imap_config SET superspam_strength = 90;
-ALTER TABLE settings.n_spam_imap_config ALTER COLUMN block_superspam SET NOT NULL;

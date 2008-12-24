@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -23,8 +23,8 @@ import static com.untangle.node.util.Ascii.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.node.TemplateValues;
 import com.untangle.node.token.header.IllegalFieldException;
+import com.untangle.uvm.node.TemplateValues;
 import org.apache.log4j.Logger;
 
 /**
@@ -142,6 +142,7 @@ public class SpamReport
       return h;
       }
     */
+
     public boolean isSpam()
     {
         return threshold <= score;

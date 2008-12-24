@@ -58,8 +58,6 @@ public abstract class SpamProtoConfig implements Serializable
     /* settings */
     private boolean bScan = false;
     private int strength = DEFAULT_STRENGTH;
-    private int superSpamStrength = DEFAULT_SUPER_STRENGTH;
-    private boolean blockSuperSpam = false;
     private int msgSizeLimit = DEFAULT_MESSAGE_SIZE_LIMIT;
     private String zNotes = NO_NOTES;
     private transient WrappedMessageGenerator m_msgGenerator;
@@ -75,8 +73,6 @@ public abstract class SpamProtoConfig implements Serializable
 
     protected SpamProtoConfig(boolean bScan,
                               int strength,
-                              boolean blockSuperSpam,
-                              int superSpamStrength,
                               String zNotes,
                               String subjectTemplate,
                               String bodyTemplate,
@@ -85,8 +81,6 @@ public abstract class SpamProtoConfig implements Serializable
                               String isHamHeaderValue) {
         this.bScan = bScan;
         this.strength = strength;
-        this.blockSuperSpam = blockSuperSpam;
-        this.superSpamStrength = superSpamStrength;
         this.zNotes = zNotes;
         m_subjectWrapperTemplate = subjectTemplate;
         m_bodyWrapperTemplate = bodyTemplate;
@@ -236,28 +230,6 @@ public abstract class SpamProtoConfig implements Serializable
     public void setStrength(int strength)
     {
         this.strength = strength;
-    }
-
-    @Column(name="block_superspam", nullable=false)
-    public boolean getBlockSuperSpam()
-    {
-        return blockSuperSpam;
-    }
-
-    public void setBlockSuperSpam(boolean blockSuperSpam)
-    {
-        this.blockSuperSpam = blockSuperSpam;
-    }
-
-    @Column(name="superspam_strength", nullable=false)
-    public int getSuperSpamStrength()
-    {
-        return superSpamStrength;
-    }
-
-    public void setSuperSpamStrength(int superSpamStrength)
-    {
-        this.superSpamStrength = superSpamStrength;
     }
 
 
