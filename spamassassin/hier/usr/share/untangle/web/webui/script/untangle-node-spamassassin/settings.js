@@ -23,7 +23,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         initComponent : function() {
             // keep initial base settings
             this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
-            
+
             this.buildEmail();
             this.buildEventLog();
             this.buildRBLEventLog();
@@ -58,9 +58,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
                     ['BLOCK', this.i18n._('Block')], ['QUARANTINE', this.i18n._('Quarantine')]];
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
-            this.strengthsData = [[50, this.i18n._('Low')], [43, this.i18n._('Medium')], [35, this.i18n._('High')],
-                    [33, this.i18n._('Very High')], [30, this.i18n._('Extreme')], [0, this.i18n._('Custom')]];
-                    
+            this.strengthsData = [[50, this.i18n._('Low (Strength: 50)')], [43, this.i18n._('Medium (Strength: 43)')], [35, this.i18n._('High (Strength: 35)')],
+                    [33, this.i18n._('Very High (Strength: 33)')], [30, this.i18n._('Extreme (Strength: 30)')], [0, this.i18n._('Custom')]];
+
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
                 name : 'Email',
@@ -186,6 +186,37 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 }.createDelegate(this)
                             }
                         }
+                    }, {
+                        xtype : 'checkbox',
+                        name : 'Enable Super Spam Blocking',
+                        boxLabel : this.i18n._('Enable Super Spam Blocking'),
+                        hideLabel : true,
+                        checked : this.getBaseSettings().smtpConfig.blockSuperSpam,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().smtpConfig.blockSuperSpam = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
+                      xtype : 'numberfield',
+                      fieldLabel : this.i18n._('Super Spam Level (5-100)'),
+                      name : 'Super Spam Level',
+                      id: 'spamassassin_smtpSuperStrengthValue',
+                      value : this.getBaseSettings().smtpConfig.superSpamStrength,
+                      width: 25,
+                      allowDecimals: false,
+                      allowNegative: false,
+                      minValue: 5,
+                      maxValue: 100,
+                      listeners : {
+                        "change" : {
+                          fn : function(elem, newValue) {
+                            this.getBaseSettings().smtpConfig.superSpamStrength = newValue;
+                          }.createDelegate(this)
+                          }
+                      }
                     }]
                 }, {
                     xtype : 'fieldset',
@@ -541,7 +572,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         return value == null ? "" : value;
                     }
                 }, {
-                    name : 'hostname'                   
+                    name : 'hostname'
                 }],
                 // the list of columns
                 columns : [{
@@ -571,9 +602,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             });
         },
         validateClient : function() {
-        	var cmp = null;
-            var valid = 
-                ((cmp = Ext.getCmp('spamassassin_smtpStrengthValue')).isValid() && 
+            var cmp = null;
+            var valid =
+                ((cmp = Ext.getCmp('spamassassin_smtpStrengthValue')).isValid() &&
                 (cmp = Ext.getCmp('spamassassin_pop3StrengthValue')).isValid() &&
                 (cmp = Ext.getCmp('spamassassin_imapStrengthValue')).isValid());
             if (!valid) {
@@ -581,7 +612,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     function () {
                         this.tabs.activate(this.emailPanel);
                         cmp.focus(true);
-                    }.createDelegate(this) 
+                    }.createDelegate(this)
                 );
             }
             return valid;
@@ -598,10 +629,10 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 }.createDelegate(this), this.getBaseSettings());
             }
         },
-        
+
         isDirty : function() {
             return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings);
         }
-        
+
     });
 }

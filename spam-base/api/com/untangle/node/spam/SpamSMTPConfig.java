@@ -52,6 +52,7 @@ import org.hibernate.annotations.Type;
 public class SpamSMTPConfig extends SpamProtoConfig
 {
     private static final long serialVersionUID = 7520156745253589107L;
+    public static final int DEFAULT_SUPER_STRENGTH = 50;
 
     /* settings */
     private boolean throttle = false;
@@ -63,7 +64,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
     private String m_notifyBodyWrapperTemplate;
 
     private int superSpamStrength = DEFAULT_SUPER_STRENGTH;
-    private boolean blockSuperSpam = false;
+    private boolean blockSuperSpam = true;
 
     // constructor ------------------------------------------------------------
 
