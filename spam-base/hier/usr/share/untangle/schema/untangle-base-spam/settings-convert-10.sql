@@ -28,3 +28,7 @@ ALTER TABLE settings.n_spam_smtp_config ALTER COLUMN block_superspam SET NOT NUL
 ALTER TABLE settings.n_spam_smtp_config ADD COLUMN superspam_strength int4;
 UPDATE settings.n_spam_smtp_config SET superspam_strength = 100;
 ALTER TABLE settings.n_spam_smtp_config ALTER COLUMN block_superspam SET NOT NULL;
+
+ALTER TABLE settings.n_spam_smtp_config ADD COLUMN fail_closed bool;
+UPDATE settings.n_spam_smtp_config SET fail_closed = true;
+ALTER TABLE settings.n_spam_smtp_config ALTER COLUMN fail_closed SET NOT NULL;

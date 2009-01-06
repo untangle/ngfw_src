@@ -67,6 +67,8 @@ public class SpamSMTPConfig extends SpamProtoConfig
     private int superSpamStrength = DEFAULT_SUPER_STRENGTH;
     private boolean blockSuperSpam = true;
 
+    private boolean failClosed = true;
+
     // constructor ------------------------------------------------------------
 
     public SpamSMTPConfig() { }
@@ -77,6 +79,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
                           int strength,
                           boolean blockSuperSpam,
                           int superSpamStrength,
+                          boolean failClosed,
                           String zNotes,
                           String subjectTemplate,
                           String bodyTemplate,
@@ -98,6 +101,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
               isHamHeaderValue);
         this.blockSuperSpam = blockSuperSpam;
         this.superSpamStrength = superSpamStrength;
+        this.failClosed = failClosed;
         this.zMsgAction = zMsgAction;
         this.zNotifyAction = zNotifyAction;
         m_notifySubjectWrapperTemplate = notifySubjectTemplate;
@@ -180,6 +184,17 @@ public class SpamSMTPConfig extends SpamProtoConfig
     public void setSuperSpamStrength(int superSpamStrength)
     {
         this.superSpamStrength = superSpamStrength;
+    }
+
+    @Column(name="fail_closed", nullable=false)
+    public boolean getFailClosed()
+    {
+        return failClosed;
+    }
+
+    public void setFailClosed(boolean failClosed)
+    {
+        this.failClosed = failClosed;
     }
 
     /**

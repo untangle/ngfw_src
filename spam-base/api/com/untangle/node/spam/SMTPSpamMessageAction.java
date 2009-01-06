@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -42,7 +42,7 @@ public enum SMTPSpamMessageAction
     QUARANTINE('Q', "quarantine message"),
     SAFELIST('S', "safelist message"),
     OVERSIZE('Z', "oversize message");
-    
+
     private static final long serialVersionUID = -6364692037092527263L;
 
     public static final char PASS_KEY = 'P';
@@ -51,7 +51,6 @@ public enum SMTPSpamMessageAction
     public static final char QUARANTINE_KEY = 'Q';
     public static final char SAFELIST_KEY = 'S'; // special pass case
     public static final char OVERSIZE_KEY = 'Z'; // special pass case
-
 
     private String name;
     private char key;
@@ -63,13 +62,13 @@ public enum SMTPSpamMessageAction
     }
 
     public static SMTPSpamMessageAction getInstance(char key) {
-    	SMTPSpamMessageAction[] values = values();
-    	for (int i = 0; i < values.length; i++) {
-    		if (values[i].getKey() == key){
-    			return values[i];
-    		}
-		}
-    	return null;
+        SMTPSpamMessageAction[] values = values();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].getKey() == key){
+                return values[i];
+            }
+        }
+        return null;
     }
 
     public char getKey() {
