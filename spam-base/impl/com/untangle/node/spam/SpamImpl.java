@@ -340,7 +340,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
                                              SpamSMTPNotifyAction.NEITHER,
                                              SpamProtoConfig.DEFAULT_STRENGTH,
                                              false,
-                                             SpamProtoConfig.DEFAULT_SUPER_STRENGTH,
+                                             SpamSMTPConfig.DEFAULT_SUPER_STRENGTH,
                                              "Scan SMTP e-mail",
                                                          getDefaultSubjectWrapperTemplate(),
                                                          getDefaultBodyWrapperTemplate(),
