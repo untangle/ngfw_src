@@ -58,8 +58,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
                     ['BLOCK', this.i18n._('Block')], ['QUARANTINE', this.i18n._('Quarantine')]];
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
-            this.strengthsData = [[50, this.i18n._('Low (Strength: 50)')], [43, this.i18n._('Medium (Strength: 43)')], [35, this.i18n._('High (Strength: 35)')],
-                    [33, this.i18n._('Very High (Strength: 33)')], [30, this.i18n._('Extreme (Strength: 30)')], [0, this.i18n._('Custom')]];
+            this.strengthsData = [[50, this.i18n._('Low (Strength: 5.0)')], [43, this.i18n._('Medium (Strength: 4.3)')], [35, this.i18n._('High (Strength: 3.5)')],
+                    [33, this.i18n._('Very High (Strength: 3.3)')], [30, this.i18n._('Extreme (Strength: 3.0)')], [0, this.i18n._('Custom')]];
 
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
@@ -133,7 +133,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                                 customCmp.hideContainer();
                                                 this.getBaseSettings().smtpConfig.strength = record.data.value;
                                             }
-                                            customCmp.setValue(this.getBaseSettings().smtpConfig.strength);
+                                            customCmp.setValue(this.getBaseSettings().smtpConfig.strength / 10.0);
                                         }.createDelegate(this)
                                     }
                                 }
@@ -147,9 +147,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 fieldLabel : this.i18n._('Strength Value'),
                                 name : 'SMTP Strength Value',
                                 id: 'spamassassin_smtpStrengthValue',
-                                value : this.getBaseSettings().smtpConfig.strength,
+                                value : this.getBaseSettings().smtpConfig.strength / 10.0,
                                 width : 100,
-                                allowDecimals: false,
+                                allowDecimals: true,
                                 allowBlank : false,
                                 blankText : this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
                                 minValue : -2147483648,
@@ -157,7 +157,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 listeners : {
                                     "change" : {
                                         fn : function(elem, newValue) {
-                                            this.getBaseSettings().smtpConfig.strength = newValue;
+                                          this.getBaseSettings().smtpConfig.strength = Math.round(newValue * 10);
                                         }.createDelegate(this)
                                     }
                                 }
@@ -201,21 +201,21 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         }
                     }, {
                       xtype : 'numberfield',
-                      fieldLabel : this.i18n._('Super Spam Level (5-100)'),
+                      fieldLabel : this.i18n._('Super Spam Level'),
                       name : 'Super Spam Level',
                       id: 'spamassassin_smtpSuperStrengthValue',
-                      value : this.getBaseSettings().smtpConfig.superSpamStrength,
-                      width: 25,
+                      value : this.getBaseSettings().smtpConfig.superSpamStrength / 10.0,
+                      width: 100,
                       allowDecimals: false,
                       allowNegative: false,
-                      minValue: 5,
-                      maxValue: 100,
+                      minValue: 0,
+                      maxValue: 2147483647,
                       listeners : {
                         "change" : {
                           fn : function(elem, newValue) {
-                            this.getBaseSettings().smtpConfig.superSpamStrength = newValue;
+                            this.getBaseSettings().smtpConfig.superSpamStrength = Math.round(newValue * 10);
                           }.createDelegate(this)
-                          }
+                        }
                       }
                     }]
                 }, {
@@ -266,7 +266,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                                 customCmp.hideContainer();
                                                 this.getBaseSettings().popConfig.strength = record.data.value;
                                             }
-                                            customCmp.setValue(this.getBaseSettings().popConfig.strength);
+                                            customCmp.setValue(this.getBaseSettings().popConfig.strength / 10.0);
                                         }.createDelegate(this)
                                     }
                                 }
@@ -280,9 +280,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 fieldLabel : this.i18n._('Strength Value'),
                                 name : 'POP3 Strength Value',
                                 id: 'spamassassin_pop3StrengthValue',
-                                value : this.getBaseSettings().popConfig.strength,
+                                value : this.getBaseSettings().popConfig.strength / 10.0,
                                 width: 100,
-                                allowDecimals: false,
+                                allowDecimals: true,
                                 allowBlank : false,
                                 blankText : this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
                                 minValue : -2147483648,
@@ -290,7 +290,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 listeners : {
                                     "change" : {
                                         fn : function(elem, newValue) {
-                                            this.getBaseSettings().popConfig.strength = newValue;
+                                          this.getBaseSettings().popConfig.strength = Math.round(newValue * 10);
                                         }.createDelegate(this)
                                     }
                                 }
@@ -369,7 +369,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                                 customCmp.hideContainer();
                                                 this.getBaseSettings().imapConfig.strength = record.data.value;
                                             }
-                                            customCmp.setValue(this.getBaseSettings().imapConfig.strength);
+                                            customCmp.setValue(this.getBaseSettings().imapConfig.strength / 10.0);
                                         }.createDelegate(this)
                                     }
                                 }
@@ -383,9 +383,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 fieldLabel : this.i18n._('Strength Value'),
                                 name : 'IMAP Strength Value',
                                 id: 'spamassassin_imapStrengthValue',
-                                value : this.getBaseSettings().imapConfig.strength,
+                                value : this.getBaseSettings().imapConfig.strength / 10.0,
                                 width: 100,
-                                allowDecimals: false,
+                                allowDecimals: true,
                                 allowBlank : false,
                                 blankText : this.i18n._('Strength Value must be a number. Smaller value is higher strength.'),
                                 minValue : -2147483648,
@@ -393,7 +393,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 listeners : {
                                     "change" : {
                                         fn : function(elem, newValue) {
-                                            this.getBaseSettings().imapConfig.strength = newValue;
+                                          this.getBaseSettings().imapConfig.strength = Math.round(newValue * 10);
                                         }.createDelegate(this)
                                     }
                                 }

@@ -53,7 +53,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
 {
     private static final long serialVersionUID = 7520156745253589107L;
 
-    public static final int DEFAULT_SUPER_STRENGTH = 50;
+    public static final int DEFAULT_SUPER_STRENGTH = 100;
 
     /* settings */
     private boolean throttle = false;
