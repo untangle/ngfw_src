@@ -104,6 +104,19 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     }, {
+                        xtype : 'checkbox',
+                        name : 'Fail Closed',
+                        boxLabel : this.i18n._('Fail Closed'),
+                        hideLabel : true,
+                        checked : this.getBaseSettings().smtpConfig.failClosed,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().smtpConfig.failClosed = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }, {
                         border: false,
                         layout:'column',
                         autoWidth : true,

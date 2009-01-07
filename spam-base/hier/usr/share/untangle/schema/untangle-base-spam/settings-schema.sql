@@ -26,6 +26,7 @@ CREATE TABLE settings.n_spam_smtp_config (
     strength int4 NOT NULL,
     block_superspam bool NOT NULL,
     superspam_strength int4 NOT NULL,
+    fail_closed bool NOT NULL,
     msg_size_limit int4 NOT NULL,
     msg_action char(1) NOT NULL,
     notify_action char(1) NOT NULL,
