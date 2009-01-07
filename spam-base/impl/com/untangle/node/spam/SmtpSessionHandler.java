@@ -263,12 +263,17 @@ public class SmtpSessionHandler
 
         SpamReport report = scanFile(f);
         if (report == null) { // Handle error case
-
-
-            m_logger.error("Error scanning message.  Assume pass");
-            postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
-            m_spamImpl.incrementPassCount();
-            return BlockOrPassResult.PASS;
+            if (m_config.getFailClosed()) {
+                m_logger.error("Error scanning message. Failing closed");
+                postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.BLOCK);
+                m_spamImpl.incrementBlockCount();
+                return BlockOrPassResult.BLOCK;
+            } else {
+                m_logger.error("Error scanning message. Failing open");
+                postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
+                m_spamImpl.incrementPassCount();
+                return BlockOrPassResult.PASS;
+            }
         }
 
         SMTPSpamMessageAction action = m_config.getMsgAction();
