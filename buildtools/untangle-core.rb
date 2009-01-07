@@ -61,6 +61,9 @@ require "#{SRC_HOME}/spamassassin/package.rb"
 ## Webfilter based nodes
 require "#{SRC_HOME}/webfilter/package.rb"
 
+# Ad Blocker node
+require "#{SRC_HOME}/adblocker/package.rb"
+
 ## Virus based nodes
 require "#{SRC_HOME}/clam/package.rb"
 
