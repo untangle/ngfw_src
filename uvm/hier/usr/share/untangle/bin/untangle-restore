@@ -69,6 +69,9 @@ clean_dirs
 # restore the files, both system and the /usr/share/untangle important stuf
 tar zxf $tarfile -C /
 
+# update the things also kept in kernel (bug 5533)
+hostname `cat /etc/hostname`
+
 # restore the LDAP configuration
 SLAPD_CONFIG=/etc/untangle-ldap/slapd.conf
 SLAPD_LIB_DIR=/var/lib/untangle-ldap
