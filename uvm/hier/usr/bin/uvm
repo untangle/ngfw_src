@@ -172,6 +172,11 @@ restartServiceIfNeeded() {
       dpkg -l untangle-kav | grep -q -E '^ii' || return
       isServiceRunning aveserver && return
       ;;
+    ctasd)
+      pidFile="/var/run/ctasd/ctasd.pid"
+      dpkg -l untangle-ctasd | grep -q -E '^ii' || return
+      isServiceRunning ctasd && return
+      ;;
   esac
 
   for service in $serviceName ; do
@@ -317,6 +322,7 @@ while true; do
             restartServiceIfNeeded slapd
             restartServiceIfNeeded untangle-support-agent
             restartServiceIfNeeded kav
+            restartServiceIfNeeded ctasd
 
 	    if [ $counter2 -lt 0 ] ; then
                 restartServiceIfNeeded mongrel || counter2=120 # so we don't check again before 120s have passed
