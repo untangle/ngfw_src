@@ -557,15 +557,19 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 break;
                             case 'SMTP' :
                                 switch (value) {
+                                    default :
                                     case 0 : // PASSED
                                         return this.i18n._("pass message");
                                     case 1 : // MARKED
                                         return this.i18n._("mark infection");
                                     case 2 : // BLOCKED
                                         return this.i18n._("block message");
-                                    default :
                                     case 3 : // QUARANTINED
                                         return this.i18n._("quarantine message");
+                                    case 4 : // SAFELISTED
+                                        return this.i18n._("safelist message");
+                                    case 5 : // OVERSIZE
+                                        return this.i18n._("oversize message");
                                 }
                                 break;
                         }
