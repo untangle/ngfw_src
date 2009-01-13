@@ -50,6 +50,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -248,7 +249,7 @@ public class RouterImpl extends AbstractNode implements Router
             
             /* Make a synchronous request */
             try {
-                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
+                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
             } catch ( Exception e ) {
                 logger.warn( "Unable to initialize the wizard", e );
             }

@@ -54,6 +54,7 @@ import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -216,15 +217,8 @@ public class VpnNodeImpl extends AbstractNode
                     this.openVpnMonitor.enable();
                 }
 
-                try {
-                    /* XXX Update the iptables rules, this should be a call in the network manager XXX */
-                    XMLRPCUtil.NullAsyncCallback callback = new XMLRPCUtil.NullAsyncCallback( this.logger );
-                    /* Make an asynchronous request */
-                    XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules",
-                                                         callback );
-                } catch ( Exception e ) {
-                    logger.error( "Error while generating iptables rules", e );
-                }
+                /* Make an asynchronous request */
+                LocalUvmContextFactory.context().newThread( new GenerateRules( null )).start();
             }
 
             this.assistant.configure( this.settings, getRunState() == NodeState.RUNNING );
@@ -873,5 +867,29 @@ public class VpnNodeImpl extends AbstractNode
                                                          this.random.nextInt(), this.random.nextInt());
             this.adminDownloadClientExpiration = now + ADMIN_DOWNLOAD_CLIENT_TIMEOUT;
         }
+    }
+
+
+    class GenerateRules implements Runnable
+    {
+        private Exception exception;
+        private final Runnable callback;
+
+        public GenerateRules( Runnable callback )
+        {
+            this.callback = callback;
+        }
+
+        public void run()
+        {
+            try {
+                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", null );
+            } catch ( Exception e ) {
+                logger.error( "Error while generating iptables rules", e );
+                this.exception = e;
+            }
+
+            if ( this.callback != null ) this.callback.run();
+        }        
     }
 }

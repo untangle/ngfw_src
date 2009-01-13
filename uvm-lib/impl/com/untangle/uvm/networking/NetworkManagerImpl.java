@@ -44,8 +44,13 @@ import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 import org.apache.log4j.Logger;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
 
@@ -301,8 +306,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     public void remapInterfaces( String[] osArray, String[] userArray ) throws NetworkException
     {
+        JSONObject jsonObject = new JSONObject();
+
         try {
-            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "remap_interfaces", null, osArray, userArray );
+            jsonObject.put( "os_names", new JSONArray( osArray ));
+            jsonObject.put( "user_names", new JSONArray( userArray ));
+        } catch ( JSONException e ) {
+            throw new NetworkException( "Unable to build JSON Object", e );
+        }
+
+        try {
+            JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "remap_interfaces", jsonObject );
         } catch ( Exception e ) {
             throw new NetworkException( "Unable to configure the external interface.", e );
         }
@@ -376,35 +390,35 @@ public class NetworkManagerImpl implements LocalNetworkManager
         /* Send the call onto the alpaca */
         PPPoEConnectionRule pppoe = basic.getPPPoESettings();
 
-        Object args[] = null;
+        JSONObject jsonObject = new JSONObject();
         String method = null;
 
-        if ( pppoe.isLive()) {
-            /* PPPoE Setup */
-            args = new String[2];
-            method = "wizard_external_interface_pppoe";
-            args[0] = pppoe.getUsername();
-            args[1] = pppoe.getPassword();
-        } else if ( basic.getDhcpEnabled()) {
-            /* Dynamic address */
-            args = new String[0];
-            method = "wizard_external_interface_dynamic";
-        } else {
-            /* Must be a static address */
-            args = new String[5];
-            args[0] = basic.getHost().toString();
-            args[1] = basic.getNetmask().toString();
-            args[2] = basic.getGateway().toString();
-            args[3] = basic.getDns1().toString();
-            args[4] = "";
-
-            IPaddr dns2 = basic.getDns2();
-            if ( !dns2.isEmpty()) args[4] = dns2.toString();
-            method = "wizard_external_interface_static";
+        try {
+            if ( pppoe.isLive()) {
+                /* PPPoE Setup */
+                method = "wizard_external_interface_pppoe";
+                jsonObject.put( "username", pppoe.getUsername());
+                jsonObject.put( "username", pppoe.getPassword());
+            } else if ( basic.getDhcpEnabled()) {
+                /* Dynamic address */
+                method = "wizard_external_interface_dynamic";
+            } else {
+                /* Must be a static address */
+                jsonObject.put( "ip", basic.getHost().toString());
+                jsonObject.put( "netmask", basic.getNetmask().toString());
+                jsonObject.put( "default_gateway", basic.getGateway().toString());
+                jsonObject.put( "dns_1", basic.getDns1().toString());
+                
+                IPaddr dns2 = basic.getDns2();
+                if ( !dns2.isEmpty()) jsonObject.put( "dns_2", dns2 );
+                method = "wizard_external_interface_static";
+            }
+        } catch ( JSONException e ) {
+            throw new NetworkException( "Unable to build JSON Object", e );
         }
 
         /* Make a synchronous request */
-        Exception e = retryAlpacaCall( method, null, args );
+        Exception e = retryAlpacaCall( method, jsonObject );
         if ( e != null ) {
             logger.warn( "Unable to configure the external interface.", e );
             throw new NetworkException( "Unable to configure the external interface.", e );
@@ -421,8 +435,15 @@ public class NetworkManagerImpl implements LocalNetworkManager
         logger.debug( "use-dhcp: " + enableDhcpServer );
         
         /* Make a synchronous request */
-        Exception e = retryAlpacaCall( "wizard_internal_interface_nat", null,
-                                       address.toString(), netmask.toString(), enableDhcpServer );
+        JSONObject jsonObject  = new JSONObject();
+        try {
+            jsonObject.put( "ip", address.toString());
+            jsonObject.put( "netmask", netmask.toString());
+            jsonObject.put( "is_dhcp_enabled", enableDhcpServer );
+        } catch ( JSONException e ) {
+            throw new NetworkException( "Unable to build JSON Object", e );
+        }
+        Exception e = retryAlpacaCall( "wizard_internal_interface_nat", jsonObject );
 
         if ( e != null ) {
             logger.warn( "unable to setup system for NAT in wizard.", e );
@@ -739,7 +760,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     }
 
     /* Retry a call to the alpaca in case it was restarted. */
-    private Exception retryAlpacaCall( String method, AsyncCallback callback, Object ... params )
+    private Exception retryAlpacaCall( String method, JSONObject jsonObject )
     {
         /* Make a synchronous request */
         for ( int c = 0 ; c < ALPACA_RETRY_COUNT ; c++ ) {
@@ -749,13 +770,13 @@ public class NetworkManagerImpl implements LocalNetworkManager
                     Thread.sleep( ALPACA_RETRY_DELAY_MS );
                 }
 
-                XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, method, callback, params );
+                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, method, jsonObject );
 
                 return null;
-            } catch ( XmlRpcException e ) {
+            } catch ( JsonClient.ConnectionException e ) {
                 String message = e.getMessage();
                 /* XXX Reading the message is not a valid way to test exceptions XXX */
-                if ( message != null && message.contains( "Connection refused" )) {
+                if ( message != null && message.contains( "Transport Error" )) {
                     logger.warn( "unable to communicate with the alpaca." );
                     continue;
                 }

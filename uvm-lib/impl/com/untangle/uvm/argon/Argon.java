@@ -25,6 +25,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkManagerImpl;
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 import org.apache.log4j.Logger;
 
@@ -169,7 +170,7 @@ public class Argon
         /* Ensure that the alpaca has initialized all of the necessary files for the UVM */
         /* Make a synchronous request */
         try {
-            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "write_files", null );
+            JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "write_files", null );
         } catch ( Exception e ) {
             logger.warn( "Unable to commit initial alpaca files.", e );
         }

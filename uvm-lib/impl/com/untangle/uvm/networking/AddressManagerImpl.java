@@ -40,9 +40,13 @@ import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
 import com.untangle.uvm.util.DeletingDataSaver;
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
+
+import org.json.JSONObject;
+import org.json.JSONException;
 
 import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 
@@ -333,13 +337,22 @@ class AddressManagerImpl implements LocalAddressManager
             logger.warn( "unable to save hostname, address settings are not initialized." );            
             return;
         }
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put( "hostname", address.getHostName().toString());
+            jsonObject.put( "save_suffix", updateSuffix );
+        } catch ( JSONException e ) {
+            logger.warn( "Unable to save JSON object", e );
+            return;
+        }
         
         /* Make a synchronous request */
         try {
             /* This will save the hostname but not commit it to the O/S, have to commit it
              * when there is no locks. */
-            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "save_hostname", null,
-                                                 address.getHostName().toString(), updateSuffix );
+            JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "save_hostname", jsonObject );
         } catch ( Exception e ) {
             logger.warn( "Unable to save the hostname", e );
         }

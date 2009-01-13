@@ -41,6 +41,7 @@ import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 
 import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
@@ -76,14 +77,8 @@ public class RuleManager
             return;
         }
 
-        try {
-            XMLRPCUtil.NullAsyncCallback callback = new XMLRPCUtil.NullAsyncCallback( this.logger );
-            /* Make an asynchronous request */
-            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", callback );
-        } catch ( Exception e ) {
-            logger.error( "Error while generating iptables rules", e );
-            throw new NetworkException( "Unable to generate iptables rules", e );
-        }
+        /* Make an asynchronous request */
+        LocalUvmContextFactory.context().newThread( new GenerateRules( null )).start();
     }
 
     synchronized void destroyIptablesRules() throws NetworkException
@@ -93,15 +88,8 @@ public class RuleManager
             return;
         }
 
-        try {
-            XMLRPCUtil.NullAsyncCallback callback = new XMLRPCUtil.NullAsyncCallback( this.logger );
-            /* Make an asynchronous request, this will automatically remove the UVM if the queue
-            * has been closed. */
-            XMLRPCUtil.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", callback );
-        } catch ( Exception e ) {
-            logger.error( "Error while generating iptables rules", e );
-            throw new NetworkException( "Unable to generate iptables rules", e );
-        }
+        /* Make an asynchronous request */
+        LocalUvmContextFactory.context().newThread( new GenerateRules( null )).start();
     }
 
     synchronized void isShutdown()
@@ -146,5 +134,28 @@ public class RuleManager
         }
         
         return INSTANCE;
+    }
+
+    class GenerateRules implements Runnable
+    {
+        private Exception exception;
+        private final Runnable callback;
+
+        public GenerateRules( Runnable callback )
+        {
+            this.callback = callback;
+        }
+
+        public void run()
+        {
+            try {
+                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", null );
+            } catch ( Exception e ) {
+                logger.error( "Error while generating iptables rules", e );
+                this.exception = e;
+            }
+
+            if ( this.callback != null ) this.callback.run();
+        }        
     }
 }

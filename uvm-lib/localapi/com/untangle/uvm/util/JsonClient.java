@@ -33,26 +33,42 @@
 
 package com.untangle.uvm.util;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+
+import org.apache.log4j.Logger;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.untangle.uvm.networking.NetworkException;
 
 public class JsonClient
 {
+    /* 10 seconds */
+    private static final int DEFAULT_CONNECTION_TIMEOUT_MS = 10000;
+
     public static final JsonClient INSTANCE = new JsonClient();
 
     private final MultiThreadedHttpConnectionManager connectionManager =
         new MultiThreadedHttpConnectionManager();
+
+    private static final String ALPACA_BASE_URL = "http://localhost:3000/alpaca/";
+    private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     private JsonClient()
     {
@@ -71,16 +87,35 @@ public class JsonClient
         return call( url, "json_request", object );
     }
 
+    public JSONObject callAlpaca( String component, String method, JSONObject object ) 
+        throws ConnectionException, IOException, NetworkException
+    {
+        String url = ALPACA_BASE_URL + component + "/" + method + "?argyle=" + getNonce();
+        return call( url, null, object );
+    }
+
     public JSONObject call( String url, String param, JSONObject object ) throws ConnectionException
     {
         // Create an instance of HttpClient.
         HttpClient client = new HttpClient( this.connectionManager );
 
+        client.getParams().setSoTimeout( DEFAULT_CONNECTION_TIMEOUT_MS );
+
+        if ( object == null ) object = new JSONObject();
+
         // Create a method instance.
         PostMethod method = new PostMethod( url );
 
-        Part parts[] = { new StringPart( param, object.toString()) };
-        method.setRequestEntity(new MultipartRequestEntity( parts, method.getParams()));
+        RequestEntity entity = null;
+        if (( param == null ) || ( param.length() == 0 )) {
+            entity = new ByteArrayRequestEntity( object.toString().getBytes(),
+                                                 "application/json; charset=UTF-8");
+        } else {
+            Part parts[] = { new StringPart( param, object.toString()) };
+            entity = new MultipartRequestEntity( parts, method.getParams());
+        }
+
+        method.setRequestEntity( entity );
 
         try {
             // Execute the method.
@@ -121,6 +156,29 @@ public class JsonClient
         public ConnectionException( String message )
         {
             super( message );
+        }
+    }
+
+    /* --------- private --------- */
+    private String getNonce() throws IOException, NetworkException 
+    {
+        BufferedReader stream = null;
+        try {
+            stream = new BufferedReader( new FileReader( ALPACA_NONCE_FILE ));
+            
+            String nonce = stream.readLine();
+            if ( nonce.length() < 3 ) {
+                throw new NetworkException( "Invalid nonce in the file [" + ALPACA_NONCE_FILE + "]: ', " + 
+                                            nonce + "'" );
+            }
+
+            return nonce;
+        } finally {
+            try {
+                if ( stream != null ) stream.close();
+            } catch ( IOException e ) {
+                this.logger.warn( "Unable to close the nonce file: " + ALPACA_NONCE_FILE, e );
+            }
         }
     }
 }

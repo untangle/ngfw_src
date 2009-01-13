@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.IPSession;
@@ -32,7 +33,8 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
-
+import org.json.JSONObject;
+import org.json.JSONException;
 
 class RouterSessionManager
 {
@@ -294,8 +296,8 @@ class SessionRedirect
 	}
 	redirectRuleFilter =
 	    "-p tcp "
-	    +" -d "+myAddr.getHostAddress()
-	    +" --dport "+reservedPort ;
+	    + " -d " + myAddr.getHostAddress()
+	    + " --dport "+ reservedPort ;
 	redirectRuleIp = serverAddr.getHostAddress();
 	redirectRulePort = serverPort;
 	if (logger.isDebugEnabled()) {
@@ -304,11 +306,12 @@ class SessionRedirect
 	    logger.debug("rule clientIp: "+redirectRuleIp);
 	    logger.debug("rule clientPort: "+redirectRulePort);
 	}
-	try{
-	    XMLRPCUtil.getInstance().callAlpaca("uvm","session_redirect_create", null,
-						redirectRuleFilter,
-						redirectRuleIp,
-						new Integer(redirectRulePort));
+	try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put( "filter", redirectRuleFilter );
+            jsonObject.put( "new_ip", redirectRuleIp );
+            jsonObject.put( "new_port", redirectRulePort );
+	    JsonClient.getInstance().callAlpaca("uvm", "session_redirect_create", jsonObject );
 	} catch(Exception e){
 	    logger.error("Failure creating redirect rule:"+ e);
 	}
@@ -324,10 +327,11 @@ class SessionRedirect
 	    logger.debug("rule clientPort: "+redirectRulePort);
 	}
 	try{
-	    XMLRPCUtil.getInstance().callAlpaca("uvm","session_redirect_delete", null,
-						redirectRuleFilter,
-						redirectRuleIp,
-						new Integer(redirectRulePort));
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put( "filter", redirectRuleFilter );
+            jsonObject.put( "new_ip", redirectRuleIp );
+            jsonObject.put( "new_port", redirectRulePort );
+	    JsonClient.getInstance().callAlpaca("uvm","session_redirect_delete", jsonObject );
 	} catch(Exception e){
 	    logger.error("Failure creating redirect rule:"+ e);
 	}
