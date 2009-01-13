@@ -278,7 +278,22 @@ public class OpenSSLWrapper {
 
     public static void generateSelfSignedCert(String alias, String filename)
         throws IOException {
-        SimpleExec.SimpleExecResult result = SimpleExec.exec(
+        SimpleExec.SimpleExecResult resultKeyCopy = SimpleExec.exec( "openssl",
+                                                                     new String[] {
+                                                                      "rsa",
+                                                                      "-in", 
+                                                                      filename,
+                                                                      "-out",
+                                                                      filename+".new"
+                                                                     },
+                                                                     null,
+                                                                     null,
+                                                                     true,
+                                                                     false,
+                                                                     1000*60);
+
+        if(resultKeyCopy.exitCode==0) {
+            SimpleExec.SimpleExecResult result = SimpleExec.exec(
                                                              "openssl",
                                                              new String[] {
                                                                  "req",
@@ -290,21 +305,39 @@ public class OpenSSLWrapper {
                                                                  "-nodes",
 								 "-days",
 								 KEY_PAIR_VALID_DAYS,
+                                                                 "-key",
+                                                                 filename+".new",
                                                                  "-out",
-                                                                 filename,
+                                                                 filename+".new",
                                                                  "-keyout",
-                                                                 filename
+                                                                 filename+".new"
                                                              },
                                                              null,
                                                              null,
                                                              true,
                                                              false,
                                                              1000*60);
+              File oldCertFile = new File(filename);
+              oldCertFile.renameTo(new File(filename+".old"));
+              File newCertFile = new File(filename+".new");
+              newCertFile.renameTo(new File(filename));
+              SimpleExec.SimpleExecResult resultRestartApache = SimpleExec.exec("apache2ctl", 
+                                                                                new String[] {
+                                                                                  "graceful"
+                                                                                },
+                                                                                null,
+                                                                                null,
+                                                                                true,
+                                                                                false,
+                                                                                1000*60);
 
-        if(result.exitCode==0) {
-            return;
+
+            if(result.exitCode==0) {
+                return;
+            }
+            throw new IOException("openssl exited with value " + result.exitCode);
         }
-        throw new IOException("openssl exited with value " + result.exitCode);
+        throw new IOException("openssl exited with value " + resultKeyCopy.exitCode);
     }
 
     /**
@@ -485,6 +518,16 @@ public class OpenSSLWrapper {
 	    } else {
 		throw new IOException("Error verifying cert against private key and CA");
 	    }
+            SimpleExec.SimpleExecResult resultRestartApache = SimpleExec.exec("apache2ctl", 
+                                                                              new String[] {
+                                                                                "graceful"
+                                                                              },
+                                                                              null,
+                                                                              null,
+                                                                              true,
+                                                                              false,
+                                                                              1000*60);
+
         }
         catch(IOException ex) {
             IOUtil.delete(temp);
