@@ -178,35 +178,35 @@ public class SpamImpl extends AbstractNode implements SpamNode
      * Increment the counter for blocked (SMTP only).
      */
     public void incrementBlockCount() {
-    blockBlinger.increment();
-    spamDetectedBlinger.increment();
-    emailReceivedBlinger.increment();
+        blockBlinger.increment();
+        spamDetectedBlinger.increment();
+        emailReceivedBlinger.increment();
     }
 
     /**
      * Increment the counter for messages passed
      */
     public void incrementPassCount() {
-    passBlinger.increment();
-    emailReceivedBlinger.increment();
+        passBlinger.increment();
+        emailReceivedBlinger.increment();
     }
 
     /**
      * Increment the counter for messages marked
      */
     public void incrementMarkCount() {
-    markBlinger.increment();
-    spamDetectedBlinger.increment();
-    emailReceivedBlinger.increment();
+        markBlinger.increment();
+        spamDetectedBlinger.increment();
+        emailReceivedBlinger.increment();
     }
 
     /**
      * Increment the count for messages quarantined.
      */
     public void incrementQuarantineCount() {
-    quarantineBlinger.increment();
-    spamDetectedBlinger.increment();
-    emailReceivedBlinger.increment();
+        quarantineBlinger.increment();
+        spamDetectedBlinger.increment();
+        emailReceivedBlinger.increment();
     }
 
     /**
@@ -343,15 +343,15 @@ public class SpamImpl extends AbstractNode implements SpamNode
                                              SpamSMTPConfig.DEFAULT_SUPER_STRENGTH,
                                              true,
                                              "Scan SMTP e-mail",
-                                                         getDefaultSubjectWrapperTemplate(),
-                                                         getDefaultBodyWrapperTemplate(),
-                                                         getDefaultIndicatorHeaderName(),
-                                                         getDefaultIndicatorHeaderValue(true),
-                                                         getDefaultIndicatorHeaderValue(false),
-                                                         getDefaultNotifySubjectTemplate(),
-                                                         getDefaultNotifyBodyTemplate(),
-                                                         true,
-                                                         15));
+                                             getDefaultSubjectWrapperTemplate(),
+                                             getDefaultBodyWrapperTemplate(),
+                                             getDefaultIndicatorHeaderName(),
+                                             getDefaultIndicatorHeaderValue(true),
+                                             getDefaultIndicatorHeaderValue(false),
+                                             getDefaultNotifySubjectTemplate(),
+                                             getDefaultNotifyBodyTemplate(),
+                                             true,
+                                             15));
 
         tmpSpamSettings.getBaseSettings().
             setPopConfig(new SpamPOPConfig(true,

@@ -18,7 +18,6 @@
 
 package com.untangle.uvm.webui.jabsorb;
 
-import java.util.Map;
 
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -125,7 +124,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new ExtendedListSerializer());
                 b.registerSerializer(new ExtendedSetSerializer());
 
-                // firewal related serializers
+                // firewall related serializers
                 b.registerSerializer(new ProtocolMatcherSerializer());
                 b.registerSerializer(new IntfMatcherSerializer());
                 b.registerSerializer(new IPMatcherSerializer());

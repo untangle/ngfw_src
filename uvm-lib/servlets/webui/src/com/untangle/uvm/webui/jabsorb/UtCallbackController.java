@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.callback.CallbackController;
 
-import com.untangle.uvm.toolbox.MackageDesc;
 
 public class UtCallbackController extends CallbackController
 {
@@ -36,8 +35,8 @@ public class UtCallbackController extends CallbackController
     }
 
     @Override
-    public void preInvokeCallback(Object context, Object instance, Method method,
-                           Object[] arguments)
+    public void preInvokeCallback(Object context, Object instance,
+                                  Method method, Object[] arguments)
     {
     }
 

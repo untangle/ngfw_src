@@ -54,7 +54,8 @@ public interface RemoteToolboxManager
      */
     RackView getRackView(Policy p);
 
-    UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException;
+    UpgradeStatus getUpgradeStatus(boolean doUpdate)
+        throws MackageException, InterruptedException;
 
     /**
      * All known mackages.

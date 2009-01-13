@@ -145,7 +145,8 @@ public interface RemoteNodeManager
      * @exception DeployException if the instance cannot be created.
      * @exception NodeStartException if the instance cannot be started.
      */
-    NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException, NodeStartException;
+    NodeDesc instantiateAndStart(String nodeName, Policy p)
+        throws DeployException, NodeStartException;
 
     /**
      * Remove node instance from the pipeline.
