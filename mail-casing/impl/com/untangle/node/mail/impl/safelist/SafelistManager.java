@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -19,18 +19,19 @@ package com.untangle.node.mail.impl.safelist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressMapper;
+import com.untangle.node.mail.impl.quarantine.Quarantine;
 import com.untangle.node.mail.papi.MailNodeSettings;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
 import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 import com.untangle.node.mail.papi.safelist.SafelistAdminView;
@@ -42,6 +43,9 @@ import com.untangle.node.mail.papi.safelist.SafelistSender;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
 import com.untangle.uvm.util.TransactionWork;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 /**
  * Implementation of the safelist stuff
@@ -50,16 +54,20 @@ public class SafelistManager
     implements SafelistAdminView, SafelistEndUserView, SafelistNodeView
 {
     private final Logger m_logger = Logger.getLogger(SafelistManager.class);
+    private final Quarantine quarantine;
 
     private MailNodeImpl mlImpl;
     private MailNodeSettings mlSettings;
 
     // caches of values held by persistent hibernate mapping objects
-    private HashMap<String, ArrayList<String>> m_sndrsByRcpnt = new HashMap<String, ArrayList<String>>();
-    private HashMap<String, Pattern> m_allSndrs = new HashMap<String, Pattern>();
+    private Map<String, List<String>> m_sndrsByRcpnt = new HashMap<String, List<String>>();
+    private Map<String, Map<String, Pattern>> m_allSndrs = new HashMap<String, Map<String, Pattern>>();
     private Object allSndrsLock = new Object ();
 
-    public SafelistManager() {}
+    public SafelistManager(Quarantine quarantine)
+    {
+        this.quarantine = quarantine;
+    }
 
     /**
      * The Safelist manager "cheats" and lets the MailTranformImpl
@@ -71,7 +79,6 @@ public class SafelistManager
         this.mlSettings = mlSettings;
         // cast list because xdoclet does not support java 1.5
         renew((List<SafelistSettings>) mlSettings.getSafelistSettings());
-        return;
     }
 
     //-------------------- SafelistNodeView ------------------------
@@ -99,23 +106,37 @@ public class SafelistManager
 
         boolean bReturn = false;
 
-        synchronized (allSndrsLock) {
-            if (null != addrStr) {
-                if (true == m_allSndrs.containsKey(addrStr)) {
-                    m_logger.debug("literal match, sender: " + addrStr);
-                    bReturn = true;
-                } else { // is not a literal match so try limited regex match
-                    Pattern sndrPattern;
-                    Matcher sndrMatcher;
+        Set<String> urs = new HashSet<String>();
+        urs.add("GLOBAL");
+        for (EmailAddress r : recipients) {
+            try {
+                urs.add(quarantine.getUltimateRecipient(r.getAddress()));
+            } catch (QuarantineUserActionFailedException exn) {
+                m_logger.warn("could not get recipient", exn);
+            }
+        }
 
-                    for (Iterator iter = m_allSndrs.values().iterator();
-                         true == iter.hasNext(); ) {
-                        sndrPattern = (Pattern) iter.next();
-                        sndrMatcher = sndrPattern.matcher(addrStr);
-                        if (true == sndrMatcher.matches()) {
-                            m_logger.debug("pattern match: " + sndrPattern + ", sender: " + addrStr);
-                            bReturn = true;
-                            break;
+        if (null != addrStr) {
+            synchronized (allSndrsLock) {
+                for (String ur : urs) {
+                    Map<String, Pattern> m = m_allSndrs.get(ur);
+                    if (null == m) { continue; }
+                    if (true == m.containsKey(addrStr)) {
+                        m_logger.debug("literal match, sender: " + addrStr);
+                        bReturn = true;
+                    } else { // is not a literal match so try limited regex match
+                        Pattern sndrPattern;
+                        Matcher sndrMatcher;
+
+                        for (Iterator iter = m.values().iterator();
+                             true == iter.hasNext(); ) {
+                            sndrPattern = (Pattern) iter.next();
+                            sndrMatcher = sndrPattern.matcher(addrStr);
+                            if (true == sndrMatcher.matches()) {
+                                m_logger.debug("pattern match: " + sndrPattern + ", sender: " + addrStr);
+                                bReturn = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -133,7 +154,7 @@ public class SafelistManager
         throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", added: " + newSndr + " to safelist");
-        ArrayList<String> sndrs = getSndrs(rcpnt);
+        List<String> sndrs = getSndrs(rcpnt);
         newSndr = newSndr.toLowerCase();
         if (null == sndrs) {
             sndrs = createSL(rcpnt);
@@ -149,7 +170,7 @@ public class SafelistManager
         // else recipient is adding new sender
         sndrs.add(newSndr);
         synchronized (allSndrsLock) {
-            addSndr(m_allSndrs, newSndr);
+            addSndr(m_allSndrs, rcpnt, newSndr);
         }
 
         setSndrs(rcpnt, sndrs);
@@ -161,7 +182,7 @@ public class SafelistManager
         throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", removed: " + obsSndr + " from safelist");
-        ArrayList<String> sndrs = getSndrs(rcpnt);
+        List<String> sndrs = getSndrs(rcpnt);
         obsSndr = obsSndr.toLowerCase();
         if (null == sndrs) {
             return null;
@@ -178,17 +199,17 @@ public class SafelistManager
         // else recipient is removing sender
         sndrs.remove(obsSndr);
         synchronized (allSndrsLock) {
-            removeSndr(m_allSndrs, obsSndr);
+            removeSndr(m_allSndrs, rcpnt, obsSndr);
         }
 
         setSndrs(rcpnt, sndrs);
         return toStringArray(sndrs);
     }
-    
+
     public String[] removeFromSafelists(String rcpnt, String[] obsSndrs)
         throws NoSuchSafelistException, SafelistActionFailedException
     {
-        ArrayList<String> sndrs = getSndrs(rcpnt);
+        List<String> sndrs = getSndrs(rcpnt);
         if (null == sndrs) {
             return null;
             //throw new NoSuchSafelistException(rcpnt + " has no safelist; cannot remove " + obsSndr + " from safelist");
@@ -208,7 +229,7 @@ public class SafelistManager
                     // else recipient is removing sender
                     sndrs.remove(obsSndr);
                     synchronized (allSndrsLock) {
-                        removeSndr(m_allSndrs, obsSndr);
+                        removeSndr(m_allSndrs, rcpnt, obsSndr);
                     }
                 }
             }
@@ -217,14 +238,14 @@ public class SafelistManager
         }
         return toStringArray(sndrs);
     }
-    
+
 
     //See doc on SafelistManipulation.java
     public String[] replaceSafelist(String rcpnt, String...newSndrs)
         throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", replacing safelist");
-        ArrayList<String> sndrs = getSndrs(rcpnt);
+        List<String> sndrs = getSndrs(rcpnt);
         if (null == sndrs) {
             sndrs = createSL(rcpnt);
             //throw new NoSuchSafelistException(rcpnt + " has no safelist to replace");
@@ -240,7 +261,7 @@ public class SafelistManager
             for (String sndr : newSndrs) {
                 sndr = sndr.toLowerCase();
                 sndrs.add(sndr);
-                addSndr(m_allSndrs, sndr);
+                addSndr(m_allSndrs, rcpnt, sndr);
             }
         }
 
@@ -253,7 +274,7 @@ public class SafelistManager
         throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", getting safelist");
-        ArrayList<String> sndrs = getSndrs(rcpnt);
+        List<String> sndrs = getSndrs(rcpnt);
         if (null == sndrs) {
             sndrs = createSL(rcpnt);
             //throw new NoSuchSafelistException(rcpnt + " has no safelist; cannot get safelist");
@@ -267,7 +288,7 @@ public class SafelistManager
         throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", getting safelist cnt");
-        ArrayList<String> sndrs = getSndrs(rcpnt);
+        List<String> sndrs = getSndrs(rcpnt);
         if (null == sndrs) {
             return 0;
             //throw new NoSuchSafelistException(rcpnt + " has no safelist; cannot get safelist cnt");
@@ -309,7 +330,7 @@ public class SafelistManager
         renew((List<SafelistSettings>) mlSettings.getSafelistSettings());
         return;
     }
-    
+
     public void deleteSafelists(String[] rcpnts)
         throws SafelistActionFailedException
     {
@@ -343,7 +364,7 @@ public class SafelistManager
         List<String> safelists = listSafelists();
         List<SafelistCount> safelistCounts = new ArrayList<SafelistCount>(safelists.size());
         for(String account : safelists){
-            
+
             if (account.equalsIgnoreCase("GLOBAL")) {
                 // ignnore GLOBAL safelist for admin
                 continue;
@@ -357,7 +378,7 @@ public class SafelistManager
 
     // refresh (add/delete/update) safelists for this recipient and
     // make these changes visible as persistent hibernate mapping objects
-    private synchronized void setSndrs(String rcpnt, ArrayList<String> sndrs)
+    private synchronized void setSndrs(String rcpnt, List<String> sndrs)
     {
         if (null == rcpnt) {
             m_logger.debug("refreshing all safelists");
@@ -400,11 +421,11 @@ public class SafelistManager
             rcpntHMSafelists.add(safelist); // cache safelist for recipient
         }
 
-        ArrayList<SafelistSettings> newSafelists = new ArrayList<SafelistSettings>(safelists.size());
-        ArrayList<String> curRcpnts = new ArrayList<String>(m_sndrsByRcpnt.keySet());
+        List<SafelistSettings> newSafelists = new ArrayList<SafelistSettings>(safelists.size());
+        List<String> curRcpnts = new ArrayList<String>(m_sndrsByRcpnt.keySet());
 
         SafelistSettings newSafelist;
-        ArrayList<String> curSndrs;
+        List<String> curSndrs;
 
         // update/add/remove safelists for current recipients
         for (String curRcpnt : curRcpnts) {
@@ -526,12 +547,12 @@ public class SafelistManager
     }
 
     // get (refresh) safelists for this recipient
-    private ArrayList<String> getSndrs(String rcpnt)
+    private List<String> getSndrs(String rcpnt)
     {
         return getSndrs(getHMSafelists(), rcpnt);
     }
 
-    private ArrayList<String> getSndrs(List<SafelistSettings> safelists, String rcpnt)
+    private List<String> getSndrs(List<SafelistSettings> safelists, String rcpnt)
     {
         return renewGetSndrs(safelists, rcpnt);
     }
@@ -560,12 +581,12 @@ public class SafelistManager
     {
         m_logger.debug("reading all safelists");
 
-        HashMap<String, ArrayList<String>> sndrsByRcpnt = new HashMap<String, ArrayList<String>>();
-        HashMap<String, Pattern> allSndrs = new HashMap<String, Pattern>();
+        Map<String, List<String>> sndrsByRcpnt = new HashMap<String, List<String>>();
+        Map<String, Map<String, Pattern>> allSndrs = new HashMap<String, Map<String, Pattern>>();
 
         SafelistRecipient slRcpnt;
         SafelistSender slSndr;
-        ArrayList<String> sndrs;
+        List<String> sndrs;
         String rcpnt;
         String sndr;
 
@@ -579,7 +600,7 @@ public class SafelistManager
 
             //m_logger.debug("using safelist: " + safelist + ", recipient: " + rcpnt + ", sender: " + sndr);
 
-            addSndr(allSndrs, sndr);
+            addSndr(allSndrs, rcpnt, sndr);
 
             sndrs = sndrsByRcpnt.get(rcpnt);
             if (null == sndrs) {
@@ -609,34 +630,44 @@ public class SafelistManager
     }
 
     // add/replace sndr - assumes sndr is already in lower-case format
-    private void addSndr(HashMap<String, Pattern> sndrs, String sndr)
+    private void addSndr(Map<String, Map<String, Pattern>> sndrs, String rcpnt, String sndr)
     {
         String sndrTmp = GlobEmailAddressMapper.fixupWildcardAddress(sndr);
         Pattern sndrPattern = Pattern.compile(sndrTmp);
 
+        Map<String, Pattern> m = sndrs.get(rcpnt);
+        if (null == m) {
+            m = new HashMap<String, Pattern>();
+            sndrs.put(rcpnt, m);
+        }
+
         // we implicitly ignore duplicates w/ HashSet
-        sndrs.put(sndr, sndrPattern);
-        return;
+        m.put(sndr, sndrPattern);
     }
 
     // remove sndr - assumes sndr is already in lower-case format
-    private Pattern removeSndr(HashMap<String, Pattern> sndrs, String sndr)
+    private Pattern removeSndr(Map<String, Map<String, Pattern>> sndrs, String rcpnt, String sndr)
     {
-        return (Pattern) sndrs.remove(sndr);
+        Map m = sndrs.get(rcpnt);
+        if (null == m) {
+            return null;
+        } else {
+            return (Pattern)m.remove(sndr);
+        }
     }
 
-    private ArrayList<String> renewGetSndrs(List<SafelistSettings> safelists, String rcpnt)
+    private List<String> renewGetSndrs(List<SafelistSettings> safelists, String rcpnt)
     {
         renew(safelists);
         // if null, recipient has no safelist
         return (m_sndrsByRcpnt.get(rcpnt.toLowerCase()));
     }
 
-    private ArrayList<String> createSL(String rcpnt)
+    private List<String> createSL(String rcpnt)
         throws SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", created safelist");
-        ArrayList<String> sndrs = getSndrs(rcpnt);
+        List<String> sndrs = getSndrs(rcpnt);
         if (null == sndrs) {
             sndrs = new ArrayList<String>();
             m_sndrsByRcpnt.put(rcpnt, sndrs);
@@ -648,8 +679,8 @@ public class SafelistManager
     }
 
     // return references to list contents for private use
-    private String[] toStringArray(ArrayList<String> strs)
+    private String[] toStringArray(List<String> strs)
     {
-        return (String[]) strs.toArray(new String[strs.size()]);
+        return (String[])strs.toArray(new String[strs.size()]);
     }
 }

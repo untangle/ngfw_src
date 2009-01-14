@@ -121,7 +121,7 @@ public class MailNodeImpl extends AbstractNode
             s_quarantine = new Quarantine();
         }
         if(s_safelistMngr == null) {
-            s_safelistMngr = new SafelistManager();
+            s_safelistMngr = new SafelistManager(s_quarantine);
         }
     }
 
@@ -201,7 +201,7 @@ public class MailNodeImpl extends AbstractNode
         settings.setSafelistSettings(this.settings.getSafelistSettings());
         setMailNodeSettings(settings);
     }
-    
+
     public QuarantineUserView getQuarantineUserView() {
         return m_quv;
     }
@@ -301,7 +301,7 @@ public class MailNodeImpl extends AbstractNode
                         settings.setSmtpTimeout(1000*60*4);
                         settings.setPopTimeout(1000*30);
                         settings.setImapTimeout(1000*30);
-			settings.setSmtpAllowTLS(false);
+            settings.setSmtpAllowTLS(false);
                         shouldSave = true;
                     }
 
@@ -480,7 +480,7 @@ public class MailNodeImpl extends AbstractNode
                 QuarantineUserActionFailedException {
             return s_quarantine.getInboxTotalRecords(account);
         }
-        
+
         public String getFormattedInboxesTotalSize(boolean inMB) {
             return s_quarantine.getFormattedInboxesTotalSize(inMB);
         }
@@ -494,7 +494,7 @@ public class MailNodeImpl extends AbstractNode
             throws NoSuchInboxException, QuarantineUserActionFailedException {
             s_quarantine.deleteInbox(account);
         }
-        
+
         public void deleteInboxes(String[] accounts)
             throws NoSuchInboxException, QuarantineUserActionFailedException {
             s_quarantine.deleteInboxes(accounts);
@@ -504,7 +504,7 @@ public class MailNodeImpl extends AbstractNode
             throws NoSuchInboxException, QuarantineUserActionFailedException {
             s_quarantine.rescueInbox(account);
         }
-        
+
         public void rescueInboxes(String[] accounts)
             throws NoSuchInboxException, QuarantineUserActionFailedException {
             s_quarantine.rescueInboxes(accounts);
@@ -548,7 +548,7 @@ public class MailNodeImpl extends AbstractNode
             throws NoSuchSafelistException, SafelistActionFailedException {
             return s_safelistMngr.removeFromSafelist(safelistOwnerAddress, toRemove);
         }
-        
+
         public String[] removeFromSafelists(String safelistOwnerAddress,
                             String[] toRemove)
             throws NoSuchSafelistException, SafelistActionFailedException {
@@ -597,7 +597,7 @@ public class MailNodeImpl extends AbstractNode
             throws SafelistActionFailedException {
             s_safelistMngr.deleteSafelist(safelistOwnerAddress);
         }
-        
+
         public void deleteSafelists(String[] safelistOwnerAddresses)
             throws SafelistActionFailedException {
             s_safelistMngr.deleteSafelists(safelistOwnerAddresses);

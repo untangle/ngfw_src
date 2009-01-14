@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -27,8 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressList;
@@ -64,6 +62,7 @@ import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.util.I18nUtil;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -89,7 +88,7 @@ public class Quarantine
     private static final InboxComparator.SortBy DEFAULT_I_SORT_COLUMN = InboxComparator.SortBy.ADDRESS;
 
     private static final Map<String, InboxRecordComparator.SortBy> NAME_TO_IR_SORT_BY;
-    private static final InboxRecordComparator.SortBy DEFAULT_IR_SORT_COLUMN = 
+    private static final InboxRecordComparator.SortBy DEFAULT_IR_SORT_COLUMN =
         InboxRecordComparator.SortBy.INTERN_DATE;
 
 
@@ -454,7 +453,7 @@ public class Quarantine
         }
         rescue(account, ids);
     }
-    
+
     public void rescueInboxes(String[] accounts)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
         if (accounts != null && accounts.length > 0) {
@@ -463,7 +462,7 @@ public class Quarantine
             }
         }
     }
-    
+
     public InboxIndex getInboxIndex(String account)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
 
@@ -485,7 +484,7 @@ public class Quarantine
 
         InboxComparator.SortBy sortBy = NAME_TO_I_SORT_BY.get( sortColumn );
         if ( sortBy == null ) sortBy = DEFAULT_I_SORT_COLUMN;
-        
+
         return InboxArray.getInboxArray( inboxList.toArray( new Inbox[inboxList.size()] ), sortBy,
                                          start, limit, isAscending );
     }
@@ -495,7 +494,7 @@ public class Quarantine
         throws NoSuchInboxException, QuarantineUserActionFailedException
     {
         Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result = m_store.getIndex(account);
-        
+
         checkAndThrowCommonErrors(result.a, account);
 
         InboxRecordComparator.SortBy sortBy = NAME_TO_IR_SORT_BY.get( sortColumn );
@@ -503,12 +502,12 @@ public class Quarantine
 
         InboxIndex index = result.b;
 
-        InboxRecordCursor cursor = 
+        InboxRecordCursor cursor =
             InboxRecordCursor.get( index.getAllRecords(), sortBy, isAscending, start, limit );
-        
+
         return new InboxRecordArray( cursor.getRecords(), index.size());
     }
-    
+
     public InboxRecordArray getInboxRecordArray(String account )
             throws NoSuchInboxException, QuarantineUserActionFailedException {
         Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result = m_store
@@ -523,7 +522,7 @@ public class Quarantine
 
     public List<InboxRecord> getInboxRecords( String account, int start, int limit, String... sortColumns)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
-        
+
         String sortColumn = null;
         boolean isAscending = true;
         if (0 < sortColumns.length) {
@@ -538,16 +537,16 @@ public class Quarantine
                 isAscending = true;
             }
         }
-        
+
         InboxRecordArray inboxRecordArray = getInboxRecordArray(account, start, limit, sortColumn, isAscending);
         return Arrays.asList(inboxRecordArray.getInboxRecords());
     }
-    
+
     public int getInboxTotalRecords( String account)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
         return getInboxRecordArray(account).getTotalRecords();
     }
-    
+
     public void test() {
         //Do nothing.
     }
@@ -635,9 +634,9 @@ public class Quarantine
             m_logger.warn( "empty from or to string." );
             return;
         }
-        
+
         GlobEmailAddressMapper currentMapper = null;
-        
+
         /* Remove the current map if one exists. */
         String existingMapping = m_addressAliases.getAddressMapping(from);
         if(existingMapping != null) {
@@ -645,7 +644,7 @@ public class Quarantine
         }
 
         if (currentMapper == null) currentMapper = m_addressAliases;
-        
+
         //Create a new List
         List<Pair<String, String>> mappings = currentMapper.getRawMappings();
         mappings.add(0, new Pair<String, String>(from, to));
@@ -700,10 +699,26 @@ public class Quarantine
     }
 
     public String getMappedTo(String account)
-        throws QuarantineUserActionFailedException {
-
+        throws QuarantineUserActionFailedException
+    {
         return m_addressAliases.getAddressMapping(account);
 
+    }
+
+    public String getUltimateRecipient(String address)
+        throws QuarantineUserActionFailedException
+    {
+        String r = address;
+
+        String s;
+        do {
+            s = getMappedTo(r);
+            if (null != s) {
+                r = s;
+            }
+        } while (s != null);
+
+        return r;
     }
 
     public String[] getMappedFrom(String account)
@@ -723,19 +738,19 @@ public class Quarantine
         Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String internalHost = getInternalIPAsString();
-        
+
         if(internalHost == null) {
             m_logger.warn("Unable to determine internal interface");
             return false;
         }
         String[] recipients = {account};
-        String subject = i18nUtil.tr("Quarantine Digest"); 
-        
+        String subject = i18nUtil.tr("Quarantine Digest");
+
         String bodyHtml = m_digestGenerator.generateMsgBody(internalHost, account, m_atm, i18nUtil);
-        
+
         // Attempt the send
         boolean ret = LocalUvmContextFactory.context().mailSender().sendHtmlMessage(recipients, subject, bodyHtml);
-        
+
         return ret;
     }
 
