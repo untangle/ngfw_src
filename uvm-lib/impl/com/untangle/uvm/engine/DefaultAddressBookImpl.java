@@ -74,8 +74,8 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
                     settings.setAddressBookConfiguration(AddressBookConfiguration.LOCAL_ONLY);
                     settings.setADRepositorySettings(new RepositorySettings("Administrator",
                                                                             "mypassword",
-                                                                            "mydomain",
-                                                                            "ad_server",
+                                                                            "mydomain.int",
+                                                                            "ad_server.mydomain.int",
                                                                             389));
                     s.save(settings);
                 }
