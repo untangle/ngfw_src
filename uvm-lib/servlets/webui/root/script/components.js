@@ -3179,8 +3179,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     sortField : null,
     // the columns are sortable by default, if sortable is not specified
     columnsDefaultSortable : null,
-    // force paginate, even if the totalRecords is smaller than minPaginateCount
-    forcePaginate : false,
     // paginate the grid by default
     paginated: true,
     // javaClass of the record, used in save function to create correct json-rpc
@@ -3394,7 +3392,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     // is grid paginated
     isPaginated : function() {
-        return this.forcePaginate || (this.totalRecords != null && this.totalRecords >= this.minPaginateCount)
+        return  this.paginated && (this.totalRecords != null && this.totalRecords >= this.minPaginateCount)
     },
     clearChangedData : function () {
         this.changedData = {};
