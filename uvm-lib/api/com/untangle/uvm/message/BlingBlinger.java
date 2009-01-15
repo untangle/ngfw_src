@@ -43,8 +43,8 @@ public class BlingBlinger implements CounterStats, Serializable
     private Date now = new Date();
     private Date lastUpdate = new Date();
 
-    private volatile int count = 0;
-    private volatile int countSinceMidnight = 0;
+    private volatile long count = 0;
+    private volatile long countSinceMidnight = 0;
 
     public BlingBlinger(String name, String displayName, String unit,
                         String action, boolean displayable)
