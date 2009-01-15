@@ -38,7 +38,6 @@ Ung.Main=Ext.extend(Object, {
                 return true;
             }
         }
-        Ung.Util.maximize();
         this.firstTimeRun=Ung.Util.getQueryStringParam("firstTimeRun");
         this.appsLastState={};
         this.nodePreviews={};
