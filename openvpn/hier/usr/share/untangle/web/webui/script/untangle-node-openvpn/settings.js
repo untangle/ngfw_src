@@ -660,22 +660,22 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }],
                 columns : [{
                     header : this.i18n._("start time"),
-                    width : 100,
+                    width : 130,
                     sortable : true,
                     dataIndex : 'start',
                     renderer : function(value) {
-                        return i18n.dateFormat(value);
+                        return i18n.timestampFormat(value);
                     }.createDelegate( this )
                 }, {
                     header : this.i18n._("end time"),
-                    width : 100,
+                    width : 130,
                     sortable : true,
                     dataIndex : 'end',
                     renderer : function(value) {
                         if (( value == null ) || ( value.time == 0 )) {
                             return this.i18n._( "active connection" );
                         }
-                        return i18n.dateFormat(value);
+                        return i18n.timestampFormat(value);
                     }.createDelegate( this )
                 }, {
                     id: 'client_name',
