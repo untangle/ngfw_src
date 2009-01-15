@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -646,8 +646,7 @@ public abstract class BufferingSessionHandler
 
                         //Send REST to server (ignore result)
                         m_txLog.add("Send synthetic RSET to server (ignoring the response)");
-                        actions.sendCommandToServer(
-                                                    new Command(Command.CommandType.RSET),
+                        actions.sendCommandToServer(new Command(Command.CommandType.RSET),
                                                     new NoopResponseCompletion());
 
                         changeState(BufTxState.DONE);

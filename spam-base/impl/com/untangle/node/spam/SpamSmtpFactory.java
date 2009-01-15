@@ -60,11 +60,11 @@ public class SpamSmtpFactory implements TokenHandlerFactory
 
         MailNodeSettings casingSettings = m_mailExport.getExportSettings();
         long timeout = casingSettings.getSmtpTimeout();
-	boolean allowTLS = casingSettings.getSmtpAllowTLS();
+        boolean allowTLS = casingSettings.getSmtpAllowTLS();
         return new Session(session,
                            new SmtpSessionHandler(session, timeout, timeout, m_spamImpl,
                                                   spamConfig, m_quarantine, m_safelist),
-			   allowTLS);
+                           allowTLS);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

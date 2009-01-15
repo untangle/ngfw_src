@@ -23,6 +23,10 @@ import static com.untangle.node.util.Ascii.*;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.node.mime.HeaderParseException;
+import com.untangle.node.mime.LCString;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEMessageHeaders;
 import com.untangle.node.token.header.IllegalFieldException;
 import com.untangle.uvm.node.TemplateValues;
 import org.apache.log4j.Logger;
@@ -151,6 +155,42 @@ public class SpamReport
     public float getScore()
     {
         return score;
+    }
+
+    public void addHeaders(MIMEMessage msg)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        if (isSpam()) {
+            sb.append("Yes, ");
+        } else {
+            sb.append("No, ");
+        }
+
+        sb.append("score=");
+        sb.append(score / 10.0f);
+        sb.append(" required=");
+        sb.append(threshold / 10.0f);
+
+        sb.append(" tests=");
+
+        boolean first = true;
+        for (ReportItem item : items) {
+            if (!first) {
+                sb.append(",");
+            } else {
+                first = false;
+            }
+            sb.append(item.getCategory());
+        }
+
+        MIMEMessageHeaders mmh = msg.getMMHeaders();
+        mmh.removeHeaderFields(new LCString("X-spam-status"));
+        try {
+        mmh.addHeaderField("X-spam-status", sb.toString());
+        } catch (HeaderParseException exn) {
+            logger.warn("could not add header: " + sb.toString(), exn);
+        }
     }
 
     // accessors --------------------------------------------------------------
