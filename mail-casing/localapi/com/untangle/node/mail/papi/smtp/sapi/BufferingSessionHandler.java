@@ -45,45 +45,46 @@ import com.untangle.node.token.Token;
 import org.apache.log4j.Logger;
 
 /**
- * Subclass of SessionHandler which yet-again simplifies
- * consumption of an SMTP stream.  This class was created
- * for Nodes wishing only to see "a whole mail".
+ * Subclass of SessionHandler which yet-again simplifies consumption
+ * of an SMTP stream.  This class was created for Nodes wishing only
+ * to see "a whole mail".
  * <br><br>
- * This class <i>buffers</i> mails, meaning it does not
- * pass each MIME chunk to the server.  Instead, it attempts
- * to collect them into a file and present them to
- * the {@link #blockPassOrModify blockPassOrModify} method
- * for evaluation.
+ * This class <i>buffers</i> mails, meaning it does not pass each MIME
+ * chunk to the server.  Instead, it attempts to collect them into a
+ * file and present them to the {@link #blockPassOrModify
+ * blockPassOrModify} method for evaluation.
  * <br><br>
- * There are two cases when the {@link #blockPassOrModify blockPassOrModify}
- * method will not be called for a given mail (except for when
- * a given transaction is aborted, but the subclass does not even
- * see such aborts).  The first is if the subclass is only interested
- * in mails {@link #getGiveupSz below a certain size}.  This size is declared
- * by implementing the {@link #getGiveupSz getGiveupSz()} method.
+ * There are two cases when the {@link #blockPassOrModify
+ * blockPassOrModify} method will not be called for a given mail
+ * (except for when a given transaction is aborted, but the subclass
+ * does not even see such aborts).  The first is if the subclass is
+ * only interested in mails {@link #getGiveupSz below a certain size}.
+ * This size is declared by implementing the {@link #getGiveupSz
+ * getGiveupSz()} method.
  * <br><br>
- * The second case which prevents {@link #blockPassOrModify blockPassOrModify()} from being
- * called is when this handler has begun to <i>trickle</i>.  Trickling is
- * the state in which the BufferingSessionHandler passes MIME chunks
- * to the server as they arrive.  Tricking is initiated after the
- * BufferingSessionHandler determines either the client or server is
- * in danger of timing-out.  The timeout time is set by the subclass
- * via the {@link #getMaxClientWait getMaxClientWait()} and
- * {@link #getMaxServerWait getMaxServerWait()} methods.
+ * The second case which prevents {@link #blockPassOrModify
+ * blockPassOrModify()} from being called is when this handler has
+ * begun to <i>trickle</i>.  Trickling is the state in which the
+ * BufferingSessionHandler passes MIME chunks to the server as they
+ * arrive.  Tricking is initiated after the BufferingSessionHandler
+ * determines either the client or server is in danger of timing-out.
+ * The timeout time is set by the subclass via the {@link
+ * #getMaxClientWait getMaxClientWait()} and {@link #getMaxServerWait
+ * getMaxServerWait()} methods.
  * <br><br>
  * When timeout occurs, the BufferingSessionHandler can enter one of
- * two states.  It can <i>giveup-then-trickle</i>, meaning no evaluation
- * will take place.  Alternatly, it can enter <i>buffer-and-trickle</i>
- * meaning it will continue to buffer while bytes are sent to the
- * server.  Which state is entered after timeout is determined by
- * the subclass' return of the {@link #isBufferAndTrickle isBufferAndTrickle()}
- * method.
+ * two states.  It can <i>giveup-then-trickle</i>, meaning no
+ * evaluation will take place.  Alternatly, it can enter
+ * <i>buffer-and-trickle</i> meaning it will continue to buffer while
+ * bytes are sent to the server.  Which state is entered after timeout
+ * is determined by the subclass' return of the {@link
+ * #isBufferAndTrickle isBufferAndTrickle()} method.
  * <br><br>
- * If <i>buffer-and-trickle</i> is selected, the method
- * {@link #blockOrPass blockOrPass()} will be invoked once the whole
- * mail is observed.  Note that modification of the MIME message
- * is forbidden in the {@link #blockOrPass blockOrPass()} callback,
- * as it is too late to modify the message.
+ * If <i>buffer-and-trickle</i> is selected, the method {@link
+ * #blockOrPass blockOrPass()} will be invoked once the whole mail is
+ * observed.  Note that modification of the MIME message is forbidden
+ * in the {@link #blockOrPass blockOrPass()} callback, as it is too
+ * late to modify the message.
  */
 public abstract class BufferingSessionHandler
     extends SessionHandler {
@@ -103,7 +104,8 @@ public abstract class BufferingSessionHandler
      */
     public enum BlockOrPassResult {
         BLOCK,
-        PASS
+        PASS,
+        TEMPORARILY_REJECT
     };
 
 
@@ -112,10 +114,14 @@ public abstract class BufferingSessionHandler
      */
     public static final class BPMEvaluationResult {
         private MIMEMessage m_newMsg;
-        private final boolean m_block;
-        private BPMEvaluationResult(boolean block) {
-            m_block = block;
+        private final BlockOrPassResult action;
+
+
+        private BPMEvaluationResult(BlockOrPassResult action)
+        {
+            this.action = action;
         }
+
         /**
          * Constrctor used to create a result
          * indicating that the message has been
@@ -123,15 +129,23 @@ public abstract class BufferingSessionHandler
          * a block.
          */
         public BPMEvaluationResult(MIMEMessage newMsg) {
-            m_block = false;
+            action = BlockOrPassResult.PASS;
             m_newMsg = newMsg;
         }
+
         public boolean isBlock() {
-            return m_block;
+            return action == BlockOrPassResult.BLOCK;
         }
+
+        public BlockOrPassResult getAction()
+        {
+            return action;
+        }
+
         public boolean messageModified() {
             return m_newMsg != null;
         }
+
         public MIMEMessage getMessage() {
             return m_newMsg;
         }
@@ -139,11 +153,13 @@ public abstract class BufferingSessionHandler
     /**
      * Result from {@link #blockPassOrModify blockPassOrModify} indicating block message
      */
-    public static BPMEvaluationResult BLOCK_MESSAGE = new BPMEvaluationResult(true);
+    public static BPMEvaluationResult BLOCK_MESSAGE = new BPMEvaluationResult(BlockOrPassResult.BLOCK);
     /**
      * Result from {@link #blockPassOrModify blockPassOrModify} indicating pass message
      */
-    public static BPMEvaluationResult PASS_MESSAGE = new BPMEvaluationResult(false);
+    public static BPMEvaluationResult PASS_MESSAGE = new BPMEvaluationResult(BlockOrPassResult.PASS);
+
+    public static BPMEvaluationResult TEMPORARILY_REJECT = new BPMEvaluationResult(BlockOrPassResult.TEMPORARILY_REJECT);
 
     private final Logger m_logger = Logger.getLogger(BufferingSessionHandler.class);
 
@@ -620,7 +636,10 @@ public abstract class BufferingSessionHandler
                     if(continuedToken != null) {
                         appendChunk(continuedToken);
                     }
-                    if(evaluateMessage(true)) {//BEGIN Not Blocking
+
+                    BlockOrPassResult action = evaluateMessage(true);
+                    switch (action) {
+                    case PASS:
                         m_txLog.add("Message passed evaluation");
                         //We're passing the message (or there was a silent parser error)
 
@@ -634,8 +653,9 @@ public abstract class BufferingSessionHandler
 
                         changeState(BufTxState.BUFFERED_DATA_SENT);//TODO bscott Useless state.
                         //It only ever gets callback and does some reporting
-                    }//ENDOF Not Blocking
-                    else {//BEGIN Blocking Message
+
+                        break;
+                    case BLOCK:
                         //TODO bscott is it safe to nuke the accumulator and/or message
                         //     here, or do we wait for the callback?
                         //We're blocking the message
@@ -653,9 +673,31 @@ public abstract class BufferingSessionHandler
                         actions.transactionEnded(this);
                         getTransaction().reset();
                         finalReport();
-                    }//ENDOF Blocking Message
-                }
-                else {
+
+                        break;
+                    case TEMPORARILY_REJECT:
+                        //We're blocking the message
+                        m_txLog.add("Message temporarily rejected");
+                        //Send a fake 451 to client
+                        m_txLog.add("Enqueue synthetic 451 to client");
+                        actions.appendSyntheticResponse(new FixedSyntheticResponse(451, "Please try again later"));
+
+                        //Send REST to server (ignore result)
+                        m_txLog.add("Send synthetic RSET to server (ignoring the response)");
+                        actions.sendCommandToServer(new Command(Command.CommandType.RSET),
+                                                    new NoopResponseCompletion());
+
+                        changeState(BufTxState.DONE);
+                        actions.transactionEnded(this);
+                        getTransaction().reset();
+                        finalReport();
+
+                        break;
+                    default:
+                        m_logger.warn("unhandled action: " + action);
+                        break;
+                    }
+                } else {
                     m_txLog.add("Not last MIME chunk, append to the file");
                     appendChunk(continuedToken);
                     //We go down one of three branches
@@ -752,12 +794,15 @@ public abstract class BufferingSessionHandler
                 appendChunk(continuedToken);
                 if(isLast) {
                     m_txLog.add("Trickle and buffer.  Whole message obtained.  Evaluate");
-                    if(evaluateMessage(false)) {
+                    BlockOrPassResult action = evaluateMessage(false);
+
+                    switch (action) {
+                    case PASS:
                         m_txLog.add("Evaluation passed");
                         actions.sendFinalMIMEToServer(continuedToken,
                                                       new MailTransmissionContinuation());
-                    }
-                    else {
+                        break;
+                    case BLOCK:
                         //Block, the hard way...
                         m_txLog.add("Evaluation failed.  Send a \"fake\" 250 to client then shutdown server");
                         actions.appendSyntheticResponse(new FixedSyntheticResponse(250, "OK"));
@@ -766,11 +811,26 @@ public abstract class BufferingSessionHandler
                         //sends an ACK to the FIN (which Exim seems to do!?!)
                         actions.sendFINToServer(new NoopResponseCompletion());
                         m_txLog.add("Replace SessionHandler with shutdown dummy");
-                        getSession().setSessionHandler(
-                                                       new ShuttingDownSessionHandler(1000*60));//TODO bscott a real timeout value
+                        getSession().setSessionHandler(new ShuttingDownSessionHandler(1000*60));//TODO bscott a real timeout value
+
+                        break;
+                    case TEMPORARILY_REJECT:
+                        //Block, the hard way...
+                        m_txLog.add("Evaluation failed.  Send a \"fake\" 451 to client then shutdown server");
+                        actions.appendSyntheticResponse(new FixedSyntheticResponse(451, "Please try again later"));
+                        actions.transactionEnded(this);
+                        //Put a Response handler here, in case the goofy server
+                        //sends an ACK to the FIN (which Exim seems to do!?!)
+                        actions.sendFINToServer(new NoopResponseCompletion());
+                        m_txLog.add("Replace SessionHandler with shutdown dummy");
+                        getSession().setSessionHandler(new ShuttingDownSessionHandler(1000*60));//TODO bscott a real timeout value
+
+                        break;
+                    default:
+                        m_logger.warn("unhandled action: " + action);
+                        break;
                     }
-                }
-                else {
+                } else {
                     actions.sendContinuedMIMEToServer(continuedToken);
                 }
                 break;
@@ -841,39 +901,34 @@ public abstract class BufferingSessionHandler
         }
 
         /**
-         * Returns true if we should pass.  If there is a parsing
-         * error, this also returns true.  If the message
+         * Returns PASS if we should pass.  If there is a parsing
+         * error, this also returns PASS.  If the message
          * was changed, it'll just be picked-up implicitly.
          */
-        private boolean evaluateMessage(boolean canModify) {
-            if(m_msg == null) {
+        private BlockOrPassResult evaluateMessage(boolean canModify) {
+            if (m_msg == null) {
                 m_msg = m_accumulator.parseBody();
                 m_accumulator.closeInput();
                 if(m_msg == null) {
                     m_txLog.add("Parse error on MIME.  Assume it passed scanning");
-                    return true;
+                    return BlockOrPassResult.PASS;
                 }
             }
-            if(canModify) {
+            if (canModify) {
                 BPMEvaluationResult result = callBlockPassOrModify(m_msg,
                                                                    getTransaction(),
                                                                    m_messageInfo);
                 if(result.messageModified()) {
                     m_txLog.add("Evaluation modified MIME message");
                     m_msg = result.getMessage();
-                    return true;
+                    return BlockOrPassResult.PASS;
+                } else {
+                    return result.getAction();
                 }
-                else {
-                    return !result.isBlock();
-                }
-            }
-            else {
-                return callBlockOrPass(m_msg, getTransaction(), m_messageInfo) == BlockOrPassResult.PASS;
+            } else {
+                return callBlockOrPass(m_msg, getTransaction(), m_messageInfo);
             }
         }
-
-
-
 
         //==========================
         // Inner-Inner-Classes

@@ -145,7 +145,7 @@ public class SmtpSessionHandler
                 m_logger.error("Error scanning message. Failing closed");
                 postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.BLOCK);
                 m_spamImpl.incrementBlockCount();
-                return BLOCK_MESSAGE;
+                return TEMPORARILY_REJECT;
             } else {
                 m_logger.error("Error scanning message. Failing open");
                 postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
@@ -274,7 +274,7 @@ public class SmtpSessionHandler
                 m_logger.error("Error scanning message. Failing closed");
                 postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.BLOCK);
                 m_spamImpl.incrementBlockCount();
-                return BlockOrPassResult.BLOCK;
+                return BlockOrPassResult.TEMPORARILY_REJECT;
             } else {
                 m_logger.error("Error scanning message. Failing open");
                 postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
@@ -467,8 +467,7 @@ public class SmtpSessionHandler
             (EmailAddress[]) addrList.toArray(new EmailAddress[addrList.size()]);
 
         return m_quarantine.quarantineMail(file,
-                                           new MailSummary(
-                                                           msg.getMMHeaders().getFrom()==null?
+                                           new MailSummary(msg.getMMHeaders().getFrom()==null?
                                                            (tx.getFrom()==null?
                                                             "<>":
                                                             tx.getFrom().getAddress()):
