@@ -70,7 +70,8 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
         + "/timezone";
     private static final String REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
         + "/registration.info";
-
+    private static final String BRAND_INFO_FILE = "/usr/share/untangle/tmp/brand";
+    
     private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
 
     private final UvmContextImpl uvmContext;
@@ -280,6 +281,8 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
             writer.write(uvmContext.getPopID());
             writer.write("&version=");
             writer.write(uvmContext.version());
+            writer.write("&brand=");
+            writer.write(this.getBrandNonce());
             writer.write("&");
             writer.write(info.toForm());
             writer.write("\n");
@@ -338,6 +341,36 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
         }
     }
 
+    private String getBrandNonce()
+    {
+        BufferedReader stream = null;
+        String brand = "xxxxxx";
+        try {
+            stream = new BufferedReader(new FileReader(BRAND_INFO_FILE));
+
+            brand = stream.readLine();
+            if (brand.length() < 6) {
+                logger.warn("Invalid brand in the file ["
+                            + BRAND_INFO_FILE + "]: ', " +
+                            brand + "'");
+                return "xxxxxx";
+            }
+            brand = brand.substring(0,6);
+            
+            return brand;
+        } catch (Exception exn) {
+            logger.warn("could not get brand", exn);
+            return "xxxxxx";
+        } finally {
+            try {
+                if (stream != null) stream.close();
+            } catch (IOException e) {
+                logger.warn("Unable to close brand file: "
+                            + BRAND_INFO_FILE, e);
+            }
+        }
+    }
+    
     public static String getFullVersionAndRevision()
     {
 	try {
