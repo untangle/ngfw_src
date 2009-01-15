@@ -39,15 +39,14 @@ if [ ! -f $ACTIVATION_KEY_FILE -o ! -f $POPID_FILE ]; then
 fi
 
 POPID=`cat $POPID_FILE`
+
 # This next will fail if testing on development machines, which is "a good thing"
-if [ -f "$SOURCES_LIST" ] ; then
-  # add untangle sources to sources.list; remove the old ones
-  echo "Installing sources list"
-  touch $SOURCES_LIST
-  perl -i -pe 's/.*untangle\.com.*//' $SOURCES_LIST
-  echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$POPID/" >> $SOURCES_LIST
-  nohup apt-get update >& /dev/null &
-fi
+# add untangle sources to sources.list; remove the old ones
+echo "Installing sources list"
+touch $SOURCES_LIST
+perl -i -pe 's/.*untangle\.com.*//' $SOURCES_LIST
+echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$KEY_TEMPLATE/$POPID/" >> $SOURCES_LIST
+nohup apt-get update >& /dev/null &
 
 @UVM_HOME@/bin/utregister
 
