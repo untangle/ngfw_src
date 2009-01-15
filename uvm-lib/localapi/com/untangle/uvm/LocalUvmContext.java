@@ -236,6 +236,14 @@ public interface LocalUvmContext
      */
     void usbBackup() throws IOException;
 
+    /**
+     * Once settings have been restored, and the UVM has been booted, call
+     * into here to get the corresponding OS files rewritten.  This calls through
+     * into callbacks in each manager, as appropriate.  All managers that write
+     * OS config files must implement this.
+     */
+    void syncConfigFiles();
+
     Process exec(String cmd) throws IOException;
     Process exec(String[] cmd) throws IOException;
     Process exec(String[] cmd, String[] envp) throws IOException;

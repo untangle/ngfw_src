@@ -177,6 +177,11 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         context.usbBackup();
     }
 
+    public void syncConfigFiles()
+    {
+        context.syncConfigFiles();
+    }
+
     public void shutdown()
     {
         context.shutdown();

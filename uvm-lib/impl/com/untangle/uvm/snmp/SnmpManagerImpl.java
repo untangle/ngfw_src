@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
+import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.node.util.IOUtil;
 import org.apache.log4j.Logger;
@@ -38,7 +39,7 @@ import org.hibernate.Session;
  *
  */
 public class SnmpManagerImpl
-    implements SnmpManager {
+    implements SnmpManager, HasConfigFiles {
 
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
@@ -116,10 +117,20 @@ public class SnmpManagerImpl
         } else if (!isAutoConfigEnabled()) {
             m_logger.info("Snmpd auto configuration is not enabled");
         } else {
-            writeDefaultCtlFile(settings);
-            writeSnmpdConfFile(settings);
-            restartDaemon();
+	    reconfigure();
         }
+    }
+
+    // Called after restore
+    public void syncConfigFiles()
+    {
+        reconfigure();
+    }
+
+    private void reconfigure() {
+        writeDefaultCtlFile(m_settings);
+	writeSnmpdConfFile(m_settings);
+	restartDaemon();
     }
 
 

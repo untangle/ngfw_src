@@ -551,6 +551,14 @@ public class UvmContextImpl extends UvmContextBase
         backupManager.usbBackup();
     }
 
+    public void syncConfigFiles()
+    {
+        // Here it would be nice if we had a list of managers.  Then we could
+	// just go through the list, testing 'instanceof HasConfigFiles'. XXX 
+	adminManager.syncConfigFiles();
+	mailSender.syncConfigFiles();
+    }
+
     public byte[] createBackup() throws IOException {
         return backupManager.createBackup();
     }

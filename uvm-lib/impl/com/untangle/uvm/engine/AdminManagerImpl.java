@@ -45,6 +45,7 @@ import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
 import com.untangle.uvm.util.FormUtil;
+import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.node.util.SimpleExec;
 import org.apache.log4j.Logger;
@@ -57,7 +58,7 @@ import org.hibernate.Session;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class RemoteAdminManagerImpl implements RemoteAdminManager
+class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
 {
     private static final String INITIAL_USER_NAME = "System Administrator";
     private static final String INITIAL_USER_LOGIN = "admin";
@@ -78,7 +79,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
     private final Logger logger = Logger.getLogger(RemoteAdminManagerImpl.class);
 
     private AdminSettings adminSettings;
-    private SnmpManager snmpManager;
+    private SnmpManagerImpl snmpManager;
 
     RemoteAdminManagerImpl(UvmContextImpl uvmContext,
                            InheritableThreadLocal<HttpServletRequest> threadRequest)
@@ -119,6 +120,11 @@ class RemoteAdminManagerImpl implements RemoteAdminManager
             }
 
         logger.info("Initialized RemoteAdminManager");
+    }
+
+    public void syncConfigFiles()
+    {
+        snmpManager.syncConfigFiles();
     }
 
     public MailSettings getMailSettings()

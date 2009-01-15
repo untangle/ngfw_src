@@ -117,6 +117,11 @@ EOF
 # try again just in case these network settings are "better" than the previous
 restore_packages $instfile
 
+# Restart apache
+/etc/init.d/apache2 restart
+
 # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
 /etc/init.d/untangle-vm start > /dev/null 2>&1
 
+# Inform the UVM that the DB settings have changed, give it a chance to write out config files.
+/usr/bin/rush -e "Untangle::RemoteUvmContext.syncConfigFiles()"

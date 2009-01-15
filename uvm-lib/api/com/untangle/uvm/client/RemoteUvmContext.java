@@ -214,6 +214,14 @@ public interface RemoteUvmContext
     void shutdown();
 
     /**
+     * Once settings have been restored, and the UVM has been booted, call
+     * into here to get the corresponding OS files rewritten.  This calls through
+     * into callbacks in each manager, as appropriate.  All managers that write
+     * OS config files must implement this.
+     */
+    void syncConfigFiles();
+
+    /**
      * Reboots the Untangle Server as if the right button menu was used
      * and confirmed.  Note that this currently will not reboot a
      * non-production (dev) box; this behavior may change in the

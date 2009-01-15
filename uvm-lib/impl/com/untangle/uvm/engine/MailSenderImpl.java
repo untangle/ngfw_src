@@ -67,6 +67,7 @@ import com.untangle.uvm.security.User;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.ConfigFileUtil;
+import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
@@ -80,7 +81,7 @@ import com.untangle.uvm.util.TransactionWork;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-class MailSenderImpl implements MailSender
+class MailSenderImpl implements MailSender, HasConfigFiles
 {
     // All error log emails go here.
     public static final String ERROR_LOG_RECIPIENT = "exceptions@untangle.com";
@@ -196,10 +197,15 @@ class MailSenderImpl implements MailSender
         refreshSessions();
     }
 
+    // Called after restore
+    public void syncConfigFiles()
+    {
+        reconfigure();
+    }
+
     // Called from UvmContextImpl at postInit time, after the networking manager
     // is up and runing
     void postInit() {
-        reconfigure();
         ((NetworkManagerImpl)LocalUvmContextFactory.context().networkManager()).
             registerListener(new AddressSettingsListener() {
                     public void event( AddressSettingsInternal settings )
@@ -209,6 +215,7 @@ class MailSenderImpl implements MailSender
                 });
     }
 
+    
 
     static MailSenderImpl mailSender() {
         synchronized (LOCK) {
