@@ -30,7 +30,7 @@ end
 email_address = ARGV[0]
 
 unless File.exists?( SUMMARY_CLOSED )
-  puts "This script must run when the UVM is stopped."
+  puts "This script must run when the UVM is stopped and a Mail Node is installed."
   exit -1
 end
 

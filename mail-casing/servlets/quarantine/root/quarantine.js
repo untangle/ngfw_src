@@ -1,7 +1,75 @@
 Ext.namespace('Ung');
+Ext.namespace('Ext.ux');
+
 
 //The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
+
+// vim: ts=4:sw=4:nu:fdc=4:nospell
+/**
+  * Page Size Plugin for Paging Toolbar
+  * 
+  * @author    rubensr, http://extjs.com/forum/member.php?u=13177
+  * @see       http://extjs.com/forum/showthread.php?t=14426
+  * @author    Ing. Jozef Sakalos, modified combo for editable, enter key handler, config texts
+  * @date      27. January 2008
+  * @version   $Id: Ext.ux.PageSizePlugin.js 82 2008-03-21 00:17:40Z jozo $
+  * @package   perseus
+  */
+
+/*global Ext */
+Ext.ux.PageSizePlugin = function(config) {
+    Ext.apply(this, config);
+
+    Ext.ux.PageSizePlugin.superclass.constructor.call(this, {
+        store: new Ext.data.SimpleStore({
+            fields: ['text', 'value'],
+            data: [['25', 25], ['100', 100], ['1000', 1000], ['All', "all"]]
+        }),
+        mode: 'local',
+        displayField: 'text',
+        valueField: 'value',
+        allowBlank: false,
+        triggerAction: 'all',
+        width: 60,
+        listWidth : 50,
+        maskRe: /[0-9]/
+    });
+};
+
+Ext.extend(Ext.ux.PageSizePlugin, Ext.form.ComboBox, {
+    beforeText:'Show',
+    afterText:'rows/page',
+    init: function(paging) {
+        paging.on('render', this.onInitView, this);
+    },
+    
+    onInitView: function(paging) {
+        paging.add('-', this.beforeText, this, this.afterText);
+        this.setValue(paging.pageSize);
+        this.on('select', this.onPageSizeChanged, paging);
+        this.on('specialkey', function(combo, e) {
+            if(13 === e.getKey()) {
+                this.onPageSizeChanged.call(paging, this);
+            }
+        });
+
+    },
+
+    onPageSizeChanged: function(combo) {
+        var value = combo.getValue();
+        if ( value == "all" ) {
+            value = this.store.totalLength;
+        } else {
+            value = parseInt( value, 10 );
+        }
+
+        this.pageSize = value;
+        this.doLoad(0);
+    }
+});
+
+// end of file 
 
 Ung.SimpleHash = function()
 {
@@ -256,7 +324,7 @@ Ung.Quarantine.prototype = {
             this.updateActionItem( null, null, false );
             
             /* Reload the data */
-            this.store.load({params:{start:0, limit:this.pageSize}});
+            this.grid.bottomToolbar.doLoad( 0 );
             
             var message = this.getMessage( result );
             if ( message != "" ) this.showMessage( message );
@@ -500,13 +568,15 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
             store: this.quarantine.store,
             displayInfo: true,
             displayMsg: i18n._( 'Showing items {0} - {1} of {2}' ),
-            emptyMsg: i18n._( 'No messages to display' )
+            emptyMsg: i18n._( 'No messages to display' ),
+            plugins : [new Ext.ux.PageSizePlugin()]
         });
         
         config.tbar = new Ext.Toolbar({
             items: [ this.quarantine.releaseButton, 
                      this.quarantine.deleteButton, 
-                     this.quarantine.safelistButton ]});
+                     this.quarantine.safelistButton ]
+        });
         
         config.store = this.quarantine.store;
         config.sm = this.quarantine.selectionModel;        
