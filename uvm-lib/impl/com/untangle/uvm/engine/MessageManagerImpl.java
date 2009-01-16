@@ -137,6 +137,8 @@ class MessageManagerImpl implements LocalMessageManager
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<Tid> tids = lm.nodeInstances(p);
+        /* Add in the nodes with the null policy */
+        tids.addAll( lm.nodeInstances((Policy)null));
         Map<Tid, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages(key);
 
