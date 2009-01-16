@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -217,6 +217,11 @@ public class Headers
         return newField;
     }
 
+    public boolean isChanged()
+    {
+        return m_changed;
+    }
+
     protected HeaderField addHeaderField(String headerName) {
         HeaderField newField = m_factory.createHeaderField(headerName);
         addHeaderFieldImpl(newField);
@@ -261,11 +266,11 @@ public class Headers
      */
     public final void writeTo(MIMEOutputStream out)
         throws IOException {
-        if(!m_changed && m_sourceRecord != null) {
+
+        if (!m_changed && m_sourceRecord != null) {
             m_logger.debug("writing out from source record (not null and not changed)");
             out.write(m_sourceRecord);
-        }
-        else {
+        } else {
             m_logger.debug("Writing out individual headers (source record null or headers changed)");
             for(HeaderField field : m_headersInOrder) {
                 field.writeTo(out);

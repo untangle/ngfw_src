@@ -140,6 +140,7 @@ public class SmtpSessionHandler
         }
 
         SpamReport report = scanFile(f);
+
         if (report == null) { // Handle error case
             if (m_config.getFailClosed()) {
                 m_logger.error("Error scanning message. Failing closed");
@@ -152,6 +153,11 @@ public class SmtpSessionHandler
                 m_spamImpl.incrementPassCount();
                 return PASS_MESSAGE;
             }
+        }
+
+        boolean addSpamHeaders = m_config.getAddSpamHeaders();
+        if (addSpamHeaders) {
+            report.addHeaders(msg);
         }
 
         SMTPSpamMessageAction action = m_config.getMsgAction();
@@ -186,7 +192,7 @@ public class SmtpSessionHandler
                 markHeaders(msg, report);
                 postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
                 m_spamImpl.incrementPassCount();
-                return PASS_MESSAGE;
+                return new BPMEvaluationResult(msg);
             } else if (action == SMTPSpamMessageAction.MARK) {
                 m_logger.debug("Marking message as-per policy");
                 postSpamEvent(msgInfo, report, SMTPSpamMessageAction.MARK);
@@ -219,7 +225,8 @@ public class SmtpSessionHandler
             postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
             m_logger.debug("Not spam");
             m_spamImpl.incrementPassCount();
-            return PASS_MESSAGE;
+
+            return new BPMEvaluationResult(msg);
         }
     }
 
@@ -269,6 +276,7 @@ public class SmtpSessionHandler
         }
 
         SpamReport report = scanFile(f);
+
         if (report == null) { // Handle error case
             if (m_config.getFailClosed()) {
                 m_logger.error("Error scanning message. Failing closed");

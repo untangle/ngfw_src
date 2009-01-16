@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -118,6 +118,7 @@ public class MIMEPart {
 
 
     }
+
     /**
      * Construct a MIME part using the already-parsed headers.
      */
@@ -150,8 +151,6 @@ public class MIMEPart {
                        " of source record");
     }
 
-
-
     //==============================
     // Factory Methods
     //==============================
@@ -169,9 +168,11 @@ public class MIMEPart {
     public MIMEPart getParent() {
         return m_parent;
     }
+
     public void setParent(MIMEPart parent) {
         m_parent = parent;
     }
+
     /**
      * Dispose of this Part and
      * any children (if {@link #isMultipart multipart}.
@@ -242,12 +243,13 @@ public class MIMEPart {
             m_observer.mIMEPartChanged(this);
         }
     }
+
     protected MIMESourceRecord getSourceRecord() {
         return m_sourceRecord;
     }
 
     public boolean isChanged() {
-        return m_changed;
+        return m_changed || (null != m_headers && m_headers.isChanged());
     }
 
     /**
@@ -287,6 +289,7 @@ public class MIMEPart {
     public void setObserver(MIMEPartObserver observer) {
         m_observer = observer;
     }
+
     public MIMEPartObserver getObserver() {
         return m_observer;
     }
@@ -698,13 +701,9 @@ public class MIMEPart {
         try {out.close();}catch(Exception ignore){}
     }
 
-
-
     //==============================
     // Output Methods
     //==============================
-
-
 
     /**
      * Write this MIMEPart and all children to
@@ -792,12 +791,6 @@ public class MIMEPart {
         }//ENDOF Source Changed
     }
 
-
-
-
-
-
-
     //==============================
     // Parse Methods
     //==============================
@@ -811,16 +804,15 @@ public class MIMEPart {
      *        part is terminated.  If null, then this part will assume
      *        its contents extend to the end of the stream.
      */
-    protected MIMEParsingInputStream.BoundaryResult parse(
-                                                          MIMEPartHeaderFieldFactory headerFactory,
+    protected MIMEParsingInputStream.BoundaryResult parse(MIMEPartHeaderFieldFactory headerFactory,
                                                           MIMEParsingInputStream stream,
                                                           MIMESource source,
                                                           boolean ownsSource,
                                                           MIMEPolicy policy,
-                                                          String outerBoundary) throws IOException,
-                                                                                       InvalidHeaderDataException,
-                                                                                       HeaderParseException,
-                                                                                       MIMEPartParseException {
+                                                          String outerBoundary)
+        throws IOException, InvalidHeaderDataException, HeaderParseException,
+               MIMEPartParseException
+    {
 
         m_logger.debug("BEGIN Parse headers, (position: " + stream.position() + ")");
         m_headers = (MIMEPartHeaders) new HeadersParser().parseHeaders(stream,
@@ -842,10 +834,10 @@ public class MIMEPart {
                                                                       MIMESource source,
                                                                       boolean ownsSource,
                                                                       MIMEPolicy policy,
-                                                                      String outerBoundary)  throws IOException,
-                                                                                                    InvalidHeaderDataException,
-                                                                                                    HeaderParseException,
-                                                                                                    MIMEPartParseException {
+                                                                      String outerBoundary)
+        throws IOException, InvalidHeaderDataException, HeaderParseException,
+               MIMEPartParseException
+    {
 
         //Determine if this is a composite type
         //of interest.  This means multipart/*
@@ -917,7 +909,8 @@ public class MIMEPart {
         throws IOException,
                InvalidHeaderDataException,
                HeaderParseException,
-               MIMEPartParseException {
+               MIMEPartParseException
+    {
 
         m_logger.debug("BEGIN parse body content to boundary \"" + outerBoundary + "\" (position: " +
                        stream.position() + ")");
@@ -1216,8 +1209,6 @@ public class MIMEPart {
 
         System.out.println("");
         mp.dump("");
-
-
 
         MyFileFactory factory = new MyFileFactory(tempDir);
 

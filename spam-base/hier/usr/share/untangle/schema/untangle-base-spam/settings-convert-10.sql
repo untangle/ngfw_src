@@ -32,3 +32,15 @@ ALTER TABLE settings.n_spam_smtp_config ALTER COLUMN block_superspam SET NOT NUL
 ALTER TABLE settings.n_spam_smtp_config ADD COLUMN fail_closed bool;
 UPDATE settings.n_spam_smtp_config SET fail_closed = true;
 ALTER TABLE settings.n_spam_smtp_config ALTER COLUMN fail_closed SET NOT NULL;
+
+ALTER TABLE settings.n_spam_smtp_config ADD COLUMN add_spam_headers bool;
+UPDATE settings.n_spam_smtp_config SET add_spam_headers = false;
+ALTER TABLE settings.n_spam_smtp_config ALTER COLUMN add_spam_headers SET NOT NULL;
+
+ALTER TABLE settings.n_spam_pop_config ADD COLUMN add_spam_headers bool;
+UPDATE settings.n_spam_pop_config SET add_spam_headers = false;
+ALTER TABLE settings.n_spam_pop_config ALTER COLUMN add_spam_headers SET NOT NULL;
+
+ALTER TABLE settings.n_spam_imap_config ADD COLUMN add_spam_headers bool;
+UPDATE settings.n_spam_imap_config SET add_spam_headers = false;
+ALTER TABLE settings.n_spam_imap_config ALTER COLUMN add_spam_headers SET NOT NULL;

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -228,7 +228,8 @@ public class HeaderField {
         throws IOException {
 
         out.write(headerName);
-        out.write((byte) COLON);
+        out.write((byte)COLON);
+        out.write((byte)SP);
 
         byte[] bytes = headerValue.getBytes();
         int len = bytes.length;

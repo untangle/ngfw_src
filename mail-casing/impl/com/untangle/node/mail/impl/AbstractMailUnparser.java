@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -20,14 +20,14 @@ package com.untangle.node.mail.impl;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.node.token.AbstractUnparser;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 import org.apache.log4j.Logger;
 
 /**
@@ -101,8 +101,7 @@ public abstract class AbstractMailUnparser
             UnparseResult ret = doUnparse(token);
             if(ret != null) {
                 if(ret.isStreamer()) {
-                    ret = new UnparseResult(
-                                            getParentCasing().wrapUnparseStreamerForTrace(ret.getTcpStreamer()));
+                    ret = new UnparseResult(getParentCasing().wrapUnparseStreamerForTrace(ret.getTcpStreamer()));
                 }
                 else {
                     ByteBuffer[] bufs = ret.result();

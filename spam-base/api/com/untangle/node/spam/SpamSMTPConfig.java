@@ -77,6 +77,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
                           SMTPSpamMessageAction zMsgAction,
                           SpamSMTPNotifyAction zNotifyAction,
                           int strength,
+                          boolean addSpamHeaders,
                           boolean blockSuperSpam,
                           int superSpamStrength,
                           boolean failClosed,
@@ -93,6 +94,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
     {
         super(bScan,
               strength,
+              addSpamHeaders,
               zNotes,
               subjectTemplate,
               bodyTemplate,

@@ -57,6 +57,7 @@ public abstract class SpamProtoConfig implements Serializable
     /* settings */
     private boolean bScan = false;
     private int strength = DEFAULT_STRENGTH;
+    private boolean addSpamHeaders = false;
     private int msgSizeLimit = DEFAULT_MESSAGE_SIZE_LIMIT;
     private String zNotes = NO_NOTES;
     private transient WrappedMessageGenerator m_msgGenerator;
@@ -72,6 +73,7 @@ public abstract class SpamProtoConfig implements Serializable
 
     protected SpamProtoConfig(boolean bScan,
                               int strength,
+                              boolean addSpamHeaders,
                               String zNotes,
                               String subjectTemplate,
                               String bodyTemplate,
@@ -80,6 +82,7 @@ public abstract class SpamProtoConfig implements Serializable
                               String isHamHeaderValue) {
         this.bScan = bScan;
         this.strength = strength;
+        this.addSpamHeaders = addSpamHeaders;
         this.zNotes = zNotes;
         m_subjectWrapperTemplate = subjectTemplate;
         m_bodyWrapperTemplate = bodyTemplate;
@@ -231,6 +234,16 @@ public abstract class SpamProtoConfig implements Serializable
         this.strength = strength;
     }
 
+    @Column(name="add_spam_headers", nullable=false)
+    public boolean getAddSpamHeaders()
+    {
+        return addSpamHeaders;
+    }
+
+    public void setAddSpamHeaders(boolean addSpamHeaders)
+    {
+        this.addSpamHeaders = addSpamHeaders;
+    }
 
     /**
      * msgSizeLimit: an integer giving scan message size limit.  Files

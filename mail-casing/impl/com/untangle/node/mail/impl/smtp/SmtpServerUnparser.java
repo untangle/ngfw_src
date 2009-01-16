@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -21,7 +21,6 @@ package com.untangle.node.mail.impl.smtp;
 import static com.untangle.node.util.ASCIIUtil.bbToString;
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.BeginMIMEToken;
 import com.untangle.node.mail.papi.ByteBufferByteStuffer;
 import com.untangle.node.mail.papi.CompleteMIMEToken;
@@ -35,6 +34,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
+import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
 
@@ -77,8 +77,7 @@ class SmtpServerUnparser
             }
             else {
                 m_logger.debug("Opening SASL Exchange");
-                switch(getSmtpCasing().getSASLObserver().initialClientResponse(
-                                                                               authCmd.getInitialResponse())) {
+                switch(getSmtpCasing().getSASLObserver().initialClientResponse(authCmd.getInitialResponse())) {
                 case EXCHANGE_COMPLETE:
                     m_logger.debug("SASL Exchange complete");
                     getSmtpCasing().closeSASLExchange();

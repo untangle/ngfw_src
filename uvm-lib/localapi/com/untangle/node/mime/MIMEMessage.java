@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -39,8 +39,8 @@ import java.io.*;
 import java.nio.*;
 import java.util.*;
 
-import com.untangle.uvm.node.TemplateValues;
 import com.untangle.node.util.*;
+import com.untangle.uvm.node.TemplateValues;
 import org.apache.log4j.Logger;
 
 
@@ -250,6 +250,7 @@ public class MIMEMessage
         //TODO bscott an optimization would be to accumulate old SourceRecords,
         //     so if a changed MIMEMessage is written to file twice, we really only
         //     write it once (and assign the new File as the SourceRecord).
+
         if(isChanged() || getSourceRecord() == null) {
             FileOutputStream fOut = null;
             try {
