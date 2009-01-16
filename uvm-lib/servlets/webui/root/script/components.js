@@ -1603,7 +1603,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("Number of Processors / Type / Speed:")+'</div>',
             '<div class="values"><span name="num_cpus"></span>, <span name="cpu_model"></span>, <span name="cpu_speed"></span></div>',
             '<div class="title">'+i18n._("Uptime:")+'</div>',
-            '<div class="values"><span name="uptime"></span> sec</div>',
+            '<div class="values"><span name="uptime"></span></div>',
             '<div class="title">'+i18n._("Tasks (Processes)")+
             // "/"+i18n._("Threads")+
             '</div>',
@@ -1713,7 +1713,16 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=num_cpus]").dom.innerHTML=stats.map.numCpus;
             toolTipEl.child("span[name=cpu_model]").dom.innerHTML=stats.map.cpuModel;
             toolTipEl.child("span[name=cpu_speed]").dom.innerHTML=stats.map.cpuSpeed;
-            toolTipEl.child("span[name=uptime]").dom.innerHTML=Math.round(stats.map.uptime);
+            var uptimeAux=Math.round(stats.map.uptime);
+            var uptimeSeconds = uptimeAux%60;
+            uptimeAux=parseInt(uptimeAux/60);
+            var uptimeMinutes = uptimeAux%60;
+            uptimeAux=parseInt(uptimeAux/60);
+            var uptimeHours = uptimeAux%24;
+            uptimeAux=parseInt(uptimeAux/24);
+            var uptimeDays = uptimeAux;
+            
+            toolTipEl.child("span[name=uptime]").dom.innerHTML=(uptimeDays>0?(uptimeDays+" "+(uptimeDays==1?i18n._("Day"):i18n._("Days"))+", "):"") + ((uptimeDays>0 || uptimeHours>0)?(uptimeHours+" "+(uptimeHours==1?i18n._("Hour"):i18n._("Hours"))+", "):"") + uptimeMinutes+" "+(uptimeMinutes==1?i18n._("Minute"):i18n._("Minutes"));
             toolTipEl.child("span[name=tasks]").dom.innerHTML=stats.map.numProcs;
             // toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
             toolTipEl.child("span[name=cpu_utilization_user]").dom.innerHTML=Math.round(stats.map.userCpuUtilization*100.0/stats.map.numCpus);
