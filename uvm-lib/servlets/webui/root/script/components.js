@@ -2462,6 +2462,9 @@ Ung.SettingsWin = Ext.extend(Ung.Window, {
             layoutOnTabChange : true
         });
         this.items=this.tabs;
+        this.tabs.on('render', function() {
+            this.addNamesToPanels();
+        }, this.tabs);
     },
     helpAction : function() {
         var helpSource=this.helpSource;
