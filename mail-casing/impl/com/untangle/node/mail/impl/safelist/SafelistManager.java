@@ -108,11 +108,13 @@ public class SafelistManager
 
         Set<String> urs = new HashSet<String>();
         urs.add("GLOBAL");
-        for (EmailAddress r : recipients) {
-            try {
-                urs.add(quarantine.getUltimateRecipient(r.getAddress()));
-            } catch (QuarantineUserActionFailedException exn) {
-                m_logger.warn("could not get recipient", exn);
+        if (null != recipients) {
+            for (EmailAddress r : recipients) {
+                try {
+                    urs.add(quarantine.getUltimateRecipient(r.getAddress()));
+                } catch (QuarantineUserActionFailedException exn) {
+                    m_logger.warn("could not get recipient", exn);
+                }
             }
         }
 
