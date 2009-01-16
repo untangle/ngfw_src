@@ -33,10 +33,12 @@ import java.util.regex.Pattern;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
 import com.untangle.node.util.CharSequenceUtil;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.util.I18nUtil;
 import org.apache.log4j.Logger;
 
 /**
@@ -186,10 +188,13 @@ public abstract class Blacklist
                      Reason.BLOCK_IP_HOST, host, node.getVendor());
                 node.log(hbe, host, port);
 
+                Map<String,String> i18nMap = LocalUvmContextFactory.context().
+                    languageManager().getTranslations("untangle-node-webfilter");
+
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
-                     "host name is an IP address (" + host + ")", clientIp,
-                     node.getNodeTitle());
+                     I18nUtil.tr("host name is an IP address ({0})", host, i18nMap),
+                     clientIp, node.getNodeTitle());
                 return node.generateNonce(bd);
             }
         }
@@ -213,9 +218,12 @@ public abstract class Blacklist
                      Reason.BLOCK_EXTENSION, exn, node.getVendor());
                 node.log(hbe, host, port);
 
+                Map<String,String> i18nMap = LocalUvmContextFactory.context().
+                    languageManager().getTranslations("untangle-node-webfilter");
+
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
-                     "extension (" + exn + ")", clientIp,
+                     I18nUtil.tr("extension ({0})", exn, i18nMap), clientIp,
                      node.getNodeTitle());
                 return node.generateNonce(bd);
             }
@@ -245,10 +253,13 @@ public abstract class Blacklist
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri().normalize();
 
+                Map<String,String> i18nMap = LocalUvmContextFactory.context().
+                    languageManager().getTranslations("untangle-node-webfilter");
+
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
-                     "Mime-Type (" + contentType + ")", clientIp,
-                     node.getNodeTitle());
+                     I18nUtil.tr("Mime-Type ({0})", contentType, i18nMap),
+                     clientIp, node.getNodeTitle());
                 return node.generateNonce(bd);
             }
         }
@@ -335,7 +346,7 @@ public abstract class Blacklist
             node.log(hbe, host, port);
 
             WebFilterBlockDetails bd = new WebFilterBlockDetails
-                (settings, host, uri, category.getDisplayName(), clientIp,
+                (settings, host, uri, category.getDescription(), clientIp,
                  node.getNodeTitle());
             return node.generateNonce(bd);
         } else if (stringRule != null && stringRule.isLive()) {
