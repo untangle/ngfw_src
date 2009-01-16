@@ -355,8 +355,8 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
                             brand + "'");
                 return "xxxxxx";
             }
-            brand = brand.substring(0,6);
-            
+            brand = brand.substring(0,6).replaceAll("[^a-zA-Z0-9]", ".");
+ 
             return brand;
         } catch (Exception exn) {
             logger.warn("could not get brand", exn);
