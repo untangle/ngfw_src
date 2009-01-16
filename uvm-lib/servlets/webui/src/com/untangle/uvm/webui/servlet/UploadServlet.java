@@ -66,9 +66,16 @@ public class UploadServlet extends HttpServlet
                             msg = "Language Pack Uploaded With Errors";
                         }
                     } else if ("logo".equals(uploadType)) {
-                        byte[] logo=item.get();
-                        RemoteBrandingManager brandingManager = uvm.brandingManager();
-                        brandingManager.setLogo(logo);
+                        if (item.getName().toLowerCase().endsWith(".gif") 
+                          || item.getName().toLowerCase().endsWith(".png")
+                          || item.getName().toLowerCase().endsWith(".jpg")
+                          || item.getName().toLowerCase().endsWith(".jpeg") )  {
+                            byte[] logo=item.get();
+                            RemoteBrandingManager brandingManager = uvm.brandingManager();
+                            brandingManager.setLogo(logo);
+                        } else {
+                            msg = "Branding logo must be GIF, PNG, or JPG";
+                        }
                     } else if ("restore".equals(uploadType)) {
                         byte[] backupFileBytes=item.get();
                         uvm.restoreBackup(backupFileBytes);
