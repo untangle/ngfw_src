@@ -3,14 +3,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
     Ung.NodeWin.registerClassName('untangle-base-webfilter', 'Ung.BaseWebFilter');
 
     Ung.BaseWebFilter = Ext.extend(Ung.NodeWin, {
-    	hasScanHTTPS: null,
+        hasScanHTTPS: null,
         gridExceptions : null,
         gridEventLog : null,
         // called when the component is rendered
         initComponent : function() {
             // keep initial base settings
             this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
-        	
+
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
@@ -103,25 +103,25 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }]
                 }],
                 initComponent : function () {
-		    var settingsCmp=Ext.getCmp(this.parentId);
+            var settingsCmp=Ext.getCmp(this.parentId);
                     this.items.push({
-		      items: {
-			xtype : 'checkbox',
-			boxLabel : settingsCmp.i18n._('Block pages from IP only hosts'),
-			hideLabel : true,
-			name : 'Block IPHost',
-			checked : settingsCmp.getBaseSettings().blockAllIpHosts,
-			listeners : {
-			  "check" : {
-			    fn : function(elem, checked) {
-			      this.getBaseSettings().blockAllIpHosts = checked;
-			    }.createDelegate(settingsCmp)
-			  }
-			}
-		      }
-		    });
+              items: {
+            xtype : 'checkbox',
+            boxLabel : settingsCmp.i18n._('Block pages from IP only hosts'),
+            hideLabel : true,
+            name : 'Block IPHost',
+            checked : settingsCmp.getBaseSettings().blockAllIpHosts,
+            listeners : {
+              "check" : {
+                fn : function(elem, checked) {
+                  this.getBaseSettings().blockAllIpHosts = checked;
+                }.createDelegate(settingsCmp)
+              }
+            }
+              }
+            });
                     if(settingsCmp.hasScanHTTPS) {
-                    	this.items.push({
+                        this.items.push({
                             items: {
                                 xtype : 'checkbox',
                                 boxLabel : settingsCmp.i18n._('Scan HTTPS'),
@@ -149,13 +149,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
-                                	Ung.Window.cancelAction(
-                                	   this.gridBlacklistCategories.isDirty() || this.isDirty(),
-                                	   function() {
+                                    Ung.Window.cancelAction(
+                                       this.gridBlacklistCategories.isDirty() || this.isDirty(),
+                                       function() {
                                             this.panelBlockLists.winBlacklistCategories.closeWindow();
                                             this.closeWindow();
-                                	   }.createDelegate(this)
-                                	);
+                                       }.createDelegate(this)
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -338,7 +338,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     fieldLabel : this.i18n._("Category"),
                     allowBlank : false,
                     width : 200,
-                    disabled : true, 
+                    disabled : true,
                     ctCls: "fixed-pos"
                 }), new Ext.form.Checkbox({
                     name : "Block",
@@ -667,9 +667,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         }.createDelegate(this)
                     }]
                 }, {
-                    title : this.i18n._('IP addresses'),
+                    title : this.i18n._('Client IP addresses'),
                     buttons : [{
-                        name : 'IP addresses manage list',
+                        name : 'Client IP addresses manage list',
                         text : this.i18n._("manage list"),
                         handler : function() {
                             this.panelPassLists.onManagePassedClients();
@@ -728,7 +728,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.panelPassLists.winPassedClients.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.i18n._("IP addresses")
+                                title : settingsCmp.i18n._("Client IP addresses")
                             }],
                             grid : settingsCmp.gridPassedClients
                         });
@@ -844,7 +844,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             });
 
             this.gridPassedClients = new Ung.EditorGrid({
-                name : 'IP addresses',
+                name : 'Client IP addresses',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().passedClientsLength,
                 emptyRow : {
@@ -852,7 +852,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "live" : true,
                     "description" : this.i18n._("[no description]")
                 },
-                title : this.i18n._("IP addresses"),
+                title : this.i18n._("Client IP addresses"),
                 recordJavaClass : "com.untangle.uvm.node.IPMaddrRule",
                 proxyRpcFn : this.getRpcNode().getPassedClients,
                 fields : [{
@@ -916,7 +916,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             var asRequest = function(value) {
                 return (value === null  || value.url === null) ? "" : value.url;
             };
-            
+
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
@@ -973,7 +973,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 return this.i18n._("no rule applied");
                         }
                     }.createDelegate(this)
-                    
+
                 }],
                 autoExpandColumn: 'request',
                 columns : [{
@@ -1123,7 +1123,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             }
         },
         isDirty : function() {
-        	return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
+            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
                 || (this.gridPassedClients ? this.gridPassedClients.isDirty() : false)
                 || (this.gridPassedUrls ? this.gridPassedUrls.isDirty() : false)
                 || (this.gridBlockedUrls ? this.gridBlockedUrls.isDirty() : false)
