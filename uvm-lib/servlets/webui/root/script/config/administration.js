@@ -1897,7 +1897,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Logo Failed"));
+                            Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, or JPG format."));
                         }
                     });
                 },

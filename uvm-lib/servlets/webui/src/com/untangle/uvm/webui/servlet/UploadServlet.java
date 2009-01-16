@@ -74,7 +74,7 @@ public class UploadServlet extends HttpServlet
                             RemoteBrandingManager brandingManager = uvm.brandingManager();
                             brandingManager.setLogo(logo);
                         } else {
-                            msg = "Branding logo must be GIF, PNG, or JPG";
+                            throw new Exception("Branding logo must be GIF, PNG, or JPG");
                         }
                     } else if ("restore".equals(uploadType)) {
                         byte[] backupFileBytes=item.get();
