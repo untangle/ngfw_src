@@ -45,7 +45,7 @@ public class Welcome extends HttpServlet
         /* If the user is not registered send them to the setup page. */
         if ( !LocalUvmContextFactory.context().isRegistered()) url = SETUP_URL;
 
-        if (request.getParameter("console").equals("1")) {
+        if (request.getParameter("console") != null && request.getParameter("console").equals("1")) {
             url = url + "?console=1";
         }
 
