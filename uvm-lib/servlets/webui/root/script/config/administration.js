@@ -578,6 +578,23 @@ if (!Ung.hasResource["Ung.Administration"]) {
             
         },
         buildPublicAddress : function() {
+            var hostname = this.getAddressSettings().hostName;
+            
+            var message = String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + hostname + '</i>' );
+            if ( hostname.indexOf( "." ) < 0 ) {
+                message += String.format( this.i18n._( '{0}The current hostname is not qualified, click {1}here{2} to update it{3}' ), 
+                                          '<br/><span class="warning">', 
+                                          '<a href="/alpaca/hostname/index" target="_blank">', 
+                                          '</a>', '</span>');
+            }
+            
+            var currentHostname = { 
+                cls: 'description',
+                html : message,
+                bodyStyle : 'padding:0px 5px 10px 25px;',
+                border : false
+            };
+            
             this.panelPublicAddress = new Ext.Panel({
                 name : 'panelPublicAddress',
                 helpSource : 'public_address',
@@ -639,15 +656,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                     	cls: 'description',
                         html : String.format(this.i18n._('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'),
-                                    main.getBrandingBaseSettings().companyName),
+                                             main.getBrandingBaseSettings().companyName),
                         bodyStyle : 'padding:0px 5px 5px 25px;',
                         border : false
-                    },{
-                    	cls: 'description',
-                        html : String.format(this.i18n._('Current Hostname: {0}'), '<i>' + this.getAddressSettings().hostName + '</i>'),
-                        bodyStyle : 'padding:0px 5px 10px 25px;',
-                        border : false
-                    },{
+                    }, currentHostname, {
                         xtype : 'radio',
                         boxLabel : this.i18n._('Use Manually Specified IP'), 
                         hideLabel : true,
