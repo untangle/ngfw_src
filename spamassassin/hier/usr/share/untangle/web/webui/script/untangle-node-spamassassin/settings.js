@@ -531,6 +531,19 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 }.createDelegate(this)
                             }
                         }
+                    }, {
+                        xtype : 'checkbox',
+                        name : 'Enable Spam Headers',
+                        boxLabel : this.i18n._('Enable Spam Headers'),
+                        hideLabel : true,
+                        checked : this.getBaseSettings().imapConfig.addSpamHeaders,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getBaseSettings().imapConfig.addSpamHeaders = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
                     }]
                 }, {
                     xtype : 'fieldset',

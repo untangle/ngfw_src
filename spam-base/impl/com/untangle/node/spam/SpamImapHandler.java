@@ -101,6 +101,11 @@ public class SpamImapHandler
             return HandleMailResult.forPassMessage();
         }
 
+        boolean addSpamHeaders = m_config.getAddSpamHeaders();
+        if (addSpamHeaders) {
+            report.addHeaders(msg);
+        }
+
         postSpamEvent(msgInfo, report, action);
 
         //Mark headers regardless of other actions
@@ -119,7 +124,7 @@ public class SpamImapHandler
             if(action == SpamMessageAction.PASS) {
                 m_logger.debug("Although SPAM detected, pass message as-per policy");
                 m_spamImpl.incrementPassCount();
-                return HandleMailResult.forPassMessage();
+                return HandleMailResult.forReplaceMessage(msg);
             }
             else {
                 m_logger.debug("Marking message as-per policy");
@@ -131,7 +136,8 @@ public class SpamImapHandler
         else {//BEGIN HAM
             m_logger.debug("Not spam");
             m_spamImpl.incrementPassCount();
-            return HandleMailResult.forPassMessage();
+            report.addHeaders(msg);
+            return HandleMailResult.forReplaceMessage(msg);
         }//ENDOF HAM
     }
 
