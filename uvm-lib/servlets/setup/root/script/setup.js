@@ -517,7 +517,6 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                         divClass = "draggable-enabled-interface";
                     }
 
-                    /* Fix for Firefox 1.5 which only allows you to drag over text. */
                     return "<div class='" + divClass + "'>" + value[0] + " : " + status + "</div>";
                 },
                 width : 400
@@ -1726,7 +1725,7 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( true ) {
+        if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
                 this.wizard.goToPage( 3 );
