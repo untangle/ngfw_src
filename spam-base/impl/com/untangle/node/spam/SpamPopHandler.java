@@ -126,7 +126,6 @@ public class SpamPopHandler extends PopStateMachine
             }
         }
 
-        System.out.println("RETURNING RESULT!");
         return new TokenResult(new Token[] { zMMessageT }, null);
     }
 
