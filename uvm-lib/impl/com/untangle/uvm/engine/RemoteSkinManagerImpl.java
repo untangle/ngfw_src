@@ -43,7 +43,9 @@ import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.license.ProductIdentifier;
+
 import com.untangle.uvm.util.DeletingDataSaver;
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
 
 /**
@@ -110,6 +112,13 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
         
         saveSettings(copy);
         this.settings = copy;
+
+        try {
+            /* This is asynchronous */
+            JsonClient.getInstance().updateAlpacaSettings();
+        } catch ( Exception e ) {
+            logger.warn( "Unable to update alpaca settings." );
+        }
     }
 	
     public void uploadSkin(FileItem item) throws UvmException {

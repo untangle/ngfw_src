@@ -1570,6 +1570,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         displayField : 'displayName',
                         valueField : 'name',
                         forceSelection : true,
+                        editable : false,
                         typeAhead : true,
                         mode : 'local',
                         triggerAction : 'all',

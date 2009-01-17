@@ -44,6 +44,7 @@ import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.util.DeletingDataSaver;
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.fileupload.FileItem;
@@ -126,6 +127,13 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         settings.copy(copy);
         saveSettings(copy);
         this.settings = copy;
+
+        try {
+            /* This is asynchronous */
+            JsonClient.getInstance().updateAlpacaSettings();
+        } catch ( Exception e ) {
+            logger.warn( "Unable to update alpaca settings." );
+        }
     }
 
     public boolean uploadLanguagePack(FileItem item) throws UvmException {

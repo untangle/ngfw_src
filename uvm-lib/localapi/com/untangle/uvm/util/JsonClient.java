@@ -53,6 +53,8 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkException;
 
 public class JsonClient
@@ -92,6 +94,33 @@ public class JsonClient
     {
         String url = ALPACA_BASE_URL + component + "/" + method + "?argyle=" + getNonce();
         return call( url, null, object );
+    }
+
+    public void callAlpacaAsync( String component, String method, JSONObject object ) 
+        throws ConnectionException, IOException, NetworkException
+    {
+        String url = ALPACA_BASE_URL + component + "/" + method + "?argyle=" + getNonce();
+        LocalUvmContextFactory.context().newThread( new AsyncRequestRunner( url, null, object )).start();
+    }
+
+    public void updateAlpacaSettings()
+    {
+        try {
+            LocalUvmContext context = LocalUvmContextFactory.context();
+            JSONObject object = new JSONObject();
+            object.put( "language", context.languageManager().getLanguageSettings().getLanguage());
+            object.put( "skin", context.skinManager().getSkinSettings().getAdministrationClientSkin());
+
+            callAlpacaAsync( "uvm", "set_uvm_settings", object );
+        } catch (JSONException e ) {
+            logger.warn( "Unable to build json object" );
+        } catch ( ConnectionException e ) {
+            logger.warn( "Unable to build json object" );
+        } catch ( IOException e ) {
+            logger.warn( "Unable to build json object" );
+        } catch ( NetworkException e ) {
+            logger.warn( "Unable to build json object" );
+        }
     }
 
     public JSONObject call( String url, String param, JSONObject object ) throws ConnectionException
@@ -141,6 +170,11 @@ public class JsonClient
         }
     }
 
+    public void callAsync( String url, String param, JSONObject object )
+    {
+        
+    }
+
     public static  JsonClient getInstance()
     {
         return INSTANCE;
@@ -178,6 +212,29 @@ public class JsonClient
                 if ( stream != null ) stream.close();
             } catch ( IOException e ) {
                 this.logger.warn( "Unable to close the nonce file: " + ALPACA_NONCE_FILE, e );
+            }
+        }
+    }
+
+    class AsyncRequestRunner implements Runnable
+    {
+        private String url;
+        private String param;
+        private JSONObject object;
+
+        AsyncRequestRunner( String url, String param, JSONObject object )
+        {
+            this.url = url;
+            this.param = param;
+            this.object = object;
+        }
+
+        public void run()
+        {
+            try {
+                getInstance().call( this.url, this.param, this.object );
+            } catch ( Exception e ) {
+                logger.warn( "Error while calling the alpaca", e );
             }
         }
     }
