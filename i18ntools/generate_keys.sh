@@ -1,11 +1,11 @@
 #!/bin/sh
 
-ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config
+ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config untangle-net-alpaca
     untangle-casing-mail untangle-base-virus untangle-base-webfilter 
     untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
     untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote'
-OFFICIAL_LANGUAGES='zh pt_BR'
+OFFICIAL_LANGUAGES='es zh pt_BR'
 
 function update_keys()
 {
@@ -61,6 +61,13 @@ case "$1" in
 "untangle-apache2-config")
     cd ../../pkgs/untangle-apache2-config/po
     xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot ../*.py
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    update_po $1
+    ;;
+"untangle-net-alpaca")
+    cd ../../pkgs/untangle-net-alpaca/po
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../files/var/lib/rails/untangle-net-alpaca/public/javascripts/pages/hostname/index.js
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
