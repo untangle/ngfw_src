@@ -3011,18 +3011,17 @@ Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
 });
 
 // Grid check column
-Ext.grid.CheckColumn = function(config) {
-    Ext.apply(this, config);
-    if (!this.id) {
-        this.id = Ext.id();
-    }
-    if (!this.width) {
-        this.width = 55;
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-
-Ext.grid.CheckColumn.prototype = {
+Ext.grid.CheckColumn = Ext.extend(Object, {
+    constructor : function(config) {
+        Ext.apply(this, config);
+        if (!this.id) {
+            this.id = Ext.id();
+        }
+        if (!this.width) {
+            this.width = 55;
+        }
+        this.renderer = this.renderer.createDelegate(this);
+    },
     init : function(grid) {
         this.grid = grid;
         this.grid.on('render', function() {
@@ -3046,7 +3045,7 @@ Ext.grid.CheckColumn.prototype = {
         metadata.css += ' x-grid3-check-col-td';
         return '<div class="x-grid3-check-col' + (value ? '-on' : '') + ' x-grid3-cc-' + this.id + '">&#160;</div>';
     }
-};
+});
 // Grid edit column
 Ext.grid.IconColumn = Ext.extend(Object, {
     constructor : function(config) {
