@@ -85,7 +85,13 @@ public abstract class AbstractNode extends NodeBase
 
     public Object getSnmpValue(int id)
     {
-        return null;
+        switch (id) {
+        case 1:
+            return getNodeDesc().getMackageDesc().getName();
+        default:
+            logger.warn("unknown snmp id: " + id);
+            return null;
+        }
     }
 
     public void dumpSessions()

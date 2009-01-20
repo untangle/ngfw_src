@@ -133,8 +133,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         case 9: // pass
             return passBlinger.getCount();
         default:
-            logger.warn("unknown snmp id: " + id);
-            return null;
+            return super.getSnmpValue(id);
         }
     }
 
