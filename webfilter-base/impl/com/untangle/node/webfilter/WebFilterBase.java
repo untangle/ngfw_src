@@ -123,6 +123,22 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     // WebFilter methods ------------------------------------------------------
 
+    public Object getSnmpValue(int id)
+    {
+        switch (id) {
+        case 7: // scan
+            return scanBlinger.getCount();
+        case 8: // block
+            return blockBlinger.getCount();
+        case 9: // pass
+            return passBlinger.getCount();
+        default:
+            logger.warn("unknown snmp id: " + id);
+            return null;
+        }
+    }
+
+
     public WebFilterSettings getWebFilterSettings()
     {
         if (settings == null)
@@ -571,7 +587,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     @Override
-        protected void postInit(String[] args)
+    protected void postInit(String[] args)
     {
         TransactionWork tw = new TransactionWork()
             {
@@ -615,7 +631,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     @Override
-        protected void postDestroy()
+    protected void postDestroy()
     {
         unDeployWebAppIfRequired(logger);
         getBlacklist().close();

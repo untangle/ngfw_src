@@ -83,6 +83,11 @@ public abstract class AbstractNode extends NodeBase
 
     // Node methods ------------------------------------------------------
 
+    public Object getSnmpValue(int id)
+    {
+        return null;
+    }
+
     public void dumpSessions()
     {
         for (PipeSpec ps : pipeSpecs) {

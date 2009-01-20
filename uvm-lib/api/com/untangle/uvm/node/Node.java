@@ -99,6 +99,8 @@ public interface Node
 
     IPSessionDesc[] liveSessionDescs();
 
+    Object getSnmpValue(int id);
+
     /**
      * <code>dumpSessions</code> dumps the session descriptions in
      * gory detail to the node log.  This is for debugging only.

@@ -98,7 +98,7 @@ public class BlingBlinger implements CounterStats, Serializable
 
     public Date getLastActivityDate()
     {
-    return now;
+        return now;
     }
 }
 
