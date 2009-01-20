@@ -45,20 +45,24 @@ public class SkinInfo {
     
     // specifies if the skin provides styling for admin pages
     private boolean adminSkin = false;
+    private int adminSkinVersion = 0;
     
     // specifies if the skin provides styling for user facing pages
     private boolean userFacingSkin = false;
+    private int userFacingSkinVersion = 0;
     
 	public SkinInfo() {
 	}
 	
 	public SkinInfo(String name, String displayName, boolean adminSkin,
-			boolean userFacingSkin) {
+			int adminSkinVersion, boolean userFacingSkin, int userFacingSkinVersion) {
 		super();
 		this.name = name;
 		this.displayName = displayName;
 		this.adminSkin = adminSkin;
+		this.adminSkinVersion = adminSkinVersion;
 		this.userFacingSkin = userFacingSkin;
+		this.userFacingSkinVersion = userFacingSkinVersion;
 	}
 
 	public String getName() {
@@ -79,11 +83,26 @@ public class SkinInfo {
 	public void setAdminSkin(boolean adminSkin) {
 		this.adminSkin = adminSkin;
 	}
+
+	public int getAdminSkinVersion() {
+		return adminSkinVersion;
+	}
+	public void setAdminSkinVersion(int adminSkinVersion) {
+		this.adminSkinVersion = adminSkinVersion;
+	}
+
 	public boolean isUserFacingSkin() {
 		return userFacingSkin;
 	}
 	public void setUserFacingSkin(boolean userFacingSkin) {
 		this.userFacingSkin = userFacingSkin;
+	}    
+
+	public int getUserFacingSkinVersion() {
+		return userFacingSkinVersion;
+	}    
+	public void setUserFacingSkinVersion(int userFacingSkinVersion) {
+		this.userFacingSkinVersion = userFacingSkinVersion;
 	}    
 
 }
