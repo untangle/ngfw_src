@@ -100,6 +100,7 @@ public interface Node
     IPSessionDesc[] liveSessionDescs();
 
     Object getSnmpValue(int id);
+    Object getSnmpCustomValue(int id);
 
     /**
      * <code>dumpSessions</code> dumps the session descriptions in

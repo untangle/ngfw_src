@@ -94,6 +94,16 @@ public abstract class AbstractNode extends NodeBase
         }
     }
 
+    public Object getSnmpCustomValue(int id)
+    {
+        switch (id) {
+        default:
+            logger.warn("unknown snmp id: " + id);
+            return null;
+        }
+    }
+
+
     public void dumpSessions()
     {
         for (PipeSpec ps : pipeSpecs) {

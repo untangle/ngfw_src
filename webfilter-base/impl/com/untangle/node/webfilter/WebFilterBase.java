@@ -123,7 +123,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     // WebFilter methods ------------------------------------------------------
 
-    public Object getSnmpValue(int id)
+    public Object getSnmpCustomValue(int id)
     {
         switch (id) {
         case 7: // scan
@@ -133,7 +133,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         case 9: // pass
             return passBlinger.getCount();
         default:
-            return super.getSnmpValue(id);
+            return super.getSnmpCustomValue(id);
         }
     }
 
