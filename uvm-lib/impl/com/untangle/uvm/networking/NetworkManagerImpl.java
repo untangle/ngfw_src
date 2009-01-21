@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.AsyncCallback;
+import org.apache.commons.httpclient.ConnectTimeoutException;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
@@ -774,9 +773,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
                 return null;
             } catch ( JsonClient.ConnectionException e ) {
-                String message = e.getMessage();
-                /* XXX Reading the message is not a valid way to test exceptions XXX */
-                if ( message != null && message.contains( "Transport Error" )) {
+                Throwable cause = e.getCause();
+                if (( cause != null ) && ( cause instanceof ConnectTimeoutException )) {
                     logger.warn( "unable to communicate with the alpaca." );
                     continue;
                 }

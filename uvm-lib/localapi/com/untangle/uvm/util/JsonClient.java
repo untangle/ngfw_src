@@ -49,6 +49,7 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,8 +60,14 @@ import com.untangle.uvm.networking.NetworkException;
 
 public class JsonClient
 {
-    /* 10 seconds */
+    /* Number of concurrent threads running */
+    private static final int DEFAULT_MAX_NUMBER_CONNECTIONS = 5;
+    
+    /* Timeout to actually establish a connection */
     private static final int DEFAULT_CONNECTION_TIMEOUT_MS = 10000;
+
+    /* Timeout to read data from the client */
+    private static final int DEFAULT_SO_TIMEOUT_MS = 90000;
 
     public static final JsonClient INSTANCE = new JsonClient();
 
@@ -74,7 +81,10 @@ public class JsonClient
 
     private JsonClient()
     {
-        this.connectionManager.getParams().setMaxTotalConnections( 5 );
+        HttpConnectionManagerParams params = this.connectionManager.getParams();
+        this.connectionManager.setMaxTotalConnections( DEFAULT_MAX_NUMBER_CONNECTIONS );
+        params.setConnectionTimeout( DEFAULT_CONNECTION_TIMEOUT_MS );
+        params.setSoTimeout( DEFAULT_SO_TIMEOUT_MS );
     }
 
     public static void main(String[] args) throws Exception
@@ -127,8 +137,6 @@ public class JsonClient
     {
         // Create an instance of HttpClient.
         HttpClient client = new HttpClient( this.connectionManager );
-
-        client.getParams().setSoTimeout( DEFAULT_CONNECTION_TIMEOUT_MS );
 
         if ( object == null ) object = new JSONObject();
 
