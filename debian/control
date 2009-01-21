@@ -296,7 +296,7 @@ Description: Spyware Blocker
 
 Package: untangle-node-webfilter
 Architecture: all
-Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter
+Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init
 Conflicts: httpblocker-transform
 Provides: httpblocker-transform
 Replaces: httpblocker-transform
