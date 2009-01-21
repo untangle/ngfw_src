@@ -40,6 +40,7 @@ package com.untangle.uvm;
  * @version 1.0
  */
 public class SkinInfo {
+
     private String name = null;
     private String displayName = null;
     
@@ -50,6 +51,11 @@ public class SkinInfo {
     // specifies if the skin provides styling for user facing pages
     private boolean userFacingSkin = false;
     private int userFacingSkinVersion = 0;
+
+    /* Compatible skin version */
+    private static final int COMPATIBLE_ADMIN_SKIN = 2;
+    private static final int COMPATIBLE_USER_SKIN = 2;
+
     
 	public SkinInfo() {
 	}
@@ -91,6 +97,10 @@ public class SkinInfo {
 		this.adminSkinVersion = adminSkinVersion;
 	}
 
+	public boolean isAdminSkinOutOfDate() {
+	    return getAdminSkinVersion() < COMPATIBLE_ADMIN_SKIN;
+	}
+
 	public boolean isUserFacingSkin() {
 		return userFacingSkin;
 	}
@@ -104,5 +114,8 @@ public class SkinInfo {
 	public void setUserFacingSkinVersion(int userFacingSkinVersion) {
 		this.userFacingSkinVersion = userFacingSkinVersion;
 	}    
+	public boolean isUserFacingSkinOutOfDate() {
+	    return getUserFacingSkinVersion() < COMPATIBLE_USER_SKIN;
+	}
 
 }

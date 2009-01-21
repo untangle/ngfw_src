@@ -83,7 +83,22 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
                 	settings.setUserPagesSkin(DEFAULT_USER_SKIN);
                         s.save(settings);
                     }
-                
+
+		    // check version of skins and revert to default if it is not compatible
+		    String userSkin = settings.getUserPagesSkin();
+		    File userSkinXML = new File( SKINS_DIR + File.separator + userSkin + File.separator + "skin.xml" );
+		    SkinInfo userSkinInfo = getSkinInfo( userSkinXML, false, true );
+		    if ( userSkinInfo == null || userSkinInfo.isUserFacingSkinOutOfDate() ) {
+			settings.setUserPagesSkin( DEFAULT_USER_SKIN );
+		    }
+		    
+		    String adminSkin = settings.getAdministrationClientSkin();
+		    File adminSkinXML = new File( SKINS_DIR + File.separator + adminSkin + File.separator + "skin.xml" );
+		    SkinInfo adminSkinInfo = getSkinInfo( adminSkinXML, false, true );
+		    if ( adminSkinInfo == null || adminSkinInfo.isAdminSkinOutOfDate() ) {
+			settings.setAdministrationClientSkin( DEFAULT_ADMIN_SKIN );
+		    }
+        
                     return true;
                 }
             };
@@ -103,9 +118,9 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 
         boolean isExpired = uvmContext.remoteLicenseManager().
             getLicenseStatus( ProductIdentifier.BRANDING_MANAGER ).isExpired();
-            
+
         if ( isExpired ) {
-            String userSkin = this.settings.getUserPagesSkin();
+	    String userSkin = this.settings.getUserPagesSkin();
             if ( userSkin == null || userSkin.length() == 0 ) userSkin = DEFAULT_USER_SKIN;
             settings.setUserPagesSkin( userSkin );
         }
@@ -189,8 +204,6 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
         if (children == null) {
             logger.warn("Skin dir \""+SKINS_DIR+"\" does not exist");
         } else {
-            XStream xstream = new XStream();
-            xstream.alias("skin", SkinInfo.class);
             for (int i=0; i<children.length; i++) {
                 File file = children[i];
                 if (file.isDirectory() && !file.getName().startsWith(".")) {
@@ -203,20 +216,31 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
                     	logger.warn("Skin folder \""+file.getName()+"\" does not have skin info file - skin.xml");
                     } else {
                     	SkinInfo skinInfo;
-                        try {
-                            skinInfo = (SkinInfo)xstream.fromXML(new FileInputStream(skinFiles[0]));
-                            if(fetchAdminSkins && skinInfo.isAdminSkin() ||
-                               fetchUserFacingSkins && skinInfo.isUserFacingSkin()) {
-                                skins.add(skinInfo);
-                            } 
-                        } catch (FileNotFoundException e) {
-                            logger.error("Error reading skin info from skin foder \"" + file.getName() + "\"");
-                        }
+			skinInfo = getSkinInfo(skinFiles[0], fetchAdminSkins, fetchUserFacingSkins);
+			if (skinInfo != null) {
+			    skins.add(skinInfo);
+			}
                     }
                 }
             }
         }    	
         return skins;    	
+    }
+
+    public SkinInfo getSkinInfo(File skinXML, boolean fetchAdminSkins, boolean fetchUserFacingSkins) {
+	XStream xstream = new XStream();
+	xstream.alias("skin", SkinInfo.class);
+	SkinInfo skinInfo;
+	try {
+	    skinInfo = (SkinInfo)xstream.fromXML(new FileInputStream(skinXML));
+	    if((fetchAdminSkins && skinInfo.isAdminSkin()  && !skinInfo.isAdminSkinOutOfDate()) ||
+	       (fetchUserFacingSkins && skinInfo.isUserFacingSkin() && !skinInfo.isUserFacingSkinOutOfDate())) {
+		return skinInfo;
+	    } 
+	} catch (FileNotFoundException e) {
+	    logger.error("Error reading skin info from skin foder \"" + skinXML.getName() + "\"");
+	}
+	return null;
     }
     
     // private methods --------------------------------------------------------
