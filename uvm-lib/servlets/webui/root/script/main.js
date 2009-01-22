@@ -75,6 +75,7 @@ Ung.Main=Ext.extend(Object, {
                 var skinSettings=result;
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
+                if (skinSettings.outOfDate) { Ext.MessageBox.alert(i18n._('Skin Out of Date'), i18n._('The currently configured skin is not marked as compatible with the current version of this software. The Default skin is now being used. <a href="http://wiki.untangle.com/index.php/Skins" target="_blank">Click here for more information.')); }
                 this.postinit();// 3
             }.createDelegate(this));
         }.createDelegate(this));

@@ -90,6 +90,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 		    SkinInfo userSkinInfo = getSkinInfo( userSkinXML, false, true );
 		    if ( userSkinInfo == null || userSkinInfo.isUserFacingSkinOutOfDate() ) {
 			settings.setUserPagesSkin( DEFAULT_USER_SKIN );
+                        settings.setOutOfDate( true );
 		    }
 		    
 		    String adminSkin = settings.getAdministrationClientSkin();
@@ -97,6 +98,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 		    SkinInfo adminSkinInfo = getSkinInfo( adminSkinXML, false, true );
 		    if ( adminSkinInfo == null || adminSkinInfo.isAdminSkinOutOfDate() ) {
 			settings.setAdministrationClientSkin( DEFAULT_ADMIN_SKIN );
+                        settings.setOutOfDate( true );
 		    }
         
                     return true;

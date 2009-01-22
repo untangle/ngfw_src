@@ -36,6 +36,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -52,6 +53,7 @@ public class SkinSettings implements Serializable{
     private Long id;
     private String administrationClientSkin = "default";
     private String userPagesSkin  = "default";
+    private boolean outOfDate = false;
 
     public SkinSettings() { }
 
@@ -99,6 +101,14 @@ public class SkinSettings implements Serializable{
     public void copy(SkinSettings settings) {
         settings.setAdministrationClientSkin(this.administrationClientSkin);
         settings.setUserPagesSkin(this.userPagesSkin);
+    }
+
+    @Transient
+    public boolean getOutOfDate() {
+        return this.outOfDate;
+    }
+    public void setOutOfDate(boolean outOfDate) {
+        this.outOfDate = outOfDate;
     }
 
 }
