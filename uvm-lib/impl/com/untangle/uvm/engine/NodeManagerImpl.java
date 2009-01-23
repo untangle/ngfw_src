@@ -266,7 +266,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         if (MackageDesc.Type.SERVICE == mackageDesc.getType()) {
             p = null;
         }
-        
+
         NodeContextImpl tc;
         NodeDesc tDesc;
         synchronized (this) {
@@ -277,9 +277,9 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                 return null; //return if the node is already installed
             }
             Tid tid = newTid(p, nodeName);
-    
+
             URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
-    
+
             logger.info("initializing node desc for: " + nodeName);
             tDesc = initNodeDesc(mackageDesc, resUrls, tid);
 
@@ -301,14 +301,14 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         Node node = tc.node();
         MackageDesc.Type type = mackageDesc.getType();
-        if (null != node 
-                && !mackageDesc.isInvisible() 
+        if (null != node
+                && !mackageDesc.isInvisible()
                 && (MackageDesc.Type.NODE == type || MackageDesc.Type.SERVICE == type)) {
             LocalMessageManager lmm = LocalUvmContextFactory.context()
                 .localMessageManager();
             Counters c = lmm.getCounters(node.getTid());
             RemoteLicenseManager lm = LocalUvmContextFactory.context().remoteLicenseManager();
-            
+
             NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs(),lm.getMackageStatus(mackageDesc.getName()));
             LocalMessageManager mm = mctx.localMessageManager();
             mm.submitMessage(ne);
@@ -316,7 +316,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         return tDesc;
     }
-    
+
     public NodeDesc instantiateAndStart(String nodeName, Policy p)
             throws DeployException, NodeStartException {
         NodeDesc nd = instantiate(nodeName, p);
@@ -843,7 +843,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         return tid;
     }
-    
+
     // private static classes -------------------------------------------------
 
     private static class NodeManagerLoggingContext
