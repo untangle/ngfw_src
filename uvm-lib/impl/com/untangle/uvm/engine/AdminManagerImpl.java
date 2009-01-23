@@ -66,8 +66,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
 
     private static final String SET_TIMEZONE_SCRIPT
         = System.getProperty("bunnicula.bin.dir") + "/uttimezone";
-    private static final String TIMEZONE_FILE = System.getProperty("bunnicula.conf.dir")
-        + "/timezone";
+    private static final String TIMEZONE_FILE = "/etc/timezone";
     private static final String REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
         + "/registration.info";
     private static final String BRAND_INFO_FILE = "/usr/share/untangle/tmp/brand";

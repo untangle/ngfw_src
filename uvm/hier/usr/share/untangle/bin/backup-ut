@@ -20,7 +20,6 @@ tar_files()
         usr/share/untangle/conf/networking.sh \
         usr/share/untangle/conf/openvpn/misc \
         usr/share/untangle/conf/openvpn/pki \
-        usr/share/untangle/conf/timezone \
         usr/share/untangle/conf/dirbackup.ldif \
         usr/share/untangle/conf/alpaca-backup.uab
 

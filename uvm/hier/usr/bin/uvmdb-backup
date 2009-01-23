@@ -62,13 +62,13 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         etc/network/interfaces \
         etc/openvpn \
         etc/resolv.conf \
+	etc/apache2/ssl \
         usr/share/untangle/conf/argon.properties \
         usr/share/untangle/conf/keystore \
         usr/share/untangle/conf/uvm.networking.properties \
         usr/share/untangle/conf/networking.sh \
         usr/share/untangle/conf/openvpn/misc \
         usr/share/untangle/conf/openvpn/pki \
-        usr/share/untangle/conf/timezone \
         usr/share/untangle/conf/dirbackup.ldif \
         usr/share/untangle/conf/alpaca-backup.uab
 

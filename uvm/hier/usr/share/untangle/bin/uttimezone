@@ -9,13 +9,10 @@ if [ ! -f /usr/share/zoneinfo/$ZONE ]; then
     exit 1
 fi
 
-echo "$ZONE" > @UVM_CONF@/timezone
 echo "$ZONE" > /etc/timezone
 
 rm -f /etc/localtime
 ln -s "/usr/share/zoneinfo/$ZONE" /etc/localtime
-
-grep -sq lang= /boot/grub/menu.lst && sed -i -e "s|\( tz=[^ ]*\)\? lang=| tz=$ZONE lang=|" /boot/grub/menu.lst
 
 # Restart system daemons that depend on timezone
 [ -x /etc/init.d/ntpdate ] && /etc/init.d/ntpdate restart > /dev/null 2>&1 &

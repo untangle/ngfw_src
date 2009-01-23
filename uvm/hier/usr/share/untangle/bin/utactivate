@@ -40,7 +40,6 @@ fi
 
 POPID=`cat $POPID_FILE`
 
-# This next will fail if testing on development machines, which is "a good thing"
 # add untangle sources to sources.list; remove the old ones
 echo "Installing sources list"
 touch $SOURCES_LIST
