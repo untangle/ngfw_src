@@ -1,4 +1,5 @@
 Ext.namespace('Ung');
+Ext.namespace('Ung.form');
 // The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 // the main internationalization object
@@ -57,6 +58,43 @@ Ext.override(Ext.TabPanel, {
                     });
                 }
             }
+        }
+    }
+});
+
+
+Ung.form.TextField = Ext.extend( Ext.form.TextField, {
+    onRender : function(ct, position)
+    {
+        Ung.form.TextField.superclass.onRender.call(this, ct, position);
+        
+        var parent = this.el.parent()
+        
+        if( this.boxLabel ) {
+            this.labelEl = parent.createChild({
+                tag: 'label',
+                htmlFor: this.el.id,
+                cls: 'x-form-textfield-detail',
+                html: this.boxLabel
+            });
+        }
+    }
+});
+
+Ung.form.NumberField = Ext.extend( Ext.form.NumberField, {
+    onRender : function(ct, position)
+    {
+        Ung.form.NumberField.superclass.onRender.call(this, ct, position);
+        
+        var parent = this.el.parent()
+        
+        if( this.boxLabel ) {
+            this.labelEl = parent.createChild({
+                tag: 'label',
+                htmlFor: this.el.id,
+                cls: 'x-form-textfield-detail',
+                html: this.boxLabel
+            });
         }
     }
 });

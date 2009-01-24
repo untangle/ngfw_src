@@ -142,15 +142,21 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         fieldLabel : this.i18n._('Name'),
                         name : 'name',
                         value : misc.name
-                    },{
-                        xtype : 'numberfield',
+                    },new Ung.form.TextField({
+                        fieldLabel : i18n._('Organization Name'),
+                        name : 'company_name',
+                        value : misc.company_name,
+                        boxLabel : i18n._('(if applicable)')
+                    }),new Ung.form.NumberField({
                         minValue : 0,
+                        width : 60,
                         allowDecimals : false,
                         fieldLabel : '<span class="required-star">*</span>'+this.i18n._('Number of PCs on your network'),
                         name : 'numSeats',
                         value : info.numSeats,
-                        allowBlank : false
-                    }]
+                        allowBlank : false,
+                        boxLabel : i18n._('(Approximate)')
+                    })]
                 },{
                     title : this.i18n._( 'Answering these questions will help us build a better product - for you!' ),
                     defaultType : 'textfield',
@@ -222,7 +228,8 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         getMisc : function() {
             var misc = {};
             misc.name        = this.panelRegistration.find( "name", "name" )[0].getValue();
-            
+            misc.company_name = this.panelRegistration.find( "name", "company_name" )[0].getValue();
+
             var value = this.panelRegistration.find( "name", "environment" )[0].getRawValue();
             if ( value != null ) misc.environment = value;
 

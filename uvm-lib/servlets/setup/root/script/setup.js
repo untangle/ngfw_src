@@ -15,6 +15,42 @@ Ung.SetupWizard.LabelWidth2 = 214;
 Ung.SetupWizard.LabelWidth3 = 120;
 Ung.SetupWizard.LabelWidth4 = 100;
 
+Ung.SetupWizard.TextField = Ext.extend( Ext.form.TextField, {
+    onRender : function(ct, position)
+    {
+        Ung.SetupWizard.TextField.superclass.onRender.call(this, ct, position);
+        
+        var parent = this.el.parent()
+        
+        if( this.boxLabel ) {
+            this.labelEl = parent.createChild({
+                tag: 'label',
+                htmlFor: this.el.id,
+                cls: 'x-form-textfield-detail',
+                html: this.boxLabel
+            });
+        }
+    }
+});
+
+Ung.SetupWizard.NumberField = Ext.extend( Ext.form.NumberField, {
+    onRender : function(ct, position)
+    {
+        Ung.SetupWizard.NumberField.superclass.onRender.call(this, ct, position);
+        
+        var parent = this.el.parent()
+        
+        if( this.boxLabel ) {
+            this.labelEl = parent.createChild({
+                tag: 'label',
+                htmlFor: this.el.id,
+                cls: 'x-form-textfield-detail',
+                html: this.boxLabel
+            });
+        }
+    }
+});
+
 Ung.SetupWizard.EmailTester = Ext.extend( Object,
 {
     constructor : function( config )
@@ -351,19 +387,19 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                 },{
                     fieldLabel : i18n._('Name'),
                     name : 'name'
-                },{
-                    xtype : 'numberfield',
+                }, new Ung.SetupWizard.TextField({
+                    fieldLabel : i18n._('Organization Name'),
+                    boxLabel: i18n._( "(if applicable)" ),
+                    name : 'company_name'
+                }),new Ung.SetupWizard.NumberField({
                     minValue : 0,
                     allowDecimals : false,
                     width : 60,
                     fieldLabel : '<span class="required-star">*</span>'+i18n._('Number of PCs on your network'),
                     name : 'numSeats',
-                    allowBlank : false	
-                },{
-                    xtype : 'label',
-                    cls : 'info-detail',
-                    html : i18n._('(Approximate)')
-                }]
+                    allowBlank : false,
+                    boxLabel : i18n._('(Approximate)')
+                })]
             },{
                 defaultType : 'textfield',
                 items : [{
@@ -424,6 +460,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
         var info = Ung.SetupWizard.CurrentValues.registrationInfo;
         var misc = {};
         this.setRegistrationValue( "name", misc, false );
+        this.setRegistrationValue( "company_name", misc, false );
         this.setRegistrationValue( "email", info, true, "emailAddr" );
         this.setRegistrationValue( "numSeats", info, true );
 
@@ -1728,7 +1765,7 @@ Ung.Setup = {
         if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 3 );
+                this.wizard.goToPage( 2 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
 
