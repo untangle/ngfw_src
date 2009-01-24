@@ -25,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -33,6 +34,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.TransactionRolledbackException;
 
+import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.security.AdminSettings;
@@ -274,6 +276,12 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
             }
         }
 
+        String language = null;
+        LanguageSettings languageSettings = uvmContext.languageManager().getLanguageSettings();
+        if ( languageSettings != null ) {
+            language = languageSettings.getLanguage();
+        }
+
         try {
             FileWriter writer = new FileWriter(regFile);
             writer.write("regKey=");
@@ -282,6 +290,10 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
             writer.write(uvmContext.version());
             writer.write("&brand=");
             writer.write(this.getBrandNonce());
+            if ( language != null ) {
+                writer.write("&language=");
+                writer.write(URLEncoder.encode(language, "UTF-8"));
+            }
             writer.write("&");
             writer.write(info.toForm());
             writer.write("\n");
