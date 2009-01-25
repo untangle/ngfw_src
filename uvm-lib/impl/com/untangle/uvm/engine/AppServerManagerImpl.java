@@ -209,7 +209,10 @@ class AppServerManagerImpl implements LocalAppServerManager
         try {
             //The goal of this is to take the existing DN minus the hostname (leaving company, city, state, etc.)
             // and append the current hostname
-            String dnString = "/"+dn.toString().replace(",","/").replaceAll("/?CN=.*","")+"/CN="+getFQDN();
+            String dnString = "/CN="+getFQDN();
+            if ( dn != null && dn.toString().length() > 0) {
+                dnString = "/"+dn.toString().replace(",","/").replaceAll("/?CN=.*","")+dnString;
+            }
             //if the old DN only had CN= then we get two slashes at the beginning so we should handle that case
             dnString = dnString.replace("//","/");
             logger.warn("Generating a new cert with dn " + dnString);
