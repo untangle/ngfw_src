@@ -142,6 +142,7 @@ case "$1" in
         done
 
         echo "x]"
+	log_end_msg 0
         ;;
 
     stop)
@@ -215,6 +216,7 @@ case "$1" in
         done
 
         echo "x]"
+	log_end_msg 1
         ;;
 
     restart|force-reload)
