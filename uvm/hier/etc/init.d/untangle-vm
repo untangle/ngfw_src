@@ -54,6 +54,7 @@ updateStatus() {
 
 updateStatusExit() {
     updateStatus $1 $2
+    log_end_msg 0
     exit
 }
 
@@ -64,11 +65,12 @@ uvmJavaPid() {
 
 case "$1" in
     start)
-        echo -n "Starting UVM: "
+        log_daemon_msg "Starting $DESC"
 
         # This is a hack to not start during install phase
         if [ ! -z "`cat /proc/cmdline | grep mv_install`" ] ; then
             echo "Skipping."
+            log_end_msg 0
             exit
         fi
 
@@ -79,6 +81,7 @@ case "$1" in
                 rm -f ${UVM_RUNDIR}/${UVM_PID}
             else
                 echo "Already started."
+		log_end_msg 0
                 exit
             fi
         fi
@@ -120,8 +123,10 @@ case "$1" in
                     echo -e "x]\nException in $UVM_CONSOLE_LOG"
                     if [ "x" != "x@PREFIX@" ] ; then
                         $0 stop
+			log_end_msg 0
                         exit
                     fi
+		    log_end_msg 0
                     exit
                 fi
             fi
@@ -146,10 +151,11 @@ case "$1" in
         ;;
 
     stop)
-        echo -n "Stopping UVM: "
+        log_daemon_msg "Starting $DESC"
 
         if [ ! -f ${UVM_RUNDIR}/${UVM_PID} ] ; then
             echo "Not Running."
+	    log_end_msg 0
             exit
         fi
 
@@ -216,7 +222,7 @@ case "$1" in
         done
 
         echo "x]"
-	log_end_msg 1
+	log_end_msg 0
         ;;
 
     restart|force-reload)
