@@ -67,7 +67,9 @@ case "$1" in
     ;;
 "untangle-net-alpaca")
     cd ../../pkgs/untangle-net-alpaca/po
-    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../files/var/lib/rails/untangle-net-alpaca/public/javascripts/pages/hostname/index.js
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot ../files/var/lib/rails/untangle-net-alpaca/app/helpers/interface_helper.rb -o tmp_keys.pot
+#    rgettext ../files/var/lib/rails/untangle-net-alpaca/app/helpers/interface_helper.rb -o tmp_keys.pot
+    find ../files/var/lib/rails/untangle-net-alpaca/public/javascripts/pages -name "*.js" -exec xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot '{}' \;
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
