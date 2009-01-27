@@ -93,21 +93,21 @@ public class SafelistManager
         //address used by MTAs
         //
         // wrs - 12/05
-        String addrStr = null;
 
+        String envAddrStr = null;
         if(envelopeSender != null && envelopeSender.getAddress() != null) {
-            addrStr = envelopeSender.getAddress().toLowerCase();
+            envAddrStr = envelopeSender.getAddress().toLowerCase();
         }
-        if(addrStr == null) {
-            if(mimeFrom != null && mimeFrom.getAddress() != null) {
-                addrStr = mimeFrom.getAddress().toLowerCase();
-            }
+
+        String hdrAddrStr = null;
+        if(mimeFrom != null && mimeFrom.getAddress() != null) {
+            hdrAddrStr  = mimeFrom.getAddress().toLowerCase();
         }
 
         boolean bReturn = false;
 
         Set<String> urs = new HashSet<String>();
-        urs.add("GLOBAL");
+        urs.add("GLOBAL".toLowerCase());
         if (null != recipients) {
             for (EmailAddress r : recipients) {
                 try {
@@ -118,31 +118,9 @@ public class SafelistManager
             }
         }
 
-        if (null != addrStr) {
-            synchronized (allSndrsLock) {
-                for (String ur : urs) {
-                    Map<String, Pattern> m = m_allSndrs.get(ur);
-                    if (null == m) { continue; }
-                    if (true == m.containsKey(addrStr)) {
-                        m_logger.debug("literal match, sender: " + addrStr);
-                        bReturn = true;
-                    } else { // is not a literal match so try limited regex match
-                        Pattern sndrPattern;
-                        Matcher sndrMatcher;
-
-                        for (Iterator iter = m.values().iterator();
-                             true == iter.hasNext(); ) {
-                            sndrPattern = (Pattern) iter.next();
-                            sndrMatcher = sndrPattern.matcher(addrStr);
-                            if (true == sndrMatcher.matches()) {
-                                m_logger.debug("pattern match: " + sndrPattern + ", sender: " + addrStr);
-                                bReturn = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+        bReturn = checkAddr(urs, envAddrStr);
+        if (!bReturn) {
+            bReturn = checkAddr(urs, hdrAddrStr);
         }
 
         m_logger.debug("sender ( " + envelopeSender + ", " + mimeFrom + "): is safelisted: " + bReturn);
@@ -365,10 +343,10 @@ public class SafelistManager
         throws NoSuchSafelistException, SafelistActionFailedException {
         List<String> safelists = listSafelists();
         List<SafelistCount> safelistCounts = new ArrayList<SafelistCount>(safelists.size());
-        for(String account : safelists){
+        for (String account : safelists){
 
             if (account.equalsIgnoreCase("GLOBAL")) {
-                // ignnore GLOBAL safelist for admin
+                // ignore GLOBAL safelist for admin
                 continue;
             }
             SafelistCount safelistCnt = new SafelistCount(account, getSafelistCnt(account));
@@ -377,6 +355,38 @@ public class SafelistManager
     return safelistCounts;
 }
     //--------------------- SafelistEndUserView -----------------------
+
+    private boolean checkAddr(Set<String> urs, String addrStr)
+    {
+        if (null != addrStr) {
+            synchronized (allSndrsLock) {
+                for (String ur : urs) {
+                    Map<String, Pattern> m = m_allSndrs.get(ur);
+                    if (null == m) { continue; }
+                    if (true == m.containsKey(addrStr)) {
+                        m_logger.debug("literal match, sender: " + addrStr);
+                        return true;
+                    } else { // is not a literal match so try limited regex match
+                        Pattern sndrPattern;
+                        Matcher sndrMatcher;
+
+                        for (Iterator iter = m.values().iterator();
+                             true == iter.hasNext(); ) {
+                            sndrPattern = (Pattern) iter.next();
+                            sndrMatcher = sndrPattern.matcher(addrStr);
+                            if (true == sndrMatcher.matches()) {
+                                m_logger.debug("pattern match: " + sndrPattern
+                                               + ", sender: " + addrStr);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 
     // refresh (add/delete/update) safelists for this recipient and
     // make these changes visible as persistent hibernate mapping objects
