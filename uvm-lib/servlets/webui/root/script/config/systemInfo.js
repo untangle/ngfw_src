@@ -5,6 +5,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         panelVersion : null,
         panelRegistration : null,
         panelLicenseAgreement : null,
+        dirty : false,
         initComponent : function() {
             this.breadcrumbs = [{
                 title : i18n._("Configuration"),
@@ -17,7 +18,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             this.buildVersion();
             this.buildRegistration();
             this.buildLicenseAgreement();
-
+            
             // builds the tab panel with the tabs
             var pageTabs = [this.panelVersion, this.panelRegistration, this.panelLicenseAgreement];
             this.buildTabPanel(pageTabs);
@@ -99,9 +100,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             });
         },
         buildRegistration : function() {
-            // keep initial registration info
-            this.initialRegistrationInfo = Ung.Util.clone(this.getRegistrationInfo());
-        	
             var info = this.getRegistrationInfo();
             var misc = null;
             if ( info.misc != null ) misc = info.misc.map;
@@ -137,16 +135,31 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         name : 'emailAddr',
                         width : 200,
                         allowBlank : false,
-                        value : info.emailAddr
+                        value : info.emailAddr,
+                        listeners : {
+                            "change" : {
+                                fn : this.onFieldChange.createDelegate(this)
+                            }
+                        }
                     },{
                         fieldLabel : this.i18n._('Name'),
                         name : 'name',
-                        value : misc.name
+                        value : misc.name,
+                        listeners : {
+                            "change" : {
+                                fn : this.onFieldChange.createDelegate(this)
+                            }
+                        }
                     },new Ung.form.TextField({
                         fieldLabel : i18n._('Organization Name'),
                         name : 'company_name',
                         value : misc.company_name,
-                        boxLabel : i18n._('(if applicable)')
+                        boxLabel : i18n._('(if applicable)'),
+                        listeners : {
+                            "change" : {
+                                fn : this.onFieldChange.createDelegate(this)
+                            }
+                        }
                     }),new Ung.form.NumberField({
                         minValue : 0,
                         width : 60,
@@ -155,7 +168,12 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         name : 'numSeats',
                         value : info.numSeats,
                         allowBlank : false,
-                        boxLabel : i18n._('(Approximate)')
+                        boxLabel : i18n._('(Approximate)'),
+                        listeners : {
+                            "change" : {
+                                fn : this.onFieldChange.createDelegate(this)
+                            }
+                        }
                     })]
                 },{
                     title : this.i18n._( 'Answering these questions will help us build a better product - for you!' ),
@@ -170,7 +188,12 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : misc.environment
+                        value : misc.environment,
+                        listeners : {
+                            "select" : {
+                                fn : this.onFieldChange.createDelegate(this)
+                            }
+                        }
                     },{
                         fieldLabel : this.i18n._('Country'),
                         name : "country",
@@ -181,7 +204,12 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : misc.country
+                        value : misc.country,
+                        listeners : {
+                            "select" : {
+                                fn : this.onFieldChange.createDelegate(this)
+                            }
+                        }
                     }]
                 },{
                     xtype : 'label',
@@ -206,6 +234,9 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     value : this.getLicenseAgreement()
                 })]
            });
+        },
+        onFieldChange : function() {
+            this.dirty = true;
         },
         //validate Registration Info
         validateClient : function() {
@@ -249,15 +280,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }
         },
         isDirty : function() {
-        	var misc = this.getMisc();
-            var emailAddr   = this.panelRegistration.find( "name", "emailAddr" )[0].getValue();
-            var numSeats    = this.panelRegistration.find( "name", "numSeats" )[0].getValue();
-        	
-            return emailAddr != this.initialRegistrationInfo.emailAddr
-                || numSeats != this.initialRegistrationInfo.numSeats
-                || misc.name != this.initialRegistrationInfo.misc.map.name
-                || misc.environment != this.initialRegistrationInfo.misc.map.environment
-                || misc.country != this.initialRegistrationInfo.misc.map.country;
+        	return this.dirty;
         }
 
     });
