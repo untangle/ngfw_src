@@ -3158,30 +3158,30 @@ Ext.grid.DeleteColumn=Ext.extend(Ext.grid.IconColumn, {
         this.grid.deleteHandler(record);
     }
 });
-// Grid delete column
-Ext.grid.ReorderColumn = function(config) {
-    Ext.apply(this, config);
-    if (!this.id) {
-        this.id = Ext.id();
-    }
-    if (!this.header) {
-        this.header = i18n._("Reorder");
-    }
-    if (!this.width) {
-        this.width = 55;
-    }
-    if (this.fixed == null) {
-        this.fixed = true;
-    }
-    if (this.sortable == null) {
-        this.sortable = false;
-    }
-    if (!this.dataIndex) {
-        this.dataIndex = null;
-    }
-    this.renderer = this.renderer.createDelegate(this);
-};
-Ext.grid.ReorderColumn.prototype = {
+// Grid reorder column
+Ext.grid.ReorderColumn = Ext.extend(Object, {
+    constructor : function(config) {
+        Ext.apply(this, config);
+        if (!this.id) {
+            this.id = Ext.id();
+        }
+        if (!this.header) {
+            this.header = i18n._("Reorder");
+        }
+        if (!this.width) {
+            this.width = 55;
+        }
+        if (this.fixed == null) {
+            this.fixed = true;
+        }
+        if (this.sortable == null) {
+            this.sortable = false;
+        }
+        if (!this.dataIndex) {
+            this.dataIndex = null;
+        }
+        this.renderer = this.renderer.createDelegate(this);
+    },
     init : function(grid) {
         this.grid = grid;
     },
@@ -3189,7 +3189,7 @@ Ext.grid.ReorderColumn.prototype = {
     renderer : function(value, metadata, record) {
         return '<div class="icon-drag">&nbsp;</div>';
     }
-};
+});
 
 // Editor Grid class
 Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
