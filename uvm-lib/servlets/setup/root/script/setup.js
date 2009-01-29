@@ -390,7 +390,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                 }, new Ung.SetupWizard.TextField({
                     fieldLabel : i18n._('Organization Name'),
                     boxLabel: i18n._( "(if applicable)" ),
-                    name : 'company_name'
+                    name : 'companyName'
                 }),new Ung.SetupWizard.NumberField({
                     minValue : 0,
                     allowDecimals : false,
@@ -460,7 +460,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
         var info = Ung.SetupWizard.CurrentValues.registrationInfo;
         var misc = {};
         this.setRegistrationValue( "name", misc, false );
-        this.setRegistrationValue( "company_name", misc, false );
+        this.setRegistrationValue( "companyName", misc, false );
         this.setRegistrationValue( "email", info, true, "emailAddr" );
         this.setRegistrationValue( "numSeats", info, true );
 

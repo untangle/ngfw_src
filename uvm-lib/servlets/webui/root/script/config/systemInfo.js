@@ -152,8 +152,8 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         }
                     },new Ung.form.TextField({
                         fieldLabel : i18n._('Organization Name'),
-                        name : 'company_name',
-                        value : misc.company_name,
+                        name : 'companyName',
+                        value : misc.companyName,
                         boxLabel : i18n._('(if applicable)'),
                         listeners : {
                             "change" : {
@@ -259,7 +259,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         getMisc : function() {
             var misc = {};
             misc.name        = this.panelRegistration.find( "name", "name" )[0].getValue();
-            misc.company_name = this.panelRegistration.find( "name", "company_name" )[0].getValue();
+            misc.companyName = this.panelRegistration.find( "name", "companyName" )[0].getValue();
 
             var value = this.panelRegistration.find( "name", "environment" )[0].getRawValue();
             if ( value != null ) misc.environment = value;
