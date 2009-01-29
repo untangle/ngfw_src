@@ -108,7 +108,7 @@
   </category>
 
   <category name="com.untangle.node.util">
-    <priority value="INFO"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.untangle.node.token">
@@ -139,7 +139,7 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.node.clamphish">
+  <category name="com.untangle.node.phish">
     <priority value="WARN"/>
   </category>
 
@@ -155,12 +155,12 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.node.httpblocker">
+  <category name="com.untangle.node.webfilter">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.node.ids">
-    <priority value="INFO"/>
+  <category name="com.untangle.node.ips">
+    <priority value="WARN"/>
   </category>
 
   <category name="com.untangle.node.protofilter">
