@@ -12,9 +12,10 @@ package com.untangle.uvm.license;
 
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileFilter;
-
+import java.io.FileInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -26,21 +27,17 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
+import com.untangle.node.util.UtLogger;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.Pulse;
 
-import com.untangle.node.util.UtLogger;
-
 
 public class LicenseManagerImpl implements LicenseManager
-{    
+{
     private static final int  SELF_SIGNED_VERSION = 0x1F;
 
     private static final String LICENSE_DIRECTORY = System.getProperty( "bunnicula.conf.dir" ) + "/licenses";
-    
+
     private static final String PROPERTY_BASE = "com.untangle.uvm.license";
 
     private static final String PROPERTY_PRODUCT_IDENTIFIER = PROPERTY_BASE + ".identifier";
@@ -72,7 +69,7 @@ public class LicenseManagerImpl implements LicenseManager
         TRIAL( "30 Day Trial", 1000l * 60 * 60 * 24 * 31 + 539 ),
         SUBSCRIPTION( "Subscription", 1000l * 60 * 60 * 24 * 365 * 2 + 344 ),
         DEVELOPMENT( "Untangle Development", 1000l * 60 * 60 * 24 * 60 + 960 );
-        
+
         private final String name;
         private final long duration;
 
@@ -81,7 +78,7 @@ public class LicenseManagerImpl implements LicenseManager
             this.name = name;
             this.duration = duration;
         }
-        
+
         public String getName()
         {
             return this.name;
@@ -113,7 +110,7 @@ public class LicenseManagerImpl implements LicenseManager
     private static final long VALIDATION_PERIOD = 3 * 60 * 60 * 1000;
 
     /* has to be declared after all static declarations */
-    private static final LicenseManagerImpl INSTANCE;   
+    private static final LicenseManagerImpl INSTANCE;
 
     /** A set of all of the products to update. */
     private final Set<Product> products = new HashSet<Product>();
@@ -128,11 +125,11 @@ public class LicenseManagerImpl implements LicenseManager
     /** configuration */
     /** frequency of license updates */
     private final long timerDelay = TIMER_DELAY;
-    
+
     /** Amount of time to update the license for, if the timer task
      * dies, all license will expire in <code>validationPeriod</code>
      * milliseconds */
-    private final long validationPeriod = VALIDATION_PERIOD; 
+    private final long validationPeriod = VALIDATION_PERIOD;
 
      /** Timer task */
     private final LicenseUpdateTask task = new LicenseUpdateTask();
@@ -150,7 +147,7 @@ public class LicenseManagerImpl implements LicenseManager
     {
         /* XXXX This shouldn't be in properties, it is too easy to override. XXX */
         // this.timerDelay = Long.getLong( "com.untangle.uvm.license.timerDelay", TIMER_DELAY );
-        // this.validationPeriod = Long.getLong( "com.untangle.uvm.license.validationPeriod", VALIDATION_PERIOD );        
+        // this.validationPeriod = Long.getLong( "com.untangle.uvm.license.validationPeriod", VALIDATION_PERIOD );
     }
 
     /**
@@ -198,10 +195,10 @@ public class LicenseManagerImpl implements LicenseManager
     public synchronized String getLicenseAgreement()
     {
         loadLicenseAgreement();
-        
+
         String licenseText = this.standardLicense;
         if ( hasPremiumLicense()) licenseText = this.professionalLicense;
-        
+
         return licenseText;
     }
 
@@ -214,14 +211,14 @@ public class LicenseManagerImpl implements LicenseManager
 
         if ( mackageName == null ) mackageName = IDENTIFIER_TO_MACKAGE_MAP.get( identifier );
         if ( mackageName == null ) mackageName = "unknown";
-        
+
         /* Found a valid license */
         if ( license != null ) return makeLicenseStatus( identifier, mackageName, license );
-        
+
         /* search for the newest license */
         for ( License l : this.licenseSettings.getLicenses()) {
             if ( !l.getProductIdentifier().equals( identifier )) continue;
-            
+
             /* newer license */
             if (( license != null ) && ( license.getEnd() > l.getEnd())) continue;
 
@@ -240,13 +237,13 @@ public class LicenseManagerImpl implements LicenseManager
     {
         /* Open up the directory with all of the licenses */
         File licenseDirectory = new File( LICENSE_DIRECTORY );
-        
+
         /* nothing to do */
         if ( !licenseDirectory.exists() || !licenseDirectory.isDirectory()) {
             this.licenseSettings = new LicenseSettings( new ArrayList<License>());
             return;
         }
-        
+
         File[] licenseFiles = licenseDirectory.listFiles( LICENSE_FILE_FILTER );
 
         if ( licenseFiles == null ) {
@@ -255,7 +252,7 @@ public class LicenseManagerImpl implements LicenseManager
         }
 
         List<License> licenses = new LinkedList<License>();
-        
+
         for ( File licenseFile : licenseFiles ) {
             try {
                 Properties props = new Properties();
@@ -274,7 +271,7 @@ public class LicenseManagerImpl implements LicenseManager
                 if ( key == null ) throw new Exception( "missing key" );
                 int keyVersion  = Integer.parseInt( props.getProperty( PROPERTY_KEY_VERSION ));
                 if ( keyVersion == 0 ) throw new Exception( "invalid key version" );
-                
+
                 /* add the license, if it passes verification. */
                 License license = new License( identifier, mackage, type, start, end, key, keyVersion );
 
@@ -285,17 +282,17 @@ public class LicenseManagerImpl implements LicenseManager
                 }
 
                 licenses.add( license );
-                
+
                 // NO_DEBUG_IN_LOGGING logger.debug( "loaded " + license );
             } catch ( Exception e ) {
                 /* get rid of the logging before release */
                 // NO_DEBUG_IN_LOGGING logger.warn( "Unable to license from " + licenseFile, e );
             }
         }
-                
+
         this.licenseSettings = new LicenseSettings( licenses );
     }
-    
+
     /**
      * update the license map.
      */
@@ -303,16 +300,16 @@ public class LicenseManagerImpl implements LicenseManager
     {
         /* Create a new map of all of the valid licenses */
         Map<String,License> newMap = new HashMap<String,License>();
-        
+
         for ( License license : this.licenseSettings.getLicenses()) {
             if ( !verifyLicense( license )) continue;
-            
+
             String identifier = license.getProductIdentifier();
             License current = newMap.get( identifier );
-            
+
             /* current license is newer and better */
             if (( current != null ) && ( current.getEnd() > license.getEnd())) continue;
-            
+
             newMap.put( identifier, license );
         }
 
@@ -329,14 +326,14 @@ public class LicenseManagerImpl implements LicenseManager
         for ( Product product : this.products ) {
             try {
                 String identifier = product.identifier();
-            
+
                 License license = this.licenseMap.get( identifier );
-                
+
                 if ( license == null ) {
                     if ( product.isActivated()) product.expire();
                 } else {
                     // NO_DEBUG_IN_LOGGING logger.debug( "Updating with the license: " + license );
-                   
+
                     /* by always using the nextExpirationDate, the
                      * product won't expire before the expiration
                      * date, therefore although they will get the
@@ -347,7 +344,7 @@ public class LicenseManagerImpl implements LicenseManager
             } catch ( Exception e ) {
                 logger.warn( "error notifying a product.", e );
             }
-        }        
+        }
     }
 
     private synchronized void notifyClients()
@@ -373,7 +370,7 @@ public class LicenseManagerImpl implements LicenseManager
         LicenseUpdateMessage message = new LicenseUpdateMessage( identifierMap, mackageMap );
         LocalUvmContextFactory.context().localMessageManager().submitMessage( message );
     }
-    
+
     private String createSelfSignedLicenseKey( License license ) throws NoSuchAlgorithmException
     {
         if ( license.getKeyVersion() != SELF_SIGNED_VERSION ) return null;
@@ -381,7 +378,7 @@ public class LicenseManagerImpl implements LicenseManager
         MessageDigest digest = MessageDigest.getInstance( "MD5" );
         String firstKey = license.getProductIdentifier() + "-license-" + 0xDEC0DED + "-" + license.getType();
 
-        digest.reset();        
+        digest.reset();
         byte[] data = digest.digest( firstKey.getBytes());
         firstKey = toHex( data ) + "\n";
         String file = firstKey + buildLicenseFile( license );
@@ -402,7 +399,7 @@ public class LicenseManagerImpl implements LicenseManager
         String key = license.getKey();
 
         long now = System.currentTimeMillis();
-        
+
         /* Verify the key hasn't already hasn't expired */
         if ( license.getStart() > now) {
             // NO_DEBUG_IN_LM logger.debug( "The license: " + license + " isn't valid yet." );
@@ -428,12 +425,12 @@ public class LicenseManagerImpl implements LicenseManager
         case TRIAL: case TRIAL14:
             /* special case for the old license key duration */
             if ( duration == OLD_TRIAL_KEY_DURATION ) break;
-            /* fallthrough */            
+            /* fallthrough */
         default:
             if ( licenseType.getDuration() != duration ) return false;
         }
-        
-        switch ( version ) {            
+
+        switch ( version ) {
         case SELF_SIGNED_VERSION:
             try {
                 String expected = createSelfSignedLicenseKey( license );
@@ -443,19 +440,19 @@ public class LicenseManagerImpl implements LicenseManager
                     // NO_DEBUG_IN_LM logger.debug( "key " + license.getKey());
                     return false;
                 }
-                
+
                 return true;
             } catch ( NoSuchAlgorithmException e ) {
                 /* perhaps this should just return true for safety */
                 return false;
             }
-            
+
         default:
             // NO_DEBUG_IN_LM logger.warn( "Unknown key version: " + version );
             return false;
         }
     }
-    
+
     private String buildLicenseFile( License license )
     {
         StringBuilder sb = new StringBuilder();
@@ -476,7 +473,7 @@ public class LicenseManagerImpl implements LicenseManager
 
         return sb.toString();
     }
-        
+
     private String toHex( byte data[] )
     {
         String response = "";
@@ -485,24 +482,24 @@ public class LicenseManagerImpl implements LicenseManager
             if ( c < 0 ) c = c +  0x100;
             response += String.format( "%02x", c );
         }
-        
+
         return response;
     }
 
     private String timeRemaining( long now, long expiration )
     {
         if ( now > expiration ) return EXPIRED;
-        
+
         /* Calculate the number of days remaining */
         long days = ( expiration - now ) / ONE_DAY;
         String daystring;
         switch ((int)days ) {
-        case 0: 
+        case 0:
             return "expires today";
-            
-        case 1: 
+
+        case 1:
             return "1 day remains";
-            
+
         default:
             return "" + days + " days remain";
         }
@@ -524,20 +521,16 @@ public class LicenseManagerImpl implements LicenseManager
         long end = license.getEnd();
         String timeLeft = timeRemaining( System.currentTimeMillis(), end );
         String type = license.getType();
-        boolean isTrial = type.equals( LicenseType.TRIAL14.getName()) || 
+        boolean isTrial = type.equals( LicenseType.TRIAL14.getName()) ||
             type.equals( LicenseType.TRIAL.getName());
-                         
+
         return new LicenseStatus( true, identifier, mackageName, license.getType(), new Date( end ),
                                   timeLeft, isTrial );
     }
 
     private void scheduleAndWait()
-    {        
-        /* update all of the licenses for products, run all of them in
-         * the timer task to avoid synchronization issues. */
-        if ( !this.pulse.beat( 4000 )) {
-            logger.debug( "unable to wait for the license task to complete." );
-        }
+    {
+        task.run();
     }
 
     /**
@@ -551,12 +544,12 @@ public class LicenseManagerImpl implements LicenseManager
     private synchronized void loadLicenseAgreement()
     {
         if ( this.professionalLicense == null ) {
-            this.professionalLicense = 
+            this.professionalLicense =
                 LicenseManagerFactory.loadLicenseText( LicenseManagerFactory.PROFESSIONAL_LICENSE_RESOURCE );
         }
-                
+
         if ( this.standardLicense == null ) {
-            this.standardLicense = 
+            this.standardLicense =
                 LicenseManagerFactory.loadLicenseText( LicenseManagerFactory.STANDARD_LICENSE_RESOURCE );
         }
     }
