@@ -161,8 +161,9 @@ class SchemaUpdater
   end
 end
 
-def bad_args()
+def bad_args(argv)
   LOG.error "usage: update-schema [ settings | events ] [ uvm | node ]"
+  LOG.error "(we were called with ARGV='#{argv.join(', ')}')"
   Kernel.exit 1
 end
 
@@ -337,10 +338,10 @@ SQL
   end
 end
 
-bad_args() unless 2 == ARGV.length
+bad_args(ARGV) unless 2 == ARGV.length
 
 TYPE=ARGV[0]
-bad_args() unless 'settings' == TYPE || 'events' == TYPE
+bad_args(ARGV) unless 'settings' == TYPE || 'events' == TYPE
 
 COMPONENT=ARGV[1]
 
