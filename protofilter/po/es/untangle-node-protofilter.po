@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
 "PO-Revision-Date: 2008-11-22 09:57-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -121,11 +121,11 @@ msgstr "motivo de la medida tomada"
 msgid "server"
 msgstr "servidor"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:217
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
 msgid "Saving..."
 msgstr "Guardando..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:217
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
 msgid "Please wait"
 msgstr "Espere"
 
@@ -160,4 +160,3 @@ msgstr "Sesiones registradas"
 #: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
 msgid "DETECT"
 msgstr "DETECTAR"
-

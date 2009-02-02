@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-21 14:15-0800\n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,6 +65,10 @@ msgstr ""
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:104
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:105
 msgid "Checking..."
+msgstr ""
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:106
+msgid "undetermined "
 msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:107
@@ -181,6 +185,10 @@ msgstr ""
 msgid "Error scanning disks"
 msgstr ""
 
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:90
+msgid "size"
+msgstr ""
+
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:114
 msgid "You must select a boot disk which you would like to install onto."
 msgstr ""
@@ -240,23 +248,23 @@ msgid ""
 "Otherwise, press the Finish button."
 msgstr ""
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:90
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:89
 msgid "<html>Welcome to the<br> Installation Wizard!</html>"
 msgstr ""
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:125
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:90
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:124
 msgid ""
 "<html>This wizard will take you step-by-step through<br> the CD installation "
 "process.</html>"
 msgstr ""
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:92
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:136
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:135
 msgid "Language:"
 msgstr ""
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:115
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:114
 msgid "<html>Welcome to the<br>Installation Wizard!</html>"
 msgstr ""
 
@@ -300,7 +308,7 @@ msgstr ""
 
 #: ../api/com/untangle/gui/widgets/dialogs/MOneButtonJDialog.java:181
 #: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:122
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:356
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:357
 msgid "Close"
 msgstr ""
 
@@ -317,17 +325,18 @@ msgid "Continue"
 msgstr ""
 
 #: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:121
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:338
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:339
 msgid "Previous"
 msgstr ""
 
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:182
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:188
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:319
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:123
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:183
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:189
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:320
 msgid "Next"
 msgstr ""
 
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:195
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:196
 msgid "Finish"
 msgstr ""
 

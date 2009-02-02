@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-04 11:30-0800\n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
 "PO-Revision-Date: 2008-11-20 05:41-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -19,8 +19,11 @@ msgstr ""
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:77
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:312
-msgid "These tests show you if your computer meets minimum hardware requirements."
-msgstr "Estas pruebas determinan si su equipo satisface los requisitos mínimos de hardware."
+msgid ""
+"These tests show you if your computer meets minimum hardware requirements."
+msgstr ""
+"Estas pruebas determinan si su equipo satisface los requisitos mínimos de "
+"hardware."
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:78
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:325
@@ -66,6 +69,11 @@ msgstr "Interfaces de red:"
 msgid "Checking..."
 msgstr "Comprobando..."
 
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:106
+#, fuzzy
+msgid "undetermined "
+msgstr "indeterminado"
+
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:107
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:108
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:109
@@ -103,16 +111,39 @@ msgid "{0} interface"
 msgstr "{0} interfaz"
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:173
-msgid "<html><font color=\"#FF0000\"><b>Warning!</b><br>Your hardware does not meet minimum requirements. This system may not function properly.<br>You may continue installation, but it is recommended that you upgrade your system hardware.<br><br>Press the Next button in the main window to continue.</font></html>"
-msgstr "<html><font color=\"#FF0000\"><b>¡Atención!</b><br>Su hardware no satisface los requisitos mínimos. Es posible que este sistema no funcione correctamente.<br>Puede continuar con la instalación, pero recomendamos que actualice el hardware de su sistema.<br><br>Haga clic en el botón Siguiente de la ventana principal para continuar.</font></html>"
+msgid ""
+"<html><font color=\"#FF0000\"><b>Warning!</b><br>Your hardware does not meet "
+"minimum requirements. This system may not function properly.<br>You may "
+"continue installation, but it is recommended that you upgrade your system "
+"hardware.<br><br>Press the Next button in the main window to continue.</"
+"font></html>"
+msgstr ""
+"<html><font color=\"#FF0000\"><b>¡Atención!</b><br>Su hardware no satisface "
+"los requisitos mínimos. Es posible que este sistema no funcione "
+"correctamente.<br>Puede continuar con la instalación, pero recomendamos que "
+"actualice el hardware de su sistema.<br><br>Haga clic en el botón Siguiente "
+"de la ventana principal para continuar.</font></html>"
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:178
-msgid "<html><font color=\"#FF9B00\"><b>Warning!</b><br>Your hardware meets minimum requirements, but performance may not be optimal.<br>Press the Next button in the main window to continue.</font></html>"
-msgstr "<html><font color=\"#FF9B00\"><b>¡Atención!</b><br>Aunque el hardware satisface los requisitos mínimos, es posible que el rendimiento no sea óptimo.<br>Haga clic en el botón Siguiente de la ventana principal para continuar.</font></html>"
+msgid ""
+"<html><font color=\"#FF9B00\"><b>Warning!</b><br>Your hardware meets minimum "
+"requirements, but performance may not be optimal.<br>Press the Next button "
+"in the main window to continue.</font></html>"
+msgstr ""
+"<html><font color=\"#FF9B00\"><b>¡Atención!</b><br>Aunque el hardware "
+"satisface los requisitos mínimos, es posible que el rendimiento no sea "
+"óptimo.<br>Haga clic en el botón Siguiente de la ventana principal para "
+"continuar.</font></html>"
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:182
-msgid "<html><font color=\"#445BFF\"><b>Success!</b><br>Your hardware meets all requirements.<br>Press the Next button in the main window to continue.</font></html>"
-msgstr "<html><font color=\"#445BFF\"><b>¡Felicitaciones!</b><br>El hardware satisface todos los requisitos.<br>Haga clic en el botón Siguiente de la ventana principal para continuar.</font></html>"
+msgid ""
+"<html><font color=\"#445BFF\"><b>Success!</b><br>Your hardware meets all "
+"requirements.<br>Press the Next button in the main window to continue.</"
+"font></html>"
+msgstr ""
+"<html><font color=\"#445BFF\"><b>¡Felicitaciones!</b><br>El hardware "
+"satisface todos los requisitos.<br>Haga clic en el botón Siguiente de la "
+"ventana principal para continuar.</font></html>"
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:185
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:186
@@ -159,16 +190,27 @@ msgstr "Fallo {0}"
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:68
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:173
-msgid "<html>This list shows the boot disks that were found.  <font color='#FF0000'>Please choose a disk for installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>"
-msgstr "<html>Esta lista muestra los discos de arranque que se encontraron. <font color='#FF0000'>Escoja un disco para la instalación. Cuidado: se borrarán todos los datos del disco de arranque que elija.</font></html>"
+msgid ""
+"<html>This list shows the boot disks that were found.  <font "
+"color='#FF0000'>Please choose a disk for installation.  Warning, all the "
+"data on the boot disk you select will be deleted.</font></html>"
+msgstr ""
+"<html>Esta lista muestra los discos de arranque que se encontraron. <font "
+"color='#FF0000'>Escoja un disco para la instalación. Cuidado: se borrarán "
+"todos los datos del disco de arranque que elija.</font></html>"
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:76
 msgid "Error scanning disks"
 msgstr "Error al analizar los discos"
 
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:90
+msgid "size"
+msgstr ""
+
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:114
 msgid "You must select a boot disk which you would like to install onto."
-msgstr "Debe elegir el disco de arranque en el cual se realizará la instalación."
+msgstr ""
+"Debe elegir el disco de arranque en el cual se realizará la instalación."
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:115
 msgid "Installation Wizard Message"
@@ -188,8 +230,12 @@ msgid "License Agreement"
 msgstr "Acuerdo de licencia"
 
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:56
-msgid "Your selected disk will be erased if you continue installation. Would you like to continue?"
-msgstr "El disco que escogió se borrará si continúa con la instalación. ¿Desea continuar?"
+msgid ""
+"Your selected disk will be erased if you continue installation. Would you "
+"like to continue?"
+msgstr ""
+"El disco que escogió se borrará si continúa con la instalación. ¿Desea "
+"continuar?"
 
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:57
 #: ../api/com/untangle/gui/install/InstallWizard.java:109
@@ -211,35 +257,51 @@ msgstr "¡Cuidado!"
 
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:71
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:106
-msgid "If you continue, in preparation for the installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!"
-msgstr "Si continúa, durante la preparación para el proceso de instalación ¡SE BORRARÁ EL DISCO Y SE PERDERÁN TODOS LOS DATOS QUE CONTIENE!"
+msgid ""
+"If you continue, in preparation for the installation process, YOUR DISK WILL "
+"BE ERASED AND ALL ITS DATA WILL BE LOST!"
+msgstr ""
+"Si continúa, durante la preparación para el proceso de instalación ¡SE "
+"BORRARÁ EL DISCO Y SE PERDERÁN TODOS LOS DATOS QUE CONTIENE!"
 
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:72
 #: ../api/com/untangle/gui/install/InstallWarningJPanel.java:116
-msgid "If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button."
-msgstr "Si no desea continuar, haga clic en el botón Cerrar ventana. En caso contrario, haga clic en el botón Terminar."
+msgid ""
+"If you would not like to continue, press the Close Window button.  "
+"Otherwise, press the Finish button."
+msgstr ""
+"Si no desea continuar, haga clic en el botón Cerrar ventana. En caso "
+"contrario, haga clic en el botón Terminar."
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:89
 msgid "<html>Welcome to the<br> Installation Wizard!</html>"
 msgstr "<html>Bienvenido al<br> Asistente de instalación.</html>"
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:92
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:126
-msgid "<html>This wizard will take you step-by-step through<br> the CD installation process.</html>"
-msgstr "<html>Este asistente le guiará por los pasos del<br> proceso de instalación del CD.</html>"
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:90
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:124
+msgid ""
+"<html>This wizard will take you step-by-step through<br> the CD installation "
+"process.</html>"
+msgstr ""
+"<html>Este asistente le guiará por los pasos del<br> proceso de instalación "
+"del CD.</html>"
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:93
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:137
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:135
 msgid "Language:"
 msgstr "Idioma:"
 
-#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:116
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:114
 msgid "<html>Welcome to the<br>Installation Wizard!</html>"
 msgstr "<html>Bienvenido al<br>Asistente de instalación.</html>"
 
 #: ../api/com/untangle/gui/install/InstallWizard.java:108
-msgid "If you exit now, you will not be able to continue installation. You should continue, if possible."
-msgstr "Si sale ahora, no podrá continuar con la instalación. Es mejor que continúe, si es posible."
+msgid ""
+"If you exit now, you will not be able to continue installation. You should "
+"continue, if possible."
+msgstr ""
+"Si sale ahora, no podrá continuar con la instalación. Es mejor que continúe, "
+"si es posible."
 
 #: ../api/com/untangle/gui/install/InstallWizard.java:111
 msgid "<html><b>Exit</b> Wizard</html>"
@@ -275,7 +337,7 @@ msgstr "Confirmar reinicio..."
 
 #: ../api/com/untangle/gui/widgets/dialogs/MOneButtonJDialog.java:181
 #: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:122
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:356
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:357
 msgid "Close"
 msgstr "Cerrar"
 
@@ -292,17 +354,18 @@ msgid "Continue"
 msgstr "Continuar"
 
 #: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:121
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:338
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:339
 msgid "Previous"
 msgstr "Anterior"
 
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:182
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:188
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:319
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:123
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:183
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:189
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:320
 msgid "Next"
 msgstr "Siguiente"
 
-#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:195
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:196
 msgid "Finish"
 msgstr "Terminar"
 
@@ -310,4 +373,3 @@ msgstr "Terminar"
 #: ../api/com/untangle/gui/util/InfiniteProgressJComponent.java:206
 msgid "Error sleeping"
 msgstr "Error de inactividad"
-

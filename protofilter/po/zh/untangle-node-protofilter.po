@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
 "PO-Revision-Date: 2008-11-21 22:29-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -123,11 +123,11 @@ msgstr "动作原因"
 msgid "server"
 msgstr "服务器"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:217
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
 msgid "Saving..."
 msgstr "正在保存..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:217
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
 msgid "Please wait"
 msgstr "请等待"
 
@@ -165,6 +165,6 @@ msgstr "检测"
 
 #~ msgid "signature"
 #~ msgstr "签名"
+
 #~ msgid "Failed"
 #~ msgstr "失败"
-
