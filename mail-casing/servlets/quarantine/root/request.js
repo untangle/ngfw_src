@@ -83,9 +83,18 @@ Ung.QuarantineRequest.prototype = {
         var field = this.requestForm.find( "name", "email_address" )[0];
 
         if ( result == true ) {
-            alert( "Sent a digest to : " + field.getValue());
-            field.setValue( "" );
+            message = String.format( i18n._( "Successfully sent digest to '{0}'" ),  field.getValue());
+        }  else {
+            message = String.format( i18n._( "A quarantine does not exist for '{0}'" ), field.getValue());
         }
+
+        Ext.MessageBox.show({
+            title : i18n._( "Quarantine Request" ),
+            msg : message,
+            buttons : Ext.MessageBox.OK,
+            icon : Ext.MessageBox.INFO
+        });
+
         
         field.enable();
     }
