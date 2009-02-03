@@ -203,8 +203,14 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
+!ifndef SF_SELECTED
 !define SF_SELECTED   1
+!endif
+
+!ifndef SF_RO
 !define SF_RO         16
+!endif
+
 !define SF_NOT_RO     0xFFFFFFEF
 
 Section "OpenVPN User-Space Components" SecOpenVPNUserSpace
