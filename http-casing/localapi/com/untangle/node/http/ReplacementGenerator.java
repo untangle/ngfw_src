@@ -136,6 +136,11 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         }
     }
 
+    public Token[] generateSimpleResponse(String nonce, TCPSession session,
+            String uri, Header requestHeader, boolean persistent) {
+        return generateSimplePage(nonce, persistent, imagePreferred(uri, requestHeader));
+    }
+    
     // protected methods ------------------------------------------------------
 
     protected abstract String getReplacement(T data);
