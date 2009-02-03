@@ -67,8 +67,9 @@ case "$1" in
     ;;
 "untangle-net-alpaca")
     cd ../../pkgs/untangle-net-alpaca/po
-    xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot ../files/var/lib/rails/untangle-net-alpaca/app/helpers/interface_helper.rb -o tmp_keys.pot
-#    rgettext ../files/var/lib/rails/untangle-net-alpaca/app/helpers/interface_helper.rb -o tmp_keys.pot
+    # choose a specific file to create the pot file; then we join messages to that file
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot ../files/var/lib/rails/untangle-net-alpaca/app/controllers/application.rb -o tmp_keys.pot
+    find ../files/var/lib/rails/untangle-net-alpaca/app -name "*.rb" -exec xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot '{}' \;
     find ../files/var/lib/rails/untangle-net-alpaca/public/javascripts/pages -name "*.js" -exec xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot '{}' \;
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
