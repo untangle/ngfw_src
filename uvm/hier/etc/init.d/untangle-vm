@@ -151,7 +151,7 @@ case "$1" in
         ;;
 
     stop)
-        log_daemon_msg "Starting $DESC"
+        log_daemon_msg "Stopping $DESC"
 
         if [ ! -f ${UVM_RUNDIR}/${UVM_PID} ] ; then
             echo "Not Running."
