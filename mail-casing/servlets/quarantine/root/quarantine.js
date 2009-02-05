@@ -287,6 +287,10 @@ Ung.Quarantine.prototype = {
         this.addresses.clearAll();
         this.selectionModel.clearSelections();
         this.grid.setDisabled( true );
+        if ( Ext.fly(this.grid.getView().getHeaderCell(0)).first().hasClass('x-grid3-hd-checker-on')){
+            Ext.fly(this.grid.getView().getHeaderCell(0)).first().removeClass('x-grid3-hd-checker-on');
+        }         
+        
     },
     
     releaseOrDelete : function( action ) {
