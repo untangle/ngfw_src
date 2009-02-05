@@ -1143,7 +1143,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         if ( exception ) {
             Ext.MessageBox.show({
                 title:i18n._( "Network Settings" ),
-                msg:exception.message,
+                msg : i18n._( "Unable to complete connectivity test, please try again." ),
                 width:300,
                 buttons:Ext.MessageBox.OK,
                 icon:Ext.MessageBox.INFO

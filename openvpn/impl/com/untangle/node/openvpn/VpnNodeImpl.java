@@ -587,7 +587,11 @@ public class VpnNodeImpl extends AbstractNode
         }
 
         /* Don't start if openvpn cannot be configured */
-        if ( !settings.isConfigured()) throw new UnconfiguredException( "Openvpn is not configured" );
+        if ( !settings.isConfigured()) {
+            throw new UnconfiguredException( "You must configure OpenVPN as either a VPN Routing Server" + 
+                                             " or a VPN Client before you can turn it on.  You may do this" +
+                                             " through its Setup Wizard (in its settings)." );
+        }
 
         try {
             settings.validate();
