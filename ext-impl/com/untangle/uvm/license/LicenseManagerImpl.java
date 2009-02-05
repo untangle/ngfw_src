@@ -115,6 +115,12 @@ public class LicenseManagerImpl implements LicenseManager
     /** A set of all of the products to update. */
     private final Set<Product> products = new HashSet<Product>();
 
+    /** A set of all of the products to were notified last time. (This is to work around
+     * the race condition on the pulse class that doesn't guarantee the pulse fires after
+     * the method starts. 5876
+     */
+    private final Set<Product> notifiedProducts = new HashSet<Product>();
+
     /** map from the product identifier to the latest valid license
      * available for this product */
     private Map<String,License> licenseMap = new HashMap<String,License>();
@@ -162,6 +168,15 @@ public class LicenseManagerImpl implements LicenseManager
         }
 
         /* schedule the task and wait for it to return */
+        scheduleAndWait();
+
+        synchronized( this ) {
+            if ( this.notifiedProducts.size() == this.products.size()) {
+                return;
+            }
+        }
+
+        /* run it again just in case the new product was missed. */
         scheduleAndWait();
     }
 
@@ -322,6 +337,9 @@ public class LicenseManagerImpl implements LicenseManager
     private synchronized void notifyProducts()
     {
         long nextExpirationDate = System.currentTimeMillis() + this.validationPeriod;
+        
+        this.notifiedProducts.clear();
+        this.notifiedProducts.addAll( this.products );
 
         for ( Product product : this.products ) {
             try {
@@ -527,10 +545,14 @@ public class LicenseManagerImpl implements LicenseManager
         return new LicenseStatus( true, identifier, mackageName, license.getType(), new Date( end ),
                                   timeLeft, isTrial );
     }
-
+    
     private void scheduleAndWait()
     {
-        task.run();
+        /* update all of the licenses for products, run all of them in
+         * the timer task to avoid synchronization issues. */
+        if ( !this.pulse.beat( 4000 )) {
+            logger.debug( "unable to wait for the license task to complete." );
+        }
     }
 
     /**
