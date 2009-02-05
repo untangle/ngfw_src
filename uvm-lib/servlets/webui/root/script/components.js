@@ -934,6 +934,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             'name' : this.md.displayName
         });
         if(this.fadeIn) {
+            this.getEl().scrollIntoView(Ext.getCmp("center").body);
             this.getEl().syncFx()
             this.getEl().fadeIn({duration: 3});
             this.getEl().frame(null, 1, { duration: 1 });
@@ -1354,6 +1355,7 @@ Ung.NodePreview = Ext.extend(Ext.Component, {
             'displayName' : this.displayName
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
+        this.getEl().scrollIntoView(Ext.getCmp("center").body);
         this.getEl().fadeIn({ endOpacity: 0.58, duration: 12});
     }    
 });

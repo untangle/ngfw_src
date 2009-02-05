@@ -801,7 +801,7 @@ Ung.Main=Ext.extend(Object, {
                 layout: 'fit',
                 defaults: {},
                 items: {
-                    html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" />'
+                    html: '<iframe id="iframeWin_iframe" name="iframeWin_iframe" width="100%" height="100%" frameborder="0"/>'
                 },
                 closeAction:'closeActionFn',
                 closeActionFn: function() {
