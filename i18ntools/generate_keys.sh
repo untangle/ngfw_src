@@ -4,7 +4,7 @@ ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config unt
     untangle-casing-mail untangle-base-virus untangle-base-webfilter 
     untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
-    untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote'
+    untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote untangle-node-adblocker'
 OFFICIAL_LANGUAGES='es zh pt_BR'
 
 function update_keys()
@@ -115,7 +115,7 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting")    
+"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting"|untangle-node-adblocker)    
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../${moduleName}/po/
     echo 'get new keys'
