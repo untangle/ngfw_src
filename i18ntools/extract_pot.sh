@@ -14,7 +14,7 @@ cp ../mail-casing/po/untangle-casing-mail.pot ./pot/
 cp ../virus-base/po/untangle-base-virus.pot ./pot/
 cp ../webfilter-base/po/untangle-base-webfilter.pot ./pot/
 
-for module in untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
+for module in untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn untangle-node-adblocker
 do 
     module_dir=`echo "${module}"|cut -d"-" -f3`
     cp ../${module_dir}/po/${module}.pot ./pot/
