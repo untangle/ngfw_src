@@ -44,5 +44,6 @@ public class ProductIdentifier
     public static final String KASPERSKY_AV = "untangle-dual-virus-blocker-kav";
     public static final String SITEFILTER = "untangle-sitefilter";
     public static final String PC_REMOTE = "untangle-pcremote";
+    public static final String NAS = "untangle-nas";
     public static final String BRANDING_MANAGER = "untangle-branding-manager";
 }
