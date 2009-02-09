@@ -639,17 +639,18 @@ public class LicenseManagerImpl implements LicenseManager
         LICENSE_MAP.put( LicenseType.SUBSCRIPTION.getName(), LicenseType.SUBSCRIPTION );
         LICENSE_MAP.put( LicenseType.DEVELOPMENT.getName(), LicenseType.DEVELOPMENT );
 
-        addMackageMap( "untangle-node-adconnector", "untangle-user-directory-integration" );
-        addMackageMap( "untangle-node-adconnector", "untangle-user-directory-management" );
-        addMackageMap( "untangle-node-policy", "untangle-policy-manager" );
-        addMackageMap( "untangle-node-kav", "untangle-dual-virus-blocker-kav" );
-        addMackageMap( "untangle-node-portal", "untangle-remote-access-portal" );
+        addMackageMap( "untangle-node-adconnector", ProductIdentifier.PHONE_BOOK );
+        addMackageMap( "untangle-node-adconnector", ProductIdentifier.POLICY_MANAGER );
+        addMackageMap( "untangle-node-policy", ProductIdentifier.POLICY_MANAGER );
+        addMackageMap( "untangle-node-kav", ProductIdentifier.KASPERSKY_AV );
+        addMackageMap( "untangle-node-portal", ProductIdentifier.PORTAL );
         addMackageMap( "untangle-node-license", "untangle-license-manager" );
-        addMackageMap( "untangle-node-branding", "untangle-branding-manager" );
-        addMackageMap( "untangle-node-boxbackup", "untangle-configuration-backup" );
-        addMackageMap( "untangle-node-pcremote", "untangle-pcremote" );
+        addMackageMap( "untangle-node-branding", ProductIdentifier.BRANDING_MANAGER );
+        addMackageMap( "untangle-node-boxbackup", ProductIdentifier.CONFIGURATION_BACKUP );
+        addMackageMap( "untangle-node-pcremote", ProductIdentifier.PC_REMOTE );
+        addMackageMap( "untangle-node-sitefilter", ProductIdentifier.SITEFILTER );
+        addMackageMap( "untangle-node-commtouch", ProductIdentifier.COMMTOUCH );
         addMackageMap( "untangle-node-nas", "untangle-nas" );
-        addMackageMap( "untangle-node-sitefilter", "untangle-sitefilter" );
 
         INSTANCE = new LicenseManagerImpl();
 
