@@ -648,6 +648,7 @@ public class LicenseManagerImpl implements LicenseManager
         addMackageMap( "untangle-node-branding", "untangle-branding-manager" );
         addMackageMap( "untangle-node-boxbackup", "untangle-configuration-backup" );
         addMackageMap( "untangle-node-pcremote", "untangle-pcremote" );
+        addMackageMap( "untangle-node-nas", "untangle-nas" );
         addMackageMap( "untangle-node-sitefilter", "untangle-sitefilter" );
 
         INSTANCE = new LicenseManagerImpl();

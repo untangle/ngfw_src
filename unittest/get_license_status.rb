@@ -11,7 +11,8 @@ identifiers = [
                "untangle-user-directory-management", 
                "untangle-policy-manager", 
                "untangle-branding-manager", 
-               "untangle-pcremote"
+               "untangle-pcremote",
+               "untangle-nas"
               ]
 
 license_manager = Untangle::RemoteUvmContext.licenseManager()
