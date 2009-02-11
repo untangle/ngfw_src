@@ -79,11 +79,11 @@ Ung.Main=Ext.extend(Object, {
                     var win;
                     win = new Ext.Window({
                         layout      : 'fit',
-                        width       : 500,
-                        height      : 300,
+                        width       : 300,
+                        height      : 200,
                         closeAction :'hide',
                         plain       : true,
-                        html        :  i18n._('The currently configured skin is not marked as compatible with the current version of this software. The Default skin is now being used. <a href="http://wiki.untangle.com/index.php/Skins" target="_blank">Click here for more information.'),
+                        html        :  i18n._('The current custom skin is no longer compatible and has been disabled. The Default skin is temporarily being used. To disable this message change the skin settings under Config Administration. To get more information on how to fix the custom skin: <a href="http://wiki.untangle.com/index.php/Skins" target="_blank">Where can I find updated skins and new skins?</a>'),
                         title: i18n._('Skin Out of Date'), 
                         buttons: [ {
                             text     : i18n._('Ok'),
