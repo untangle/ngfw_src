@@ -75,6 +75,11 @@ class LocalLdapAdapter extends LdapAdapter {
     }
 
     @Override
+    protected String getGroupClassType() {
+        return "groupOfNames";
+    }
+
+    @Override
     protected String getMailAttributeName() {
         return "mail";
     }

@@ -36,6 +36,7 @@ import com.untangle.uvm.addrbook.NoSuchEmailException;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.addrbook.GroupEntry;
 import org.apache.log4j.Logger;
 
 /**
@@ -69,6 +70,9 @@ abstract class LdapAdapter {
      * in this directory (e.g. "user" or "inetOrgPerson").
      */
     protected abstract String getUserClassType();
+
+    protected abstract String getGroupClassType();
+
 
     /**
      * Get the attribute used to hold the mail (e.g. "mail").
@@ -175,6 +179,39 @@ abstract class LdapAdapter {
             throw new ServiceUnavailableException(ex.toString());
         }
     }
+
+    public List<GroupEntry> listAllGroups()
+        throws ServiceUnavailableException {
+
+        try {
+            List<Map<String, String[]>> list =
+                queryAsSuperuser(getSearchBase(),
+                                 getListAllGroupsSearchString(),
+                                 getGroupEntrySearchControls());
+
+            List<GroupEntry> ret = new ArrayList<GroupEntry>();
+
+            if(list == null || list.size() == 0) {
+                return ret;
+            }
+
+            for(Map<String, String[]> map : list) {
+                GroupEntry entry = toGroupEntry(map);
+                if(entry != null) {
+                    ret.add(entry);
+                }
+            }
+            return ret;
+        }
+        catch(NamingException ex) {
+            m_logger.warn("Exception group listing entries", ex);
+            throw new ServiceUnavailableException(ex.toString());
+        }
+    }
+
+
+
+
 
     /**
      * Tests if the given userid exists in this repository
@@ -418,6 +455,7 @@ abstract class LdapAdapter {
                              settings.getSuperuserPass());
     }
 
+
     /**
      * Intended to be overidden by Active Directory
      */
@@ -426,6 +464,13 @@ abstract class LdapAdapter {
         sb.append("(").append("objectClass=").append(getUserClassType()).append(")");
         return sb.toString();
     }
+
+    protected String getListAllGroupsSearchString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(objectClass=").append(getGroupClassType()).append(")");
+        return sb.toString();
+    }
+
 
 
     /**
@@ -632,6 +677,40 @@ abstract class LdapAdapter {
                              getRepositoryType());
     }
 
+    /**
+     * Helper to convert (based on our "standard" returned controls)
+     * the GroupEntry.
+     */
+    private GroupEntry toGroupEntry(Map<String, String[]> map) {
+        return new GroupEntry(
+                              getFirstEntryOrNull(map.get(getCNName())),
+                              getFirstEntryOrNull(map.get(getGroupName())),
+                              getFirstEntryOrNull(map.get(getGroupTypeName())),
+                              getFirstEntryOrNull(map.get(getGroupDescriptionName())),
+                              map.get(getGroupMembersName()),
+                              getRepositoryType());
+    }
+
+    protected String getCNName() {
+        return "cn";
+    }
+
+    protected String getGroupName() {
+        return "samaccountname";
+    }
+
+    protected String getGroupTypeName() {
+        return "samaccounttype";
+    }
+
+    protected String getGroupDescriptionName() {
+        return "description";
+    }
+
+    protected String getGroupMembersName() {
+        return "members";
+    }
+    
 
     /**
      * Gets the first entry in the String[], or null
@@ -646,10 +725,23 @@ abstract class LdapAdapter {
      * Helper to create the search controls used when fetching a UserEntry
      */
     private SearchControls getUserEntrySearchControls() {
-        return createSimpleSearchControls(
+         return createSimpleSearchControls(
                                           getUIDAttributeName(),
                                           getMailAttributeName(),
                                           getFullNameAttributeName());
+     }
+
+
+    /**
+     * Helper to create the search controls used when fetching a GroupEntry
+     */
+    private SearchControls getGroupEntrySearchControls() {
+        return createSimpleSearchControls(
+                                          "cn",
+                                          "description",
+                                          "sAMAccountName",
+                                          "sAMAccountType",
+                                          "member");
     }
 
 
