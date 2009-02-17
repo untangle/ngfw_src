@@ -28,6 +28,7 @@ import com.untangle.uvm.addrbook.NoSuchEmailException;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.addrbook.GroupEntry;
 
 /**
  * Concrete implementation of the AddressBook.  Note that this class
@@ -236,6 +237,25 @@ class RemoteAddressBookAdaptor implements RemoteAddressBook {
     {
         return this.addressBook.productIdentifier();
     }
+
+    //====================================================
+    // See doc on com.untangle.uvm.addrbook.AddressBook
+    //====================================================
+    public List<GroupEntry> getGroupEntries()
+        throws ServiceUnavailableException {
+        return this.addressBook.getGroupEntries();
+    }
+
+
+
+    //====================================================
+    // See doc on com.untangle.uvm.addrbook.AddressBook
+    //====================================================
+    public List<GroupEntry> getGroupEntries(RepositoryType searchIn)
+        throws ServiceUnavailableException {
+        return this.addressBook.getGroupEntries(searchIn);
+    }
+
 }
 
 

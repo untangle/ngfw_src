@@ -368,6 +368,38 @@ public interface RemoteAddressBook extends LicensedProduct
      */
     void updateLocalPassword(String uid, String newPassword)
         throws ServiceUnavailableException, NameNotFoundException;
+
+    /**
+     * Get all GroupEntries from all configured repositories.  Note
+     * that a GroupEntry is unique in its uid/repository key so there
+     * is a chance to see the same "uid" twice in the returned list
+     *
+     * @return the list of all entries (may be of zero length, but not
+     * null).
+     *
+     * @exception ServiceUnavailableException the back-end directory
+     * is in a bad state.  There are no corrective actions the caller
+     * can take based on the given input
+     */
+    List<GroupEntry> getGroupEntries()
+        throws ServiceUnavailableException;
+
+    /**
+     * Get all GroupEntries from the given repository.
+     *
+     * @param searchIn the repository type to search
+     * @return the list of all entries (may ne of zero length, but not
+     * null).
+     * @exception ServiceUnavailableException the back-end directory
+     * is in a bad state.  There are no corrective actions the caller
+     * can take based on the given input.  Note that this is
+     * <b>not</b> thrown if the specified repository is not
+     * configured.
+     */
+    List<GroupEntry> getGroupEntries(RepositoryType searchIn)
+        throws ServiceUnavailableException;
+
+
 }
 
 

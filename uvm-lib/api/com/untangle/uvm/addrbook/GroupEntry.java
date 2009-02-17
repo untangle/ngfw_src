@@ -1,6 +1,6 @@
 /*
  * $HeadURL: svn://chef.metaloft.com/work/src/uvm-lib/api/com/untangle/uvm/addrbook/GroupEntry.java $
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2009 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,

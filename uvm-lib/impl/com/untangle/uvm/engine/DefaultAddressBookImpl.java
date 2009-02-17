@@ -38,6 +38,7 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.addrbook.GroupEntry;
 
 import com.untangle.uvm.license.ProductIdentifier;
 
@@ -471,6 +472,45 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
         return m_settings.getAddressBookConfiguration() ==
             AddressBookConfiguration.NOT_CONFIGURED;
     }
+
+    //====================================================
+    // See doc on com.untangle.uvm.addrbook.AddressBook
+    //====================================================
+    public List<GroupEntry> getGroupEntries()
+        throws ServiceUnavailableException {
+        m_logger.info("getGroupEntries");
+        
+        return isNotConfigured()?
+            new ArrayList<GroupEntry>():
+            m_localAdapter.listAllGroups();
+    }
+
+
+
+    //====================================================
+    // See doc on com.untangle.uvm.addrbook.AddressBook
+    //====================================================
+    public List<GroupEntry> getGroupEntries(RepositoryType searchIn)
+        throws ServiceUnavailableException {
+        m_logger.info("getGroupEntries <" + searchIn + ">");
+
+        switch(searchIn) {
+            //---------------------------------------
+        case LOCAL_DIRECTORY:
+            return isNotConfigured()?
+                new ArrayList<GroupEntry>():
+                m_localAdapter.listAllGroups();
+
+            //---------------------------------------
+        case MS_ACTIVE_DIRECTORY:
+            // fallthrough
+            //---------------------------------------
+        case NONE:
+        default:
+            break;
+        }
+
+        return new ArrayList<GroupEntry>();
+    }
+
 }
-
-
