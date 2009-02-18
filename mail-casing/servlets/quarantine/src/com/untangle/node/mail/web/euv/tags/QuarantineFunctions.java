@@ -28,6 +28,9 @@ import com.untangle.node.mail.web.euv.Constants;
 
 import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 public class QuarantineFunctions
 {
     private static final String SL_KEY = "untangle.safelist.contents.";
@@ -72,19 +75,13 @@ public class QuarantineFunctions
 
     private static final String buildJsonList( String[] values )
     {
-        if ( values == null ) return "[]";
-        boolean isFirst = true;
-        StringBuilder sb = new StringBuilder();
-        sb.append( "[" );
-        for ( String s : values ) {
-            if ( !isFirst ) sb.append( "," );
-            isFirst = false;
-            sb.append( "['" + s + "']\n" );
+        try {
+            JSONArray ja = new JSONArray(values);
+            return ja.toString();
+        } catch(JSONException j) {
+            //TODO log something
         }
-
-        sb.append( "]" );
-
-        return  sb.toString();
+        return "[]";
     }
 
     public static void setCurrentSafelist( ServletRequest request, String[] list )
