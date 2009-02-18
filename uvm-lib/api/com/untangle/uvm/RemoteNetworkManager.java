@@ -121,6 +121,9 @@ public interface RemoteNetworkManager
     /* Get the hostname of the box */
     HostName getHostname();
 
+    /* Get the domain name of the box (alpaca domainNameSuffix) */
+    HostName getDomainName();
+
     /* Get the public URL of the box */
     String getPublicAddress();
 

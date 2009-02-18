@@ -363,6 +363,18 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return this.addressManager.getInternalSettings().getHostName();
     }
 
+    /* Get the domain name suffix */
+    public HostName getDomainName()
+    {
+        HostName result = null;
+        // XXX  Implement me XXX
+        try {
+	    result = HostName.parseStrict("untangle.local");
+	} catch (Exception x) { /* Can't happen */ }
+	return result;
+    }
+    
+
     public String getPublicAddress()
     {
         return this.addressManager.getInternalSettings().getCurrentURL();

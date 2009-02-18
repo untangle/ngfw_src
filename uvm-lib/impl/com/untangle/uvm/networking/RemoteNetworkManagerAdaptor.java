@@ -145,6 +145,12 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         return lnm.getHostname();
     }
 
+    /* Get the domain name of the box (alpaca domainNameSuffix) */
+    public HostName getDomainName()
+    {
+        return lnm.getDomainName();
+    }
+
     /* Get the public URL of the box */
     public String getPublicAddress()
     {
