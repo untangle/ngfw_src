@@ -175,7 +175,11 @@ restartServiceIfNeeded() {
     ctasd)
       pidFile="/var/run/ctasd/ctasd.pid"
       dpkg -l untangle-ctasd | grep -q -E '^ii' || return
+      # do nothing if ctasd is not configured, or explicitely disabled
+      [ -f /etc/default/untangle-ctasd ] || return
+      grep 'CTASD_DISABLED=true' /etc/default/untangle-ctasd && return
       isServiceRunning ctasd && return
+      serviceName=untangle-ctasd
       ;;
   esac
 
