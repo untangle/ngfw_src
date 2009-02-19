@@ -75,6 +75,9 @@ public class QuarantineFunctions
 
     private static final String buildJsonList( String[] values )
     {
+        if ( values == null ) {
+            return "[]";
+        }
         try {
             JSONArray ja = new JSONArray(values);
             return ja.toString();
