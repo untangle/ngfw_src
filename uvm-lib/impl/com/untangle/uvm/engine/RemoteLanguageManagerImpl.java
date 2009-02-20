@@ -39,10 +39,14 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.UvmException;
+import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
@@ -344,6 +348,22 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             // is done in client side
         }
 
+        // get translation for base node, if any
+        RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
+        Node node = uvm.nodeManager().node(module);
+        if (node != null) {
+            NodeDesc nodeDesc = node.getNodeDesc();
+            if (nodeDesc != null) {
+                String nodeBase = nodeDesc.getNodeBase();
+                if (nodeBase != null) {
+                    Map<String, String> mapBase = getTranslations(nodeBase);
+                    if (mapBase != null) {
+                        map.putAll(mapBase);
+                    }
+                }
+            }
+        }
+        
         return map;
     }
 

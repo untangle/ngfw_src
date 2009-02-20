@@ -1,0 +1,25 @@
+import reports.engine
+import sql_helper
+
+class HttpCasing(reports.engine.Node):
+    nodes = []
+
+    def __init__(self):
+        print "__init__"
+
+
+    def setup(self, start_time, end_time):
+        sql_helper.create_table_from_query('reports.users', """\
+SELECT DISTINCT username FROM events.u_lookup_evt
+WHERE time_stamp >= ? AND time_stamp < ?""",
+                                           (start_time, end_time))
+
+        sql_helper.create_table_from_query('reports_hnames', """\
+SELECT DISTINCT hname FROM reports.sessions
+WHERE time_stamp >= ? AND time_stamp < ? AND client_intf=1""",
+                                           (start_time, end_time))
+
+    def teardown(self):
+        print "TEARDOWN"
+
+reports.engine.register_node(UvmNode())

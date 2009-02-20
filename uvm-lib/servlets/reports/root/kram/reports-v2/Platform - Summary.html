@@ -1,0 +1,79 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<span style="position:absolute; left:20px; top:50px; width:338px; height:230px">
+<span id=ou0 style="position:absolute;left:0px;top:0px;width:338px;height:230px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Platform - Summary_files/u0.png',sizingMethod='scale');
+"><img style="width:338px; height:230px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Platform - Summary_files/u0.png" border="0" alt=""></span>
+</span>
+<IMG id=u0 src="Resources/transparent.gif" style="position:absolute; left:20px; top:50px; width:338px; height:230px"   >
+
+<span style="position:absolute; left:20px; top:290px; width:340px; height:220px">
+<span id=ou1 style="position:absolute;left:0px;top:0px;width:340px;height:220px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Platform - Summary_files/u1.png',sizingMethod='scale');
+"><img style="width:340px; height:220px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Platform - Summary_files/u1.png" border="0" alt=""></span>
+</span>
+<IMG id=u1 src="Resources/transparent.gif" style="position:absolute; left:20px; top:290px; width:340px; height:220px"   >
+
+<DIV id=u2 style="position:absolute; left:380px; top:130px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u2_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Average data rate <br>Peak data rate <br>Average data rate (7-day)<br>Data Transfered (7-day) </span></DIV></DIV>
+<DIV id=u3 style="position:absolute; left:530px; top:130px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u3_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">64 Kb/sec<br>205 Kb/sec<br>2.5 Gb/day<br>7.8 Gb</span></DIV></DIV>
+<span style="position:absolute; left:20px; top:520px; width:340px; height:250px">
+<span id=ou4 style="position:absolute;left:0px;top:0px;width:340px;height:250px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Platform - Summary_files/u4.png',sizingMethod='scale');
+"><img style="width:340px; height:250px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Platform - Summary_files/u4.png" border="0" alt=""></span>
+</span>
+<IMG id=u4 src="Resources/transparent.gif" style="position:absolute; left:20px; top:520px; width:340px; height:250px"   >
+
+<DIV id=u5 style="position:absolute; left:400px; top:370px; width:160px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u5_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Average CPU load (1-day):<br>Max CPU load (1-day):<br>Min CPU load (1-day): </span></DIV></DIV>
+<DIV id=u6 style="position:absolute; left:580px; top:370px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u6_rtf><span style=" color:#000000; font-size:10pt;">0.78<br>5.90<br>0.001</span></DIV></DIV>
+<DIV id=u7 style="position:absolute; left:400px; top:592px; width:170px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u7_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Average swap used (7-day): <br>Max swap used (7-day):</span></DIV></DIV>
+<DIV id=u8 style="position:absolute; left:580px; top:592px; width:150px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u8_rtf><span style=" color:#000000; font-size:10pt;">5.3%<br>5.4%</span></DIV></DIV>
+<DIV id=u9 style="position:absolute; left:130px; top:14px; width:310px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u9_rtf><span style=" color:#000000; font-size:20pt;">Platform - Summary</span></DIV></DIV>
+<span style="position:absolute; left:363px; top:50px; width:17px; height:17px">
+<IMG id=ou10 src="Platform - Summary_files/u10.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u10 src="Resources/transparent.gif" style="position:absolute; left:363px; top:50px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:363px; top:290px; width:17px; height:17px">
+<IMG id=ou11 src="Platform - Summary_files/u11.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u11 src="Resources/transparent.gif" style="position:absolute; left:363px; top:290px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:363px; top:523px; width:17px; height:17px">
+<IMG id=ou12 src="Platform - Summary_files/u12.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u12 src="Resources/transparent.gif" style="position:absolute; left:363px; top:523px; width:17px; height:17px"   >
+<SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="Platform - Summary_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>

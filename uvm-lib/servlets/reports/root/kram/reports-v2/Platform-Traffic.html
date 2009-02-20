@@ -1,0 +1,75 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<span style="position:absolute; left:20px; top:60px; width:338px; height:230px">
+<span id=ou0 style="position:absolute;left:0px;top:0px;width:338px;height:230px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Platform-Traffic_files/u0.png',sizingMethod='scale');
+"><img style="width:338px; height:230px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Platform-Traffic_files/u0.png" border="0" alt=""></span>
+</span>
+<IMG id=u0 src="Resources/transparent.gif" style="position:absolute; left:20px; top:60px; width:338px; height:230px"   >
+
+<span style="position:absolute; left:20px; top:300px; width:341px; height:223px">
+<span id=ou1 style="position:absolute;left:0px;top:0px;width:341px;height:223px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Platform-Traffic_files/u1.png',sizingMethod='scale');
+"><img style="width:341px; height:223px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Platform-Traffic_files/u1.png" border="0" alt=""></span>
+</span>
+<IMG id=u1 src="Resources/transparent.gif" style="position:absolute; left:20px; top:300px; width:341px; height:223px"   >
+
+<DIV id=u2 style="position:absolute; left:380px; top:150px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u2_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Average data rate (/sec)<br>Average data rate (/day)<br>Data Transfered (7-day) </span></DIV></DIV>
+<DIV id=u3 style="position:absolute; left:540px; top:152px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u3_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">64 Kb/sec<br>2.5 Gb/day<br>7.8 Gb</span></DIV></DIV>
+<DIV id=u4 style="position:absolute; left:387px; top:394px; width:190px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u4_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Average active sessions:<br>Maximum active sessions:<br>Total sessions (7-day): </span></DIV></DIV>
+<DIV id=u5 style="position:absolute; left:560px; top:396px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u5_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">150<br>320<br>302304</span></DIV></DIV>
+<span style="position:absolute; left:360px; top:60px; width:17px; height:17px">
+<IMG id=ou6 src="Platform-Traffic_files/u6.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u6 src="Resources/transparent.gif" style="position:absolute; left:360px; top:60px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:363px; top:300px; width:17px; height:17px">
+<IMG id=ou7 src="Platform-Traffic_files/u7.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u7 src="Resources/transparent.gif" style="position:absolute; left:363px; top:300px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:363px; top:540px; width:17px; height:17px">
+<IMG id=ou8 src="Platform-Traffic_files/u8.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u8 src="Resources/transparent.gif" style="position:absolute; left:363px; top:540px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:20px; top:538px; width:340px; height:202px">
+<span id=ou9 style="position:absolute;left:0px;top:0px;width:340px;height:202px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Platform-Traffic_files/u9.png',sizingMethod='scale');
+"><img style="width:340px; height:202px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Platform-Traffic_files/u9.png" border="0" alt=""></span>
+</span>
+<IMG id=u9 src="Resources/transparent.gif" style="position:absolute; left:20px; top:538px; width:340px; height:202px"   >
+
+<DIV id=u10 style="position:absolute; left:130px; top:14px; width:310px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u10_rtf><span style=" color:#000000; font-size:20pt;">Platform - Traffic</span></DIV></DIV><SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="Platform-Traffic_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>

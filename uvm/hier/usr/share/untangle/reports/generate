@@ -1,0 +1,113 @@
+#!/usr/bin/python
+
+import sys
+import simplejson
+
+from elementtree import ElementTree
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus.flowables import Flowable
+from reportlab.platypus.tables import Table, TableStyle
+from reportlab.rl_config import defaultPageSize
+
+REPORT_DIR = "@PREFIX@/var/lib/untangle/reports/data"
+
+class PdfGenerator:
+    def __init__(self, node):
+        self.__node = node
+
+        self.__report_xml = ElementTree.parse("@UVM_SCHEMA@/%s/report.xml"
+                                              % (self.__node))
+
+    def generate_reports(self, date, period):
+        doc = SimpleDocTemplate("phello.pdf")
+
+        story = []
+
+        for mr in self.__report_xml.findall('master-report'):
+            l = self.__layout_master(mr, date, period)
+            if l != None:
+                story.append(l)
+
+        doc.build(story)
+
+    def __layout_master(self, mr, date, period):
+        master_name = mr.attrib.get('name')
+        reports = mr.findall('report')
+
+        table_data = []
+        table_row = None;
+        i = 0;
+
+        for r in reports:
+            try:
+                json = self.__get_json(date, period, master_name, r.get('name'))
+                t = TopTen(json)
+                if i % 2 == 0:
+                    table_row = []
+                    table_data.append(table_row)
+                table_row.append(t)
+                i += 1
+            except IOError, e:
+                print "Skipping unknown report %s" % (e)
+
+        if (0 == i):
+            return None
+
+        return Table(table_data)
+
+    def __get_json(self, date, period, *report):
+        fn = "%s/%s/%s/%s" % (REPORT_DIR, date, period, self.__node)
+        for r in report:
+            fn += "/%s" % r
+
+        f = open(fn, 'r')
+        return simplejson.load(f)
+
+    def __firstPage(self, canvas, doc):
+        canvas.saveState()
+        canvas.setFont('Times-Roman',8)
+        canvas.drawString(inch, 0.75 * inch, "First Page / %s" % "platypus example")
+
+        canvas.restoreState()
+
+    def __laterPages(self, canvas, doc):
+        canvas.saveState()
+        canvas.setFont('Times-Roman',8)
+        canvas.drawString(inch, 0.75 * inch,
+                          "Page %d %s" % (doc.page, "platypus example"))
+        canvas.restoreState()
+
+class TopTen(Flowable):
+    def __init__(self, json):
+        columns = json['columns']
+        data = json['data']
+        total = json['total']
+
+        td = [[columns[0], columns[1], '%']]
+
+        subtotal = 0
+
+        for d in data:
+            td.append([d[0], d[1], '%d%%' % (float(d[1]) / total * 100)])
+            subtotal += d[1]
+
+        td.append(['Top 15 Totals:', subtotal,
+                   '%d%%' % (float(subtotal) / total * 100)])
+        td.append(['Overall Totals:', total, '100%'])
+
+        t = Table(td)
+        t.setStyle(TableStyle([('LINEBELOW',(0,0),(2,0),2,colors.black)]))
+
+        self.table = Table([[json['title']],[t]])
+
+    def draw(self):
+        self.table.drawOn(self.canv, 0, 0)
+
+    def wrap(self, *args):
+        return self.table.wrap(*args)
+
+pfg = PdfGenerator('untangle-node-webfilter')
+pfg.generate_reports('2008-04-16', 'monthly')

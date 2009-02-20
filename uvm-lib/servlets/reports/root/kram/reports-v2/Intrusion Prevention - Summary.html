@@ -1,0 +1,132 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<DIV id=u0 style="position:absolute; left:230px; top:10px; width:490px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u0_rtf><span style=" color:#000000; font-size:20pt;">Intrusion Prevention - Summary Report</span></DIV></DIV>
+<DIV id=u1 style="position:absolute; left:560px; top:60px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u1_rtf><span style=" color:#0000FF; font-size:10pt;"><u>Incident Report</u></span></DIV></DIV>
+<span style="position:absolute; left:20px; top:100px; width:451px; height:293px">
+<span id=ou2 style="position:absolute;left:0px;top:0px;width:451px;height:293px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Intrusion Prevention - Summary_files/u2.png',sizingMethod='scale');
+"><img style="width:451px; height:293px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Intrusion Prevention - Summary_files/u2.png" border="0" alt=""></span>
+</span>
+<IMG id=u2 src="Resources/transparent.gif" style="position:absolute; left:20px; top:100px; width:451px; height:293px"   >
+
+<DIV id=u3 style="position:absolute; left:538px; top:160px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u3_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Max Logged/day (7-day):<br>Avg Logged/day (7-day):<br>Max Blocked/day (7-day):<br>Avg Blocked/day (7-day):</span></DIV></DIV>
+<DIV id=u4 style="position:absolute; left:700px; top:160px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u4_rtf><span style=" color:#000000; font-size:10pt;">61</span><br><span style=" font-family:'Arial'; font-size:10pt;">20.5<br>23<br>12</span></DIV></DIV>
+<span style="position:absolute; left:20px; top:400px; width:451px; height:291px">
+<span id=ou5 style="position:absolute;left:0px;top:0px;width:451px;height:291px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Intrusion Prevention - Summary_files/u5.png',sizingMethod='scale');
+"><img style="width:451px; height:291px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Intrusion Prevention - Summary_files/u5.png" border="0" alt=""></span>
+</span>
+<IMG id=u5 src="Resources/transparent.gif" style="position:absolute; left:20px; top:400px; width:451px; height:291px"   >
+
+<span style="position:absolute; left:20px; top:700px; width:450px; height:285px">
+<span id=ou6 style="position:absolute;left:0px;top:0px;width:450px;height:285px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Intrusion Prevention - Summary_files/u6.png',sizingMethod='scale');
+"><img style="width:450px; height:285px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Intrusion Prevention - Summary_files/u6.png" border="0" alt=""></span>
+</span>
+<IMG id=u6 src="Resources/transparent.gif" style="position:absolute; left:20px; top:700px; width:450px; height:285px"   >
+
+<span style="position:absolute; left:20px; top:989px; width:450px; height:281px">
+<span id=ou7 style="position:absolute;left:0px;top:0px;width:450px;height:281px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Intrusion Prevention - Summary_files/u7.png',sizingMethod='scale');
+"><img style="width:450px; height:281px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Intrusion Prevention - Summary_files/u7.png" border="0" alt=""></span>
+</span>
+<IMG id=u7 src="Resources/transparent.gif" style="position:absolute; left:20px; top:989px; width:450px; height:281px"   >
+
+<DIV id=u8 style="position:absolute; left:540px; top:484px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u8_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">dbms_offline_snap<br>adware_warez_23<br>purity_hijack<br>information leak-42<br>foo<br>bar<br>baz</span></DIV></DIV>
+<DIV id=u9 style="position:absolute; left:680px; top:484px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u9_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">45 (55%)<br>21 (27%)<br>4 (4%)<br>1 (1%)<br>1 (1%)<br>1 (1%)<br>1 (1%)</span></DIV></DIV>
+<DIV id=u10 style="position:absolute; left:540px; top:778px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u10_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">dbms_offline_snap<br>adware_warez_23<br>purity_hijack<br>information leak-42<br>foo<br>bar<br>baz</span></DIV></DIV>
+<DIV id=u11 style="position:absolute; left:680px; top:778px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u11_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">45 (55%)<br>21 (27%)<br>4 (4%)<br>1 (1%)<br>1 (1%)<br>1 (1%)<br>1 (1%)</span></DIV></DIV>
+<DIV id=u12 style="position:absolute; left:540px; top:1040px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u12_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">dbms_offline_snap<br>adware_warez_23<br>purity_hijack<br>information leak-42<br>foo<br>bar<br>baz</span></DIV></DIV>
+<DIV id=u13 style="position:absolute; left:680px; top:1040px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u13_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">45 (55%)<br>21 (27%)<br>4 (4%)<br>1 (1%)<br>1 (1%)<br>1 (1%)<br>1 (1%)</span></DIV></DIV>
+<span style="position:absolute; left:19px; top:1272px; width:451px; height:291px">
+<span id=ou14 style="position:absolute;left:0px;top:0px;width:451px;height:291px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Intrusion Prevention - Summary_files/u14.png',sizingMethod='scale');
+"><img style="width:451px; height:291px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Intrusion Prevention - Summary_files/u14.png" border="0" alt=""></span>
+</span>
+<IMG id=u14 src="Resources/transparent.gif" style="position:absolute; left:19px; top:1272px; width:451px; height:291px"   >
+
+<span style="position:absolute; left:18px; top:1566px; width:452px; height:293px">
+<span id=ou15 style="position:absolute;left:0px;top:0px;width:452px;height:293px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Intrusion Prevention - Summary_files/u15.png',sizingMethod='scale');
+"><img style="width:452px; height:293px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Intrusion Prevention - Summary_files/u15.png" border="0" alt=""></span>
+</span>
+<IMG id=u15 src="Resources/transparent.gif" style="position:absolute; left:18px; top:1566px; width:452px; height:293px"   >
+
+<DIV id=u16 style="position:absolute; left:540px; top:1358px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u16_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">192.168.1.105<br>192.167.1.110<br>192.168.1.104 (foo)<br>192.168.1.106 (macbook)<br>192.168.1.107 (sbs)<br>192.168.1.12<br>192.168.1.125</span></DIV></DIV>
+<DIV id=u17 style="position:absolute; left:710px; top:1354px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u17_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">14 (35%)<br>10 (25%)<br>9 (20%)<br>8 (15%)<br>1 (2%)<br>1 (2%)<br>1 (2%)</span></DIV></DIV>
+<DIV id=u18 style="position:absolute; left:530px; top:1714px; width:150px; height:80px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u18_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">192.168.1.105<br>192.167.1.110<br>192.168.1.104 (foo)<br>192.168.1.106 (macbook)</span></DIV></DIV>
+<DIV id=u19 style="position:absolute; left:700px; top:1710px; width:150px; height:80px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u19_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">14 (35%)<br>10 (25%)<br>9 (20%)<br>8 (15%)</span></DIV></DIV>
+<span style="position:absolute; left:473px; top:100px; width:17px; height:17px">
+<IMG id=ou20 src="Intrusion Prevention - Summary_files/u20.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u20 src="Resources/transparent.gif" style="position:absolute; left:473px; top:100px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:473px; top:400px; width:17px; height:17px">
+<IMG id=ou21 src="Intrusion Prevention - Summary_files/u21.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u21 src="Resources/transparent.gif" style="position:absolute; left:473px; top:400px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:473px; top:700px; width:17px; height:17px">
+<IMG id=ou22 src="Intrusion Prevention - Summary_files/u22.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u22 src="Resources/transparent.gif" style="position:absolute; left:473px; top:700px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:473px; top:990px; width:17px; height:17px">
+<IMG id=ou23 src="Intrusion Prevention - Summary_files/u23.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u23 src="Resources/transparent.gif" style="position:absolute; left:473px; top:990px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:473px; top:1273px; width:17px; height:17px">
+<IMG id=ou24 src="Intrusion Prevention - Summary_files/u24.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u24 src="Resources/transparent.gif" style="position:absolute; left:473px; top:1273px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:473px; top:1570px; width:17px; height:17px">
+<IMG id=ou25 src="Intrusion Prevention - Summary_files/u25.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u25 src="Resources/transparent.gif" style="position:absolute; left:473px; top:1570px; width:17px; height:17px"   >
+<SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="Intrusion Prevention - Summary_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>

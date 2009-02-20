@@ -207,20 +207,17 @@ Ung.Util= {
             Ung.Util.loadScript(sScriptSrc, handler);
         }
     },
-    loadModuleTranslations : function(moduleName, dependencyMap, handler) {
+    loadModuleTranslations : function(moduleName, handler) {
         if(!Ung.i18nModuleInstances[moduleName]) {
-            rpc.languageManager.getTranslations(function(result, exception, opt, moduleName, dependencyMap, handler) {
+            rpc.languageManager.getTranslations(function(result, exception, opt, moduleName, handler) {
                 if(Ung.Util.handleException(exception)) return;
                 var moduleMap=result.map;
-                if(dependencyMap!=null) {
-                    Ext.applyIf(moduleMap, dependencyMap)
-                }
                 Ung.i18nModuleInstances[moduleName] = new Ung.ModuleI18N({
                         "map" : i18n.map,
                         "moduleMap" : moduleMap
                 });
                 handler.call(this);
-            }.createDelegate(this,[moduleName, dependencyMap, handler],true), moduleName);
+            }.createDelegate(this,[moduleName, handler],true), moduleName);
         } else {
             handler.call(this);
         }
@@ -1165,14 +1162,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         this.loadNodeContext.createDelegate(this,[this.initSettingsTranslations.createDelegate(this,[this.openSettings.createDelegate(this)])]).call(this);
     },
     initSettingsTranslations : function(handler) {
-        if(Ung.NodeWin.dependency[this.name]) {
-            var dependencyName=Ung.NodeWin.dependency[this.name].name;
-            Ung.Util.loadModuleTranslations.call(this, dependencyName, null, function(nodeName,dependencyName) {
-                Ung.Util.loadModuleTranslations.call(this,nodeName, Ung.i18nModuleInstances[dependencyName].moduleMap,handler);
-            }.createDelegate(this,[this.name, dependencyName]));
-        } else {
-            Ung.Util.loadModuleTranslations.call(this, this.name, null, handler);
-        }
+        Ung.Util.loadModuleTranslations.call(this, this.name, handler);
     },
     // open settings window
     openSettings : function() {

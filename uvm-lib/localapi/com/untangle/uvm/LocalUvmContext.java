@@ -52,6 +52,7 @@ import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
+import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;

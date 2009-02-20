@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -24,18 +24,33 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.lang.Math;
 
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.RemoteReportingManager;
-import com.untangle.uvm.reporting.Reporter;
-import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.reporting.Reporter;
+import com.untangle.uvm.reports.Application;
+import com.untangle.uvm.reports.ApplicationData;
+import com.untangle.uvm.reports.Chart;
+import com.untangle.uvm.reports.ColumnDesc;
+import com.untangle.uvm.reports.DetailSection;
+import com.untangle.uvm.reports.Host;
+import com.untangle.uvm.reports.KeyStatistic;
+import com.untangle.uvm.reports.LegendItem;
+import com.untangle.uvm.reports.RemoteReportingManager;
+import com.untangle.uvm.reports.Section;
+import com.untangle.uvm.reports.SummaryItem;
+import com.untangle.uvm.reports.SummarySection;
+import com.untangle.uvm.reports.TableOfContents;
+import com.untangle.uvm.reports.User;
+import com.untangle.uvm.security.Tid;
 import org.apache.log4j.Logger;
 
 class RemoteReportingManagerImpl implements RemoteReportingManager
@@ -50,7 +65,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     private static RemoteReportingManagerImpl REPORTING_MANAGER = new RemoteReportingManagerImpl();
 
     private enum RunState {
-        START,                  // Not yet prepared 
+        START,                  // Not yet prepared
         PREPARING,              // Currently preparing reports
         READY,                  // Prepared and Ready to run reports
         RUNNING                // Running report.
@@ -78,6 +93,123 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         return REPORTING_MANAGER;
     }
+
+    // NEW SHIZZLE -------------------------------------------------------------
+
+    // XXX SAMPLE DATA
+    public List<Date> getDates()
+    {
+        List<Date> l = new ArrayList<Date>();
+
+        Calendar c = Calendar.getInstance();
+        for (int i = 0; i < 10; i++) {
+            c.add(Calendar.DAY_OF_WEEK, -1);
+            l.add(c.getTime());
+        }
+
+        return l;
+    }
+
+    // XXX SAMPLE DATA
+    public TableOfContents getTableOfContents(Date d)
+    {
+        Application platform = new Application("untangle-vm", "Platform");
+        List<Application> apps = new ArrayList<Application>();
+        apps.add(new Application("untangle-node-webfilter", "WebFilter"));
+        apps.add(new Application("untangle-node-phish", "Phish Blocker"));
+        apps.add(new Application("untangle-node-spamassassin", "Spam Blocker"));
+        List<User> users = new ArrayList<User>();
+        List<Host> hosts = new ArrayList<Host>();
+
+        return new TableOfContents(platform, apps, users, hosts);
+    }
+
+    // XXX SAMPLE DATA
+    public ApplicationData getApplicationData(Date d, String appName)
+    {
+        List<Section> s = new ArrayList<Section>();
+        s.add(getBogusSummary());
+        s.add(getBogusDetails());
+
+        return new ApplicationData(s);
+    }
+
+    public ApplicationData getApplicationDataForUser(Date d, String appName,
+                                                     String username)
+    {
+        List<Section> s = new ArrayList<Section>();
+        s.add(getBogusDetails());
+        return new ApplicationData(s);
+    }
+
+    public ApplicationData getApplicationDataForHost(Date d, String appName,
+                                                     String hostname)
+    {
+        List<Section> s = new ArrayList<Section>();
+        s.add(getBogusDetails());
+        return new ApplicationData(s);
+    }
+
+    public ApplicationData getApplicationDataForEmail(Date d, String appName,
+                                                      String emailAddr)
+    {
+        List<Section> s = new ArrayList<Section>();
+        s.add(getBogusDetails());
+        return new ApplicationData(s);
+    }
+
+    private Section getBogusSummary()
+    {
+        List<SummaryItem> sis = new ArrayList<SummaryItem>();
+
+        String imageUrl = "script/samples/graph0.png";
+        String csvUrl = "/reports/date/data.csv";
+        String printerUrl = "/reports/date/shizzle.html";
+        List<KeyStatistic> ks = new ArrayList<KeyStatistic>();
+        ks.add(new KeyStatistic("Girth", 60, "inch"));
+        ks.add(new KeyStatistic("Weight", 350, "lbs"));
+        ks.add(new KeyStatistic("Engineers Maimed", 3, null));
+
+        List<LegendItem> li = new ArrayList<LegendItem>();
+        li.add(new LegendItem("Puppies Harmed", "/reports/legend/bluedash.png"));
+
+        Chart c = new Chart("Bogus Chart", imageUrl, csvUrl, printerUrl, ks, "Date", "Terra", li);
+        sis.add(c);
+
+        Chart c1 = new Chart("Bogus Chart", imageUrl, csvUrl, printerUrl, ks, "Date", "Terra", li);
+        sis.add(c1);
+
+        return new SummarySection("Bogus Summary Section", sis);
+    }
+
+    private Section getBogusDetails()
+    {
+        List<ColumnDesc> cds = new ArrayList<ColumnDesc>();
+        cds.add(new ColumnDesc("time", "Time", "Date"));
+        cds.add(new ColumnDesc("site", "URL", "URL"));
+        cds.add(new ColumnDesc("user", "User", "UserLink"));
+        cds.add(new ColumnDesc("host", "Host", "HostLink"));
+        cds.add(new ColumnDesc("email", "Email", "EmailLink"));
+
+        Calendar c = Calendar.getInstance();
+
+        List<List> data = new ArrayList<List>();
+        for (int i = 0; i < 100; i++) {
+            List l = new ArrayList();
+            l.add(c.getTime());
+            l.add("http://foo.bar/" + i);
+            l.add("user" + i);
+            l.add("10.0.0." + i);
+            l.add("mail" + (Math.floor((Math.random()*1000)))+"@foo.bar");
+            data.add(l);
+            c.add(Calendar.DAY_OF_WEEK, -1);
+        }
+
+        return new DetailSection("Bogus Detail Section", cds, data);
+    }
+
+    // OLD SHIT ----------------------------------------------------------------
+
 
     public void prepareReports(String outputBaseDir, Date midnight, int daysToKeep)
         throws UvmException
@@ -122,7 +254,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     public void startReports()
         throws UvmException
-    {   
+    {
         synchronized (this) {
             switch (state) {
             case START:

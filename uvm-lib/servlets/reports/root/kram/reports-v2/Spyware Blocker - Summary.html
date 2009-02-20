@@ -1,0 +1,161 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<DIV id=u0 style="position:absolute; left:230px; top:10px; width:490px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u0_rtf><span style=" color:#000000; font-size:20pt;">Spyware Blocker - Summary Report</span></DIV></DIV>
+<span style="position:absolute; left:463px; top:53px; width:17px; height:17px">
+<IMG id=ou1 src="Spyware Blocker - Summary_files/u1.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u1 src="Resources/transparent.gif" style="position:absolute; left:463px; top:53px; width:17px; height:17px"   >
+
+<DIV id=u2 style="position:absolute; left:510px; top:164px; width:190px; height:96px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u2_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Avg URLs blocked (1-day):<br>Avg URLs blocked (7-day):<br>Avg subnets detected (1-day):<br>Avg subnets detected (7-day):<br>Avg cookies blocked (1-day):<br>Avg cookies blocked (7-day):</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:56px; width:452px; height:304px">
+<span id=ou3 style="position:absolute;left:0px;top:0px;width:452px;height:304px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u3.png',sizingMethod='scale');
+"><img style="width:452px; height:304px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u3.png" border="0" alt=""></span>
+</span>
+<IMG id=u3 src="Resources/transparent.gif" style="position:absolute; left:10px; top:56px; width:452px; height:304px"   >
+
+<DIV id=u4 style="position:absolute; left:710px; top:164px; width:150px; height:96px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u4_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">60/hour<br>62/hour<br>10/hour<br>12/hour<br>21/hour<br>20/hour</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:416px; width:453px; height:294px">
+<span id=ou5 style="position:absolute;left:0px;top:0px;width:453px;height:294px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u5.png',sizingMethod='scale');
+"><img style="width:453px; height:294px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u5.png" border="0" alt=""></span>
+</span>
+<IMG id=u5 src="Resources/transparent.gif" style="position:absolute; left:10px; top:416px; width:453px; height:294px"   >
+
+<DIV id=u6 style="position:absolute; left:10px; top:390px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u6_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">URLs</span></DIV></DIV>
+<DIV id=u7 style="position:absolute; left:500px; top:490px; width:200px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u7_rtf><br><span style=" color:#000000; font-size:10pt;">Avg URLs blocked (7-day):<br>Max URLs blocked (7-day):</span></DIV></DIV>
+<DIV id=u8 style="position:absolute; left:700px; top:508px; width:200px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u8_rtf><span style=" color:#000000; font-size:10pt;">200/day<br>280/day</span></DIV></DIV>
+<DIV id=u9 style="position:absolute; left:530px; top:774px; width:150px; height:192px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u9_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">gator.com<br>doubleclick.net<br>foo.com<br>bar.net<br>baz.foo.com<br>snafflefuoo.com<br>metavizzle.com<br>adware.com<br>spyware.com<br>malware.com<br>other</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:720px; width:450px; height:289px">
+<span id=ou10 style="position:absolute;left:0px;top:0px;width:450px;height:289px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u10.png',sizingMethod='scale');
+"><img style="width:450px; height:289px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u10.png" border="0" alt=""></span>
+</span>
+<IMG id=u10 src="Resources/transparent.gif" style="position:absolute; left:10px; top:720px; width:450px; height:289px"   >
+
+<DIV id=u11 style="position:absolute; left:650px; top:774px; width:150px; height:192px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u11_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">1000<br>900<br>800<br>700<br>600<br>500<br>400<br>300<br>200<br>100<br>1500</span></DIV></DIV>
+<DIV id=u12 style="position:absolute; left:10px; top:1390px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u12_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Cookies</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:1416px; width:450px; height:290px">
+<span id=ou13 style="position:absolute;left:0px;top:0px;width:450px;height:290px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u13.png',sizingMethod='scale');
+"><img style="width:450px; height:290px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u13.png" border="0" alt=""></span>
+</span>
+<IMG id=u13 src="Resources/transparent.gif" style="position:absolute; left:10px; top:1416px; width:450px; height:290px"   >
+
+<DIV id=u14 style="position:absolute; left:500px; top:1516px; width:200px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u14_rtf><br><span style=" color:#000000; font-size:10pt;">Avg cookies blocked (7-day):<br>Max cookies blocked (7-day):</span></DIV></DIV>
+<DIV id=u15 style="position:absolute; left:700px; top:1534px; width:200px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u15_rtf><span style=" color:#000000; font-size:10pt;">200/day<br>280/day</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:1716px; width:450px; height:289px">
+<span id=ou16 style="position:absolute;left:0px;top:0px;width:450px;height:289px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u16.png',sizingMethod='scale');
+"><img style="width:450px; height:289px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u16.png" border="0" alt=""></span>
+</span>
+<IMG id=u16 src="Resources/transparent.gif" style="position:absolute; left:10px; top:1716px; width:450px; height:289px"   >
+
+<DIV id=u17 style="position:absolute; left:10px; top:2020px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u17_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Suspicious Subnets</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:2053px; width:451px; height:293px">
+<span id=ou18 style="position:absolute;left:0px;top:0px;width:451px;height:293px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u18.png',sizingMethod='scale');
+"><img style="width:451px; height:293px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u18.png" border="0" alt=""></span>
+</span>
+<IMG id=u18 src="Resources/transparent.gif" style="position:absolute; left:10px; top:2053px; width:451px; height:293px"   >
+
+<DIV id=u19 style="position:absolute; left:500px; top:2176px; width:200px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u19_rtf><br><span style=" color:#000000; font-size:10pt;">Avg subnets detected (7-day):<br>Max subnets detected (7-day):</span></DIV></DIV>
+<DIV id=u20 style="position:absolute; left:700px; top:2194px; width:200px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u20_rtf><span style=" color:#000000; font-size:10pt;">200/day<br>280/day</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:2667px; width:450px; height:353px">
+<span id=ou21 style="position:absolute;left:0px;top:0px;width:450px;height:353px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u21.png',sizingMethod='scale');
+"><img style="width:450px; height:353px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u21.png" border="0" alt=""></span>
+</span>
+<IMG id=u21 src="Resources/transparent.gif" style="position:absolute; left:10px; top:2667px; width:450px; height:353px"   >
+
+<DIV id=u22 style="position:absolute; left:520px; top:1756px; width:150px; height:192px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u22_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">gator.com<br>doubleclick.net<br>foo.com<br>bar.net<br>baz.foo.com<br>snafflefuoo.com<br>metavizzle.com<br>adware.com<br>spyware.com<br>malware.com<br>other</span></DIV></DIV>
+<DIV id=u23 style="position:absolute; left:640px; top:1756px; width:150px; height:192px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u23_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">1000<br>900<br>800<br>700<br>600<br>500<br>400<br>300<br>200<br>100<br>1500</span></DIV></DIV>
+<DIV id=u24 style="position:absolute; left:510px; top:2735px; width:150px; height:192px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u24_rtf><span style=" color:#000000; font-size:10pt;">192.168.1.105<br>192.168.1.110<br>192.168.1.120 (foo)<br>192.168.1.121 (macbook)<br>192.168.1.122 (sbs)<br>192.168.1.12<br>192.168.1.125<br>192.168.1.123 (ceo)<br>192.168.1.124 (cfo)<br>192.168.1.114<br>other</span></DIV></DIV>
+<DIV id=u25 style="position:absolute; left:670px; top:2738px; width:150px; height:192px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u25_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">1000<br>900<br>800<br>700<br>600<br>500<br>400<br>300<br>200<br>100<br>1500</span></DIV></DIV>
+<DIV id=u26 style="position:absolute; left:510px; top:2400px; width:150px; height:208px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u26_rtf><span style=" color:#000000; font-size:10pt;">Doubleclick<br>DialtonInternet<br>Omniture<br>Datapipe<br>Webtrends<br>Hitbox<br>Everyones<br>Webtrends<br>Covesoft<br>Mediaplex<br>other</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:2360px; width:451px; height:286px">
+<span id=ou27 style="position:absolute;left:0px;top:0px;width:451px;height:286px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u27.png',sizingMethod='scale');
+"><img style="width:451px; height:286px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u27.png" border="0" alt=""></span>
+</span>
+<IMG id=u27 src="Resources/transparent.gif" style="position:absolute; left:10px; top:2360px; width:451px; height:286px"   >
+
+<DIV id=u28 style="position:absolute; left:620px; top:2402px; width:150px; height:192px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u28_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">1000<br>900<br>800<br>700<br>600<br>500<br>400<br>300<br>200<br>100<br>1500</span></DIV></DIV>
+<DIV id=u29 style="position:absolute; left:10px; top:3034px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u29_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">ActiveX</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:3060px; width:451px; height:290px">
+<span id=ou30 style="position:absolute;left:0px;top:0px;width:451px;height:290px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u30.png',sizingMethod='scale');
+"><img style="width:451px; height:290px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u30.png" border="0" alt=""></span>
+</span>
+<IMG id=u30 src="Resources/transparent.gif" style="position:absolute; left:10px; top:3060px; width:451px; height:290px"   >
+
+<DIV id=u31 style="position:absolute; left:500px; top:3160px; width:200px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u31_rtf><br><span style=" color:#000000; font-size:10pt;">Avg subnets detected (7-day):<br>Max subnets detected (7-day):</span></DIV></DIV>
+<DIV id=u32 style="position:absolute; left:700px; top:3178px; width:200px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u32_rtf><span style=" color:#000000; font-size:10pt;">0/day<br>0/day</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:1020px; width:450px; height:353px">
+<span id=ou33 style="position:absolute;left:0px;top:0px;width:450px;height:353px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spyware Blocker - Summary_files/u33.png',sizingMethod='scale');
+"><img style="width:450px; height:353px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spyware Blocker - Summary_files/u33.png" border="0" alt=""></span>
+</span>
+<IMG id=u33 src="Resources/transparent.gif" style="position:absolute; left:10px; top:1020px; width:450px; height:353px"   >
+
+<DIV id=u34 style="position:absolute; left:520px; top:1125px; width:150px; height:192px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u34_rtf><span style=" color:#000000; font-size:10pt;">192.168.1.105<br>192.168.1.110<br>192.168.1.120 (foo)<br>192.168.1.121 (macbook)<br>192.168.1.122 (sbs)<br>192.168.1.12<br>192.168.1.125<br>192.168.1.123 (ceo)<br>192.168.1.124 (cfo)<br>192.168.1.114<br>other</span></DIV></DIV>
+<DIV id=u35 style="position:absolute; left:680px; top:1128px; width:150px; height:192px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u35_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">1000<br>900<br>800<br>700<br>600<br>500<br>400<br>300<br>200<br>100<br>1500</span></DIV></DIV><SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="Spyware Blocker - Summary_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>

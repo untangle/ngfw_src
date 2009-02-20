@@ -1,0 +1,44 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<DIV id=u0 style="position:absolute; left:40px; top:88px; width:150px; height:80px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u0_rtf><span style=" font-family:'Arial'; color:#0000FF; font-size:10pt;"><u>192.168.1.105<br>192.168.1.110<br>192.168.1.111 192.168.1.123 192.168.1.10 </u></span></DIV></DIV>
+<DIV id=u1 style="position:absolute; left:70px; top:64px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u1_rtf><span style=" color:#000000; font-size:10pt;">IP</span></DIV></DIV>
+<DIV id=u2 style="position:absolute; left:240px; top:5px; width:490px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u2_rtf><span style=" color:#000000; font-size:20pt;">Protocol Control - Host List</span></DIV></DIV>
+<DIV id=u3 style="position:absolute; left:160px; top:64px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u3_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">hostname</span></DIV></DIV>
+<DIV id=u4 style="position:absolute; left:160px; top:120px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u4_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">foo<br>macbook<br>sbs</span></DIV></DIV>
+<DIV id=u5 style="position:absolute; left:340px; top:88px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u5_rtf><span style=" color:#000000; font-size:10pt;">25<br>10<br>8<br>2<br>25</span></DIV></DIV>
+<DIV id=u6 style="position:absolute; left:280px; top:60px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u6_rtf><span style=" color:#000000; font-size:10pt;">Blocked (7-day) </span></DIV></DIV>
+<DIV id=u7 style="position:absolute; left:420px; top:60px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u7_rtf><span style=" color:#000000; font-size:10pt;">Logged (7-day) </span></DIV></DIV>
+<DIV id=u8 style="position:absolute; left:460px; top:88px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u8_rtf><span style=" color:#000000; font-size:10pt;">30<br>20<br>12<br>120<br>0</span></DIV></DIV><SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="Protocol Control - Host List_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>

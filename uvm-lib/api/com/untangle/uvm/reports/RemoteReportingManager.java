@@ -31,9 +31,13 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm;
+package com.untangle.uvm.reports;
+
 
 import java.util.Date;
+import java.util.List;
+
+import com.untangle.uvm.UvmException;
 
 /**
  * Manages report generation.
@@ -42,6 +46,27 @@ import java.util.Date;
  * @version 1.0
  */
 public interface RemoteReportingManager  {
+
+    // NEW SHIZZLE -------------------------------------------------------------
+
+    List<Date> getDates();
+
+    TableOfContents getTableOfContents(Date d);
+
+    ApplicationData getApplicationData(Date d, String appName);
+
+    ApplicationData getApplicationDataForUser(Date d, String appName,
+                                              String username);
+
+    ApplicationData getApplicationDataForEmail(Date d, String appName,
+                                               String emailAddr);
+
+    ApplicationData getApplicationDataForHost(Date d, String appName,
+                                              String hostname);
+
+    // old stuff ---------------------------------------------------------------
+
+
     /**
      * Tests if reporting is enabled, that is if reports will be
      * generated nightly.  Currently this is the same thing as "is the

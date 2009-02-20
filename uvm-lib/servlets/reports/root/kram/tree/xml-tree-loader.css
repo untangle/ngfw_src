@@ -1,0 +1,181 @@
+/*
+ * Ext JS Library 2.2
+ * Copyright(c) 2006-2008, Ext JS, LLC.
+ * licensing@extjs.com
+ * 
+ * http://extjs.com/license
+ */
+html{
+margin:0 auto;
+
+}
+body{
+	margin:0 auto;
+	width:960px;
+}
+.base-container{
+width:960px;background-color:#E8E8E8;border:1px #d0d0d0 solid;padding:0.2em;
+}
+.base-container img{
+	vertical-align:middle;
+	margin-bottom:0.2em;
+}
+.base-container h1{
+	display:inline;
+	margin-left:0.4em;
+	font-size:2.3em;
+	color:#444;
+}
+.export-excel{
+	background-image:url('../reports-v2/Platform - Summary_files/u10.jpg');
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:16px;
+	height:18px;
+	float:left;
+	margin:0px 6px 2px 0px;
+	cursor:hand;
+	cursor:pointer;
+}
+.export-printer{
+	background-image:url('images/untangle/printer.gif');
+	background-repeat:no-repeat;
+	background-position:center bottom;
+	width:16px;
+	height:18px;
+	float:left;
+	margin:0px 6px 2px 0px;
+	cursor:hand;
+	cursor:pointer;
+}
+/* icons */
+.spamblocker{
+    background-image: url(../shared/icons/fam/spamblocker.png) !important;
+}
+.attackblocker{
+    background-image: url(../shared/icons/fam/attackblocker.png) !important;
+}
+.phishblocker{
+    background-image: url(../shared/icons/fam/phishblocker.png) !important;
+}
+.virusblocker{
+    background-image: url(../shared/icons/fam/virusblocker.png) !important;
+}
+.webfilter{
+    background-image: url(../shared/icons/fam/webfilter.png) !important;
+}
+.spywareblocker{
+    background-image: url(../shared/icons/fam/spywareblocker.png) !important;
+}
+.kav{
+    background-image: url(../shared/icons/fam/kav.png) !important;
+}
+.openvpn{
+    background-image: url(../shared/icons/fam/openvpn.png) !important;
+}
+.intrusionprevention{
+    background-image: url(../shared/icons/fam/intrusionprevention.png) !important;
+}
+.firewall{
+    background-image: url(../shared/icons/fam/firewall.png) !important;
+}
+.adconnector{
+    background-image: url(../shared/icons/fam/adconnector.png) !important;
+}
+.protocolcontrol{
+    background-image: url(../shared/icons/fam/protocolcontrol.png) !important;
+}
+.remoteaccessportal{
+    background-image: url(../shared/icons/fam/remoteaccessportal.png) !important;
+}
+.date{
+display:block;float:right;margin-top:-3.3em;margin-right:0.2em;color:#333;
+}
+
+.statsheader,.toolsheader{
+	font-size:11px;
+	font-family:Tahoma, Arial, Helvetica;	
+	font-weight:bold;
+	background-color:#EFEFEF;
+	border:1px #ccc solid;
+	border-bottom:none;
+	padding:0.2em;
+	color:#333;
+	clear:left;
+}
+.stats table{
+	border:1px #ccc solid;
+	font-size:11px;
+	font-family:Tahoma, Arial, Helvetica;		
+}
+.stats tr td{
+	vertical-align:top;
+	padding-bottom:1em;
+}
+.stats tr td.print-tools{
+	padding-bottom:0;
+}
+.tools{
+	text-align:right;
+	padding-right:10px;
+}
+
+.keystats tr td.label{
+	width:130px;
+}
+.keystats tr td.value{
+	width:50px;
+}
+.alternate td{
+	background-color:#EFEFEF;
+}	
+.graph{
+	padding-right:1em;
+}
+.graph img{
+	width:338px;
+	height:230px;
+}
+.stats table tr td{
+	padding:0.2em;
+}
+.date .x-btn button{
+	font-weight:bold;
+	color:#333;
+}
+#details-panel .x-panel-body {
+    padding: 10px;
+    background: #FFF;
+    color: #555;
+}
+#details-panel a:link, #details-panel a:visited {
+    color: #369;
+}
+#details-panel h2 {
+    color: #369;
+    font-size: 15px;
+}
+#details-panel p {
+    margin-bottom: 5px;
+}
+.reports-tab-panel div div div.x-tab-panel-body div div div.x-panel-body{
+	overflow:auto;
+}
+.author-m {
+    background-image: url(../shared/icons/fam/user.gif) !important;
+}
+.author-f {
+    background-image: url(../shared/icons/fam/user_female.gif) !important;
+}
+.book {
+    background-image: url(../shared/icons/fam/book.png) !important;
+}
+.hosts {
+    background-image: url(../shared/icons/fam/untangle_server.png) !important;
+}
+.emails {
+    background-image: url(../shared/icons/fam/untangle_emailaccount.png) !important;
+}
+#summary{
+	overflow:auto;
+}

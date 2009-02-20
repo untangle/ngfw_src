@@ -1,0 +1,78 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<DIV id=u0 style="position:absolute; left:230px; top:10px; width:490px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u0_rtf><span style=" color:#000000; font-size:20pt;">Firewall - #{user} Summary Report</span></DIV></DIV>
+<DIV id=u1 style="position:absolute; left:560px; top:60px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u1_rtf><span style=" color:#0000FF; font-size:10pt;"><u>#{user} Incident Report</u></span></DIV></DIV>
+<span style="position:absolute; left:20px; top:399px; width:453px; height:291px">
+<span id=ou2 style="position:absolute;left:0px;top:0px;width:453px;height:291px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Firewall - User Summary_files/u2.png',sizingMethod='scale');
+"><img style="width:453px; height:291px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Firewall - User Summary_files/u2.png" border="0" alt=""></span>
+</span>
+<IMG id=u2 src="Resources/transparent.gif" style="position:absolute; left:20px; top:399px; width:453px; height:291px"   >
+
+<DIV id=u3 style="position:absolute; left:541px; top:460px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u3_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Max Logged/day (7-day):<br>Avg Logged/day (7-day):<br>Max Blocked/day (7-day):<br>Avg Blocked/day (7-day):</span></DIV></DIV>
+<DIV id=u4 style="position:absolute; left:703px; top:460px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u4_rtf><span style=" color:#000000; font-size:10pt;">61</span><br><span style=" font-family:'Arial'; font-size:10pt;">20.5<br>23<br>12</span></DIV></DIV>
+<span style="position:absolute; left:20px; top:700px; width:487px; height:291px">
+<span id=ou5 style="position:absolute;left:0px;top:0px;width:487px;height:291px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Firewall - User Summary_files/u5.png',sizingMethod='scale');
+"><img style="width:487px; height:291px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Firewall - User Summary_files/u5.png" border="0" alt=""></span>
+</span>
+<IMG id=u5 src="Resources/transparent.gif" style="position:absolute; left:20px; top:700px; width:487px; height:291px"   >
+
+<span style="position:absolute; left:20px; top:1000px; width:483px; height:291px">
+<span id=ou6 style="position:absolute;left:0px;top:0px;width:483px;height:291px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Firewall - User Summary_files/u6.png',sizingMethod='scale');
+"><img style="width:483px; height:291px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Firewall - User Summary_files/u6.png" border="0" alt=""></span>
+</span>
+<IMG id=u6 src="Resources/transparent.gif" style="position:absolute; left:20px; top:1000px; width:483px; height:291px"   >
+
+<span style="position:absolute; left:20px; top:90px; width:570px; height:296px">
+<span id=ou7 style="position:absolute;left:0px;top:0px;width:570px;height:296px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Firewall - User Summary_files/u7.png',sizingMethod='scale');
+"><img style="width:570px; height:296px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Firewall - User Summary_files/u7.png" border="0" alt=""></span>
+</span>
+<IMG id=u7 src="Resources/transparent.gif" style="position:absolute; left:20px; top:90px; width:570px; height:296px"   >
+
+<DIV id=u8 style="position:absolute; left:620px; top:220px; width:160px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u8_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Max Scanned/day (7-day):<br>Avg Scanned/day (7-day):<br>Max Blocked/day (7-day):<br>Avg Blocked/day (7-day):</span></DIV></DIV>
+<DIV id=u9 style="position:absolute; left:782px; top:220px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u9_rtf><span style=" color:#000000; font-size:10pt;">61000</span><br><span style=" font-family:'Arial'; font-size:10pt;">43000<br>23<br>12</span></DIV></DIV>
+<DIV id=u10 style="position:absolute; left:580px; top:770px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u10_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">rule 12<br>rule 11<br>rule 6<br>default</span></DIV></DIV>
+<DIV id=u11 style="position:absolute; left:590px; top:1130px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u11_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">rule 12<br>rule 11<br>rule 6</span></DIV></DIV>
+<DIV id=u12 style="position:absolute; left:650px; top:770px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u12_rtf><span style=" color:#000000; font-size:10pt;">100 (4%)<br>75 (3%)<br>50 (2%)<br>101010 (91%)</span></DIV></DIV>
+<DIV id=u13 style="position:absolute; left:640px; top:1130px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u13_rtf><span style=" color:#000000; font-size:10pt;">100 (41%)<br>75 (36%)<br>50 (23%)</span></DIV></DIV><SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="Firewall - User Summary_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>

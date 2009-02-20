@@ -1,0 +1,175 @@
+div.annnoteimage
+{
+	position: absolute;
+	font-size: 0px;
+	width: 16px;
+	height: 12px;
+	cursor: help;
+	background-image: url(../Resources/note.gif);
+	background-repeat: no-repeat;
+}
+
+div.annnotelabel
+{
+	position: absolute;
+	font-family: Arial;
+	font-size: 10px;
+	border: 1px solid #666666;
+	cursor: help;
+	background:#DDDD00 none repeat scroll 0% 0%; 
+	padding-left:3px; 
+	padding-right:3px;
+	white-space: nowrap;
+}
+ 
+div.annwindow
+{
+	position: absolute;
+	font-family: Arial;
+	font-size: 14px;
+	cursor: move;
+	visibility: hidden;
+}
+
+td.annwindowtl
+{
+	font-size: 0px;
+	width: 5px;
+	height: 24px;
+	background-image: url(../Resources/window_01.gif);
+	background-repeat: no-repeat;
+}
+
+td.annwindowt
+{
+	font-size: 0px;
+	height: 24px;
+	background-image: url(../Resources/window_02.gif);
+	background-repeat: repeat-x;
+}
+
+td.annwindowtr
+{
+	font-size: 0px;
+	width: 6px;
+	height: 24px;
+	background-image: url(../Resources/window_04.gif);
+	background-repeat: no-repeat;
+	background-position: right;
+}
+
+td.annwindowml
+{
+	font-size: 0px;
+	width: 5px;
+	background-image: url(../Resources/window_09.gif);
+	background-repeat: repeat-y;
+}
+
+td.annwindowmr
+{
+	font-size: 0px;
+	width: 6px;
+	background-image: url(../Resources/window_07.gif);
+	background-repeat: repeat-y;
+	background-position: right;
+}
+
+td.annwindowbl
+{
+	font-size: 0px;
+	width: 5px;
+	height: 5px;
+	background-image: url(../Resources/window_10.gif);
+	background-repeat: no-repeat;
+	background-position: left bottom;
+}
+
+td.annwindowb
+{
+	font-size: 0px;
+	height: 5px;
+	background-image: url(../Resources/window_11.gif);
+	background-repeat: repeat-x;
+	background-position: bottom;
+}
+
+td.annwindowbr
+{
+	font-size: 0px;
+	width: 6px;
+	height: 5px;
+	background-image: url(../Resources/window_12.gif);
+	background-repeat: no-repeat;
+	background-position: right bottom;
+}
+
+div.annwindowtitle
+{
+	position: absolute;
+	width: 270px;
+	height: 15px;
+	z-index: 1;
+	font-weight: bold;
+	cursor: move;
+	overflow: hidden;
+}
+
+div.annwindowclose
+{
+	font-size: 0px;
+	position: absolute;
+	width: 13px;
+	height: 13px;
+	cursor: pointer;
+	background-image: url(../Resources/closebutton.gif);
+	background-repeat: no-repeat;
+}
+
+div.annwindowresize
+{
+	font-size: 0px;
+	position: absolute;
+	width: 15px;
+	height: 15px;
+	z-index: 5px;
+	cursor: nw-resize;
+	background-image: url(../Resources/window_12.gif);
+	background-repeat: no-repeat;
+}
+
+iframe.annwindowcontent
+{
+	cursor: auto;
+	border: 1px solid #777777;
+	background: white;
+	width: 100%;
+}
+
+div.anncontent
+{
+	font-family: arial; 
+	font-size: 14px;
+}
+
+span.annfieldname
+{
+	font-weight: bold;
+}
+
+div.intcases 
+{
+	font-family: arial; 
+	font-size: 12px; 
+	border:1px solid #666666; 
+	background:#DDDDDD none repeat scroll 0% 0%; 
+	z-index:9999; 
+	visibility:hidden; 
+	position:absolute; 
+	padding:5px;
+}
+
+div.intcaselink
+{
+	cursor: pointer;
+}

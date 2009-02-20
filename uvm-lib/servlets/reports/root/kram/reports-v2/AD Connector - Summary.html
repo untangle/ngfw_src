@@ -1,0 +1,42 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<span style="position:absolute; left:17px; top:89px; width:483px; height:291px">
+<span id=ou0 style="position:absolute;left:0px;top:0px;width:483px;height:291px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='AD Connector - Summary_files/u0.png',sizingMethod='scale');
+"><img style="width:483px; height:291px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="AD Connector - Summary_files/u0.png" border="0" alt=""></span>
+</span>
+<IMG id=u0 src="Resources/transparent.gif" style="position:absolute; left:17px; top:89px; width:483px; height:291px"   >
+
+<DIV id=u1 style="position:absolute; left:530px; top:193px; width:150px; height:96px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u1_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">alice<br>bob<br>carol<br>dave<br>eve<br>frank</span></DIV></DIV>
+<DIV id=u2 style="position:absolute; left:590px; top:193px; width:150px; height:96px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u2_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">52%<br>29%<br>14%<br>3%<br>1%<br>1%</span></DIV></DIV>
+<DIV id=u3 style="position:absolute; left:150px; top:10px; width:570px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u3_rtf><span style=" color:#000000; font-size:20pt;">Active Directory Connector - Summary Report</span></DIV></DIV>
+<DIV id=u4 style="position:absolute; left:560px; top:60px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u4_rtf><span style=" color:#0000FF; font-size:10pt;"><u>Incident Report</u></span></DIV></DIV><SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="AD Connector - Summary_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>

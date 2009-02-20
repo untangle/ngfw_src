@@ -1,0 +1,183 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<DIV id=u0 style="position:absolute; left:240px; top:5px; width:550px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u0_rtf><span style=" color:#000000; font-size:20pt;">Web Filter - {#user} Summary Report</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:350px; width:455px; height:287px">
+<span id=ou1 style="position:absolute;left:0px;top:0px;width:455px;height:287px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Web Filter - User Summary_files/u1.png',sizingMethod='scale');
+"><img style="width:455px; height:287px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Web Filter - User Summary_files/u1.png" border="0" alt=""></span>
+</span>
+<IMG id=u1 src="Resources/transparent.gif" style="position:absolute; left:10px; top:350px; width:455px; height:287px"   >
+
+<span style="position:absolute; left:10px; top:53px; width:455px; height:287px">
+<span id=ou2 style="position:absolute;left:0px;top:0px;width:455px;height:287px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Web Filter - User Summary_files/u2.png',sizingMethod='scale');
+"><img style="width:455px; height:287px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Web Filter - User Summary_files/u2.png" border="0" alt=""></span>
+</span>
+<IMG id=u2 src="Resources/transparent.gif" style="position:absolute; left:10px; top:53px; width:455px; height:287px"   >
+
+<span style="position:absolute; left:10px; top:640px; width:383px; height:220px">
+<span id=ou3 style="position:absolute;left:0px;top:0px;width:383px;height:220px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Web Filter - User Summary_files/u3.png',sizingMethod='scale');
+"><img style="width:383px; height:220px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Web Filter - User Summary_files/u3.png" border="0" alt=""></span>
+</span>
+<IMG id=u3 src="Resources/transparent.gif" style="position:absolute; left:10px; top:640px; width:383px; height:220px"   >
+
+<span style="position:absolute; left:10px; top:885px; width:453px; height:291px">
+<span id=ou4 style="position:absolute;left:0px;top:0px;width:453px;height:291px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Web Filter - User Summary_files/u4.png',sizingMethod='scale');
+"><img style="width:453px; height:291px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Web Filter - User Summary_files/u4.png" border="0" alt=""></span>
+</span>
+<IMG id=u4 src="Resources/transparent.gif" style="position:absolute; left:10px; top:885px; width:453px; height:291px"   >
+
+<DIV id=u5 style="position:absolute; left:500px; top:154px; width:180px; height:128px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u5_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Max hits/minute (1-day):<br>Avg hits/minute (1-day):<br>Max hits/minute (7-day):<br>Avg hits/minute (7-day):<br>Avg violations/hour (1-day):<br>Avg violations/hour (7-day):</span></DIV></DIV>
+<DIV id=u6 style="position:absolute; left:680px; top:150px; width:150px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u6_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">400<br>200<br>450<br>205<br>300<br>290</span></DIV></DIV>
+<DIV id=u7 style="position:absolute; left:500px; top:422px; width:180px; height:112px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u7_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Max hits/day (7-day): <br>Avg hits/day (7-day): <br>Max violations/day (7-day):<br>Avg violations/day (7-day):</span></DIV></DIV>
+<DIV id=u8 style="position:absolute; left:670px; top:420px; width:150px; height:80px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u8_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">34000<br>32000<br>345<br>245</span></DIV></DIV>
+<DIV id=u9 style="position:absolute; left:430px; top:710px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u9_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Total Hits (7-day):<br>Total Violations (7-day):<br>Total Hits (1-day):<br>Total Violations (1-day): </span></DIV></DIV>
+<DIV id=u10 style="position:absolute; left:590px; top:710px; width:150px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u10_rtf><span style=" color:#000000; font-size:10pt;">3</span><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">30000<br>900</span><br><span style=" font-family:'Arial'; font-size:10pt;">30000<br>200</span></DIV></DIV>
+<DIV id=u11 style="position:absolute; left:510px; top:950px; width:150px; height:160px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u11_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">uncategorized<br>sports<br>business<br>ecommerce<br>gambling<br>porn<br>foo<br>bar<br>baz</span></DIV></DIV>
+<DIV id=u12 style="position:absolute; left:630px; top:950px; width:150px; height:160px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u12_rtf><span style=" color:#000000; font-size:10pt;">9000 (70%)<br>8000 (5%)<br>7000 (5%)<br>6600 (4%)<br>5500 (3%)<br>4400 (2%)<br>3300 (1%)<br>2200 (1%)<br>1000 (1%)</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:1190px; width:457px; height:282px">
+<span id=ou13 style="position:absolute;left:0px;top:0px;width:457px;height:282px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Web Filter - User Summary_files/u13.png',sizingMethod='scale');
+"><img style="width:457px; height:282px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Web Filter - User Summary_files/u13.png" border="0" alt=""></span>
+</span>
+<IMG id=u13 src="Resources/transparent.gif" style="position:absolute; left:10px; top:1190px; width:457px; height:282px"   >
+
+<DIV id=u14 style="position:absolute; left:507px; top:1242px; width:150px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u14_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">porn<br>proxy</span></DIV></DIV>
+<DIV id=u15 style="position:absolute; left:510px; top:1564px; width:150px; height:176px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u15_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">zimbra.untangle.com<br>news.google.com<br>google.com<br>gmail.com<br>forums.untangle.com<br>wsj.com<br>espn.com<br>nascar.com<br>sb.google.com<br>ad.doubleclick.net<br>other</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:1492px; width:450px; height:382px">
+<span id=ou16 style="position:absolute;left:0px;top:0px;width:450px;height:382px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Web Filter - User Summary_files/u16.png',sizingMethod='scale');
+"><img style="width:450px; height:382px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Web Filter - User Summary_files/u16.png" border="0" alt=""></span>
+</span>
+<IMG id=u16 src="Resources/transparent.gif" style="position:absolute; left:10px; top:1492px; width:450px; height:382px"   >
+
+<span style="position:absolute; left:10px; top:1882px; width:450px; height:382px">
+<span id=ou17 style="position:absolute;left:0px;top:0px;width:450px;height:382px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Web Filter - User Summary_files/u17.png',sizingMethod='scale');
+"><img style="width:450px; height:382px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Web Filter - User Summary_files/u17.png" border="0" alt=""></span>
+</span>
+<IMG id=u17 src="Resources/transparent.gif" style="position:absolute; left:10px; top:1882px; width:450px; height:382px"   >
+
+<DIV id=u18 style="position:absolute; left:500px; top:1964px; width:150px; height:176px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u18_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">zimbra.untangle.com<br>news.google.com<br>google.com<br>gmail.com<br>forums.untangle.com<br>wsj.com<br>espn.com<br>nascar.com<br>sb.google.com<br>ad.doubleclick.net<br>other</span></DIV></DIV>
+<DIV id=u19 style="position:absolute; left:620px; top:1242px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u19_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">30<br>15</span></DIV></DIV>
+<DIV id=u20 style="position:absolute; left:650px; top:1566px; width:150px; height:176px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u20_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">900 (7%)<br>800 (6%)<br>700 (5%)<br>600 (4%)<br>500 (3%)<br>400 (3%)<br>300 (2%)<br>200 (1%)<br>150 (1%)<br>100 (1%)<br>8000 (67%)</span></DIV></DIV>
+<DIV id=u21 style="position:absolute; left:640px; top:1966px; width:150px; height:176px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u21_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">900 (7%)<br>800 (6%)<br>700 (5%)<br>600 (4%)<br>500 (3%)<br>400 (3%)<br>300 (2%)<br>200 (1%)<br>150 (1%)<br>100 (1%)<br>8000 (67%)</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:2270px; width:450px; height:382px">
+<span id=ou22 style="position:absolute;left:0px;top:0px;width:450px;height:382px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Web Filter - User Summary_files/u22.png',sizingMethod='scale');
+"><img style="width:450px; height:382px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Web Filter - User Summary_files/u22.png" border="0" alt=""></span>
+</span>
+<IMG id=u22 src="Resources/transparent.gif" style="position:absolute; left:10px; top:2270px; width:450px; height:382px"   >
+
+<DIV id=u23 style="position:absolute; left:480px; top:2374px; width:150px; height:176px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u23_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">zimbra.untangle.com<br>news.google.com<br>google.com<br>gmail.com<br>forums.untangle.com<br>wsj.com<br>espn.com<br>nascar.com<br>sb.google.com<br>ad.doubleclick.net<br>other</span></DIV></DIV>
+<DIV id=u24 style="position:absolute; left:630px; top:2374px; width:150px; height:176px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u24_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">900 (7%)<br>800 (6%)<br>700 (5%)<br>600 (4%)<br>500 (3%)<br>400 (3%)<br>300 (2%)<br>200 (1%)<br>150 (1%)<br>100 (1%)<br>8000 (67%)</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:2660px; width:450px; height:382px">
+<span id=ou25 style="position:absolute;left:0px;top:0px;width:450px;height:382px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Web Filter - User Summary_files/u25.png',sizingMethod='scale');
+"><img style="width:450px; height:382px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Web Filter - User Summary_files/u25.png" border="0" alt=""></span>
+</span>
+<IMG id=u25 src="Resources/transparent.gif" style="position:absolute; left:10px; top:2660px; width:450px; height:382px"   >
+
+<DIV id=u26 style="position:absolute; left:500px; top:2744px; width:150px; height:176px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u26_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">zimbra.untangle.com<br>news.google.com<br>google.com<br>gmail.com<br>forums.untangle.com<br>wsj.com<br>espn.com<br>nascar.com<br>sb.google.com<br>ad.doubleclick.net<br>other</span></DIV></DIV>
+<DIV id=u27 style="position:absolute; left:650px; top:2744px; width:150px; height:176px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u27_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">90 (7%)<br>80 (6%)<br>70 (5%)<br>60 (4%)<br>50 (3%)<br>40 (3%)<br>30 (2%)<br>20 (1%)<br>10 (1%)<br>10 (1%)<br>800 (67%)</span></DIV></DIV>
+<span style="position:absolute; left:463px; top:1493px; width:17px; height:17px">
+<IMG id=ou28 src="Web Filter - User Summary_files/u28.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u28 src="Resources/transparent.gif" style="position:absolute; left:463px; top:1493px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:470px; top:1190px; width:17px; height:17px">
+<IMG id=ou29 src="Web Filter - User Summary_files/u29.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u29 src="Resources/transparent.gif" style="position:absolute; left:470px; top:1190px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:463px; top:883px; width:17px; height:17px">
+<IMG id=ou30 src="Web Filter - User Summary_files/u30.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u30 src="Resources/transparent.gif" style="position:absolute; left:463px; top:883px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:393px; top:640px; width:17px; height:17px">
+<IMG id=ou31 src="Web Filter - User Summary_files/u31.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u31 src="Resources/transparent.gif" style="position:absolute; left:393px; top:640px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:470px; top:350px; width:17px; height:17px">
+<IMG id=ou32 src="Web Filter - User Summary_files/u32.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u32 src="Resources/transparent.gif" style="position:absolute; left:470px; top:350px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:463px; top:53px; width:17px; height:17px">
+<IMG id=ou33 src="Web Filter - User Summary_files/u33.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u33 src="Resources/transparent.gif" style="position:absolute; left:463px; top:53px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:463px; top:2653px; width:17px; height:17px">
+<IMG id=ou34 src="Web Filter - User Summary_files/u34.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u34 src="Resources/transparent.gif" style="position:absolute; left:463px; top:2653px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:463px; top:2273px; width:17px; height:17px">
+<IMG id=ou35 src="Web Filter - User Summary_files/u35.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u35 src="Resources/transparent.gif" style="position:absolute; left:463px; top:2273px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:460px; top:1883px; width:17px; height:17px">
+<IMG id=ou36 src="Web Filter - User Summary_files/u36.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u36 src="Resources/transparent.gif" style="position:absolute; left:460px; top:1883px; width:17px; height:17px"   >
+
+<DIV id=u37 style="position:absolute; left:560px; top:60px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u37_rtf><span style=" color:#0000FF; font-size:10pt;"><u>{#email} Incident Report</u></span></DIV></DIV><SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="Web Filter - User Summary_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>

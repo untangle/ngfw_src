@@ -1,0 +1,84 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<DIV id=u0 style="position:absolute; left:240px; top:5px; width:550px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u0_rtf><span style=" font-family:'Arial'; color:#000000; font-size:20pt;">Spam Blocker - {#email} Summary Report</span></DIV></DIV>
+<span style="position:absolute; left:9px; top:270px; width:451px; height:238px">
+<span id=ou1 style="position:absolute;left:0px;top:0px;width:451px;height:238px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spam Blocker - Email Summary_files/u1.png',sizingMethod='scale');
+"><img style="width:451px; height:238px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spam Blocker - Email Summary_files/u1.png" border="0" alt=""></span>
+</span>
+<IMG id=u1 src="Resources/transparent.gif" style="position:absolute; left:9px; top:270px; width:451px; height:238px"   >
+
+<span style="position:absolute; left:8px; top:532px; width:452px; height:278px">
+<span id=ou2 style="position:absolute;left:0px;top:0px;width:452px;height:278px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spam Blocker - Email Summary_files/u2.png',sizingMethod='scale');
+"><img style="width:452px; height:278px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spam Blocker - Email Summary_files/u2.png" border="0" alt=""></span>
+</span>
+<IMG id=u2 src="Resources/transparent.gif" style="position:absolute; left:8px; top:532px; width:452px; height:278px"   >
+
+<DIV id=u3 style="position:absolute; left:500px; top:344px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u3_rtf><span style=" color:#000000; font-size:10pt;">Average Email Rate:&nbsp;&nbsp; </span><br><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Average Spam Rate:<br>Average Ham Rate:</span></DIV></DIV>
+<DIV id=u4 style="position:absolute; left:650px; top:344px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u4_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">20 emails/hour<br>18 spam/hour<br>2 ham/hour</span></DIV></DIV>
+<span style="position:absolute; left:10px; top:44px; width:288px; height:216px">
+<span id=ou5 style="position:absolute;left:0px;top:0px;width:288px;height:216px;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Spam Blocker - Email Summary_files/u5.png',sizingMethod='scale');
+"><img style="width:288px; height:216px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Spam Blocker - Email Summary_files/u5.png" border="0" alt=""></span>
+</span>
+<IMG id=u5 src="Resources/transparent.gif" style="position:absolute; left:10px; top:44px; width:288px; height:216px"   >
+
+<DIV id=u6 style="position:absolute; left:360px; top:120px; width:220px; height:64px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u6_rtf><span style=" color:#000000; font-size:10pt;">Total: 2200 (100%)</span><br><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Spam: 2000 (92%)<br>Ham: 200 (8%)</span></DIV></DIV>
+<span style="position:absolute; left:460px; top:270px; width:17px; height:17px">
+<IMG id=ou7 src="Spam Blocker - Email Summary_files/u7.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u7 src="Resources/transparent.gif" style="position:absolute; left:460px; top:270px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:461px; top:533px; width:17px; height:17px">
+<IMG id=ou8 src="Spam Blocker - Email Summary_files/u8.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u8 src="Resources/transparent.gif" style="position:absolute; left:461px; top:533px; width:17px; height:17px"   >
+
+<DIV id=u9 style="position:absolute; left:500px; top:650px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u9_rtf><span style=" color:#000000; font-size:10pt;">Average Email Rate:&nbsp;&nbsp; </span><br><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">Average Spam Rate:<br>Average Ham Rate:</span></DIV></DIV>
+<DIV id=u10 style="position:absolute; left:650px; top:650px; width:150px; height:48px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u10_rtf><span style=" font-family:'Arial'; color:#000000; font-size:10pt;">480 emails/day<br>400 spam/day<br>80 ham/day</span></DIV></DIV>
+<span style="position:absolute; left:300px; top:43px; width:17px; height:17px">
+<IMG id=ou11 src="Spam Blocker - Email Summary_files/u11.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u11 src="Resources/transparent.gif" style="position:absolute; left:300px; top:43px; width:17px; height:17px"   >
+
+<span style="position:absolute; left:720px; top:80px; width:17px; height:17px">
+<IMG id=ou12 src="Spam Blocker - Email Summary_files/u12.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u12 src="Resources/transparent.gif" style="position:absolute; left:720px; top:80px; width:17px; height:17px"   >
+
+<DIV id=u13 style="position:absolute; left:560px; top:60px; width:150px; height:16px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u13_rtf><span style=" color:#0000FF; font-size:10pt;"><u>{#email} Incident Report</u></span></DIV></DIV><SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="Spam Blocker - Email Summary_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>

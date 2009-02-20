@@ -1,0 +1,37 @@
+body
+{
+	background-color:#EEEEFF;
+	font-family: arial;
+	font-size: 12px; 
+}
+
+a 
+{
+	font-family:arial;
+	font-size:10pt;
+	text-decoration:none;
+	color:#000099
+}
+
+img.plusminus
+{
+	margin-top:3px; 
+	margin-bottom:3px; 
+	margin-right:5px;
+	vertical-align:middle;
+}
+
+span.notespagename
+{
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+span.notesname
+{
+	font-weight: bold;
+}
+
+span.notescontent
+{
+}

@@ -1,0 +1,48 @@
+<HTML><HEAD><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta http-equiv="imagetoolbar" content="no"><link href="Resources/axurerppage.css" type="text/css" rel="stylesheet"></HEAD><BODY>
+<script type="text/javascript">
+function InitializeSubmenu(submenucontainerid, tablecellroid, tablecellid, fname) { 
+var s = "";
+s = s + "function " + fname + "() { ";
+s = s + "document.getElementById(submenucontainerid).style.visibility='';";
+s = s + "BringToFront(submenucontainerid);";
+s = s + "}";
+if ((index = navigator.userAgent.indexOf("MSIE")) >= 0)
+s = s + "document.getElementById('" + tablecellid + "').attachEvent(\"onmouseover\", " + fname + ");";
+else
+s = s + "document.getElementById('" + tablecellid + "').addEventListener(\"mouseover\", " + fname + ", true);";
+s = s + "document.getElementById(tablecellroid).onclick = function() {";
+s = s + "if( document.createEvent ) {";
+s = s + "var evObj = document.createEvent('MouseEvents');";
+s = s + "evObj.initEvent( 'click', true, false );";
+s = s + "document.getElementById(tablecellid).dispatchEvent(evObj);";
+s = s + "} else if( document.createEventObject ) {";
+s = s + "document.getElementById(tablecellid).fireEvent('onclick');";
+s = s + "}";
+s = s + "}";
+eval(s);
+}
+</script>
+
+<DIV id=ou0 style="position:absolute; left:25px; top:60px; width:676px; height:431px;; overflow:visible">
+
+<span style="position:absolute; left:-3px; top:-3px; width:684px; height:439px; ;
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Administration - Global Incident_files/u0.png',sizingMethod='scale');
+"><img style="width:684px; height:439px; filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" 
+src="Administration - Global Incident_files/u0.png" border="0" alt=""></span>
+
+</DIV>
+<DIV id=u0container style="position:absolute; left:25px; top:60px; width:676px; height:431px;; overflow:visible">
+
+<DIV id=u1 style="position:absolute; left:2px; top:207px; width:671px; height:16px; ; ; text-align: center ; font-family:Arial; text-align:left;" >
+<DIV id=u1_rtf><div style="text-align:center"><span style=" color:#000000; font-size:10pt;">global event table</span></div></DIV></DIV>
+</DIV>
+<IMG id=u0 src="Resources/transparent.gif" style="position:absolute; left:25px; top:60px; width:675px; height:430px"  >
+
+<DIV id=u2 style="position:absolute; left:240px; top:5px; width:550px; height:32px; ; ; text-align: left ; font-family:Arial; text-align:left;" >
+<DIV id=u2_rtf><span style=" color:#000000; font-size:20pt;">Administration - Incident Report</span></DIV></DIV>
+<span style="position:absolute; left:703px; top:60px; width:17px; height:17px">
+<IMG id=ou3 src="Administration - Global Incident_files/u3.jpg" style="position:absolute;left:0px;top:0px;width:17px;height:17px">
+</span>
+<IMG id=u3 src="Resources/transparent.gif" style="position:absolute; left:703px; top:60px; width:17px; height:17px"   >
+<SCRIPT src="Resources/axurerp_pagescript.js"></SCRIPT>
+<SCRIPT src="Administration - Global Incident_files/axurerp_pagespecificscript.js"></SCRIPT></BODY></HTML>
