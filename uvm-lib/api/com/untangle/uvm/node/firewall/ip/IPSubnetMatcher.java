@@ -140,8 +140,10 @@ public final class IPSubnetMatcher extends IPDBMatcher
         IPMatcherUtil imu = IPMatcherUtil.getInstance();
 
         String user = network.getHostAddress() + " " + MARKER_SUBNET + " " + cidr;
-
-        return new IPSubnetMatcher( imu.toLong( network ), imu.cidrToLong( cidr ), user );
+        long netmaskLong = imu.cidrToLong( cidr );
+        long networkLong = imu.toLong( network ) & netmaskLong;
+        
+        return new IPSubnetMatcher( networkLong, netmaskLong, user );
     }
 
     /* The parser for an Subnet Matcher */
