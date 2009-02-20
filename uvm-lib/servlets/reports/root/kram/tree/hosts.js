@@ -1,1 +1,0 @@
-{results:5,rows:[{"ip": 192.168.1.105,"hostname":''},{"ip": 192.168.1.110,"hostname":'foo'},{"ip": 192.168.1.111,"hostname":'thinkpad'},{"ip": 192.168.1.112,"hostname":'macbook'},{"ip": 192.168.1.113,"hostname":'sbs'}]}
