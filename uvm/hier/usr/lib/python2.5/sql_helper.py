@@ -28,6 +28,8 @@ def drop_table(tablename):
     try:
         curs = conn.cursor()
         curs.execute("DROP TABLE %s" % tablename)
+    except:
+        logger.debug('did not drop table: %s' % tablename)
     finally:
         conn.commit()
 
@@ -67,10 +69,10 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
     for d in all_dates - existing_dates:
         run_sql("""\
 CREATE TABLE %s
-(CHECK (#{timestamp_column} >= %%s AND #{timestamp_column} < %%s))
+(CHECK (%s >= %%s AND %s < %%s))
 INHERITS (%s)""" % (__tablename_for_date(tablename, d),
                     timestamp_column, timestamp_column, tablename),
-                (d, d + timedelta(days=1)))
+        (d, d + timedelta(days=1)))
 
     if clear_tables:
         for d in all_dates:
@@ -137,7 +139,7 @@ def drop_table(table, schema=None):
     finally:
         conn.commit()
 
-def get_tables(schema=None, table_prefix=''):
+def get_tables(schema=None, prefix=''):
     conn = get_connection()
 
     try:
@@ -146,11 +148,11 @@ def get_tables(schema=None, table_prefix=''):
         if schema:
             curs.execute("""\
 SELECT tablename FROM pg_catalog.pg_tables
-WHERE schemaname = %s AND tablename LIKE %s""", (schema, '%s%%' % table_prefix))
+WHERE schemaname = %s AND tablename LIKE %s""", (schema, '%s%%' % prefix))
         else:
             curs.execute("""\
 SELECT tablename FROM pg_catalog.pg_tables
-WHERE tablename LIKE %s""", '%s%%' % table_prefix)
+WHERE tablename LIKE %s""", '%s%%' % prefix)
 
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
@@ -200,7 +202,7 @@ CREATE TRIGGER trigger_name
 """ % (trigger_name, tablename, trigger_function_name))
 
 def __tablename_for_date(tablename, date):
-    return "%s_%d_%d_%d" % (tablename) + d.timetuple()[0:3]
+    return "%s_%d_%d_%d" % ((tablename,) + date.timetuple()[0:3])
 
 def __get_tablename(table_ddl):
     m = re.search('create\s+table\s+(\S+)', table_ddl, re.I | re.M)

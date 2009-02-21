@@ -12,7 +12,7 @@ class HttpCasing(Node):
     def parents(self):
         return ['untangle-vm']
 
-    def setup(self, start_time, end_time):
+    def setup(self, start_date, end_date):
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.n_http_events (
     time_stamp timestamp without time zone,
@@ -31,7 +31,7 @@ CREATE TABLE reports.n_http_events (
     s2c_content_length integer, s2c_content_type text,
     hname text
 )""",
-                                            'time_stamp', end_time)
+                                            'time_stamp', start_date, end_date)
 
         sql_helper.run_sql("""\
 INSERT INTO reports.n_http_events
@@ -65,7 +65,7 @@ INSERT INTO reports.n_http_events
     LEFT OUTER JOIN n_http_evt_resp resp on req.request_id = resp.request_id
     LEFT OUTER JOIN merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp >= ? AND pe.time_stamp < ?""", (start_time, end_time))
+    WHERE pe.time_stamp >= ? AND pe.time_stamp < ?""", (start_date, end_date))
 
         ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
                        'time_stamp',

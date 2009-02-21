@@ -16,7 +16,8 @@ if (PREFIX != ''):
 
 import reports.engine
 
-end_date = mx.DateTime.today()
+#end_date = mx.DateTime.today()
+end_date = mx.DateTime.Date(2009, 2, 11)
 start_date = end_date - mx.DateTime.DateTimeDelta(30)
 
 reports.engine.init_engine(NODE_MODULE_DIR)
