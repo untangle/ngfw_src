@@ -3849,7 +3849,20 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.title == null) {
             this.title = i18n._('Portal Question');
         }
-        var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectUser});
+        var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectUser,listeners:{"rowselect":{
+                fn:function(obj,rowIndex,r){
+                    if(r.data.UID=="[any]"){
+                        this.anyChecked = true;                    
+                    }else{
+                        if(this.anyChecked){
+                            obj.deselectRow(0);
+                            this.anyChecked = false;
+                        }
+                    }
+                }.createDelegate(this)
+            }
+        }
+        });
         this.usersGrid=new Ext.grid.GridPanel({
            // title: i18n._('Users'),
            height: 210,
