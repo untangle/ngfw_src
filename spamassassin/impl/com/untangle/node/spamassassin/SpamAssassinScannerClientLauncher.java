@@ -19,6 +19,7 @@ package com.untangle.node.spamassassin;
 
 import java.io.File;
 import java.lang.Thread;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,19 +73,28 @@ public class SpamAssassinScannerClientLauncher {
         SpamReport[] results = getResults(); // get results
         freeClients(); // destroy scanners
 
+        boolean allNull = true;
+
         // consolidate results into final item list
         // -> add unique and remove dupl items
         List<ReportItem> itemFinalList = new LinkedList<ReportItem>();
         for (SpamReport result : results) {
-            //logger.debug("result: " + result);
-            consolidate(itemFinalList, result);
+            if (null != result) {
+                allNull = false;
+                //logger.debug("result: " + result);
+                consolidate(itemFinalList, result);
+            }
         }
 
-        // if final item list is empty, final result will be clean
-        SpamReport resultFinal = new SpamReport(itemFinalList, threshold);
-        logger.debug("spamc: " + resultFinal);
-
-        return resultFinal;
+        if (allNull) {
+            logger.debug("All null reports indicates timeout");
+            return null;
+        } else {
+            // if final item list is empty, final result will be clean
+            SpamReport resultFinal = new SpamReport(itemFinalList, threshold);
+            logger.debug("spamc: " + resultFinal);
+            return resultFinal;
+        }
     }
 
     private SpamAssassinClient createClient(SpamAssassinClientContext cContext) {
@@ -123,16 +133,20 @@ public class SpamAssassinScannerClientLauncher {
         return clients;
     }
 
-    private Object[] getClientContexts() {
-        return clientMap.values().toArray();
+    private Collection<SpamAssassinClientContext> getClientContexts() {
+        return clientMap.values();
     }
 
     private SpamReport[] getResults() {
-        Object[] cContexts = getClientContexts();
-        SpamReport[] results = new SpamReport[cContexts.length];
+        Collection<SpamAssassinClientContext> cContexts = getClientContexts();
+        SpamReport[] results = new SpamReport[cContexts.size()];
         int idx = 0;
-        for (Object cContext : cContexts) {
-            results[idx] = ((SpamAssassinClientContext) cContext).getResult();
+        for (SpamAssassinClientContext cContext : cContexts) {
+            if (cContext.isDone()) {
+                results[idx] = cContext.getResult();
+            } else {
+                results[idx] = null;
+            }
             idx++;
         }
 
