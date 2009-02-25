@@ -172,6 +172,11 @@ public class SmtpSessionHandler
             action = SMTPSpamMessageAction.MARK;
         }
 
+        if (m_config.getBlockSuperSpam()
+            && m_config.getSuperSpamStrength() / 10.0f <= report.getScore()) {
+            action = SMTPSpamMessageAction.BLOCK;
+        }
+
         if (report.isSpam()) {// BEGIN SPAM
             m_logger.debug("Spam found");
 
@@ -312,7 +317,8 @@ public class SmtpSessionHandler
             action = SMTPSpamMessageAction.PASS;
         }
 
-        if (m_config.getBlockSuperSpam() && m_config.getSuperSpamStrength() <= report.getScore()) {
+        if (m_config.getBlockSuperSpam()
+            && m_config.getSuperSpamStrength() / 10.0f <= report.getScore()) {
             action = SMTPSpamMessageAction.BLOCK;
         }
 
