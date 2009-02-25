@@ -135,14 +135,16 @@ public class SpamPopHandler extends PopStateMachine
             SpamReport zReport = zScanner.scanFile(zFile, strength / 10.0f);
             postSpamEvent(zMsgInfo, zReport, zMsgAction);
 
-            try {
-                zMMessage.getMMHeaders().removeHeaderFields(new LCString(zConfig.getHeaderName()));
-                zMMessage.getMMHeaders().addHeaderField(zConfig.getHeaderName(),
-                                                        zConfig.getHeaderValue(zReport.isSpam()));
-            }
-            catch (HeaderParseException exn) {
-                /* we'll reuse original message */
-                throw new TokenException("cannot add spam report header to scanned message/mime part: " + exn);
+            if (zConfig.getAddSpamHeaders()) {
+                try {
+                    zMMessage.getMMHeaders().removeHeaderFields(new LCString(zConfig.getHeaderName()));
+                    zMMessage.getMMHeaders().addHeaderField(zConfig.getHeaderName(),
+                                                            zConfig.getHeaderValue(zReport.isSpam()));
+                }
+                catch (HeaderParseException exn) {
+                    /* we'll reuse original message */
+                    throw new TokenException("cannot add spam report header to scanned message/mime part: " + exn);
+                }
             }
 
             if (true == zReport.isSpam()) {

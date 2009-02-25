@@ -358,12 +358,15 @@ public class SmtpSessionHandler
 
     private void markHeaders(MIMEMessage msg,
                              SpamReport report) {
-        try {
-            msg.getMMHeaders().removeHeaderFields(new LCString(m_config.getHeaderName()));
-            msg.getMMHeaders().addHeaderField(m_config.getHeaderName(),
-                                              m_config.getHeaderValue(report.isSpam()));
-        } catch (HeaderParseException shouldNotHappen) {
-            m_logger.error(shouldNotHappen);
+        boolean addSpamHeaders = m_config.getAddSpamHeaders();
+        if (addSpamHeaders) {
+            try {
+                msg.getMMHeaders().removeHeaderFields(new LCString(m_config.getHeaderName()));
+                msg.getMMHeaders().addHeaderField(m_config.getHeaderName(),
+                                                  m_config.getHeaderValue(report.isSpam()));
+            } catch (HeaderParseException shouldNotHappen) {
+                m_logger.error(shouldNotHappen);
+            }
         }
     }
 
