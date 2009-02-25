@@ -75,16 +75,18 @@ public class QuarantineFunctions
 
     private static final String buildJsonList( String[] values )
     {
-        if ( values == null ) {
+        if ( values == null || values.length == 0 ) {
             return "[]";
         }
-        try {
-            JSONArray ja = new JSONArray(values);
-            return ja.toString();
-        } catch(JSONException j) {
-            //TODO log something
+
+        JSONArray ja = new JSONArray();
+        for ( String value : values ) {
+            JSONArray v = new JSONArray();
+            v.put( value );
+            ja.put( v );
         }
-        return "[]";
+        
+        return ja.toString();
     }
 
     public static void setCurrentSafelist( ServletRequest request, String[] list )
