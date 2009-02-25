@@ -109,13 +109,14 @@ public class SpamImapHandler
         postSpamEvent(msgInfo, report, action);
 
         //Mark headers regardless of other actions
-        try {
-            msg.getMMHeaders().removeHeaderFields(new LCString(m_config.getHeaderName()));
-            msg.getMMHeaders().addHeaderField(m_config.getHeaderName(),
-                                              m_config.getHeaderValue(report.isSpam()));
-        }
-        catch(HeaderParseException shouldNotHappen) {
-            m_logger.error(shouldNotHappen);
+        if (m_config.getAddSpamHeaders()) {
+            try {
+                msg.getMMHeaders().removeHeaderFields(new LCString(m_config.getHeaderName()));
+                msg.getMMHeaders().addHeaderField(m_config.getHeaderName(),
+                                                  m_config.getHeaderValue(report.isSpam()));
+            } catch(HeaderParseException shouldNotHappen) {
+                m_logger.error(shouldNotHappen);
+            }
         }
 
         if(report.isSpam()) {//BEGIN SPAM

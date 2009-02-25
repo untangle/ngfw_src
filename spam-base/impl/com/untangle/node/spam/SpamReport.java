@@ -187,7 +187,7 @@ public class SpamReport
         MIMEMessageHeaders mmh = msg.getMMHeaders();
         mmh.removeHeaderFields(new LCString("X-spam-status"));
         try {
-        mmh.addHeaderField("X-spam-status", sb.toString());
+            mmh.addHeaderField("X-spam-status", sb.toString());
         } catch (HeaderParseException exn) {
             logger.warn("could not add header: " + sb.toString(), exn);
         }
