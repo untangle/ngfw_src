@@ -46,16 +46,16 @@ Ung.Safelist.prototype = {
             }]);
 
         this.reader = new Ext.data.ArrayReader(
-        {},
-        [ { name : 'emailAddress' } ]);
+            {},
+            [ { name : 'emailAddress' } ]);
 
         this.store = new Ext.data.Store({
-            reader : safelist.reader,
-            data : inboxDetails.safelistData
+            proxy : new Ext.data.MemoryProxy( inboxDetails.safelistData ),
+            reader : safelist.reader
         });
 
         this.addButton = new Ext.Button( {
-			iconCls:'icon-add-row',
+	    iconCls:'icon-add-row',
             text : i18n._( "Add" ),
             handler : function() {
                 var window = this.getAddWindow();
@@ -63,11 +63,11 @@ Ung.Safelist.prototype = {
             },
             "scope" : this
         });
-
+        
         this.deleteButton = new Ext.Button( {
             text : i18n._( "Delete Addresses" ),
             disabled : true,
-			iconCls:'icon-delete-row',						
+	    iconCls:'icon-delete-row',						
             handler : function() {
                 var addresses = [];
                 this.selectionModel.each( function( record ) {
@@ -86,7 +86,7 @@ Ung.Safelist.prototype = {
             },
             "scope" : this
         });
-                    
+        
         this.grid = new Ext.grid.GridPanel({
             store : safelist.store,
             region : "center",
@@ -95,12 +95,13 @@ Ung.Safelist.prototype = {
             loadMask : true,
             frame : true,
             stripeRows : true,
-			cls:'safelist-grid',
-			autoExpandColumn : 1,	
-			autoExpandMax: 1700,
+	    cls:'safelist-grid',
+	    autoExpandColumn : 1,	
+	    autoExpandMax: 1700,
             tbar : [ this.addButton, this.deleteButton ]
-         });
-    
+        });
+        
+        safelist.store.load();
     },
     
     getAddWindow : function() {
