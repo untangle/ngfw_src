@@ -1247,7 +1247,10 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                     default :
                                     case 3 : // QUARANTINED
                                         return this.i18n._("quarantine message");
-                                }
+                                    case 4 : // SAFELISTED
+                                        return this.i18n._("safelist message");
+                                    case 5 : // OVERSIZE
+                                        return this.i18n._("oversize message");                                }
                                 break;
                         }
                         return "";
