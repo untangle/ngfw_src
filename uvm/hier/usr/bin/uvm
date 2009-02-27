@@ -178,7 +178,7 @@ restartServiceIfNeeded() {
       # do nothing if ctasd is not configured, or explicitely disabled
       [ -f /etc/default/untangle-ctasd ] || return
       grep 'CTASD_DISABLED=true' /etc/default/untangle-ctasd && return
-      isServiceRunning ctasd && return
+      isServiceRunning ctasd.bin && return
       serviceName=untangle-ctasd
       ;;
   esac
