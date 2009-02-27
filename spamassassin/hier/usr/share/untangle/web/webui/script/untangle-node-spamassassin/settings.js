@@ -67,8 +67,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 if(dsfq.getValue()){
                    ssv.enable();
                 }else{
-                   ssv.enable();                                        
-                }            
+                   ssv.enable();
+                }
             }else{
                 dsfq.disable();
                 ssv.disable();
@@ -77,9 +77,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             if(ssv.disabled){
                 ssv.fireEvent('disable');
             }else{
-                ssv.fireEvent('enable');            
-            }                                 
-        },          
+                ssv.fireEvent('enable');
+            }
+        },
         // Email Config Panel
         buildEmail : function() {
             this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
@@ -122,7 +122,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                         Ext.getCmp('spamassassin_smtpStrength').disable();
                                         Ext.getCmp('spamassassin_smtpAction').disable();
                                     }
-                                    this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'));                                    
+                                    this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'));
                                 }.createDelegate(this)
                             },
                             "render":{
@@ -136,9 +136,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                             Ext.getCmp('spamassassin_smtpAction').disable();
                                         }
                                         this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'))
-                                        
+
                                     }.createDelegate(this)
-                            }                            
+                            }
                         }
                     }, {
                         border: false,
@@ -224,7 +224,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().smtpConfig.msgAction = newValue;    
+                                    this.getBaseSettings().smtpConfig.msgAction = newValue;
                                 }.createDelegate(this)
                             },
                             "render" : {
@@ -233,9 +233,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 }.createDelegate(this)
                             },
                             "select" :{
-                                fn : function(elem){                                
+                                fn : function(elem){
                                     this.enableSuperSpam(elem);
-                                }.createDelegate(this)                          
+                                }.createDelegate(this)
                             }
                         }
                     }, {
@@ -244,7 +244,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         id : 'drop-spam-from-quarantine',
                         boxLabel : this.i18n._('Drop Super Spam from Quarantine'),
                         hideLabel : true,
-                        itemCls : 'left-indent-4',                        
+                        itemCls : 'left-indent-4',
                         checked : this.getBaseSettings().smtpConfig.blockSuperSpam,
                         listeners : {
                             "render" : {
@@ -270,11 +270,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     },
                     {
                       xtype : 'numberfield',
-                      labelWidth: 150,                      
+                      labelWidth: 150,
                       fieldLabel : this.i18n._('Super Spam Threshold'),
                       name : 'Super Spam Level',
-                      id: 'spamassassin_smtpSuperStrengthValue', 
-                      value : this.getBaseSettings().smtpConfig.superSpamStrength / 10.0,                   
+                      id: 'spamassassin_smtpSuperStrengthValue',
+                      value : this.getBaseSettings().smtpConfig.superSpamStrength / 10.0,
                       allowDecimals: false,
                       allowNegative: false,
                       minValue: 0,
@@ -303,7 +303,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 if(this.rendered){
                                         this.getEl().parent().parent().removeClass('x-item-disabled');
                                 }
-                            }                       
+                            }
                         }
                       }
                     },{

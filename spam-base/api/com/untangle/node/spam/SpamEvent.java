@@ -51,6 +51,7 @@ public abstract class SpamEvent extends LogEvent
     public static final int MARKED = 1;
     public static final int BLOCKED = 2;
     public static final int QUARANTINED = 3;
+    public static final int SAFELISTED = 4;
 
     // constructors -----------------------------------------------------------
 
@@ -152,6 +153,7 @@ public abstract class SpamEvent extends LogEvent
         switch(getActionType())
             {
             case PASSED:
+            case SAFELISTED:
                 // NOTICE = spam but passed
                 // INFORMATIONAL = statistics or normal operation
                 return true == isSpam() ? SyslogPriority.NOTICE : SyslogPriority.INFORMATIONAL;

@@ -95,6 +95,8 @@ public class SpamSmtpEvent extends SpamEvent
             return MARKED;
         } else if (SMTPSpamMessageAction.BLOCK_KEY == type) {
             return BLOCKED;
+        } else if (SMTPSpamMessageAction.SAFELIST_KEY == type) {
+            return SAFELISTED;
         } else { // QUARANTINE_KEY
             return QUARANTINED;
         }
