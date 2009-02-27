@@ -1009,7 +1009,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
     saveSettings : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Configuring Internet Connection" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Saving Internet Connection Settings" ), i18n._( "Please wait" ));
         
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
@@ -1330,7 +1330,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             return;
         }
 
-        Ext.MessageBox.wait( i18n._( "Configuring Internal Network" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ), i18n._( "Please wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
@@ -1415,7 +1415,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                         xtype : 'textfield',
                         name : 'from-address-textfield',
                         fieldLabel : i18n._("From Address"),
-                        width : 200,
+                        width : 230,
                         itemCls : 'spacing-margin-1',
                         vtype : 'emailAddressCheck',
                         allowBlank : false

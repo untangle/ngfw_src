@@ -1304,21 +1304,21 @@ Ung.Node.getCmp = function(tid) {
 Ung.Node.getStatusTip = function() {
     return [
         '<div style="text-align: left;">',
-        i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular software product."),
+        i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
         '<BR>',
         '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> '
-                + i18n._('indicates that the product is "on" and operating normally.'),
+                + i18n._('indicates that the application is "on" and operating normally.'),
         '<BR>',
         '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> '
-                + i18n._('indicates that the product is "on", but that an abnormal condition has occurred.'),
+                + i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
         '<BR>',
         '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> '
-                + i18n._('indicates that the product is saving or refreshing settings.'), '<BR>',
-        '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the product is "off", and may be turned "on" by the user.'),
+                + i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
+        '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
         '</div>'].join('');
 }
 Ung.Node.getPowerTip = function() {
-    return i18n._('The <B>Power Button</B> allows you to turn a product "on" and "off".');
+    return i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".');
 };
 Ung.Node.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
     '<div class="node-trial-info">{trialInfo}</div>',
