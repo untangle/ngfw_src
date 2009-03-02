@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.io.IOException;
 import javax.naming.AuthenticationException;
 import javax.naming.CommunicationException;
 import javax.naming.Context;
@@ -61,7 +62,7 @@ import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.uvm.addrbook.GroupEntry;
 import org.apache.log4j.Logger;
-
+import com.untangle.node.util.SimpleExec;
 /**
  * Abstract base class for "Adapters" which call LDAP
  * to perform various operations.
@@ -205,31 +206,65 @@ abstract class LdapAdapter {
 
     public List<GroupEntry> listAllGroups()
         throws ServiceUnavailableException {
-
+        List<GroupEntry> ret = new ArrayList<GroupEntry>();
         try {
-            List<Map<String, String[]>> list =
-                queryAsSuperuser(getSearchBase(),
-                                 getListAllGroupsSearchString(),
-                                 getGroupEntrySearchControls());
+            SimpleExec.SimpleExecResult result = SimpleExec.exec(
+                                                                 "getent",//cmd
+                                                                 new String[] {//args
+                                                                     "group"
+                                                                 },
+                                                                 null,//env
+                                                                 null,//rootDir
+                                                                 true,//stdout
+                                                                 true,//stderr
+                                                                 1000*20);
 
-            List<GroupEntry> ret = new ArrayList<GroupEntry>();
+            if(result.exitCode==0) {
+                String output = new String(result.stdOut);
+                String[] lines = output.split("\n");
+                for (String line : lines) {
+                    String[] groupPieces = line.split(":");
+                    GroupEntry ge = new GroupEntry(
+                              groupPieces[0],
+                              Long.valueOf(groupPieces[2]).longValue(),
+                              groupPieces[0],
+                              "",
+                              "",
+                              null,
+                              getRepositoryType());
+                    ret.add(ge);
 
-            if(list == null || list.size() == 0) {
-                return ret;
-            }
-
-            for(Map<String, String[]> map : list) {
-                GroupEntry entry = toGroupEntry(map);
-                if(entry != null) {
-                    ret.add(entry);
                 }
             }
-            return ret;
+        } catch (IOException ioe) {
+            m_logger.warn("Exception group listing entries", ioe);
+            throw new ServiceUnavailableException(ioe.toString());
+         
         }
-        catch(NamingException ex) {
-            m_logger.warn("Exception group listing entries", ex);
-            throw new ServiceUnavailableException(ex.toString());
-        }
+            //List<Map<String, String[]>> list =
+                //queryAsSuperuser(getSearchBase(),
+                                 //getListAllGroupsSearchString(),
+                                 //getGroupEntrySearchControls());
+//
+            //List<GroupEntry> ret = new ArrayList<GroupEntry>();
+//
+            //if(list == null || list.size() == 0) {
+                //return ret;
+            //}
+//
+            //for(Map<String, String[]> map : list) {
+                //GroupEntry entry = toGroupEntry(map);
+                //if(entry != null) {
+                    //ret.add(entry);
+                //}
+            //}
+            //return ret;
+            //}
+            //catch(NamingException ex) {
+            // m_logger.warn("Exception group listing entries", ex);
+            // throw new ServiceUnavailableException(ex.toString());
+            //}
+        return ret;
     }
 
 
@@ -707,6 +742,7 @@ abstract class LdapAdapter {
     private GroupEntry toGroupEntry(Map<String, String[]> map) {
         return new GroupEntry(
                               getFirstEntryOrNull(map.get(getCNName())),
+                              Long.valueOf("0").longValue(), //TODO fix this later
                               getFirstEntryOrNull(map.get(getGroupName())),
                               getFirstEntryOrNull(map.get(getGroupTypeName())),
                               getFirstEntryOrNull(map.get(getGroupDescriptionName())),
