@@ -70,13 +70,13 @@ class LocalLdapAdapter extends LdapAdapter {
     }
 
     @Override
-    protected String getUserClassType() {
-        return "inetOrgPerson";
+    protected String[] getUserClassType() {
+        return new String[] { "inetOrgPerson", "posixAccount" };
     }
 
     @Override
-    protected String getGroupClassType() {
-        return "groupOfNames";
+    protected String[] getGroupClassType() {
+        return new String[] { "groupOfNames" };
     }
 
     @Override
@@ -269,9 +269,11 @@ class LocalLdapAdapter extends LdapAdapter {
 
         //Create the LDAP crap
         BasicAttributes attrs = new BasicAttributes();
-        BasicAttribute attr = new BasicAttribute("objectclass");
-        attr.add(getUserClassType());
-        attrs.put(attr);
+        for(String userClass : getUserClassType()) {
+            BasicAttribute attr = new BasicAttribute("objectclass");
+            attr.add(userClass);
+            attrs.put(attr);
+        }
 
         attrs.put(new BasicAttribute("uid", newEntry.getUID()));
         attrs.put(new BasicAttribute("sn", newEntry.getLastName()));

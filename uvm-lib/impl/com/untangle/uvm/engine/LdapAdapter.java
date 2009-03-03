@@ -93,9 +93,9 @@ abstract class LdapAdapter {
      * Get the type of object used to describe "people"
      * in this directory (e.g. "user" or "inetOrgPerson").
      */
-    protected abstract String getUserClassType();
+    protected abstract String[] getUserClassType();
 
-    protected abstract String getGroupClassType();
+    protected abstract String[] getGroupClassType();
 
 
     /**
@@ -304,7 +304,7 @@ abstract class LdapAdapter {
 
         StringBuilder sb = new StringBuilder();
         sb.append("(&");
-        sb.append("(").append("objectClass=").append(getUserClassType()).append(")");
+        sb.append(orStrings("objectClass=", getUserClassType()));
         sb.append("(").append(getMailAttributeName()).append("=").append(email).append(")");
         sb.append(")");
 
@@ -328,13 +328,34 @@ abstract class LdapAdapter {
 
         StringBuilder sb = new StringBuilder();
         sb.append("(&");
-        sb.append("(").append("objectClass=").append(getUserClassType()).append(")");
+        sb.append(orStrings("objectClass=", getUserClassType()));
         sb.append("(").append(getUIDAttributeName()).append("=").append(uid).append(")");
         sb.append(")");
 
         return getEntryWithSearchString(sb.toString());
     }
 
+    public static String orStrings(String prefix, String[] values) {
+        return queryStrings(prefix, values, "|", "(", ")");
+    }
+
+    public static String queryStrings(String prefix, String[] values, String operator, String open, String close) {
+        StringBuilder results = new StringBuilder();
+        queryStringsRecursive(prefix, values, operator, open, close, results);
+        return results.toString();
+    }
+    
+    protected static void queryStringsRecursive(String prefix, String[] values, String operator, String open, String close, StringBuilder results) {
+        if (values.length == 1) {
+            results.append(open + prefix + values[0] + close);
+        } else {
+            results.append(open + operator + open + prefix + values[0] + close);
+            String[] valuesDequed = new String[values.length-1];
+            System.arraycopy(values, 1, valuesDequed, 0, values.length-1);
+            queryStringsRecursive(prefix, valuesDequed, operator, open, close, results);
+            results.append(close);
+        }
+    }
 
     /**
      * Tests the settings via creating a superuser context.
@@ -518,15 +539,11 @@ abstract class LdapAdapter {
      * Intended to be overidden by Active Directory
      */
     protected String getListAllUsersSearchString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(").append("objectClass=").append(getUserClassType()).append(")");
-        return sb.toString();
+        return orStrings("objectClass=", getUserClassType());
     }
 
     protected String getListAllGroupsSearchString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(objectClass=").append(getGroupClassType()).append(")");
-        return sb.toString();
+        return orStrings("objectClass=", getGroupClassType());
     }
 
 
