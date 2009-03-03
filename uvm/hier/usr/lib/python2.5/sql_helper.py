@@ -1,10 +1,11 @@
 import logging
+import mx
 import psycopg
 import re
+import string
 
-from datetime import date
-from datetime import timedelta
 from sets import Set
+from psycopg import DateFromMx
 
 # XXX function timing
 
@@ -49,6 +50,11 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
                              clear_tables=False):
     (schema, tablename) = __get_tablename(table_ddl)
 
+    if schema:
+        full_tablename = "%s.%s" % (schema, tablename)
+    else:
+        full_tablename = tablename
+
     existing_dates = Set()
 
     for t in get_tables(schema='reports', prefix='%s_' % tablename):
@@ -64,21 +70,21 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
 
     interval = (end_date - start_date).days
 
-    all_dates = Set(end_date - timedelta(days=i + 1) for i in range(interval))
+    all_dates = Set(end_date - mx.DateTime.DateTimeDelta(i + 1) for i in range(interval))
 
     for d in all_dates - existing_dates:
         run_sql("""\
 CREATE TABLE %s
 (CHECK (%s >= %%s AND %s < %%s))
-INHERITS (%s)""" % (__tablename_for_date(tablename, d),
-                    timestamp_column, timestamp_column, tablename),
-        (d, d + timedelta(days=1)))
+INHERITS (%s)""" % (__tablename_for_date(full_tablename, d),
+                    timestamp_column, timestamp_column, full_tablename),
+                (DateFromMx(d), DateFromMx(d + mx.DateTime.DateTimeDelta(1))))
 
     if clear_tables:
         for d in all_dates:
-            drop_table(__tablename_for_date(tablename, d))
+            drop_table(__tablename_for_date(full_tablename, d))
 
-    __make_trigger(tablename, all_dates)
+    __make_trigger(full_tablename, all_dates)
 
 def get_update_info(tablename):
     conn = get_connection()
@@ -177,7 +183,7 @@ BEGIN
         INSERT INTO %s VALUES (NEW.*);""" % ('IF' if first else "ELSIF",
                                              timestamp_column, d,
                                              timestamp_column,
-                                             d + timedelta(days=1),
+                                             d + mx.DateTime.DateTimeDelta(1),
                                              __get_tablename(tablename, d))
         first = False
 
@@ -209,6 +215,6 @@ def __get_tablename(table_ddl):
 
     if m:
       s = m.group(1).split('.')
-      return (s[0:-1], s[-1])
+      return (string.join(s[0:-1], '.'), s[-1])
     else:
       raise ValueError("Cannot find table in: %s" % table_ddl)
