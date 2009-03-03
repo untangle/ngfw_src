@@ -43,27 +43,23 @@ CREATE TABLE settings.n_spyware_settings (
 -- com.untangle.tran.spyware.SpywareSettings.cookieRules
 CREATE TABLE settings.n_spyware_cr (
     settings_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4);
+    rule_id int8 NOT NULL);
 
 -- com.untangle.tran.spyware.SpywareSettings.activeXRules
 CREATE TABLE settings.n_spyware_ar (
     settings_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4);
+    rule_id int8 NOT NULL);
 
 -- com.untangle.tran.spyware.SpywareSettings.subnetRules
 CREATE TABLE settings.n_spyware_sr (
     settings_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4);
+    rule_id int8 NOT NULL);
 
 
 -- com.untangle.tran.spyware.SpywareSettings.domainWhitelist
 CREATE TABLE settings.n_spyware_wl (
     settings_id int8 NOT NULL,
-    rule_id int8 NOT NULL,
-    position int4);
+    rule_id int8 NOT NULL);
 
 ----------------
 -- constraints |
