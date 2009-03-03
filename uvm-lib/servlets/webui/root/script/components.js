@@ -107,7 +107,7 @@ Ung.Util= {
     rpcExHandler: function(exception) {
         if(exception instanceof JSONRpcClient.Exception)
         {
-            if(exception.code == 550 || exception.code == 12029)
+            if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 )
             {
                 Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
             }
@@ -121,7 +121,7 @@ Ung.Util= {
     },
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
         if(exception) {
-            if(exception.code==550 ||exception.code == 12029) {
+            if(exception.code==550 ||exception.code == 12029 || exception.code == 12019) {
                 Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
                 return true;
             }else {
@@ -1409,6 +1409,13 @@ Ung.MessageManager = {
                         this.cycleCompleted = true;
                         return;
                     } 
+                }
+                /* After a hostname change and the certificate is regenerated. */
+                else if ( exception.code == 12019 ) {
+                    Ext.MessageBox.alert(i18n._("System Busy"), "Please refresh the page", function() {
+                        this.cycleCompleted = true;
+                    }.createDelegate(this));
+                    return;
                 }
                 Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
                     this.cycleCompleted = true;
