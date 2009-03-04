@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -43,6 +43,12 @@ public interface SpamNode extends Node
     SpamBaseSettings getBaseSettings();
     SpamBaseSettings getBaseSettings(boolean updateScannerInfo);
     void setBaseSettings(SpamBaseSettings baseSettings);
+
+    void enableSmtpSpamHeaders(boolean enableHeaders);
+    void enablePopSpamHeaders(boolean enableHeaders);
+    void enableImapSpamHeaders(boolean enableHeaders);
+
+    void enableSmtpFailClosed(boolean failClosed);
 
     List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns );
     void updateSpamRBLList( List<SpamRBL> added, List<Long> deleted, List<SpamRBL> modified );

@@ -390,7 +390,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     public void setSpamSettings(final SpamSettings newSpamSettings)
     {
-        //TEMP HACK, Until we move the templates to database
+        // TEMP HACK, Until we move the templates to database
         ensureTemplateSettings(newSpamSettings);
         // set lists if not already set
         initSpamRBLList(newSpamSettings);
@@ -410,6 +410,34 @@ public class SpamImpl extends AbstractNode implements SpamNode
         getNodeContext().runTransaction(tw);
 
         return;
+    }
+
+    public void enableSmtpSpamHeaders(boolean enableHeaders)
+    {
+        SpamBaseSettings sbs = getBaseSettings(false);
+        sbs.getSmtpConfig().setAddSpamHeaders(enableHeaders);
+        setBaseSettings(sbs);
+    }
+
+    public void enablePopSpamHeaders(boolean enableHeaders)
+    {
+        SpamBaseSettings sbs = getBaseSettings(false);
+        sbs.getPopConfig().setAddSpamHeaders(enableHeaders);
+        setBaseSettings(sbs);
+    }
+
+    public void enableImapSpamHeaders(boolean enableHeaders)
+    {
+        SpamBaseSettings sbs = getBaseSettings(false);
+        sbs.getImapConfig().setAddSpamHeaders(enableHeaders);
+        setBaseSettings(sbs);
+    }
+
+    public void enableSmtpFailClosed(boolean failClosed)
+    {
+        SpamBaseSettings sbs = getBaseSettings(false);
+        sbs.getSmtpConfig().setFailClosed(failClosed);
+        setBaseSettings(sbs);
     }
 
     public SpamBaseSettings getBaseSettings()
