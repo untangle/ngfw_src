@@ -148,7 +148,6 @@ public abstract class SpamProtoConfig implements Serializable
         }
     }
 
-
     /**
      * Get the template used to create the subject for a wrapped
      * message.
