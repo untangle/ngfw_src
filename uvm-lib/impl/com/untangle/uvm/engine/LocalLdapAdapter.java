@@ -11,6 +11,7 @@
 
 package com.untangle.uvm.engine;
 
+import java.io.IOException;
 import java.util.List;
 import javax.naming.AuthenticationException;
 import javax.naming.NameAlreadyBoundException;
@@ -21,6 +22,7 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 
+import com.untangle.node.util.SimpleExec;
 import com.untangle.uvm.addrbook.NoSuchEmailException;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
@@ -130,6 +132,30 @@ class LocalLdapAdapter extends LdapAdapter {
             throw new ServiceUnavailableException(ex.toString());
         }
     }
+
+    @Override
+    public void joinDomain(String smbWorkgroup)
+	throws ServiceUnavailableException
+    {
+        try {
+	    String auth = m_settings.getSuperuser() + "%" + m_settings.getSuperuserPass();
+            SimpleExec.SimpleExecResult result = SimpleExec.exec(
+		"/usr/bin/smbpasswd",
+		new String [] { "-w", m_settings.getSuperuserPass() },
+		null,//env
+		null,//rootDir
+		true,//stdout
+		true,//stderr
+		1000*60);
+            if(result.exitCode != 0) {
+		m_logger.warn("Unable to join domain: " + result.stdOut + result.stdErr);
+            }
+        } catch (IOException ioe) {
+            m_logger.warn("Exception joining domain", ioe);
+            throw new ServiceUnavailableException(ioe.toString());
+        }
+    }
+
 
     /**
      * Change the given user's password

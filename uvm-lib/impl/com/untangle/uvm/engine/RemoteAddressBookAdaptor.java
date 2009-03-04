@@ -256,6 +256,10 @@ class RemoteAddressBookAdaptor implements RemoteAddressBook {
         return this.addressBook.getGroupEntries(searchIn);
     }
 
+    public void joinDomain(String smbWorkgroup)
+    {
+        this.addressBook.joinDomain(smbWorkgroup);
+    }
 }
 
 

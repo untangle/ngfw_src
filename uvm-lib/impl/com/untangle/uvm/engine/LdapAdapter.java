@@ -137,6 +137,16 @@ abstract class LdapAdapter {
 
 
     /**
+     * Join a domain.  Creates a computer account for the Untangle server in the ADs
+     * domain, or the equivalent in the local LDAP directory.
+     *
+     * @param smbWorkgroup The Netbios Domain name (usually first word of realm) to join
+     */
+    public abstract void joinDomain(String smbWorkgroup)
+        throws ServiceUnavailableException;
+
+
+    /**
      * Authenticate the user who owns the given email addres
      * with the provided password.
      *
