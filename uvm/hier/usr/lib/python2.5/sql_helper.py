@@ -42,12 +42,16 @@ def run_sql(sql, args=None):
 
     try:
         curs = conn.cursor()
-        curs.execute(sql, args)
+        if args:
+            curs.execute(sql, args)
+        else:
+            curs.execute(sql)
     finally:
         conn.commit()
 
 def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
                              clear_tables=False):
+
     (schema, tablename) = __get_tablename(table_ddl)
 
     if schema:
@@ -55,12 +59,15 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
     else:
         full_tablename = tablename
 
+    if not table_exists(schema, tablename):
+        run_sql(table_ddl)
+
     existing_dates = Set()
 
     for t in get_tables(schema='reports', prefix='%s_' % tablename):
         m=re.search('%s_(\d+)_(\d+)_(\d+)' % tablename, t)
         if m:
-            d = date(*map(int, m.groups()))
+            d = mx.DateTime.Date(*map(int, m.groups()))
             if d >= start_date and d < end_date:
                 existing_dates.add(d)
             else:
@@ -84,7 +91,7 @@ INHERITS (%s)""" % (__tablename_for_date(full_tablename, d),
         for d in all_dates:
             drop_table(__tablename_for_date(full_tablename, d))
 
-    __make_trigger(full_tablename, all_dates)
+    __make_trigger(schema, tablename, timestamp_column, all_dates)
 
 def get_update_info(tablename):
     conn = get_connection()
@@ -145,6 +152,22 @@ def drop_table(table, schema=None):
     finally:
         conn.commit()
 
+def table_exists(schemaname, tablename):
+    conn = get_connection()
+
+    try:
+        curs = conn.cursor()
+
+        curs.execute("""
+SELECT tablename FROM pg_catalog.pg_tables
+WHERE schemaname = %s AND tablename = %s""", (schemaname, tablename))
+
+        rv = curs.rowcount
+    finally:
+        conn.commit()
+
+    return rv
+
 def get_tables(schema=None, prefix=''):
     conn = get_connection()
 
@@ -167,7 +190,7 @@ WHERE tablename LIKE %s""", '%s%%' % prefix)
 
     return rv
 
-def __make_trigger(tablename, all_dates):
+def __make_trigger(schema, tablename, timestamp_column, all_dates):
     trigger_function_name = '%s_insert_trigger()' % tablename
 
     trigger_function = """\
@@ -184,28 +207,46 @@ BEGIN
                                              timestamp_column, d,
                                              timestamp_column,
                                              d + mx.DateTime.DateTimeDelta(1),
-                                             __get_tablename(tablename, d))
+                                             __tablename_for_date(tablename, d))
         first = False
 
     trigger_function += """\
     ELSE
-        RAISE NOTICE 'Date out of range: %', NEW.#{timestamp_column};
+        RAISE NOTICE 'Date out of range: %%', NEW.%s;
     END IF;
     RETURN NULL;
 END;
 $$
-LANGUAGE plpgsql;"""
+LANGUAGE plpgsql;""" % timestamp_column
 
     run_sql(trigger_function);
 
     trigger_name = "insert_%s_trigger" % tablename
 
-    if not __has_trigger(schema, tablename, trigger_name % tablename):
+    if not __trigger_exists(schema, tablename, trigger_name):
         run_sql("""\
-CREATE TRIGGER trigger_name
-    BEFORE INSERT ON %s
+CREATE TRIGGER %s
+    BEFORE INSERT ON %s.%s
     FOR EACH ROW EXECUTE PROCEDURE %s
-""" % (trigger_name, tablename, trigger_function_name))
+""" % (trigger_name, schema, tablename, trigger_function_name))
+
+def __trigger_exists(schema, tablename, trigger_name):
+    conn = get_connection()
+
+    try:
+        curs = conn.cursor()
+
+        curs.execute("""
+SELECT 1 FROM information_schema.triggers
+WHERE trigger_schema = %s AND event_object_table = %s AND trigger_name = %s
+""", (schema, tablename, trigger_name))
+
+        rv = curs.rowcount
+    finally:
+        conn.commit()
+
+    return rv
+
 
 def __tablename_for_date(tablename, date):
     return "%s_%d_%d_%d" % ((tablename,) + date.timetuple()[0:3])

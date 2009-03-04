@@ -1,8 +1,11 @@
 import sql_helper
 
 import reports.engine
-from reports.engine import FactTable
+
+from psycopg import DateFromMx
+
 from reports.engine import Column
+from reports.engine import FactTable
 from reports.engine import Node
 
 class HttpCasing(Node):
@@ -33,6 +36,7 @@ CREATE TABLE reports.n_http_events (
 )""",
                                             'time_stamp', start_date, end_date)
 
+
         sql_helper.run_sql("""\
 INSERT INTO reports.n_http_events
       (time_stamp, session_id, client_intf, server_intf, c_client_addr,
@@ -58,14 +62,15 @@ INSERT INTO reports.n_http_events
         resp.content_length, resp.content_type,
         -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
-    FROM pl_endp pe
-    JOIN pl_stats ps ON pe.event_id = ps.pl_endp_id
-    JOIN n_http_req_line req ON pe.event_id = req.pl_endp_id
-    JOIN n_http_evt_req er ON er.request_id = req.request_id
-    LEFT OUTER JOIN n_http_evt_resp resp on req.request_id = resp.request_id
-    LEFT OUTER JOIN merged_address_map mam
+    FROM events.pl_endp pe
+    JOIN events.pl_stats ps ON pe.event_id = ps.pl_endp_id
+    JOIN events.n_http_req_line req ON pe.event_id = req.pl_endp_id
+    JOIN events.n_http_evt_req er ON er.request_id = req.request_id
+    LEFT OUTER JOIN events.n_http_evt_resp resp on req.request_id = resp.request_id
+    LEFT OUTER JOIN events.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp >= ? AND pe.time_stamp < ?""", (start_date, end_date))
+    WHERE pe.time_stamp >= %s AND pe.time_stamp < %s""",
+                           (DateFromMx(start_date), DateFromMx(end_date)))
 
         ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
                        'time_stamp',
