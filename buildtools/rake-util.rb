@@ -23,6 +23,7 @@ require 'find'
 require 'ftools'
 require 'set'
 require 'tempfile'
+require 'thread'
 
 def ensureDirectory(t)
   mkdir_p t unless File.exist?(t)
