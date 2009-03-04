@@ -30,6 +30,8 @@
 # on that task, but difficult to depend on the files that it
 # creates.
 
+require 'thread'
+
 module Rake
   ## This is a special task that keeps track of the last time it was run
   ## Therefore it can depend on files, and only run if the files have changed.
