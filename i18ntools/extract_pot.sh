@@ -14,6 +14,8 @@ cp ../mail-casing/po/untangle-casing-mail.pot ./pot/
 cp ../virus-base/po/untangle-base-virus.pot ./pot/
 cp ../webfilter-base/po/untangle-base-webfilter.pot ./pot/
 cp ../../../internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/untangle-system-stats.templates ./pot/untangle-system-stats.pot
+cp ../../../internal/isotools/wintangle-systray/untangle-systray.pot ./pot/
+cp ../../../internal/isotools/wintangle-installer/LanguageStrings.nsh ./pot/
 
 for module in untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn untangle-node-adblocker
 do 

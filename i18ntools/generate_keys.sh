@@ -224,6 +224,9 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
+"untangle-systray")
+    pygettext ../../../internal/isotools/wintangle-systray/*.py
+    ;;
 *)
     echo 1>&2 Module Name \"$1\" is invalid ...
     exit 127
