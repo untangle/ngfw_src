@@ -29,8 +29,9 @@ import java.util.Set;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.UserWhitelistMode;
-import com.untangle.node.spam.SpamImpl;
 import com.untangle.node.spam.SpamBaseSettings;
+import com.untangle.node.spam.SpamImpl;
+import com.untangle.node.spam.SpamSettings;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.EncryptedUrlList;
@@ -222,6 +223,8 @@ public class PhishNode extends SpamImpl implements Phish
         PhishSettings tmpSpamSettings = new PhishSettings(getTid());
         tmpSpamSettings.setEnableGooglePhishList(true);
         configureSpamSettings(tmpSpamSettings);
+        tmpSpamSettings.getBaseSettings().getSmtpConfig().setBlockSuperSpam(false);
+
         setSpamSettings(tmpSpamSettings);
     }
 
@@ -243,6 +246,10 @@ public class PhishNode extends SpamImpl implements Phish
             urlDatabaseCount++;
         }
         deployWebAppIfRequired(logger);
+
+        SpamSettings ps = getSpamSettings();
+        ps.getBaseSettings().getSmtpConfig().setBlockSuperSpam(false);
+        setSpamSettings(ps);
     }
 
     @Override
