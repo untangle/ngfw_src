@@ -80,6 +80,9 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-systray)
             d=$internal/isotools/wintangle-installer
             ;;
+        untangle-system-stats)
+            d=$internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/po/
+            ;;
         *)
             echo "unknown module: $m"
     esac
