@@ -13,7 +13,7 @@ cp ../../pkgs/untangle-net-alpaca/po/untangle-net-alpaca.pot ./pot/
 cp ../mail-casing/po/untangle-casing-mail.pot ./pot/
 cp ../virus-base/po/untangle-base-virus.pot ./pot/
 cp ../webfilter-base/po/untangle-base-webfilter.pot ./pot/
-cp ../../../internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/untangle-system-stats.templates ./pot/untangle-system-stats.pot
+cp ../../../internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/po/templates.pot ./pot/untangle-system-stats.pot
 cp ../../../internal/isotools/wintangle-systray/untangle-systray.pot ./pot/
 cp ../../../internal/isotools/wintangle-installer/LanguageStrings.nsh ./pot/
 
