@@ -187,6 +187,14 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
                     }
                     dest.flush();
                     dest.close();
+                    if (entry.getName().contains("skin.xml")) {
+		       File skinXML = new File( SKINS_DIR + File.separator + entry.getName() );
+		       SkinInfo skinInfo = getSkinInfo( skinXML, false, true );
+		       if ( skinInfo == null || skinInfo.isUserFacingSkinOutOfDate() || skinInfo.isAdminSkinOutOfDate() ) {
+                           logger.error("Upload Skin Failed, Out of Date");
+                           throw new UvmException("Upload Skin Failed, Out of Date");
+		       }
+                    }
                 }
             }
             zis.close();		    	
