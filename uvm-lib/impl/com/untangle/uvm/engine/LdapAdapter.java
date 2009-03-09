@@ -234,6 +234,9 @@ abstract class LdapAdapter {
                 String[] lines = output.split("\n");
                 for (String line : lines) {
                     String[] groupPieces = line.split(":");
+                    if (Long.valueOf(groupPieces[2]).longValue() < 500l) {
+                        continue;
+                    }
                     GroupEntry ge = new GroupEntry(
                               groupPieces[0],
                               Long.valueOf(groupPieces[2]).longValue(),
