@@ -131,7 +131,6 @@ exec $JAVA_HOME/bin/java \
     -Djava.endorsed.dirs=@ENDORSED_LIB@ \
     -Djava.library.path=@SRC_LIB@ \
     -Dbunnicula.home=@UVM_HOME@ \
-    -Dargon.shield.cfg_file=@UVM_HOME@/conf/shield.cfg \
     -Djdbc.drivers=org.postgresql.Driver \
     -Dcom.untangle.isDevel=@IS_DEVEL@ \
     ${JAVA_OPTS} $* \
