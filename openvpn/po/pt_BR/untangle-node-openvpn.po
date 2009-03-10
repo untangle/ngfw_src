@@ -2,7 +2,6 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
@@ -15,6 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Country: BRAZIL\n"
 
@@ -84,8 +84,8 @@ msgid ""
 "Click \"Send Email\" to send an email to \"Email Address\" with information "
 "to retrieve the OpenVPN Client."
 msgstr ""
-"Clique em \"Enviar e-mail\" para enviar um e-mail para \"Endereço de e-mail"
-"\" com informações para recuperar o Cliente OpenVPN."
+"Clique em \"Enviar e-mail\" para enviar um e-mail para \"Endereço de e-mail\" "
+"com informações para recuperar o Cliente OpenVPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:120
 msgid "Email Address"
@@ -531,8 +531,8 @@ msgid ""
 "The group: \"{0}\" cannot be deleted because it is being used by the client: "
 "{1} in the Client To Site List."
 msgstr ""
-"O grupo: \"{0}\" não pode ser excluído porque está sendo usado por um "
-"cliente: {1} na Lista Cliente a Site."
+"O grupo: \"{0}\" não pode ser excluído porque está sendo usado por um cliente: "
+"{1} na Lista Cliente a Site."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1540
 msgid ""
@@ -749,9 +749,8 @@ msgid "Passphrase:"
 msgstr ""
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:340
-#, fuzzy
 msgid "Click here to download the OpenVPN client."
-msgstr "Clique aqui para baixar uma chave para os clientes Windows."
+msgstr ""
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:341
 msgid "Or copy and paste the following link into your Web Browser."
@@ -766,9 +765,8 @@ msgid "internal network"
 msgstr "rede interna"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:362
-#, fuzzy
 msgid "OpenVPN Client"
-msgstr "Clientes VPN"
+msgstr ""
 
 #~ msgid ""
 #~ "If necessary, you can change the configuration of OpenVPN by launching "
@@ -776,9 +774,3 @@ msgstr "Clientes VPN"
 #~ msgstr ""
 #~ "Se necessário, você pode alterar a configuração do OpenVPN ao iniciar "
 #~ "novamente o Assistente de Configuração."
-
-#~ msgid "The country code must be 2 characters long."
-#~ msgstr "O código de país deve ter 2 caracteres de extensão."
-
-#~ msgid "You must fill out the name of your country."
-#~ msgstr "Você deve preencher o nome de seu país."

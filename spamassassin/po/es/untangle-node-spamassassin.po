@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-03-04 13:57-0800\n"
-"PO-Revision-Date: 2008-11-25 05:54-0700\n"
-"Last-Translator: David Russi <dprussi@qwest.net>\n"
+"PO-Revision-Date: 2009-02-10 08:51-0800\n"
+"Last-Translator: Juan Machado <juan@itos.uga.edu>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Spanish\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:85
@@ -37,23 +37,23 @@ msgstr "Cuarentena"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:88
 msgid "Low (Strength: 5.0)"
-msgstr ""
+msgstr "Bajo (Intensidad: 5.0)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:88
 msgid "Medium (Strength: 4.3)"
-msgstr ""
+msgstr "Medio (Intensidad: 4.3)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:88
 msgid "High (Strength: 3.5)"
-msgstr ""
+msgstr "Alto (Intensidad: 3.5)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:89
 msgid "Very High (Strength: 3.3)"
-msgstr ""
+msgstr "Muy Alto (Intensidad: 3.3)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:89
 msgid "Extreme (Strength: 3.0)"
-msgstr ""
+msgstr "Extremo (Intensidad: 3.0)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:89
 msgid "Custom"
@@ -112,7 +112,7 @@ msgstr "Activar el bloqueo SMPT de correo basura"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:318
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:588
 msgid "Enable Spam Headers"
-msgstr ""
+msgstr "Usar encabezados Spam"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:331
 msgid "POP3"
@@ -161,14 +161,12 @@ msgid "quarantine message"
 msgstr "poner mensaje en cuarentena"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:647
-#, fuzzy
 msgid "safelist message"
-msgstr "permitir mensaje"
+msgstr "mensaje de lista segura"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:649
-#, fuzzy
 msgid "oversize message"
-msgstr "poner mensaje en cuarentena"
+msgstr "mensaje por encima del tamaño aceptado"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:681
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:756
@@ -302,9 +300,14 @@ msgstr "Eventos de correo basura"
 msgid "Identity Theft Events"
 msgstr "Eventos de robo de identidad"
 
-#, fuzzy
+#~ msgid "Enable Super Spam Blocking"
+#~ msgstr "Usar Super Bloqueo de Spam"
+
+#~ msgid "Super Spam Level"
+#~ msgstr "Super Bloqueo de Spam"
+
 #~ msgid "Fail Closed"
-#~ msgstr "Falló"
+#~ msgstr "Falla cerrada"
 
 #~ msgid "Low"
 #~ msgstr "Baja"

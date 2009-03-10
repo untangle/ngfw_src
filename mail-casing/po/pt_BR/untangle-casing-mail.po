@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-03-04 13:57-0800\n"
-"PO-Revision-Date: 2008-11-24 18:58-0800\n"
-"Last-Translator: Claudia\n"
+"PO-Revision-Date: 2009-03-06 14:05-0800\n"
+"Last-Translator: Ricardo Miguel P.M.Aroso <ricardo.aroso@ersuc.pt>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Portuguese\n"
 
 #: ../servlets/quarantine/root/quarantine.js:194
@@ -223,14 +223,12 @@ msgid "Successfully sent digest to '{0}'"
 msgstr ""
 
 #: ../servlets/quarantine/root/request.js:88
-#, fuzzy
 msgid "A quarantine does not exist for '{0}'"
-msgstr "Sumário de Quarentena para: {0}"
+msgstr ""
 
 #: ../servlets/quarantine/root/request.js:92
-#, fuzzy
 msgid "Quarantine Request"
-msgstr "Sumário de Quarentena para: {0}"
+msgstr ""
 
 #: ../servlets/quarantine/root/safelist.js:59
 msgid "Add"
@@ -261,25 +259,25 @@ msgid "Delete one Address"
 msgstr "Excluir um endereço"
 
 #: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:747
-#, fuzzy
 msgid "Quarantine Digest"
-msgstr "Sumário de Quarentena para: {0}"
+msgstr "Resumo de Quarentena"
 
 #: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:20
 #: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:25
-#, fuzzy
 msgid "Quarantine Digest for {0}"
-msgstr "Sumário de Quarentena para: {0}"
+msgstr "Resumo de Quarentena para: {0}"
 
 #: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:27
 msgid "Click here to access your spam quarantine."
-msgstr ""
+msgstr "Carregue aqui para aceder à quarentena de SPAM."
 
 #: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:28
 msgid ""
 "From this link you can have a specific email delivered to your email account "
 "or delete an email from the quarantine."
 msgstr ""
+"Através deste link pode especificar um email de devolução para a sua conta "
+"ou apagar qualquer email da lista de quarentena."
 
 #: ../servlets/quarantine/root/inbox.jspx:34
 msgid "Quarantine Digest for: {0}"
@@ -297,9 +295,5 @@ msgstr "Solicitar e-mail com Sumário de Quarentena"
 msgid "{0} | Request Quarantine Digest Email"
 msgstr "{0} | Solicitar e-mail de Sumário de Quarentena"
 
-#~ msgid ""
-#~ "Your Remote Access Portal login has been configured without an email "
-#~ "address or with an incorrect email address."
-#~ msgstr ""
-#~ "Seu login do Portal de Acesso Remoto foi configurado sem um endereço de e-"
-#~ "mail ou com um endereço de e-mail incorreto."
+#~ msgid "Your Remote Access Portal login has been configured without an email address or with an incorrect email address."
+#~ msgstr "Seu login do Portal de Acesso Remoto foi configurado sem um endereço de e-mail ou com um endereço de e-mail incorreto."

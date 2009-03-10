@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-03-04 13:57-0800\n"
-"PO-Revision-Date: 2008-11-24 21:10-0800\n"
-"Last-Translator: Claudia\n"
+"PO-Revision-Date: 2009-03-09 02:33-0700\n"
+"Last-Translator: Ricardo Miguel P.M.Aroso <ricardo.aroso@ersuc.pt>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Portuguese\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:85
@@ -112,7 +112,7 @@ msgstr "Habilitar SMTP tarpitting"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:318
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:588
 msgid "Enable Spam Headers"
-msgstr ""
+msgstr "Activar Cabeçalhos de SPAM"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:331
 msgid "POP3"
@@ -161,14 +161,12 @@ msgid "quarantine message"
 msgstr "mensagem de quarentena"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:647
-#, fuzzy
 msgid "safelist message"
-msgstr "permitir mensagem"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:649
-#, fuzzy
 msgid "oversize message"
-msgstr "mensagem de quarentena"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:681
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:756
@@ -301,10 +299,6 @@ msgstr "Eventos de Spam"
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSpamFilter.java:29
 msgid "Identity Theft Events"
 msgstr "Eventos de roubo de identidade"
-
-#, fuzzy
-#~ msgid "Fail Closed"
-#~ msgstr "Falha"
 
 #~ msgid "Low"
 #~ msgstr "Baixa"

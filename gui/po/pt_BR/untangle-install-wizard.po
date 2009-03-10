@@ -2,7 +2,6 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
@@ -15,6 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Portuguese\n"
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:77
@@ -121,8 +121,8 @@ msgstr ""
 "<html><font color=\"#FF0000\"><b>Aviso!</b><br>Seu hardware não cumpre os "
 "requisitos mínimos. Este sistema pode não funcionar adequadamente.<br>Você "
 "pode continuar a instalação, mas recomenda-se que atualize o hardware de "
-"sistema.<br><br>Pressione o botão Próximo na janela principal para continuar."
-"</font></html>"
+"sistema.<br><br>Pressione o botão Próximo na janela principal para "
+"continuar.</font></html>"
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:178
 msgid ""
@@ -140,8 +140,8 @@ msgid ""
 "requirements.<br>Press the Next button in the main window to continue.</"
 "font></html>"
 msgstr ""
-"<html><font color=\"#445BFF\"><b>Sucesso!</b><br>Seu hardware cumpre todos "
-"os requisitos.<br>Pressione o botão Próximo na janela principal para "
+"<html><font color=\"#445BFF\"><b>Sucesso!</b><br>Seu hardware cumpre todos os "
+"requisitos.<br>Pressione o botão Próximo na janela principal para "
 "continuar.</font></html>"
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:185
@@ -196,8 +196,8 @@ msgid ""
 msgstr ""
 "<html>Este lista mostra os discos de inicialização que foram encontrados.  "
 "<font color='#FF0000'>Escolha um disco para instalação. Aviso, serão "
-"excluídos todos os dados no disco de inicialização que selecionar.</font></"
-"html>"
+"excluídos todos os dados no disco de inicialização que "
+"selecionar.</font></html>"
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:76
 msgid "Error scanning disks"

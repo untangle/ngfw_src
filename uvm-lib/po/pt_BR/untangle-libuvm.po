@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-03-04 13:57-0800\n"
-"PO-Revision-Date: 2008-11-24 21:12-0800\n"
-"Last-Translator: Claudia\n"
+"PO-Revision-Date: 2009-02-25 09:33-0800\n"
+"Last-Translator: André Henriques <andre.trouble@gmail.com>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Portuguese\n"
 
 #: ../servlets/webui/root/script/main.js:57
@@ -69,7 +69,7 @@ msgstr "Inicializando..."
 #: ../servlets/webui/root/script/config/upgrade.js:44
 #: ../servlets/webui/root/script/config/upgrade.js:406
 msgid "Please wait"
-msgstr "Aguarde"
+msgstr "Aguarde por favor"
 
 #: ../servlets/webui/root/script/main.js:86
 msgid ""
@@ -370,9 +370,8 @@ msgid "Error making rpc request to server"
 msgstr "Erro ao fazer solicitação rpc ao servidor"
 
 #: ../servlets/webui/root/script/components.js:130
-#, fuzzy
 msgid "Service busy or timed out."
-msgstr "atingido tempo limite da solicitação"
+msgstr ""
 
 #: ../servlets/webui/root/script/components.js:229
 msgid "TODO"
@@ -487,7 +486,7 @@ msgstr "Configurações"
 
 #: ../servlets/webui/root/script/components.js:965
 msgid "Buy Now"
-msgstr "Comprar"
+msgstr "Comprar agora"
 
 #: ../servlets/webui/root/script/components.js:1151
 msgid "Loading Settings..."
@@ -578,9 +577,8 @@ msgstr ""
 "produto."
 
 #: ../servlets/webui/root/script/components.js:1425
-#, fuzzy
 msgid "System Busy"
-msgstr "Sistema"
+msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1499
 msgid "Error downloading package {0}. Install Aborted."
@@ -780,28 +778,24 @@ msgid "Data write:"
 msgstr "Dados gravados:"
 
 #: ../servlets/webui/root/script/components.js:1772
-#, fuzzy
 msgid "Day"
-msgstr "qualquer"
+msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1772
 msgid "Days"
 msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1772
-#, fuzzy
 msgid "Hour"
-msgstr "Roteador"
+msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1772
-#, fuzzy
 msgid "Hours"
-msgstr "Host"
+msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1772
-#, fuzzy
 msgid "Minute"
-msgstr "impressora"
+msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1772
 msgid "Minutes"
@@ -857,9 +851,8 @@ msgstr "Atualizando..."
 
 #: ../servlets/webui/root/script/components.js:2189
 #: ../servlets/webui/root/script/components.js:2193
-#, fuzzy
 msgid "Auto Refresh"
-msgstr "Atualizar"
+msgstr ""
 
 #: ../servlets/webui/root/script/components.js:2448
 #: ../servlets/webui/root/script/components.js:2466
@@ -1212,7 +1205,7 @@ msgstr "Nome"
 #: ../servlets/webui/root/script/config/systemInfo.js:154
 #, fuzzy
 msgid "Organization Name"
-msgstr "Organização"
+msgstr "Unidade de organização"
 
 #: ../servlets/setup/root/script/setup.js:392
 #: ../servlets/webui/root/script/config/systemInfo.js:157
@@ -2025,12 +2018,11 @@ msgstr ""
 "Certificadora (Verisign, Thawte, etc.)."
 
 #: ../servlets/webui/root/script/config/administration.js:1176
-#, fuzzy
 msgid ""
 "When your Certificate Authority (Verisign, Thawte, etc.) has sent your "
 "Signed Certificate, copy and paste it below (Control-V) then press the "
 "Proceed button."
-msgstr "enviar seu Certificado Assinado, copie e cole-o abaixo (Control-V),"
+msgstr ""
 
 #: ../servlets/webui/root/script/config/administration.js:1188
 msgid ""
@@ -3310,8 +3302,8 @@ msgid ""
 "local computer.  The backup file name ends with \".backup\""
 msgstr ""
 "Você pode restaurar uma configuração de sistema anterior de um arquivo de "
-"backup no seu computador local. O nome de arquivo de backup termina com \"."
-"backup\"."
+"backup no seu computador local. O nome de arquivo de backup termina com "
+"\".backup\"."
 
 #: ../servlets/webui/root/script/config/system.js:406
 msgid "Restore from File"
@@ -3434,8 +3426,7 @@ msgstr ""
 
 #: ../servlets/webui/root/script/config/system.js:635
 msgid "{0}Disable Processing{1} of File Transfer traffic."
-msgstr ""
-"{0}Desabilitar processamento{1} de tráfego de transferência de arquivo."
+msgstr "{0}Desabilitar processamento{1} de tráfego de transferência de arquivo."
 
 #: ../servlets/webui/root/script/config/system.js:657
 msgid "SMTP"
@@ -3570,9 +3561,8 @@ msgid "IMAP timeout should be between 0 and 86400!"
 msgstr "Tempo limite de IMAP deve ser entre 0 e 86400!"
 
 #: ../servlets/webui/root/script/config/upgrade.js:49
-#, fuzzy
 msgid "Upgrade in progress."
-msgstr "Ampliar tempo"
+msgstr ""
 
 #: ../servlets/webui/root/script/config/upgrade.js:78
 #: ../servlets/webui/root/script/config/upgrade.js:85
@@ -3796,9 +3786,9 @@ msgid "Error"
 msgstr "Erro"
 
 #: ../impl/com/untangle/uvm/engine/MailSenderImpl.java:681
-#, fuzzy, java-format
+#, java-format
 msgid "{0} Server Test Message"
-msgstr "Servidor {0}"
+msgstr ""
 
 #: ../impl/com/untangle/uvm/engine/MailSenderImpl.java:684
 #, java-format
@@ -4004,18 +3994,19 @@ msgstr "."
 msgid "thousand_sep"
 msgstr ","
 
+#, fuzzy
 msgid "date_fmt"
-msgstr "d/m/Y"
-
-msgid "timestamp_fmt"
-msgstr "Y-m-d G:i:s"
+msgstr "m/d/y"
 
 #, fuzzy
-#~ msgid "timestamp"
-#~ msgstr "Y-m-d g:i:s a"
+msgid "timestamp_fmt"
+msgstr "Y-m-d g:i:s a"
 
 #~ msgid "When your Certificate Authority (Verisign, Thawte, etc.) "
 #~ msgstr "Quando sua Autoridade Certificadora (Verisign, Thawte, etc.) "
+
+#~ msgid "has sent your Signed Certificate, copy and paste it below (Control-V), "
+#~ msgstr "enviar seu Certificado Assinado, copie e cole-o abaixo (Control-V),"
 
 #~ msgid "then press the Proceed button."
 #~ msgstr "em seguida pressione o botão Prosseguir."
@@ -4035,27 +4026,6 @@ msgstr "Y-m-d G:i:s"
 #~ msgid "off-site access"
 #~ msgstr "acesso fora do local"
 
-#~ msgid "The value in this field is invalid"
-#~ msgstr "O valor neste campo é inválido"
-
-#~ msgid "This field is required"
-#~ msgstr "Este campo é necessário"
-
-#~ msgid "Advanced Email Configuration."
-#~ msgstr "Configuração avançada de e-mail."
-
-#~ msgid ""
-#~ "You are about to manually reboot.  This will interrupt normal network "
-#~ "operations<br>"
-#~ msgstr ""
-#~ "Você está prestes a inicializar manualmente. isto irá interromper as "
-#~ "operações normais de rede<br>"
-
-#~ msgid "until the Untangle Server is finished automatically restarting.<br>"
-#~ msgstr "até o Servidor Untangle terminar o reinício automático.<br>"
-
-#~ msgid "This may take up to several minutes to complete."
-#~ msgstr "Isto poderá levar vários minutos para completar."
-
-#~ msgid "Unknown"
-#~ msgstr "Desconhecido"
+#, fuzzy
+#~ msgid "timestamp"
+#~ msgstr "Y-m-d g:i:s a"

@@ -2,7 +2,6 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
@@ -15,6 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Portuguese\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:32
@@ -84,8 +84,7 @@ msgstr "Monitorar tráfego suspeito"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:167
 msgid "Spyware Blocker signatures were last updated"
-msgstr ""
-"As assinaturas do Bloqueador de Spyware foram atualizadas por último em"
+msgstr "As assinaturas do Bloqueador de Spyware foram atualizadas por último em"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:169
 msgid "Unknown"
@@ -170,8 +169,7 @@ msgstr "Registro"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:475
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
 msgstr ""
-"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro "
-"(https)"
+"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro (https)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:487
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:535

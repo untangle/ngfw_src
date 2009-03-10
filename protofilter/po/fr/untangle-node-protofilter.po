@@ -1,0 +1,161 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"PO-Revision-Date: 2009-02-20 04:36-0800\n"
+"Last-Translator: Thierry D'AMBROSIO <thierry@dambrosio.fr>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 1.1.0\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:19
+msgid "block"
+msgstr "bloquer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:25
+msgid "log"
+msgstr "enregistrer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:38
+msgid "[no category]"
+msgstr "[pas de catégorie]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:39
+msgid "[no protocol]"
+msgstr "[pas de protocole]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:42
+msgid "[no description]"
+msgstr "[pas de description]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:43
+msgid "[no signature]"
+msgstr "[pas de signature]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
+msgid "Protocol List"
+msgstr "Liste de protocole"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:77
+msgid "category"
+msgstr "catégorie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:86
+msgid "protocol"
+msgstr "protocole"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
+msgid "description"
+msgstr "description"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:108
+msgid "Category"
+msgstr "Catégorie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:114
+msgid "Protocol"
+msgstr "Protocole"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:120
+msgid "Block"
+msgstr "Bloquer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
+msgid "Log"
+msgstr "Enregistrer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:128
+msgid "Description"
+msgstr "Description"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:134
+msgid "Signature"
+msgstr "Signature"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
+msgid "blocked"
+msgstr "bloqué(e)"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
+msgid "passed"
+msgstr "passé(e)"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:147
+msgid "blocked in block list"
+msgstr "bloqué(e) dans la liste de blocage"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:147
+msgid "not blocked in block list"
+msgstr "non bloqué(e) dans la liste de blocage"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:178
+msgid "timestamp"
+msgstr "référence temporelle"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:186
+msgid "action"
+msgstr "action"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:191
+msgid "client"
+msgstr "client"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:197
+msgid "request"
+msgstr "demande"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:202
+msgid "reason for action"
+msgstr "raison de l'action"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:207
+msgid "server"
+msgstr "serveur"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
+msgid "Saving..."
+msgstr "Sauvegarde en cours..."
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
+msgid "Please wait"
+msgstr "SVP attendez"
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterAllFilter.java:27
+msgid "Protocol Events"
+msgstr "Evènements de protocole"
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterBlockedFilter.java:27
+msgid "Blocked Protocol Events"
+msgstr "Evènements de protocole bloqués"
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+msgid "Sessions scanned"
+msgstr "Sessions scannées"
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
+msgid "SCAN"
+msgstr "SCANNER"
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "Sessions blocked"
+msgstr "Sessions bloquées"
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
+msgid "BLOCK"
+msgstr "BLOQUER"
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
+msgid "Sessions logged"
+msgstr "Sessions enregistrées"
+
+#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
+msgid "DETECT"
+msgstr "DETECTER"

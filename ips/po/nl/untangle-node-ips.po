@@ -1,0 +1,214 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: Untangle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"PO-Revision-Date: 2008-12-08 19:43+0100\n"
+"Last-Translator: Koen Claeys <koen.claeys@gmail.com>\n"
+"Language-Team: Dutch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Translate Toolkit 1.1.1\n"
+"X-Poedit-Language: Dutch\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:27
+msgid "Status"
+msgstr "Status"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:37
+msgid "Statistics"
+msgstr "Statistieken"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:45
+msgid "Total Signatures Available"
+msgstr "Totaal handtekeningen beschikbaar"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:49
+msgid "Total Signatures Logging"
+msgstr "Totaal handtekeningen registreren"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:53
+msgid "Total Signatures Blocking"
+msgstr "Totaal handtekeningen blokkeren"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:58
+msgid "Note"
+msgstr "Nota"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:60
+#, fuzzy
+msgid ""
+"{0} continues to maintain the default signature settings through automatic "
+"updates. You are free to modify and add signatures, however it is not "
+"required."
+msgstr ""
+"{0} gaat door met de standaard handtekening instellingen up te daten door "
+"automatische updates. Je bent vrij om handtekeningen toe te voegen en te "
+"wijzigen, het is evenwel niet verplicht."
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:70
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:313
+msgid "block"
+msgstr "blokkeer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:77
+msgid "log"
+msgstr "registreer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:87
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:112
+msgid "Rules"
+msgstr "Regels"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:103
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:106
+msgid "[no category]"
+msgstr "[geen categorie]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:104
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:231
+msgid "[no name]"
+msgstr "[geen naam]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:105
+msgid "[no signature]"
+msgstr "[geen handtekening]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:110
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:233
+msgid "[no description]"
+msgstr "[geen omschrijving]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:140
+msgid "category"
+msgstr "categorie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:148
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:269
+msgid "description"
+msgstr "omschrijving"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:165
+msgid "id"
+msgstr "id"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:171
+msgid "info"
+msgstr "info"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:187
+msgid "Category"
+msgstr "Categorie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:193
+msgid "Signature"
+msgstr "Handtekening"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:199
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:281
+msgid "Name"
+msgstr "Naam"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:205
+msgid "SID"
+msgstr "SID"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:211
+msgid "Block"
+msgstr "Blokkeer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:215
+msgid "Log"
+msgstr "Registreer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:219
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:293
+msgid "Description"
+msgstr "Omschrijving"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:232
+msgid "[no definition]"
+msgstr "[geen definitie]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:235
+msgid "Variables"
+msgstr "Variabelen"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:253
+msgid "name"
+msgstr "naam"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:261
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:315
+msgid "pass"
+msgstr "paswoord"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:287
+msgid "Pass"
+msgstr "Paswoord"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:337
+msgid "timestamp"
+msgstr "tijdsaanduiding"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:345
+msgid "action"
+msgstr "actie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:350
+msgid "client"
+msgstr "client"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:357
+msgid "reason for action"
+msgstr "reden voor actie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:362
+msgid "server"
+msgstr "server"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+msgid "Saving..."
+msgstr "Bezig met bewaren..."
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+msgid "Please wait"
+msgstr "Gelieve te wachten"
+
+#: ../impl/com/untangle/node/ips/IpsBlockedFilter.java:27
+msgid "Blocked Events"
+msgstr "Geblokkeerde gebeurtenissen"
+
+#: ../impl/com/untangle/node/ips/IpsLogFilter.java:27
+msgid "All Events"
+msgstr "Alle gebeurtenissen"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+msgid "Sessions scanned"
+msgstr "Sessies gescand"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+msgid "SCAN"
+msgstr "SCAN"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
+msgid "Sessions logged"
+msgstr "Sessies geregistreerd"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
+msgid "DETECT"
+msgstr "DETECTEER"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+msgid "Sessions blocked"
+msgstr "Sessies geblokkeerd"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+msgid "BLOCK"
+msgstr "BLOKKEER"
