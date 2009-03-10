@@ -69,7 +69,6 @@ require "#{SRC_HOME}/clam/package.rb"
 
 ## Other packages
 require "#{SRC_HOME}/util/package.rb"
-require "#{SRC_HOME}/gui/package.rb"
 
 # # We don't need ipq at all, as netfilter-queue replaces it.
 # # --Seb & Robert
