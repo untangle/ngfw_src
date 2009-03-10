@@ -1,0 +1,136 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"PO-Revision-Date: 2009-02-10 22:48-0800\n"
+"Last-Translator: Noah Lubarsky <nclubarsky@hotmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 1.1.0\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:20
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:32
+msgid "Status"
+msgstr "ステータス"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:28
+msgid "Statistics"
+msgstr "統計"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
+msgid "active"
+msgstr "アクティブ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
+msgid "inactive"
+msgstr "インアクティブ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:43
+msgid "Note"
+msgstr "注釈"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:47
+msgid ""
+"Attack Blocker is a heuristic based intrusion prevention and requires no "
+"configuration. Users can modify the treatment of certain IP and/or networks "
+"on the exception tab."
+msgstr ""
+"Attack Blockerは侵入防止をベースにしたヒューリスティックで設定は必要ありません。ユーザーは一定のIPと（もしくは）exception "
+"tab上のネットワークの処理を修正できます。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:55
+msgid "enable"
+msgstr "イネーブル（有効）"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:60
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:61
+msgid "users"
+msgstr "ユーザー"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:61
+msgid "unlimited"
+msgstr "無制限"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:74
+msgid "[no description]"
+msgstr "[無記述]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:76
+msgid "Exceptions"
+msgstr "例外"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:101
+msgid "address"
+msgstr "アドレス"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:111
+msgid "user count"
+msgstr "ユーザカウント"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:137
+msgid "description"
+msgstr "記述"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:151
+msgid "Enable"
+msgstr "可能"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:155
+msgid "Address"
+msgstr "アドレス"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:162
+msgid "User Count"
+msgstr "ユーザカウント"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:177
+msgid "Description"
+msgstr "記述"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:213
+msgid "timestamp"
+msgstr "タイムスタンプ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:221
+msgid "source"
+msgstr "ソース"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:227
+msgid "source interface"
+msgstr "ソースインタフェース"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:232
+msgid "reputation"
+msgstr "評判"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:240
+msgid "limited"
+msgstr "限界"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:248
+msgid "dropped"
+msgstr "ドロップ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:256
+msgid "reject"
+msgstr "拒否"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
+msgid "Saving..."
+msgstr "保存..."
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
+msgid "Please wait"
+msgstr "待ってください"
+
+#: ../impl/com/untangle/node/shield/LogIteration.java:194
+msgid "type"
+msgstr "タイプ"

@@ -1,0 +1,202 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: Untangle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"PO-Revision-Date: 2008-12-09 20:27+0100\n"
+"Last-Translator: Koen Claeys <koen.claeys@gmail.com>\n"
+"Language-Team: Dutch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Translate Toolkit 1.1.1\n"
+"X-Poedit-Language: Dutch\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:24
+msgid "Enable"
+msgstr "Inschakelen"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:331
+msgid "Pass"
+msgstr "Doorlaten"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:318
+msgid "Block"
+msgstr "Blokkeren"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:37
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:70
+msgid "Rules"
+msgstr "Regels"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:65
+msgid "[no name]"
+msgstr "[geen naam]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:66
+msgid "[no category]"
+msgstr "[geen categorie]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:67
+msgid "[no description]"
+msgstr "[geen omschrijving]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:106
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:235
+msgid "Description"
+msgstr "Omschrijving"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:194
+msgid "Warning"
+msgstr "Waarschuwing"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:194
+msgid "The form is not valid!"
+msgstr "Het formulier is niet geldig!"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:229
+msgid "Enable Rule"
+msgstr "Regel inschakelen"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:241
+msgid "Action"
+msgstr "Actie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:259
+msgid "Log"
+msgstr "Registreer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:262
+msgid "Rule"
+msgstr "Regel"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:270
+msgid "Traffic Type"
+msgstr "Verkeerstype"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:275
+msgid "Source Interface"
+msgstr "Broninterface"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:281
+msgid "Destination Interface"
+msgstr "Aankomstinterface"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:286
+msgid "Source Address"
+msgstr "Bronadres"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:293
+msgid "Destination Address"
+msgstr "Aankomstadres"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:299
+msgid "Source Port"
+msgstr "Bronpoort"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:305
+msgid "Destination Port"
+msgstr "Aankomstpoort"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:315
+msgid "Default Action"
+msgstr "Standaardactie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:361
+msgid "blocked"
+msgstr "geblokkeerd"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:361
+msgid "passed"
+msgstr "doorgelaten"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:375
+msgid "timestamp"
+msgstr "tijdsaanduiding"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:383
+msgid "action"
+msgstr "actie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:388
+msgid "client"
+msgstr "client"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:395
+msgid "reason for action"
+msgstr "reden voor actie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:400
+msgid "rule #{0}"
+msgstr "regel #{0}"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:403
+msgid "server"
+msgstr "server"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:455
+msgid "Invalid address specified for Source Address"
+msgstr "Ongeldig adres opgegeven als bronadres"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:458
+msgid "Invalid address specified for Destination Address"
+msgstr "Ongeldig adres opgegeven als aankomstadres"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:461
+msgid "Invalid port specified for Source Port"
+msgstr "Ongeldige poort opgegeven als bronpoort"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:464
+msgid "Invalid port specified for Destination Port"
+msgstr "Ongeldige poort opgegeven als aankomstpoort"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:469
+msgid "Validation failed"
+msgstr "Validatie mislukt"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:473
+msgid "Failed"
+msgstr "Mislukt"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:483
+msgid "Saving..."
+msgstr "Bezig met bewaren"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:483
+msgid "Please wait"
+msgstr "Gelieve te wachten"
+
+#: ../impl/com/untangle/node/firewall/FirewallAllFilter.java:27
+msgid "Firewall Events"
+msgstr "Firewall gebeurtenissen"
+
+#: ../impl/com/untangle/node/firewall/FirewallBlockedFilter.java:27
+msgid "Firewall Block Events"
+msgstr "Firewall blokkeer gebeurtenissen"
+
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:93
+msgid "Sessions blocked"
+msgstr "Sessies geblokkeerd"
+
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:93
+msgid "BLOCK"
+msgstr "BLOKKEER"
+
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:94
+msgid "Sessions passed"
+msgstr "Sessies doorgelaten"
+
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:94
+msgid "PASS"
+msgstr "DOORLATEN"
+
+#: ../impl/com/untangle/node/firewall/FirewallImpl.java:95
+msgid "Sessions logged"
+msgstr "Sessies geregistreerd"

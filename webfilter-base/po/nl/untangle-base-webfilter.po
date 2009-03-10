@@ -1,0 +1,399 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: Untangle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"PO-Revision-Date: 2008-12-06 13:54+0100\n"
+"Last-Translator: Koen Claeys <koen.claeys@gmail.com>\n"
+"Language-Team: Dutch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Translate Toolkit 1.1.1\n"
+"X-Poedit-Language: Dutch\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:33
+msgid "Block Lists"
+msgstr "Blokkeer lijsten"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:166
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:292
+msgid "Categories"
+msgstr "Categoriën"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:46
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:55
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:64
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:73
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:664
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:673
+msgid "manage list"
+msgstr "beheer lijst"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:52
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:195
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:411
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:661
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:702
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:780
+msgid "Sites"
+msgstr "Sites"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:61
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:224
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:498
+msgid "File Types"
+msgstr "Bestandstypes"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:70
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:253
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:581
+msgid "MIME Types"
+msgstr "MIME Types"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:84
+msgid "User Bypass"
+msgstr "Gebruikers omleiding"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:88
+msgid "None"
+msgstr "Geen"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:88
+msgid "Temporary"
+msgstr "Tijdelijk"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:89
+msgid "Permanent and Global"
+msgstr "Permanent en globaal"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:110
+msgid "Block pages from IP only hosts"
+msgstr "Blokkeer pagina's van hosts met enkel een IP"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:127
+msgid "Scan HTTPS"
+msgstr "Scan HTTPS"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:269
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:391
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:478
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:561
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:935
+msgid "block"
+msgstr "blokkeer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:281
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:396
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:566
+msgid "log"
+msgstr "registreer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:319
+msgid "category"
+msgstr "categorie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:324
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:439
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:524
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:607
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:806
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:878
+msgid "description"
+msgstr "omschrijving"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:338
+msgid "Category"
+msgstr "Categorie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:346
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:461
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:544
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:627
+msgid "Block"
+msgstr "Blokkeer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:360
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:465
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:548
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:631
+msgid "Log"
+msgstr "Registreer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:364
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:469
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:552
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:635
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:832
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:902
+msgid "Description"
+msgstr "Omschrijving"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:374
+msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
+msgstr ""
+"De opgegeven \"URL\" kan niet worden geblokkeerd omdat het beveiligd http "
+"(https) gebruikt"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:386
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:435
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:457
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:760
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:802
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:824
+msgid "Invalid \"URL\" specified"
+msgstr "Ongeldige \"URL\" opgegeven"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:406
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:776
+msgid "[no site]"
+msgstr "[geen site]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:409
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:496
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:579
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:778
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:853
+msgid "[no description]"
+msgstr "[geen omschrijving]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:429
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:796
+msgid "site"
+msgstr "site"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:453
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:820
+msgid "Site"
+msgstr "Site"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:516
+msgid "file type"
+msgstr "bestandstype"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:538
+msgid "File Type"
+msgstr "Bestandstype"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:576
+msgid "[no mime type]"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:599
+msgid "MIME type"
+msgstr "MIME type"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:621
+msgid "MIME Type"
+msgstr "MIME Type"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:652
+msgid "Pass Lists"
+msgstr "Doorlaatlijsten"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:670
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:731
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:855
+msgid "Client IP addresses"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:748
+msgid "\"URL\" specified cannot be passed because it uses secure http (https)"
+msgstr ""
+"De opgegeven \"URL\" kan niet worden doorgelaten omdat het beveiligd http "
+"(https) gebruikt"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:766
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:841
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:932
+msgid "pass"
+msgstr "laat door"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:828
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:898
+msgid "Pass"
+msgstr "Laat door"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:870
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:892
+msgid "IP address/range"
+msgstr "IP adres/bereik"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:956
+msgid "in Categories Block list"
+msgstr "in de categoriën blokkeer lijst"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:958
+msgid "in URLs Block list"
+msgstr "in de URL's blokkeer lijst"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:960
+msgid "in File Extensions Block list"
+msgstr "in de bestandsextensies blokkeer lijst"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:962
+msgid "in MIME Types Block list"
+msgstr "in de MIME types blokkeer lijst"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:964
+msgid "blocking all traffic"
+msgstr "alle verkeer blokkeren"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:966
+msgid "hostname is an IP address"
+msgstr "hostnaam is een IP adres"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:968
+msgid "in URLs Pass list"
+msgstr "in de URL's doorlaat lijst"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:970
+msgid "in Clients Pass list"
+msgstr "in de Client's doorlaat lijst"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:973
+msgid "no rule applied"
+msgstr "geen regel toegepast"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:980
+msgid "timestamp"
+msgstr "tijdsaanduiding"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:988
+msgid "action"
+msgstr "actie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:993
+msgid "client"
+msgstr "client"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1000
+msgid "request"
+msgstr "aanvraag"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1006
+msgid "reason for action"
+msgstr "reden voor actie"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1011
+msgid "server"
+msgstr "server"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1085
+msgid "Invalid subnet specified"
+msgstr "ongeldig subnet opgegeven"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1093
+msgid "Validation failed"
+msgstr "Validatie mislukt"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1097
+msgid "Failed"
+msgstr "Mislukt"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1111
+msgid "Saving..."
+msgstr "Bezig met bewaren..."
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1111
+msgid "Please wait"
+msgstr "Gelieve te wachten"
+
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:59
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:69
+msgid "Feature is not installed."
+msgstr "Onderdeel is niet geïnstalleerd."
+
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:78
+msgid "This request has expired."
+msgstr "Deze aanvraag is verstreken."
+
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:110
+#, java-format
+msgid "{0} | {1} Warning"
+msgstr "{0} | {1} Waarschuwing"
+
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:133
+#, java-format
+msgid "{0}This web page was blocked{1} because it is considered inappropriate."
+msgstr ""
+"{0}Deze webpagina is geblokkeerd{1} omdat het als ongewenst wordt beschouwd."
+
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
+#, java-format
+msgid "If you have any questions, Please contact {0}."
+msgstr "Indien je vragen hebt, gelieve {0} te contacteren."
+
+#: ../impl/com/untangle/node/webfilter/WebFilterAllFilter.java:47
+msgid "All HTTP Traffic"
+msgstr "Alle HTTP verkeer"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:117
+msgid "Pages scanned"
+msgstr "Pagina's gescand"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:117
+msgid "SCAN"
+msgstr "SCAN"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:118
+msgid "Pages blocked"
+msgstr "Pagina's geblokkeerd"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:118
+msgid "BLOCK"
+msgstr "BLOCK"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:119
+msgid "Pages passed"
+msgstr "Pagina's doorgelaten"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:119
+msgid "PASS"
+msgstr "PASS"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBase.java:120
+msgid "Passed by policy"
+msgstr "Doorgelaten door policy"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterBlockedFilter.java:36
+msgid "Blocked HTTP Traffic"
+msgstr "Geblokkeerd HTTP verkeer"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterPassedFilter.java:47
+msgid "Passed HTTP Traffic"
+msgstr "Doorgelaten HTTP verkeer"
+
+#: ../impl/com/untangle/node/webfilter/WebFilterWhitelistFilter.java:36
+msgid "Whitelisted HTTP Traffic"
+msgstr "HTTP verkeer op witte lijst"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+msgid "Host:"
+msgstr "Host:"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+msgid "URL:"
+msgstr "URL:"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+msgid "Reason:"
+msgstr "Reden:"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+msgid "Unblock For Now"
+msgstr "Deblokkeer voor nu"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+msgid "Unblock Permanently"
+msgstr "Deblokkeer permanent"
+
+#~ msgid "IP addresses"
+#~ msgstr "IP adressen"

@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2008-11-24 15:48-0700\n"
-"Last-Translator: David Russi <dprussi@qwest.net>\n"
+"PO-Revision-Date: 2009-02-10 08:52-0800\n"
+"Last-Translator: Juan Machado <juan@itos.uga.edu>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Spanish\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:26
@@ -84,8 +84,8 @@ msgid ""
 "Click \"Send Email\" to send an email to \"Email Address\" with information "
 "to retrieve the OpenVPN Client."
 msgstr ""
-"Haga clic en \"Enviar mensaje\" para enviar un mensaje a \"Dirección de email"
-"\" con información sobre cómo recuperar el cliente OpenVPN."
+"Haga clic en \"Enviar mensaje\" para enviar un mensaje a \"Dirección de email\" "
+"con información sobre cómo recuperar el cliente OpenVPN."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:120
 msgid "Email Address"
@@ -738,24 +738,23 @@ msgstr "CONECTAR"
 #: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:336
 msgid "Please input the following information into the \"VPN Client\" wizard."
 msgstr ""
+"Por favor entre la siguiente información en el ayudante del \"Cliente VPN\""
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:337
-#, fuzzy
 msgid "Server Address:"
 msgstr "Dirección IP del servidor"
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:338
 msgid "Passphrase:"
-msgstr ""
+msgstr "Clave:"
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:340
-#, fuzzy
 msgid "Click here to download the OpenVPN client."
-msgstr "Haga clic aquí para descargar una clave para clientes Windows."
+msgstr "Presione aquí para bajar el cliente OpenVPN "
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:341
 msgid "Or copy and paste the following link into your Web Browser."
-msgstr ""
+msgstr "o copie y pegue el siguiente enlace en su navegador de internet."
 
 #: ../impl/com/untangle/node/openvpn/Sandbox.java:250
 msgid "default"
@@ -766,9 +765,8 @@ msgid "internal network"
 msgstr "red interna"
 
 #: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:362
-#, fuzzy
 msgid "OpenVPN Client"
-msgstr "Clientes VPN"
+msgstr "Cliente OpenVPN "
 
 #~ msgid ""
 #~ "If necessary, you can change the configuration of OpenVPN by launching "
@@ -776,9 +774,3 @@ msgstr "Clientes VPN"
 #~ msgstr ""
 #~ "Si resulta necesario, puede lanzar el Asistente de instalación otra vez "
 #~ "para cambiar la configuración de OpenVPN."
-
-#~ msgid "The country code must be 2 characters long."
-#~ msgstr "El código del país debe contener 2 caracteres."
-
-#~ msgid "You must fill out the name of your country."
-#~ msgstr "Debe escribir el nombre de su país."

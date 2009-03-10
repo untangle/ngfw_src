@@ -77,11 +77,14 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-spyware)
             d=$work/src/spyware
             ;;
+        untangle-net-alpaca)
+            d=$work/pkgs/untangle-net-alpaca
+            ;;
         untangle-systray)
             d=$internal/isotools/wintangle-installer
             ;;
-        untangle-system-stats)
-            d=$internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/po/
+        untangle-system-stats*)
+            d=$internal/isotools/installer-pkgs-additional/untangle-system-stats/debian
             ;;
         untangle-systray)
             d=$internal/isotools/wintangle-systray

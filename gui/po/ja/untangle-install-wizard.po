@@ -1,0 +1,354 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"PO-Revision-Date: 2009-02-15 21:44-0800\n"
+"Last-Translator: Noah Lubarsky <nclubarsky@hotmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 1.1.0\n"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:77
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:312
+msgid ""
+"These tests show you if your computer meets minimum hardware requirements."
+msgstr "これらのテストはあなたのコンピューターがハードウェアの最低条件を満たしているかを示します。"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:78
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:325
+msgid "Main Memory:"
+msgstr "メインメモリ："
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:79
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:85
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:351
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:510
+msgid "Memory Test"
+msgstr "メモリテスト："
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:80
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:378
+msgid "CPU:"
+msgstr "CPU:"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:81
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:404
+msgid "CPU Test"
+msgstr "CPUテスト"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:82
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:431
+msgid "Hard Disk:"
+msgstr "ハードディスク："
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:83
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:457
+msgid "Hard Disk Test"
+msgstr "ハードディスクテスト"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:84
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:484
+msgid "Network Interfaces:"
+msgstr "ネットワークインターフェース："
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:102
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:103
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:104
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:105
+msgid "Checking..."
+msgstr "チェック中..."
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:106
+msgid "undetermined "
+msgstr "未定"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:107
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:108
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:109
+msgid "undetermined"
+msgstr "未定"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:132
+#, java-format
+msgid "({0} MB required)"
+msgstr "({0} MB 必要)"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:136
+#, java-format
+msgid "({0} MHz required)"
+msgstr "({0} MHz 必要)"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:141
+#, java-format
+msgid "({0} GB required)"
+msgstr "({0} GB 必要)"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:145
+#, java-format
+msgid "(#{0} interfaces required)"
+msgstr "(#{0} インターフェースが必要)"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:164
+#, java-format
+msgid "{0} MHz ({1} detected) [approximated as a single {2} MHz CPU]"
+msgstr "{0} MHz ({1} 検知された) [おおよそシングル{2} MHz CPU]"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:168
+#, java-format
+msgid "{0} interface"
+msgstr "インターフェース"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:173
+msgid ""
+"<html><font color=\"#FF0000\"><b>Warning!</b><br>Your hardware does not meet "
+"minimum requirements. This system may not function properly.<br>You may "
+"continue installation, but it is recommended that you upgrade your system "
+"hardware.<br><br>Press the Next button in the main window to continue.</"
+"font></html>"
+msgstr ""
+"<html><font color=\"#FF0000\"><b>警告!</b><br>あなたのハードウェアは必要最低条件を満たしていません。このシステムは"
+"正しく機能しないかもしれません。<br>インストレーショんを続けるか、あなたのシステムハードウェアのアップデートをお薦めします。<br><br> "
+"続けるにはメインウィンドウにあるNextボタンを押してください 。</font></html>"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:178
+msgid ""
+"<html><font color=\"#FF9B00\"><b>Warning!</b><br>Your hardware meets minimum "
+"requirements, but performance may not be optimal.<br>Press the Next button "
+"in the main window to continue.</font></html>"
+msgstr ""
+"<html><font color=\"#FF9B00\"><b>警告!</b><br>あなたのハードウェアは必要最低条件を満たしていますが、パフォーマンス"
+"は最適でないかもしれません。<br>メインウィンドウのNextボタンを押して続けてください。</font></html>"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:182
+msgid ""
+"<html><font color=\"#445BFF\"><b>Success!</b><br>Your hardware meets all "
+"requirements.<br>Press the Next button in the main window to continue.</"
+"font></html>"
+msgstr ""
+"<html><font color=\"#445BFF\"><b>成功!</b><br>あなたのハードウェアは必要最低条件をみたしています。<br>メインウ"
+"ィンドウにあるNextボタンを押して続けてください。</font></html>"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:185
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:186
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:113
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:55
+#: ../api/com/untangle/gui/install/InstallWizard.java:55
+#: ../api/com/untangle/gui/install/InstallWizard.java:79
+#: ../api/com/untangle/gui/install/InstallWizard.java:107
+msgid "Installation Wizard"
+msgstr "インストレーションウィザード"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:186
+msgid "Result"
+msgstr "結果"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:206
+#, java-format
+msgid "Failure: {0}"
+msgstr "失敗: {0}"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:212
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:249
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:58
+#: ../api/com/untangle/gui/install/InstallWizard.java:110
+msgid "Warning"
+msgstr "警告"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:219
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:256
+msgid "Good"
+msgstr "良"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:225
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:231
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:262
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:268
+msgid "Excellent"
+msgstr "最良"
+
+#: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:243
+#, java-format
+msgid "Failure {0}"
+msgstr "失敗 {0}"
+
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:68
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:173
+msgid ""
+"<html>This list shows the boot disks that were found.  <font "
+"color='#FF0000'>Please choose a disk for installation.  Warning, all the "
+"data on the boot disk you select will be deleted.</font></html>"
+msgstr ""
+"<html>このリストは見つかった起動ディスクを表示します。<font color='#FF0000'>インストレーションのためのディスクを選択してくだ"
+"さい。警告、選択した起動ディスクにあるデータはすべて消去されます。</font></html>"
+
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:76
+msgid "Error scanning disks"
+msgstr "ディスクスキャンにエラー"
+
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:90
+msgid "size"
+msgstr "サイズ"
+
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:114
+msgid "You must select a boot disk which you would like to install onto."
+msgstr "インストールしたい起動ディスクを選んでください"
+
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:115
+msgid "Installation Wizard Message"
+msgstr "インストレーションウィザードメッセージ"
+
+#: ../api/com/untangle/gui/install/InstallDiskJPanel.java:115
+msgid "Message"
+msgstr "メッセージ"
+
+#: ../api/com/untangle/gui/install/InstallLicenseJPanel.java:84
+msgid "error loading license"
+msgstr "ライセンスのローディングにエラー"
+
+#: ../api/com/untangle/gui/install/InstallLicenseJPanel.java:90
+#: ../api/com/untangle/gui/install/InstallLicenseJPanel.java:116
+msgid "License Agreement"
+msgstr "ライセンス契約"
+
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:56
+msgid ""
+"Your selected disk will be erased if you continue installation. Would you "
+"like to continue?"
+msgstr "インストレーションを続行するならば、選択したディスクは消されます。続行しますか？"
+
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:57
+#: ../api/com/untangle/gui/install/InstallWizard.java:109
+msgid "Installation Wizard Warning"
+msgstr "インストレーションウィザード警告"
+
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:59
+msgid "<html><b>Continue</b></html>"
+msgstr "<html><b>続行</b></html>"
+
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:60
+msgid "<html><b>Don't Continue</b></html>"
+msgstr "<html><b>続行しない</b></html>"
+
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:70
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:94
+msgid "Warning!"
+msgstr "警告！"
+
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:71
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:106
+msgid ""
+"If you continue, in preparation for the installation process, YOUR DISK WILL "
+"BE ERASED AND ALL ITS DATA WILL BE LOST!"
+msgstr "インストレーションプロセスの準備中に続行するならば、ディスクとそのデータがすべて消されます！"
+
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:72
+#: ../api/com/untangle/gui/install/InstallWarningJPanel.java:116
+msgid ""
+"If you would not like to continue, press the Close Window button.  "
+"Otherwise, press the Finish button."
+msgstr "もし続行しないのであれば、Close Windowボタンを押してください。続行するのであれば、Finishボタンを押してください。"
+
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:89
+msgid "<html>Welcome to the<br> Installation Wizard!</html>"
+msgstr "<html>へようこそ<br> インストレーションウィザード!</html>"
+
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:90
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:124
+msgid ""
+"<html>This wizard will take you step-by-step through<br> the CD installation "
+"process.</html>"
+msgstr "<html>を通してこのウィザードはステップごとに説明します。<br> CDインストレーションプロセス.</html>"
+
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:91
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:135
+msgid "Language:"
+msgstr "言語："
+
+#: ../api/com/untangle/gui/install/InstallWelcomeJPanel.java:114
+msgid "<html>Welcome to the<br>Installation Wizard!</html>"
+msgstr "<html>へようこそ！<br>インストレーションウィザード!</html>"
+
+#: ../api/com/untangle/gui/install/InstallWizard.java:108
+msgid ""
+"If you exit now, you will not be able to continue installation. You should "
+"continue, if possible."
+msgstr "今退出すると、インストレーションを続行することができません。できれば、続行してください。"
+
+#: ../api/com/untangle/gui/install/InstallWizard.java:111
+msgid "<html><b>Exit</b> Wizard</html>"
+msgstr "<html><b>退出</b> ウィザード</html>"
+
+#: ../api/com/untangle/gui/install/InstallWizard.java:112
+msgid "<html><b>Continue</b> Wizard</html>"
+msgstr "<html><b>続行</b> ウィザード</html>"
+
+#: ../api/com/untangle/gui/install/InstallWizard.java:59
+msgid "1. Language"
+msgstr "1. 言語"
+
+#: ../api/com/untangle/gui/install/InstallWizard.java:62
+msgid "2. License Agreement"
+msgstr "2. ライセンス契約"
+
+#: ../api/com/untangle/gui/install/InstallWizard.java:65
+msgid "3. Choose Disk"
+msgstr "3. ディスク選択"
+
+#: ../api/com/untangle/gui/install/InstallWizard.java:68
+msgid "4. Hardware Test"
+msgstr "4. ハードウェアテスト"
+
+#: ../api/com/untangle/gui/install/InstallWizard.java:71
+msgid "5. Final Warning"
+msgstr "5. 最終警告"
+
+#: ../api/com/untangle/gui/widgets/dialogs/MOneButtonJDialog.java:124
+msgid "Confirm Restart..."
+msgstr "再起動を確認"
+
+#: ../api/com/untangle/gui/widgets/dialogs/MOneButtonJDialog.java:181
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:122
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:357
+msgid "Close"
+msgstr "クローズ"
+
+#: ../api/com/untangle/gui/widgets/dialogs/MTwoButtonJDialog.java:123
+msgid "Confirm Install..."
+msgstr "インストールを確認..."
+
+#: ../api/com/untangle/gui/widgets/dialogs/MTwoButtonJDialog.java:183
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../api/com/untangle/gui/widgets/dialogs/MTwoButtonJDialog.java:202
+msgid "Continue"
+msgstr "続行"
+
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:121
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:339
+msgid "Previous"
+msgstr "過去の"
+
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:123
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:183
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:189
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:320
+msgid "Next"
+msgstr "次"
+
+#: ../api/com/untangle/gui/widgets/wizard/MWizardJDialog.java:196
+msgid "Finish"
+msgstr "終了"
+
+#: ../api/com/untangle/gui/util/InfiniteProgressJComponent.java:203
+#: ../api/com/untangle/gui/util/InfiniteProgressJComponent.java:206
+msgid "Error sleeping"
+msgstr "スリーピングにエラー"

@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2008-11-20 05:41-0700\n"
-"Last-Translator: David Russi <dprussi@qwest.net>\n"
+"PO-Revision-Date: 2009-02-06 06:32-0800\n"
+"Last-Translator: Juan Machado <juan@itos.uga.edu>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Spanish\n"
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:77
@@ -70,7 +70,6 @@ msgid "Checking..."
 msgstr "Comprobando..."
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:106
-#, fuzzy
 msgid "undetermined "
 msgstr "indeterminado"
 
@@ -141,9 +140,9 @@ msgid ""
 "requirements.<br>Press the Next button in the main window to continue.</"
 "font></html>"
 msgstr ""
-"<html><font color=\"#445BFF\"><b>¡Felicitaciones!</b><br>El hardware "
-"satisface todos los requisitos.<br>Haga clic en el botón Siguiente de la "
-"ventana principal para continuar.</font></html>"
+"<html><font color=\"#445BFF\"><b>¡Felicitaciones!</b><br>El hardware satisface "
+"todos los requisitos.<br>Haga clic en el botón Siguiente de la ventana "
+"principal para continuar.</font></html>"
 
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:185
 #: ../api/com/untangle/gui/install/InstallBenchmarkJPanel.java:186
@@ -205,7 +204,7 @@ msgstr "Error al analizar los discos"
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:90
 msgid "size"
-msgstr ""
+msgstr "tamaño"
 
 #: ../api/com/untangle/gui/install/InstallDiskJPanel.java:114
 msgid "You must select a boot disk which you would like to install onto."

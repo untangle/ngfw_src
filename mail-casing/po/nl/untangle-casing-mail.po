@@ -1,0 +1,295 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: Untangle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-03-04 13:57-0800\n"
+"PO-Revision-Date: 2008-12-06 14:34+0100\n"
+"Last-Translator: Koen Claeys <koen.claeys@gmail.com>\n"
+"Language-Team: Dutch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Translate Toolkit 1.1.1\n"
+"X-Poedit-Language: Dutch\n"
+
+#: ../servlets/quarantine/root/quarantine.js:194
+msgid "The account {0} doesn't have any quarantined messages."
+msgstr "De account {0} heeft geen enkel bericht in quarantaine."
+
+#: ../servlets/quarantine/root/quarantine.js:244
+#: ../servlets/quarantine/root/quarantine.js:396
+msgid "Move to Inbox"
+msgstr "Verplaats naar Inbox"
+
+#: ../servlets/quarantine/root/quarantine.js:251
+#: ../servlets/quarantine/root/quarantine.js:395
+msgid "Delete Messages"
+msgstr "Verwijder berichten"
+
+#: ../servlets/quarantine/root/quarantine.js:258
+#: ../servlets/quarantine/root/quarantine.js:413
+msgid "Add Sender(s) to Safelist"
+msgstr "Voeg zender(s) to aan Safelist"
+
+#: ../servlets/quarantine/root/quarantine.js:356
+msgid "Deleted one Message"
+msgstr "Eén bericht verwijderd"
+
+#: ../servlets/quarantine/root/quarantine.js:357
+msgid "Deleted {0} Messages"
+msgstr "{0} berichten verwijderd"
+
+#: ../servlets/quarantine/root/quarantine.js:363
+msgid "Released one Message"
+msgstr "één bericht vrijgegeven"
+
+#: ../servlets/quarantine/root/quarantine.js:364
+msgid "Released {0} Messages"
+msgstr "{0} berichten vrijgegeven"
+
+#: ../servlets/quarantine/root/quarantine.js:370
+msgid "Safelisted one Address"
+msgstr "één bericht toegevoegd aan Safelist"
+
+#: ../servlets/quarantine/root/quarantine.js:371
+msgid "Safelisted {0} Addresses"
+msgstr "{0} adressen toegevoegd aan Safelist"
+
+#: ../servlets/quarantine/root/quarantine.js:400
+msgid "Delete one Message"
+msgstr "Verwijder één bericht"
+
+#: ../servlets/quarantine/root/quarantine.js:401
+msgid "Move one Message to Inbox"
+msgstr "Verplaats één bericht naar inbox"
+
+#: ../servlets/quarantine/root/quarantine.js:405
+msgid "Delete {0} Messages"
+msgstr "Verwijder {0} berichten"
+
+#: ../servlets/quarantine/root/quarantine.js:406
+msgid "Move {0} Messages to Inbox"
+msgstr "Verplaats {0} berichten naar inbox"
+
+#: ../servlets/quarantine/root/quarantine.js:416
+msgid "Add Sender to Safelist"
+msgstr "Voeg zender toe aan Safelist"
+
+#: ../servlets/quarantine/root/quarantine.js:419
+msgid "Add {0} Senders to Safelist"
+msgstr "Voeg {0} zenders toe aan Safelist"
+
+#: ../servlets/quarantine/root/quarantine.js:530
+msgid "From"
+msgstr "Van"
+
+#: ../servlets/quarantine/root/quarantine.js:537
+msgid "Number of Attachments in the email."
+msgstr "Aantal bijlagen in de email."
+
+#: ../servlets/quarantine/root/quarantine.js:540
+msgid "Score"
+msgstr "Score"
+
+#: ../servlets/quarantine/root/quarantine.js:545
+msgid "Subject"
+msgstr "Onderwerp"
+
+#: ../servlets/quarantine/root/quarantine.js:549
+msgid "Date"
+msgstr "Datum"
+
+#: ../servlets/quarantine/root/quarantine.js:560
+msgid "Size (KB)"
+msgstr "Grootte (KB)"
+
+#: ../servlets/quarantine/root/quarantine.js:574
+msgid "Showing items {0} - {1} of {2}"
+msgstr "Bezig met items {0} - {1} van {2} te tonen"
+
+#: ../servlets/quarantine/root/quarantine.js:575
+msgid "No messages to display"
+msgstr "Geen berichten om weer te geven"
+
+#: ../servlets/quarantine/root/quarantine.js:648
+msgid "The messages below were quarantined and will be deleted after {0} days."
+msgstr ""
+
+#: ../servlets/quarantine/root/quarantine.js:653
+msgid "Quarantined Messages"
+msgstr "Berichten in quarantaine"
+
+#: ../servlets/quarantine/root/quarantine.js:658
+msgid ""
+"You can use the Safelist to make sure that messages from these senders are "
+"never quarantined."
+msgstr ""
+"Je kan de Safelist gebruiken om er zeker van te zijn dat berichten van deze "
+"zenders nooit in quarantaine worden geplaatst."
+
+#: ../servlets/quarantine/root/quarantine.js:661
+msgid "Safelist"
+msgstr "Safelist"
+
+#: ../servlets/quarantine/root/remaps.js:40
+#: ../servlets/quarantine/root/request.js:48
+#: ../servlets/quarantine/root/safelist.js:43
+#: ../servlets/quarantine/root/safelist.js:112
+msgid "Email Address"
+msgstr "Email adres"
+
+#: ../servlets/quarantine/root/remaps.js:56
+#: ../servlets/quarantine/root/remaps.js:66
+#: ../servlets/quarantine/root/remaps.js:221
+#: ../servlets/quarantine/root/safelist.js:68
+#: ../servlets/quarantine/root/safelist.js:81
+#: ../servlets/quarantine/root/safelist.js:180
+msgid "Delete Addresses"
+msgstr "Verwijder adressen"
+
+#: ../servlets/quarantine/root/remaps.js:93
+msgid "Forward Quarantined Messages To:"
+msgstr "Stuur berichten in quarantaine door naar:"
+
+#: ../servlets/quarantine/root/remaps.js:114
+msgid "Address"
+msgstr "adres"
+
+#: ../servlets/quarantine/root/remaps.js:138
+msgid "Received Quarantined Messages From:"
+msgstr "Ontvangen berichten in quarantaine van:"
+
+#: ../servlets/quarantine/root/remaps.js:157
+msgid "Forward or Receive Quarantines"
+msgstr "Doorsturen of ontvangen van quarantaines"
+
+#: ../servlets/quarantine/root/remaps.js:179
+msgid "Unable to set the forward."
+msgstr "Kan het doorsturen niet instellen."
+
+#: ../servlets/quarantine/root/remaps.js:187
+msgid "Unable to delete an entry."
+msgstr "Kan geen ingang verwijderen."
+
+#: ../servlets/quarantine/root/remaps.js:201
+msgid "Delete one Remap"
+msgstr "Verwijder één hertoewijzing"
+
+#: ../servlets/quarantine/root/remaps.js:202
+msgid "Deleted {0} Remaps"
+msgstr "{0} hertoewijzingen verwijderd"
+
+#: ../servlets/quarantine/root/remaps.js:208
+msgid "Unable to update remap table."
+msgstr "Kan de hertoewijzingstabel niet updaten"
+
+#: ../servlets/quarantine/root/remaps.js:216
+msgid "Delete one Addressess"
+msgstr "Verwijder één adressen"
+
+#: ../servlets/quarantine/root/remaps.js:216
+#: ../servlets/quarantine/root/safelist.js:175
+msgid "Delete {0} Addresses"
+msgstr "{0} adressen verwijderen"
+
+#: ../servlets/quarantine/root/request.js:21
+msgid ""
+"Your Remote Access Portal login is not configured with a valid email address."
+msgstr ""
+"Je Remote Access Portal login is niet ingesteld met een geldig email adres."
+
+#: ../servlets/quarantine/root/request.js:31
+msgid "Select User"
+msgstr "Selecteer gebruiker"
+
+#: ../servlets/quarantine/root/request.js:31
+msgid "Enter the email address for which you would like the Quarantine Digest"
+msgstr "Voer het email adres in waar je de quarantaine samenvatting wil"
+
+#: ../servlets/quarantine/root/request.js:35
+msgid "Request"
+msgstr "Aanvraag"
+
+#: ../servlets/quarantine/root/request.js:86
+msgid "Successfully sent digest to '{0}'"
+msgstr ""
+
+#: ../servlets/quarantine/root/request.js:88
+msgid "A quarantine does not exist for '{0}'"
+msgstr ""
+
+#: ../servlets/quarantine/root/request.js:92
+msgid "Quarantine Request"
+msgstr ""
+
+#: ../servlets/quarantine/root/safelist.js:59
+msgid "Add"
+msgstr "Toevoegen"
+
+#: ../servlets/quarantine/root/safelist.js:125
+msgid "Add an Email Address to Safelist"
+msgstr "Voeg een email adres to aan Safelist"
+
+#: ../servlets/quarantine/root/safelist.js:128
+msgid "Save"
+msgstr "Bewaren"
+
+#: ../servlets/quarantine/root/safelist.js:138
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: ../servlets/quarantine/root/safelist.js:162
+msgid "Deleted one address"
+msgstr "Eén adres verwijderd"
+
+#: ../servlets/quarantine/root/safelist.js:162
+msgid "Deleted {0} addresses"
+msgstr "{0} adressen verwijderd"
+
+#: ../servlets/quarantine/root/safelist.js:175
+msgid "Delete one Address"
+msgstr "Verwijder één adres"
+
+#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:747
+msgid "Quarantine Digest"
+msgstr ""
+
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:20
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:25
+#, fuzzy
+msgid "Quarantine Digest for {0}"
+msgstr "Quarantaine samenvatting voor: {0}"
+
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:27
+msgid "Click here to access your spam quarantine."
+msgstr ""
+
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:28
+msgid ""
+"From this link you can have a specific email delivered to your email account "
+"or delete an email from the quarantine."
+msgstr ""
+
+#: ../servlets/quarantine/root/inbox.jspx:34
+msgid "Quarantine Digest for: {0}"
+msgstr "Quarantaine samenvatting voor: {0}"
+
+#: ../servlets/quarantine/root/inbox.jspx:39
+msgid "{0} | Quarantine Digest for: {1}"
+msgstr "{0} | Quarantine samenvatting voor: {1}"
+
+#: ../servlets/quarantine/root/request.jspx:36
+msgid "Request Quarantine Digest Email"
+msgstr "Vraag quarantaine samenvatting email aan"
+
+#: ../servlets/quarantine/root/request.jspx:40
+msgid "{0} | Request Quarantine Digest Email"
+msgstr "{0} | Vraag quarantaine samenvatting email aan"
+
+#~ msgid "Your Remote Access Portal login has been configured without an email address or with an incorrect email address."
+#~ msgstr "Je Remote Access Portal login is ingesteld zonder een emailadres of met een ongeldig email adres."

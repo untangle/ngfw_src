@@ -1,0 +1,209 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"PO-Revision-Date: 2009-02-10 23:45-0800\n"
+"Last-Translator: Noah Lubarsky <nclubarsky@hotmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 1.1.0\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:27
+msgid "Status"
+msgstr "ステータス"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:37
+msgid "Statistics"
+msgstr "統計"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:45
+msgid "Total Signatures Available"
+msgstr "有効シグネチャートータル"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:49
+msgid "Total Signatures Logging"
+msgstr "ロギングシグネチャートータル"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:53
+msgid "Total Signatures Blocking"
+msgstr "ブロッキングシグネチャートータル"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:58
+msgid "Note"
+msgstr "注釈"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:60
+msgid ""
+"{0} continues to maintain the default signature settings through automatic "
+"updates. You are free to modify and add signatures, however it is not "
+"required."
+msgstr "{0}自動アップデートにより初期シグネチャー設定を維持する。シグネチャーの変更や追加は自由にできます。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:70
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:313
+msgid "block"
+msgstr "ブロック"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:77
+msgid "log"
+msgstr "ログ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:87
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:112
+msgid "Rules"
+msgstr "ルール"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:103
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:106
+msgid "[no category]"
+msgstr "[カテゴリー無し]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:104
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:231
+msgid "[no name]"
+msgstr "[名前無し]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:105
+msgid "[no signature]"
+msgstr "[シグネチャー無し]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:110
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:233
+msgid "[no description]"
+msgstr "[無表記]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:140
+msgid "category"
+msgstr "カテゴリー"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:148
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:269
+msgid "description"
+msgstr "表記"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:165
+msgid "id"
+msgstr "id"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:171
+msgid "info"
+msgstr "インフォ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:187
+msgid "Category"
+msgstr "カテゴリー"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:193
+msgid "Signature"
+msgstr "シグネチャー"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:199
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:281
+msgid "Name"
+msgstr "氏名"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:205
+msgid "SID"
+msgstr "SID"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:211
+msgid "Block"
+msgstr "ブロック"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:215
+msgid "Log"
+msgstr "ログ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:219
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:293
+msgid "Description"
+msgstr "表記"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:232
+msgid "[no definition]"
+msgstr "[無定義]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:235
+msgid "Variables"
+msgstr "変数"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:253
+msgid "name"
+msgstr "氏名"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:261
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:315
+msgid "pass"
+msgstr "パス"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:287
+msgid "Pass"
+msgstr "パス"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:337
+msgid "timestamp"
+msgstr "タイムスタンプ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:345
+msgid "action"
+msgstr "アクション"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:350
+msgid "client"
+msgstr "クライアント"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:357
+msgid "reason for action"
+msgstr "アクションの理由"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:362
+msgid "server"
+msgstr "サーバー"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+msgid "Saving..."
+msgstr "保存..."
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+msgid "Please wait"
+msgstr "お待ちください"
+
+#: ../impl/com/untangle/node/ips/IpsBlockedFilter.java:27
+msgid "Blocked Events"
+msgstr "ブロックされたイベント"
+
+#: ../impl/com/untangle/node/ips/IpsLogFilter.java:27
+msgid "All Events"
+msgstr "イベント全体"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+msgid "Sessions scanned"
+msgstr "セッションをスキャンします"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+msgid "SCAN"
+msgstr "SCAN（スキャン）"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
+msgid "Sessions logged"
+msgstr "セッションをログします"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
+msgid "DETECT"
+msgstr "検出"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+msgid "Sessions blocked"
+msgstr "セッションをブロックします"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+msgid "BLOCK"
+msgstr "ブロック"

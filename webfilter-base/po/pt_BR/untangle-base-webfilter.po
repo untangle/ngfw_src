@@ -2,18 +2,18 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2008-11-24 18:17-0800\n"
-"Last-Translator: Claudia\n"
+"PO-Revision-Date: 2009-02-25 09:29-0800\n"
+"Last-Translator: André Henriques <andre.trouble@gmail.com>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Portuguese\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:33
@@ -33,7 +33,7 @@ msgstr "Categorias"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:664
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:673
 msgid "manage list"
-msgstr "gerenciar lista"
+msgstr "gerir lista"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:52
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:195
@@ -138,8 +138,8 @@ msgstr "Descrição"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:374
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
 msgstr ""
-"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro "
-"(https) "
+"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro (https) "
+""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:386
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:435
@@ -182,9 +182,8 @@ msgid "File Type"
 msgstr "Tipo de arquivo"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:576
-#, fuzzy
 msgid "[no mime type]"
-msgstr "[nenhum site]"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:599
 msgid "MIME type"
@@ -201,14 +200,12 @@ msgstr "Listas permitidas"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:670
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:731
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:855
-#, fuzzy
 msgid "Client IP addresses"
-msgstr "Endereços IP"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:748
 msgid "\"URL\" specified cannot be passed because it uses secure http (https)"
-msgstr ""
-"Especificado \"URL\" não pode passar porque utiliza http seguro (https) "
+msgstr "Especificado \"URL\" não pode passar porque utiliza http seguro (https) "
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:766
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:841
@@ -393,3 +390,6 @@ msgstr "Desbloquear por enquanto"
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
+
+#~ msgid "IP addresses"
+#~ msgstr "Endereços IP"

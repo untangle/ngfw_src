@@ -2,19 +2,19 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2008-11-24 15:48-0700\n"
-"Last-Translator: David Russi <dprussi@qwest.net>\n"
+"PO-Revision-Date: 2009-02-06 06:34-0800\n"
+"Last-Translator: Juan Machado <juan@itos.uga.edu>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Spanish\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:49
@@ -94,8 +94,7 @@ msgstr "Activar filtración de páginas web de phishing"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:230
 msgid "Phish Blocker web signatures were last updated "
-msgstr ""
-"Última actualización de las firmas de web de Phish Blocker realizada el"
+msgstr "Última actualización de las firmas de web de Phish Blocker realizada el"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:255
 msgid "Web Event Log"
@@ -156,14 +155,12 @@ msgid "quarantine message"
 msgstr "poner mensaje en cuarentena"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:360
-#, fuzzy
 msgid "safelist message"
-msgstr "permitir mensaje"
+msgstr "poner mensaje en lista segura"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:362
-#, fuzzy
 msgid "oversize message"
-msgstr "poner mensaje en cuarentena"
+msgstr "mensaje por encima del tamaño permitido"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:410
 msgid "subject"
