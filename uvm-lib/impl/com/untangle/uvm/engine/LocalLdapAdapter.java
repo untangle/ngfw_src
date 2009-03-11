@@ -27,6 +27,7 @@ import com.untangle.uvm.addrbook.NoSuchEmailException;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.addrbook.GroupEntry;
 import org.apache.log4j.Logger;
 
 /**
@@ -78,7 +79,7 @@ class LocalLdapAdapter extends LdapAdapter {
 
     @Override
     protected String[] getGroupClassType() {
-        return new String[] { "groupOfNames" };
+        return new String[] { "groupOfNames", "posixGroup" };
     }
 
     @Override
@@ -135,20 +136,20 @@ class LocalLdapAdapter extends LdapAdapter {
 
     @Override
     public void joinDomain(String smbWorkgroup)
-	throws ServiceUnavailableException
+        throws ServiceUnavailableException
     {
         try {
-	    String auth = m_settings.getSuperuser() + "%" + m_settings.getSuperuserPass();
+            String auth = m_settings.getSuperuser() + "%" + m_settings.getSuperuserPass();
             SimpleExec.SimpleExecResult result = SimpleExec.exec(
-		"/usr/bin/smbpasswd",
-		new String [] { "-w", m_settings.getSuperuserPass() },
-		null,//env
-		null,//rootDir
-		true,//stdout
-		true,//stderr
-		1000*60);
+                "/usr/bin/smbpasswd",
+                new String [] { "-w", m_settings.getSuperuserPass() },
+                null,//env
+                null,//rootDir
+                true,//stdout
+                true,//stderr
+                1000*60);
             if(result.exitCode != 0) {
-		m_logger.warn("Unable to join domain: " + result.stdOut + result.stdErr);
+                m_logger.warn("Unable to join domain: " + result.stdOut + result.stdErr);
             }
         } catch (IOException ioe) {
             m_logger.warn("Exception joining domain", ioe);
@@ -295,11 +296,11 @@ class LocalLdapAdapter extends LdapAdapter {
 
         //Create the LDAP crap
         BasicAttributes attrs = new BasicAttributes();
+        BasicAttribute attr = new BasicAttribute("objectclass");
         for(String userClass : getUserClassType()) {
-            BasicAttribute attr = new BasicAttribute("objectclass");
             attr.add(userClass);
-            attrs.put(attr);
         }
+        attrs.put(attr);
 
         attrs.put(new BasicAttribute("uid", newEntry.getUID()));
         attrs.put(new BasicAttribute("sn", newEntry.getLastName()));
@@ -307,6 +308,12 @@ class LocalLdapAdapter extends LdapAdapter {
                                      newEntry.getFirstName() + " " + newEntry.getLastName()));
         attrs.put(new BasicAttribute("mail", newEntry.getEmail()));
         attrs.put(new BasicAttribute("userPassword", password));//TODO MD5
+
+        attrs.put(new BasicAttribute("gidNumber", "27777"));
+        attrs.put(new BasicAttribute("uidNumber", "7777")); //TODO implement counting number
+        attrs.put(new BasicAttribute("homeDirectory", "/tmp"));
+        attrs.put(new BasicAttribute("loginShell", "/bin/false"));
+
 
         try {
             createSubcontextAsSuperuser("uid=" + newEntry.getUID() + ",dc=nodomain", attrs);
@@ -425,6 +432,99 @@ class LocalLdapAdapter extends LdapAdapter {
 
     }
 
+    public GroupEntry createGroupEntry(GroupEntry newEntry)
+        throws NameAlreadyBoundException,
+               ServiceUnavailableException,
+               IllegalArgumentException {
+
+        if(newEntry.getCN() == null) {
+            throw new IllegalArgumentException("cn cannot be null");
+        }
+        if(newEntry.getGID() > 0) {
+            throw new IllegalArgumentException("gid must be greather than 0");
+        }
+
+
+        //Create the LDAP crap
+        BasicAttributes attrs = new BasicAttributes();
+        BasicAttribute attr = new BasicAttribute("objectclass");
+        for(String groupClass : getGroupClassType()) {
+            attr.add(groupClass);
+        }
+        attrs.put(attr);
+
+        attrs.put(new BasicAttribute("cn", newEntry.getCN()));
+        attrs.put(new BasicAttribute("gid", Integer.toString(newEntry.getGID())));
+
+        try {
+            createSubcontextAsSuperuser("cn=" + newEntry.getCN() + ",dc=nodomain", attrs);
+        }
+        catch(NameAlreadyBoundException ex) {
+            throw ex;
+        }
+        catch(NamingException ex) {
+            m_logger.warn("Exception creating new group\"" + newEntry.getCN() + "\"", ex);
+            throw new ServiceUnavailableException(ex.toString());
+        }
+
+        newEntry.setStoredIn(getRepositoryType());
+        return newEntry;
+    }
+
+/**
+     * Delete the given group entry
+     *
+     * @param cn the cn of the group
+     *
+     * @return true if found and deleted, false if not found or not deleted
+     *
+     * @exception ServiceUnavailableException if the back-end communication
+     *            with the repository is somehow hosed.
+     */
+    public boolean deleteGroupEntry(String cn)
+        throws ServiceUnavailableException  {
+
+        try {
+            return deleteGroupEntryImpl(cn, true);
+        }
+        catch(ServiceUnavailableException ex) {
+            m_logger.warn("Exception deleting group \"" + cn + "\"", ex);
+            throw ex;
+        }
+    }
+
+    /**
+     * Tries twice
+     */
+    private boolean deleteGroupEntryImpl(String cn, boolean tryAgain)
+        throws ServiceUnavailableException {
+
+        DirContext ctx = checkoutSuperuserContext();
+
+        if(ctx == null) {
+            throw new ServiceUnavailableException("Unable to obtain superuser context");
+        }
+
+        try {
+            ctx.destroySubcontext("cn=" + cn + ",dc=nodomain");
+            returnSuperuserContext(ctx, false);
+            return true;
+        }
+        catch(NameNotFoundException ex) {
+            returnSuperuserContext(ctx, false);
+            return false;
+        }
+        catch(NamingException ex) {
+            returnSuperuserContext(ctx, true);
+            if(tryAgain) {
+                return deleteGroupEntryImpl(cn, false);
+            }
+            else {
+                m_logger.warn("Exception deleting group \"" + cn + "\"", ex);
+                throw new ServiceUnavailableException(ex.toString());
+            }
+        }
+    }
 
     public static void main(String[] args) throws Exception {
         System.out.println("Hello");

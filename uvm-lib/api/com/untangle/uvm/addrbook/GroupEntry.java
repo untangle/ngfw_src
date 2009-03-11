@@ -45,7 +45,7 @@ import java.util.List;
 public final class GroupEntry implements Serializable {
 
     private String m_cn;
-    private long m_gid;
+    private int m_gid;
     private String m_samaccountname;
     private String m_samaccounttype;
     private String m_description;
@@ -53,11 +53,11 @@ public final class GroupEntry implements Serializable {
     private RepositoryType m_storedIn;
 
     public GroupEntry() {
-        this(null, 0l, null, null, null, null, RepositoryType.NONE);
+        this(null, 0, null, null, null, null, RepositoryType.NONE);
     }
 
     public GroupEntry(String cn,
-                     long gid,
+                     int gid,
                      String samaccountname,
                      String samaccounttype,
                      String description,
@@ -73,7 +73,7 @@ public final class GroupEntry implements Serializable {
     }
 
     public GroupEntry(String cn,
-                     long gid,
+                     int gid,
                      String samaccountname,
                      String samaccounttype,
                      String description,
@@ -97,11 +97,11 @@ public final class GroupEntry implements Serializable {
         m_cn = cn;
     }
 
-    public long getGID() {
+    public int getGID() {
         return m_gid;
     }
 
-    public void setGID(long gid) {
+    public void setGID(int gid) {
         m_gid = gid;
     }
 

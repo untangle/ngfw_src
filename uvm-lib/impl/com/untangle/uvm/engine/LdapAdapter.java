@@ -234,12 +234,12 @@ abstract class LdapAdapter {
                 String[] lines = output.split("\n");
                 for (String line : lines) {
                     String[] groupPieces = line.split(":");
-                    if (Long.valueOf(groupPieces[2]).longValue() < 500l) {
+                    if (Integer.valueOf(groupPieces[2]).intValue() < 500) {
                         continue;
                     }
                     GroupEntry ge = new GroupEntry(
                               groupPieces[0],
-                              Long.valueOf(groupPieces[2]).longValue(),
+                              Integer.valueOf(groupPieces[2]).intValue(),
                               groupPieces[0],
                               "",
                               "",
@@ -772,7 +772,7 @@ abstract class LdapAdapter {
     private GroupEntry toGroupEntry(Map<String, String[]> map) {
         return new GroupEntry(
                               getFirstEntryOrNull(map.get(getCNName())),
-                              Long.valueOf("0").longValue(), //TODO fix this later
+                              0, //TODO fix this later
                               getFirstEntryOrNull(map.get(getGroupName())),
                               getFirstEntryOrNull(map.get(getGroupTypeName())),
                               getFirstEntryOrNull(map.get(getGroupDescriptionName())),
