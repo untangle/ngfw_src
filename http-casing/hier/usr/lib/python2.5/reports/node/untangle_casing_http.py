@@ -67,7 +67,7 @@ INSERT INTO reports.n_http_events
     JOIN events.n_http_req_line req ON pe.event_id = req.pl_endp_id
     JOIN events.n_http_evt_req er ON er.request_id = req.request_id
     LEFT OUTER JOIN events.n_http_evt_resp resp on req.request_id = resp.request_id
-    LEFT OUTER JOIN events.merged_address_map mam
+    LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
     WHERE pe.time_stamp >= %s AND pe.time_stamp < %s""",
                            (DateFromMx(start_date), DateFromMx(end_date)))

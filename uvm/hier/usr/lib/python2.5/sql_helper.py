@@ -37,7 +37,7 @@ def drop_table(tablename):
 def create_table_as_sql(tablename, query, args):
     run_sql("CREATE TABLE %s AS %s" % (tablename, query), args)
 
-def run_sql(sql, args=None):
+def run_sql(sql, args=None, log_errors=True, raise_exceptions=False):
     conn = get_connection()
 
     try:
@@ -46,6 +46,11 @@ def run_sql(sql, args=None):
             curs.execute(sql, args)
         else:
             curs.execute(sql)
+    except Exception, e:
+        if log_errors:
+            logging.warn("exception running '%s', %s" % (sql, e))
+        if raise_exceptions:
+            raise e
     finally:
         conn.commit()
 
