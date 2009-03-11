@@ -72,6 +72,7 @@ class DevMkg
         puts "#{pack} 10.0"
       end
     }
+    STDOUT.flush
     IO.popen("dpkg --get-selections 'untangle*'", 'r') do |input|
       IO.popen("xargs dpkg-query -W", 'w') do |output|
         input.each_line do |l|
