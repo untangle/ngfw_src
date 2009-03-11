@@ -36,12 +36,12 @@ FROM events.n_webfilter_evt_blk
 WHERE reports.n_http_events.time_stamp >= ?
   AND reports.n_http_events.time_stamp < ?
   AND reports.n_http_events.request_id = events.n_webfilter_evt_blk.request_id""",
-s                           (sd, end_date))
+                           (sd, end_date))
 
         ft = report_engine.get_fact_table('reports.n_http_totals')
 
-        ft.measures.add(Column.new('blocks', 'integer',
-                                   "count(CASE WHEN webfilter_action = 'P' THEN 1 ELSE NULL END)"))
+        ft.measures.add(Column('blocks', 'integer',
+                               "count(CASE WHEN webfilter_action = 'P' THEN 1 ELSE NULL END)"))
 
     def teardown(self):
         print "TEARDOWN"

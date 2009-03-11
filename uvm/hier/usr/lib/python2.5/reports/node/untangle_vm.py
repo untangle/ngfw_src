@@ -19,7 +19,7 @@ class UvmNode(Node):
         st = DateFromMx(start_time)
         et = DateFromMx(end_time)
 
-        self.__generate_address_map(start_time, end_time)
+        # self.__generate_address_map(start_time, end_time)
 
         sql_helper.create_table_from_query('reports.users', """\
 SELECT DISTINCT username FROM events.u_lookup_evt

@@ -196,6 +196,8 @@ WHERE tablename LIKE %s""", '%s%%' % prefix)
     return rv
 
 def __make_trigger(schema, tablename, timestamp_column, all_dates):
+    full_tablename = '%s.%s' % (schema, tablename)
+
     trigger_function_name = '%s_insert_trigger()' % tablename
 
     trigger_function = """\
@@ -212,7 +214,7 @@ BEGIN
                                              timestamp_column, d,
                                              timestamp_column,
                                              d + mx.DateTime.DateTimeDelta(1),
-                                             __tablename_for_date(tablename, d))
+                                             __tablename_for_date(full_tablename, d))
         first = False
 
     trigger_function += """\

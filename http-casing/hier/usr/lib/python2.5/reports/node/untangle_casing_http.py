@@ -36,7 +36,6 @@ CREATE TABLE reports.n_http_events (
 )""",
                                             'time_stamp', start_date, end_date)
 
-
         sql_helper.run_sql("""\
 INSERT INTO reports.n_http_events
       (time_stamp, session_id, client_intf, server_intf, c_client_addr,
@@ -74,15 +73,15 @@ INSERT INTO reports.n_http_events
 
         ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
                        'time_stamp',
-                       [Column.new('hname', 'text'), Column.new('host', 'text'),
-                        Column.new('s2c_content_type', 'text')],
-                       [Column.new('hits', 'bigint', 'count(*)'),
-                        Column.new('c2s_content_length', 'bigint',
+                       [Column('hname', 'text'), Column('host', 'text'),
+                        Column('s2c_content_type', 'text')],
+                       [Column('hits', 'bigint', 'count(*)'),
+                        Column('c2s_content_length', 'bigint',
                                    'sum(c2s_content_length)'),
-                        Column.new('s2c_content_length', 'bigint',
+                        Column('s2c_content_length', 'bigint',
                                    'sum(s2c_content_length)'),
-                        Column.new('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
-                        Column.new('c2s_bytes', 'bigint', 'sum(p2s_bytes)')]);
+                        Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
+                        Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')]);
         reports.engine.register_fact_table(ft)
 
     def teardown(self):
