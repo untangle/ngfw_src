@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
     Ung.hasResource["Ung.LocalDirectory"] = true;
 
     Ung.LocalDirectory = Ext.extend(Ung.ConfigWin, {
-    	fnCallback:null,
+        fnCallback:null,
         gridUsers : null,
         initComponent : function() {
             this.breadcrumbs = [{
@@ -15,7 +15,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             }];
             this.buildLocalDirectory();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.gridUsers]);
+            this.buildTabPanel([this.gridUsers, this.gridGroups]);
             this.tabs.activate(this.gridUsers);
             Ung.LocalDirectory.superclass.initComponent.call(this);
         },
@@ -26,9 +26,9 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             }
             
             this.gridUsers = new Ung.EditorGrid({
-                name : 'Local Directory',
+                name : 'Local Users',
                 helpSource : 'local_directory',
-                title : this.i18n._('Local Directory'),
+                title : this.i18n._('Local Users'),
                 settingsCmp : this,
                 height : 500,
                 paginated : false,
@@ -142,6 +142,132 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     width : 150
                 })]
             });
+
+            var groupData=main.getAppAddressBook().getGroupEntries().list;
+
+
+            this.gridGroups = new Ung.EditorGrid({
+                name : 'Local Groups',
+                helpSource : 'local_directory',
+                title : this.i18n._('Local Groups'),
+                settingsCmp : this,
+                height : 500,
+                paginated : false,
+                emptyRow : {
+                    "Name" : this.i18n._('[no name]'),
+                    //"firstName" : this.i18n._('[no name]'),
+                    //"lastName" : this.i18n._('[no name]'),
+                    //"email" : this.i18n._('[no email]'),
+                    //"password" : "",
+                    "javaClass" : "com.untangle.uvm.addrbook.GroupEntry"
+                },
+                recordJavaClass : "com.untangle.uvm.addrbook.GroupEntry",
+                data : groupData,
+                dataRoot: null,
+                autoGenerateId: true,
+                fields : [{
+                    name : 'CN'
+                }//, {
+                //    name : 'firstName'
+                //}, {
+                //    name : 'lastName'
+                // }, {
+//                     name : 'email'
+//                 }, {
+//                     name : 'password'
+//                 }, {
+//                     name : 'storedIn'
+//                 }, {
+//                     name : 'javaClass'
+//                }
+                 ],
+                columns : [{
+                    id : 'CN',
+                    header : this.i18n._("Name"),
+                    width : 140,
+                    dataIndex : 'CN',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false,
+                        regex: /^[\w ]+$/,
+                        regexText: this.i18n._("The field name can have only alphanumeric characters.")
+                    })
+                }
+// , {
+//                     id : 'firstName',
+//                     header : this.i18n._("first name"),
+//                     width : 120,
+//                     dataIndex : 'firstName',
+//                     editor : new Ext.form.TextField({
+//                         allowBlank : false
+//                     })
+//                 }, {
+//                     id : 'lastName',
+//                     header : this.i18n._("last name"),
+//                     width : 120,
+//                     dataIndex : 'lastName',
+//                     editor : new Ext.form.TextField({
+//                     })
+//                 }, {
+//                     id : 'email',
+//                     header : this.i18n._("email address"),
+//                     width : 250,
+//                     dataIndex : 'email',
+//                     editor : new Ext.form.TextField({
+//                     })
+//                 }, {
+//                     id : 'password',
+//                     header : this.i18n._("password"),
+//                     width : 150,
+//                     dataIndex : 'password',
+//                     editor : new Ext.form.TextField({
+//                         inputType: 'password'
+//                     }),
+//                     renderer : function(value, metadata, record) {
+//                         var result = "";
+//                         for(var i=0; value != null && i<value.length; i++) {
+//                             result = result + "*";
+//                         }
+//                         return result;
+//                     }
+//                }
+],
+                sortField : 'CN',
+                columnsDefaultSortable : true,
+                autoExpandColumn : 'CN',
+                rowEditorInputLines : [new Ext.form.TextField({
+                    name : "Name",
+                    dataIndex: "CN",
+                    fieldLabel : this.i18n._("Name"),
+                    allowBlank : false,
+                    regex: /^[\w ]+$/,
+                    regexText: this.i18n._("The field name can have only alphanumeric character."),
+                    width : 100
+                })
+// , new Ext.form.TextField({
+//                     name : "First Name",
+//                     dataIndex: "firstName",
+//                     fieldLabel : this.i18n._("First Name"),
+//                     allowBlank : false,
+//                     width : 100
+//                 }), new Ext.form.TextField({
+//                     name : "Last Name",
+//                     dataIndex: "lastName",
+//                     fieldLabel : this.i18n._("Last Name"),
+//                     width : 100
+//                 }), new Ext.form.TextField({
+//                     name : "Email Address",
+//                     dataIndex: "email",
+//                     fieldLabel : this.i18n._("Email Address"),
+//                     width : 250
+//                 }), new Ext.form.TextField({
+//                     inputType: 'password',
+//                     name : "Password",
+//                     dataIndex: "password",
+//                     fieldLabel : this.i18n._("Password"),
+//                     width : 150
+//                 })
+]
+            });
         },
         
         validateClient : function() {
@@ -240,7 +366,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
         },
         
         isDirty : function() {
-        	return this.gridUsers.isDirty();
+                return this.gridUsers.isDirty();
         }
         
     });
