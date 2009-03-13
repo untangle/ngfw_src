@@ -22,3 +22,4 @@ start_date = end_date - mx.DateTime.DateTimeDelta(30)
 
 reports.engine.init_engine(NODE_MODULE_DIR)
 reports.engine.setup(start_date, end_date)
+reports.engine.process_fact_tables(start_date, end_date)

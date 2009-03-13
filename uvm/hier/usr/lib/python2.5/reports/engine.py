@@ -1,7 +1,10 @@
 import logging
 import os
 import sets
+import sql_helper
 import string
+
+from psycopg import DateFromMx
 
 class Node:
     def __init__(self, name):
@@ -30,21 +33,28 @@ class FactTable:
     def measures(self):
         return self.__measures
 
-    def process(self):
+    def process(self, start_date, end_date):
         sql_helper.create_partitioned_table(self.__ddl(), 'trunc_time',
                                             start_date, end_date)
 
-        sd = sql_helper.get_update_info(name.__name)
-        if None == sd:
-            sd = start_date
+        sd = DateFromMx(sql_helper.get_update_info(self.__name, start_date))
+        ed = DateFromMx(end_date)
 
-        sql_helper.run_sql(self.__insert_stmt(), (sd, end_date))
+        conn = sql_helper.get_connection()
 
-        sql_helper.set_update_info(self.__name, end_date);
+        try:
+            sql_helper.run_sql(self.__insert_stmt(), (sd, ed), connection=conn,
+                               auto_commit=False)
+            sql_helper.set_update_info(self.__name, ed, connection=conn,
+                                       auto_commit=False)
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
 
     def __ddl(self):
         ddl = 'CREATE TABLE %s (trunc_time timestamp without time zone' \
-            % self.__name;
+            % self.__name
         for c in (self.__dimensions + self.__measures):
             ddl += ", %s %s" % (c.name, c.type)
         ddl += ')'
@@ -52,22 +62,22 @@ class FactTable:
 
     def __insert_stmt(self):
         insert_strs = ['trunc_time']
-        select_strs = ["date_trunc('minute', #{@time_column})"]
-        group_strs = ["date_trunc('minute', #{@time_column})"]
+        select_strs = ["date_trunc('minute', %s)" % self.__time_column]
+        group_strs = ["date_trunc('minute', %s)" % self.__time_column]
 
-        for c in dimensions:
+        for c in self.__dimensions:
             insert_strs.append(c.name)
             select_strs.append(c.value_expression)
             group_strs.append(c.name)
 
-        for c in measures.each:
+        for c in self.__measures:
             insert_strs.append(c.name)
             select_strs.append(c.value_expression)
 
         return """\
 INSERT INTO %s (%s)
     SELECT %s FROM %s
-    WHERE %s >= ? AND %s < ?
+    WHERE %s >= %%s AND %s < %%s
     GROUP BY %s""" % (self.__name, string.join(insert_strs, ','),
                       string.join(select_strs, ','), self.__detail_table,
                       self.__time_column, self.__time_column,
@@ -112,16 +122,16 @@ def get_fact_table(name):
 
     return __fact_tables.get(name, None)
 
-def process_fact_tables(start_time, end_time):
+def process_fact_tables(start_date, end_date):
     global __fact_tables
 
     for ft in __fact_tables.values():
-        ft.process(start_time, end_time)
+        ft.process(start_date, end_date)
 
 def init_engine(node_module_dir):
     __get_nodes(node_module_dir)
 
-def setup(start_time, end_time):
+def setup(start_date, end_date):
     global __nodes
 
     for name in __get_node_partial_order():
@@ -130,7 +140,7 @@ def setup(start_time, end_time):
         if not node:
             logger.warn("could not get node %s" % name)
         else:
-            node.setup(start_time, end_time)
+            node.setup(start_date, end_date)
 
 def __get_node_partial_order():
     global __nodes
