@@ -1,9 +1,6 @@
 #! /bin/bash
-# This file automatically created - do not modify
 
 rm -fr /usr/share/untangle/db/spyware/
-
-/usr/bin/mcli -t 30 register untangle-node-spyware 2>/dev/null || true
 
 /etc/init.d/apache2 reload
 
