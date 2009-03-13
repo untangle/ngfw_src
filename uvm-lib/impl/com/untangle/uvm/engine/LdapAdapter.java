@@ -234,7 +234,7 @@ abstract class LdapAdapter {
                 String[] lines = output.split("\n");
                 for (String line : lines) {
                     String[] groupPieces = line.split(":");
-                    if (Integer.valueOf(groupPieces[2]).intValue() < 500) {
+                    if (filterGID(Integer.valueOf(groupPieces[2]).intValue())) {
                         continue;
                     }
                     GroupEntry ge = new GroupEntry(
@@ -557,6 +557,14 @@ abstract class LdapAdapter {
 
     protected String getListAllGroupsSearchString() {
         return orStrings("objectClass=", getGroupClassType());
+    }
+
+    /**
+     * @param gid the group id in question
+     * @return true if it should be skipped, false if it is included in this directory
+     */
+    protected boolean filterGID(int gid) {
+        return gid < 500 || gid > 1000000;
     }
 
 
