@@ -3,11 +3,28 @@ import mx
 import psycopg
 import re
 import string
+import time
 
 from sets import Set
 from psycopg import DateFromMx
 
 # XXX function timing
+
+def print_timing(func):
+    def wrapper(*arg):
+        t1 = time.time()
+        res = func(*arg)
+        t2 = time.time()
+
+        if hasattr(func, 'im_class'):
+            fun_name = "%s.%s" % (func.im_class, func.func_name)
+        else:
+            fun_name = func.func_name
+
+        logging.info('%s took %0.3f ms' % (fun_name, (t2-t1)*1000.0))
+        return res
+
+    return wrapper
 
 __conn = None
 
@@ -30,29 +47,29 @@ def drop_table(tablename):
         curs = conn.cursor()
         curs.execute("DROP TABLE %s" % tablename)
     except:
-        logger.debug('did not drop table: %s' % tablename)
+        logging.debug('did not drop table: %s' % tablename)
     finally:
         conn.commit()
 
 def create_table_as_sql(tablename, query, args):
     run_sql("CREATE TABLE %s AS %s" % (tablename, query), args)
 
-def run_sql(sql, args=None, log_errors=True, raise_exceptions=False):
-    conn = get_connection()
-
+def run_sql(sql, args=None, connection=get_connection(), auto_commit=True):
     try:
-        curs = conn.cursor()
+        curs = connection.cursor()
         if args:
             curs.execute(sql, args)
         else:
             curs.execute(sql)
+
+        if auto_commit:
+            connection.commit()
+
     except Exception, e:
-        if log_errors:
-            logging.warn("exception running '%s', %s" % (sql, e))
-        if raise_exceptions:
-            raise e
-    finally:
-        conn.commit()
+        logging.warn("exception running '%s', %s" % (sql, e))
+        if auto_commit:
+            connection.rollback()
+        raise e
 
 def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
                              clear_tables=False):
@@ -98,7 +115,7 @@ INHERITS (%s)""" % (__tablename_for_date(full_tablename, d),
 
     __make_trigger(schema, tablename, timestamp_column, all_dates)
 
-def get_update_info(tablename):
+def get_update_info(tablename, default=None):
     conn = get_connection()
     try:
         curs = conn.cursor()
@@ -112,35 +129,40 @@ SELECT last_update FROM reports.table_updates WHERE tablename = %s
         if row:
             rv = row[0]
         else:
-            rv = None
+            rv = default
 
     finally:
         conn.commit()
 
     return rv
 
-def set_update_info(tablename, last_update):
-    conn = get_connection()
+def set_update_info(tablename, last_update, connection=get_connection(),
+                    auto_commit=True):
     try:
-        curs = conn.cursor()
+        curs = connection.cursor()
 
         curs.execute("""\
-SELECT count(*) FROM reports.table_updates WHERE table_updates = %s
+SELECT count(*) FROM reports.table_updates WHERE tablename = %s
 """, (tablename,))
         row = curs.fetchone()
 
         if row[0] == 0:
-            curs = conn.cursor()
+            curs = connection.cursor()
             curs.execute("""\
 INSERT INTO reports.table_updates (tablename, last_update) VALUES (%s, %s)
-""", (tablename, date))
+""", (tablename, last_update))
         else:
-            curs = conn.cursor()
+            curs = connection.cursor()
             curs.execute("""\
 UPDATE reports.table_updates SET last_update = %s WHERE tablename = %s
-""", (date, tablename))
-    finally:
-        conn.commit();
+""", (last_update, tablename))
+
+        if auto_commit:
+            connection.commit()
+    except Exception, e:
+        if auto_commit:
+            connection.rollback()
+        raise e
 
 def drop_table(table, schema=None):
     if schema:

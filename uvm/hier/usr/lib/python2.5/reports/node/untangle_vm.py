@@ -1,8 +1,9 @@
 import logging
 import psycopg
-import sql_helper
 import reports.engine
+import sql_helper
 
+from sql_helper import print_timing
 from reports.engine import Node
 from psycopg import DateFromMx
 
@@ -15,38 +16,105 @@ class UvmNode(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-vm')
 
-    def setup(self, start_time, end_time):
-        st = DateFromMx(start_time)
-        et = DateFromMx(end_time)
+    @print_timing
+    def setup(self, start_date, end_date):
+        self.__generate_address_map(start_date, end_date)
 
-        # self.__generate_address_map(start_time, end_time)
+        self.__make_sessions_table(start_date, end_date)
 
+        self.__create_users_table(start_date, end_date)
+        self.__create_hnames_table(start_date, end_date)
+
+    @print_timing
+    def __create_users_table(self, start_date, end_date):
         sql_helper.create_table_from_query('reports.users', """\
 SELECT DISTINCT username FROM events.u_lookup_evt
-WHERE time_stamp >= %s AND time_stamp < %s""", (st, et))
+WHERE time_stamp >= %s AND time_stamp < %s""", (DateFromMx(start_date),
+                                                DateFromMx(end_date)))
 
-        sql_helper.create_table_from_query('reports_hnames', """\
+    @print_timing
+    def __create_hnames_table(self, start_date, end_date):
+        sql_helper.create_table_from_query('reports.hnames', """\
 SELECT DISTINCT hname FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s AND client_intf=1""",
-                                           (st, et))
+                                           (DateFromMx(start_date),
+                                            DateFromMx(end_date)))
+
+    @print_timing
+    def __make_sessions_table(self, start_date, end_date):
+        sql_helper.create_partitioned_table("""\
+CREATE TABLE reports.sessions (
+        pl_endp_id int8 NOT NULL,
+        time_stamp timestamp NOT NULL,
+        hname text,
+        uid text,
+        c_client_addr inet,
+        c_server_addr inet,
+        c_server_port int4,
+        client_intf int2,
+        c2p_bytes int8,
+        p2c_bytes int8,
+        s2p_bytes int8,
+        p2s_bytes int8,
+        PRIMARY KEY (pl_endp_id));
+""", 'time_stamp', start_date, end_date)
+
+        sd = DateFromMx(sql_helper.get_update_info('reports.sessions', start_date))
+        ed = DateFromMx(end_date)
+
+        conn = sql_helper.get_connection()
+
+        try:
+            sql_helper.run_sql("""\
+CREATE TEMPORARY TABLE newsessions AS
+    SELECT endp.event_id, endp.time_stamp, mam.name,
+           endp.c_client_addr, endp.c_server_addr, endp.c_server_port,
+           endp.client_intf
+    FROM events.pl_endp endp
+    LEFT OUTER JOIN reports.merged_address_map mam
+      ON (endp.c_client_addr = mam.addr AND endp.time_stamp >= mam.start_time
+         AND endp.time_stamp < mam.end_time)
+    WHERE endp.time_stamp >= %s AND endp.time_stamp < %s
+""", (sd, ed), connection=conn, auto_commit=False)
+
+            sql_helper.run_sql("""\
+INSERT INTO reports.sessions
+  SELECT ses.event_id, ses.time_stamp,
+         COALESCE(NULLIF(ses.name, ''), HOST(ses.c_client_addr)) AS hname,
+         stats.uid, c_client_addr, c_server_addr, c_server_port, client_intf,
+         stats.c2p_bytes, stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
+    FROM newsessions ses
+    JOIN events.pl_stats stats ON (ses.event_id = stats.pl_endp_id)""",
+                               connection=conn, auto_commit=False)
+
+            sql_helper.set_update_info('reports.sessions', ed,
+                                       connection=conn, auto_commit=False)
+
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
+
 
     def teardown(self):
         print "TEARDOWN"
 
-    def __generate_address_map(self, start_time, end_time):
+    @print_timing
+    def __generate_address_map(self, start_date, end_date):
         self.__do_housekeeping()
 
         m = {}
 
         if self.__nat_installed():
-            self.__generate_abs_leases(m, start_time, end_time)
-            self.__generate_relative_leases(m, start_time, end_time)
-            self.__generate_static_leases(m, start_time, end_time)
+            self.__generate_abs_leases(m, start_date, end_date)
+            self.__generate_relative_leases(m, start_date, end_date)
+            self.__generate_static_leases(m, start_date, end_date)
 
-        self.__generate_manual_map(m, start_time, end_time)
+        self.__generate_manual_map(m, start_date, end_date)
 
         self.__write_leases(m)
 
+    @print_timing
     def __do_housekeeping(self):
         sql_helper.run_sql("""\
 DELETE FROM settings.n_reporting_settings WHERE tid NOT IN
@@ -74,6 +142,7 @@ CREATE TABLE reports.merged_address_map (
     end_time   TIMESTAMP,
     PRIMARY KEY (id))""")
 
+    @print_timing
     def __write_leases(self, m):
         values = []
 
@@ -97,7 +166,8 @@ VALUES (%s, %s, %s, %s)""", values)
         return sql_helper.table_exists('events',
                                        'n_router_evt_dhcp_abs_leases')
 
-    def __generate_abs_leases(self, m, start_time, end_time):
+    @print_timing
+    def __generate_abs_leases(self, m, start_date, end_date):
         self.__generate_leases(m, """\
 SELECT evt.time_stamp, lease.end_of_lease, lease.ip, lease.hostname,
        CASE WHEN (lease.event_type = 0) THEN 0 ELSE 3 END AS event_type
@@ -107,17 +177,19 @@ FROM events.n_router_evt_dhcp_abs_leases AS glue,
 WHERE glue.event_id=evt.event_id AND glue.lease_id = lease.event_id
       AND ((%s <= evt.time_stamp and evt.time_stamp <= %s)
       OR ((%s <= lease.end_of_lease and lease.end_of_lease <= %s)))
-ORDER BY evt.time_stamp""", start_time, end_time)
+ORDER BY evt.time_stamp""", start_date, end_date)
 
-    def __generate_relative_leases(self, m, start_time, end_time):
+    @print_timing
+    def __generate_relative_leases(self, m, start_date, end_date):
         self.__generate_leases(m, """\
 SELECT evt.time_stamp, evt.end_of_lease, evt.ip, evt.hostname, evt.event_type
 FROM events.n_router_evt_dhcp AS evt
 WHERE (%s <= evt.time_stamp AND evt.time_stamp <= %s)
     OR (%s <= evt.end_of_lease AND evt.end_of_lease <= %s)
-ORDER BY evt.time_stamp""", start_time, end_time)
+ORDER BY evt.time_stamp""", start_date, end_date)
 
-    def __generate_static_leases(self, m, start_time, end_time):
+    @print_timing
+    def __generate_static_leases(self, m, start_date, end_date):
         conn = sql_helper.get_connection()
 
         try:
@@ -140,11 +212,12 @@ WHERE rule.rule_id = list.rule_id
 
                 hostname = hostname.split(" ")[0]
 
-                m[ip] = [Lease((start_time, end_time, ip, hostname, None))]
+                m[ip] = [Lease((start_date, end_date, ip, hostname, None))]
         finally:
             conn.commit()
 
-    def __generate_manual_map(self, m, start_time, end_time):
+    @print_timing
+    def __generate_manual_map(self, m, start_date, end_date):
         conn = sql_helper.get_connection()
 
         try:
@@ -177,13 +250,13 @@ ON min_idx = position""")
 
                 (ip, hostname) = r
 
-                m[ip] = [Lease((start_time, end_time, ip, hostname, None))]
+                m[ip] = [Lease((start_date, end_date, ip, hostname, None))]
         finally:
             conn.commit()
 
-    def __generate_leases(self, m, q, start_time, end_time):
-        st = DateFromMx(start_time)
-        et = DateFromMx(end_time)
+    def __generate_leases(self, m, q, start_date, end_date):
+        st = DateFromMx(start_date)
+        et = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
 

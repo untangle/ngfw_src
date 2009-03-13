@@ -95,15 +95,26 @@ __nodes = {}
 __fact_tables = {}
 
 def register_node(node):
+    global __nodes
+
     __nodes[node.name] = node
 
 def register_fact_table(fact_table):
+    global __fact_tables
+
+    logging.info("registering fact table: '%s'" % fact_table)
     __fact_tables[fact_table.name] = fact_table
+    logging.info('AFTER: %s' % __fact_tables)
+
 
 def get_fact_table(name):
-    __fact_tables.get(name, None)
+    global __fact_tables
+
+    return __fact_tables.get(name, None)
 
 def process_fact_tables(start_time, end_time):
+    global __fact_tables
+
     for ft in __fact_tables.values():
         ft.process(start_time, end_time)
 
@@ -111,6 +122,8 @@ def init_engine(node_module_dir):
     __get_nodes(node_module_dir)
 
 def setup(start_time, end_time):
+    global __nodes
+
     for name in __get_node_partial_order():
         logging.info('doing setup for: %s' % name)
         node = __nodes.get(name, None)
@@ -120,6 +133,8 @@ def setup(start_time, end_time):
             node.setup(start_time, end_time)
 
 def __get_node_partial_order():
+    global __nodes
+
     available = sets.Set(__nodes.keys());
     list = []
 
@@ -130,6 +145,8 @@ def __get_node_partial_order():
     return list
 
 def __add_node(name, list, available):
+    global __nodes
+
     node = __nodes.get(name, None)
     if not node:
         logging.warn("node not found %s" % name)

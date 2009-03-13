@@ -1,12 +1,12 @@
-import sql_helper
-
 import reports.engine
+import sql_helper
+import sys
 
 from psycopg import DateFromMx
-
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
+from sql_helper import print_timing
 
 class HttpCasing(Node):
     def __init__(self):
@@ -15,7 +15,25 @@ class HttpCasing(Node):
     def parents(self):
         return ['untangle-vm']
 
+    @print_timing
     def setup(self, start_date, end_date):
+        self.__create_n_http_events(start_date, end_date)
+
+        ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
+                       'time_stamp',
+                       [Column('hname', 'text'), Column('host', 'text'),
+                        Column('s2c_content_type', 'text')],
+                       [Column('hits', 'bigint', 'count(*)'),
+                        Column('c2s_content_length', 'bigint',
+                                   'sum(c2s_content_length)'),
+                        Column('s2c_content_length', 'bigint',
+                                   'sum(s2c_content_length)'),
+                        Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
+                        Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')]);
+        reports.engine.register_fact_table(ft)
+
+    @print_timing
+    def __create_n_http_events(self, start_date, end_date):
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.n_http_events (
     time_stamp timestamp without time zone,
@@ -36,7 +54,13 @@ CREATE TABLE reports.n_http_events (
 )""",
                                             'time_stamp', start_date, end_date)
 
-        sql_helper.run_sql("""\
+        sd = DateFromMx(sql_helper.get_update_info('reports.n_http_events', start_date))
+        ed = DateFromMx(end_date)
+
+        conn = sql_helper.get_connection()
+
+        try:
+            sql_helper.run_sql("""\
 INSERT INTO reports.n_http_events
       (time_stamp, session_id, client_intf, server_intf, c_client_addr,
        s_client_addr, c_server_addr, s_server_addr, c_client_port,
@@ -69,20 +93,15 @@ INSERT INTO reports.n_http_events
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
     WHERE pe.time_stamp >= %s AND pe.time_stamp < %s""",
-                           (DateFromMx(start_date), DateFromMx(end_date)))
+                               (sd, ed), connection=conn, auto_commit=False)
 
-        ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
-                       'time_stamp',
-                       [Column('hname', 'text'), Column('host', 'text'),
-                        Column('s2c_content_type', 'text')],
-                       [Column('hits', 'bigint', 'count(*)'),
-                        Column('c2s_content_length', 'bigint',
-                                   'sum(c2s_content_length)'),
-                        Column('s2c_content_length', 'bigint',
-                                   'sum(s2c_content_length)'),
-                        Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
-                        Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')]);
-        reports.engine.register_fact_table(ft)
+            sql_helper.set_update_info('reports.n_http_events', ed,
+                                       connection=conn, auto_commit=False)
+
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
 
     def teardown(self):
         print "TEARDOWN"
