@@ -25,6 +25,7 @@ class WebfilterBaseNode(Node):
     def teardown(self):
         print "TEARDOWN"
 
+
     @print_timing
     def __update_n_http_events(self, start_date, end_date):
         try:

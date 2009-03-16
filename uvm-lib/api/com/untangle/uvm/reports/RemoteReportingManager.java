@@ -37,7 +37,6 @@ package com.untangle.uvm.reports;
 import java.util.Date;
 import java.util.List;
 
-import com.untangle.uvm.UvmException;
 
 /**
  * Manages report generation.
@@ -85,42 +84,4 @@ public interface RemoteReportingManager  {
      * @return true if reports are available
      */
     boolean isReportsAvailable();
-
-    /**
-     * Kicks off the reporting process.  It creates a settings.env
-     * file to help in later shell script execution.  It also updates
-     * the merged address map.  Finally it purges reports other than
-     * <code>daysToKeep</code> days.
-     *
-     * Call this each time before calling startReports.
-     *
-     * If this is called while a report is running, the running report
-     * is automatically terminated.
-     *
-     * @param outputBaseDir the base output directory
-     * @param midnight the day to be reported on (previous 24 hours
-     * from midnight of given Date)
-     * @param daysToKeep number of days of data to keep
-     */
-    void prepareReports(String outputBaseDir, Date midnight, int daysToKeep)
-        throws UvmException;
-
-    /**
-     * Starts the report generation.  We return since the alternative
-     * is mcli with a 6 hour timeout or something stupid like that.
-     *
-     * Call this after calling prepareReports to set the parameters.
-     */
-    void startReports() throws UvmException;
-
-    void stopReports() throws UvmException;
-
-    /**
-     * Tests if the reports are running -- have been started
-     * and have not yet finished.  Call this after
-     * <code>startReports</code> if desired to see if they're done.
-     *
-     * @return true if reports still running, false otherwise.
-     */
-    boolean isRunning();
 }
