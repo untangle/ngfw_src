@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/uvm-lib/localapi/com/untangle/uvm/LocalUvmContext.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -33,53 +33,7 @@
 
 package com.untangle.uvm.reports;
 
-import java.util.Date;
-import java.util.List;
+public class AbstractReport
+{
 
-/**
- * Manages report generation.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
- */
-public interface RemoteReportingManager  {
-
-    // NEW SHIZZLE -------------------------------------------------------------
-
-    List<Date> getDates();
-
-    TableOfContents getTableOfContents(Date d);
-
-    ApplicationData getApplicationData(Date d, String appName);
-
-    ApplicationData getApplicationDataForUser(Date d, String appName,
-                                              String username);
-
-    ApplicationData getApplicationDataForEmail(Date d, String appName,
-                                               String emailAddr);
-
-    ApplicationData getApplicationDataForHost(Date d, String appName,
-                                              String hostname);
-
-    // old stuff ---------------------------------------------------------------
-
-
-    /**
-     * Tests if reporting is enabled, that is if reports will be
-     * generated nightly.  Currently this is the same thing as "is the
-     * reporting node installed and turned on."
-     *
-     * @return true if reporting is enabled, false otherwise.
-     */
-    boolean isReportingEnabled();
-
-    /**
-     * Tests if reporting is enabled and reports have been generated
-     * and are ready to view.  Currently this is the same thing as
-     * "does the current symlink exist and contain a valid
-     * reporting-node/sum-daily.html file."
-     *
-     * @return true if reports are available
-     */
-    boolean isReportsAvailable();
 }

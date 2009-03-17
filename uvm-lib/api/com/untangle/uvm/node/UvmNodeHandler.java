@@ -61,7 +61,7 @@ public class UvmNodeHandler extends DefaultHandler
 
     private String name = null;
     private String className = null;
-    private String guiClassName = null;
+    private String reportsClassName = null;
     private String nodeBase = null;
     private boolean singleInstance = false;
     private String displayName = null;
@@ -81,7 +81,7 @@ public class UvmNodeHandler extends DefaultHandler
 
     public NodeDesc getNodeDesc(Tid tid)
     {
-        return new NodeDesc(tid, mackageDesc, className, guiClassName,
+        return new NodeDesc(tid, mackageDesc, className, reportsClassName,
                             nodeBase, exports, parents, uvmResources,
                             singleInstance, hasPowerButton, noStart);
     }
@@ -151,8 +151,8 @@ public class UvmNodeHandler extends DefaultHandler
                 className = v;
             } else if (n.equals("display-name")) {
                 displayName = v;
-            } else if (n.equals("gui-classname")) {
-                guiClassName = v;
+            } else if (n.equals("reports-classname")) {
+                reportsClassName = v;
             } else if (n.equals("node-base")) {
                 nodeBase = v;
             } else if (n.equals("power-button")) {

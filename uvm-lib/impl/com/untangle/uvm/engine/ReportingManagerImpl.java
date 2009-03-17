@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.reporting.Reporter;
 import com.untangle.uvm.reports.Application;
 import com.untangle.uvm.reports.ApplicationData;
@@ -43,6 +45,7 @@ import com.untangle.uvm.reports.Host;
 import com.untangle.uvm.reports.KeyStatistic;
 import com.untangle.uvm.reports.LegendItem;
 import com.untangle.uvm.reports.RemoteReportingManager;
+import com.untangle.uvm.reports.ReportDesc;
 import com.untangle.uvm.reports.Section;
 import com.untangle.uvm.reports.SummaryItem;
 import com.untangle.uvm.reports.SummarySection;
@@ -101,10 +104,30 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     public TableOfContents getTableOfContents(Date d)
     {
         Application platform = new Application("untangle-vm", "Platform");
-        List<Application> apps = new ArrayList<Application>();
-        apps.add(new Application("untangle-node-webfilter", "WebFilter"));
-        apps.add(new Application("untangle-node-phish", "Phish Blocker"));
-        apps.add(new Application("untangle-node-spamassassin", "Spam Blocker"));
+
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        LocalNodeManager nodeManager = uvm.nodeManager();
+
+        List<ReportDesc> reportDescs = new ArrayList<ReportDesc>();
+
+        for (Tid t : nodeManager.nodeInstances()) {
+            NodeContext nc = nodeManager.nodeContext(t);
+            NodeDesc nd = nc.getNodeDesc();
+            ReportDesc rd = ReportDesc.getReportDesc(nd);
+            if (null != rd) {
+                reportDescs.add(rd);
+            }
+        }
+
+        Collections.sort(reportDescs);
+
+        List<Application> apps = new ArrayList<Application>(reportDescs.size());
+
+        for (ReportDesc rd : reportDescs) {
+            apps.add(rd.getApplication());
+        }
+
+        // XXX TODO
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
 
@@ -144,6 +167,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         s.add(getBogusDetails());
         return new ApplicationData(s);
     }
+
+
 
     private Section getBogusSummary()
     {

@@ -56,7 +56,7 @@ public class NodeDesc implements Serializable
     private final MackageDesc mackageDesc;
 
     private final String className;
-    private final String guiClassName;
+    private final String reportsClassName;
     private final String nodeBase;
     private final String syslogName;
 
@@ -73,7 +73,7 @@ public class NodeDesc implements Serializable
     private final int udpMaxPacketSize = 16384;
 
     public NodeDesc(Tid tid, MackageDesc mackageDesc, String className,
-                    String guiClassName, String nodeBase,
+                    String reportsClassName, String nodeBase,
                     List<String> exports, List<String> parents,
                     List<String> uvmResources, boolean singleInstance,
                     boolean hasPowerButton, boolean noStart)
@@ -81,7 +81,7 @@ public class NodeDesc implements Serializable
         this.tid = tid;
         this.mackageDesc = mackageDesc;
         this.className = className;
-        this.guiClassName = guiClassName;
+        this.reportsClassName = reportsClassName;
         this.nodeBase = nodeBase;
         List<String> l = null == exports ? new LinkedList<String>() : exports;
         this.exports = Collections.unmodifiableList(l);
@@ -224,13 +224,13 @@ public class NodeDesc implements Serializable
     }
 
     /**
-     * The class name of the GUI module.
+     * The class name of the reports module.
      *
-     * @return class name of GUI component.
+     * @return class name of reports component.
      */
-    public String getGuiClassName()
+    public String getReportsClassName()
     {
-        return guiClassName;
+        return reportsClassName;
     }
 
     /**

@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
- * $HeadURL$
+/*
+ * $HeadURL: svn://chef/work/src/webfilter-base/impl/com/untangle/node/webfilter/Blacklist.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,11 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
--->
+ */
 
-<uvm-node>
-  <node-desc classname="com.untangle.node.webfilter.WebFilterImpl"
-             reports-classname="com.untangle.node.webfilter.WebFilterReport"
-             node-base="untangle-base-webfilter"/>
-  <parent>untangle-casing-http</parent>
-</uvm-node>
+package com.untangle.node.webfilter;
+
+import com.untangle.uvm.reports.AbstractReport;
+
+public class WebFilterReport extends AbstractReport
+{
+
+}
