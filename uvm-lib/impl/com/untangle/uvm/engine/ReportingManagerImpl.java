@@ -168,8 +168,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return new ApplicationData(s);
     }
 
-
-
     private Section getBogusSummary()
     {
         List<SummaryItem> sis = new ArrayList<SummaryItem>();
