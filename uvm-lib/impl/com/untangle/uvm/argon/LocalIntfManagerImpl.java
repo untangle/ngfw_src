@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -63,6 +64,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
     /** The current value from the properties value, if the value hasn't changed, the interfaces
      * are not reloaded. */
     private String currentInterfaceOrder = null;
+    private String currentWanInterfaces = null;
 
     /**
      * Convert an interface using the argon standard (0 = outside, 1 = inside, 2 = DMZ 1, etc)
@@ -183,11 +185,13 @@ class LocalIntfManagerImpl implements LocalIntfManager
         /* First check to see if the property file exists */
         FileInputStream fis = null;
         String interfaceOrder = null;
+        String wanInterfaces = null;
         try {
             Properties p = new Properties();
             fis = new FileInputStream(INTF_ORDER_FILE);
             p.load(fis);
             interfaceOrder = p.getProperty("com.untangle.interface-order");
+            wanInterfaces = p.getProperty("com.untangle.wan-interfaces");
         } catch (IOException exn) {
             logger.warn("could not close: " + INTF_ORDER_FILE, exn);
         } finally {
@@ -203,9 +207,13 @@ class LocalIntfManagerImpl implements LocalIntfManager
         if (interfaceOrder == null || interfaceOrder.trim().length() == 0) {
             interfaceOrder = DEFAULT_INTERFACE_ORDER;
         }
+        if (( wanInterfaces == null ) || ( wanInterfaces.trim().length() == 0 )) {
+            wanInterfaces = String.valueOf( IntfConstants.NETCAP_EXTERNAL );
+        }
         interfaceOrder = interfaceOrder.trim();
 
-        if (( this.currentInterfaceOrder != null ) && this.currentInterfaceOrder.equals( interfaceOrder )) {
+        if (( this.currentInterfaceOrder != null ) && this.currentInterfaceOrder.equals( interfaceOrder ) &&
+            ( this.currentWanInterfaces != null ) && this.currentWanInterfaces.equals( wanInterfaces )) {
             logger.info( "The interface order is current, not reloading interfaces." );
             return;
         }
@@ -213,6 +221,17 @@ class LocalIntfManagerImpl implements LocalIntfManager
         logger.debug("Loading the interface order: " + interfaceOrder);
 
         String[] ifds = interfaceOrder.split(",");
+        BitSet wanInterfaceSet = new BitSet( IntfConstants.NETCAP_MAX );
+        for ( String w : wanInterfaces.split( "," )) {
+            try {
+                int i = Integer.valueOf( w );
+                if (( i >= IntfConstants.NETCAP_MIN ) && ( i <= IntfConstants.NETCAP_MAX )) {
+                    wanInterfaceSet.set( i );
+                }
+            }catch ( Exception e ) {
+            }
+        }
+
         List<Byte> l = new ArrayList<Byte>(ifds.length);
         List<ArgonInterface> argonInterfaceList = new LinkedList<ArgonInterface>();
 
@@ -224,13 +243,15 @@ class LocalIntfManagerImpl implements LocalIntfManager
             } else {
                 try {
                     byte netcap = Byte.parseByte(d[2]);
+                    boolean isWanInterface = wanInterfaceSet.get( netcap );
                     byte argon = (byte)(netcap - 1);
 
                     String userString = d[0];
                     String osName = d[1];
                     l.add(argon);
 
-                    argonInterfaceList.add(new ArgonInterface(osName, argon, netcap, userString));
+                    argonInterfaceList.add(new ArgonInterface(osName, null, argon, netcap, userString, 
+                                                              isWanInterface));
                 } catch (NumberFormatException exn) {
                     logger.warn("skiping bad interface description: "
                                 + ifd);
@@ -246,6 +267,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
         this.intfConverter = ArgonInterfaceConverter.makeInstance(argonInterfaceList);
         notifyDependents(prevIntfConverter);
         this.currentInterfaceOrder = interfaceOrder;
+        this.currentWanInterfaces = wanInterfaces;
     }
 
     public IntfDBMatcher[] getIntfMatcherEnumeration()

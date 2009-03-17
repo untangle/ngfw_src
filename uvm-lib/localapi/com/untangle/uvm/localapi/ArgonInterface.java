@@ -57,6 +57,9 @@ public final class ArgonInterface
     /* The string value */
     private final String string;
 
+    /* True if this is a WAN interface */
+    private final boolean isWanInterface;
+
     public ArgonInterface( String physicalName, byte argon, byte netcap, String userName )
     {
         this( physicalName, null, argon, netcap, userName );
@@ -68,6 +71,12 @@ public final class ArgonInterface
      */
     public ArgonInterface( String physicalName, String secondaryName, byte argon, byte netcap, String userName )
     {
+        this( physicalName, secondaryName, argon, netcap, userName, false );
+    }
+
+    public ArgonInterface( String physicalName, String secondaryName, byte argon, byte netcap, 
+                           String userName, boolean isWanInterface )
+    {
         this.physicalName = physicalName.trim();
         if ( secondaryName == null ) secondaryName = "";
         this.secondaryName = secondaryName.trim();
@@ -76,8 +85,9 @@ public final class ArgonInterface
         this.string =  "'" + this.physicalName + "," +  this.secondaryName + "' " +
             this.argon + "/" + this.netcap;
         this.userName = userName;
+        this.isWanInterface = isWanInterface;
     }
-
+                               
     /** Get the name of the interface where traffic should go be routed. */
     public String getName()
     {
@@ -121,6 +131,11 @@ public final class ArgonInterface
         return this.argon;
     }
 
+    public boolean isWanInterface()
+    {
+        return this.isWanInterface;
+    }
+
     public String toString()
     {
         return this.string;
@@ -145,7 +160,8 @@ public final class ArgonInterface
     /** Return a new argon interface with a modified secondary interface */
     public ArgonInterface makeNewSecondaryIntf( String secondaryName )
     {
-        return new ArgonInterface( this.physicalName, secondaryName, this.argon, this.netcap, this.userName );
+        return new ArgonInterface( this.physicalName, secondaryName, this.argon, this.netcap, this.userName, 
+                                   this.isWanInterface );
     }
 
     public boolean equals(Object o)
