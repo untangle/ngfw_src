@@ -19,6 +19,7 @@
 package com.untangle.uvm.reports;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.node.NodeDesc;
@@ -74,6 +75,12 @@ public class ReportDesc implements Comparable<ReportDesc>
     {
         return new Application(nodeDesc.getName(),
                                nodeDesc.getDisplayName());
+    }
+
+    public ApplicationData getApplicationData()
+    {
+        List<Section> sections = report.getSections();
+        return new ApplicationData(sections);
     }
 
     // Comparable methods ------------------------------------------------------

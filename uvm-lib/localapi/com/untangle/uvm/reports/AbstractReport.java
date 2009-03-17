@@ -33,7 +33,32 @@
 
 package com.untangle.uvm.reports;
 
-public class AbstractReport
-{
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
 
+public abstract class AbstractReport
+{
+    protected static final String REPORT_DATE = "report-date";
+    protected static final String ONE_DAY_BEFORE = "one-day-before";
+    protected static final String ONE_WEEK_BEFORE = "one-week-before";
+
+    public abstract List<Section> getSections();
+
+    protected ResultSet doDateQuery(Connection c, String q, Timestamp startDate,
+                                    Timestamp endDate)
+        throws SQLException
+    {
+        PreparedStatement ps = c
+            .prepareStatement("SELECT max(hits) AS max_hits, "
+                              + "avg(hits) AS avg_hits "
+                              + "FROM reports.n_http_totals "
+                              + "WHERE trunc_time >= ? AND trunc_time < ?");
+        ps.setTimestamp(1, startDate);
+        ps.setTimestamp(2, endDate);
+        return ps.executeQuery();
+    }
 }
