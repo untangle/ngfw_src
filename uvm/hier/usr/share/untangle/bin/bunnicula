@@ -95,8 +95,8 @@ done
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
-if [ -d "$CLI_SERVER_HOME" ]; then
-    JAVA_OPTS="-Djruby.shell=/bin/sh -Dcom.untangle.cli.server.home=$CLI_SERVER_HOME $JAVA_OPTS"
+if [ -d "/usr/share/untangle-cli-server/src" ]; then
+    JAVA_OPTS="-Djruby.shell=/bin/sh -Dcom.untangle.cli.server.home=/usr/share/untangle-cli-server/src $JAVA_OPTS"
     export RUBYLIB=@PREFIX@/usr/share/untangle/nucli:$RUBYLIB
 fi
 
@@ -113,7 +113,7 @@ export PATH LD_LIBRARY_PATH CLASSPATH JAVA_HOME
 #
 # profiling tweeks
 #
-if [ "x$PROFILE_UVM_YJP" = "xyes" ] ; then
+if [ "x$UVM_YJP" = "xyes" ] ; then
     echo "YJP profiling support enabled (concurrent garbage collection disabled)"
     YJP_HOME=/opt/yjp
     LD_LIBRARY_PATH=$YJP_HOME/bin/linux-x86-32:$LD_LIBRARY_PATH

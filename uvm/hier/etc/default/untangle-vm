@@ -3,85 +3,70 @@
 source @PREFIX@/etc/default/untangle-babysitter
 source @PREFIX@/etc/default/untangle-activation
 
-## Simply function for taking a string, trim surround space, and the convert
-## space separators to the token string. eg join_string " a b c " ";" -> "a;b;c"
-join_string() {
-    echo $1 | sed -e 's/^ *//g' -e 's/ *$//g' -e "s/ \\+/$2/g"
-}
+#
+# Machine configuration
+#
+ARCH=`uname -m`
+MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
+if [ $MEM -gt 3900000 ] ; then
+    if [ $ARCH = 'x86_64' ]; then
+        MAX_HEAP_SIZE=1200m
+        MAX_BERKDB_MEG=150
+    else
+        MAX_HEAP_SIZE=960m
+        MAX_BERKDB_MEG=120
+    fi
+elif [ $MEM -gt 1900000 ] ; then
+    if [ $ARCH = 'x86_64' ]; then
+        MAX_HEAP_SIZE=800m
+        MAX_BERKDB_MEG=100
+    else
+        MAX_HEAP_SIZE=640m
+        MAX_BERKDB_MEG=80
+    fi
+elif [ $MEM -gt 900000 ] ; then
+    if [ $ARCH = 'x86_64' ]; then
+        MAX_HEAP_SIZE=380m
+        MAX_BERKDB_MEG=48
+    else
+        MAX_HEAP_SIZE=320m
+        MAX_BERKDB_MEG=32
+    fi
+else
+    if [ $ARCH = 'x86_64' ]; then
+        MAX_HEAP_SIZE=260m
+        MAX_BERKDB_MEG=24
+    else
+        MAX_HEAP_SIZE=220m
+        MAX_BERKDB_MEG=20
+    fi
+fi
 
-DEFAULT_DMZ="eth2"
+
+
+#
+# untangle-vm configuration
+#
+UVM_ARGS=""
 
 UVM_LOGDIR=@PREFIX@/var/log/uvm
 UVM_RUNDIR=@PREFIX@/var/run
-UVM_RESTART_PIDFILE=$UVM_RUNDIR/uvm-restart.pid
-UVM_REBOOT_PIDFILE=$UVM_RUNDIR/uvm-reboot.pid
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
 UVM_WRAPPER_LOG=$UVM_LOGDIR/wrapper.log
 UVM_GC_LOG=$UVM_LOGDIR/gc.log
 UVM_CMD=@PREFIX@/usr/bin/uvm
 UVM_USER=root
-## Defaults to 10000 in the code, set here if you want something else
-UVM_SESSION_LIMIT=""
+UVM_YJP=${UVM_YJP=$:-no}
+UVM_NICENESS=0
 
-# Use the following to configure your local installation.
-UVM_ARGS=""
+## if in the build, disable network configuration by default
+#UVM_ARGS="${UVM_ARGS} -Dbunnicula.devel.nonetworking=true"
 
-# postgresql stuff
-PG_VERSION=`dpkg -l postgresql | awk '/^ii/ { gsub(/\..-.*/, "", $3) ; print $3 }'`
-if [[ "$PG_VERSION" == 7* ]] ; then
-    PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
-    PGSERVICE="postgresql"
-    PG_DAEMON_NAME="postmaster"
-    PG_CREATEUSER_OPTIONS="-dA"
-else
-    PGDATA=${POSTGRES_DATA:-/var/lib/postgresql/${PG_VERSION}/main}
-    PGSERVICE="postgresql-${PG_VERSION}"
-    PG_DAEMON_NAME="postgres"
-    PG_CREATEUSER_OPTIONS="-dSR"
-fi
+## Set a session limit - defaults to 10k
+#UVM_ARGS="${UVM_ARGS} -Dargon.sessionlimit=${UVM_SESSION_LIMIT}"
 
-# cli stuff
-CLI_SERVER_HOME=/usr/share/untangle-cli-server/src
-# JRUBY_HOME=/usr/lib/jruby1.0
-
-## For testing uncomment if you want to generate /etc/network/interfaces files.
-# UVM_ENABLE_NETWORK_CFG="anything"
-
-if [ "x${USER}" = "x" -o "x${USER}" = "xroot" ]; then
-        UVM_NICENESS=0
-else
-        UVM_NICENESS=0
-fi
-
-# if in the build, disable network configuration by default
-if [ "x" != "x@PREFIX@" ]  && [ -z "${UVM_ENABLE_NETWORK_CFG}" ] ; then
-    UVM_ARGS="${UVM_ARGS} -Dbunnicula.devel.nonetworking=true"
-fi
-
-## Append the session limit if it is set
-if [ -n "${UVM_SESSION_LIMIT}" ]; then
-    UVM_ARGS="${UVM_ARGS} -Dargon.sessionlimit=${UVM_SESSION_LIMIT}"
-fi
-
-#
-# Profiling
-#
-PROFILE_UVM_YJP=${PROFILE_UVM_YJP=$:-no}
-export PROFILE_UVM_YJP
-
-# Use the Throughput or Concurrent-Low-Pause garbage collector?
-# We normally want to use the Concurrent collector as it gives the lowest possible pause
-# times.
-USE_THROUGHPUT_COLLECTOR=no
-if [ "x$PROFILE_UVM_YJP" = "xyes" ] ; then
-    USE_THROUGHPUT_COLLECTOR=yes
-fi
-
-#
-# Heap monitor thread
-#
 ## Enable the heap monitor.
-UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.memmonitor.enabled=true"
+#UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.memmonitor.enabled=true"
 
 ## Rate, kilobytes/second to start dumping stack traces.
 #UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.memmonitor.rate=$((3 * 1024)"
@@ -104,108 +89,88 @@ UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.memmonitor.enabled=true"
 ## Lifetime for positive phonebook lookups (millis)
 #UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.user.phonebook.lifetime=300000"
 
-## Lifetime for succesful wmi lookups (millis)
-#UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.user.wmi.lifetime=240000"
-
-## Lifetime for unsuccesful wmi lookups (millis)
-#UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.user.wmi.negativelifetime=600000"
-
-#
-# JAVA options
-# NOTE: this setting is required
-#
-JAVA_HOME=@DEFAULT_JAVA6_HOME@
-export JAVA_HOME
-
-PATH=${JAVA_HOME}/bin:${PATH}
-export PATH
-
-# Could use HOSTTYPE, but it's not as standard as uname -m
-MACHARCH=`uname -m`
-
-# The maximum heap/virtual sizes depend on the memory available
-MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
-if [ $MEM -gt 3900000 ] ; then
-    if [ $MACHARCH = 'x86_64' ]; then
-    MAX_HEAP_SIZE=1200m
-    MAX_VIRTUAL_SIZE=5500000
-    MAX_UCB_DB_MEG=150
-    [ -z "$UVM_SESSION_LIMIT" ] && UVM_SESSION_LIMIT=30000
-    else
-    MAX_HEAP_SIZE=960m
-    MAX_VIRTUAL_SIZE=2500000
-    MAX_UCB_DB_MEG=120
-    fi
-elif [ $MEM -gt 1900000 ] ; then
-    if [ $MACHARCH = 'x86_64' ]; then
-    MAX_HEAP_SIZE=800m
-    MAX_VIRTUAL_SIZE=3500000
-    MAX_UCB_DB_MEG=100
-    [ -z "$UVM_SESSION_LIMIT" ] && UVM_SESSION_LIMIT=20000
-    else
-    MAX_HEAP_SIZE=640m
-    MAX_VIRTUAL_SIZE=1500000
-    MAX_UCB_DB_MEG=80
-    fi
-elif [ $MEM -gt 900000 ] ; then
-    if [ $MACHARCH = 'x86_64' ]; then
-    MAX_HEAP_SIZE=380m
-    MAX_VIRTUAL_SIZE=1950000
-    MAX_UCB_DB_MEG=48
-    else
-    MAX_HEAP_SIZE=320m
-    MAX_VIRTUAL_SIZE=950000
-    MAX_UCB_DB_MEG=32
-    fi
-else
-    if [ $MACHARCH = 'x86_64' ]; then
-    MAX_HEAP_SIZE=260m
-    MAX_VIRTUAL_SIZE=1500000
-    MAX_UCB_DB_MEG=24
-  else
-    MAX_HEAP_SIZE=220m
-    MAX_VIRTUAL_SIZE=800000
-    MAX_UCB_DB_MEG=20
-    fi
-fi
-
 ## Limit Berkeley DB caching to 5% of java heap
-UVM_ARGS="${UVM_ARGS} -Dje.maxMemory=${MAX_UCB_DB_MEG}"
+UVM_ARGS="${UVM_ARGS} -Dje.maxMemory=${MAX_BERKDB_MEG}"
 
-## Reduce DNS caching to minimal (30 seconds).  Don't eliminate completely
-## to limit impact of multiple lookups in a short period.
+## Reduce DNS caching to minimal (30 seconds).  
 UVM_ARGS="${UVM_ARGS} -Dnetworkaddress.cache.ttl=30 -Dsun.net.inetaddr.ttl=30 -Dnetworkaddress.cache.negative.ttl=10"
 
-if [ "x$USE_THROUGHPUT_COLLECTOR" = "xyes" ] ; then
-# Goals: 85% throughput (don't set maxpausegcmillis here, you'll regret it)
-    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+UseParallelGC -XX:GCTimeRatio=6"
-else
-    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -XX:CMSIncrementalDutyCycleMin=0 -XX:CMSIncrementalDutyCycle=10 -XX:+UseParNewGC -XX:NewRatio=4"
-fi
-JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime"
-# Java Options:
-#  Minimum at 128m so we don't blow out smaller (512MB) machines
-#  Maximum at 320m so we leave a lot of space for stacks but still have enough for 10,000 sessions
-#  Stack size 96k which is small enough but still works
-JAVA_OPTS_COMMON="-verbose:gc -Xloggc:$UVM_GC_LOG -Xms128m -Xmx${MAX_HEAP_SIZE} -server"
+## Alternative store
+#UVM_ARGS="${UVM_ARGS} -Duvm.store.host=store.untangle.com"
 
-if [ $MACHARCH != 'x86_64' ]; then
-    JAVA_OPTS_COMMON="-Xss96k $JAVA_OPTS_COMMON"
-    JAVAWS=${JAVA_HOME}/bin/javaws
-else
-    JAVA_OPTS_COMMON="-Xss192k $JAVA_OPTS_COMMON"
-    JAVAWS=/usr/lib/jvm/ia32-java-6-sun/bin/javaws
-fi
-export JAVAWS
-
+# If inside the devel environment 
 if [ "x" != "x@PREFIX@" ] ; then
-    JAVA_OPTS_COMMON="-ea $JAVA_OPTS_COMMON"
+    ## Disable writing of networking config files
+    UVM_ARGS="${UVM_ARGS} -Dbunnicula.devel.nonetworking=true"
 fi
 
-if [ -f $JAVA_HOME/bin/console ] ; then
-    JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS_BEA" #   BEA
+
+
+#
+# JAVA configuration
+#
+JAVA_HOME=@DEFAULT_JAVA6_HOME@
+JAVA_OPTS=""
+PATH=${JAVA_HOME}/bin:${PATH}
+
+## Max Heap Size
+JAVA_OPTS="${JAVA_OPTS} -Xmx${MAX_HEAP_SIZE}"
+
+## Min Heap Size
+JAVA_OPTS="${JAVA_OPTS} -Xms128m"
+
+## Throughput Garbarge collector 
+#JAVA_OPTS="${JAVA_OPTS} -XX:+UseParallelGC -XX:GCTimeRatio=6"
+
+## Concurrent Garbarge collector
+JAVA_OPTS="${JAVA_OPTS} -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -XX:CMSIncrementalDutyCycleMin=0 -XX:CMSIncrementalDutyCycle=10 -XX:+UseParNewGC -XX:NewRatio=4"
+
+## Garbage collector 
+JAVA_OPTS="${JAVA_OPTS} -Xloggc:$UVM_GC_LOG -XX:+PrintGCDetails -XX:+PrintGCDateStamps"
+
+## Garbage collector verbosity
+JAVA_OPTS="${JAVA_OPTS} -verbose:gc"
+
+## Server mode (optimizes code at startup)
+JAVA_OPTS="${JAVA_OPTS} -server"
+
+if [ $ARCH != 'x86_64' ]; then
+    ## Stack size
+    JAVA_OPTS="${JAVA_OPTS} -Xss96k"
 else
-    JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS_SUN" #   SUN
+    ## Stack size
+    JAVA_OPTS="${JAVA_OPTS} -Xss192k"
+fi
+
+# If inside the devel environment 
+if [ "x" != "x@PREFIX@" ] ; then
+    ## Enable assertions
+    JAVA_OPTS="${JAVA_OPTS} -ea"
 fi
 
 export JAVA_OPTS
+export JAVA_HOME
+export PATH
+
+
+
+#
+# Postgres Configuration
+#
+PG_VERSION=`dpkg -l postgresql | awk '/^ii/ { gsub(/\..-.*/, "", $3) ; print $3 }'`
+if [[ "$PG_VERSION" == 7* ]] ; then
+    PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
+    PGSERVICE="postgresql"
+    PG_DAEMON_NAME="postmaster"
+    PG_CREATEUSER_OPTIONS="-dA"
+else
+    PGDATA=${POSTGRES_DATA:-/var/lib/postgresql/${PG_VERSION}/main}
+    PGSERVICE="postgresql-${PG_VERSION}"
+    PG_DAEMON_NAME="postgres"
+    PG_CREATEUSER_OPTIONS="-dSR"
+fi
+
+
+
+
+
