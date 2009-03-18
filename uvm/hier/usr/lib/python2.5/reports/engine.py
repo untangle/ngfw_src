@@ -10,6 +10,9 @@ class Node:
     def __init__(self, name):
         self.__name = name
 
+    def process_graphs(self, end_date):
+        pass
+
     @property
     def name(self):
         return self.__name
@@ -101,6 +104,24 @@ class Column:
     def value_expression(self):
         return self.__value_expression
 
+class KeyStatistic:
+    def __init__(self, name, value, units):
+        self.__name = name
+        self.__value = value
+        self.__units = units
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def value(self):
+        return self.__value
+
+    @property
+    def units(self):
+        return self.__units
+
 __nodes = {}
 __fact_tables = {}
 
@@ -127,6 +148,17 @@ def process_fact_tables(start_date, end_date):
 
     for ft in __fact_tables.values():
         ft.process(start_date, end_date)
+
+def process_graphs(end_date):
+    global __nodes
+
+    for name in __get_node_partial_order():
+        logging.info('doing process_graphs for: %s' % name)
+        node = __nodes.get(name, None)
+        if not node:
+            logger.warn("could not get node %s" % name)
+        else:
+            node.process_graphs(end_date)
 
 def init_engine(node_module_dir):
     __get_nodes(node_module_dir)
