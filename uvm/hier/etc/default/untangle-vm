@@ -157,18 +157,9 @@ export PATH
 #
 # Postgres Configuration
 #
-PG_VERSION=`dpkg -l postgresql | awk '/^ii/ { gsub(/\..-.*/, "", $3) ; print $3 }'`
-if [[ "$PG_VERSION" == 7* ]] ; then
-    PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
-    PGSERVICE="postgresql"
-    PG_DAEMON_NAME="postmaster"
-    PG_CREATEUSER_OPTIONS="-dA"
-else
-    PGDATA=${POSTGRES_DATA:-/var/lib/postgresql/${PG_VERSION}/main}
-    PGSERVICE="postgresql-${PG_VERSION}"
-    PG_DAEMON_NAME="postgres"
-    PG_CREATEUSER_OPTIONS="-dSR"
-fi
+## Postgres8 create user options
+PG_CREATEUSER_OPTIONS="-dSR"
+
 
 
 
