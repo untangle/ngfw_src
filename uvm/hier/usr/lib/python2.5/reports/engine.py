@@ -10,7 +10,7 @@ class Node:
     def __init__(self, name):
         self.__name = name
 
-    def process_graphs(self, end_date):
+    def process_graphs(self, end_date, base_directory):
         pass
 
     @property
@@ -158,7 +158,7 @@ def process_graphs(end_date):
         if not node:
             logger.warn("could not get node %s" % name)
         else:
-            node.process_graphs(end_date)
+            node.process_graphs(end_date, '/home/amread/')
 
 def init_engine(node_module_dir):
     __get_nodes(node_module_dir)

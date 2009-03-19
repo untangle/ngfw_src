@@ -69,8 +69,10 @@ INSERT INTO reports.n_http_events
        p2c_chunks, p2s_chunks, uid, request_id, method, uri, host,
        c2s_content_length, s2c_content_length, s2c_content_type, hname)
     SELECT
+        -- timestamp from request
+        er.time_stamp,
         -- pipeline endpoints
-        pe.time_stamp, pe.session_id, pe.client_intf, pe.server_intf,
+        pe.session_id, pe.client_intf, pe.server_intf,
         pe.c_client_addr, pe.s_client_addr, pe.c_server_addr, pe.s_server_addr,
         pe.c_client_port, pe.s_client_port, pe.c_server_port, pe.s_server_port,
         pe.policy_id, pe.policy_inbound,
