@@ -1,8 +1,11 @@
+import gettext
 import logging
 import os
 import sets
 import sql_helper
 import string
+
+from reports.graph import Report
 
 from psycopg import DateFromMx
 
@@ -10,8 +13,8 @@ class Node:
     def __init__(self, name):
         self.__name = name
 
-    def process_graphs(self, end_date, base_directory):
-        pass
+    def get_report(self):
+        return None
 
     @property
     def name(self):
@@ -104,24 +107,6 @@ class Column:
     def value_expression(self):
         return self.__value_expression
 
-class KeyStatistic:
-    def __init__(self, name, value, units):
-        self.__name = name
-        self.__value = value
-        self.__units = units
-
-    @property
-    def name(self):
-        return self.__name
-
-    @property
-    def value(self):
-        return self.__value
-
-    @property
-    def units(self):
-        return self.__units
-
 __nodes = {}
 __fact_tables = {}
 
@@ -149,18 +134,33 @@ def process_fact_tables(start_date, end_date):
     for ft in __fact_tables.values():
         ft.process(start_date, end_date)
 
-def process_graphs(end_date):
+def generate_reports(reports_output_base, end_date):
     global __nodes
 
-    for name in __get_node_partial_order():
-        logging.info('doing process_graphs for: %s' % name)
-        node = __nodes.get(name, None)
-        if not node:
-            logger.warn("could not get node %s" % name)
-        else:
-            node.process_graphs(end_date, '/home/amread/')
+    date_base = '%s/%s-%s-%s' % (reports_output_base, end_date.year,
+                                 end_date.month, end_date.day)
 
-def init_engine(node_module_dir):
+    for node_name in __get_node_partial_order():
+        logging.info('doing process_graphs for: %s' % node_name)
+        node = __nodes.get(node_name, None)
+        if not node:
+            logger.warn("could not get node %s" % node_name)
+        else:
+            report = node.get_report()
+            if report:
+                report.generate(date_base, end_date)
+
+def init_engine(node_module_dir, locale):
+    gettext.bindtextdomain('untangle-node-reporting')
+    gettext.textdomain('untangle-node-reporting')
+
+    try:
+        lang = gettext.translation('untangle-node-reporting',
+                                   languages=[locale])
+        lang.install()
+    except Exception, e:
+        logging.warn(e)
+
     __get_nodes(node_module_dir)
 
 def setup(start_date, end_date):
@@ -204,4 +204,3 @@ def __get_nodes(node_module_dir):
         if f.endswith('py'):
             (m, e) = os.path.splitext(f)
             __import__('reports.node.%s' % m)
-

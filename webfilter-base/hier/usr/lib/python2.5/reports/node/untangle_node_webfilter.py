@@ -1,3 +1,4 @@
+import gettext
 import mx
 import numpy
 import pylab
@@ -6,15 +7,19 @@ import sql_helper
 
 from psycopg import DateFromMx
 from reports.engine import Column
-from reports.engine import KeyStatistic
 from reports.engine import Node
-from reports.graph import time_of_day_formatter
-from reports.graph import even_hours_of_a_day
+from reports.graph import EVEN_HOURS_OF_A_DAY
+from reports.graph import Graph
+from reports.graph import KeyStatistic
+from reports.graph import Report
+from reports.graph import SummarySection
+from reports.graph import TIME_OF_DAY_FORMATTER
 from sql_helper import print_timing
 
-def _(message): return message
+_ = gettext.gettext
+def N_(message): return message
 
-class WebfilterBaseNode(Node):
+class WebFilterBaseNode(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-base-webfilter')
 
@@ -28,13 +33,15 @@ class WebfilterBaseNode(Node):
         ft = reports.engine.get_fact_table('reports.n_http_totals')
 
         ft.measures.append(Column('blocks', 'integer',
-                                  "count(CASE WHEN webfilter_action = 'P' THEN 1 ELSE NULL END)"))
+                                  "count(case when webfilter_action = 'p' then 1 else null end)"))
 
-    def process_graphs(self, end_date, base_directory):
-        self.__hourly_web_usage_graph(end_date, base_directory)
+    def get_report(self):
+        return Report(self.name, 'Web Filter',
+                      [SummarySection('summary', N_('Summary Report'),
+                                      [HourlyWebUsage()])])
 
     def teardown(self):
-        print "TEARDOWN"
+        print "teardown"
 
 
     @print_timing
@@ -66,19 +73,21 @@ SET webfilter_action = action,
 FROM events.n_webfilter_evt_blk
 WHERE reports.n_http_events.time_stamp >= %s
   AND reports.n_http_events.time_stamp < %s
-  AND reports.n_http_events.request_id = events.n_webfilter_evt_blk.request_id""", (sd, ed), connection=conn, auto_commit=False)
+  AND reports.n_http_events.request_id = events.n_webfilter_evt_blk.request_id""", (sd, ed), connection=conn, auto_commit=false)
 
             sql_helper.set_update_info('reports.n_http_events[untangle-base-webfilter]', ed,
-                                       connection=conn, auto_commit=False)
-
+                                       connection=conn, auto_commit=false)
 
             conn.commit()
-        except Exception, e:
+        except exception, e:
             conn.rollback()
             raise e
 
-    @print_timing
-    def __hourly_web_usage_graph(self, end_date, base_directory):
+class HourlyWebUsage(Graph):
+    def __init__(self):
+        Graph.__init__(self, 'usage')
+
+    def generate_graph(self, end_date):
         ed = DateFromMx(end_date)
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(7))
@@ -90,12 +99,10 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         violations_query = """\
 SELECT avg(blocks)
-FROM (SELECT date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
+FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
       FROM reports.n_http_totals
       WHERE trunc_time >= %s AND trunc_time < %s
       GROUP BY hour) AS foo"""
-
-        lks = []
 
         conn = sql_helper.get_connection()
 
@@ -103,33 +110,41 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
             curs = conn.cursor()
             curs.execute(hits_query, (one_day, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('Max Hits (1-day)'), r[0], _('hits/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Hits (1-day)'), r[1], _('hits/minute'))
-            lks.append(ks)
+            ks = KeyStatistic(N_('max hits (1-day)'), r[0], N_('hits/minute'))
+            self.key_statistics.append(ks)
+            ks = KeyStatistic(N_('avg hits (1-day)'), r[1], N_('hits/minute'))
+            self.key_statistics.append(ks)
+        except: pass
 
+        try:
             curs = conn.cursor()
             curs.execute(hits_query, (one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('Max Hits (1-week)'), r[0], _('hits/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Hits (1-week)'), r[1], _('hits/minute'))
-            lks.append(ks)
+            ks = KeyStatistic(N_('max hits (1-week)'), r[0], N_('hits/minute'))
+            self.key_statistics.append(ks)
+            ks = KeyStatistic(N_('avg hits (1-week)'), r[1], N_('hits/minute'))
+            self.key_statistics.append(ks)
+        except: pass
 
+        try:
             curs = conn.cursor()
             curs.execute(violations_query, (one_day, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('Avg Violations (1-day)'), r[0],
-                              _('violations/hour'))
-            lks.append(ks)
+            ks = KeyStatistic(N_('avg violations (1-day)'), r[0],
+                              N_('violations/hour'))
+            self.key_statistics.append(ks)
+        except: pass
 
+        try:
             curs = conn.cursor()
             curs.execute(violations_query, (one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('Avg Violations (1-week)'), r[0],
-                              _('violations/hour'))
-            lks.append(ks)
+            ks = KeyStatistic(N_('avg violations (1-week)'), r[0],
+                              N_('violations/hour'))
+            self.key_statistics.append(ks)
+        except: pass
 
+        try:
             curs = conn.cursor()
             curs.execute("""\
 SELECT (date_part('hour', trunc_time) || ':'
@@ -153,14 +168,14 @@ ORDER BY time asc""", (one_week, ed))
                 dates.append(r[0].seconds)
                 hits.append(r[1])
                 blocks.append(r[2])
-        finally:
-            conn.commit()
+        except: pass
 
+        conn.commit()
 
         fix = pylab.figure()
         axes = pylab.axes()
-        axes.xaxis.set_major_formatter(time_of_day_formatter)
-        axes.xaxis.set_ticks(even_hours_of_a_day)
+        axes.xaxis.set_major_formatter(TIME_OF_DAY_FORMATTER)
+        axes.xaxis.set_ticks(EVEN_HOURS_OF_A_DAY)
         pylab.title(_('Hourly Web Usage'))
         pylab.xlabel(_('Hour of Day'))
         pylab.ylabel(_('Hits per Minute'))
@@ -169,9 +184,7 @@ ORDER BY time asc""", (one_week, ed))
         pylab.plot(dates, hits, linestyle='-', label="hits")
         pylab.plot(dates, blocks, linestyle='-', label="violations")
 
-
         pylab.legend()
-        pylab.savefig('%s/hourly-usage.png' % base_directory)
+        pylab.savefig(self.graph_filename)
 
-
-reports.engine.register_node(WebfilterBaseNode())
+reports.engine.register_node(WebFilterBaseNode())
