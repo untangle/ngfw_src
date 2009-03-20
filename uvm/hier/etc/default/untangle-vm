@@ -178,9 +178,9 @@ UVM_ARGS="${UVM_ARGS} -Dnetworkaddress.cache.ttl=30 -Dsun.net.inetaddr.ttl=30 -D
 
 if [ "x$USE_THROUGHPUT_COLLECTOR" = "xyes" ] ; then
 # Goals: 85% throughput (don't set maxpausegcmillis here, you'll regret it)
-    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseParallelGC -XX:GCTimeRatio=6"
+    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+UseParallelGC -XX:GCTimeRatio=6"
 else
-    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -XX:CMSIncrementalDutyCycleMin=0 -XX:CMSIncrementalDutyCycle=10 -XX:+UseParNewGC -XX:NewRatio=4"
+    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -XX:CMSIncrementalDutyCycleMin=1 -XX:CMSIncrementalDutyCycle=50 -XX:CMSIncrementalSafetyFactor=50 "
 fi
 JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime"
 # Java Options:
