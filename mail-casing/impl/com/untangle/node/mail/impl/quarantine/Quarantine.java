@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressList;
@@ -710,11 +712,19 @@ public class Quarantine
     {
         String r = address;
 
+        Set<String> seen = new HashSet();
+        seen.add(r);
+
         String s;
         do {
             s = getMappedTo(r);
             if (null != s) {
                 r = s;
+                if (seen.contains(r)) {
+                    break;
+                } else {
+                    seen.add(r);
+                }
             }
         } while (s != null);
 
