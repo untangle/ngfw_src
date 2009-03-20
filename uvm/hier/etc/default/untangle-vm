@@ -123,7 +123,7 @@ JAVA_OPTS="${JAVA_OPTS} -Xms128m"
 #JAVA_OPTS="${JAVA_OPTS} -XX:+UseParallelGC -XX:GCTimeRatio=6"
 
 ## Concurrent Garbarge collector
-JAVA_OPTS="${JAVA_OPTS} -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -XX:CMSIncrementalDutyCycleMin=0 -XX:CMSIncrementalDutyCycle=10 -XX:+UseParNewGC -XX:NewRatio=4"
+JAVA_OPTS="${JAVA_OPTS} -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -XX:CMSIncrementalDutyCycleMin=1 -XX:CMSIncrementalDutyCycle=50 -XX:CMSIncrementalSafetyFactor=50"
 
 ## Garbage collector 
 JAVA_OPTS="${JAVA_OPTS} -Xloggc:$UVM_GC_LOG -XX:+PrintGCDetails -XX:+PrintGCDateStamps"
