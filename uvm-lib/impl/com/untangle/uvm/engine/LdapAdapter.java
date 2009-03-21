@@ -564,7 +564,7 @@ abstract class LdapAdapter {
      * @return true if it should be skipped, false if it is included in this directory
      */
     protected boolean filterGID(int gid) {
-        return gid < 500 || gid > 1000000;
+        return gid < 20000 || gid > 1000000;
     }
 
 
