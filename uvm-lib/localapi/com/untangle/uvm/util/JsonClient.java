@@ -89,7 +89,7 @@ public class JsonClient
 
     public static void main(String[] args) throws Exception
     {
-        JSONObject object = getInstance().call( args[0], new JSONObject( args[1] ));
+        JSONObject object = getInstance().call( args[0], null, new JSONObject( args[1] ));
 
         System.out.println( "Returned: " + object.toString() + "\n" );
     }
