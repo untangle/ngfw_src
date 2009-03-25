@@ -1,19 +1,16 @@
 import gettext
 import mx
-import numpy
-import pylab
 import reports.engine
 import sql_helper
 
 from psycopg import DateFromMx
 from reports.engine import Column
 from reports.engine import Node
-from reports.graph import EVEN_HOURS_OF_A_DAY
 from reports.graph import Graph
+from reports.graph import LinePlot
 from reports.graph import KeyStatistic
 from reports.graph import Report
 from reports.graph import SummarySection
-from reports.graph import TIME_OF_DAY_FORMATTER
 from sql_helper import print_timing
 
 _ = gettext.gettext
@@ -73,13 +70,13 @@ SET webfilter_action = action,
 FROM events.n_webfilter_evt_blk
 WHERE reports.n_http_events.time_stamp >= %s
   AND reports.n_http_events.time_stamp < %s
-  AND reports.n_http_events.request_id = events.n_webfilter_evt_blk.request_id""", (sd, ed), connection=conn, auto_commit=false)
+  AND reports.n_http_events.request_id = events.n_webfilter_evt_blk.request_id""", (sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.n_http_events[untangle-base-webfilter]', ed,
-                                       connection=conn, auto_commit=false)
+                                       connection=conn, auto_commit=False)
 
             conn.commit()
-        except exception, e:
+        except Exception, e:
             conn.rollback()
             raise e
 
@@ -87,7 +84,7 @@ class HourlyWebUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'usage')
 
-    def generate_graph(self, end_date):
+    def get_key_statistics(self, end_date):
         ed = DateFromMx(end_date)
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(7))
@@ -106,14 +103,16 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
 
         conn = sql_helper.get_connection()
 
+        lks = []
+
         try:
             curs = conn.cursor()
             curs.execute(hits_query, (one_day, ed))
             r = curs.fetchone()
             ks = KeyStatistic(N_('max hits (1-day)'), r[0], N_('hits/minute'))
-            self.key_statistics.append(ks)
+            lks.append(ks)
             ks = KeyStatistic(N_('avg hits (1-day)'), r[1], N_('hits/minute'))
-            self.key_statistics.append(ks)
+            lks.append(ks)
         except: pass
 
         try:
@@ -121,9 +120,9 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
             curs.execute(hits_query, (one_week, ed))
             r = curs.fetchone()
             ks = KeyStatistic(N_('max hits (1-week)'), r[0], N_('hits/minute'))
-            self.key_statistics.append(ks)
+            lks.append(ks)
             ks = KeyStatistic(N_('avg hits (1-week)'), r[1], N_('hits/minute'))
-            self.key_statistics.append(ks)
+            lks.append(ks)
         except: pass
 
         try:
@@ -132,7 +131,7 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
             r = curs.fetchone()
             ks = KeyStatistic(N_('avg violations (1-day)'), r[0],
                               N_('violations/hour'))
-            self.key_statistics.append(ks)
+            lks.append(ks)
         except: pass
 
         try:
@@ -141,8 +140,16 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
             r = curs.fetchone()
             ks = KeyStatistic(N_('avg violations (1-week)'), r[0],
                               N_('violations/hour'))
-            self.key_statistics.append(ks)
+            lks.append(ks)
         except: pass
+
+        return lks
+
+    def get_plot(self, end_date):
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(7))
+
+        conn = sql_helper.get_connection()
 
         try:
             curs = conn.cursor()
@@ -172,19 +179,12 @@ ORDER BY time asc""", (one_week, ed))
 
         conn.commit()
 
-        fix = pylab.figure()
-        axes = pylab.axes()
-        axes.xaxis.set_major_formatter(TIME_OF_DAY_FORMATTER)
-        axes.xaxis.set_ticks(EVEN_HOURS_OF_A_DAY)
-        pylab.title(_('Hourly Web Usage'))
-        pylab.xlabel(_('Hour of Day'))
-        pylab.ylabel(_('Hits per Minute'))
-        fix.autofmt_xdate()
+        plot = LinePlot(_('Hourly Web Usage'), _('Hour of Day'),
+                        _('Hits per Minute'))
 
-        pylab.plot(dates, hits, linestyle='-', label="hits")
-        pylab.plot(dates, blocks, linestyle='-', label="violations")
+        plot.add_dataset(dates, hits, label=_('hits'))
+        plot.add_dataset(dates, blocks, label=_('violations'))
 
-        pylab.legend()
-        pylab.savefig(self.graph_filename)
+        return plot
 
 reports.engine.register_node(WebFilterBaseNode())

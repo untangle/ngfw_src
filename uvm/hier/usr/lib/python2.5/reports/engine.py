@@ -150,6 +150,7 @@ def generate_reports(reports_output_base, end_date):
             if report:
                 report.generate(date_base, end_date)
 
+
 def init_engine(node_module_dir, locale):
     gettext.bindtextdomain('untangle-node-reporting')
     gettext.textdomain('untangle-node-reporting')

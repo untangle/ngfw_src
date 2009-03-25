@@ -1,4 +1,5 @@
 import os
+import pylab
 
 from matplotlib.ticker import FuncFormatter
 from mx.DateTime import DateTimeDeltaFromSeconds
@@ -67,30 +68,61 @@ class DetailSection(Section):
 class Graph:
     def __init__(self, name):
         self.__name = name
-        self.__graph_filename = None
-        self.__key_statistics = []
 
-    @property
-    def graph_filename(self):
-        return self.__graph_filename
+    def get_key_statistics(self, end_date):
+        return []
 
-    @property
-    def key_statistics(self):
-        return self.__key_statistics
+    def get_plot(self, end_date):
+        return None
 
     @property
     def name(self):
         return self.__name
 
     def generate(self, section_base, end_date):
-        self.__graph_filename = '%s-%s.png' % (section_base, self.__name)
-        os.makedirs(os.path.dirname(self.__graph_filename))
+        self.__key_statistics = self.get_key_statistics(end_date)
+        self.__plot = self.get_plot(end_date)
+
+        filename_base = '%s-%s' % (section_base, self.__name)
+        os.makedirs(os.path.dirname(filename_base))
+
+        self.__plot.generate_graph(filename_base + '.png')
+        self.__plot.generate_csv(filename_base + '.csv')
 
         # XXX return DOM
-        return self.generate_graph(end_date)
 
-    def generate_graph(self, end_date):
-        pass
+class LinePlot:
+    def __init__(self, title=None, xlabel=None, ylabel=None):
+        self.__title = title
+        self.__xlabel = xlabel
+        self.__ylabel = ylabel
+
+        self.__datasets = []
+
+    def add_dataset(self, xdata, ydata, label=None, linestyle='-'):
+        m = {'xdata': xdata, 'ydata': ydata, 'label': label,
+             'linestyle': linestyle}
+        self.__datasets.append(m)
+
+    def generate_csv(self, filename):
+        pass # XXX do it!
+
+    def generate_graph(self, filename):
+        fix = pylab.figure()
+        axes = pylab.axes()
+        axes.xaxis.set_major_formatter(TIME_OF_DAY_FORMATTER)
+        axes.xaxis.set_ticks(EVEN_HOURS_OF_A_DAY)
+        pylab.title(self.__title)
+        pylab.xlabel(self.__xlabel)
+        pylab.ylabel(self.__ylabel)
+        fix.autofmt_xdate()
+
+        for ds in self.__datasets:
+            pylab.plot(ds['xdata'], ds['ydata'], linestyle=ds['linestyle'],
+                       label=ds['label'])
+
+        pylab.legend()
+        pylab.savefig(filename)
 
 class KeyStatistic:
     def __init__(self, name, value, units):
