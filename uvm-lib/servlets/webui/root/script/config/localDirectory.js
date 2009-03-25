@@ -143,7 +143,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 })]
             });
 
-            var groupData=main.getAppAddressBook().getGroupEntries().list;
+            var groupData=main.getAppAddressBook().getGroupEntries('LOCAL_DIRECTORY').list;
 
 
             this.gridGroups = new Ung.EditorGrid({
