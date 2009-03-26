@@ -1276,7 +1276,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                    var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
                    if (!isNaN(daysRemain)) {
 		     if (daysRemain > 32) {
-		       trialInfo = "Free Limited Trial";
+		       trialInfo = i18n._("Free Limited Trial");
 		     } else {
 		       trialInfo = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
 		     }
