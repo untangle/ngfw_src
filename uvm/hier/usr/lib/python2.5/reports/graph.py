@@ -23,7 +23,8 @@ class Report:
         node_base = '%s/%s' % (date_base, self.__name)
 
         element = Element('report')
-        element.set('foo', 'bar')
+        element.set('name', self.__name)
+        element.set('title', self.__title)
 
         for s in self.__sections:
             element.append(s.generate(node_base, end_date))
@@ -65,7 +66,7 @@ class SummarySection(Section):
         element.set('name', self.name)
 
         for summary_item in self.__summary_items:
-            summary_item.generate(section_base, end_date)
+            element.append(summary_item.generate(section_base, end_date))
 
         return element
 
@@ -100,6 +101,10 @@ class Graph:
         dir = os.path.dirname(filename_base)
         if not os.path.exists(dir):
             os.makedirs(dir)
+
+        element = Element('graph')
+        element.set('image', filename_base + '.png')
+        element.set('csv', filename_base + '.csv')
 
         self.__plot.generate_graph(filename_base + '.png')
         self.__plot.generate_csv(filename_base + '.csv')
