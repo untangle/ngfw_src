@@ -114,11 +114,12 @@ class Graph:
 
 class LinePlot:
     def __init__(self, title=None, xlabel=None, ylabel=None,
-                 major_formatter=None):
+                 major_formatter=None, xaxis_ticks=None):
         self.__title = title
         self.__xlabel = xlabel
         self.__ylabel = ylabel
         self.__major_formatter = major_formatter
+        self.__xaxis_ticks = xaxis_ticks
 
         self.__datasets = []
 
@@ -154,8 +155,10 @@ class LinePlot:
     def generate_graph(self, filename):
         fix = pylab.figure()
         axes = pylab.axes()
-        axes.xaxis.set_major_formatter(TIME_OF_DAY_FORMATTER)
-        axes.xaxis.set_ticks(EVEN_HOURS_OF_A_DAY)
+        if self.__major_formatter:
+            axes.xaxis.set_major_formatter(self.__major_formatter)
+        if self.__xaxis_ticks:
+            axes.xaxis.set_ticks(self.__xaxis_ticks)
         pylab.title(self.__title)
         pylab.xlabel(self.__xlabel)
         pylab.ylabel(self.__ylabel)

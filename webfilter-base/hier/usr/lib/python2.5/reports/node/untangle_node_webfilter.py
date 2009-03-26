@@ -6,6 +6,7 @@ import sql_helper
 from psycopg import DateFromMx
 from reports.engine import Column
 from reports.engine import Node
+from reports.graph import EVEN_HOURS_OF_A_DAY
 from reports.graph import Graph
 from reports.graph import KeyStatistic
 from reports.graph import LinePlot
@@ -183,7 +184,8 @@ ORDER BY time asc""", (one_week, ed))
         plot = LinePlot(title=_('Hourly Web Usage'),
                         xlabel=_('Hour of Day'),
                         ylabel=_('Hits per Minute'),
-                        major_formatter=TIME_OF_DAY_FORMATTER)
+                        major_formatter=TIME_OF_DAY_FORMATTER,
+                        xaxis_ticks=EVEN_HOURS_OF_A_DAY)
 
         plot.add_dataset(dates, hits, label=_('hits'))
         plot.add_dataset(dates, blocks, label=_('violations'))
