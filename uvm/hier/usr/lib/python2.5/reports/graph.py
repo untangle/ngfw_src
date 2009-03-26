@@ -35,7 +35,8 @@ class Report:
         if not os.path.exists(node_base):
             os.makedirs(node_base)
 
-        tree.write("%s/report.xml" % node_base)
+        tree.write("%s/report.xml" % node_base, encoding='utf-8',
+                   pretty_print=True, xml_declaration=True)
 
 class Section:
     def __init__(self, name, title):
