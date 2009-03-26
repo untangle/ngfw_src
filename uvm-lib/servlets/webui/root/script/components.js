@@ -1279,6 +1279,7 @@ Ung.Node = Ext.extend(Ext.Component, {
 		       trialInfo = "Free Limited Trial";
 		     } else {
 		       trialInfo = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
+		     }
                    }
                 }
             }
