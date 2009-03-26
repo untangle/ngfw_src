@@ -3,13 +3,14 @@ import pylab
 
 from matplotlib.ticker import FuncFormatter
 from mx.DateTime import DateTimeDeltaFromSeconds
+from lxml.etree import Element
+from lxml.etree import ElementTree
 
 def __time_of_day_formatter(x, pos):
     t = DateTimeDeltaFromSeconds(x)
     return "%02d:%02d" % (t.hour, t.minute)
 
 TIME_OF_DAY_FORMATTER = FuncFormatter(__time_of_day_formatter)
-
 EVEN_HOURS_OF_A_DAY = [i * 7200 for i in range(12)]
 
 class Report:
@@ -21,10 +22,18 @@ class Report:
     def generate(self, date_base, end_date):
         node_base = '%s/%s' % (date_base, self.__name)
 
-        for s in self.__sections:
-            s.generate(node_base, end_date)
+        element = Element('report')
+        element.set('foo', 'bar')
 
-        # print XML
+        for s in self.__sections:
+            element.append(s.generate(node_base, end_date))
+
+        tree = ElementTree(element)
+
+        if not os.path.exists(node_base):
+            os.makedirs(node_base)
+
+        tree.write("%s/report.xml" % node_base)
 
 class Section:
     def __init__(self, name, title):
@@ -52,10 +61,13 @@ class SummarySection(Section):
     def generate(self, node_base, end_date):
         section_base = "%s_%s" % (node_base, self.name)
 
-        for summary_item in self.__summary_items:
-            summary_item.generate(section_base, end_date) # XXX add to dom
+        element = Element('summary-section')
+        element.set('name', self.name)
 
-        # XXX return DOM
+        for summary_item in self.__summary_items:
+            summary_item.generate(section_base, end_date)
+
+        return element
 
 class DetailSection(Section):
     def __init__(self, name, tile):
@@ -84,7 +96,10 @@ class Graph:
         self.__plot = self.get_plot(end_date)
 
         filename_base = '%s-%s' % (section_base, self.__name)
-        os.makedirs(os.path.dirname(filename_base))
+
+        dir = os.path.dirname(filename_base)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
 
         self.__plot.generate_graph(filename_base + '.png')
         self.__plot.generate_csv(filename_base + '.csv')
