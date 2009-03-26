@@ -67,9 +67,9 @@ Ung.form.TextField = Ext.extend( Ext.form.TextField, {
     onRender : function(ct, position)
     {
         Ung.form.TextField.superclass.onRender.call(this, ct, position);
-        
+
         var parent = this.el.parent()
-        
+
         if( this.boxLabel ) {
             this.labelEl = parent.createChild({
                 tag: 'label',
@@ -85,9 +85,9 @@ Ung.form.NumberField = Ext.extend( Ext.form.NumberField, {
     onRender : function(ct, position)
     {
         Ung.form.NumberField.superclass.onRender.call(this, ct, position);
-        
+
         var parent = this.el.parent()
-        
+
         if( this.boxLabel ) {
             this.labelEl = parent.createChild({
                 tag: 'label',
@@ -167,7 +167,7 @@ Ung.Util= {
         }
     },
     getScriptSrc: function(sScriptSrc){
-    	return main.debugMode ? sScriptSrc : sScriptSrc.replace(/\.js$/, "-min.js");
+        return main.debugMode ? sScriptSrc : sScriptSrc.replace(/\.js$/, "-min.js");
     },
     // Load css file Dynamically
     loadCss: function(filename) {
@@ -426,11 +426,11 @@ Ung.Util= {
     maximize: function() {
         top.window.moveTo(0,0);
         if(Ext.isIE) {
-            top.window.resizeTo(screen.availWidth,screen.availHeight); 
+            top.window.resizeTo(screen.availWidth,screen.availHeight);
         } else {
-            top.window.outerHeight = top.screen.availHeight; 
-            top.window.outerWidth = top.screen.availWidth; 
-            
+            top.window.outerHeight = top.screen.availHeight;
+            top.window.outerWidth = top.screen.availWidth;
+
         }
     }
 };
@@ -450,15 +450,15 @@ Ung.Util.RetryHandler = {
         var input = {
             "fn" : fn,
             "fnScope" : fnScope,
-            "params" : params, 
+            "params" : params,
             "callback" : callback,
-            "timeout" : timeout, 
+            "timeout" : timeout,
             "count" : count
         };
-        
+
         this.callFunction( input );
     },
-    
+
     completeRetry : function( result, exception, input )
     {
         var handler = this.tryAgain.createDelegate( this, [ exception, input ] );
@@ -473,14 +473,14 @@ Ung.Util.RetryHandler = {
         } else {
             input["count"]--;
         }
-        
+
         if ( Ung.Util.handleException( exception, handler, type )) {
             return;
         }
 
         input["callback"]( result, exception );
     },
-    
+
     tryAgain : function( exception, input )
     {
         if( exception.code == 500 ) {
@@ -489,7 +489,7 @@ Ung.Util.RetryHandler = {
             console.debug( "Retrying the call in " + input["timeout"] + " ms." );
             return;
         }
-        
+
         Ext.MessageBox.alert(i18n._("Failed"), exception.message );
     },
 
@@ -503,7 +503,7 @@ Ung.Util.RetryHandler = {
         if ( input["params"] != null ) {
             params = params.concat( input["params"] );
         }
-        
+
         fn.apply( fnScope, params );
     }
 };
@@ -957,7 +957,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             name : "Buy",
             id: 'node-buy-button_'+this.getId(),
             iconCls : 'icon-buy',
-            hidden : !(this.licenseStatus && this.licenseStatus.trial), 
+            hidden : !(this.licenseStatus && this.licenseStatus.trial),
             ctCls:'buy-button-text',
             text : i18n._('Buy Now'),
             handler : this.onBuyNowAction.createDelegate(this)
@@ -1275,11 +1275,11 @@ Ung.Node = Ext.extend(Ext.Component, {
                 } else {
                    var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
                    if (!isNaN(daysRemain)) {
-		     if (daysRemain > 32) {
-		       trialInfo = i18n._("Free Limited Trial");
-		     } else {
-		       trialInfo = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
-		     }
+                     if (daysRemain > 32) {
+                       trialInfo = i18n._("Free Limited Trial");
+                     } else {
+                       trialInfo = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
+                     }
                    }
                 }
             }
@@ -1336,7 +1336,7 @@ Ung.NodePreview = Ext.extend(Ext.Component, {
         this.id = "node_preview_" + config.name;
         Ung.NodePreview.superclass.constructor.apply(this, arguments);
     },
-    
+
     onRender : function(container, position) {
         Ung.NodePreview.superclass.onRender.call(this, container, position);
         this.getEl().addClass("node");
@@ -1351,7 +1351,7 @@ Ung.NodePreview = Ext.extend(Ext.Component, {
         this.getEl().insertHtml("afterBegin", templateHTML);
         this.getEl().scrollIntoView(Ext.getCmp("center").body);
         this.getEl().fadeIn({ endOpacity: 0.58, duration: 12});
-    }    
+    }
 });
 Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>');
 
@@ -1412,7 +1412,7 @@ Ung.MessageManager = {
                     } else if(((new Date()).getTime()-this.firstToleratedError)<this.errorToleranceInterval) {
                         this.cycleCompleted = true;
                         return;
-                    } 
+                    }
                 }
                 /* After a hostname change and the certificate is regenerated. */
                 else if ( exception.code == 12019 ) {
@@ -1453,7 +1453,7 @@ Ung.MessageManager = {
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
-                                    if ( main.getIframeWin() != null  ) { 
+                                    if ( main.getIframeWin() != null  ) {
                                         main.getIframeWin().closeActionFn();
                                     }
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
@@ -1762,7 +1762,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             var uptimeHours = uptimeAux%24;
             uptimeAux=parseInt(uptimeAux/24);
             var uptimeDays = uptimeAux;
-            
+
             toolTipEl.child("span[name=uptime]").dom.innerHTML=(uptimeDays>0?(uptimeDays+" "+(uptimeDays==1?i18n._("Day"):i18n._("Days"))+", "):"") + ((uptimeDays>0 || uptimeHours>0)?(uptimeHours+" "+(uptimeHours==1?i18n._("Hour"):i18n._("Hours"))+", "):"") + uptimeMinutes+" "+(uptimeMinutes==1?i18n._("Minute"):i18n._("Minutes"));
             toolTipEl.child("span[name=tasks]").dom.innerHTML=stats.map.numProcs;
             // toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
@@ -2160,7 +2160,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             height: 21,
             pageSize : this.recordsPerPage,
             store : this.store,
-            style: "border-top:0px solid white;padding-top:1px;padding-bottom:0px;" 
+            style: "border-top:0px solid white;padding-top:1px;padding-bottom:0px;"
         });
 
         this.bbar = [{
@@ -2228,7 +2228,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         var refreshButton=Ext.getCmp("refresh_"+this.getId());
         refreshButton.disable();
         this.autorefreshList();
-        
+
     },
     stopAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=false;
@@ -2281,7 +2281,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             }
         }
     },
-    
+
     // called when the component is rendered
     onRender : function(container, position) {
         Ung.GridEventLog.superclass.onRender.call(this, container, position);
@@ -2362,7 +2362,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             }
         }
     }
-   
+
 });
 
 // Standard Ung window
@@ -2387,7 +2387,7 @@ Ung.Window = Ext.extend(Ext.Window, {
         autoScroll: true,
         autoWidth : true
     },
-    
+
     constructor : function(config) {
         this.subCmps = [];
         Ung.Window.superclass.constructor.apply(this, arguments);
@@ -2432,14 +2432,14 @@ Ung.Window = Ext.extend(Ext.Window, {
         objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
         this.setSize(objSize);
     },
-    
+
     // to override if needed
     isDirty : function() {
         return false;
     },
     cancelAction : function() {
         if (this.isDirty()) {
-            Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'), 
+            Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
                 function(btn) {
                     if (btn == 'yes') {
                         this.closeWindow();
@@ -2457,7 +2457,7 @@ Ung.Window = Ext.extend(Ext.Window, {
 });
 Ung.Window.cancelAction = function(dirty, closeWinFn) {
     if (dirty) {
-        Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'), 
+        Ext.MessageBox.confirm(i18n._('Warning'), i18n._('There are unsaved settings which will be lost. Do you want to continue?'),
             function(btn) {
                 if (btn == 'yes') {
                     closeWinFn();
@@ -2484,7 +2484,7 @@ Ung.SettingsWin = Ext.extend(Ung.Window, {
     constructor : function(config) {
         config.rpc = {};
         Ung.SettingsWin.superclass.constructor.apply(this, arguments);
-    },    
+    },
     buildTabPanel : function(itemsArray) {
         this.tabs = new Ext.TabPanel({
             anchor: '100% 100%',
@@ -2547,9 +2547,9 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
         Ung.NodeWin.superclass.constructor.apply(this, arguments);
     },
     initComponent : function() {
-    	if (this.helpSource == null) {
+        if (this.helpSource == null) {
             this.helpSource = this.node.helpSource;
-    	};
+        };
         this.breadcrumbs = [{
             title : i18n._(rpc.currentPolicy.name),
             action : function() {
@@ -2767,7 +2767,7 @@ Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
         this.hide();
     },
     isDirty : function() {
-    	return this.grid.isDirty();
+        return this.grid.isDirty();
     },
     updateAction : function() {
         this.hide();
@@ -2896,9 +2896,9 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                 for (var i = 0; i < this.inputLines.length; i++) {
                     var inputLine = this.inputLines[i];
                     if(inputLine.dataIndex!=null) {
-                    	if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
-                    		return true;
-                    	}
+                        if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
+                                return true;
+                        }
                     }
                 }
             }
@@ -4080,3 +4080,259 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.hide();
     }
 });
+
+
+
+// Row editor window used by editor grid
+Ung.GroupsWindow = Ext.extend(Ung.UpdateWindow, {
+    // the record currently edit
+    record : null,
+    sizeToRack : true,
+    // size to grid on show
+    sizeToGrid : false,
+    singleSelectUser : false,
+    loadActiveDirectoryUsers : true,
+    loadLocalDirectoryUsers : true,
+    userDataIndex : null,
+    usersGrid:null,
+    populateSemaphore: null,
+    userEntries: null,
+    fnCallback: null,
+    initComponent : function() {
+        if (!this.height && !this.width) {
+            this.sizeToGrid = true;
+        }
+        if (this.title == null) {
+            this.title = i18n._('Portal Question');
+        }
+        var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectGroup});
+        this.groupsGrid=new Ext.grid.GridPanel({
+           // title: i18n._('Groups'),
+           height: 210,
+           width: 290,
+           enableHdMenu : false,
+           enableColumnMove: false,
+           store: new Ext.data.Store({
+                proxy : new Ung.MemoryProxy({
+                    root : 'list'
+                }),
+                sortInfo : this.sortField ? {
+                    field : this.sortField,
+                    direction : "ASC"
+                } : null,
+                remoteSort : false,
+                reader : new Ext.data.JsonReader({
+                    totalProperty : "totalRecords",
+                    root : 'list',
+                    fields : [{
+                        name: "CN"
+                    }, {
+                        name: "name",
+                        mapping: "CN",
+                        convert : function(val, rec) {
+                            var name=val;
+                            var repository=null;
+                            if(rec.storedIn) {
+                                if(rec.storedIn=="MS_ACTIVE_DIRECTORY") {
+                                    repository=i18n._('Active Directory');
+                                } else if(rec.storedIn=="LOCAL_DIRECTORY") {
+                                    repository=i18n._('Local');
+                                } else {
+                                    repository=i18n._('UNKNOWN');
+                                }
+                            }
+                            if(repository) {
+                                name+=" ("+repository+")";
+                            }
+                            return name;
+                        }
+                    }]
+                })
+            }),
+            columns: [selModel, {
+                header : i18n._("group"),
+                width : 250,
+                fixed :true,
+                sortable : false,
+                dataIndex : 'name'
+            }],
+            selModel : selModel
+        });
+        this.items = new Ext.FormPanel({
+            labelWidth : 75,
+            buttonAlign : 'right',
+            border : false,
+            bodyStyle : 'padding:10px 10px 0px 10px;',
+            autoScroll: true,
+            defaults : {
+                selectOnFocus : true,
+                msgTarget : 'side'
+            },
+            items : [{
+                xtype : 'fieldset',
+                title : this.singleSelectGroup ? i18n._('Select Group') : i18n._('Select Groups'),
+                autoHeight : true,
+                items: [{
+                    border : false,
+                    cls: 'description',
+                    html: this.singleSelectGroup ? i18n._("You may choose group ID/Login that exists in the Group Directory (either local or remote Active Directory), or you can add a new group to the Group Directory, and then choose that group.")
+                                : i18n._("You may choose group IDs/Logins that exist in the Group Directory (either local or remote Active Directory), or you can add a new group to the Group Directory, and then choose that group.")
+                }, {
+                    xtype : 'fieldset',
+                    title : this.singleSelectGroup ? i18n._('Select an existing group') : i18n._('Select an existing group or groups'),
+                    autoHeight : true,
+                    items: [this.groupsGrid]
+                }, {
+                    xtype : 'fieldset',
+                    title : i18n._('Add a new group'),
+                    autoHeight : true,
+                    buttonAlign : 'left',
+                    buttons:[{
+                        xtype: "button",
+                        name : 'Open Local Directory',
+                        text : i18n._("Open Local Directory"),
+                        hidden : !this.loadLocalDirectoryGroups,
+                        handler : function() {
+                            Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+                            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), function() {
+                                main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
+                                    this.populate(this.record,this.fnCallback)
+                                }.createDelegate(this)});
+                                main.localDirectoryWin.show();
+                                Ext.MessageBox.hide();
+                            }.createDelegate(this)]);
+                        }.createDelegate(this)
+                    }, {
+                        xtype: "button",
+                        name : 'Open Active Directory',
+                        text : i18n._("Open Active Directory"),
+                        hidden : !this.loadActiveDirectoryGroups,
+                        disabled : !main.isNodeRunning('untangle-node-adconnector'),
+                        handler : function() {
+                            var node = main.getNode('untangle-node-adconnector');
+                            if (node != null) {
+                                var nodeCmp = Ung.Node.getCmp(node.tid);
+                                if (nodeCmp != null) {
+                                    nodeCmp.onSettingsAction(function() {
+                                        this.populate(this.record,this.fnCallback)
+                                    }.createDelegate(this));
+                                }
+                            }
+                        }.createDelegate(this)
+                    }]
+                }]
+            }]
+        });
+        Ung.GroupsWindow.superclass.initComponent.call(this);
+    },
+    initSubComponents : function(container, position) {
+    },
+    // populate is called whent a record is edited, tot populate the edit window
+    populate : function(record,fnCallback) {
+        this.fnCallback=fnCallback;
+        this.record = record;
+        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+        this.groupsGrid.getSelectionModel().clearSelections();
+        var store=this.groupsGrid.getStore();
+        store.proxy.data = {list:[]};
+        store.load({
+            params : {
+                start : 0
+            }
+        });
+        this.populateSemaphore=2;
+        this.groupEntries=this.singleSelectGroup ? [] : [{CN: "[any]"}];
+        if (this.loadActiveDirectoryGroups && main.isNodeRunning('untangle-node-adconnector')){
+            main.getAppAddressBook().getGroupEntries(function(result, exception) {
+                if(Ung.Util.handleException(exception, function() {
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory groups.  Please check your Active Directory settings and then try again."), function(){
+                        this.populateCallback();
+                    }.createDelegate(this));
+                }.createDelegate(this),"noAlert")) return;
+                this.groupEntries=this.groupEntries.concat(result.list);
+                this.populateCallback();
+            }.createDelegate(this),'MS_ACTIVE_DIRECTORY')
+        } else {
+            this.populateSemaphore--;
+        }
+        if (this.loadLocalDirectoryGroups) {
+            main.getAppAddressBook().getGroupEntries(function(result, exception) {
+                if(Ung.Util.handleException(exception, function() {
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Local Directory groups.  Please check your Local Directory settings and try again."), function(){
+                        this.populateCallback();
+                    }.createDelegate(this));
+                }.createDelegate(this),"noAlert")) return;
+                this.groupEntries=this.groupEntries.concat(result.list);
+                this.populateCallback();
+            }.createDelegate(this),'LOCAL_DIRECTORY')
+        } else {
+            this.populateCallback();
+        }
+    },
+    populateCallback : function () {
+        this.populateSemaphore--;
+        if (this.populateSemaphore == 0) {
+            if (this.settingsCmp !== null) {
+                var sm=this.groupsGrid.getSelectionModel();
+                sm.clearSelections()
+                var store=this.groupsGrid.getStore();
+                store.proxy.data = {list:this.groupEntries};
+                store.load({
+                    params : {
+                        start : 0
+                    }
+                });
+                var groups=this.record.get(this.groupDataIndex);
+                if(groups!=null) {
+                  groups=groups.split(";");
+                  for(var i=0;i<groups.length;i++) {
+                    var index=store.find("CN",groups[i]);
+                    if(index>=0) {
+                      sm.selectRow(index,true);
+                    }
+                  }
+                }
+            }
+            Ext.MessageBox.hide();
+        }
+    },
+    // check if the form is valid;
+    // this is the default functionality which can be overwritten
+    isFormValid : function() {
+        if (this.singleSelectGroup) {
+            // one group must be selected
+            return (this.groupsGrid.getSelectionModel().getSelections().length == 1);
+        }
+        return true;
+    },
+    // updateAction is called to update the record after the edit
+    updateAction : function() {
+        if (this.isFormValid()) {
+            if (this.record !== null) {
+                var sm=this.groupsGrid.getSelectionModel();
+                var groups=[];
+                var selRecs=sm.getSelections();
+                for(var i=0;i<selRecs.length;i++) {
+                    var uid=selRecs[i].get("CN");
+                    if(uid=="[any]") {
+                        groups=[uid];
+                        break;
+                    } else {
+                      groups.push(selRecs[i].get("CN"));
+                    }
+                }
+                this.record.set(this.groupDataIndex,groups.join(";"));
+                if(this.fnCallback) {
+                    this.fnCallback.call()
+                }
+            }
+            this.hide();
+        } else {
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Please choose a group id/login or press Cancel!"));
+        }
+    },
+    closeWindow : function() {
+        this.hide();
+    }
+});
+
