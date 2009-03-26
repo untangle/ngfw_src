@@ -68,7 +68,10 @@ public class LicenseManagerImpl implements LicenseManager
         TRIAL14( "14 Day Trial", 1000l * 60 * 60 * 24 * 15 + 278 ),
         TRIAL( "30 Day Trial", 1000l * 60 * 60 * 24 * 31 + 539 ),
         SUBSCRIPTION( "Subscription", 1000l * 60 * 60 * 24 * 365 * 2 + 344 ),
-        DEVELOPMENT( "Untangle Development", 1000l * 60 * 60 * 24 * 60 + 960 );
+	DEVELOPMENT( "Untangle Development", 1000l * 60 * 60 * 24 * 60 + 960 ),
+
+	// This one is used for NAS, which is limited by space rather than time.
+	TRIAL_LIMITED( "Limited Trial", 1000l * 60 * 60 * 24 * 365 * 10 + 37 );
 
         private final String name;
         private final long duration;
@@ -540,7 +543,8 @@ public class LicenseManagerImpl implements LicenseManager
         String timeLeft = timeRemaining( System.currentTimeMillis(), end );
         String type = license.getType();
         boolean isTrial = type.equals( LicenseType.TRIAL14.getName()) ||
-            type.equals( LicenseType.TRIAL.getName());
+            type.equals( LicenseType.TRIAL.getName()) ||
+	    type.equals( LicenseType.TRIAL_LIMITED.getName());
 
         return new LicenseStatus( true, identifier, mackageName, license.getType(), new Date( end ),
                                   timeLeft, isTrial );
@@ -636,6 +640,7 @@ public class LicenseManagerImpl implements LicenseManager
         /* Add the license to the map */
         LICENSE_MAP.put( LicenseType.TRIAL.getName(), LicenseType.TRIAL );
         LICENSE_MAP.put( LicenseType.TRIAL14.getName(), LicenseType.TRIAL14 );
+        LICENSE_MAP.put( LicenseType.TRIAL_LIMITED.getName(), LicenseType.TRIAL_LIMITED );
         LICENSE_MAP.put( LicenseType.SUBSCRIPTION.getName(), LicenseType.SUBSCRIPTION );
         LICENSE_MAP.put( LicenseType.DEVELOPMENT.getName(), LicenseType.DEVELOPMENT );
 
@@ -650,7 +655,7 @@ public class LicenseManagerImpl implements LicenseManager
         addMackageMap( "untangle-node-pcremote", ProductIdentifier.PC_REMOTE );
         addMackageMap( "untangle-node-sitefilter", ProductIdentifier.SITEFILTER );
         addMackageMap( "untangle-node-commtouch", ProductIdentifier.COMMTOUCH );
-        addMackageMap( "untangle-node-nas", "untangle-nas" );
+        addMackageMap( "untangle-node-nas", ProductIdentifier.NAS );
 
         INSTANCE = new LicenseManagerImpl();
 
