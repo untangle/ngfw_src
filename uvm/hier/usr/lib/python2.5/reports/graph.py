@@ -1,3 +1,4 @@
+import csv
 import os
 import pylab
 
@@ -60,7 +61,7 @@ class SummarySection(Section):
         self.__summary_items = summary_items
 
     def generate(self, node_base, end_date):
-        section_base = "%s_%s" % (node_base, self.name)
+        section_base = "%s/%s" % (node_base, self.name)
 
         element = Element('summary-section')
         element.set('name', self.name)
@@ -111,10 +112,12 @@ class Graph:
         return element
 
 class LinePlot:
-    def __init__(self, title=None, xlabel=None, ylabel=None):
+    def __init__(self, title=None, xlabel=None, ylabel=None,
+                 major_formatter=None):
         self.__title = title
         self.__xlabel = xlabel
         self.__ylabel = ylabel
+        self.__major_formatter = major_formatter
 
         self.__datasets = []
 
@@ -124,7 +127,28 @@ class LinePlot:
         self.__datasets.append(m)
 
     def generate_csv(self, filename):
-        pass # XXX do it!
+        data = {}
+        z = 0
+        for ds in self.__datasets:
+            for x, y in zip(ds['xdata'], ds['ydata']):
+                a = data.get(x, None)
+                if a:
+                    a[z] = y
+                else:
+                    a = [None for i in range(len(self.__datasets))]
+                    a[z] = y
+                    data[x] = a
+            z = z + 1
+
+        rows = [[k] + v for (k, v) in data.iteritems()]
+        rows.sort()
+
+        if self.__major_formatter:
+            rows = map(lambda a: [self.__major_formatter(a[0], None)] + a[1:],
+                       rows)
+
+        w = csv.writer(open(filename, 'w'))
+        w.writerows(rows)
 
     def generate_graph(self, filename):
         fix = pylab.figure()

@@ -7,10 +7,11 @@ from psycopg import DateFromMx
 from reports.engine import Column
 from reports.engine import Node
 from reports.graph import Graph
-from reports.graph import LinePlot
 from reports.graph import KeyStatistic
+from reports.graph import LinePlot
 from reports.graph import Report
 from reports.graph import SummarySection
+from reports.graph import TIME_OF_DAY_FORMATTER
 from sql_helper import print_timing
 
 _ = gettext.gettext
@@ -179,8 +180,10 @@ ORDER BY time asc""", (one_week, ed))
 
         conn.commit()
 
-        plot = LinePlot(_('Hourly Web Usage'), _('Hour of Day'),
-                        _('Hits per Minute'))
+        plot = LinePlot(title=_('Hourly Web Usage'),
+                        xlabel=_('Hour of Day'),
+                        ylabel=_('Hits per Minute'),
+                        major_formatter=TIME_OF_DAY_FORMATTER)
 
         plot.add_dataset(dates, hits, label=_('hits'))
         plot.add_dataset(dates, blocks, label=_('violations'))
