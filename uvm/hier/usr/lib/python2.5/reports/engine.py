@@ -5,8 +5,6 @@ import sets
 import sql_helper
 import string
 
-from reports.graph import Report
-
 from psycopg import DateFromMx
 
 class Node:

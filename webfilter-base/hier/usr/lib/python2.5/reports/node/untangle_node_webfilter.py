@@ -4,15 +4,15 @@ import reports.engine
 import sql_helper
 
 from psycopg import DateFromMx
+from reports import EVEN_HOURS_OF_A_DAY
+from reports import Graph
+from reports import KeyStatistic
+from reports import LinePlot
+from reports import Report
+from reports import SummarySection
+from reports import TIME_OF_DAY_FORMATTER
 from reports.engine import Column
 from reports.engine import Node
-from reports.graph import EVEN_HOURS_OF_A_DAY
-from reports.graph import Graph
-from reports.graph import KeyStatistic
-from reports.graph import LinePlot
-from reports.graph import Report
-from reports.graph import SummarySection
-from reports.graph import TIME_OF_DAY_FORMATTER
 from sql_helper import print_timing
 
 _ = gettext.gettext
