@@ -102,14 +102,13 @@ class Graph:
         if not os.path.exists(dir):
             os.makedirs(dir)
 
-        element = Element('graph')
-        element.set('image', filename_base + '.png')
-        element.set('csv', filename_base + '.csv')
-
         self.__plot.generate_graph(filename_base + '.png')
         self.__plot.generate_csv(filename_base + '.csv')
 
-        # XXX return DOM
+        element = Element('graph')
+        element.set('image', filename_base + '.png')
+        element.set('csv', filename_base + '.csv')
+        return element
 
 class LinePlot:
     def __init__(self, title=None, xlabel=None, ylabel=None):
