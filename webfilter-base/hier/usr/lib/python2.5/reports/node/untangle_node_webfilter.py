@@ -4,6 +4,7 @@ import reports.engine
 import sql_helper
 
 from psycopg import DateFromMx
+from reports import DetailSection
 from reports import EVEN_HOURS_OF_A_DAY
 from reports import Graph
 from reports import KeyStatistic
@@ -37,11 +38,16 @@ class WebFilterBaseNode(Node):
     def get_report(self):
         return Report(self.name, 'Web Filter',
                       [SummarySection('summary', N_('Summary Report'),
-                                      [HourlyWebUsage()])])
+                                      [HourlyWebUsage()]),
+                       DetailSection('incidents', N_('Incident Report'),
+                                     sql_template="""\
+SELECT * FROM reports.n_http_events
+WHERE time_stamp >= '$end_date' - '1 day'::interval
+      AND time_stamp < '$end_date'
+      AND NOT webfilter_action ISNULL""")])
 
     def teardown(self):
         print "teardown"
-
 
     @print_timing
     def __update_n_http_events(self, start_date, end_date):

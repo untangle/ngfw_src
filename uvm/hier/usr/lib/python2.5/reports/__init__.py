@@ -1,10 +1,12 @@
 import csv
 import os
 import pylab
+import string
 
 from matplotlib.ticker import FuncFormatter
 from mx.DateTime import DateTimeDeltaFromSeconds
 from lxml.etree import Element
+from lxml.etree import CDATA
 from lxml.etree import ElementTree
 
 def __time_of_day_formatter(x, pos):
@@ -66,6 +68,7 @@ class SummarySection(Section):
 
         element = Element('summary-section')
         element.set('name', self.name)
+        element.set('title', self.title)
 
         for summary_item in self.__summary_items:
             element.append(summary_item.generate(section_base, end_date))
@@ -73,12 +76,23 @@ class SummarySection(Section):
         return element
 
 class DetailSection(Section):
-    def __init__(self, name, tile):
+    def __init__(self, name, title, sql_template=None):
         Section.__init__(self, name, title)
+        self.__sql_template = sql_template
 
     def generate(self, node_base, end_date):
-        # XXX return DOM
-        pass
+        element = Element('detail-section')
+        element.set('name', self.name)
+        element.set('title', self.title)
+        if self.__sql_template:
+            sql_element = Element('sql')
+
+            t = string.Template(self.__sql_template)
+            sql_element.text = CDATA(t.substitute(end_date=end_date))
+
+            element.append(sql_element)
+
+        return element
 
 class Graph:
     def __init__(self, name):
