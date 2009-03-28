@@ -18,11 +18,7 @@
 
 package com.untangle.uvm.engine;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,10 +49,11 @@ import org.apache.log4j.Logger;
 
 class RemoteReportingManagerImpl implements RemoteReportingManager
 {
-    private static final String BUNNICULA_WEB = System.getProperty( "bunnicula.web.dir" );
+    private static final String BUNNICULA_REPORTS
+        = System.getProperty("bunnicula.reports.dir");
 
-    private static final String WEB_REPORTS_DIR = BUNNICULA_WEB + "/reports";
-    private static final String CURRENT_REPORT_DIR = WEB_REPORTS_DIR + "/current";
+    private static final File REPORTS_DIR = new File(BUNNICULA_REPORTS);
+
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -88,10 +85,20 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         List<Date> l = new ArrayList<Date>();
 
-        Calendar c = Calendar.getInstance();
-        for (int i = 0; i < 10; i++) {
-            c.add(Calendar.DAY_OF_WEEK, -1);
-            l.add(c.getTime());
+        for (String s : REPORTS_DIR.list()) {
+            String[] split = s.split("-");
+            if (split.length == 3) {
+                try {
+                    int year = Integer.decode(split[0]);
+                    int month = Integer.decode(split[1]);
+                    int day = Integer.decode(split[2]);
+                    l.add(new Date(year, month, day));
+                } catch (NumberFormatException exn) {
+                    logger.debug("not a date: " + s);
+                }
+            } else {
+                logger.debug("not a date: " + s);
+            }
         }
 
         return l;
@@ -101,6 +108,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     public TableOfContents getTableOfContents(Date d)
     {
         Application platform = new Application("untangle-vm", "Platform");
+
+
 
         // XXX TODO
         List<User> users = new ArrayList<User>();
@@ -211,52 +220,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return true;
     }
 
-    public boolean isReportsAvailable() {
-        if (!isReportingEnabled())
-            return false;
-        File crd = new File(CURRENT_REPORT_DIR);
-        if (!crd.isDirectory())
-            return false;
-
-        // note that Reporter creates env file
-        File envFile = new File(CURRENT_REPORT_DIR, "settings.env");
-
-        FileReader envFReader;
-        try {
-            envFReader = new FileReader(envFile);
-        } catch (FileNotFoundException exn) {
-            logger.error("report settings env file is missing: ", exn);
-            return false;
-        }
-
-        BufferedReader envBReader = new BufferedReader(envFReader);
-        ArrayList<String> envList = new ArrayList<String>();
-        try {
-            while (true == envBReader.ready()) {
-                envList.add(envBReader.readLine());
-            }
-            envBReader.close();
-            envFReader.close();
-        } catch (IOException exn) {
-            logger.error("cannot read or close report settings env file: ", exn);
-            return false;
-        }
-
-        String daily = "export MV_EG_DAILY_REPORT=y";
-        if (true == envList.contains(daily)) {
-            return true;
-        }
-
-        String weekly = "export MV_EG_WEEKLY_REPORT=y";
-        if (true == envList.contains(weekly)) {
-            return true;
-        }
-
-        String monthly = "export MV_EG_MONTHLY_REPORT=y";
-        if (true == envList.contains(monthly)) {
-            return true;
-        }
-
-        return false;
+    public boolean isReportsAvailable()
+    {
+        return true;
     }
 }
