@@ -351,7 +351,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
                                              getDefaultIndicatorHeaderValue(false),
                                              getDefaultNotifySubjectTemplate(),
                                              getDefaultNotifyBodyTemplate(),
-                                             true,
+                                             false,
                                              15));
 
         tmpSpamSettings.getBaseSettings().

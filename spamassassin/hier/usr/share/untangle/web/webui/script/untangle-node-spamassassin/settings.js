@@ -311,7 +311,14 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         name : 'Enable SMTP tarpitting',
                         boxLabel : this.i18n._('Enable SMTP tarpitting'),
                         hideLabel : true,
-                        checked : this.getBaseSettings().smtpConfig.throttle
+                        checked : this.getBaseSettings().smtpConfig.throttle,
+                        listeners : {
+                          "check" : {
+                            fn : function(elem, checked) {
+                              this.getBaseSettings().smtpConfig.throttle = checked;
+                            }.createDelegate(this)
+                          }
+                        }
                     }/*, {
                         xtype : 'checkbox',
                         name : 'Enable Spam Headers',
