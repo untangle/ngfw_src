@@ -11,7 +11,7 @@ INDIR = '/home/amread/reports-email-template'
 
 # Define these once; use them twice!
 strFrom = 'amread@untangle.com'
-strTo = 'krambo@untangle.com'
+strTo = 'karthiknram@gmail.com'
 
 # Create the root message and fill in the from, to, and subject headers
 msgRoot = MIMEMultipart('related')
