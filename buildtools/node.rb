@@ -84,11 +84,6 @@ class NodeBuilder
 
     baseHash.each_pair { |bd, bn| directories << "#{bn.buildEnv.home}/#{bd}/impl" }
 
-    ## The IMPL jar depends on the reports
-    deps << JasperTarget.build_target( node,
-                                      "#{buildEnv.staging}/#{node.name}-impl/reports",
-                                      directories )
-
     jt = JarTarget.build_target(node, deps, "impl", directories)
 
     po_dir = "#{home}/#{dirName}/po"
@@ -108,7 +103,7 @@ class NodeBuilder
       cf = CopyFiles.new(node, ms, 'hier', buildEnv.filterset)
       node.registerTarget('hier', cf)
     end
-    
+
     script_dir = "#{home}/#{dirName}/hier/usr/share/untangle/web/webui/script"
     if File.exist? script_dir
       YuiCompressorTarget.make_min_targets(node, script_dir,
