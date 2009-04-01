@@ -22,7 +22,7 @@ class Report:
         self.__title = title
         self.__sections = sections
 
-    def generate(self, date_base, end_date):
+    def generate(self, report_base, date_base, end_date):
         node_base = '%s/%s' % (date_base, self.__name)
 
         element = Element('report')
@@ -30,15 +30,15 @@ class Report:
         element.set('title', self.__title)
 
         for s in self.__sections:
-            element.append(s.generate(node_base, end_date))
+            element.append(s.generate(report_base, node_base, end_date))
 
         tree = ElementTree(element)
 
         if not os.path.exists(node_base):
             os.makedirs(node_base)
 
-        tree.write("%s/report.xml" % node_base, encoding='utf-8',
-                   pretty_print=True, xml_declaration=True)
+        tree.write("%s/%s/report.xml" % (report_base, node_base),
+                   encoding='utf-8', pretty_print=True, xml_declaration=True)
 
 class Section:
     def __init__(self, name, title):
@@ -53,7 +53,7 @@ class Section:
     def title(self):
         return self.__title
 
-    def generate(self, node_base, end_date):
+    def generate(self, report_base, node_base, end_date):
         # XXX return DOM
         pass
 
@@ -63,7 +63,7 @@ class SummarySection(Section):
 
         self.__summary_items = summary_items
 
-    def generate(self, node_base, end_date):
+    def generate(self, report_base, node_base, end_date):
         section_base = "%s/%s" % (node_base, self.name)
 
         element = Element('summary-section')
@@ -71,7 +71,8 @@ class SummarySection(Section):
         element.set('title', self.title)
 
         for summary_item in self.__summary_items:
-            element.append(summary_item.generate(section_base, end_date))
+            element.append(summary_item.generate(report_base, section_base,
+                                                 end_date))
 
         return element
 
@@ -81,7 +82,7 @@ class DetailSection(Section):
         self.__sql_template = sql_template
         self.__columns = columns
 
-    def generate(self, node_base, end_date):
+    def generate(self, report_base, node_base, end_date):
         element = Element('detail-section')
         element.set('name', self.name)
         element.set('title', self.title)
@@ -127,18 +128,18 @@ class Graph:
     def name(self):
         return self.__name
 
-    def generate(self, section_base, end_date):
+    def generate(self, report_base, section_base, end_date):
         self.__key_statistics = self.get_key_statistics(end_date)
         self.__plot = self.get_plot(end_date)
 
         filename_base = '%s-%s' % (section_base, self.__name)
 
-        dir = os.path.dirname(filename_base)
+        dir = os.path.dirname('%s/%s' % (report_base, filename_base))
         if not os.path.exists(dir):
             os.makedirs(dir)
 
-        self.__plot.generate_graph(filename_base + '.png')
-        self.__plot.generate_csv(filename_base + '.csv')
+        self.__plot.generate_graph('%s/%s.png' % (report_base, filename_base))
+        self.__plot.generate_csv('%s/%s.csv' % (report_base, filename_base))
 
         element = Element('graph')
         element.set('name', self.__name)
@@ -149,7 +150,7 @@ class Graph:
         for ks in self.__key_statistics:
             ks_element = Element('key-statistic')
             ks_element.set('name', ks.name)
-            ks_element.set('value', ks.value)
+            ks_element.set('value', str(ks.value))
             ks_element.set('unit', ks.unit)
             element.append(ks_element)
 

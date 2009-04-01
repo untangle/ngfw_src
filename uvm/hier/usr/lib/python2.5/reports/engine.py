@@ -132,11 +132,10 @@ def process_fact_tables(start_date, end_date):
     for ft in __fact_tables.values():
         ft.process(start_date, end_date)
 
-def generate_reports(reports_output_base, end_date):
+def generate_reports(report_base, end_date):
     global __nodes
 
-    date_base = '%s/%s-%s-%s' % (reports_output_base, end_date.year,
-                                 end_date.month, end_date.day)
+    date_base = '%s-%s-%s' % (end_date.year, end_date.month, end_date.day)
 
     for node_name in __get_node_partial_order():
         logging.info('doing process_graphs for: %s' % node_name)
@@ -146,7 +145,7 @@ def generate_reports(reports_output_base, end_date):
         else:
             report = node.get_report()
             if report:
-                report.generate(date_base, end_date)
+                report.generate(report_base, date_base, end_date)
 
 
 def init_engine(node_module_dir, locale):

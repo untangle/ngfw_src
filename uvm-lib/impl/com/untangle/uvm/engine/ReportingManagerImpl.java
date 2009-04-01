@@ -46,8 +46,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 class RemoteReportingManagerImpl implements RemoteReportingManager
 {
-    private static final String BUNNICULA_REPORTS
-        = System.getProperty("bunnicula.reports.dir");
+    private static final String BUNNICULA_REPORTS_DATA
+        = System.getProperty("bunnicula.web.dir") + "/reports/data";
 
     private static final File REPORTS_DIR = new File(BUNNICULA_REPORTS);
 

@@ -216,8 +216,6 @@ public class Main
         System.setProperty("bunnicula.db.dir", bunniculaDb);
         String bunniculaWeb = bunniculaHome + "/web";
         System.setProperty("bunnicula.web.dir", bunniculaWeb);
-        String bunniculaReports = bunniculaHome + "/reports";
-        System.setProperty("bunnicula.reports.dir", bunniculaReports);
         String bunniculaConf = bunniculaHome + "/conf";
         System.setProperty("bunnicula.conf.dir", bunniculaConf);
         String bunniculaTmp = bunniculaHome + "/tmp";
