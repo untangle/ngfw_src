@@ -76,9 +76,10 @@ class SummarySection(Section):
         return element
 
 class DetailSection(Section):
-    def __init__(self, name, title, sql_template=None):
+    def __init__(self, name, title, sql_template=None, columns=[]):
         Section.__init__(self, name, title)
         self.__sql_template = sql_template
+        self.__columns = columns
 
     def generate(self, node_base, end_date):
         element = Element('detail-section')
@@ -92,11 +93,29 @@ class DetailSection(Section):
 
             element.append(sql_element)
 
+        for c in self.__columns:
+            element.append(c.get_dom())
+
+        return element
+
+class Column():
+    def __init__(self, name, title, type):
+        self.__name = name
+        self.__title = title
+        self.__type = type
+
+    def get_dom(self):
+        element = Element('column')
+        element.set('name', self.__name)
+        element.set('title', self.__title)
+        element.set('type', self.__type)
+
         return element
 
 class Graph:
-    def __init__(self, name):
+    def __init__(self, name, title):
         self.__name = name
+        self.__title = title
 
     def get_key_statistics(self, end_date):
         return []
@@ -122,8 +141,18 @@ class Graph:
         self.__plot.generate_csv(filename_base + '.csv')
 
         element = Element('graph')
+        element.set('name', self.__name)
+        element.set('title', self.__title)
         element.set('image', filename_base + '.png')
         element.set('csv', filename_base + '.csv')
+
+        for ks in self.__key_statistics:
+            ks_element = Element('key-statistic')
+            ks_element.set('name', ks.name)
+            ks_element.set('value', ks.value)
+            ks_element.set('unit', ks.unit)
+            element.append(ks_element)
+
         return element
 
 class LinePlot:
@@ -186,10 +215,10 @@ class LinePlot:
         pylab.savefig(filename)
 
 class KeyStatistic:
-    def __init__(self, name, value, units):
+    def __init__(self, name, value, unit):
         self.__name = name
         self.__value = value
-        self.__units = units
+        self.__unit = unit
 
     @property
     def name(self):
@@ -200,5 +229,5 @@ class KeyStatistic:
         return self.__value
 
     @property
-    def units(self):
-        return self.__units
+    def unit(self):
+        return self.__unit

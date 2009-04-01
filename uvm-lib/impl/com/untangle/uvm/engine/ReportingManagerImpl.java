@@ -19,33 +19,30 @@
 package com.untangle.uvm.engine;
 
 import java.io.File;
-import java.lang.Math;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.reporting.Reporter;
 import com.untangle.uvm.reports.Application;
 import com.untangle.uvm.reports.ApplicationData;
-import com.untangle.uvm.reports.Chart;
-import com.untangle.uvm.reports.ColumnDesc;
-import com.untangle.uvm.reports.DetailSection;
 import com.untangle.uvm.reports.Host;
-import com.untangle.uvm.reports.KeyStatistic;
-import com.untangle.uvm.reports.LegendItem;
 import com.untangle.uvm.reports.RemoteReportingManager;
-import com.untangle.uvm.reports.Section;
-import com.untangle.uvm.reports.SummaryItem;
-import com.untangle.uvm.reports.SummarySection;
 import com.untangle.uvm.reports.TableOfContents;
 import com.untangle.uvm.reports.User;
 import com.untangle.uvm.security.Tid;
 import org.apache.log4j.Logger;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 class RemoteReportingManagerImpl implements RemoteReportingManager
 {
@@ -54,23 +51,15 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     private static final File REPORTS_DIR = new File(BUNNICULA_REPORTS);
 
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private static RemoteReportingManagerImpl REPORTING_MANAGER = new RemoteReportingManagerImpl();
 
-    // Prepare info
-    private volatile String outputBaseDir;
-    private volatile int daysToKeep;
-    private volatile Date midnight ;
+    private final Map<NameDate, ApplicationData> appData
+        = new HashMap<NameDate, ApplicationData>();
 
-    // Run info
-    private volatile Thread runThread;
-    private Reporter reporter;
-
-    private RemoteReportingManagerImpl() {
-        runThread = null;
-        reporter = null;
+    private RemoteReportingManagerImpl()
+    {
     }
 
     static RemoteReportingManagerImpl reportingManager()
@@ -109,8 +98,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-
-
         // XXX TODO
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
@@ -123,85 +110,95 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     // XXX SAMPLE DATA
     public ApplicationData getApplicationData(Date d, String appName)
     {
-        List<Section> s = new ArrayList<Section>();
-        s.add(getBogusSummary());
-        s.add(getBogusDetails());
+        NameDate nd = new NameDate(appName, d);
 
-        return new ApplicationData(s);
+        ApplicationData ad;
+
+        synchronized (appData) {
+            ad = appData.get(nd);
+            if (null == ad) {
+                ad = readXml(d, appName);
+                if (null != ad) {
+                    appData.put(nd, ad);
+                }
+            }
+        }
+
+        return ad;
     }
 
     public ApplicationData getApplicationDataForUser(Date d, String appName,
                                                      String username)
     {
-        List<Section> s = new ArrayList<Section>();
-        s.add(getBogusDetails());
-        return new ApplicationData(s);
+        return null; //XXX
     }
 
     public ApplicationData getApplicationDataForHost(Date d, String appName,
                                                      String hostname)
     {
-        List<Section> s = new ArrayList<Section>();
-        s.add(getBogusDetails());
-        return new ApplicationData(s);
+        return null; //XXX
     }
 
     public ApplicationData getApplicationDataForEmail(Date d, String appName,
                                                       String emailAddr)
     {
-        List<Section> s = new ArrayList<Section>();
-        s.add(getBogusDetails());
-        return new ApplicationData(s);
+        return null; //XXX
     }
 
-    private Section getBogusSummary()
+    // private classes ---------------------------------------------------------
+
+    private static class NameDate
     {
-        List<SummaryItem> sis = new ArrayList<SummaryItem>();
+        private final String name;
+        private final Date date;
 
-        String imageUrl = "script/samples/graph0.png";
-        String csvUrl = "/reports/date/data.csv";
-        String printerUrl = "/reports/date/shizzle.html";
-        List<KeyStatistic> ks = new ArrayList<KeyStatistic>();
-        ks.add(new KeyStatistic("Girth", 60, "inch"));
-        ks.add(new KeyStatistic("Weight", 350, "lbs"));
-        ks.add(new KeyStatistic("Engineers Maimed", 3, null));
-
-        List<LegendItem> li = new ArrayList<LegendItem>();
-        li.add(new LegendItem("Puppies Harmed", "/reports/legend/bluedash.png"));
-
-        Chart c = new Chart("Bogus Chart", imageUrl, csvUrl, printerUrl, ks, "Date", "Terra", li);
-        sis.add(c);
-
-        Chart c1 = new Chart("Bogus Chart", imageUrl, csvUrl, printerUrl, ks, "Date", "Terra", li);
-        sis.add(c1);
-
-        return new SummarySection("Bogus Summary Section", sis);
-    }
-
-    private Section getBogusDetails()
-    {
-        List<ColumnDesc> cds = new ArrayList<ColumnDesc>();
-        cds.add(new ColumnDesc("time", "Time", "Date"));
-        cds.add(new ColumnDesc("site", "URL", "URL"));
-        cds.add(new ColumnDesc("user", "User", "UserLink"));
-        cds.add(new ColumnDesc("host", "Host", "HostLink"));
-        cds.add(new ColumnDesc("email", "Email", "EmailLink"));
-
-        Calendar c = Calendar.getInstance();
-
-        List<List> data = new ArrayList<List>();
-        for (int i = 0; i < 100; i++) {
-            List l = new ArrayList();
-            l.add(c.getTime());
-            l.add("http://foo.bar/" + i);
-            l.add("user" + i);
-            l.add("10.0.0." + i);
-            l.add("mail" + (Math.floor((Math.random()*1000)))+"@foo.bar");
-            data.add(l);
-            c.add(Calendar.DAY_OF_WEEK, -1);
+        NameDate(String name, Date date)
+        {
+            this.name = name;
+            this.date = date;
         }
 
-        return new DetailSection("Bogus Detail Section", cds, data);
+        public boolean equals(Object o)
+        {
+            if (o instanceof NameDate) {
+                NameDate nd = (NameDate)o;
+                return name.equals(nd.name) && date.equals(nd.date);
+            } else {
+                return false;
+            }
+        }
+
+        public int hashCode()
+        {
+            int result = 17;
+            result = 37 * result + name.hashCode();
+            result = 37 * result + date.hashCode();
+            return result;
+        }
+    }
+
+    private ApplicationData readXml(Date d, String appName)
+    {
+        ReportXmlHandler h = new ReportXmlHandler();
+
+        try {
+            FileInputStream fis = new FileInputStream(BUNNICULA_REPORTS + "/"
+                                                      + d.getYear() + "-"
+                                                      + d.getMonth() + "-"
+                                                      + d.getDay() + "/"
+                                                      + appName
+                                                      + "/report.xml");
+
+            XMLReader xr = XMLReaderFactory.createXMLReader();
+            xr.setContentHandler(h);
+            xr.parse(new InputSource(fis));
+        } catch (SAXException exn) {
+            return null;
+        } catch (IOException exn) {
+            return null;
+        }
+
+        return h.getReport();
     }
 
     // OLD SHIT ----------------------------------------------------------------

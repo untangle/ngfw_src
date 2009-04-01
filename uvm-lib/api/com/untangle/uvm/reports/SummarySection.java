@@ -34,20 +34,25 @@
 package com.untangle.uvm.reports;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SummarySection extends Section implements Serializable
 {
-    private final List<SummaryItem> summaryItems;
+    private final List<SummaryItem> summaryItems = new ArrayList<SummaryItem>();
 
-    public SummarySection(String title, List<SummaryItem> summaryItems)
+    public SummarySection(String name, String title)
     {
-        super(title);
-        this.summaryItems = summaryItems;
+        super(name, title);
     }
 
     public List<SummaryItem> getSummaryItems()
     {
         return summaryItems;
+    }
+
+    public void addSummaryItem(SummaryItem item)
+    {
+        summaryItems.add(item);
     }
 }

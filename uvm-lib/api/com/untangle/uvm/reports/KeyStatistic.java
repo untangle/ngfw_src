@@ -35,13 +35,13 @@ package com.untangle.uvm.reports;
 
 import java.io.Serializable;
 
-public class KeyStatistic<T> implements Serializable
+public class KeyStatistic implements Serializable
 {
     private final String label;
-    private final T value;
+    private final Object value;
     private final String unit;
 
-    public KeyStatistic(String label, T value, String unit)
+    public KeyStatistic(String label, Object value, String unit)
     {
         this.label = label;
         this.value = value;
@@ -53,7 +53,7 @@ public class KeyStatistic<T> implements Serializable
         return label;
     }
 
-    public T getValue()
+    public Object getValue()
     {
         return value;
     }

@@ -90,7 +90,7 @@ WHERE reports.n_http_events.time_stamp >= %s
 
 class HourlyWebUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'usage')
+        Graph.__init__(self, 'usage', _('Hourly Usage'))
 
     def get_key_statistics(self, end_date):
         ed = DateFromMx(end_date)

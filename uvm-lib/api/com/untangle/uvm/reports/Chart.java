@@ -34,33 +34,23 @@
 package com.untangle.uvm.reports;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Chart extends SummaryItem implements Serializable
 {
     private final String imageUrl;
     private final String csvUrl;
-    private final String printerUrl;
 
-    private final List<KeyStatistic> keyStatistics;
-    private final String xAxisLabel;
-    private final String yAxisLabel;
-    private final List<LegendItem> legend;
+    private final List<KeyStatistic> keyStatistics =
+        new ArrayList<KeyStatistic>();
 
-    public Chart(String title, String imageUrl, String csvUrl,
-                 String printerUrl, List<KeyStatistic> keyStatistics,
-                 String xAxisLabel, String yAxisLabel, List<LegendItem> legend)
+    public Chart(String name, String title, String imageUrl, String csvUrl)
     {
-        super(title);
+        super(name, title);
 
         this.imageUrl = imageUrl;
         this.csvUrl = csvUrl;
-        this.printerUrl = printerUrl;
-
-        this.keyStatistics = keyStatistics;
-        this.xAxisLabel = xAxisLabel;
-        this.yAxisLabel = yAxisLabel;
-        this.legend = legend;
     }
 
     public String getImageUrl()
@@ -75,7 +65,7 @@ public class Chart extends SummaryItem implements Serializable
 
     public String getPrinterUrl()
     {
-        return printerUrl;
+        return csvUrl;
     }
 
     public List<KeyStatistic> getKeyStatistics()
@@ -83,18 +73,8 @@ public class Chart extends SummaryItem implements Serializable
         return keyStatistics;
     }
 
-    public String getXAxisLabel()
+    public void addKeyStatistic(KeyStatistic ks)
     {
-        return xAxisLabel;
-    }
-
-    public String getYAxisLabel()
-    {
-        return yAxisLabel;
-    }
-
-    public List<LegendItem> getLegend()
-    {
-        return legend;
+        keyStatistics.add(ks);
     }
 }

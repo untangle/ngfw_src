@@ -41,10 +41,10 @@ public class DetailSection extends Section implements Serializable
     private final List<ColumnDesc> columns;
     private final List<List> data;
 
-    public DetailSection(String title, List<ColumnDesc> columns,
+    public DetailSection(String name, String title, List<ColumnDesc> columns,
                          List<List> data)
     {
-        super(title);
+        super(name, title);
         this.columns = columns;
         this.data = data;
     }
