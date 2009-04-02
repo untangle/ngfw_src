@@ -21,7 +21,11 @@ package com.untangle.uvm.engine;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +52,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         = System.getProperty("bunnicula.web.dir") + "/reports/data";
 
     private static final File REPORTS_DIR = new File(BUNNICULA_REPORTS_DATA);
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -67,22 +72,18 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     // XXX SAMPLE DATA
     public List<Date> getDates()
     {
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+
+        Calendar c = Calendar.getInstance();
+
         List<Date> l = new ArrayList<Date>();
 
         if (REPORTS_DIR.exists()) {
             for (String s : REPORTS_DIR.list()) {
-                String[] split = s.split("-");
-                if (split.length == 3) {
-                    try {
-                        int year = Integer.decode(split[0]);
-                        int month = Integer.decode(split[1]);
-                        int day = Integer.decode(split[2]);
-                        l.add(new Date(year, month, day));
-                    } catch (NumberFormatException exn) {
-                        logger.debug("not a date: " + s);
-                    }
-                } else {
-                    logger.debug("not a date: " + s);
+                try {
+                    l.add(df.parse(s));
+                } catch (ParseException exn) {
+                    logger.warn("skipping non-date directory: " + s, exn);
                 }
             }
         }
@@ -102,16 +103,12 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         List<Application> apps = new ArrayList<Application>();
         File dir = new File(getDateDir(d));
         if (dir.exists()) {
-            System.out.println(dir + " exists");
             for (String s : dir.list()) {
-                System.out.println("S: " + s);
                 ApplicationData ad = readXml(d, s);
                 if (null != ad) {
                     apps.add(new Application(ad.getName(), ad.getTitle()));
                 }
             }
-        } else {
-            System.out.println(dir + " not exists");
         }
 
         return new TableOfContents(platform, apps, users, hosts);
@@ -165,14 +162,27 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     private String getDateDir(Date d)
     {
-        return String.format("%s/%d-%02d-%02d", BUNNICULA_REPORTS_DATA,
-                             d.getYear(), d.getMonth(), d.getDay());
+        StringBuffer sb = new StringBuffer(BUNNICULA_REPORTS_DATA);
+        sb.append("/");
+
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        sb.append(df.format(d));
+
+        return String.format(sb.toString());
     }
 
     private String getAppDir(Date d, String appName)
     {
-        return String.format("%s/%d-%02d-%02d/%s", BUNNICULA_REPORTS_DATA,
-                             d.getYear(), d.getMonth(), d.getDay(), appName);
+        StringBuffer sb = new StringBuffer(BUNNICULA_REPORTS_DATA);
+        sb.append("/");
+
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        sb.append(df.format(d));
+
+        sb.append("/");
+        sb.append(appName);
+
+        return String.format(sb.toString());
     }
 
     // OLD SHIT ----------------------------------------------------------------

@@ -257,7 +257,7 @@ Ung.Reports = Ext.extend(Object, {
         return treeNodes;
     },
     changeDate : function(date) {
-        this.reportsDate=date;
+      this.reportsDate=date;
         rpc.reportingManager.getTableOfContents(function(result, exception) {
             if (exception) {
                 Ext.MessageBox.alert("Failed", exception.message);
