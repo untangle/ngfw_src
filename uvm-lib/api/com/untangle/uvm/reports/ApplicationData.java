@@ -49,6 +49,16 @@ public class ApplicationData implements Serializable
         this.sections = sections;
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
     public List<Section> getSections()
     {
         return sections;

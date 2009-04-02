@@ -160,7 +160,7 @@ Ung.Reports = Ext.extend(Object, {
                     autoScroll : true,
                     rootVisible : false,
                     title : i18n._('Reports'),
-                    enableDD: false, 
+                    enableDD: false,
                     enableDrag: false,
                     root : new Ext.tree.AsyncTreeNode({
                         draggable : false,
@@ -280,8 +280,8 @@ Ung.Reports = Ext.extend(Object, {
                 text: this.selectedNode.attributes.text,
                 handler: this.getApplicationData.createDelegate(this,[nodeName])
             });
-            
-            Ung.Util.loadModuleTranslations( nodeName, i18n, 
+
+            Ung.Util.loadModuleTranslations( nodeName, i18n,
                 function(){
                     reports.reportDetails = new Ung.ReportDetails();
                 }
@@ -304,7 +304,7 @@ Ung.ReportDetails = Ext.extend(Object, {
         // this.i18n should be used in ReportDetails to have i18n context based
         this.i18n = Ung.i18nModuleInstances[reports.selectedNode.attributes.name];
         this.buildReportDetails();
-    },	
+    },
     buildReportDetails: function() {
         var reportDetails=Ext.getCmp("report-details");
         while(reportDetails.items.length!=0) {
@@ -359,7 +359,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             });
         }
         return sectionPanel;
-        
+
     },
     buildSummarySection: function (section) {
         var items = [];
@@ -372,7 +372,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             for(var j=0;j<summaryItem.keyStatistics.list.length;j++) {
                 var keyStatistic = summaryItem.keyStatistics.list[j]
                 data.push([keyStatistic.label, keyStatistic.label, keyStatistic.unit]);
-            }            
+            }
             items.push( new Ext.grid.GridPanel({
                     store: new Ext.data.SimpleStore({
                         fields: [
@@ -384,17 +384,17 @@ Ung.ReportDetails = Ext.extend(Object, {
                     }),
                     columns: [{
                         id:'label',
-                        header: "Label", 
-                        width: 150, 
-                        sortable: false, 
+                        header: "Label",
+                        width: 150,
+                        sortable: false,
                         dataIndex: 'label',
                         renderer: function(value) {
-                        	return this.i18n._(value);
+                            return this.i18n._(value);
                         }.createDelegate(this)
                     },{
-                        header: "Value", 
+                        header: "Value",
                         width: 150,
-                        sortable: false, 
+                        sortable: false,
                         dataIndex: 'value',
                         renderer: function (value, medata, record) {
                             return record.data.unit == null ? value :  (value + " " + this.i18n._(record.data.unit));
@@ -405,21 +405,21 @@ Ung.ReportDetails = Ext.extend(Object, {
                         tooltip:this.i18n._('Export Excel'),
                         iconCls:'export-excel',
                         handler : function () {
-                            window.open(summaryItem.csvUrl)                        
+                            window.open(summaryItem.csvUrl)
                         }
                     }, '-', {
                         tooltip:this.i18n._('Export Printer'),
                         iconCls:'export-printer',
                         handler : function () {
-                            window.open(summaryItem.printerUrl)                        
+                            window.open(summaryItem.printerUrl)
                         }
-                    }],                    
+                    }],
                     title:this.i18n._('Key Statistics'),
                     stripeRows: true,
                     hideHeaders: true,
                     enableHdMenu : false,
-                    enableColumnMove: false                    
-                })            
+                    enableColumnMove: false
+                })
             );
         }
         return new Ext.Panel({
@@ -428,7 +428,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             defaults: {
                 border: false,
                 columnWidth: 0.5
-            },            
+            },
             layoutConfig: {
                 columns: 2
             },
@@ -467,7 +467,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                     return '<a href="javascript:reports.reportDetails.getApplicationDataForEmail(\''+value+'\')">'+value+'</a>';
                 }
                 col.width=180;
-            } 
+            }
             columns.push(col);
             fields.push({name:c.name});
         }

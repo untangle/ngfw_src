@@ -23,9 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -49,14 +47,11 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     private static final String BUNNICULA_REPORTS_DATA
         = System.getProperty("bunnicula.web.dir") + "/reports/data";
 
-    private static final File REPORTS_DIR = new File(BUNNICULA_REPORTS);
+    private static final File REPORTS_DIR = new File(BUNNICULA_REPORTS_DATA);
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private static RemoteReportingManagerImpl REPORTING_MANAGER = new RemoteReportingManagerImpl();
-
-    private final Map<NameDate, ApplicationData> appData
-        = new HashMap<NameDate, ApplicationData>();
 
     private RemoteReportingManagerImpl()
     {
@@ -74,19 +69,21 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         List<Date> l = new ArrayList<Date>();
 
-        for (String s : REPORTS_DIR.list()) {
-            String[] split = s.split("-");
-            if (split.length == 3) {
-                try {
-                    int year = Integer.decode(split[0]);
-                    int month = Integer.decode(split[1]);
-                    int day = Integer.decode(split[2]);
-                    l.add(new Date(year, month, day));
-                } catch (NumberFormatException exn) {
+        if (REPORTS_DIR.exists()) {
+            for (String s : REPORTS_DIR.list()) {
+                String[] split = s.split("-");
+                if (split.length == 3) {
+                    try {
+                        int year = Integer.decode(split[0]);
+                        int month = Integer.decode(split[1]);
+                        int day = Integer.decode(split[2]);
+                        l.add(new Date(year, month, day));
+                    } catch (NumberFormatException exn) {
+                        logger.debug("not a date: " + s);
+                    }
+                } else {
                     logger.debug("not a date: " + s);
                 }
-            } else {
-                logger.debug("not a date: " + s);
             }
         }
 
@@ -103,6 +100,19 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         List<Host> hosts = new ArrayList<Host>();
 
         List<Application> apps = new ArrayList<Application>();
+        File dir = new File(getDateDir(d));
+        if (dir.exists()) {
+            System.out.println(dir + " exists");
+            for (String s : dir.list()) {
+                System.out.println("S: " + s);
+                ApplicationData ad = readXml(d, s);
+                if (null != ad) {
+                    apps.add(new Application(ad.getName(), ad.getTitle()));
+                }
+            }
+        } else {
+            System.out.println(dir + " not exists");
+        }
 
         return new TableOfContents(platform, apps, users, hosts);
     }
@@ -110,21 +120,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     // XXX SAMPLE DATA
     public ApplicationData getApplicationData(Date d, String appName)
     {
-        NameDate nd = new NameDate(appName, d);
-
-        ApplicationData ad;
-
-        synchronized (appData) {
-            ad = appData.get(nd);
-            if (null == ad) {
-                ad = readXml(d, appName);
-                if (null != ad) {
-                    appData.put(nd, ad);
-                }
-            }
-        }
-
-        return ad;
+        return readXml(d, appName);
     }
 
     public ApplicationData getApplicationDataForUser(Date d, String appName,
@@ -145,48 +141,14 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return null; //XXX
     }
 
-    // private classes ---------------------------------------------------------
-
-    private static class NameDate
-    {
-        private final String name;
-        private final Date date;
-
-        NameDate(String name, Date date)
-        {
-            this.name = name;
-            this.date = date;
-        }
-
-        public boolean equals(Object o)
-        {
-            if (o instanceof NameDate) {
-                NameDate nd = (NameDate)o;
-                return name.equals(nd.name) && date.equals(nd.date);
-            } else {
-                return false;
-            }
-        }
-
-        public int hashCode()
-        {
-            int result = 17;
-            result = 37 * result + name.hashCode();
-            result = 37 * result + date.hashCode();
-            return result;
-        }
-    }
+    // private methods ---------------------------------------------------------
 
     private ApplicationData readXml(Date d, String appName)
     {
         ReportXmlHandler h = new ReportXmlHandler();
 
         try {
-            FileInputStream fis = new FileInputStream(BUNNICULA_REPORTS + "/"
-                                                      + d.getYear() + "-"
-                                                      + d.getMonth() + "-"
-                                                      + d.getDay() + "/"
-                                                      + appName
+            FileInputStream fis = new FileInputStream(getAppDir(d, appName)
                                                       + "/report.xml");
 
             XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -199,6 +161,18 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         }
 
         return h.getReport();
+    }
+
+    private String getDateDir(Date d)
+    {
+        return String.format("%s/%d-%02d-%02d", BUNNICULA_REPORTS_DATA,
+                             d.getYear(), d.getMonth(), d.getDay());
+    }
+
+    private String getAppDir(Date d, String appName)
+    {
+        return String.format("%s/%d-%02d-%02d/%s", BUNNICULA_REPORTS_DATA,
+                             d.getYear(), d.getMonth(), d.getDay(), appName);
     }
 
     // OLD SHIT ----------------------------------------------------------------
