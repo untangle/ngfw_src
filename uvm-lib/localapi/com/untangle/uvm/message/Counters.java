@@ -120,6 +120,19 @@ public class Counters
         return addActivity(name, displayName, unit, action, true);
     }
 
+    public BlingBlinger delActivity(String name)
+    {
+        BlingBlinger b = null;
+        synchronized (metrics) {
+            b = metrics.remove(name);
+        }
+        synchronized (activities) {
+            b  = (b == null) ? activities.remove(name) : b;
+        }
+
+        return b;
+    }
+
     public void addLoadMaster(String name, LoadMaster loadMaster)
     {
         synchronized (loads) {

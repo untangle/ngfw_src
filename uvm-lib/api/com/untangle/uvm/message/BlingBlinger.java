@@ -85,12 +85,20 @@ public class BlingBlinger implements CounterStats, Serializable
     }
 
     // CounterStats methods ---------------------------------------------------
-
     public long getCount()
     {
         return count;
     }
 
+    public void setCount(long newValue)
+    {
+        synchronized (this) {
+            count = 0;
+            countSinceMidnight = 0;
+            increment(newValue);
+        }
+    }
+    
     public long getCountSinceMidnight()
     {
         return countSinceMidnight;
