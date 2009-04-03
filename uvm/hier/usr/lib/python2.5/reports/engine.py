@@ -135,7 +135,7 @@ def process_fact_tables(start_date, end_date):
 def generate_reports(report_base, end_date):
     global __nodes
 
-    date_base = '%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
+    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
 
     for node_name in __get_node_partial_order():
         logging.info('doing process_graphs for: %s' % node_name)

@@ -352,11 +352,12 @@ Ung.ReportDetails = Ext.extend(Object, {
             sectionPanel=this.buildDetailSection(section);
         } else {
             //For test
-            sectionPanel=new Ext.Panel({
-                title : this.i18n._(section.title),
-                layout : "form",
-                items : [{border:false, html:"TODO: "+section.title+" for "+this.selectedNode.attributes.text +" on date "+i18n.dateFormat(this.reportsDate)}]
-            });
+          sectionPanel=new Ext.Panel({
+            title : this.i18n._(section.title),
+            layout : "form",
+            items : [{border:false, html:"TODO: "+section.title+" for "+"HIPPIES" +" on date "+ "DIPPIE"}]
+          //items : [{border:false, html:"TODO: "+section.title+" for "+this.selectedNode.attributes.text +" on date "+i18n.dateFormat(this.reportsDate)}]
+          });
         }
         return sectionPanel;
 

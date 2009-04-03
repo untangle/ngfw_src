@@ -16,6 +16,15 @@ def __time_of_day_formatter(x, pos):
 TIME_OF_DAY_FORMATTER = FuncFormatter(__time_of_day_formatter)
 EVEN_HOURS_OF_A_DAY = [i * 7200 for i in range(12)]
 
+params = {'axes.labelsize': 8,
+          'text.fontsize': 8,
+          'xtick.labelsize': 8,
+          'ytick.labelsize': 8,
+          'legend.fontsize': 8,
+          'figure.dpi': 100,
+          'figure.figsize': (3.5,2.5)}
+pylab.rcParams.update(params)
+
 class Report:
     def __init__(self, name, title, sections):
         self.__name = name
@@ -199,6 +208,7 @@ class LinePlot:
     def generate_graph(self, filename):
         fix = pylab.figure()
         axes = pylab.axes()
+
         if self.__major_formatter:
             axes.xaxis.set_major_formatter(self.__major_formatter)
         if self.__xaxis_ticks:
