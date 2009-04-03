@@ -109,7 +109,7 @@ class ReportXmlHandler extends DefaultHandler
             } else {
                 KeyStatistic ks = new KeyStatistic(attrs.getValue("name"),
                                                    attrs.getValue("value"),
-                                                   attrs.getValue("units"));
+                                                   attrs.getValue("unit"));
                 currentChart.addKeyStatistic(ks);
             }
         } else if (qName.equals("detail-section")) {

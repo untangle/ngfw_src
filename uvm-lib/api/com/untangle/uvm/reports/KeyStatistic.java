@@ -62,4 +62,10 @@ public class KeyStatistic implements Serializable
     {
         return unit;
     }
+
+    public String toString()
+    {
+        return "[KeyStatistic label: " + label + " value: " + value
+            + " unit: " + unit + "]";
+    }
 }

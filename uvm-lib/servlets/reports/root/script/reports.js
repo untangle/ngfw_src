@@ -372,7 +372,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             var data = [];
             for(var j=0;j<summaryItem.keyStatistics.list.length;j++) {
                 var keyStatistic = summaryItem.keyStatistics.list[j]
-                data.push([keyStatistic.label, keyStatistic.label, keyStatistic.unit]);
+                data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit]);
             }
             items.push( new Ext.grid.GridPanel({
                     store: new Ext.data.SimpleStore({
