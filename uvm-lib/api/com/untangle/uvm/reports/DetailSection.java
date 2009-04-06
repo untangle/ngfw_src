@@ -34,19 +34,18 @@
 package com.untangle.uvm.reports;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailSection extends Section implements Serializable
 {
-    private final List<ColumnDesc> columns;
-    private final List<List> data;
+    private final List<ColumnDesc> columns = new ArrayList<ColumnDesc>();
 
-    public DetailSection(String name, String title, List<ColumnDesc> columns,
-                         List<List> data)
+    private String sql;
+
+    public DetailSection(String name, String title)
     {
         super(name, title);
-        this.columns = columns;
-        this.data = data;
     }
 
     public List<ColumnDesc> getColumns()
@@ -54,8 +53,18 @@ public class DetailSection extends Section implements Serializable
         return columns;
     }
 
-    public List<List> getData()
+    public void addColumn(ColumnDesc col)
     {
-        return data;
+        columns.add(col);
+    }
+
+    public String getSql()
+    {
+        return sql;
+    }
+
+    public void setSql(String sql)
+    {
+        this.sql = sql;
     }
 }

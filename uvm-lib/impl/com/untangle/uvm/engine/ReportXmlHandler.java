@@ -39,9 +39,9 @@ import java.util.List;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.Chart;
 import com.untangle.uvm.reports.ColumnDesc;
+import com.untangle.uvm.reports.DetailSection;
 import com.untangle.uvm.reports.KeyStatistic;
 import com.untangle.uvm.reports.Section;
-import com.untangle.uvm.reports.SqlDetailSection;
 import com.untangle.uvm.reports.SummarySection;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -62,7 +62,7 @@ class ReportXmlHandler extends DefaultHandler
     private ApplicationData currentReport;
     private SummarySection currentSummary;
     private Chart currentChart;
-    private SqlDetailSection currentDetailSection;
+    private DetailSection currentDetailSection;
 
     private StringBuilder sqlBuilder;
 
@@ -113,7 +113,7 @@ class ReportXmlHandler extends DefaultHandler
                 currentChart.addKeyStatistic(ks);
             }
         } else if (qName.equals("detail-section")) {
-            currentDetailSection = new SqlDetailSection(attrs.getValue("name"),
+            currentDetailSection = new DetailSection(attrs.getValue("name"),
                                                         attrs.getValue("title"));
             sections.add(currentDetailSection);
         } else if (qName.equals("sql")) {

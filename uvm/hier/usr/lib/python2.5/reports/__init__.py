@@ -1,4 +1,5 @@
 import csv
+import mx
 import os
 import pylab
 import string
@@ -86,10 +87,10 @@ class SummarySection(Section):
         return element
 
 class DetailSection(Section):
-    def __init__(self, name, title, sql_template=None, columns=[]):
+    def __init__(self, name, title, columns=[], sql_template=None):
         Section.__init__(self, name, title)
-        self.__sql_template = sql_template
         self.__columns = columns
+        self.__sql_template = sql_template
 
     def generate(self, report_base, node_base, end_date):
         element = Element('detail-section')
@@ -98,8 +99,14 @@ class DetailSection(Section):
         if self.__sql_template:
             sql_element = Element('sql')
 
+            ed = '%d-%d-%d' % (end_date.year, end_date.month, end_date.day)
+
+            odb = (end_date - mx.DateTime.DateTimeDelta(1))
+            one_day_before = '%d-%d-%d' % (odb.year, odb.month, odb.day)
+
             t = string.Template(self.__sql_template)
-            sql_element.text = CDATA(t.substitute(end_date=end_date))
+            sql_element.text = CDATA(t.substitute(end_date=ed,
+                                                  one_day_before=one_day_before))
 
             element.append(sql_element)
 
@@ -108,8 +115,8 @@ class DetailSection(Section):
 
         return element
 
-class Column():
-    def __init__(self, name, title, type):
+class ColumnDesc():
+    def __init__(self, name, title, type=None):
         self.__name = name
         self.__title = title
         self.__type = type

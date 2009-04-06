@@ -61,6 +61,8 @@ public interface RemoteReportingManager  {
     ApplicationData getApplicationDataForHost(Date d, String appName,
                                               String hostname);
 
+    List<List> getDetailData(Date d, String appName, String detailName);
+
     // old stuff ---------------------------------------------------------------
 
 

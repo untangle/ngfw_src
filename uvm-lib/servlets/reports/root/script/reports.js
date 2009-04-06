@@ -84,11 +84,11 @@ Ung.Reports = Ext.extend(Object, {
         }.createDelegate(this));
     },
     postinit : function() {
-        this.initSemaphore--;
-        if (this.initSemaphore != 0) {
-            return;
-        }
-        this.startApplication()
+      this.initSemaphore--;
+      if (this.initSemaphore != 0) {
+        return;
+      }
+      this.startApplication();
     },
 
     startApplication : function() {
@@ -371,8 +371,8 @@ Ung.ReportDetails = Ext.extend(Object, {
             // key statistics
             var data = [];
             for(var j=0;j<summaryItem.keyStatistics.list.length;j++) {
-                var keyStatistic = summaryItem.keyStatistics.list[j]
-                data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit]);
+              var keyStatistic = summaryItem.keyStatistics.list[j];
+              data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit]);
             }
             items.push( new Ext.grid.GridPanel({
                     store: new Ext.data.SimpleStore({
@@ -406,13 +406,13 @@ Ung.ReportDetails = Ext.extend(Object, {
                         tooltip:this.i18n._('Export Excel'),
                         iconCls:'export-excel',
                         handler : function () {
-                            window.open(summaryItem.csvUrl)
+                          window.open(summaryItem.csvUrl);
                         }
                     }, '-', {
                         tooltip:this.i18n._('Export Printer'),
                         iconCls:'export-printer',
                         handler : function () {
-                            window.open(summaryItem.printerUrl)
+                          window.open(summaryItem.printerUrl);
                         }
                     }],
                     title:this.i18n._('Key Statistics'),
@@ -436,57 +436,72 @@ Ung.ReportDetails = Ext.extend(Object, {
             items : items
         });
     },
+
     buildDetailSection: function (section) {
-        var columns=[];
-        var fields=[];
-        var data=[];
-        for(var i=0;i<section.columns.list.length;i++) {
-            var c=section.columns.list[i];
-            var col={header:this.i18n._(c.title), dataIndex:c.name};
-            if(c.type=="Date") {
-                col.renderer=function(value) {
-                    return i18n.timestampFormat(value);
-                }
-                col.width=140;
-            } else if(c.type=="URL") {
-                col.renderer=function(value) {
-                    return '<a href="'+value+'" target="_new">'+value+'</a>';
-                }
-                col.width=160;
-            } else if(c.type=="UserLink") {
-                col.renderer=function(value) {
-                    return '<a href="javascript:reports.reportDetails.getApplicationDataForUser(\''+value+'\')">'+value+'</a>';
-                }
-                col.width=100;
-            } else if(c.type=="HostLink") {
-                col.renderer=function(value) {
-                    return '<a href="javascript:reports.reportDetails.getApplicationDataForHost(\''+value+'\')">'+value+'</a>';
-                }
-                col.width=100;
-            } else if(c.type=="EmailLink") {
-                col.renderer=function(value) {
-                    return '<a href="javascript:reports.reportDetails.getApplicationDataForEmail(\''+value+'\')">'+value+'</a>';
-                }
-                col.width=180;
-            }
-            columns.push(col);
-            fields.push({name:c.name});
+        var columns = [];
+        var fields = [];
+        for (var i = 0; i < section.columns.list.length; i++) {
+          var c = section.columns.list[i];
+          var col = { header:this.i18n._(c.title), dataIndex:c.name };
+
+          if (c.type == "Date") {
+            col.renderer = function(value) {
+              return i18n.timestampFormat(value);
+            };
+            col.width = 140;
+          } else if (c.type == "URL") {
+            col.renderer = function(value) {
+              return '<a href="' + value + '" target="_new">' + value + '</a>';
+            };
+            col.width = 160;
+          } else if (c.type == "UserLink") {
+            col.renderer = function(value) {
+              return '<a href="javascript:reports.reportDetails.getApplicationDataForUser(\'' + value + '\')">' + value + '</a>';
+            };
+            col.width = 100;
+          } else if (c.type == "HostLink") {
+            col.renderer = function(value) {
+              return '<a href="javascript:reports.reportDetails.getApplicationDataForHost(\'' + value + '\')">' + value + '</a>';
+            };
+            col.width = 100;
+          } else if (c.type == "EmailLink") {
+            col.renderer = function(value) {
+              return '<a href="javascript:reports.reportDetails.getApplicationDataForEmail(\'' + value + '\')">' + value + '</a>';
+            };
+            col.width = 180;
+          }
+          columns.push(col);
+          fields.push({ name: c.name });
         }
-        for(var i=0;i<section.data.list.length;i++) {
-            data.push(section.data.list[i].list);
-        }
+
+        var store = new Ext.data.SimpleStore({fields: fields, data: [] });
+
         var detailSection=new Ext.grid.GridPanel({
             title : section.title,
             enableHdMenu : false,
             enableColumnMove: false,
-            store:new Ext.data.SimpleStore({
-                fields: fields,
-                data:data
-            }),
+            store: store,
             columns: columns
         });
+
+        rpc.reportingManager.getDetailData(function(result, exception) {
+          if (exception) {
+            Ext.MessageBox.alert("Failed", exception.message);
+            return;
+          };
+
+          var data = [];
+
+          for (var i = 0; i < result.list.length; i++) {
+            data.push(result.list[i].list);
+          }
+
+          store.loadData(data);
+        }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name);
+
         return detailSection;
     },
+
     getApplicationDataForUser: function(value) {
         rpc.reportingManager.getApplicationDataForUser(function (result, exception) {
             if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};

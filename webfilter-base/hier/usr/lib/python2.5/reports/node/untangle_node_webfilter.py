@@ -4,6 +4,7 @@ import reports.engine
 import sql_helper
 
 from psycopg import DateFromMx
+from reports import ColumnDesc
 from reports import DetailSection
 from reports import EVEN_HOURS_OF_A_DAY
 from reports import Graph
@@ -36,15 +37,25 @@ class WebFilterBaseNode(Node):
                                   "count(case when webfilter_action = 'p' then 1 else null end)"))
 
     def get_report(self):
-        return Report(self.name, 'Web Filter',
-                      [SummarySection('summary', N_('Summary Report'),
-                                      [HourlyWebUsage()]),
-                       DetailSection('incidents', N_('Incident Report'),
-                                     sql_template="""\
-SELECT * FROM reports.n_http_events
-WHERE time_stamp >= '$end_date' - '1 day'::interval
+        sections = []
+
+        s = SummarySection('summary', N_('Summary Report'), [HourlyWebUsage()])
+        sections.append(s)
+
+        columns = [ColumnDesc('time_stamp', 'Time', 'Date'),
+                   ColumnDesc('hname', 'Client', 'HostLink'),
+                   ColumnDesc('uid', 'User', 'UserLink'),
+                   ColumnDesc('url', 'URL', 'URL')]
+        s = DetailSection('incidents', N_('Incident Report'),
+                          columns=columns,
+                          sql_template="""\
+SELECT time_stamp, hname, uid, 'http://' || host || uri FROM reports.n_http_events
+WHERE time_stamp >= '$one_day_before'
       AND time_stamp < '$end_date'
-      AND NOT webfilter_action ISNULL""")])
+      AND NOT webfilter_action ISNULL""")
+        sections.append(s)
+
+        return Report(self.name, 'Web Filter', sections)
 
     def teardown(self):
         print "teardown"

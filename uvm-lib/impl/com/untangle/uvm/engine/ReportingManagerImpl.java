@@ -21,6 +21,10 @@ package com.untangle.uvm.engine;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,8 +39,10 @@ import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.reports.Application;
 import com.untangle.uvm.reports.ApplicationData;
+import com.untangle.uvm.reports.DetailSection;
 import com.untangle.uvm.reports.Host;
 import com.untangle.uvm.reports.RemoteReportingManager;
+import com.untangle.uvm.reports.Section;
 import com.untangle.uvm.reports.TableOfContents;
 import com.untangle.uvm.reports.User;
 import com.untangle.uvm.security.Tid;
@@ -136,6 +142,50 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                                                       String emailAddr)
     {
         return null; //XXX
+    }
+
+    public List<List> getDetailData(Date d, String appName, String detailName)
+    {
+        List<List> rv = null;
+
+        ApplicationData ad = readXml(d, appName);
+        for (Section section : ad.getSections()) {
+            if (section instanceof DetailSection) {
+                DetailSection sds = (DetailSection)section;
+                if (sds.getName().equals(detailName)) {
+                    rv = new ArrayList<List>();
+                    String sql = sds.getSql();
+
+                    Connection conn = null;
+                    try {
+                        conn = DataSourceFactory.factory().getConnection();
+                        Statement stmt = conn.createStatement();
+                        stmt.setMaxRows(10);
+                        ResultSet rs = stmt.executeQuery(sql);
+                        int columnCount = rs.getMetaData().getColumnCount();
+                        while (rs.next()) {
+                            List l = new ArrayList(columnCount);
+                            for (int i = 1; i <= columnCount; i++) {
+                                l.add(rs.getObject(i));
+                            }
+                            rv.add(l);
+                        }
+                    } catch (SQLException exn) {
+                        logger.warn("could not get DetailData for: " + sql,
+                                    exn);
+                    } finally {
+                        if (conn != null) {
+                            try {
+                                DataSourceFactory.factory().closeConnection(conn);
+                            } catch (Exception x) { }
+                            conn = null;
+                        }
+                    }
+                }
+            }
+        }
+
+        return rv;
     }
 
     // private methods ---------------------------------------------------------
