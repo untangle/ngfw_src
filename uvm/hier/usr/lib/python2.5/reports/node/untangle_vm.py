@@ -43,7 +43,7 @@ CREATE TABLE reports.users (
         try:
             for sd in sql_helper.get_date_range(start_date, end_date):
                 sql_helper.run_sql("""\
-INSERT INTO reports.hnames
+INSERT INTO reports.users
     SELECT DISTINCT %s::date, username
     FROM events.u_lookup_evt
     WHERE time_stamp >= %s AND time_stamp < %s AND NOT username ISNULL""",
@@ -97,7 +97,7 @@ INSERT INTO reports.hnames
     def __make_sessions_table(self, start_date, end_date):
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.sessions (
-        date int8 NOT NULL,
+        pl_endp_id int8 NOT NULL,
         time_stamp timestamp NOT NULL,
         hname text,
         uid text,
@@ -109,7 +109,7 @@ CREATE TABLE reports.sessions (
         p2c_bytes int8,
         s2p_bytes int8,
         p2s_bytes int8,
-        PRIMARY KEY (pl_endp_id));
+        PRIMARY KEY (pl_endp_id))
 """, 'time_stamp', start_date, end_date)
 
         sd = DateFromMx(sql_helper.get_update_info('reports.sessions', start_date))

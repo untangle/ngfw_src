@@ -76,7 +76,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     // NEW SHIZZLE -------------------------------------------------------------
 
-    // XXX SAMPLE DATA
     public List<Date> getDates()
     {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
@@ -98,7 +97,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return l;
     }
 
-    // XXX SAMPLE DATA
     public TableOfContents getTableOfContents(Date d)
     {
         Application platform = new Application("untangle-vm", "Platform");
@@ -114,9 +112,13 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
             }
         }
 
-        // XXX TODO
-        List<User> users = getUsers(d);
-        List<Host> hosts = getHosts(d);
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        c.add(Calendar.DAY_OF_MONTH, -1);
+        Date yesterday = c.getTime();
+
+        List<User> users = getUsers(yesterday);
+        List<Host> hosts = getHosts(yesterday);
 
         return new TableOfContents(platform, apps, users, hosts);
     }
