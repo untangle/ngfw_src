@@ -97,9 +97,7 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
         else:
             logging.warn('ignoring table: %s' % tablename)
 
-    interval = (end_date - start_date).days
-
-    all_dates = Set(end_date - mx.DateTime.DateTimeDelta(i + 1) for i in range(interval))
+    all_dates = Set(get_date_range(start_date, end_date))
 
     for d in all_dates - existing_dates:
         run_sql("""\
@@ -216,6 +214,10 @@ WHERE tablename LIKE %s""", '%s%%' % prefix)
         conn.commit()
 
     return rv
+
+def get_date_range(start_date, end_date):
+    l = (end_date - start_date).days
+    return [end_date - mx.DateTime.DateTimeDelta(i + 1) for i in range(l)]
 
 def __make_trigger(schema, tablename, timestamp_column, all_dates):
     full_tablename = '%s.%s' % (schema, tablename)

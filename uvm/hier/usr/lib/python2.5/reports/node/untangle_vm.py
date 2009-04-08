@@ -6,6 +6,7 @@ import sql_helper
 from sql_helper import print_timing
 from reports.engine import Node
 from psycopg import DateFromMx
+from mx.DateTime import DateTimeDelta
 
 EVT_TYPE_REGISTER = 0
 EVT_TYPE_RENEW    = 1
@@ -22,29 +23,81 @@ class UvmNode(Node):
 
         self.__make_sessions_table(start_date, end_date)
 
-        self.__create_users_table(start_date, end_date)
-        self.__create_hnames_table(start_date, end_date)
+        self.__make_hnames_table(start_date, end_date)
+
+        self.__make_users_table(start_date, end_date)
 
     @print_timing
-    def __create_users_table(self, start_date, end_date):
-        sql_helper.create_table_from_query('reports.users', """\
-SELECT DISTINCT username FROM events.u_lookup_evt
-WHERE time_stamp >= %s AND time_stamp < %s""", (DateFromMx(start_date),
-                                                DateFromMx(end_date)))
+    def __make_users_table(self, start_date, end_date):
+        sql_helper.create_partitioned_table("""\
+CREATE TABLE reports.users (
+        date date NOT NULL,
+        username text NOT NULL,
+        PRIMARY KEY (date, username));
+""", 'date', start_date, end_date)
+
+        start_date = sql_helper.get_update_info('reports.users', start_date)
+
+        conn = sql_helper.get_connection()
+
+        try:
+            for sd in sql_helper.get_date_range(start_date, end_date):
+                sql_helper.run_sql("""\
+INSERT INTO reports.hnames
+    SELECT DISTINCT %s::date, username
+    FROM events.u_lookup_evt
+    WHERE time_stamp >= %s AND time_stamp < %s AND NOT username ISNULL""",
+                                   (DateFromMx(sd), DateFromMx(sd),
+                                    DateFromMx(sd + DateTimeDelta(1))),
+                                   connection=conn, auto_commit=False)
+
+            sql_helper.set_update_info('reports.users', DateFromMx(end_date),
+                                       connection=conn, auto_commit=False)
+
+            conn.commit()
+        except Exception, e:
+            print e
+            conn.rollback()
+            raise e
 
     @print_timing
-    def __create_hnames_table(self, start_date, end_date):
-        sql_helper.create_table_from_query('reports.hnames', """\
-SELECT DISTINCT hname FROM reports.sessions
-WHERE time_stamp >= %s AND time_stamp < %s AND client_intf=1""",
-                                           (DateFromMx(start_date),
-                                            DateFromMx(end_date)))
+    def __make_hnames_table(self, start_date, end_date):
+        sql_helper.create_partitioned_table("""\
+CREATE TABLE reports.hnames (
+        date date NOT NULL,
+        hname text NOT NULL,
+        PRIMARY KEY (date, hname));
+""", 'date', start_date, end_date)
+
+        start_date = sql_helper.get_update_info('reports.hnames', start_date)
+
+        conn = sql_helper.get_connection()
+
+        try:
+            for sd in sql_helper.get_date_range(start_date, end_date):
+                sql_helper.run_sql("""\
+INSERT INTO reports.hnames
+    SELECT DISTINCT %s::date, hname
+    FROM reports.sessions
+    WHERE time_stamp >= %s AND time_stamp < %s AND NOT hname ISNULL""",
+                                   (DateFromMx(sd), DateFromMx(sd),
+                                    DateFromMx(sd + DateTimeDelta(1))),
+                                   connection=conn, auto_commit=False)
+
+            sql_helper.set_update_info('reports.hnames', DateFromMx(end_date),
+                                       connection=conn, auto_commit=False)
+
+            conn.commit()
+        except Exception, e:
+            print e
+            conn.rollback()
+            raise e
 
     @print_timing
     def __make_sessions_table(self, start_date, end_date):
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.sessions (
-        pl_endp_id int8 NOT NULL,
+        date int8 NOT NULL,
         time_stamp timestamp NOT NULL,
         hname text,
         uid text,
@@ -94,7 +147,6 @@ INSERT INTO reports.sessions
         except Exception, e:
             conn.rollback()
             raise e
-
 
     def teardown(self):
         print "TEARDOWN"

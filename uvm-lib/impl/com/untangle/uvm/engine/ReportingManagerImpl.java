@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -102,10 +103,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        // XXX TODO
-        List<User> users = new ArrayList<User>();
-        List<Host> hosts = new ArrayList<Host>();
-
         List<Application> apps = new ArrayList<Application>();
         File dir = new File(getDateDir(d));
         if (dir.exists()) {
@@ -116,6 +113,10 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                 }
             }
         }
+
+        // XXX TODO
+        List<User> users = getUsers(d);
+        List<Host> hosts = getHosts(d);
 
         return new TableOfContents(platform, apps, users, hosts);
     }
@@ -208,6 +209,60 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         }
 
         return h.getReport();
+    }
+
+    private List<Host> getHosts(Date d)
+    {
+        List<Host> l = new ArrayList<Host>();
+
+        Connection conn = null;
+        try {
+            conn = DataSourceFactory.factory().getConnection();
+            PreparedStatement ps = conn.prepareStatement("SELECT hname from reports.hnames WHERE date = ?");
+            ps.setDate(1, new java.sql.Date(d.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                l.add(new Host(rs.getString(1)));
+            }
+        } catch (SQLException exn) {
+            logger.warn("could not get hnames", exn);
+        } finally {
+            if (conn != null) {
+                try {
+                    DataSourceFactory.factory().closeConnection(conn);
+                } catch (Exception x) { }
+                conn = null;
+            }
+        }
+
+        return l;
+    }
+
+    private List<User> getUsers(Date d)
+    {
+        List<User> l = new ArrayList<User>();
+
+        Connection conn = null;
+        try {
+            conn = DataSourceFactory.factory().getConnection();
+            PreparedStatement ps = conn.prepareStatement("SELECT username from reports.users WHERE date = ?");
+            ps.setDate(1, new java.sql.Date(d.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                l.add(new User(rs.getString(1)));
+            }
+        } catch (SQLException exn) {
+            logger.warn("could not get users", exn);
+        } finally {
+            if (conn != null) {
+                try {
+                    DataSourceFactory.factory().closeConnection(conn);
+                } catch (Exception x) { }
+                conn = null;
+            }
+        }
+
+        return l;
     }
 
     private String getDateDir(Date d)
