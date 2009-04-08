@@ -91,6 +91,7 @@ public class UvmContextImpl extends UvmContextBase
     private static final UvmContextImpl CONTEXT = new UvmContextImpl();
 
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
+    private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
     private static final String BDB_HOME = System.getProperty("bunnicula.db.dir");
 
     private static final String ACTIVATE_SCRIPT;
@@ -522,7 +523,24 @@ public class UvmContextImpl extends UvmContextBase
         } catch (InterruptedException exn) {
             logger.error("Interrupted during reboot");
         } catch (IOException exn) {
-            logger.error("Exception during rebooot");
+            logger.error("Exception during reboot");
+        }
+    }
+
+    public void shutdownBox() {
+        try {
+            Process p = exec(new String[] { SHUTDOWN_SCRIPT , "-h" , "now" });
+            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
+            int exitValue = p.waitFor();
+            if (0 != exitValue) {
+                logger.error("Unable to shutdown (" + exitValue + ")");
+            } else {
+                logger.info("Shutdown at admin request");
+            }
+        } catch (InterruptedException exn) {
+            logger.error("Interrupted during shutdown");
+        } catch (IOException exn) {
+            logger.error("Exception during shutdown");
         }
     }
 

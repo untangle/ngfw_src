@@ -222,18 +222,24 @@ public interface RemoteUvmContext
     void syncConfigFiles();
 
     /**
-     * Reboots the Untangle Server as if the right button menu was used
-     * and confirmed.  Note that this currently will not reboot a
-     * non-production (dev) box; this behavior may change in the
-     * future.  XXX
-     *
+     * Reboots the Untangle Server. Note that this currently will not reboot a
+     * dev box.
      */
     void rebootBox();
 
-    // debugging / performance management
+    /**
+     * Shutdown the Untangle Server
+     */
+    void shutdownBox();
+
+    /**
+     * Force a Full Garbage Collection.
+     */   
     void doFullGC();
 
-    // making sure the client and uvm versions are the same
+    /**
+     * Return the Version
+     */
     String version();
 
     /**

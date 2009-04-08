@@ -213,7 +213,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     buttons: [{
                         xtype : 'button',
                         text : this.i18n._('Reboot'),
-                        name : 'View Reports',
+                        name : 'Manual Reboot',
                         iconCls : 'reboot-icon',
                         handler : function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),
@@ -225,6 +225,37 @@ if (!Ung.hasResource["Ung.System"]) {
                                             Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),String.format(this.i18n._("Error: Unable to reboot {0} Server"),this.companyName)); 
                                         } else {
                                             Ext.MessageBox.wait(String.format(this.i18n._("The {0} Server is rebooting."),this.companyName), i18n._("Please wait"));
+                                        }
+                                    }.createDelegate(this))    
+                                }
+                             }.createDelegate(this));
+                        }.createDelegate(this)
+                    }]
+                },{
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    title : this.i18n._('Manual Shutdown'),
+                    buttonAlign: "left",
+                    items : [{
+                        border: false,
+                        cls: 'description',
+                        html: String.format(this.i18n._("{0}Warning:{1} Clicking this button will shutdown the {2} Server, stopping all network activity."),"<b>","</b>",this.companyName)                      
+                    }],
+                    buttons: [{
+                        xtype : 'button',
+                        text : this.i18n._('Shutdown'),
+                        name : 'Manual Shutdown',
+                        iconCls : 'reboot-icon',
+                        handler : function() {
+                            Ext.MessageBox.confirm(this.i18n._("Manual Shutdown Warning"),
+                                String.format(this.i18n._("You are about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ), 
+                                function(btn) {
+                                if (btn == 'yes') {
+                                    rpc.jsonrpc.RemoteUvmContext.shutdownBox(function (result, exception) {
+                                        if(exception) {
+                                            Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),String.format(this.i18n._("Error: Unable to shutdown {0} Server"),this.companyName)); 
+                                        } else {
+                                            Ext.MessageBox.wait(String.format(this.i18n._("The {0} Server is shutting down."),this.companyName), i18n._("Please wait"));
                                         }
                                     }.createDelegate(this))    
                                 }

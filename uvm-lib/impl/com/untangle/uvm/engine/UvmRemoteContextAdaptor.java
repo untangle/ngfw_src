@@ -192,6 +192,11 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         context.rebootBox();
     }
 
+    public void shutdownBox()
+    {
+        context.shutdownBox();
+    }
+
     public void doFullGC()
     {
         context.doFullGC();
