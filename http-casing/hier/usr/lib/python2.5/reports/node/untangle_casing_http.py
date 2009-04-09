@@ -21,7 +21,8 @@ class HttpCasing(Node):
 
         ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
                        'time_stamp',
-                       [Column('hname', 'text'), Column('host', 'text'),
+                       [Column('hname', 'text'), Column('uid', 'text'),
+                        Column('host', 'text'),
                         Column('s2c_content_type', 'text')],
                        [Column('hits', 'bigint', 'count(*)'),
                         Column('c2s_content_length', 'bigint',

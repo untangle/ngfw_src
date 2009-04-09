@@ -103,22 +103,33 @@ class HourlyWebUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'usage', _('Hourly Usage'))
 
-    def get_key_statistics(self, end_date):
+    def get_key_statistics(self, end_date, host=None, user=None):
         ed = DateFromMx(end_date)
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(7))
+
 
         hits_query = """\
 SELECT max(hits) AS max_hits, avg(hits) AS avg_hits
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
+        if host:
+            hits_query = hits_query + " AND hname = %s"
+        elif user:
+            hits_query = hits_query + " AND uid = %s"
 
         violations_query = """\
 SELECT avg(blocks)
 FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
       FROM reports.n_http_totals
-      WHERE trunc_time >= %s AND trunc_time < %s
-      GROUP BY hour) AS foo"""
+      WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        if host:
+            violations_query = violations_query + " AND hname = %s"
+        elif user:
+            violations_query = violations_query + " AND uid = %s"
+
+        violations_query = violations_query + " GROUP BY hour) AS foo"
 
         conn = sql_helper.get_connection()
 
@@ -126,7 +137,12 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
 
         try:
             curs = conn.cursor()
-            curs.execute(hits_query, (one_day, ed))
+            if host:
+                curs.execute(hits_query, (one_day, ed, host))
+            elif user:
+                curs.execute(hits_query, (one_day, ed, user))
+            else:
+                curs.execute(hits_query, (one_day, ed))
             r = curs.fetchone()
             ks = KeyStatistic(N_('max hits (1-day)'), r[0], N_('hits/minute'))
             lks.append(ks)
@@ -136,7 +152,12 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
 
         try:
             curs = conn.cursor()
-            curs.execute(hits_query, (one_week, ed))
+            if host:
+                curs.execute(hits_query, (one_week, ed, host))
+            elif user:
+                curs.execute(hits_query, (one_week, ed, user))
+            else:
+                curs.execute(hits_query, (one_week, ed))
             r = curs.fetchone()
             ks = KeyStatistic(N_('max hits (1-week)'), r[0], N_('hits/minute'))
             lks.append(ks)
@@ -146,7 +167,12 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
 
         try:
             curs = conn.cursor()
-            curs.execute(violations_query, (one_day, ed))
+            if host:
+                curs.execute(violations_query, (one_day, ed, host))
+            elif user:
+                curs.execute(violations_query, (one_day, ed, user))
+            else:
+                curs.execute(violations_query, (one_day, ed))
             r = curs.fetchone()
             ks = KeyStatistic(N_('avg violations (1-day)'), r[0],
                               N_('violations/hour'))
@@ -155,7 +181,12 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
 
         try:
             curs = conn.cursor()
-            curs.execute(violations_query, (one_week, ed))
+            if host:
+                curs.execute(violations_query, (one_week, ed, host))
+            elif user:
+                curs.execute(violations_query, (one_week, ed, user))
+            else:
+                curs.execute(violations_query, (one_week, ed))
             r = curs.fetchone()
             ks = KeyStatistic(N_('avg violations (1-week)'), r[0],
                               N_('violations/hour'))
@@ -164,23 +195,36 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
 
         return lks
 
-    def get_plot(self, end_date):
+    def get_plot(self, end_date, host=None, user=None):
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(7))
 
         conn = sql_helper.get_connection()
 
         try:
-            curs = conn.cursor()
-            curs.execute("""\
+            q = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        sum(hits) / 10 AS hits,
        sum(blocks) / 10 AS blocks
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s AND trunc_time < %s"""
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY time
-ORDER BY time asc""", (one_week, ed))
+ORDER BY time asc"""
+
+            curs = conn.cursor()
+
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
             dates = []
             hits = []
