@@ -93,6 +93,7 @@ class HourlyWebUsage(Graph):
     def __init__(self):
         Graph.__init__(self, 'usage', _('Hourly Usage'))
 
+    @print_timing
     def get_key_statistics(self, end_date, host=None, user=None):
         ed = DateFromMx(end_date)
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
@@ -184,6 +185,7 @@ FROM (select date_trunc('hour', trunc_time) AS hour, sum(blocks) AS blocks
 
         return lks
 
+    @print_timing
     def get_plot(self, end_date, host=None, user=None):
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(7))
