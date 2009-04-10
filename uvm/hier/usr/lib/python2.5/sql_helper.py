@@ -3,6 +3,7 @@ import mx
 import psycopg
 import re
 import string
+import md5
 import time
 
 from sets import Set
@@ -48,6 +49,13 @@ def drop_table(tablename):
         logging.debug('did not drop table: %s' % tablename)
     finally:
         conn.commit()
+
+def create_index(table, columns):
+    col_str = string.join(columns, ',')
+
+    index = md5.new(table + columns).hexdigest()
+
+    run_sql("CREATE INDEX %s ON %s (%s)" % (index, table, col_str))
 
 def create_table_as_sql(tablename, query, args):
     run_sql("CREATE TABLE %s AS %s" % (tablename, query), args)
@@ -97,12 +105,16 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
 
     all_dates = Set(get_date_range(start_date, end_date))
 
+    created_tables = []
+
     for d in all_dates - existing_dates:
+        tn = __tablename_for_date(full_tablename, d)
+        created_tables.append(tn)
+
         run_sql("""\
 CREATE TABLE %s
 (CHECK (%s >= %%s AND %s < %%s))
-INHERITS (%s)""" % (__tablename_for_date(full_tablename, d),
-                    timestamp_column, timestamp_column, full_tablename),
+INHERITS (%s)""" % (tn, timestamp_column, timestamp_column, full_tablename),
                 (DateFromMx(d), DateFromMx(d + mx.DateTime.DateTimeDelta(1))))
 
     if clear_tables:
@@ -110,6 +122,8 @@ INHERITS (%s)""" % (__tablename_for_date(full_tablename, d),
             drop_table(__tablename_for_date(full_tablename, d))
 
     __make_trigger(schema, tablename, timestamp_column, all_dates)
+
+    return created_tables
 
 def get_update_info(tablename, default=None):
     conn = get_connection()
@@ -278,7 +292,7 @@ WHERE trigger_schema = %s AND event_object_table = %s AND trigger_name = %s
 
 
 def __tablename_for_date(tablename, date):
-    return "%s_%d_%d_%d" % ((tablename,) + date.timetuple()[0:3])
+    return "%s_%d_%02d_%02d" % ((tablename,) + date.timetuple()[0:3])
 
 def __get_tablename(table_ddl):
     m = re.search('create\s+table\s+(\S+)', table_ddl, re.I | re.M)

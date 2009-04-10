@@ -39,8 +39,8 @@ class FactTable:
         return self.__measures
 
     def process(self, start_date, end_date):
-        sql_helper.create_partitioned_table(self.__ddl(), 'trunc_time',
-                                            start_date, end_date)
+        tables = sql_helper.create_partitioned_table(self.__ddl(), 'trunc_time',
+                                                     start_date, end_date)
 
         sd = DateFromMx(sql_helper.get_update_info(self.__name, start_date))
         ed = DateFromMx(end_date)
