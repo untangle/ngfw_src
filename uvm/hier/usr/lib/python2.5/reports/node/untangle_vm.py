@@ -79,7 +79,8 @@ CREATE TABLE reports.hnames (
 INSERT INTO reports.hnames
     SELECT DISTINCT %s::date, hname
     FROM reports.sessions
-    WHERE time_stamp >= %s AND time_stamp < %s AND NOT hname ISNULL""",
+    WHERE time_stamp >= %s AND time_stamp < %s
+          AND client_intf = 1 AND NOT hname ISNULL""",
                                    (DateFromMx(sd), DateFromMx(sd),
                                     DateFromMx(sd + DateTimeDelta(1))),
                                    connection=conn, auto_commit=False)

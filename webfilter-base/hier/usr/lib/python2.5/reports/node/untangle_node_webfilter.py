@@ -4,6 +4,7 @@ import reports.engine
 import sql_helper
 
 from psycopg import DateFromMx
+from psycopg import QuotedString
 from reports import ColumnDesc
 from reports import DetailSection
 from reports import EVEN_HOURS_OF_A_DAY
@@ -42,18 +43,7 @@ class WebFilterBaseNode(Node):
         s = SummarySection('summary', N_('Summary Report'), [HourlyWebUsage()])
         sections.append(s)
 
-        columns = [ColumnDesc('time_stamp', 'Time', 'Date'),
-                   ColumnDesc('hname', 'Client', 'HostLink'),
-                   ColumnDesc('uid', 'User', 'UserLink'),
-                   ColumnDesc('url', 'URL', 'URL')]
-        s = DetailSection('incidents', N_('Incident Report'),
-                          columns=columns,
-                          sql_template="""\
-SELECT time_stamp, hname, uid, 'http://' || host || uri FROM reports.n_http_events
-WHERE time_stamp >= '$one_day_before'
-      AND time_stamp < '$end_date'
-      AND NOT webfilter_action ISNULL""")
-        sections.append(s)
+        sections.append(WebFilterDetail())
 
         return Report(self.name, 'Web Filter', sections)
 
@@ -107,7 +97,6 @@ class HourlyWebUsage(Graph):
         ed = DateFromMx(end_date)
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(7))
-
 
         hits_query = """\
 SELECT max(hits) AS max_hits, avg(hits) AS avg_hits
@@ -252,5 +241,43 @@ ORDER BY time asc"""
         plot.add_dataset(dates, blocks, label=_('violations'))
 
         return plot
+
+class WebFilterDetail(DetailSection):
+    def __init__(self):
+        DetailSection.__init__(self, 'incidents', N_('Incident Report'))
+
+    def get_columns(self, host=None, user=None):
+        rv = [ColumnDesc('time_stamp', 'Time', 'Date')]
+
+        if not host:
+            rv.append(ColumnDesc('hname', 'Client', 'HostLink'))
+        if not user:
+            rv.append(ColumnDesc('uid', 'User', 'UserLink'))
+
+        rv = rv + [ColumnDesc('url', 'URL', 'URL')]
+
+        return rv
+
+
+    def get_sql(self, start_date, end_date, host=None, user=None):
+        sql = "SELECT time_stamp, "
+
+        if not host:
+            sql = sql + "hname, "
+        if not user:
+            sql = sql + "uid, "
+
+        sql = sql + ("""'http://' || host || uri
+FROM reports.n_http_events
+WHERE time_stamp >= %s AND time_stamp < %s
+      AND NOT webfilter_action ISNULL""" % (DateFromMx(start_date),
+                                            DateFromMx(end_date)))
+
+        if host:
+            sql = sql + (" AND host = %s" % QuotedString(host))
+        if user:
+            sql = sql + (" AND host = %s" % QuotedString(user))
+
+        return sql
 
 reports.engine.register_node(WebFilterBaseNode())

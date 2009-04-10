@@ -1,5 +1,6 @@
 import gettext
 import logging
+import mx
 import os
 import sets
 import sql_helper
@@ -146,7 +147,10 @@ def generate_reports(report_base, end_date):
             report = node.get_report()
             if report:
                 report.generate(report_base, date_base, end_date)
-
+                for u in __get_users(end_date - mx.DateTime.DateTimeDelta(1)):
+                    report.generate(report_base, date_base, end_date, user=u)
+                for h in __get_hosts(end_date - mx.DateTime.DateTimeDelta(1)):
+                    report.generate(report_base, date_base, end_date, host=h)
 
 def init_engine(node_module_dir, locale):
     gettext.bindtextdomain('untangle-node-reporting')
@@ -171,6 +175,36 @@ def setup(start_date, end_date):
             logger.warn("could not get node %s" % name)
         else:
             node.setup(start_date, end_date)
+
+def __get_users(date):
+    conn = sql_helper.get_connection()
+
+    d = DateFromMx(date)
+
+    try:
+        curs = conn.cursor()
+        curs.execute("SELECT username from reports.users WHERE date = %s", (d,))
+        rows = curs.fetchall()
+        rv = [rows[i][0] for i in range(len(rows))]
+    finally:
+        conn.commit()
+
+    return rv
+
+def __get_hosts(date):
+    conn = sql_helper.get_connection()
+
+    d = DateFromMx(date)
+
+    try:
+        curs = conn.cursor()
+        curs.execute("SELECT hname from reports.hnames WHERE date = %s", (d,))
+        rows = curs.fetchall()
+        rv = [rows[i][0] for i in range(len(rows))]
+    finally:
+        conn.commit()
+
+    return rv
 
 def __get_node_partial_order():
     global __nodes

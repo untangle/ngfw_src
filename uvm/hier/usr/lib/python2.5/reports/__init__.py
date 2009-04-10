@@ -32,15 +32,25 @@ class Report:
         self.__title = title
         self.__sections = sections
 
-    def generate(self, report_base, date_base, end_date):
-        node_base = '%s/%s' % (date_base, self.__name)
+    def generate(self, report_base, date_base, end_date, host=None, user=None):
+        if host:
+            node_base = '%s/%s/host/%s' % (date_base, self.__name, host)
+        elif user:
+            node_base = '%s/%s/user/%s' % (date_base, self.__name, user)
+        else:
+            node_base = '%s/%s' % (date_base, self.__name)
 
         element = Element('report')
         element.set('name', self.__name)
         element.set('title', self.__title)
+        if host:
+            element.set('host', host)
+        if user:
+            element.set('user', user)
 
         for s in self.__sections:
-            element.append(s.generate(report_base, node_base, end_date))
+            element.append(s.generate(report_base, node_base, end_date, host,
+                                      user))
 
         tree = ElementTree(element)
 
@@ -63,7 +73,7 @@ class Section:
     def title(self):
         return self.__title
 
-    def generate(self, report_base, node_base, end_date):
+    def generate(self, report_base, node_base, end_date, host=None, user=None):
         # XXX return DOM
         pass
 
@@ -73,7 +83,7 @@ class SummarySection(Section):
 
         self.__summary_items = summary_items
 
-    def generate(self, report_base, node_base, end_date):
+    def generate(self, report_base, node_base, end_date, host=None, user=None):
         section_base = "%s/%s" % (node_base, self.name)
 
         element = Element('summary-section')
@@ -82,35 +92,33 @@ class SummarySection(Section):
 
         for summary_item in self.__summary_items:
             element.append(summary_item.generate(report_base, section_base,
-                                                 end_date))
+                                                 end_date, host, user))
 
         return element
 
 class DetailSection(Section):
-    def __init__(self, name, title, columns=[], sql_template=None):
+    def __init__(self, name, title):
         Section.__init__(self, name, title)
-        self.__columns = columns
-        self.__sql_template = sql_template
 
-    def generate(self, report_base, node_base, end_date):
+    def get_columns(self, host=None, user=None):
+        pass
+
+    def get_sql(self, start_date, end_date, host=None, user=None):
+        pass
+
+    def generate(self, report_base, node_base, end_date, host=None, user=None):
         element = Element('detail-section')
         element.set('name', self.name)
         element.set('title', self.title)
-        if self.__sql_template:
-            sql_element = Element('sql')
 
-            ed = '%d-%d-%d' % (end_date.year, end_date.month, end_date.day)
+        start_date = end_date - mx.DateTime.DateTimeDelta(1)
+        sql = self.get_sql(start_date, end_date, host, user)
 
-            odb = (end_date - mx.DateTime.DateTimeDelta(1))
-            one_day_before = '%d-%d-%d' % (odb.year, odb.month, odb.day)
+        sql_element = Element('sql')
+        sql_element.text = CDATA(sql)
+        element.append(sql_element)
 
-            t = string.Template(self.__sql_template)
-            sql_element.text = CDATA(t.substitute(end_date=ed,
-                                                  one_day_before=one_day_before))
-
-            element.append(sql_element)
-
-        for c in self.__columns:
+        for c in self.get_columns(host, user):
             element.append(c.get_dom())
 
         return element
@@ -134,17 +142,18 @@ class Graph:
         self.__name = name
         self.__title = title
 
-    def get_key_statistics(self, end_date):
+    def get_key_statistics(self, end_date, host=None, user=None):
         return []
 
-    def get_plot(self, end_date):
+    def get_plot(self, end_date, host=None, user=None):
         return None
 
     @property
     def name(self):
         return self.__name
 
-    def generate(self, report_base, section_base, end_date):
+    def generate(self, report_base, section_base, end_date, host=None,
+                 user=None):
         self.__key_statistics = self.get_key_statistics(end_date)
         self.__plot = self.get_plot(end_date)
 
@@ -188,7 +197,7 @@ class LinePlot:
              'linestyle': linestyle}
         self.__datasets.append(m)
 
-    def generate_csv(self, filename):
+    def generate_csv(self, filename, host=None, user=None):
         data = {}
         z = 0
         for ds in self.__datasets:
@@ -212,7 +221,7 @@ class LinePlot:
         w = csv.writer(open(filename, 'w'))
         w.writerows(rows)
 
-    def generate_graph(self, filename):
+    def generate_graph(self, filename, host=None, user=None):
         fix = pylab.figure()
         axes = pylab.axes()
 

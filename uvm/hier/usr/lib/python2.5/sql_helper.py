@@ -8,8 +8,6 @@ import time
 from sets import Set
 from psycopg import DateFromMx
 
-# XXX function timing
-
 def print_timing(func):
     def wrapper(*arg):
         t1 = time.time()
