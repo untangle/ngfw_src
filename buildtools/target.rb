@@ -555,15 +555,17 @@ class JavaMsgFmtTarget < Target
     @filename
   end
 
-  protected
-
-  def make_dependencies
-    task self => @po_file
-    file filename => self
+  def to_s
+    "msgfmt:#{@filename}"
   end
+
+  protected
 
   def build()
     ensureDirectory @dest
+
+    info "[msgfmt] => #{@filename}"
+
     raise "msgfmt failed" unless
       Kernel.system <<CMD
 msgfmt --java2 -d #{@dest} -r "i18n.official.#{@basename.gsub('-', '_')}" -l #{@lang} #{@po_file}
@@ -630,21 +632,22 @@ class YuiCompressorTarget < Target
     @filename
   end
 
-  protected
-
-  def make_dependencies
-    task self => @script_file
-    file filename => self
+  def to_s
+    "yui-compressor:#{@filename}"
   end
 
+  protected
+
   def build()
+    info "YUI Compressor #{@filename}"
+
     ensureDirectory(File.dirname(@filename))    
     args = [@script_file, "--type", @type, "-o", @filename]
     yuiCompressorJar = Jars.downloadTarget('yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar').filename
     raise "YUI compress failed" unless
       JavaCompiler.runJar([], yuiCompressorJar, *args )
   end
-  
+    
   private 
   
   def YuiCompressorTarget.listFiles(src, type, relative_path = nil)
