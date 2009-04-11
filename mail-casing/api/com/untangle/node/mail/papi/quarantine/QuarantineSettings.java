@@ -34,6 +34,10 @@
 package com.untangle.node.mail.papi.quarantine;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+
+import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -45,6 +49,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.untangle.node.mail.papi.EmailAddressPairRule;
 import com.untangle.node.mail.papi.EmailAddressRule;
@@ -240,6 +245,29 @@ public class QuarantineSettings implements Serializable {
      */
     public void setSecretKey(byte[] key) {
         m_secretKey = key;
+    }
+
+    @Transient
+    public String getSecretKeyString()
+    {
+        try {
+            return URLEncoder.encode(new String(this.m_secretKey),"UTF-8");
+        } catch ( UnsupportedEncodingException e ) {
+            return null;
+        }
+    }
+
+    public void setSecretKeyString(String newValue)
+    {
+        if (newValue==null) {
+            return;
+        }
+
+        try {
+            this.m_secretKey = URLDecoder.decode(new String(newValue),"UTF-8").getBytes();
+        } catch ( UnsupportedEncodingException e ) {
+            /* nothing to do */
+        }
     }
 
     @Column(name="max_intern_time", nullable=false)

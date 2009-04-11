@@ -1196,9 +1196,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }.createDelegate(this), this.getMailSettings());
                 
                 if( this.isMailLoaded() ) {
+                    var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
                     // save mail node settings 
-                    this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList()                
-                    this.getMailNodeSettings().quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList()                
+                    quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList();
+                    quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList();
+
+                    delete quarantineSettings.secretKey;
                     this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         this.afterSave();

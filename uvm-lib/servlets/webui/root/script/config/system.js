@@ -130,7 +130,7 @@ if (!Ung.hasResource["Ung.System"]) {
         isMailLoaded : function(forceReload) {
             return this.getMailNode(forceReload) != null;
         },
-        getMailSettings : function(forceReload) {
+        getMailNodeSettings : function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
             	try {
                     this.rpc.mailSettings = this.getMailNode(forceReload).getMailNodeSettings();
@@ -680,7 +680,7 @@ if (!Ung.hasResource["Ung.System"]) {
             
             if (this.isMailLoaded()) {
                 // keep initial mail settings
-                this.initialMailSettings = Ung.Util.clone(this.getMailSettings());
+                this.initialMailSettings = Ung.Util.clone(this.getMailNodeSettings());
                 
                 protocolSettingsItems.push({
                     collapsible: true,
@@ -693,11 +693,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         boxLabel : String.format(this.i18n._('{0}Enable SMTP{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'SMTP',
-                        checked : this.getMailSettings().smtpEnabled,
+                        checked : this.getMailNodeSettings().smtpEnabled,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getMailSettings().smtpEnabled = checked;
+                                    this.getMailNodeSettings().smtpEnabled = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -706,11 +706,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         boxLabel : String.format(this.i18n._('{0}Disable SMTP{1} email processing.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'SMTP',
-                        checked : !this.getMailSettings().smtpEnabled,
+                        checked : !this.getMailNodeSettings().smtpEnabled,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getMailSettings().smtpEnabled = !checked;
+                                    this.getMailNodeSettings().smtpEnabled = !checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -719,7 +719,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         fieldLabel : this.i18n._('SMTP timeout (seconds)'),
                         name : 'SMTP timeout',
                         id: 'system_protocolSettings_smtpTimeout',
-                        value : this.getMailSettings().smtpTimeout/1000,
+                        value : this.getMailNodeSettings().smtpTimeout/1000,
                         width: 50,
                         allowDecimals: false,
                         allowNegative: false,
@@ -728,7 +728,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getMailSettings().smtpTimeout = newValue*1000;
+                                    this.getMailNodeSettings().smtpTimeout = newValue*1000;
                                 }.createDelegate(this)
                             }
                         }
@@ -737,11 +737,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         boxLabel : String.format(this.i18n._('{0}Allow TLS{1} encryption over SMTP.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'AllowTLS',
-                        checked : this.getMailSettings().smtpAllowTLS,
+                        checked : this.getMailNodeSettings().smtpAllowTLS,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getMailSettings().smtpAllowTLS = checked;
+                                    this.getMailNodeSettings().smtpAllowTLS = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -750,11 +750,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         boxLabel : String.format(this.i18n._('{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'AllowTLS',
-                        checked : !this.getMailSettings().smtpAllowTLS,
+                        checked : !this.getMailNodeSettings().smtpAllowTLS,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getMailSettings().smtpAllowTLS = !checked;
+                                    this.getMailNodeSettings().smtpAllowTLS = !checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -772,11 +772,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         boxLabel : String.format(this.i18n._('{0}Enable POP3{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'POP3',
-                        checked : this.getMailSettings().popEnabled,
+                        checked : this.getMailNodeSettings().popEnabled,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getMailSettings().popEnabled = checked;
+                                    this.getMailNodeSettings().popEnabled = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -785,11 +785,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         boxLabel : String.format(this.i18n._('{0}Disable POP3{1} email processing.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'POP3',
-                        checked : !this.getMailSettings().popEnabled,
+                        checked : !this.getMailNodeSettings().popEnabled,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getMailSettings().popEnabled = !checked;
+                                    this.getMailNodeSettings().popEnabled = !checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -798,7 +798,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         fieldLabel : this.i18n._('POP3 timeout (seconds)'),
                         name : 'POP3 timeout',
                         id: 'system_protocolSettings_popTimeout',
-                        value : this.getMailSettings().popTimeout/1000,
+                        value : this.getMailNodeSettings().popTimeout/1000,
                         width: 50,
                         allowDecimals: false,
                         allowNegative: false,
@@ -807,7 +807,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getMailSettings().popTimeout = newValue*1000;
+                                    this.getMailNodeSettings().popTimeout = newValue*1000;
                                 }.createDelegate(this)
                             }
                         }
@@ -824,11 +824,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         boxLabel : String.format(this.i18n._('{0}Enable IMAP{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'IMAP',
-                        checked : this.getMailSettings().imapEnabled,
+                        checked : this.getMailNodeSettings().imapEnabled,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getMailSettings().imapEnabled = checked;
+                                    this.getMailNodeSettings().imapEnabled = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -837,11 +837,11 @@ if (!Ung.hasResource["Ung.System"]) {
                         boxLabel : String.format(this.i18n._('{0}Disable IMAP{1} email processing.'), '<b>', '</b>'), 
                         hideLabel : true,
                         name : 'IMAP',
-                        checked : !this.getMailSettings().imapEnabled,
+                        checked : !this.getMailNodeSettings().imapEnabled,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getMailSettings().imapEnabled = !checked;
+                                    this.getMailNodeSettings().imapEnabled = !checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -850,7 +850,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         fieldLabel : this.i18n._('IMAP timeout (seconds)'),
                         name : 'IMAP timeout',
                         id: 'system_protocolSettings_imapTimeout',
-                        value : this.getMailSettings().imapTimeout/1000,
+                        value : this.getMailNodeSettings().imapTimeout/1000,
                         width: 50,
                         allowDecimals: false,
                         allowNegative: false,
@@ -859,7 +859,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getMailSettings().imapTimeout = newValue*1000;
+                                    this.getMailNodeSettings().imapTimeout = newValue*1000;
                                 }.createDelegate(this)
                             }
                         }
@@ -1176,10 +1176,13 @@ if (!Ung.hasResource["Ung.System"]) {
                 
                 // save mail settings
                 if (this.isMailLoaded()) {
+                    var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
+                    delete quarantineSettings.secretKey;
+
                     this.getMailNode().setMailNodeSettings(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         this.afterSave();
-                    }.createDelegate(this), this.getMailSettings());
+                    }.createDelegate(this), this.getMailNodeSettings());
                 } else {
                     this.saveSemaphore--;
                 };
@@ -1209,7 +1212,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 || !Ung.Util.equals(this.getMiscSettings(), this.initialMiscSettings)
                 || this.isHttpLoaded() && !Ung.Util.equals(this.getHttpSettings(), this.initialHttpSettings)
                 || this.isFtpLoaded() && !Ung.Util.equals(this.getFtpSettings(), this.initialFtpSettings)
-                || this.isMailLoaded() && !Ung.Util.equals(this.getMailSettings(), this.initialMailSettings);
+                || this.isMailLoaded() && !Ung.Util.equals(this.getMailNodeSettings(), this.initialMailSettings);
         }
 
     });
