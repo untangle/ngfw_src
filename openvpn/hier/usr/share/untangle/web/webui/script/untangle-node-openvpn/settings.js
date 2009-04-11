@@ -433,6 +433,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         completeWizard : function( handler )
         {
+            this.gui.node.start();
             this.gui.clientSetup.endAction();
         }
     });
@@ -1813,6 +1814,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             clientWizard.goToPage(0);
         },
 
+        completeServerWizard : function( handler )
+        {
+            this.node.start();
+            this.serverSetup.endAction();
+        },
+
         //
         configureVPNServer : function() {
             if (this.serverSetup) {
@@ -2025,9 +2032,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         border : false
                     }]
                 },
-                onNext : function(handler) {
-                    this.serverSetup.endAction();
-                }.createDelegate(this)
+                onNext : this.completeServerWizard.createDelegate(this)
             };
             var serverWizard = new Ung.Wizard({
                 height : 450,
