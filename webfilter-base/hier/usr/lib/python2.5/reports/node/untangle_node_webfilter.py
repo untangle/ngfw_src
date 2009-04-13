@@ -249,14 +249,14 @@ class WebFilterDetail(DetailSection):
         DetailSection.__init__(self, 'incidents', N_('Incident Report'))
 
     def get_columns(self, host=None, user=None):
-        rv = [ColumnDesc('time_stamp', 'Time', 'Date')]
+        rv = [ColumnDesc('time_stamp', N_('Time'), 'Date')]
 
         if not host:
-            rv.append(ColumnDesc('hname', 'Client', 'HostLink'))
+            rv.append(ColumnDesc('hname', N_('Client'), 'HostLink'))
         if not user:
-            rv.append(ColumnDesc('uid', 'User', 'UserLink'))
+            rv.append(ColumnDesc('uid', N_('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('url', 'URL', 'URL')]
+        rv = rv + [ColumnDesc('url', N_('URL'), 'URL')]
 
         return rv
 
