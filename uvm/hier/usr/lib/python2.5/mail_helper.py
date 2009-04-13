@@ -8,7 +8,12 @@ import os.path
 import popen2
 import re
 import shutil
+import smtplib
 import tempfile
+
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from email.MIMEImage import MIMEImage
 
 _ = gettext.gettext
 def N_(message): return message
@@ -29,7 +34,7 @@ class HtmlWriter():
         output = open("%s/index.html" % self.__dir, 'w')
 
         input_files = ['%s/toc.html' % self.__dir,
-                       '%s/index.html' % self.__dir]
+                       '%s/body.html' % self.__dir]
 
         for l in fileinput.input(input_files):
             output.write(l)
@@ -39,11 +44,46 @@ class HtmlWriter():
         for f in input_files:
             os.remove(f)
 
-        return self.__dir
+    def mail(self):
+        strFrom = 'amread@untangle.com'
+        strTo = 'amread@untangle.com'
+
+        msgRoot = MIMEMultipart('related')
+        msgRoot['Subject'] = 'test message' # XXX
+        msgRoot['From'] = strFrom
+        msgRoot['To'] = strTo
+        msgRoot.preamble = 'This is a multi-part message in MIME format.'
+
+        msgAlternative = MIMEMultipart('alternative')
+        msgRoot.attach(msgAlternative)
+
+        msgText = MIMEText('This is the alternative plain text message.')
+        msgAlternative.attach(msgText)
+
+        index_file = open('%s/%s' % (self.__dir, 'index.html'), 'r')
+        msgText = MIMEText(index_file.read(), 'html')
+        msgAlternative.attach(msgText)
+
+        for f in os.listdir(self.__dir):
+            if f.endswith('.png'):
+                # This example assumes the image is in the current directory
+                fp = open('%s/%s' % (self.__dir, f), 'rb')
+                msgImage = MIMEImage(fp.read())
+                fp.close()
+                # Define the image's ID as referenced above
+                msgImage.add_header('Content-ID', f)
+                msgRoot.attach(msgImage)
+
+        smtp = smtplib.SMTP()
+        smtp.connect('mail.untangle.com')
+        smtp.sendmail(strFrom, strTo, msgRoot.as_string())
+        smtp.quit()
+
+    def cleanup(self):
+        os.rmdir(self.__dir)
 
     def close(self):
         self.__body_file.close();
-
 
     def write(self, str):
         self.__body_file.write(str)

@@ -157,8 +157,9 @@ def generate_reports(report_base, end_date):
                     report.generate(report_base, date_base, end_date, host=h)
 
     writer.close()
-    message_file = writer.generate(end_date)
-    print "CHECK OUT %s" % message_file
+    writer.generate(end_date)
+    writer.mail()
+    writer.cleanup()
 
 def init_engine(node_module_dir, locale):
     gettext.bindtextdomain('untangle-node-reporting')
