@@ -1,9 +1,10 @@
 import csv
+import gettext
 import mx
 import os
 import pylab
 import string
-import gettext
+import sql_helper
 
 from matplotlib.ticker import FuncFormatter
 from mx.DateTime import DateTimeDeltaFromSeconds
@@ -37,12 +38,7 @@ class Report:
         self.__sections = sections
 
     def generate(self, report_base, date_base, end_date, host=None, user=None):
-        if host:
-            node_base = '%s/%s/host/%s' % (date_base, self.__name, host)
-        elif user:
-            node_base = '%s/%s/user/%s' % (date_base, self.__name, user)
-        else:
-            node_base = '%s/%s' % (date_base, self.__name)
+        node_base = self.__get_node_base(date_base, host, user)
 
         element = Element('report')
         element.set('name', self.__name)
@@ -64,11 +60,11 @@ class Report:
         tree.write("%s/%s/report.xml" % (report_base, node_base),
                    encoding='utf-8', pretty_print=True, xml_declaration=True)
 
-    def to_html(self, writer, report_base, section_base, end_date):
-        display_name, anchor_name = add_node_anchor(self.__name)
+    def to_html(self, writer, report_base, date_base, end_date):
+        ni = writer.add_node_anchor(self.__name)
 
         writer.write("""\
-      <table style="width:100%;border-bottom:1px #CCC solid;margin-bottom:10px;">
+      <table style="width:100%%;border-bottom:1px #CCC solid;margin-bottom:10px;">
         <tr>
           <td>
             <span style="font-size:16px;font-weight:bold;">%s</span><a name="%s"></a>
@@ -78,10 +74,20 @@ class Report:
           </td>
 
         </tr>
-      </table>""", (display_name, anchor_name))
+      </table>""" % (ni.display_name, ni.anchor))
+
+        node_base = self.__get_node_base(date_base)
 
         for s in self.__sections:
-            s.to_html(writer, report_base, section_base, end_date)
+            s.to_html(writer, report_base, node_base, end_date)
+
+    def __get_node_base(self, date_base, host=None, user=None):
+        if host:
+            return '%s/%s/host/%s' % (date_base, self.__name, host)
+        elif user:
+            return '%s/%s/user/%s' % (date_base, self.__name, user)
+        else:
+            return '%s/%s' % (date_base, self.__name)
 
 class Section:
     def __init__(self, name, title):
@@ -121,10 +127,10 @@ class SummarySection(Section):
 
         return element
 
-    def to_html(self, writer, report_base, section_base, end_date):
+    def to_html(self, writer, report_base, node_base, end_date):
         writer.write("""\
       <div style="margin-left:10px;">
-        <table style="width:100%;border-bottom:1px #CCC dotted;margin-bottom:10px;">
+        <table style="width:100%%;border-bottom:1px #CCC dotted;margin-bottom:10px;">
           <tr>
             <td>
               <span style="font-size:14px;font-weight:bold;;color:#009933">%s</span>
@@ -134,8 +140,10 @@ class SummarySection(Section):
         </table>
 """ % _(self.title))
 
+        section_base = "%s/%s" % (node_base, self.name)
+
         for si in self.__summary_items:
-            si.to_html(write, report_base, section_base, end_date)
+            si.to_html(writer, report_base, section_base, end_date)
 
 class DetailSection(Section):
     def __init__(self, name, title):
@@ -166,7 +174,7 @@ class DetailSection(Section):
 
     def to_html(self, writer, report_base, section_base, end_date):
         writer.write("""\
-<table style="width:100%;border-bottom:1px #CCC dotted;margin-bottom:10px;">
+<table style="width:100%%;border-bottom:1px #CCC dotted;margin-bottom:10px;">
   <tr>
     <td>
       <span style="font-size:14px;font-weight:bold;;color:#009933">%s</span>
@@ -174,22 +182,22 @@ class DetailSection(Section):
 
   </tr>
 </table>
-<table style="width:100%;font-size:12px;"><tbody><tr><td colspan="2">
-        <div style="float: left; width: 100%;"><table  style="width:100%;"><thead>
+<table style="width:100%%;font-size:12px;"><tbody><tr><td colspan="2">
+        <div style="float: left; width: 100%%;"><table  style="width:100%%;"><thead>
               <tr style="background-color:#EFEFEF;text-align:left;"><th >Client Address</th>
 """ % _(self.title))
 
         columns = self.get_columns()
 
         for c in columns:
-            writer.write('<th >%s</th>', _(c.title))
+            writer.write('<th >%s</th>' % _(c.title))
 
         conn = sql_helper.get_connection()
 
         try:
             curs = conn.cursor()
             start_date = end_date - mx.DateTime.DateTimeDelta(1)
-            curs.execute(get_sql(start_date, end_date))
+            curs.execute(self.get_sql(start_date, end_date))
             rows = curs.fetchall()
         finally:
             conn.commit()
@@ -281,7 +289,7 @@ class Graph:
                                                           self.__name))
 
         writer.write("""\
-<table  style="width:100%;border:1px #ccc solid;font-size:11px;">
+<table  style="width:100%%;border:1px #ccc solid;font-size:11px;">
   <tbody>
     <tr><td style="vertical-align:top;padding-bottom:1em;padding-right:1em;" ><img src="%s"/></td><td style="vertical-align:top;padding-bottom:1em;">
         <div style=" width: 236px;background-color:#cccccc;border:1px #ccc solid;border-bottom:none;padding:0.2em;color:#333;clear:left;font-weight:bold;">%s</div>

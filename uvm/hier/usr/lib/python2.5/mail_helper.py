@@ -1,6 +1,7 @@
 import StringIO
 import base64
 import fileinput
+import gettext
 import locale
 import os
 import os.path
@@ -19,15 +20,16 @@ class HtmlWriter():
 
         self.__body_file = open('%s/body.html' % self.__dir, 'w')
 
+        self.__table_of_contents = []
+        self.__node_info = {}
         self.__image_num = 0
 
     def generate(self, date):
-        self.__write_toc()
+        self.__write_toc(date)
         output = open("%s/index.html" % self.__dir, 'w')
 
         input_files = ['%s/toc.html' % self.__dir,
                        '%s/index.html' % self.__dir]
-
 
         for l in fileinput.input(input_files):
             output.write(l)
@@ -37,6 +39,8 @@ class HtmlWriter():
         for f in input_files:
             os.remove(f)
 
+        return self.__dir
+
     def close(self):
         self.__body_file.close();
 
@@ -45,15 +49,16 @@ class HtmlWriter():
         self.__body_file.write(str)
 
     def encode_image(self, path, base=None):
-        base, ext = os.path.splitext('foo.png')
-        cid = '%s.%s' % (self.__image_num, ext)
+        b, ext = os.path.splitext(path)
+        if not ext or ext == '':
+            ext = '.png'
+        cid = '%s%s' % (self.__image_num, ext)
         self.__image_num = self.__image_num + 1
 
         if base:
-            filename = '%s/%s'
+            filename = '%s/%s' % (base, path)
         else:
             filename = path
-
 
         shutil.copyfile(filename, '%s/%s' % (self.__dir, cid))
 
@@ -62,32 +67,40 @@ class HtmlWriter():
     def add_node_anchor(self, name):
         self.__table_of_contents.append(name)
 
+        return self.get_node_info(name)
+
     def get_node_info(self, name):
-        r, w = popen2.popen2("apt-cache show untangle-vm")
-        w.close()
+        ni = self.__node_info.get(name, None)
 
-        desc_icon = None
-        display_name = None
-        cid = None
+        if not ni:
+            r, w = popen2.popen2("apt-cache show untangle-vm")
+            w.close()
 
-        for l in r.readlines():
-            if re.search('^Desc-Icon:', l):
-                desc_icon = l.split(':', 1)[1]
-            elif desc_icon and re.search('^ ', l):
-                desc_icon =  desc_icon + l
-            elif desc_icon:
-                input = StringIO.StringIO(desc_icon)
-                fd, fname = tempfile.mkstemp()
-                output = os.fdopen(fs, 'w')
-                base64.decode(input, output)
-                output.close()
-                cid = self.encode_image(fname)
-                os.remove(fname)
+            desc_icon = None
+            display_name = None
+            cid = None
 
-            if re.search('^Display-Name:', l):
-                display_name = l.split(': ', 1)
+            for l in r.readlines():
+                if re.search('^Desc-Icon:', l):
+                    desc_icon = l.split(':', 1)[1]
+                elif desc_icon and re.search('^ ', l):
+                    desc_icon =  desc_icon + l
+                elif desc_icon:
+                    input = StringIO.StringIO(desc_icon)
+                    fd, fname = tempfile.mkstemp()
+                    output = os.fdopen(fd, 'w')
+                    base64.decode(input, output)
+                    output.close()
+                    cid = self.encode_image(fname)
+                    os.remove(fname)
 
-            return (display_name, cid)
+                    if re.search('^Display-Name:', l):
+                        display_name = l.split(': ', 1)
+
+            ni = NodeInfo(name, display_name, cid)
+            self.__node_info[name] = ni
+
+        return ni
 
     def __write_toc(self, date):
         toc_file = open('%s/toc.html' % self.__dir, 'w')
@@ -114,7 +127,7 @@ class HtmlWriter():
         </div>
         <br/><br/>
 
-        <table cellspacing="0" cellpadding="4"style="width:100%;border:1px #ccc solid;font-size:14px;">
+        <table cellspacing="0" cellpadding="4"style="width:100%%;border:1px #ccc solid;font-size:14px;">
           <thead><tr><th colspan="2" align="left" style="text-align:left;background-color:#EFEFEF">%s</th></tr></thead>
           <tbody>
 """ % (_('Reports'), _('Reports'), day_of_week, date_string, _('Report Items')))
@@ -125,14 +138,14 @@ class HtmlWriter():
             if name == 'untangle-vm':
                 name = 'untangle-node-reporting'
 
-            display_name, cid = self.get_node_info(name)
+            ni = self.get_node_info(name)
 
             if row_num % 2 == 0:
                 toc_file.write("""\
             <tr>
               <td style="width: 44px"><img alt="" src="%s"style="width:42px;height:42px;"/></td>
               <td><a href="%s">%s</a></td>
-            </tr>""" % (node_info.icon_cid, self.add_node_anchor(name), node_info.title))
+            </tr>""" % (ni.cid, self.add_node_anchor(name), ni.display_name))
             else:
                 toc_file.write("""\
             <tr style="background-color:#EFEFEF;">
@@ -164,6 +177,21 @@ class HtmlWriter():
 </html>
 """)
 
+class NodeInfo():
+    def __init__(self, name, display_name, cid):
+        self.__name = name
+        self.__display_name = display_name
+        self.__cid = cid
+
+    @property
+    def display_name(self):
+        return self.__display_name
+
+    @property
+    def cid(self):
+        return self.__cid
 
 
-
+    @property
+    def anchor(self):
+        return '#%s' % self.__name
