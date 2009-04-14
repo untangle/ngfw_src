@@ -70,7 +70,7 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object,
             return;
         }
 
-        var message = i18n._( 'Test email sent.' );
+        var message = i18n._( 'Test email sent.  Check your mailbox to for successful delivery.' );
         if ( result != true ) message = i18n._( 'Warning!  Test failed.  Check your settings.' );
 
         this.showTester( { progressText : message } );

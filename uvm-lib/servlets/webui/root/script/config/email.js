@@ -168,14 +168,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                         modal : true,
                         prompt : true,
                         fn: function(btn, emailAddress){
-						    if (btn == 'ok'){
+			    if (btn == 'ok'){
                                 Ext.MessageBox.show({
                                     title : this.i18n._('Email Test'),
                                     msg : emailTestMessage,
-		                            buttons : { 
-		                                cancel:this.i18n._('Close'), 
-		                                ok:this.i18n._('Proceed') 
-		                            },
+		                    buttons : { 
+		                        cancel:this.i18n._('Close'), 
+		                        ok:this.i18n._('Proceed') 
+		                    },
                                     modal : true,
                                     prompt : true,
                                     progress : true,
@@ -184,26 +184,26 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     progressText : this.i18n._('Sending...'),
                                     value : emailAddress
                                 });
-		                        var message = rpc.adminManager.sendTestMessage( function(result, exception) {
-		                            if(Ung.Util.handleException(exception)) return;
-		                            this.testEmailResultMessage = result == true ? this.i18n._('Test email sent.') : this.i18n._('Warning!  Test failed.  Check your settings.');
-		    
-		                            Ext.MessageBox.show({
-		                                title : this.i18n._('Email Test'),
-		                                msg : emailTestMessage,
+		                var message = rpc.adminManager.sendTestMessage( function(result, exception) {
+		                    if(Ung.Util.handleException(exception)) return;
+		                    this.testEmailResultMessage = (( result == true ) ? this.i18n._( 'Test email sent.  Check your mailbox to for successful delivery.' ) : this.i18n._('Warning!  Test failed.  Check your settings.' ));
+		                    
+		                    Ext.MessageBox.show({
+		                        title : this.i18n._('Email Test'),
+		                        msg : emailTestMessage,
                                         buttons : { 
                                             cancel:this.i18n._('Close'), 
                                             ok:this.i18n._('Proceed') 
                                         },
-		                                modal : true,
+		                        modal : true,
                                         prompt : true,
-		                                progress : true,
-		                                waitConfig: {interval: 100},
-		                                progressText : this.testEmailResultMessage,
+		                        progress : true,
+		                        waitConfig: {interval: 100},
+		                        progressText : this.testEmailResultMessage,
                                         value : emailAddress
-		                            });
-		                        }.createDelegate(this), emailAddress);
-						    }
+		                    });
+		                }.createDelegate(this), emailAddress);
+			    }
                         }.createDelegate(this),
                         progress : true,
                         progressText : ' '
