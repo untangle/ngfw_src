@@ -187,7 +187,6 @@ if (!Ung.hasResource["Ung.Email"]) {
 		                var message = rpc.adminManager.sendTestMessage( function(result, exception) {
 		                    if(Ung.Util.handleException(exception)) return;
 		                    this.testEmailResultMessage = (( result == true ) ? this.i18n._( 'Test email sent.  Check your mailbox to for successful delivery.' ) : this.i18n._('Warning!  Test failed.  Check your settings.' ));
-		                    
 		                    Ext.MessageBox.show({
 		                        title : this.i18n._('Email Test'),
 		                        msg : emailTestMessage,

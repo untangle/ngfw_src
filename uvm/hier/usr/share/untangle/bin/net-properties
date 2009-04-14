@@ -102,23 +102,25 @@ bridge_configuration()
     fi
 }
 
+## This may be incorrect if you have two links, but it isn't actually used
+## by the system so it doesn't really matter.
 get_default_gateway()
 {
-    ip route show | awk '/default/ { print $3 }'
+    ip route show table all | awk '/default/ { print $3 ; exit }'
 }
 
 ## Here goes nothing, several calls to awk to accomplish what could be done in one.
 get_dns_1()
 {
     if [ -f ${DNS_MASQ_CONF} ] ; then
-        awk 'BEGIN { server = "yes" } /server/ { gsub( "server=", "" ) ; if ( server == "yes" ) { print ; server = "no" }}' ${DNS_MASQ_CONF}
+        awk '/^server/ { sub( " *#.*", "" ); sub( "^server=", "" ) ; print  ; exit }' ${DNS_MASQ_CONF}
     fi
 }
 
 get_dns_2()
 {
     if [ -f ${DNS_MASQ_CONF} ] ; then
-        awk 'BEGIN { server = "no" } /server/ { gsub( "server=", "" ) ; if ( server == "no" ) { server = "yes" } else if ( server == "yes" ) { print ; server = "done" }}' ${DNS_MASQ_CONF}
+        awk -v dns_1=false '/^server/ { if ( dns_1 == "false" ) { dns_1 = "true" ; next } ; sub( " *#.*", "" ); sub( "^server=", "" ) ; print  ; exit }' ${DNS_MASQ_CONF}
     fi
 }
 
