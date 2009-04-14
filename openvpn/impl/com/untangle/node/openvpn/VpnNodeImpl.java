@@ -575,12 +575,16 @@ public class VpnNodeImpl extends AbstractNode
     {
         super.preStart();
 
+        Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-openvpn");
+        I18nUtil i18nUtil = new I18nUtil(i18nMap);
+
         if ( this.settings == null ) {
             String[] args = {""};
             try {
                 postInit( args );
             } catch ( NodeException e ) {
-                throw new NodeStartException( "post init", e );
+                throw new NodeStartException( i18nUtil.tr( "An Internal Error Occurred, Please try again."), 
+                                              e );
             }
 
             if ( this.settings == null ) initializeSettings();
@@ -588,9 +592,7 @@ public class VpnNodeImpl extends AbstractNode
 
         /* Don't start if openvpn cannot be configured */
         if ( !settings.isConfigured()) {
-            throw new UnconfiguredException( "You must configure OpenVPN as either a VPN Routing Server" + 
-                                             " or a VPN Client before you can turn it on.  You may do this" +
-                                             " through its Setup Wizard (in its settings)." );
+            throw new UnconfiguredException( i18nUtil.tr( "You must configure OpenVPN as either a VPN Routing Server or a VPN Client before you can turn it on.  You may do this through its Setup Wizard (in its settings)." ));
         }
 
         try {

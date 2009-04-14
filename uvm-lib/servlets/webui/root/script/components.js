@@ -1065,8 +1065,10 @@ Ung.Node = Ext.extend(Ext.Component, {
             this.setState("attention");
             this.nodeContext.rpcNode.start(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {
+                    var title = String.format( i18n._( "Unable to start {0}" ), this.displayName );
+                    Ext.MessageBox.alert(title, exception.message);
                    //this.updateRunState("INITIALIZED");
-                }.createDelegate(this),"alert")) return;
+                }.createDelegate(this),"noAlert")) return;
             }.createDelegate(this));
         }.createDelegate(this));
     },
