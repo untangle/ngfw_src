@@ -9,6 +9,7 @@ import popen2
 import re
 import shutil
 import smtplib
+import string
 import tempfile
 
 from email.MIMEMultipart import MIMEMultipart
@@ -31,15 +32,14 @@ class HtmlWriter():
 
     def generate(self, date):
         self.__write_toc(date)
-        output = open("%s/index.html" % self.__dir, 'w')
 
         input_files = ['%s/toc.html' % self.__dir,
                        '%s/body.html' % self.__dir]
 
-        for l in fileinput.input(input_files):
-            output.write(l)
+        output_file = '%s/index.html' % self.__dir
 
-        output.close()
+        os.system('cat %s | tidy -i >%s 2>&1' % (string.join(input_files, ' '),
+                                                 output_file))
 
         for f in input_files:
             os.remove(f)
@@ -80,7 +80,7 @@ class HtmlWriter():
         smtp.quit()
 
     def cleanup(self):
-        os.rmdir(self.__dir)
+        os.removedirs(self.__dir)
 
     def close(self):
         self.__body_file.close();
@@ -230,7 +230,6 @@ class NodeInfo():
     @property
     def cid(self):
         return self.__cid
-
 
     @property
     def anchor(self):
