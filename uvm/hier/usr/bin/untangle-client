@@ -1,0 +1,3 @@
+#!/bin/dash
+
+/usr/bin/x-www-browser http://localhost/setup/welcome.do\?console=1
