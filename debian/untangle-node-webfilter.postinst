@@ -1,5 +1,8 @@
 #! /bin/bash
+# This file automatically created - do not modify
 
 rm -fr /usr/share/untangle/db/webfilter/
+
+/usr/bin/ucli -t 30 register untangle-node-webfilter 2>/dev/null || true
 
 exit 0
