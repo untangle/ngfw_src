@@ -656,6 +656,8 @@ public class LicenseManagerImpl implements LicenseManager
         addMackageMap( "untangle-node-sitefilter", ProductIdentifier.SITEFILTER );
         addMackageMap( "untangle-node-commtouch", ProductIdentifier.COMMTOUCH );
         addMackageMap( "untangle-node-nas", ProductIdentifier.NAS );
+        addMackageMap( "untangle-node-splitd", ProductIdentifier.SPLITD );
+        addMackageMap( "untangle-node-faild", ProductIdentifier.FAILD );
 
         INSTANCE = new LicenseManagerImpl();
 
