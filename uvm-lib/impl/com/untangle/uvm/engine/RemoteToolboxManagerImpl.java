@@ -182,6 +182,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             } else if (type == MackageDesc.Type.TRIAL) {
                 //Workaround for Trial display names. better solution is welcome.
                 String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
+                realDn=realDn.replaceFirst(" Limited Trial","");
                 displayNames.add(realDn);
                 trials.put(realDn, md);
             }
@@ -196,6 +197,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             } else if (type == MackageDesc.Type.TRIAL) {
                 //Workaround for Trial display names. better solution is welcome.
                 String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
+                realDn=realDn.replaceFirst(" Limited Trial","");
                 trials.remove(realDn);
             } else if (!md.isInvisible()
                        && (type == MackageDesc.Type.NODE
