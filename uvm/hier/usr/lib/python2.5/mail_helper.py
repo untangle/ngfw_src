@@ -38,15 +38,15 @@ class HtmlWriter():
 
         output_file = '%s/index.html' % self.__dir
 
-        os.system('cat %s | tidy -i >%s 2>&1' % (string.join(input_files, ' '),
-                                                 output_file))
+        os.system('cat %s | tidy -i >%s 2>/dev/null'
+                  % (string.join(input_files, ' '), output_file))
 
         for f in input_files:
             os.remove(f)
 
     def mail(self):
         strFrom = 'amread@untangle.com'
-        strTo = 'amread@untangle.com'
+        strTo = 'amread@hippiesoft.com'
 
         msgRoot = MIMEMultipart('related')
         msgRoot['Subject'] = 'test message' # XXX
@@ -80,7 +80,7 @@ class HtmlWriter():
         smtp.quit()
 
     def cleanup(self):
-        os.removedirs(self.__dir)
+        shutil.rmtree(self.__dir)
 
     def close(self):
         self.__body_file.close();
@@ -135,7 +135,7 @@ class HtmlWriter():
                     os.remove(fname)
 
                     if re.search('^Display-Name:', l):
-                        display_name = l.split(': ', 1)
+                        display_name = l.split(': ', 1)[1]
 
             ni = NodeInfo(name, display_name, cid)
             self.__node_info[name] = ni
@@ -185,16 +185,15 @@ class HtmlWriter():
             <tr>
               <td style="width: 44px"><img alt="" src="%s"style="width:42px;height:42px;"/></td>
               <td><a href="%s">%s</a></td>
-            </tr>""" % (ni.cid, self.add_node_anchor(name), ni.display_name))
+            </tr>""" % (ni.cid, ni.anchor, ni.display_name))
             else:
                 toc_file.write("""\
             <tr style="background-color:#EFEFEF;">
-              <td style="width: 44px;background-color:#EFEFEF;"><img alt="" src="web-filter-small.png" width="42" height="42"/></td>
-              <td><a href="#webfilter">Web Filter</a></td>
-            </tr>""")
+              <td style="width: 44px;background-color:#EFEFEF;"><img alt="" src="%s" width="42" height="42"/></td>
+              <td><a href="%s">%s</a></td>
+            </tr>""" % (ni.cid, ni.anchor, ni.display_name))
 
             row_num = row_num + 1
-
 
         toc_file.write("""\
           </tbody>
