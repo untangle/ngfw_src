@@ -662,7 +662,6 @@ public class LicenseManagerImpl implements LicenseManager
         LICENSE_MAP.put( LicenseType.DEVELOPMENT.getName(), LicenseType.DEVELOPMENT );
 
         addMackageMap( "untangle-node-adconnector", ProductIdentifier.PHONE_BOOK );
-        addMackageMap( "untangle-node-adconnector", ProductIdentifier.POLICY_MANAGER );
         addMackageMap( "untangle-node-policy", ProductIdentifier.POLICY_MANAGER );
         addMackageMap( "untangle-node-kav", ProductIdentifier.KASPERSKY_AV );
         addMackageMap( "untangle-node-portal", ProductIdentifier.PORTAL );
