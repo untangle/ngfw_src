@@ -87,7 +87,7 @@ public class Launcher extends HttpServlet
             } else if ( ACTION_BUY.equals( action )) {
                 String libitem = request.getParameter( FIELD_LIBITEM );
                 if ( libitem == null ) redirect = getMyAccountURL( request );
-                else redirect = getLibraryURL( request, libitem );
+                else redirect = getBuyURL( request, libitem );
             } else {
                 redirect = getMyAccountURL( request );
             }
