@@ -511,7 +511,8 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
         var refreshButton = new Ext.Button( {
             text : i18n._( "Refresh" ),
-            handler : this.refreshInterfaces.createDelegate( this )
+            handler : this.refreshInterfaces.createDelegate( this ),
+            iconCls : 'icon-autorefresh'
         });
 
         this.interfaceGrid = new Ext.grid.GridPanel({
