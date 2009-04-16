@@ -108,6 +108,7 @@ Ung.form.NumberField = Ext.extend( Ext.form.NumberField, {
         }
     }    
 });
+
 Ext.ComponentMgr.registerType('unumberfield', Ung.form.NumberField);
 Ung.Util= {
     goToStartPage: function () {
