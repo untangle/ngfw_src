@@ -162,7 +162,7 @@ public class SpamSummarizer extends BaseSummarizer {
 	if (smtpQuarantined > 0)
             addEntry("&nbsp;&nbsp;&nbsp;Spam & Quarantined", Util.trimNumber("",smtpQuarantined), Util.percentNumber(smtpQuarantined, smtpScanned));
 	if (smtpBlocked > 0)
-            addEntry("&nbsp;&nbsp;&nbsp;Spam & Blocked", Util.trimNumber("",smtpBlocked), Util.percentNumber(smtpBlocked, smtpScanned));
+            addEntry("&nbsp;&nbsp;&nbsp;Spam & Dropped", Util.trimNumber("",smtpBlocked), Util.percentNumber(smtpBlocked, smtpScanned));
 	if (smtpMarked > 0)
             addEntry("&nbsp;&nbsp;&nbsp;Spam & Marked", Util.trimNumber("",smtpMarked), Util.percentNumber(smtpMarked, smtpScanned));
 	if (smtpPassed > 0)

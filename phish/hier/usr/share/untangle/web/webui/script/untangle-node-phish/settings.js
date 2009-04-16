@@ -47,7 +47,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // Email Config Panel
         buildEmail : function() {
             this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
-                    ['BLOCK', this.i18n._('Block')], ['QUARANTINE', this.i18n._('Quarantine')]];
+                    ['BLOCK', this.i18n._('Drop')], ['QUARANTINE', this.i18n._('Quarantine')]];
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
