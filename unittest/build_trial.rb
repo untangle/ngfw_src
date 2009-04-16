@@ -4,6 +4,7 @@ require "md5"
 
 module LicenseBuilder
   Trial = "14 Day Trial"
+  Subscription = "Subscription"
 
   SelfSignedKeyVersion = 31
 
@@ -11,14 +12,17 @@ module LicenseBuilder
   ## start and end don't end in the same final three digits.
   DurationMap = {
     Trial => ( 60 * 60 * 24 * 15 ) + 0.278,
+    Subscription => ( 60 * 60 * 24 * 365 * 2 ) + 0.344
   }
   
   class License
-    def initialize( identifier, mackage, startTime = nil )
+    def initialize( identifier, mackage, startTime = nil, licenseType = Trial )
       startTime = Time.new if startTime.nil?
       @identifier = identifier
       @mackage = mackage      
       @version = SelfSignedKeyVersion
+      @licenseType = licenseType
+
       ## Update the start time
       self.startTime = startTime
     end
@@ -36,11 +40,11 @@ module LicenseBuilder
     end
 
     def duration
-      DurationMap[Trial]
+      DurationMap[@licenseType]
     end
 
     def firstKey
-      digest( "#{@identifier}-license-#{0xDEC0DED}-#{Trial}" )
+      digest( "#{@identifier}-license-#{0xDEC0DED}-#{@licenseType}" )
     end
 
     def key
@@ -48,7 +52,7 @@ module LicenseBuilder
 #{firstKey}
 untangle: 234363866
 version: #{@version}
-type: #{Trial}
+type: #{@licenseType}
 product: #{@identifier}
 start: #{startTimeMillis}
 end: #{endTimeMillis}
@@ -62,7 +66,7 @@ THE_LICENSE_TERMINATOR
       ## Generate a new license key
       license = <<THE_LICENSE_TERMINATOR
 com.untangle.uvm.license.identifier=#{@identifier}
-com.untangle.uvm.license.type=#{Trial}
+com.untangle.uvm.license.type=#{@licenseType}
 com.untangle.uvm.license.mackage=#{@mackage}
 com.untangle.uvm.license.start=#{startTimeMillis}
 com.untangle.uvm.license.end=#{endTimeMillis}
@@ -98,9 +102,13 @@ mackage = ARGV[1]
 
 daysPassed = 0
 daysPassed = ARGV[2].to_i unless ARGV[2].nil?
-
 startTime = Time.new - ( daysPassed * 60 * 60 * 24 ) 
 
-l = LicenseBuilder::License.new( identifier, mackage, startTime )
+
+licenseType = LicenseBuilder::Trial
+licenseType = ARGV[3] unless ARGV[3].nil?
+
+
+l = LicenseBuilder::License.new( identifier, mackage, startTime, licenseType )
 
 puts l.license

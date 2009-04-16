@@ -49,6 +49,8 @@ public class LicenseManagerImpl implements LicenseManager
     private static final String PROPERTY_KEY = PROPERTY_BASE + ".key";
     private static final String PROPERTY_KEY_VERSION = PROPERTY_BASE + ".keyVersion";
 
+    private static final long LICENSE_SUBSCRIPTION_EXTENSION = ( 1000l * 60 * 60 * 24 * 365 * 8 ) + 835l;
+
     /* 30 day keys */
     private static final long OLD_TRIAL_KEY_DURATION = ( 1000l * 60 * 60 * 24 * 30 ) + 539;
 
@@ -290,6 +292,11 @@ public class LicenseManagerImpl implements LicenseManager
                 int keyVersion  = Integer.parseInt( props.getProperty( PROPERTY_KEY_VERSION ));
                 if ( keyVersion == 0 ) throw new Exception( "invalid key version" );
 
+                /* Make a special case for subscriptions */
+                if ( LicenseType.SUBSCRIPTION.getName().equals( type )) {
+                    end += LICENSE_SUBSCRIPTION_EXTENSION;
+                }
+                
                 /* add the license, if it passes verification. */
                 License license = new License( identifier, mackage, type, start, end, key, keyVersion );
 
@@ -442,8 +449,14 @@ public class LicenseManagerImpl implements LicenseManager
         /* Verify the duration lines up properly */
         long duration = license.getEnd() - license.getStart();
 
+        if ( LicenseType.SUBSCRIPTION.equals( licenseType )) {
+            duration -= LICENSE_SUBSCRIPTION_EXTENSION;
+        }
+
         switch ( licenseType ) {
-        case TRIAL: case TRIAL14:
+        case TRIAL:
+            /* fallthrough */
+        case TRIAL14:
             /* special case for the old license key duration */
             if ( duration == OLD_TRIAL_KEY_DURATION ) break;
             /* fallthrough */
@@ -484,12 +497,16 @@ public class LicenseManagerImpl implements LicenseManager
             /* presently the only one supported, fallthrough */
 
         default:
+            long end = license.getEnd();
+            if ( LicenseType.SUBSCRIPTION.getName().equals( license.getType())) {
+                end -= LICENSE_SUBSCRIPTION_EXTENSION;
+            }
             sb.append( "untangle: " + ( 0xC0DED + 0xDEC0DED ) + "\n" );
             sb.append( "version: " + version + "\n" );
             sb.append( "type: " + license.getType() + "\n" );
             sb.append( "product: " + license.getProductIdentifier() + "\n" );
             sb.append( "start: " +  license.getStart() + "\n" );
-            sb.append( "end: " +  license.getEnd() + "\n" );
+            sb.append( "end: " +  end + "\n" );
         }
 
         return sb.toString();
