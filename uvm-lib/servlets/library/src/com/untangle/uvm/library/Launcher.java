@@ -117,6 +117,7 @@ public class Launcher extends HttpServlet
     private URL getBuyURL( HttpServletRequest request, String mackageName ) throws MalformedURLException
     {
         return getActionURL( request, "buy", mackageName );
+    }
 
     private URL getActionURL( HttpServletRequest request, String action, String mackageName )
         throws MalformedURLException
