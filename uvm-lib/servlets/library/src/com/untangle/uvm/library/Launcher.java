@@ -46,6 +46,7 @@ public class Launcher extends HttpServlet
 
     private static final String ACTION_MY_ACCOUNT = "my_account";
     private static final String ACTION_BROWSE = "browse";
+    private static final String ACTION_BUY = "buy";
     private static final String ACTION_WIZARD = "wizard";
     private static final String ACTION_HELP = "help";
 
@@ -83,6 +84,10 @@ public class Launcher extends HttpServlet
                 redirect = getHelpURL( request, source );
             } else if ( ACTION_WIZARD.equals( action )) {
                 redirect = getWizardURL( request );
+            } else if ( ACTION_BUY.equals( action )) {
+                String libitem = request.getParameter( FIELD_LIBITEM );
+                if ( libitem == null ) redirect = getMyAccountURL( request );
+                else redirect = getLibraryURL( request, libitem );
             } else {
                 redirect = getMyAccountURL( request );
             }
@@ -108,6 +113,10 @@ public class Launcher extends HttpServlet
     {
         return getActionURL( request, "browse", mackageName );
     }
+
+    private URL getBuyURL( HttpServletRequest request, String mackageName ) throws MalformedURLException
+    {
+        return getActionURL( request, "buy", mackageName );
 
     private URL getActionURL( HttpServletRequest request, String action, String mackageName )
         throws MalformedURLException
