@@ -2,16 +2,16 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<c:set var="isDebug" value="false"/>
+<c:set var="isDebug" value="true"/>
 <head>
     <title>${bbs.companyName}</title>
-    
+
     <style type="text/css">
         @import "/ext/resources/css/ext-all.css";
     </style>
 <c:if test="${isDebug==false}">
-	<script type="text/javascript" src="/ext/adapter/ext/ext-base.js"></script>
-	<script type="text/javascript" src="/ext/ext-all.js"></script>
+    <script type="text/javascript" src="/ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="/ext/ext-all.js"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js"></script>
     <script type="text/javascript" src="/script/i18n.js"></script>
@@ -22,14 +22,14 @@
     <script type="text/javascript" src="/script/timezone.js"></script>
     <script type="text/javascript" src="/script/country.js"></script>
     <script type="text/javascript" src="/script/wizard.js"></script>
-</c:if>	
+</c:if>
 <c:if test="${isDebug==true}">
-	<script type="text/javascript" src="/ext/source/core/Ext.js"></script>
-	<script type="text/javascript" src="/ext/source/adapter/ext-base.js"></script>
-	<script type="text/javascript" src="/ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="/ext/source/core/Ext.js"></script>
+    <script type="text/javascript" src="/ext/source/adapter/ext-base.js"></script>
+    <script type="text/javascript" src="/ext/ext-all-debug.js"></script>
 
-	
-	<script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
+
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
     <script type="text/javascript" src="/script/i18n.js"></script>
     <script type="text/javascript" src="script/components.js"></script>
     <script type="text/javascript" src="script/main.js"></script>
@@ -39,8 +39,8 @@
     <script type="text/javascript" src="/script/country.js"></script>
     <script type="text/javascript" src="/script/wizard.js"></script>
 
-<!-- Just for Test, normaly this resources are Dynamically loaded     
--->	
+<!-- Just for Test, normaly this resources are Dynamically loaded
+-->
     <script type="text/javascript" src="script/untangle-node-openvpn/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-spyware/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
@@ -57,8 +57,8 @@
     <script type="text/javascript" src="script/untangle-node-pcremote/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-policy/settings.js"></script>
     <script type="text/javascript" src="script/untangle-node-adconnector/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-base-virus/settings.js"></script> 
-    <script type="text/javascript" src="script/untangle-node-clam/settings.js"></script> 
+    <script type="text/javascript" src="script/untangle-base-virus/settings.js"></script>
+    <script type="text/javascript" src="script/untangle-node-clam/settings.js"></script>
     <script type="text/javascript" src="script/config/administration.js"></script>
     <script type="text/javascript" src="script/config/email.js"></script>
     <script type="text/javascript" src="script/config/system.js"></script>
@@ -71,22 +71,22 @@
     <script type="text/javascript">
         top.window.moveTo(0,0);
         if(Ext.isIE) {
-            top.window.resizeTo(screen.availWidth,screen.availHeight); 
+            top.window.resizeTo(screen.availWidth,screen.availHeight);
         } else {
-            top.window.outerHeight = top.screen.availHeight; 
-            top.window.outerWidth = top.screen.availWidth; 
+            top.window.outerHeight = top.screen.availHeight;
+            top.window.outerWidth = top.screen.availWidth;
         }
      </script>
 </c:if>
-	<script type="text/javascript">
+    <script type="text/javascript">
         var storeWindowName='store_window_${storeWindowId}';
-		function init() {
-			main=new Ung.Main({debugMode:${isDebug}});
-		    main.buildStamp='${buildStamp}';
-			main.init();
-		}
-		Ext.onReady(init);
-	</script>
+        function init() {
+            main=new Ung.Main({debugMode:${isDebug}});
+            main.buildStamp='${buildStamp}';
+            main.init();
+        }
+        Ext.onReady(init);
+    </script>
  </head>
 <body>
 <div id="container" style="margin:0px 0px 0px 0px;"></div>
