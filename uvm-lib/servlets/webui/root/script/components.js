@@ -78,9 +78,14 @@ Ung.form.TextField = Ext.extend( Ext.form.TextField, {
                 html: this.boxLabel
             });
         }
+    },
+    updateBoxLabel : function(html){
+        if(this.labelEl){
+            this.labelEl.dom.innerHTML = html;   
+        }
     }
 });
-
+Ext.ComponentMgr.registerType('utextfield', Ung.form.TextField);
 Ung.form.NumberField = Ext.extend( Ext.form.NumberField, {
     onRender : function(ct, position)
     {
@@ -96,9 +101,14 @@ Ung.form.NumberField = Ext.extend( Ext.form.NumberField, {
                 html: this.boxLabel
             });
         }
-    }
+    },
+    updateBoxLabel : function(html){
+        if(this.labelEl){
+            this.labelEl.dom.innerHTML = html;   
+        }
+    }    
 });
-
+Ext.ComponentMgr.registerType('unumberfield', Ung.form.NumberField);
 Ung.Util= {
     goToStartPage: function () {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
@@ -4337,4 +4347,3 @@ Ung.GroupsWindow = Ext.extend(Ung.UpdateWindow, {
         this.hide();
     }
 });
-
