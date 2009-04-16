@@ -13,6 +13,7 @@ PROPERTY_DNS_2="com.untangle.networking.dns-2"
 PROPERTY_DEFAULT_GW="com.untangle.networking.default-gateway"
 PROPERTY_DDNS_EN="com.untangle.networking.ddns-en"
 PROPERTY_HOSTNAME="com.untangle.networking.hostname"
+PROPERTY_DOMAIN_SUFFIX="com.untangle.networking.domain-suffix"
 PROPERTY_DHCP_EN="com.untangle.networking.dhcp-enabled"
 PROPERTY_DHCP_START="com.untangle.networking.dhcp-start"
 PROPERTY_DHCP_END="com.untangle.networking.dhcp-end"
@@ -199,6 +200,11 @@ get_single_nic_mode()
     fi
 }
 
+get_domain_suffix()
+{
+    awk -v suffix=example.com '/^search/ { suffix=$2 ; exit }; END { print suffix }' /etc/resolv.conf
+}
+
 get_properties()
 {
     local t_pppoe_interface
@@ -211,6 +217,7 @@ get_properties()
     echo "${PROPERTY_DNS_2}=`get_dns_2`"
     echo "${PROPERTY_DEFAULT_GW}=`get_default_gateway`"
     echo "${PROPERTY_HOSTNAME}=`hostname`"
+    echo "${PROPERTY_DOMAIN_SUFFIX}=`get_domain_suffix`"
     echo "${PROPERTY_DHCP_EN}=`get_dhcp_enabled`"
     echo "${PROPERTY_DHCP_START}=`get_dhcp_start`"
     echo "${PROPERTY_DHCP_END}=`get_dhcp_end`"

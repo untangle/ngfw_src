@@ -121,6 +121,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
 
+    private HostName domainName = null;
+
     private NetworkManagerImpl()
     {
         this.ruleManager = RuleManager.getInstance();
@@ -366,14 +368,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Get the domain name suffix */
     public HostName getDomainName()
     {
-        HostName result = null;
-        // XXX  Implement me XXX
-        try {
-	    result = HostName.parseStrict("untangle.local");
-	} catch (Exception x) { /* Can't happen */ }
-	return result;
+        if ( this.domainName == null ) {
+            return NetworkUtil.LOCAL_DOMAIN_DEFAULT;
+        }
+
+        return this.domainName;
     }
-    
 
     public String getPublicAddress()
     {
@@ -530,6 +530,18 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.isDynamicDnsEnabled =
             Boolean.parseBoolean( properties.getProperty( "com.untangle.networking.ddns-en" ));
         logger.debug( "DynamicDns: " + this.isDynamicDnsEnabled );
+
+        
+        String domainName = properties.getProperty( "com.untangle.networking.domain-suffix" );
+        try {
+
+            if (( domainName != null ) && ( domainName.trim().length() > 0 )) {
+                this.domainName = HostName.parseStrict( domainName.trim());
+            }
+        } catch ( Exception e ) {
+            /* */
+            logger.warn( "Unable to parse the domain name: <" + domainName + ">" );
+        }
 
         /* Load the internal address (has to happen before the services settings are loaded) */
         updateInternalAddress( this.networkSettings );
