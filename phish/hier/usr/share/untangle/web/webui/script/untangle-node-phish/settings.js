@@ -12,7 +12,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         // override get base settings object
         getBaseSettings : function(forceReload) {
             if (forceReload || this.rpc.baseSettings === undefined) {
-            	try {
+                try {
                    this.rpc.baseSettings = this.getRpcNode().getPhishBaseSettings(true);
                 } catch (e) {
                 Ung.Util.rpcExHandler(e);
@@ -156,9 +156,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().imapConfig.scan,
                         listeners : {
-                            "change" : {
+                            "check" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().imapConfig.scan = newValue;
+                                  this.getBaseSettings().imapConfig.scan = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -247,7 +247,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
             var asRequest = function(value) {
                 return value == null || value.url == null ? "" : value.url;
             }.createDelegate(this);
-            
+
             this.gridWebEventLog = new Ung.GridEventLog({
                 name : 'Web Event Log',
                 helpSource : 'web_event_log',
@@ -266,8 +266,8 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         switch (value) {
                             case 0 : // PASSED
                                 return this.i18n._("pass");
-                            default :
                             case 1 : // BLOCKED
+                            default :
                                 return this.i18n._("block");
                         }
                     }.createDelegate(this)
