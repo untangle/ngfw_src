@@ -54,6 +54,7 @@ require "./buildtools/rake-util.rb"
 require "./buildtools/target.rb"
 require "./buildtools/jars.rb"
 require "./buildtools/c-compiler.rb"
+require "./buildtools/jasper.rb"
 require "./buildtools/node.rb"
 
 if SRC_HOME.nil?
