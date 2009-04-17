@@ -427,6 +427,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     mode : 'local',
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
+                    editable : false,
                     itemCls : 'small-top-margin'
                 }]
             },{
@@ -460,7 +461,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
         var info = Ung.SetupWizard.CurrentValues.registrationInfo;
         var misc = {};
         this.setRegistrationValue( "name", misc, false );
-        this.setRegistrationValue( "companyName", misc, false );
+        this.setRegistrationValue( "companyName", info, false );
         this.setRegistrationValue( "email", info, true, "emailAddr" );
         this.setRegistrationValue( "numSeats", info, true );
 

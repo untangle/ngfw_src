@@ -153,7 +153,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     },new Ung.form.TextField({
                         fieldLabel : i18n._('Organization Name'),
                         name : 'companyName',
-                        value : misc.companyName,
+                        value : info.companyName,
                         boxLabel : i18n._('(if applicable)'),
                         listeners : {
                             "change" : {
@@ -205,6 +205,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
                         value : misc.country,
+                        editable : false,
                         listeners : {
                             "select" : {
                                 fn : this.onFieldChange.createDelegate(this)
