@@ -22,10 +22,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -76,8 +78,13 @@ public class VpnNodeImpl extends AbstractNode
 
     private static final String SERVICE_NAME = "openvpn";
 
+    /* 5 minutes in nanoseconds */
+    private static final long DISTRIBUTION_CACHE_NS = TimeUnit.SECONDS.toNanos( 60 * 5 );
+
     /* Expire these links after an hour */
-    private static final long ADMIN_DOWNLOAD_CLIENT_TIMEOUT = 1000l * 60 * 60;
+    private static final long ADMIN_DOWNLOAD_CLIENT_TIMEOUT = TimeUnit.SECONDS.toMillis( 60 * 60 );
+
+    
 
     private final Logger logger = Logger.getLogger( VpnNodeImpl.class );
 
@@ -107,6 +114,8 @@ public class VpnNodeImpl extends AbstractNode
     
     private String adminDownloadClientKey = null;
     private long   adminDownloadClientExpiration = 0l;
+
+    private final Map <String,DistributionCache> distributionMap = new HashMap<String,DistributionCache>();
 
     // constructor ------------------------------------------------------------
 
@@ -391,6 +400,26 @@ public class VpnNodeImpl extends AbstractNode
             logger.debug( "Looking up client for key: " + key );
         }
 
+        long requestTime = System.nanoTime();
+
+        /* cleanup the hash for expired distribution caches. */
+        for ( Iterator<String> i = this.distributionMap.keySet().iterator() ; i.hasNext() ; ) {
+            DistributionCache dc = this.distributionMap.get( i.next());
+            if ( dc == null ) {
+                /* not really possible... */
+                continue;
+            }
+            if ( requestTime > dc.getExpirationTime()) {
+                i.remove();
+            }
+        }
+
+        /* First check if it is in the hash */
+        DistributionCache dc = this.distributionMap.get( key );
+        if ( dc != null ) {
+            return dc.getCommonName();
+        }
+
         /* Could use a hash map, but why bother ? */
         for ( final VpnClientBase client : ((List<VpnClientBase>)this.settings.getCompleteClientList())) {
             if ( lookupClientDistributionKey( key, clientAddress, client )) return client.getInternalName();
@@ -476,6 +505,9 @@ public class VpnNodeImpl extends AbstractNode
         if ( !clientKey.equalsIgnoreCase( key )) return false;
 
         client.setDistributionKey( null );
+
+        long expiration = System.nanoTime() + DISTRIBUTION_CACHE_NS;
+        this.distributionMap.put( key, new DistributionCache( expiration, client.getInternalName(), key ));
 
         TransactionWork tw = new TransactionWork()
             {
@@ -897,5 +929,35 @@ public class VpnNodeImpl extends AbstractNode
 
             if ( this.callback != null ) this.callback.run();
         }        
+    }
+
+    class DistributionCache
+    {
+        /* This is the request time using nanoTime which is independent of clock time */
+        private final long expirationTime;
+        private final String commonName;
+        private final String key;
+
+        DistributionCache( long expirationTime, String commonName, String key )
+        {
+            this.expirationTime = expirationTime;
+            this.commonName = commonName;
+            this.key = key;
+        }
+
+        public long getExpirationTime()
+        {
+            return this.expirationTime;
+        }
+
+        public String getCommonName()
+        {
+            return this.commonName;
+        }
+
+        public String getKey()
+        {
+            return this.key;
+        }
     }
 }
