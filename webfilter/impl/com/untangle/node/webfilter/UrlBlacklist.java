@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.util.PrefixUrlList;
@@ -46,6 +47,9 @@ import org.apache.log4j.Logger;
 class UrlBlacklist extends Blacklist
 {
     private final Logger logger = Logger.getLogger(getClass());
+
+    private final Pattern GOOGLE_MAPS_PATTERN
+        = Pattern.compile("(mt[0-9]*.google.com)|(khm[0-9]*.google.com)|(cbk[0-9]*.google.com)");
 
     private boolean unconfigured = true;
 
@@ -199,6 +203,12 @@ class UrlBlacklist extends Blacklist
 
     protected String checkBlacklistDatabase(String dom, int port, String uri)
     {
+        // XXX hack attack. should solve the problem with less lookups
+        // instead, but no time for that.
+        if (GOOGLE_MAPS_PATTERN.matcher(dom).matches()) {
+            return null;
+        }
+
         List<String> all = urlDatabase.findAllBlacklisted("http", dom, uri);
 
         if (null == all || 0 == all.size()) {
