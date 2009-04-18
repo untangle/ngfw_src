@@ -123,6 +123,7 @@ public class Reporter implements Runnable
     public void prepare()
         throws SQLException, IOException
     {
+        System.out.println("PREPARE!!!!!!!");
         Calendar cal = Calendar.getInstance();
 
         // Figure out the real output Dir. Note we use 'lastday' as that really
@@ -136,8 +137,15 @@ public class Reporter implements Runnable
             File current = new File(outputBaseDir, "current");
             current.delete();
             String command = SYMLINK_CMD + " " + outputDir.getPath() + " " + current.getPath();
+            System.out.println("EXECUTE: " + command);
             Process p = Runtime.getRuntime().exec(command);
-
+            p.waitFor();
+            System.out.println("DONE!!! " + p.exitValue());
+            for (File s : outputBaseDir.listFiles()) {
+                System.out.println(" " + s);
+            }
+        } catch (InterruptedException exn) {
+            logger.error("Unable to create current link", exn);
         } catch (IOException exn) {
             logger.error("Unable to create current link", exn);
         }
@@ -225,6 +233,11 @@ public class Reporter implements Runnable
         } catch (IOException exn) {
             logger.error("Unable to delete old env file, create new env file, or write to new env file for update-reports", exn);
         }
+
+        System.out.println("AGAIN:");
+            for (File s : outputBaseDir.listFiles()) {
+                System.out.println(" " + s);
+            }
 
     }
 

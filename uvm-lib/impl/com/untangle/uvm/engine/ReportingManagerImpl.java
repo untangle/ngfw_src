@@ -82,6 +82,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     public void prepareReports(String outputBaseDir, Date midnight, int daysToKeep)
         throws UvmException
     {
+        System.out.println("MAWK!!!");
         synchronized (this) {
             switch (state) {
             case PREPARING:

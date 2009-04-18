@@ -105,13 +105,6 @@ if [ "${isrunning}x" = "truex" ]; then
     exit 1
 fi
 
-# Build the DHCP Merged Address Map (needed for running start-reports scripts)
-@USR_BIN@/ucli -t 3600 prepareReports -o $REPORT_DIR -d 60 -n $midnight
-exitOnUvmError $? reporter
-# note that Reporter has just created settings.env and daystoadd
-
-source $REPORT_DIR/current/settings.env
-
 ################################################################################
 # CLEANUP SECTION
 
@@ -180,7 +173,13 @@ exitOnUvmError $? uvm
 # Only generate today's reports if the reporting node is running
 if [ "$is_reporting_enabled" != 'false' ]; then
 
+    # Build the DHCP Merged Address Map (needed for running start-reports scripts)
+    @USR_BIN@/ucli -t 3600 prepareReports -o $REPORT_DIR -d 60 -n $midnight
+    exitOnUvmError $? reporter
+    # note that Reporter has just created settings.env and daystoadd
+
     if [ -h $REPORT_DIR/current -a -f $REPORT_DIR/current/settings.env ]; then
+        source $REPORT_DIR/current/settings.env
 
         # Build pre-joined reports tables
         daystoadd=`mktemp -t update-reports.XXXXXXXXXX`
