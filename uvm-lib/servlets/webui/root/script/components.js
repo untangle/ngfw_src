@@ -713,7 +713,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             if(this.libItem!=null) { // libitem and trial node
                 this.buttonBuy.setVisible(true);
                 this.buttonBuy.insertHtml("afterBegin", i18n._("Buy"));
-                this.buttonBuy.on("click", this.linkToStoreFn, this);
+                this.buttonBuy.on("click", this.linkToStoreBuyFn.createDelegate(this), "buy");
                 this.buttonBuy.addClass("button-buy");
                 this.buttonBuy.addClass("icon-arrow-buy");
             }
@@ -823,8 +823,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             }
         }
     },
-    // open store page in a new frame
-    linkToStoreFn : function(e) {
+    // open store buy page in a new frame
+    linkToStoreBuyFn : function(e) {
         if (e!=null) {
             e.stopEvent();
         }
@@ -832,7 +832,19 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             return;
         }
         main.warnOnUpgrades(function() {
-            main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName));
+            main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),"buy");
+        }.createDelegate(this));
+    },
+    // open store page in a new frame
+    linkToStoreFn : function(e,action) {
+        if (e!=null) {
+            e.stopEvent();
+        }
+        if(!this.progressBar.hidden) {
+            return;
+        }
+        main.warnOnUpgrades(function() {
+            main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),action);
         }.createDelegate(this));
     },
     // install node / uninstall App
@@ -1110,7 +1122,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     onBuyNowAction :function(){
         var appItem=Ung.AppItem.getApp(this.md.displayName);
         if(appItem!=null) {
-            appItem.linkToStoreFn();
+            appItem.linkToStoreFn(null,"buy");
         }
     },
     getNodeContext: function(handler) {

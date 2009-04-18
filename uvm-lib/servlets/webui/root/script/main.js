@@ -379,12 +379,19 @@ Ung.Main=Ext.extend(Object, {
 
         this.openWindow( query, storeWindowName, title );
     },
-    openStoreToLibItem : function (libItemName, title) {
-        var currentLocation = window.location;
-        var query = "host=" + currentLocation.hostname;
+    openStoreToLibItem : function (libItemName, title,action) {        
+        var currentLocation = window.location,
+        query = "host=" + currentLocation.hostname;
+        if(!action){
+            action = 'browse';
+        }else{
+            if(action != 'buy'){
+                action = "browse";
+            }        
+        }
         query += "&port=" + currentLocation.port;
         query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
-        query += "&action=browse";
+        query += "&action="+action;
         query += "&libitem=" + libItemName;
 
         this.openWindow( query, storeWindowName, title );
