@@ -18,55 +18,60 @@
 
 package com.untangle.uvm.engine;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmException;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.reports.Application;
-import com.untangle.uvm.reports.ApplicationData;
-import com.untangle.uvm.reports.DetailSection;
-import com.untangle.uvm.reports.Host;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.reporting.Reporter;
 import com.untangle.uvm.reports.RemoteReportingManager;
-import com.untangle.uvm.reports.Section;
-import com.untangle.uvm.reports.TableOfContents;
-import com.untangle.uvm.reports.User;
 import com.untangle.uvm.security.Tid;
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 class RemoteReportingManagerImpl implements RemoteReportingManager
 {
-    private static final String BUNNICULA_REPORTS_DATA
-        = System.getProperty("bunnicula.web.dir") + "/reports/data";
+    private static final String BUNNICULA_WEB = System.getProperty( "bunnicula.web.dir" );
 
-    private static final File REPORTS_DIR = new File(BUNNICULA_REPORTS_DATA);
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String WEB_REPORTS_DIR = BUNNICULA_WEB + "/reports";
+    private static final String CURRENT_REPORT_DIR = WEB_REPORTS_DIR + "/current";
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private static RemoteReportingManagerImpl REPORTING_MANAGER = new RemoteReportingManagerImpl();
 
-    private RemoteReportingManagerImpl()
-    {
+    private enum RunState {
+        START,                  // Not yet prepared
+        PREPARING,              // Currently preparing reports
+        READY,                  // Prepared and Ready to run reports
+        RUNNING                // Running report.
+        // Goes back to START after RUNNING, so no need for another state.
+    };
+
+    private volatile RunState state;
+
+    // Prepare info
+    private volatile String outputBaseDir;
+    private volatile int daysToKeep;
+    private volatile Date midnight ;
+
+    // Run info
+    private volatile Thread runThread;
+    private Reporter reporter;
+
+    private RemoteReportingManagerImpl() {
+        state = RunState.START;
+        runThread = null;
+        reporter = null;
     }
 
     static RemoteReportingManagerImpl reportingManager()
@@ -74,225 +79,116 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return REPORTING_MANAGER;
     }
 
-    // NEW SHIZZLE -------------------------------------------------------------
-
-    public List<Date> getDates()
+    public void prepareReports(String outputBaseDir, Date midnight, int daysToKeep)
+        throws UvmException
     {
-        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-
-        Calendar c = Calendar.getInstance();
-
-        List<Date> l = new ArrayList<Date>();
-
-        if (REPORTS_DIR.exists()) {
-            for (String s : REPORTS_DIR.list()) {
-                try {
-                    l.add(df.parse(s));
-                } catch (ParseException exn) {
-                    logger.warn("skipping non-date directory: " + s, exn);
-                }
+        synchronized (this) {
+            switch (state) {
+            case PREPARING:
+                throw new UvmException("Already preparing reports");
+            case RUNNING:
+                throw new UvmException("Reports are currently running");
+            case START:
+            case READY:
+                break;
+            }
+            this.outputBaseDir = outputBaseDir;
+            this.daysToKeep = daysToKeep;
+            this.midnight = midnight;
+            logger.debug("Now PREPARING");
+            state = RunState.PREPARING;
+            notifyAll();
+            reporter = new Reporter(outputBaseDir, midnight, daysToKeep);
+        }
+        try {
+            reporter.prepare();
+            logger.debug("Finished, now READY ");
+        } catch (Exception x) {
+            logger.error("Exception preparing reports", x);
+        } finally {
+            synchronized (this) {
+                state = RunState.READY;
+                notifyAll();
             }
         }
-
-        return l;
     }
 
-    public TableOfContents getTableOfContents(Date d)
+    public boolean isRunning()
     {
-        Application platform = new Application("untangle-vm", "Platform");
-
-        List<Application> apps = new ArrayList<Application>();
-        File dir = new File(getDateDir(d));
-        if (dir.exists()) {
-            for (String s : dir.list()) {
-                ApplicationData ad = readXml(d, s);
-                if (null != ad) {
-                    apps.add(new Application(ad.getName(), ad.getTitle()));
-                }
-            }
+        synchronized (this) {
+            return (state == RunState.RUNNING);
         }
-
-        Calendar c = Calendar.getInstance();
-        c.setTime(d);
-        c.add(Calendar.DAY_OF_MONTH, -1);
-        Date yesterday = c.getTime();
-
-        List<User> users = getUsers(yesterday);
-        List<Host> hosts = getHosts(yesterday);
-
-        return new TableOfContents(platform, apps, users, hosts);
     }
 
-    // XXX SAMPLE DATA
-    public ApplicationData getApplicationData(Date d, String appName)
+    public void startReports()
+        throws UvmException
     {
-        return readXml(d, appName);
-    }
-
-    public ApplicationData getApplicationDataForUser(Date d, String appName,
-                                                     String username)
-    {
-        return null; //XXX
-    }
-
-    public ApplicationData getApplicationDataForHost(Date d, String appName,
-                                                     String hostname)
-    {
-        return null; //XXX
-    }
-
-    public ApplicationData getApplicationDataForEmail(Date d, String appName,
-                                                      String emailAddr)
-    {
-        return null; //XXX
-    }
-
-    public List<List> getDetailData(Date d, String appName, String detailName)
-    {
-        List<List> rv = null;
-
-        ApplicationData ad = readXml(d, appName);
-        for (Section section : ad.getSections()) {
-            if (section instanceof DetailSection) {
-                DetailSection sds = (DetailSection)section;
-                if (sds.getName().equals(detailName)) {
-                    rv = new ArrayList<List>();
-                    String sql = sds.getSql();
-
-                    Connection conn = null;
-                    try {
-                        conn = DataSourceFactory.factory().getConnection();
-                        Statement stmt = conn.createStatement();
-                        stmt.setMaxRows(10);
-                        ResultSet rs = stmt.executeQuery(sql);
-                        int columnCount = rs.getMetaData().getColumnCount();
-                        while (rs.next()) {
-                            List l = new ArrayList(columnCount);
-                            for (int i = 1; i <= columnCount; i++) {
-                                l.add(rs.getObject(i));
+        synchronized (this) {
+            switch (state) {
+            case START:
+                throw new UvmException("Haven't prepared yet");
+            case PREPARING:
+                throw new UvmException("Still preparing");
+            case RUNNING:
+                throw new UvmException("Already started, need to stop before starting again.");
+            case READY:
+                break;
+            }
+            logger.debug("Now RUNNING");
+            state = RunState.RUNNING;
+            notifyAll();
+            Runnable task = new Runnable() {
+                    public void run() {
+                        try {
+                            reporter.run();
+                        } catch (Exception x) {
+                            logger.error("Exception running reports", x);
+                        } finally {
+                            logger.debug("Run finished.  Back to START.");
+                            synchronized (this) {
+                                state = RunState.START;
+                                notifyAll();
+                                reporter = null;
+                                runThread = null;
                             }
-                            rv.add(l);
-                        }
-                    } catch (SQLException exn) {
-                        logger.warn("could not get DetailData for: " + sql,
-                                    exn);
-                    } finally {
-                        if (conn != null) {
-                            try {
-                                DataSourceFactory.factory().closeConnection(conn);
-                            } catch (Exception x) { }
-                            conn = null;
                         }
                     }
-                }
-            }
+                };
+            runThread = LocalUvmContextFactory.context().newThread(task, "Reports");
         }
-
-        return rv;
+        runThread.start();
     }
 
-    // private methods ---------------------------------------------------------
-
-    private ApplicationData readXml(Date d, String appName)
+    /**
+     * Guaranteed death
+     *
+     */
+    public void stopReports()
+        throws UvmException
     {
-        ReportXmlHandler h = new ReportXmlHandler();
-
-        try {
-            FileInputStream fis = new FileInputStream(getAppDir(d, appName)
-                                                      + "/report.xml");
-
-            XMLReader xr = XMLReaderFactory.createXMLReader();
-            xr.setContentHandler(h);
-            xr.parse(new InputSource(fis));
-        } catch (SAXException exn) {
-            return null;
-        } catch (IOException exn) {
-            return null;
+        synchronized (this) {
+            switch (state) {
+            case START:
+                throw new UvmException("Haven't begun to prepare reports");
+            case PREPARING:
+                throw new UvmException("Can't stop while preparing, wait til done");
+            case RUNNING:
+                reporter.setNeedToDie();
+                runThread.interrupt();
+                break;
+            case READY:
+                return;
+            }
+            try {
+                this.wait(1000);
+            } catch (InterruptedException x) {
+                // Can't happen.
+            }
+            if (state != RunState.START)
+                throw new UvmException("Unable to stop reports, ended in state " +
+                                        state.toString());
         }
-
-        return h.getReport();
     }
-
-    private List<Host> getHosts(Date d)
-    {
-        List<Host> l = new ArrayList<Host>();
-
-        Connection conn = null;
-        try {
-            conn = DataSourceFactory.factory().getConnection();
-            PreparedStatement ps = conn.prepareStatement("SELECT hname from reports.hnames WHERE date = ?");
-            ps.setDate(1, new java.sql.Date(d.getTime()));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                l.add(new Host(rs.getString(1)));
-            }
-        } catch (SQLException exn) {
-            logger.warn("could not get hnames", exn);
-        } finally {
-            if (conn != null) {
-                try {
-                    DataSourceFactory.factory().closeConnection(conn);
-                } catch (Exception x) { }
-                conn = null;
-            }
-        }
-
-        return l;
-    }
-
-    private List<User> getUsers(Date d)
-    {
-        List<User> l = new ArrayList<User>();
-
-        Connection conn = null;
-        try {
-            conn = DataSourceFactory.factory().getConnection();
-            PreparedStatement ps = conn.prepareStatement("SELECT username from reports.users WHERE date = ?");
-            ps.setDate(1, new java.sql.Date(d.getTime()));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                l.add(new User(rs.getString(1)));
-            }
-        } catch (SQLException exn) {
-            logger.warn("could not get users", exn);
-        } finally {
-            if (conn != null) {
-                try {
-                    DataSourceFactory.factory().closeConnection(conn);
-                } catch (Exception x) { }
-                conn = null;
-            }
-        }
-
-        return l;
-    }
-
-    private String getDateDir(Date d)
-    {
-        StringBuffer sb = new StringBuffer(BUNNICULA_REPORTS_DATA);
-        sb.append("/");
-
-        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-        sb.append(df.format(d));
-
-        return String.format(sb.toString());
-    }
-
-    private String getAppDir(Date d, String appName)
-    {
-        StringBuffer sb = new StringBuffer(BUNNICULA_REPORTS_DATA);
-        sb.append("/");
-
-        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-        sb.append(df.format(d));
-
-        sb.append("/");
-        sb.append(appName);
-
-        return String.format(sb.toString());
-    }
-
-    // OLD SHIT ----------------------------------------------------------------
 
     public boolean isReportingEnabled() {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
@@ -304,12 +200,56 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         NodeContext context = nodeManager.nodeContext(tids.get(0));
         if (context == null)
             return false;
-
-        return true;
+        NodeState state = context.getRunState();
+        return (state == NodeState.RUNNING);
     }
 
-    public boolean isReportsAvailable()
-    {
-        return true;
+    public boolean isReportsAvailable() {
+        if (!isReportingEnabled())
+            return false;
+        File crd = new File(CURRENT_REPORT_DIR);
+        if (!crd.isDirectory())
+            return false;
+
+        // note that Reporter creates env file
+        File envFile = new File(CURRENT_REPORT_DIR, "settings.env");
+
+        FileReader envFReader;
+        try {
+            envFReader = new FileReader(envFile);
+        } catch (FileNotFoundException exn) {
+            logger.error("report settings env file is missing: ", exn);
+            return false;
+        }
+
+        BufferedReader envBReader = new BufferedReader(envFReader);
+        ArrayList<String> envList = new ArrayList<String>();
+        try {
+            while (true == envBReader.ready()) {
+                envList.add(envBReader.readLine());
+            }
+            envBReader.close();
+            envFReader.close();
+        } catch (IOException exn) {
+            logger.error("cannot read or close report settings env file: ", exn);
+            return false;
+        }
+
+        String daily = "export MV_EG_DAILY_REPORT=y";
+        if (true == envList.contains(daily)) {
+            return true;
+        }
+
+        String weekly = "export MV_EG_WEEKLY_REPORT=y";
+        if (true == envList.contains(weekly)) {
+            return true;
+        }
+
+        String monthly = "export MV_EG_MONTHLY_REPORT=y";
+        if (true == envList.contains(monthly)) {
+            return true;
+        }
+
+        return false;
     }
 }
