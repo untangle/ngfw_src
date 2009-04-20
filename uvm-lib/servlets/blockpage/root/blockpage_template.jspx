@@ -11,7 +11,7 @@
   <jsp:directive.page contentType="text/html"/>
 
   <head>
-    <link rel="icon"  type="image/png" href="/images/block-favicon.png">  
+    <link rel="icon"  type="image/png" href="/images/block-favicon.png"/>  
     <title><c:out value="${pageTitle}"/></title>
 
     <uvm:skin src="user.css" name="${ss.userPagesSkin}"/>
