@@ -158,7 +158,12 @@ export PATH
 # Postgres Configuration
 #
 ## Postgres8 create user options
-PG_CREATEUSER_OPTIONS="-dSR"
+PG_VERSION=`dpkg -l postgresql | awk '/^ii/ { gsub(/\..-.*/, "", $3) ; print $3 }'`
+if [[ "$PG_VERSION" == 7* ]] ; then
+    PG_CREATEUSER_OPTIONS="-dA"
+else
+    PG_CREATEUSER_OPTIONS="-dSR"
+fi
 
 
 
