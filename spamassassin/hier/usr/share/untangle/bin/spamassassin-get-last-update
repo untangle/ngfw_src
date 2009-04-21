@@ -1,6 +1,5 @@
 #!/bin/dash
 
-## Ignore errors
-find /var/lib/spamassassin/ -type f -printf "%T@\n" 2>/dev/null | sed -e 's/\..*$//' | sort -n | tail -n 1
+@UVM_HOME@/bin/get-last-update /var/lib/spamassassin/
 
 exit 0
