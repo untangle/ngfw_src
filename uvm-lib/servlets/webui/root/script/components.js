@@ -497,7 +497,8 @@ Ung.Util.RetryHandler = {
         if( exception.code == 500 ) {
             /* If necessary try calling the function again. */
             window.setTimeout( this.callFunction.createDelegate( this, [ input ] ), input["timeout"] );
-            console.debug( "Retrying the call in " + input["timeout"] + " ms." );
+            // Console is not globally supported.
+            // console.debug( "Retrying the call in " + input["timeout"] + " ms." );
             return;
         }
 
