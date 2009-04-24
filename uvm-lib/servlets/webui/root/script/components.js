@@ -2155,6 +2155,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         if (this.title == null) {
             this.title = i18n._('Event Log');
         }
+        if ( this.hasAutoRefresh == null ) {
+            this.hasAutoRefresh = true;
+        }
         if (this.autoExpandColumn == null) {
             this.autoExpandColumn = "timestamp";
         }
@@ -2205,6 +2208,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             }.createDelegate(this)
         }, {
             xtype : 'tbbutton',
+            hidden : !this.hasAutoRefresh,
             id: "auto_refresh_"+this.getId(),
             text : i18n._('Auto Refresh'),
             enableToggle: true,
