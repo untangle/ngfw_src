@@ -1,21 +1,3 @@
-/*if (!Ung.hasResource["Ung.Reporting"]) {
-    Ung.hasResource["Ung.Reporting"] = true;
-    Ung.NodeWin.registerClassName('untangle-node-reporting', 'Ung.Reporting');
-
-    Ung.Reporting = Ext.extend(Ung.NodeWin, {
-        layout: 'fit',
-        initComponent : function(container, position) {
-            // builds the tab panel with the tabs
-            var url="../reports/new.jsp";
-            this.items={
-                autoWidth : true,
-                border: false,
-                html: '<iframe id="reports_iframe" src="'+url+'" name="reports_iframe" width="100%" height="100%" frameborder="0"/>'
-            };
-            Ung.Reporting.superclass.initComponent.call(this);
-        }
-    });
-}*/
 if (!Ung.hasResource["Ung.Reporting"]) {
     Ung.hasResource["Ung.Reporting"] = true;
     Ung.NodeWin.registerClassName('untangle-node-reporting', 'Ung.Reporting');
@@ -75,18 +57,12 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         border : false,
                         buttons: [{
                             xtype : 'button',
-                            text : this.i18n._('Launch Reports'),
+                            text : this.i18n._('View Reports'),
                             name : 'View Reports',
                             iconCls : 'action-icon',
                             handler : function() {
-                                var viewReportsUrl = "../reports/new.jsp",
-                                    x = window.open(viewReportsUrl,"reports");
-                                if(!x){
-                                    Ext.MessageBox.alert(this.i18n._("Error"), this.i18n._("A popup blocker prevented reports from opening. Please disable the popup blocker and try again."));
-                                }else{
-                                    x.focus();
-                                }
-                                /*var breadcrumbs = [{
+                                var viewReportsUrl = "../reports/";
+                                var breadcrumbs = [{
                                     title : i18n._(rpc.currentPolicy.name),
                                     action : function() {
                                         main.iframeWin.closeActionFn();
@@ -100,10 +76,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 }, {
                                     title : this.i18n._('View Reports')
                                 }];
-                                main.openInRightFrame(breadcrumbs, viewReportsUrl);*/
+                                main.openInRightFrame(breadcrumbs, viewReportsUrl);
                             }.createDelegate(this)
                         }]
-                    }/*, {
+                    }, {
                         buttonAlign : 'center',
                         footer : false,
                         border : false,
@@ -131,7 +107,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 main.openInRightFrame(breadcrumbs, viewReportsUrl);
                             }.createDelegate(this)
                         }]
-                    }*/]
+                    }]
                 }]
             });
         },
