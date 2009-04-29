@@ -15,7 +15,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             }];
             this.buildLocalDirectory();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.gridUsers, this.gridGroups]);
+            this.buildTabPanel([this.gridUsers]);
             this.tabs.activate(this.gridUsers);
             Ung.LocalDirectory.superclass.initComponent.call(this);
         },
