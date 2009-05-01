@@ -4,7 +4,8 @@ ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config unt
     untangle-casing-mail untangle-base-virus untangle-base-webfilter 
     untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
-    untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote untangle-node-adblocker'
+    untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote untangle-node-adblocker
+    untangle-node-faild untangle-node-splitd'
 OFFICIAL_LANGUAGES='es zh pt_BR'
 
 function update_keys()
@@ -168,6 +169,27 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
+"untangle-node-splitd")    
+    moduleName=`echo "$1"|cut -d"-" -f3`
+    cd ../../../hades/rup/${moduleName}/po/
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    update_po $1
+    ;;
+"untangle-node-faild")
+    moduleName=`echo "$1"|cut -d"-" -f3`
+    cd ../../../hades/rup/${moduleName}/po/
+    echo 'get new keys'
+    xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    update_po $1
+    ;;
+
 "untangle-node-portal")    
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/rup/${moduleName}/po/
