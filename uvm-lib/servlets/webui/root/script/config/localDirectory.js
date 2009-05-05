@@ -143,31 +143,31 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 })]
             });
 
-            var groupData=main.getAppAddressBook().getGroupEntries('LOCAL_DIRECTORY').list;
+            //var groupData=main.getAppAddressBook().getGroupEntries('LOCAL_DIRECTORY').list;
 
 
-            this.gridGroups = new Ung.EditorGrid({
-                name : 'Local Groups',
-                helpSource : 'local_directory',
-                title : this.i18n._('Local Groups'),
-                settingsCmp : this,
-                height : 500,
-                paginated : false,
-                emptyRow : {
-                    "Name" : this.i18n._('[no name]'),
+            //this.gridGroups = new Ung.EditorGrid({
+                //name : 'Local Groups',
+                //helpSource : 'local_directory',
+                //title : this.i18n._('Local Groups'),
+                //settingsCmp : this,
+                //height : 500,
+                //paginated : false,
+                //emptyRow : {
+                    //"Name" : this.i18n._('[no name]'),
                     //"firstName" : this.i18n._('[no name]'),
                     //"lastName" : this.i18n._('[no name]'),
                     //"email" : this.i18n._('[no email]'),
                     //"password" : "",
-                    "javaClass" : "com.untangle.uvm.addrbook.GroupEntry"
-                },
-                recordJavaClass : "com.untangle.uvm.addrbook.GroupEntry",
-                data : groupData,
-                dataRoot: null,
-                autoGenerateId: true,
-                fields : [{
-                    name : 'CN'
-                }//, {
+                    //"javaClass" : "com.untangle.uvm.addrbook.GroupEntry"
+                //},
+                //recordJavaClass : "com.untangle.uvm.addrbook.GroupEntry",
+                //data : groupData,
+                //dataRoot: null,
+                //autoGenerateId: true,
+                //fields : [{
+                //    name : 'CN'
+                //}//, {
                 //    name : 'firstName'
                 //}, {
                 //    name : 'lastName'
@@ -180,18 +180,18 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
 //                 }, {
 //                     name : 'javaClass'
 //                }
-                 ],
-                columns : [{
-                    id : 'CN',
-                    header : this.i18n._("Name"),
-                    width : 140,
-                    dataIndex : 'CN',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false,
-                        regex: /^[\w ]+$/,
-                        regexText: this.i18n._("The field name can have only alphanumeric characters.")
-                    })
-                }
+                 //],
+                //columns : [{
+                    //id : 'CN',
+                    //header : this.i18n._("Name"),
+                    //width : 140,
+                    //dataIndex : 'CN',
+                    //editor : new Ext.form.TextField({
+                        //allowBlank : false,
+                        //regex: /^[\w ]+$/,
+                        //regexText: this.i18n._("The field name can have only alphanumeric characters.")
+                    //})
+                //}
 // , {
 //                     id : 'firstName',
 //                     header : this.i18n._("first name"),
@@ -230,19 +230,19 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
 //                         return result;
 //                     }
 //                }
-],
-                sortField : 'CN',
-                columnsDefaultSortable : true,
-                autoExpandColumn : 'CN',
-                rowEditorInputLines : [new Ext.form.TextField({
-                    name : "Name",
-                    dataIndex: "CN",
-                    fieldLabel : this.i18n._("Name"),
-                    allowBlank : false,
-                    regex: /^[\w ]+$/,
-                    regexText: this.i18n._("The field name can have only alphanumeric character."),
-                    width : 100
-                })
+//],
+                //sortField : 'CN',
+                //columnsDefaultSortable : true,
+                //autoExpandColumn : 'CN',
+                //rowEditorInputLines : [new Ext.form.TextField({
+                    //name : "Name",
+                    //dataIndex: "CN",
+                    //fieldLabel : this.i18n._("Name"),
+                    //allowBlank : false,
+                    //regex: /^[\w ]+$/,
+                    //regexText: this.i18n._("The field name can have only alphanumeric character."),
+                    //width : 100
+                //})
 // , new Ext.form.TextField({
 //                     name : "First Name",
 //                     dataIndex: "firstName",
@@ -266,8 +266,8 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
 //                     fieldLabel : this.i18n._("Password"),
 //                     width : 150
 //                 })
-]
-            });
+//]
+            //});
         },
         
         validateClient : function() {
