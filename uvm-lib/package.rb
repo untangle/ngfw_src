@@ -144,7 +144,7 @@ deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
 JarTarget.build_target(BuildEnv::SRC["unittest"], deps, 'untangle-libuvm', "./uvm-lib/unittest")
 
 JavaMsgFmtTarget.make_po_targets(uvm_lib, "#{BuildEnv::SRC.home}/uvm-lib/po",
-                                 "#{uvm_lib.distDirectory}/usr/share/untangle/lang/i18n/official",
+                                 "#{uvm_lib.distDirectory}/usr/share/untangle/lang/",
                                  'untangle-libuvm').each do |t|
   BuildEnv::SRC.installTarget.register_dependency(t)
 end
