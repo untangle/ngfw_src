@@ -130,9 +130,6 @@ class AppServerManagerImpl implements LocalAppServerManager
                     if (currentHostname == null || currentHostname.equals("")) { return; }
                     if (null == existingAlias
                         || !(existingAlias.equals(currentHostname))) {
-                        logger.warn( "Regenerating the cert because the hostname change from <" + 
-                                     existingAlias + "> to <" + currentHostname + ">" );
-                                     
                         hostnameChanged(currentHostname);
                     }
                 }
