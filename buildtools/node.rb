@@ -94,7 +94,7 @@ class NodeBuilder
     po_dir = "#{home}/#{dirName}/po"
     if File.exist? po_dir
       JavaMsgFmtTarget.make_po_targets(node, po_dir,
-                                       "#{node.distDirectory}/usr/share/untangle/lang/i18n/official",
+                                       "#{node.distDirectory}/usr/share/untangle/lang/",
                                        name).each do |t|
         buildEnv.installTarget.register_dependency(t)
       end
