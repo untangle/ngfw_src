@@ -355,7 +355,8 @@ while true; do
 
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
 	          [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst "$SPAMD_RESTART_HOOK"
-                  case "`$BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT`" in
+		  [ `tail -n 50 /var/log/mail.info | grep -c -E 'spamd.*child states: .*K'` -gt 5 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "child-killing" stopFirst "$SPAMD_RESTART_HOOK"
+  		   case "`$BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT`" in
                     *success*) true ;;
                     *) restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst "$SPAMD_RESTART_HOOK" ;;
                   esac
