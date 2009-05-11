@@ -1215,47 +1215,6 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
 Description: WebFilter Base
  The WebFilter Base.
 
-Package: untangle-client
-Architecture: all
-Depends: sun-java6-jre | sun-java5-jre
-Provides: metavize-client
-Conflicts: metavize-client (<< 4.1)
-Replaces: metavize-client (<< 4.1)
-XB-Display-Name: Untangle Client
-XB-Untangle-Type: library
-XB-Untangle-Pkg-Type: library
-XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
- MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
- 1JhrKG1bFMftg1semyghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQS
- UconIZ9IKVIOpWzv+zt7nrvuPGuvxd77nu12x6e15lxrjjn+4/8fY65liI6ODg4O
- 9vf39/HxcXd3d3FxcXKMOTs7/2E2Ll5fX+vr6xk0eHt7Ly8vM+rq6sqEwWBwcph9
- +9ve39/ZQWxsrMvd3Z3JZKqtrQ0MDPTy8mIHjnBMVODq5ubm6elJqG9vb/n5+Yz/
- gPrl5eXs7Ozp6cnR7j08PIxGIynm9vn5+ad77Pb29vHxEfcOzT2hwzABADH/4x57
- eHhgB9a7j4iIaG1tBbOmpqabm5tPn2dlXJByXiELXPziHiMlzFnjmwjq6uoqKiqC
- goJqamra2to+fQV/sJsIcQESsO8HGe1DsqGhobOz8/7+/uTkZHV1NS8vz/p33832
- Uwt2+CZzyPX8/Fzc7u7upqSk2ClFO97JyMhYX1+XR9hKeHj4F7nPzMzc2NiQR8Cf
- wS9yD/JwWB45ODiIi4uzYyltmYEkouICcokSDdpra2uQFt8MaspaEUVaWlpCQgKP
- UVIDAgKQWW9v7/X1tbXuJycnc3NzLy8vFa6xYl9fHxekmVgtX8FZWVlZfHw8Ltlo
- S0uLjNbo6GhRUZG17i/NptwS9KrZCLGrq4s0s+LQ0JCoNsRH+yLc7e3t6upqy9Xu
- zGYD+EdHR5GRkWjasnSQ9dLSUl9f34GBARYV9au/v39/f19FCMWQJbM2UI9UdXR0
- aLafkJCQi4sLUoAz0gwMYABUDDKlWR8LCwvHxsZsiJ5EEtDg4KAlmIRLlU1KSqLQ
- ChJAi6Wlpc3NTcuCzcMsQn20WXh7e3sLCwvDw8MyBmQEgZ2enmZnZysERBTp6emk
- gHLk5+cn+x4fHycMnv9IfHBKb4q0zczMACDXlZWVkH9lZUXhc09PT3NzM3IQt0zN
- zs5mZWVxSyuan5+PiYmRlckzoaGhHHISExO3trZ0wVcMSEkqOyAdc3NzpJBrMYUE
- yIIg9sjIiLhAXWyIHQBDVVWVLB/7q96r2VRMVG5F55YfVj1gc9WTwQfzkpISoueC
- 6oHkxBTUg/zUsqmpKSUdgA9ICAcVwBuKDxr+ZAt6uU9OTsafHERYWNjh4aHIrgoJ
- ivTOzg4lSKYemVI6oWbudcGHNcXFxQhPxhYOE01UVBS0Utal3kE6liYMOdlgU15e
- zrZkOVgFPmTmNTBX5VUhGs6gGLOIAm7COCoB2KgeZgecybq7uzWLsW70LE2t0Dz3
- ER8ICymKniY+XBhUzj+q7S4uLubk5NjWcDUpgydRyOhpjY2NovOKlkPN0aus1CUq
- BN9S1roHRjwp0RMcq9PoGARqqqHsCTxguDgHTE9PowU8UTDksq+Xfm33JIyFBLaE
- ywjhMsiGEB4FRxOYP82GJ/bKiUFUCzaHCNvb221wT38U32CWRn8jUL2jDkb0Yh8f
- PPOvznpAoloLKep19N9/1ORUg8xUZ98P+tZvdm/5WQNVNVXnEPeADytpqeI2NTVV
- 5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
- 8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e
- 3tKQEpgPAAAAAElFTkSuQmCC
-Description: Untangle Client
- The Untangle Client.
-
 Package: untangle-libuvmthirdparty
 Architecture: all
 Depends: sun-java6-jre
@@ -1302,7 +1261,7 @@ Architecture: all
 Depends: untangle-keyring, sun-java6-jdk, untangle-libuvm, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, iptables (>= 1.3.6), db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, sg3-utils, pciutils, libdbd-pg-ruby, ruby1.8, ruby, postgresql-client | postgresql-client-7.4 | postgresql-client-8.1 | postgresql-client-8.2, postgresql | postgresql-7.4 | postgresql-8.1 | postgresql-8.2, untangle-linux-image, exim4-daemon-light | mail-transport-agent, jruby1.0, gettext, libgettext-ruby, ethtool, net-tools, dnsutils, untangle-net-alpaca, untangle-node-router, untangle-ldap-server, libgpgme-ruby, dash, untangle-apache2-config, python-pycurl | python2.3-pycurl, libwww-mechanize-ruby, perl, untangle-vm-shell, zip, unzip, tofrodos, python-matplotlib, python-psycopg, python-lxml, tidy, dpkg-dev
 Recommends: untangle-postgresql-config, untangle-gateway-light
 Provides: mvvm
-Conflicts: mvvm, untangle-restore-tools (<< 5.1), untangle-linux-image-2.6.16-ck11-untangle-prod-486, untangle-linux-image-2.6.16-ck11-untangle-prod-xd-486, untangle-linux-image-2.6.16-ck11-untangle-cd-486, untangle-slapd, untangle-libldap-2.2-7, untangle-ldap-utils
+Conflicts: mvvm, untangle-restore-tools (<< 5.1), untangle-linux-image-2.6.16-ck11-untangle-prod-486, untangle-linux-image-2.6.16-ck11-untangle-prod-xd-486, untangle-linux-image-2.6.16-ck11-untangle-cd-486, untangle-slapd, untangle-libldap-2.2-7, untangle-ldap-utils, untangle-client
 Replaces: mvvm
 XB-Display-Name: Untangle Server
 XB-Untangle-Type: library
