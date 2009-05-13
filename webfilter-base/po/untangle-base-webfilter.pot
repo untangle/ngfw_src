@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"POT-Creation-Date: 2009-05-12 17:13-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -369,22 +369,22 @@ msgstr ""
 msgid "Whitelisted HTTP Traffic"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
 msgid "Host:"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
 msgid "URL:"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:52
 msgid "Reason:"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:58
 msgid "Unblock For Now"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:64
 msgid "Unblock Permanently"
 msgstr ""

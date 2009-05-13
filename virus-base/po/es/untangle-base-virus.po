@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"POT-Creation-Date: 2009-05-12 17:13-0700\n"
 "PO-Revision-Date: 2008-11-25 06:07-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -313,22 +313,22 @@ msgstr "Permitido por directiva"
 msgid "SMTP Events"
 msgstr "Eventos SMTP"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:52
 msgid "Reason:"
 msgstr "Razón:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:58
 msgid "Unblock For Now"
 msgstr "Desbloquear por ahora"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:64
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
