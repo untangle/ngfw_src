@@ -135,11 +135,7 @@ class OpenVpnManager
         "mute 20",
 
         /* Allow management from localhost */
-        "management 127.0.0.1 " + MANAGEMENT_PORT,
-        
-        /* Bind to the local server address. there is a redirect that will allow it. */
-        /* XXX This is kind of a very magic number XXX */
-        "local 192.0.2.42"
+        "management 127.0.0.1 " + MANAGEMENT_PORT        
     };
 
     private static final String CLIENT_DEFAULTS[] = new String[] {
