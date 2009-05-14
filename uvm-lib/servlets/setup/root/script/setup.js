@@ -968,8 +968,8 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                          fn : this.onSelectConfig.createDelegate( this )
                     }
                 },
-                width : 100,
-                listWidth : 105,
+                width : 115,
+                listWidth : 120,
                 value : this.configTypes[0][0],
                 triggerAction : 'all',
                 listClass : 'x-combo-list-small'
