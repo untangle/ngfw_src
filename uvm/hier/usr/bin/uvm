@@ -82,12 +82,7 @@ flushIptables() {
     local t_nonce=`head -n 1 /etc/untangle-net-alpaca/nonce`
 
     ## Tell the alpaca to reload the rules
-    ruby <<EOF
-require "xmlrpc/client"
- 
-client = XMLRPC::Client.new( "localhost", "/alpaca/uvm/api?argyle=${t_nonce}", 3000 )
-ok, status = client.call( "generate_rules" )
-EOF
+    curl "http://localhost:3000/alpaca/uvm/generate_rules?argyle=${t_nonce}"
 }
 
 # In 5.3, this code is only used to handle the upgrade and factory-defaults cases.
