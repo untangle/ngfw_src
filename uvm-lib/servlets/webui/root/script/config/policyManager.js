@@ -806,7 +806,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             }.createDelegate(this));
                         }.createDelegate(this)
                     }]
-                }, {
+                }, /*{
                     xtype : 'fieldset',
                     autoHeight : true,
                     title : this.i18n._("Groups"),
@@ -824,7 +824,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         allowBlank : false
                     }, {
                         xtype: "button",
-                        name : 'Change Users',
+                        name : 'Change Groups',
                         text : i18n._("Change Groups"),
                         handler : function() {
                             this.gridRules.groupsWindow.show();
@@ -833,7 +833,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             }.createDelegate(this));
                         }.createDelegate(this)
                     }]
-                }, {
+                }, */{
                     xtype : 'fieldset',
                     autoHeight : true,
                     title : this.i18n._("Time of Day"),
