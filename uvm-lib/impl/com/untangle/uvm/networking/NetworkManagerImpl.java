@@ -409,7 +409,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 /* PPPoE Setup */
                 method = "wizard_external_interface_pppoe";
                 jsonObject.put( "username", pppoe.getUsername());
-                jsonObject.put( "username", pppoe.getPassword());
+                jsonObject.put( "password", pppoe.getPassword());
             } else if ( basic.getDhcpEnabled()) {
                 /* Dynamic address */
                 method = "wizard_external_interface_dynamic";
