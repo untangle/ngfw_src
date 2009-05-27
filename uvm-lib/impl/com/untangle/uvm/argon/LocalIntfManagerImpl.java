@@ -187,9 +187,10 @@ class LocalIntfManagerImpl implements LocalIntfManager
         String interfaceOrder = null;
         String wanInterfaces = null;
         try {
+            String cmd = System.getProperty( "bunnicula.bin.dir" ) + "/interface-properties";
+            Process process = LocalUvmContextFactory.context().exec( cmd );
             Properties p = new Properties();
-            fis = new FileInputStream(INTF_ORDER_FILE);
-            p.load(fis);
+            p.load( process.getInputStream());
             interfaceOrder = p.getProperty("com.untangle.interface-order");
             wanInterfaces = p.getProperty("com.untangle.wan-interfaces");
         } catch (IOException exn) {
