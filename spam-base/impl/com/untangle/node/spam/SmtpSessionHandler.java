@@ -143,12 +143,12 @@ public class SmtpSessionHandler
 
         if (report == null) { // Handle error case
             if (m_config.getFailClosed()) {
-                m_logger.error("Error scanning message. Failing closed");
+                m_logger.warn("Error scanning message. Failing closed");
                 postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.BLOCK);
                 m_spamImpl.incrementBlockCount();
                 return TEMPORARILY_REJECT;
             } else {
-                m_logger.error("Error scanning message. Failing open");
+                m_logger.warn("Error scanning message. Failing open");
                 postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
                 m_spamImpl.incrementPassCount();
                 return PASS_MESSAGE;
@@ -284,12 +284,12 @@ public class SmtpSessionHandler
 
         if (report == null) { // Handle error case
             if (m_config.getFailClosed()) {
-                m_logger.error("Error scanning message. Failing closed");
+                m_logger.warn("Error scanning message. Failing closed");
                 postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.BLOCK);
                 m_spamImpl.incrementBlockCount();
                 return BlockOrPassResult.TEMPORARILY_REJECT;
             } else {
-                m_logger.error("Error scanning message. Failing open");
+                m_logger.warn("Error scanning message. Failing open");
                 postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
                 m_spamImpl.incrementPassCount();
                 return BlockOrPassResult.PASS;
@@ -461,10 +461,6 @@ public class SmtpSessionHandler
         try {
             SpamReport ret = m_spamImpl.getScanner()
                 .scanFile(f, m_config.getStrength()/10.0f);
-            if (ret == null) {
-                m_logger.error("Received ERROR SpamReport");
-                return null;
-            }
             return ret;
         } catch (Exception ex) {
             m_logger.error("Exception scanning message", ex);

@@ -95,7 +95,7 @@ public class SpamImapHandler
         SpamReport report = scanFile(f);
         //Handle error case
         if(report == null) {
-            m_logger.error("Error scanning message.  Assume pass");
+            m_logger.warn("Error scanning message.  Assume pass");
             postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
             m_spamImpl.incrementPassCount();
             return HandleMailResult.forPassMessage();
@@ -187,10 +187,6 @@ public class SpamImapHandler
         try {
             SpamReport ret = m_spamImpl.getScanner()
                 .scanFile(f, m_config.getStrength() / 10.0f);
-            if(ret == null) {
-                m_logger.error("Received ERROR SpamReport");
-                return null;
-            }
             return ret;
         }
         catch(Exception ex) {

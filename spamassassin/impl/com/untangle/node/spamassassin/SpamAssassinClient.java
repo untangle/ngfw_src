@@ -120,9 +120,9 @@ public final class SpamAssassinClient implements Runnable {
                 }
             }
         } catch (InterruptedException e) {
-            logger.warn(dbgName + ", spamc interrupted", e);
+            logger.warn(dbgName + ", spamc interrupted: " + e);
         } catch (Exception e) {
-            logger.warn(dbgName + ", spamc failed", e);
+            logger.warn(dbgName + ", spamc failed: " + e);
         }
 
         if (null == cContext.getResult()) {
@@ -154,7 +154,7 @@ public final class SpamAssassinClient implements Runnable {
         try {
             spamcSocket = SpamAssassinClientSocket.create(cContext.getHost(), cContext.getPort());
         } catch (Exception e) {
-            logger.warn(dbgName + ", finish, spamc could not connect to spamd; spamd may not be configured or spamd may be overloaded", e);
+            logger.warn(dbgName + ", spamc could not connect to spamd: " + e);
             cleanExit();
             return;
         }
@@ -310,21 +310,21 @@ public final class SpamAssassinClient implements Runnable {
             bufOutputStream = null;
         } catch (ClosedByInterruptException e) {
             // not thrown
-            logger.warn(dbgName + ", spamc i/o channel interrupted:" + spamcSocket, e);
+            logger.warn(dbgName + ", spamc i/o channel interrupted: " + spamcSocket + ": " + e);
         } catch (SocketException e) {
             // thrown during read block
-            logger.warn(dbgName + ", spamc socket closed/interrupted: " + spamcSocket, e);
+            logger.warn(dbgName + ", spamc socket closed/interrupted: " + spamcSocket + ": " + e);
         } catch (IOException e) {
             // not thrown
-            logger.warn(dbgName + ", spamc i/o exception: " + spamcSocket, e);
+            logger.warn(dbgName + ", spamc i/o exception: " + spamcSocket + ": " + e);
         } catch (InterruptedException e) {
             // not thrown
-            logger.warn(dbgName + ", spamc interrupted: " + spamcSocket, e);
+            logger.warn(dbgName + ", spamc interrupted: " + spamcSocket + ": " + e);
         } catch (Exception e) {
             // thrown during parse
-            logger.warn(dbgName + ", spamc failed", e);
+            logger.warn(dbgName + ", spamc failed: " + e);
         } finally {
-            //logger.debug(dbgName + ", finish");
+            logger.debug(dbgName + ", finish");
             cleanExit(spamcSocket, cContext.getHost(), cContext.getPort());
             spamcSocket = null;
             return;
