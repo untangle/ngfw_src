@@ -20,19 +20,25 @@ update_pppoe()
         t_pid=`cat ${t_pid}`
         
         [  -f /proc/${t_pid}/cmdline ]  || continue
-        t_connection_file=`cat "/proc/${t_pid}/cmdline" | tr '\000' '\001' | awk -v RS='\001' '/^connection./ { print }'`
+        t_connection_file=`cat "/proc/${t_pid}/cmdline" | tr '\000' '\001' | awk -v RS='\001' '/^connection./ { print ; exit }'`
         t_connection_file="/etc/ppp/peers/${t_connection_file}"
         [ -f "${t_connection_file}" ] || continue
         
-        t_index=`awk '/# *PPPOE_UPLINK_INDEX=/ { sub( "# *PPPOE_UPLINK_INDEX=", "" ); print ; exit }' \
-            "${t_connection_file}"`
+        if [ "`basename ${t_connection_file}`" = "connection0" ]; then
+            t_index=1
+        else
+            t_index=`awk '/# *PPPOE_UPLINK_INDEX=/ { sub( "# *PPPOE_UPLINK_INDEX=", "" ); print ; exit }' \
+                "${t_connection_file}"`
+        fi
+
+        [ -z "${t_index}" ] && continue
         
         t_sub="sub( \":[^:]*:${t_index},\", \":${t_intf_name}:\" ${t_index} \",\" ) ; ${t_sub}"
     done
     
     [ -z "${t_sub}" ] && return 
     [ -f "${INTERFACE_PROPERTIES}" ] || return
-
+    
     t_temp=`mktemp`
 
     [ -f ${t_temp} ] || return
@@ -40,8 +46,8 @@ update_pppoe()
     awk "/^com.untangle.interface-order=/ { ${t_sub} print ; next } ; { print }" \
         "${INTERFACE_PROPERTIES}" > ${t_temp}
 
-    diff -q ${t_temp} "${INTERFACE_PROPERTIES}" || {
-        echo "[DEBUG:`date`] Updating interface properties for PPPoE"
+    diff -q ${t_temp} "${INTERFACE_PROPERTIES}" >&2 || {
+        echo "[DEBUG:`date`] Updating interface properties for PPPoE" >&2
         mv ${t_temp} "${INTERFACE_PROPERTIES}"
         chmod 0644  "${INTERFACE_PROPERTIES}"
     }
