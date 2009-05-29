@@ -109,7 +109,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     public void postInit()
     {
-	//TODO check for expiration and call regenCert if expired
+        //TODO check for expiration and call regenCert if expired
         try {
             String disableTomcat = System.getProperty("bunnicula.devel.notomcat");
             if (null == disableTomcat || !Boolean.valueOf(disableTomcat)) {
@@ -216,7 +216,7 @@ class AppServerManagerImpl implements LocalAppServerManager
             //if the old DN only had CN= then we get two slashes at the beginning so we should handle that case
             dnString = dnString.replace("//","/");
             logger.warn("Generating a new cert with dn " + dnString);
-	    OpenSSLWrapper.generateSelfSignedCert(dnString, APACHE_PEM_FILE);
+            OpenSSLWrapper.generateSelfSignedCert(dnString, APACHE_PEM_FILE);
             return true;
         } catch (Exception ex) {
             logger.error("Unable to regen cert", ex);
@@ -285,10 +285,10 @@ class AppServerManagerImpl implements LocalAppServerManager
     public byte[] generateCSR()
     {
         try {
-	    byte[] oldCert = getCurrentServerCert();
+            byte[] oldCert = getCurrentServerCert();
             CertInfo ci = OpenSSLWrapper.getCertInfo(oldCert);
             RFC2253Name currentDN = ci.subjectDN;
-	    return OpenSSLWrapper.createCSR("/"+currentDN.toString().replace(",","/"),
+            return OpenSSLWrapper.createCSR("/"+currentDN.toString().replace(",","/"),
                         new File(APACHE_PEM_FILE));
         } catch (Exception ex) {
             logger.error("Exception generating a CSR", ex);
@@ -318,20 +318,23 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     /**
      * Callback indicating that the hostname has changed
+     * @TODO This does nothing for now. Maybe we want to keep it that way
+     * but we need to call regenCert from somewhere else
      */
     private void hostnameChanged(String newHostName)
     {
-        String reason = "";
-        try {
-            reason = "Unable to export current cert";
-            byte[] oldCert = getCurrentServerCert();
-            reason = "Unable to get current cert info";
-            CertInfo ci = OpenSSLWrapper.getCertInfo(oldCert);
-            RFC2253Name oldDN = ci.subjectDN;
-            regenCert(oldDN, 365 * 5 +1);
-        } catch (Exception ex) {
-            logger.error(reason, ex);
-        }
+        return;
+        //        String reason = "";
+        //        try {
+        //  reason = "Unable to export current cert";
+        //  byte[] oldCert = getCurrentServerCert();
+        //  reason = "Unable to get current cert info";
+        //  CertInfo ci = OpenSSLWrapper.getCertInfo(oldCert);
+        //  RFC2253Name oldDN = ci.subjectDN;
+        //  regenCert(oldDN, 365 * 5 +1);
+        //} catch (Exception ex) {
+        //  logger.error(reason, ex);
+        //}
     }
 
     private String getFQDN()
