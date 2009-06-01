@@ -30,9 +30,9 @@ class RBLEventHandler extends AbstractEventHandler
 {
     private final Logger m_logger = Logger.getLogger(RBLEventHandler.class);
 
-    private SpamImpl m_spamImpl;
+    private SpamNodeImpl m_spamImpl;
 
-    RBLEventHandler(SpamImpl spamImpl)
+    RBLEventHandler(SpamNodeImpl spamImpl)
     {
         super(spamImpl);
 
@@ -44,7 +44,7 @@ class RBLEventHandler extends AbstractEventHandler
         throws MPipeException
     {
         Session s = event.session();
-        SpamSMTPRBLEvent rblEvent = (SpamSMTPRBLEvent)s.attachment();
+        SpamSmtpRblEvent rblEvent = (SpamSmtpRblEvent)s.attachment();
         if (null != rblEvent) {
             m_spamImpl.logRBL(rblEvent);
         }
@@ -55,16 +55,15 @@ class RBLEventHandler extends AbstractEventHandler
         throws MPipeException
     {
         TCPNewSessionRequest tsr = event.sessionRequest();
-
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();
-        SpamSMTPConfig spamConfig = spamSettings.getBaseSettings().getSmtpConfig();
+        SpamSmtpConfig spamConfig = spamSettings.getBaseSettings().getSmtpConfig();
 
         boolean releaseSession = true;
 
-        if (spamConfig.getThrottle()) {
+        if (spamConfig.getTarpit()) {
             //m_logger.debug("Check DNSBL(s) for connection from: " + tsr.clientAddr());
             RBLChecker rblChecker = new RBLChecker(spamSettings.getSpamRBLList(),m_spamImpl);
-            if (true == rblChecker.check(tsr, spamConfig.getThrottleSec())) {
+            if (true == rblChecker.check(tsr, spamConfig.getTarpitTimeout())) {
                 m_logger.debug("DNSBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
                 /* get finalization in order to log rejection */
                 tsr.rejectReturnRst(true);

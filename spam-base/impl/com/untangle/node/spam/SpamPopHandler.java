@@ -43,22 +43,28 @@ public class SpamPopHandler extends PopStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final SpamImpl zNode;
+    private final SpamNodeImpl zNode;
     private final SpamScanner zScanner;
     private final String zVendorName;
 
+    private static final String MOD_SUB_TEMPLATE =
+        "[SPAM] $MIMEMessage:SUBJECT$";
+
+    private static final String MOD_BODY_TEMPLATE =
+        "The attached message from $MIMEMessage:FROM$\r\n" +
+        "was determined by the Spam Blocker to be spam based on a score\r\n" +
+        "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
+
+    private static WrappedMessageGenerator msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
+
     private final SafelistNodeView zSLNodeView;
-    private final SpamPOPConfig zConfig;
+    private final SpamPopConfig zConfig;
     private final SpamMessageAction zMsgAction;
     private final boolean bScan;
     private final int strength;
     private final int giveUpSize;
 
-    private WrappedMessageGenerator zWMsgGenerator;
-
-    // constructors -----------------------------------------------------------
-
-    protected SpamPopHandler(TCPSession session, SpamImpl node,
+    protected SpamPopHandler(TCPSession session, SpamNodeImpl node,
                              MailExport zMExport)
     {
         super(session);
@@ -77,13 +83,10 @@ public class SpamPopHandler extends PopStateMachine
         zMsgAction = zConfig.getMsgAction();
         strength = zConfig.getStrength();
         giveUpSize = zConfig.getMsgSizeLimit();
-        zWMsgGenerator = zConfig.getMessageGenerator();
         if (logger.isDebugEnabled()) {
             logger.debug("scan: " + bScan + ", message action: " + zMsgAction + ", timeout: " + lTimeout);
         }
     }
-
-    // PopStateMachine methods -----------------------------------------------
 
     protected TokenResult scanMessage() throws TokenException
     {
@@ -102,7 +105,7 @@ public class SpamPopHandler extends PopStateMachine
                 zNode.incrementMarkCount();
 
                 /* wrap spam message and rebuild message token */
-                MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zReport);
+                MIMEMessage zWMMessage = this.getMsgGenerator().wrap(zMMessage, zReport);
                 try {
                     zMsgFile = zWMMessage.toFile(new TempFileFactory(getPipeline()));
 
@@ -138,8 +141,7 @@ public class SpamPopHandler extends PopStateMachine
             if (zConfig.getAddSpamHeaders()) {
                 try {
                     zMMessage.getMMHeaders().removeHeaderFields(new LCString(zConfig.getHeaderName()));
-                    zMMessage.getMMHeaders().addHeaderField(zConfig.getHeaderName(),
-                                                            zConfig.getHeaderValue(zReport.isSpam()));
+                    zMMessage.getMMHeaders().addHeaderField(zConfig.getHeaderName(),(zReport.isSpam() ? "YES" : "NO"));
                 }
                 catch (HeaderParseException exn) {
                     /* we'll reuse original message */
@@ -171,4 +173,13 @@ public class SpamPopHandler extends PopStateMachine
                                               zVendorName);
         zNode.log(event);
     }
+
+    /**
+     * Method for returning the generator used to mark messages
+     */
+    protected WrappedMessageGenerator getMsgGenerator()
+    {
+        return this.msgGenerator;
+    }
+
 }

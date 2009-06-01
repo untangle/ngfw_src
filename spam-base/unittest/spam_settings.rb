@@ -9,14 +9,6 @@ tid = nm.nodeInstances( 'untangle-node-spamassassin' ).first
 spam = nm.nodeContext( tid ).node
 base_settings = spam.getBaseSettings
 smtp_config = base_settings.getSmtpConfig
-notify_sender = com.untangle.node.spam.SpamSMTPNotifyAction.getInstance( "notify sender" )
-do_not_notify = com.untangle.node.spam.SpamSMTPNotifyAction.getInstance( "do not notify" )
-action = smtp_config.getNotifyAction
-puts "Current Notify action: #{smtp_config.getNotifyAction}"
-
-smtp_config.setNotifyAction(( action.getKey == do_not_notify.getKey ) ? notify_sender : do_not_notify )
-
-puts "New Notify action: #{smtp_config.getNotifyAction}"
 
 spam.setBaseSettings( base_settings )
 

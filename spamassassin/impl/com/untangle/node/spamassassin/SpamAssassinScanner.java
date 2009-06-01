@@ -25,6 +25,7 @@ import com.untangle.node.spam.SpamReport;
 import com.untangle.node.spam.SpamScanner;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
 
 public class SpamAssassinScanner implements SpamScanner
@@ -54,12 +55,19 @@ public class SpamAssassinScanner implements SpamScanner
 
     public SpamReport scanFile(File msgFile, float threshold)
     {
-        SpamAssassinScannerClientLauncher scan = new SpamAssassinScannerClientLauncher(msgFile, threshold);
+        SpamAssassinClient client = new SpamAssassinClient(msgFile, SpamAssassinClient.SPAMD_DEFHOST, SpamAssassinClient.SPAMD_DEFPORT, threshold, "spamc");
+
         try {
             synchronized(activeScanMonitor) {
                 activeScanCount++;
             }
-            return scan.doScan(this.timeout);
+            Thread thread = LocalUvmContextFactory.context().newThread(client);
+            client.setThread(thread);
+            client.startScan();
+            client.checkProgress(this.timeout);
+            client.stopScan();
+            
+            return client.getResult();
         } finally {
             synchronized(activeScanMonitor) {
                 activeScanCount--;

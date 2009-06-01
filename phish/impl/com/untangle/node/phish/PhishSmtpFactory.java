@@ -23,9 +23,9 @@ import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.mail.papi.MailNodeSettings;
 import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
-import com.untangle.node.mail.papi.smtp.ScanLoadChecker;
 import com.untangle.node.mail.papi.smtp.sapi.Session;
-import com.untangle.node.spam.SpamSMTPConfig;
+import com.untangle.node.spam.SpamSmtpConfig;
+import com.untangle.node.spam.SpamLoadChecker;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 
 public class PhishSmtpFactory implements TokenHandlerFactory
 {
-
     private MailExport m_mailExport;
     private PhishNode m_phishImpl;
     private QuarantineNodeView m_quarantine;
@@ -48,11 +47,9 @@ public class PhishSmtpFactory implements TokenHandlerFactory
         m_safelist = m_mailExport.getSafelistNodeView();
     }
 
-
-
     public TokenHandler tokenHandler(TCPSession session)
     {
-        SpamSMTPConfig spamConfig = m_phishImpl.getSpamSettings().getBaseSettings().getSmtpConfig();
+        SpamSmtpConfig spamConfig = m_phishImpl.getSpamSettings().getBaseSettings().getSmtpConfig();
 
         if(!spamConfig.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");
@@ -73,7 +70,7 @@ public class PhishSmtpFactory implements TokenHandlerFactory
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
-        SpamSMTPConfig spamConfig = m_phishImpl.getSpamSettings().getBaseSettings().getSmtpConfig();
+        SpamSmtpConfig spamConfig = m_phishImpl.getSpamSettings().getBaseSettings().getSmtpConfig();
 
         // Note that we may *****NOT***** release the session here.
         // This is because the mail casings currently assume that
@@ -85,7 +82,7 @@ public class PhishSmtpFactory implements TokenHandlerFactory
         }
 
         int activeCount = m_phishImpl.getScanner().getActiveScanCount();
-        if (ScanLoadChecker.reject(activeCount, m_logger)) {
+        if (SpamLoadChecker.reject(activeCount, m_logger, spamConfig.getScanLimit(), spamConfig.getLoadLimit())) {
             m_logger.warn("Load too high, rejecting connection from " + tsr.clientAddr());
             tsr.rejectReturnRst();
         }

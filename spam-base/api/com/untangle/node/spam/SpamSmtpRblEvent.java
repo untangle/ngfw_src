@@ -57,7 +57,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_spam_smtp_rbl_evt", schema="events")
-    public class SpamSMTPRBLEvent extends PipelineEvent
+    public class SpamSmtpRblEvent extends PipelineEvent
     {
         private HostName hostname;
         private IPaddr ipAddr;
@@ -65,16 +65,16 @@ import org.hibernate.annotations.Type;
 
         // constructors -----------------------------------------------------------
 
-        public SpamSMTPRBLEvent() {}
+        public SpamSmtpRblEvent() {}
 
-        public SpamSMTPRBLEvent(PipelineEndpoints plEndp, HostName hostname, IPaddr ipAddr, boolean skipped) {
+        public SpamSmtpRblEvent(PipelineEndpoints plEndp, HostName hostname, IPaddr ipAddr, boolean skipped) {
             super(plEndp);
             this.hostname = hostname;
             this.ipAddr = ipAddr;
             this.skipped = skipped;
         }
 
-        public SpamSMTPRBLEvent(PipelineEndpoints plEndp, String hostnameS, InetAddress ipAddrIN, boolean skipped) {
+        public SpamSmtpRblEvent(PipelineEndpoints plEndp, String hostnameS, InetAddress ipAddrIN, boolean skipped) {
             super(plEndp);
             try {
                 this.hostname = HostName.parse(hostnameS);

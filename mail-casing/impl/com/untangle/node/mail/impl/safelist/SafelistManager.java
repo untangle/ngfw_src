@@ -102,7 +102,7 @@ public class SafelistManager
         String hdrAddrStr = null;
         if(mimeFrom != null && mimeFrom.getAddress() != null) {
             hdrAddrStr  = mimeFrom.getAddress().toLowerCase();
-        }
+       } 
 
         boolean bReturn = false;
 
@@ -111,7 +111,7 @@ public class SafelistManager
         if (null != recipients) {
             for (EmailAddress r : recipients) {
                 try {
-                    urs.add(quarantine.getUltimateRecipient(r.getAddress()));
+                    urs.add(quarantine.getUltimateRecipient(r.getAddress().toLowerCase()).toLowerCase());
                 } catch (QuarantineUserActionFailedException exn) {
                     m_logger.warn("could not get recipient", exn);
                 }

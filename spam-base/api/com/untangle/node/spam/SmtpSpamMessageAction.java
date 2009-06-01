@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,51 +33,48 @@
 
 package com.untangle.node.spam;
 
-import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 
+public enum SmtpSpamMessageAction
+{
+    PASS('P', "pass message"),
+    MARK('M', "mark message"),
+    BLOCK('B', "block message"),
+    QUARANTINE('Q', "quarantine message"),
+    SAFELIST('S', "safelist message"),
+    OVERSIZE('Z', "oversize message");
 
-public enum SpamSMTPNotifyAction {
-
-    SENDER('S', "notify sender"),
-    NEITHER('N', "do not notify");
-    
     private static final long serialVersionUID = -6364692037092527263L;
+
+    public static final char PASS_KEY = 'P';
+    public static final char MARK_KEY = 'M';
+    public static final char BLOCK_KEY = 'B';
+    public static final char QUARANTINE_KEY = 'Q';
+    public static final char SAFELIST_KEY = 'S'; // special pass case
+    public static final char OVERSIZE_KEY = 'Z'; // special pass case
 
     private String name;
     private char key;
-    
-    private SpamSMTPNotifyAction(char key, String name)
+
+    private SmtpSpamMessageAction(char key, String name)
     {
         this.key = key;
         this.name = name;
     }
 
-    public static SpamSMTPNotifyAction getInstance(char key)
-    {
-    	SpamSMTPNotifyAction[] values = values();
-    	for (int i = 0; i < values.length; i++) {
-    		if (values[i].getKey() == key){
-    			return values[i];
-    		}
-		}
-    	return null;
+    public static SmtpSpamMessageAction getInstance(char key) {
+        SmtpSpamMessageAction[] values = values();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].getKey() == key){
+                return values[i];
+            }
+        }
+        return null;
     }
 
     public char getKey() {
         return key;
     }
-
     public String getName() {
         return name;
-    }
-    
-    public static SMTPNotifyAction toSMTPNotifyAction(SpamSMTPNotifyAction action) {
-        if(action == SENDER) {
-            return SMTPNotifyAction.SENDER;
-        }
-        if(action == NEITHER) {
-            return SMTPNotifyAction.NEITHER;
-        }
-        return null;
     }
 }

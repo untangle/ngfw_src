@@ -18,10 +18,15 @@
 
 package com.untangle.node.spamassassin;
 
+import java.io.File;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.lang.InterruptedException;
 import java.net.SocketException;
 import java.nio.channels.ClosedByInterruptException;
@@ -36,7 +41,18 @@ import com.untangle.node.spam.SpamReport;
 import org.apache.log4j.Logger;
 
 public final class SpamAssassinClient implements Runnable {
+
+    private final File msgFile;
+    private final String host;
+    private final int port;
+    private final float threshold;
+    private boolean done = false;
+    private volatile SpamReport spamReport;
+
     private final Logger logger = Logger.getLogger(getClass());
+
+    public final static String SPAMD_DEFHOST = "127.0.0.1"; // default host
+    public final static int SPAMD_DEFPORT = 783; // default port
 
     private final static Pattern REPORT_PATTERN = Pattern.compile("^[ ]*-?[0-9.]+ [A-Z0-9_]+");
 
@@ -71,8 +87,6 @@ public final class SpamAssassinClient implements Runnable {
     private final static Pattern REP_CONTENTLEN_DHDRP = Pattern.compile(REP_CONTENTLEN_DHDR, Pattern.CASE_INSENSITIVE);
     private final static Pattern REP_SPAM_DHDRP = Pattern.compile(REP_SPAM_DHDR, Pattern.CASE_INSENSITIVE);
 
-    private final SpamAssassinClientContext cContext;
-
     private final String userNameCHdr;
     private final String contentLenCHdr;
 
@@ -80,17 +94,20 @@ public final class SpamAssassinClient implements Runnable {
     private String dbgName; // thread name and socket host
     private volatile boolean stop = false;
 
-    public SpamAssassinClient(SpamAssassinClientContext cContext, String userName) {
-        this.cContext = cContext;
-
-        userNameCHdr = new StringBuilder(REQ_USERNAME_TAG).append(userName).append(CRLF).toString();
+    public SpamAssassinClient(File msgFile, String host, int port, float threshold, String userName) {
+        this.msgFile = msgFile;
+        this.host = host;
+        this.port = port;
+        this.threshold = threshold;
+        
+        this.userNameCHdr = new StringBuilder(REQ_USERNAME_TAG).append(userName).append(CRLF).toString();
         // add extra CRLF in case message doesn't end with CRLF
-        contentLenCHdr = new StringBuilder(REQ_CONTENTLEN_TAG).append(Long.toString(cContext.getMsgFile().length() + CRLF.length())).append(CRLF).toString();
+        this.contentLenCHdr = new StringBuilder(REQ_CONTENTLEN_TAG).append(Long.toString(msgFile.length() + CRLF.length())).append(CRLF).toString();
     }
 
     public void setThread(Thread cThread) {
         this.cThread = cThread;
-        dbgName = new StringBuilder("<").append(cThread.getName()).append(">").append(cContext.getHost()).append(":").append(cContext.getPort()).toString();
+        dbgName = new StringBuilder("<").append(cThread.getName()).append(">").append(host).append(":").append(port).toString();
         return;
     }
 
@@ -100,6 +117,10 @@ public final class SpamAssassinClient implements Runnable {
         return;
     }
 
+    public SpamReport getResult() {
+        return spamReport;
+    }
+
     public void checkProgress(long timeout) {
         //logger.debug("check, thread: " + cThread + ", this: " + this);
         if (false == cThread.isAlive()) {
@@ -107,14 +128,14 @@ public final class SpamAssassinClient implements Runnable {
             return;
         }
 
+        long startTime = System.currentTimeMillis();
         try {
             synchronized (this) {
-                long startTime = System.currentTimeMillis();
                 this.wait(timeout); // wait for run() to finish/timeout
 
                 // retry when no result yet and time remains before timeout
                 long elapsedTime = System.currentTimeMillis() - startTime;
-                while (!cContext.isDone() && elapsedTime < timeout) {
+                while (!done && elapsedTime < timeout) {
                     this.wait(timeout - elapsedTime);
                     elapsedTime = System.currentTimeMillis() - startTime;
                 }
@@ -125,8 +146,11 @@ public final class SpamAssassinClient implements Runnable {
             logger.warn(dbgName + ", spamc failed: " + e);
         }
 
-        if (null == cContext.getResult()) {
-            logger.warn(dbgName + ", spamc timer expired");
+        if (null == this.spamReport) {
+            if (System.currentTimeMillis() - startTime > timeout)
+                logger.warn(dbgName + ", spamc timer expired");
+            else
+                logger.warn(dbgName + ", spamc returned no result");
             stopScan();
         }
 
@@ -150,20 +174,23 @@ public final class SpamAssassinClient implements Runnable {
     }
 
     public void run() {
-        SpamAssassinClientSocket spamcSocket = null;
+        Socket socket;
+        OutputStream oSocketStream;
+        InputStream iSocketStream;
+        BufferedOutputStream bufOutputStream;
+        BufferedReader bufReader;
+
         try {
-            spamcSocket = SpamAssassinClientSocket.create(cContext.getHost(), cContext.getPort());
+            socket = new Socket(host, port);
+            bufOutputStream = new BufferedOutputStream(socket.getOutputStream());
+            bufReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (Exception e) {
             logger.warn(dbgName + ", spamc could not connect to spamd: " + e);
             cleanExit();
             return;
         }
-        //logger.debug("run, thread: " + cThread + ", this: " + this + ", create: " + spamcSocket);
 
         try {
-            BufferedOutputStream bufOutputStream = spamcSocket.getBufferedOutputStream();
-            BufferedReader bufReader = spamcSocket.getBufferedReader();
-
             if (true == this.stop) {
                 logger.warn(dbgName + ", spamc interrupted post socket streams");
                 return; // return after finally
@@ -185,7 +212,7 @@ public final class SpamAssassinClient implements Runnable {
             bufOutputStream.flush();
 
             // send message
-            FileInputStream fInputStream = new FileInputStream(cContext.getMsgFile());
+            FileInputStream fInputStream = new FileInputStream(this.msgFile);
             rBuf = new byte[READ_SZ];
 
             int rLen;
@@ -197,7 +224,7 @@ public final class SpamAssassinClient implements Runnable {
             bufOutputStream.flush();
             // Can't close the bufOutputStream here or it closes the
             // whole socket.  Instead shutdown.
-            spamcSocket.shutdownOutput();
+            socket.shutdownOutput();
             fInputStream.close();
             fInputStream = null;
             rBuf = null;
@@ -310,45 +337,34 @@ public final class SpamAssassinClient implements Runnable {
             bufOutputStream = null;
         } catch (ClosedByInterruptException e) {
             // not thrown
-            logger.warn(dbgName + ", spamc i/o channel interrupted: " + spamcSocket + ": " + e);
+            logger.warn(dbgName + ", spamc i/o channel interrupted: " + socket + ": " + e);
         } catch (SocketException e) {
             // thrown during read block
-            logger.warn(dbgName + ", spamc socket closed/interrupted: " + spamcSocket + ": " + e);
+            logger.warn(dbgName + ", spamc socket closed/interrupted: " + socket + ": " + e);
         } catch (IOException e) {
             // not thrown
-            logger.warn(dbgName + ", spamc i/o exception: " + spamcSocket + ": " + e);
+            logger.warn(dbgName + ", spamc i/o exception: " + socket + ": " + e);
         } catch (InterruptedException e) {
             // not thrown
-            logger.warn(dbgName + ", spamc interrupted: " + spamcSocket + ": " + e);
+            logger.warn(dbgName + ", spamc interrupted: " + socket + ": " + e);
         } catch (Exception e) {
             // thrown during parse
             logger.warn(dbgName + ", spamc failed: " + e);
         } finally {
             logger.debug(dbgName + ", finish");
-            cleanExit(spamcSocket, cContext.getHost(), cContext.getPort());
-            spamcSocket = null;
+
+            try {bufReader.close();} catch (java.io.IOException e) {}
+            try {bufOutputStream.close();} catch (java.io.IOException e) {}
+            try {socket.close();} catch (java.io.IOException e) {}
+
+            cleanExit();
             return;
         }
     }
 
-    private void cleanExit(SpamAssassinClientSocket cSocket, String host, int port) {
-        try {
-            if (null != cSocket) {
-                // close socket and its open streams
-                //logger.debug(dbgName + ", close: " + spamcSocket);
-                cSocket.close(host, port);
-            }
-        } catch (Exception e) {
-            // if socket and streams fail to close, nothing can be done
-        }
-
-        cleanExit();
-        return;
-    }
-
     private void cleanExit() {
         synchronized (this) {
-            cContext.setDone(true);
+            this.done = true;
             this.notifyAll(); // notify waiting thread and finish run()
             return;
         }
@@ -534,7 +550,8 @@ public final class SpamAssassinClient implements Runnable {
             throw new Exception(dbgName + ", spamd result is missing data, expected " + len + " bytes but only received " + tmpLen + " bytes");
         }
 
-        cContext.setResult(reportItemList, score);
+        this.spamReport = new SpamReport(reportItemList, score, this.threshold);
+
         // SpamReport creates its own item list and then copies contents
         reportItemList.clear();
         reportItemList = null;

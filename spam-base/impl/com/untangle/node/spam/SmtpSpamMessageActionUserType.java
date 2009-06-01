@@ -27,12 +27,12 @@ import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 import java.io.Serializable;
 
-public class SMTPSpamMessageActionUserType implements UserType
+public class SmtpSpamMessageActionUserType implements UserType
 {
     private static final int[] SQL_TYPES = { Types.CHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return SMTPSpamMessageAction.class; }
+    public Class returnedClass() { return SmtpSpamMessageAction.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }
@@ -45,10 +45,10 @@ public class SMTPSpamMessageActionUserType implements UserType
             return null;
         } else {
             char actionKey = s.charAt(0);
-            Object smAction = SMTPSpamMessageAction.getInstance(actionKey);
+            Object smAction = SmtpSpamMessageAction.getInstance(actionKey);
             if (null == smAction) {
                 // need to add new action -> default to PASS for now
-                smAction = (Object) SMTPSpamMessageAction.PASS;
+                smAction = (Object) SmtpSpamMessageAction.PASS;
             }
             return smAction;
         }
@@ -61,7 +61,7 @@ public class SMTPSpamMessageActionUserType implements UserType
             // 0 means no value/null
             ps.setString(i, "0");
         } else {
-            SMTPSpamMessageAction a = (SMTPSpamMessageAction)v;
+            SmtpSpamMessageAction a = (SmtpSpamMessageAction)v;
             ps.setString(i, Character.toString(a.getKey()));
         }
 

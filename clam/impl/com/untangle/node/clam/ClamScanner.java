@@ -36,9 +36,9 @@ public class ClamScanner implements VirusScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final int timeout = 30000; /* XXX should be user configurable */
+    private static final int timeout = 29500; /* XXX should be user configurable */
 
-        private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "bunnicula.bin.dir" ) + "/clam-get-last-update";
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "bunnicula.bin.dir" ) + "/clam-get-last-update";
 
     private static final String VERSION_ARG = "-V";
 

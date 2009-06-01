@@ -49,38 +49,28 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="n_spam_imap_config", schema="settings")
-public class SpamIMAPConfig extends SpamProtoConfig
+public class SpamImapConfig extends SpamProtoConfig
 {
     private static final long serialVersionUID = 7520156745253589127L;
 
     /* settings */
-    private SpamMessageAction zMsgAction = SpamMessageAction.MARK;
+    private SpamMessageAction msgAction = SpamMessageAction.MARK;
 
     // constructor ------------------------------------------------------------
 
-    public SpamIMAPConfig() {}
+    public SpamImapConfig() {}
 
-    public SpamIMAPConfig(boolean bScan,
-                          SpamMessageAction zMsgAction,
+    public SpamImapConfig(boolean bScan,
+                          SpamMessageAction msgAction,
                           int strength,
                           boolean addSpamHeaders,
-                          String zNotes,
-                          String subjectTemplate,
-                          String bodyTemplate,
-                          String headerName,
-                          String isSpamHeaderValue,
-                          String isHamHeaderValue)
+                          String headerName)
     {
         super(bScan,
               strength,
               addSpamHeaders,
-              zNotes,
-              subjectTemplate,
-              bodyTemplate,
-              headerName,
-              isSpamHeaderValue,
-              isHamHeaderValue);
-        this.zMsgAction = zMsgAction;
+              headerName);
+        this.msgAction = msgAction;
     }
 
     // business methods ------------------------------------------------------
@@ -109,13 +99,12 @@ public class SpamIMAPConfig extends SpamProtoConfig
     @Type(type="com.untangle.node.spam.SpamMessageActionUserType")
     public SpamMessageAction getMsgAction()
     {
-        return zMsgAction;
+        return msgAction;
     }
 
-    public void setMsgAction(SpamMessageAction zMsgAction)
+    public void setMsgAction(SpamMessageAction msgAction)
     {
-        // Guard XXX
-        this.zMsgAction = zMsgAction;
-        return;
+        this.msgAction = msgAction;
     }
+
 }

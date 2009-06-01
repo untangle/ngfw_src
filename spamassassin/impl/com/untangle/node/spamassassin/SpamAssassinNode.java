@@ -17,10 +17,14 @@
  */
 package com.untangle.node.spamassassin;
 
-import com.untangle.node.spam.SpamImpl;
+import com.untangle.node.spam.SpamNodeImpl;
 
-public class SpamAssassinNode extends SpamImpl
+public class SpamAssassinNode extends SpamNodeImpl
 {
+    /* XXX CONTINUE HERE XXX */
+    /* create spamassassin settings */
+    /* create setting-schema.xml and converters */
+
     public SpamAssassinNode()
     {
         super(new SpamAssassinScanner());

@@ -710,7 +710,7 @@ public class Quarantine
     public String getUltimateRecipient(String address)
         throws QuarantineUserActionFailedException
     {
-        String r = address;
+        String r = address.toLowerCase();
 
         Set<String> seen = new HashSet();
         seen.add(r);
@@ -719,7 +719,7 @@ public class Quarantine
         do {
             s = getMappedTo(r);
             if (null != s) {
-                r = s;
+                r = s.toLowerCase();
                 if (seen.contains(r)) {
                     break;
                 } else {

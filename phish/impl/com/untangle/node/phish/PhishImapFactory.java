@@ -22,7 +22,7 @@ import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.mail.papi.imap.ImapTokenStream;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
-import com.untangle.node.spam.SpamIMAPConfig;
+import com.untangle.node.spam.SpamImapConfig;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -48,7 +48,7 @@ public class PhishImapFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
 
-        SpamIMAPConfig config = m_node.getSpamSettings().getBaseSettings().getImapConfig();
+        SpamImapConfig config = m_node.getSpamSettings().getBaseSettings().getImapConfig();
 
         if(!config.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");

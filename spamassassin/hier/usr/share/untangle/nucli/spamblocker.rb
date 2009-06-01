@@ -118,7 +118,7 @@ HELP
     ret << "#{config.getScan.to_s}"
     ret << ",#{config.getStrengthByName}"
     ret << ",#{config.getMsgAction}"
-    ret << ",#{config.getThrottle.to_s}" if (protocol == "SMTP")
+    ret << ",#{config.getTarpit.to_s}" if (protocol == "SMTP")
     ret << ",#{config.getNotes}"
     ret << "\n"
     return ret
@@ -141,7 +141,7 @@ HELP
       when "tarpit"
         raise "Error: invalid key for '#{protocol}'" if protocol != "SMTP"
         validate_bool(new_value, "tarpit")
-        config.setThrottle(new_value == "true")
+        config.setTarpit(new_value == "true")
       when "description"
         config.setNotes(new_value)
       else

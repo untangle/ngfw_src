@@ -342,7 +342,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                                         return this.i18n._("pass message");
                                     default :
                                     case 1 : // MARKED
-                                        return this.i18n._("mark infection");
+                                        return this.i18n._("mark message");
                                 }
                                 break;
                             case 'SMTP' :
@@ -351,9 +351,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                                     case 0 : // PASSED
                                         return this.i18n._("pass message");
                                     case 1 : // MARKED
-                                        return this.i18n._("mark infection");
+                                        return this.i18n._("mark message");
                                     case 2 : // BLOCKED
-                                        return this.i18n._("block message");
+                                        return this.i18n._("drop message");
                                     case 3 : // QUARANTINED
                                         return this.i18n._("quarantine message");
                                     case 4 : // SAFELISTED

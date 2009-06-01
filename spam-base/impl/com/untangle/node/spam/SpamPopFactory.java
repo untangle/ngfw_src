@@ -28,12 +28,12 @@ import com.untangle.node.token.TokenHandlerFactory;
 
 public class SpamPopFactory implements TokenHandlerFactory
 {
-    private final SpamImpl node;
+    private final SpamNodeImpl node;
     private final MailExport zMExport;
 
     // constructors -----------------------------------------------------------
 
-    SpamPopFactory(SpamImpl node)
+    SpamPopFactory(SpamNodeImpl node)
     {
         this.node = node;
         Policy p = node.getTid().getPolicy();

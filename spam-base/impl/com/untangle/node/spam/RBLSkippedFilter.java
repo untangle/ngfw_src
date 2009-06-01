@@ -22,7 +22,7 @@ import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.util.I18nUtil;
 
-public class RBLSkippedFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
+public class RBLSkippedFilter implements SimpleEventFilter<SpamSmtpRblEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Skipped Events"));
 
@@ -32,7 +32,7 @@ public class RBLSkippedFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
 
     public RBLSkippedFilter()
     {
-        skippedQuery = "FROM SpamSMTPRBLEvent evt WHERE evt.skipped = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        skippedQuery = "FROM SpamSmtpRblEvent evt WHERE evt.skipped = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     }
 
     // SimpleEventFilter methods ----------------------------------------------
@@ -47,7 +47,7 @@ public class RBLSkippedFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
         return new String[] { skippedQuery };
     }
 
-    public boolean accept(SpamSMTPRBLEvent e)
+    public boolean accept(SpamSmtpRblEvent e)
     {
         return e.getSkipped();
     }

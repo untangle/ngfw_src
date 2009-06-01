@@ -16,7 +16,7 @@ def disable_tarpitting( host, username, password )
   nm.nodeInstances( "untangle-node-spamassassin" ).each do |tid|
     spamassassin = nm.nodeContext( tid ).node
     settings = spamassassin.getBaseSettings()
-    settings["smtpConfig"]["throttle"] = false
+    settings["smtpConfig"]["tarpit"] = false
     spamassassin.setBaseSettings( settings )
   end
 end

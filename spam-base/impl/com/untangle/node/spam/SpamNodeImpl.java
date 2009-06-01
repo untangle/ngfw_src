@@ -47,39 +47,9 @@ import org.hibernate.Session;
 
 import static com.untangle.node.util.Ascii.CRLF;
 
-public class SpamImpl extends AbstractNode implements SpamNode
+public class SpamNodeImpl extends AbstractNode implements SpamNode
 {
     private final Logger logger = Logger.getLogger(getClass());
-
-    //===============================
-    // Defaults for templates
-
-    private static final String MOD_SUB_TEMPLATE =
-        "[SPAM] $MIMEMessage:SUBJECT$";
-
-    private static final String MOD_BODY_TEMPLATE =
-        "The attached message from $MIMEMessage:FROM$\r\n" +
-        "was determined by the Spam Blocker to be spam based on a score\r\n" +
-        "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
-
-    private static final String MOD_BODY_SMTP_TEMPLATE =
-        "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
-        "was determined by the Spam Blocker to be spam based on a score\r\n" +
-        "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
-
-    private static final String SPAM_HEADER_NAME = "X-Spam-Flag";
-    private final static String SPAM_HDR_VALUE = "YES";
-    private final static String HAM_HDR_VALUE = "NO";
-
-    private static final String NOTIFY_SUB_TEMPLATE =
-        "[SPAM NOTIFICATION] re: $MIMEMessage:SUBJECT$";
-
-    private static final String NOTIFY_BODY_TEMPLATE =
-        "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF +
-        "was received by $SMTPTransaction:TO$.  The message was determined" + CRLF +
-        "by the Spam Blocker to be spam based on a score of $SPAMReport:SCORE$ where anything" + CRLF +
-        "above $SPAMReport:THRESHOLD$ is spam.  The details of the report are as follows:" + CRLF + CRLF +
-        "$SPAMReport:FULL$";
 
     private final RBLEventHandler rblHandler = new RBLEventHandler(this);
 
@@ -99,7 +69,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
     private final SpamScanner scanner;
     private final SpamAssassinDaemon saDaemon;
     private final EventLogger<SpamEvent> eventLogger;
-    private final EventLogger<SpamSMTPRBLEvent> rblEventLogger;
+    private final EventLogger<SpamSmtpRblEvent> rblEventLogger;
 
     private final PartialListUtil listUtil = new PartialListUtil();
 
@@ -118,7 +88,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     // constructors -----------------------------------------------------------
 
-    public SpamImpl(SpamScanner scanner)
+    public SpamNodeImpl(SpamScanner scanner)
     {
         this.scanner = scanner;
         saDaemon = new SpamAssassinDaemon();
@@ -167,7 +137,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
         return eventLogger;
     }
 
-    public EventManager<SpamSMTPRBLEvent> getRBLEventManager()
+    public EventManager<SpamSmtpRblEvent> getRBLEventManager()
     {
         return rblEventLogger;
     }
@@ -209,106 +179,6 @@ public class SpamImpl extends AbstractNode implements SpamNode
         emailReceivedBlinger.increment();
     }
 
-    /**
-     * Method for subclass (currently - clamphish) to define
-     * the default Subject template for POP/IMAP wrapped messages
-     */
-    public String getDefaultSubjectWrapperTemplate() {
-        return MOD_SUB_TEMPLATE;
-    }
-
-    /**
-     * Method for subclass (currently - clamphish) to define
-     * the default wrapping body template for POP/IMAP
-     */
-    public String getDefaultBodyWrapperTemplate() {
-        return MOD_BODY_TEMPLATE;
-    }
-
-    /**
-     * Method for subclass (currently - clamphish) to define
-     * the default Subject template for SMTP wrapped messages
-     */
-    public String getDefaultSMTPSubjectWrapperTemplate() {
-        return getDefaultSubjectWrapperTemplate();
-    }
-
-    /**
-     * Method for subclass (currently - clamphish) to define
-     * the default wrapping body template for SMTP
-     */
-    public String getDefaultSMTPBodyWrapperTemplate() {
-        return MOD_BODY_SMTP_TEMPLATE;
-    }
-
-    /**
-     * Get the default name of the header added to mails
-     * to indicate "spamminess"
-     */
-    public String getDefaultIndicatorHeaderName() {
-        return SPAM_HEADER_NAME;
-    }
-
-    /**
-     * Get the default value for the {@link #getDefaultIndicatorHeaderName header}
-     * indicating if the email is/is not spam
-     */
-    public String getDefaultIndicatorHeaderValue(boolean isSpam) {
-        return isSpam?SPAM_HDR_VALUE:HAM_HDR_VALUE;
-    }
-
-    /**
-     * Get the default template used for notification messages'
-     * subject
-     */
-    public String getDefaultNotifySubjectTemplate() {
-        return NOTIFY_SUB_TEMPLATE;
-    }
-
-    /**
-     * Get the default template used to create notification
-     * messages' bodies
-     */
-    public String getDefaultNotifyBodyTemplate() {
-        return NOTIFY_BODY_TEMPLATE;
-    }
-
-    /**
-     * The settings for the IMAP/POP/SMTP templates have been added
-     * to the Config objects, yet not in the database (9/05).
-     * This method makes sure that they are set to the programatic default.
-     *
-     * Once we move these to the database, this method is obsolete.
-     */
-    private void ensureTemplateSettings(SpamSettings ss) {
-        ensureTemplateSettings(ss.getBaseSettings());
-    }
-
-    private void ensureTemplateSettings(SpamBaseSettings sbs) {
-        SpamIMAPConfig ic = sbs.getImapConfig();
-        ic.setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate());
-        ic.setBodyWrapperTemplate(getDefaultBodyWrapperTemplate());
-        ic.setHeaderName(getDefaultIndicatorHeaderName());
-        ic.setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        ic.setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-
-        SpamPOPConfig pc = sbs.getPopConfig();
-        pc.setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate());
-        pc.setBodyWrapperTemplate(getDefaultBodyWrapperTemplate());
-        pc.setHeaderName(getDefaultIndicatorHeaderName());
-        pc.setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        pc.setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-
-        SpamSMTPConfig sc = sbs.getSmtpConfig();
-        sc.setSubjectWrapperTemplate(getDefaultSMTPSubjectWrapperTemplate());
-        sc.setBodyWrapperTemplate(getDefaultSMTPBodyWrapperTemplate());
-        sc.setHeaderName(getDefaultIndicatorHeaderName());
-        sc.setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
-        sc.setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-        sc.setNotifySubjectTemplate(getDefaultNotifySubjectTemplate());
-        sc.setNotifyBodyTemplate(getDefaultNotifyBodyTemplate());
-    }
-
     protected void initSpamRBLList(SpamSettings tmpSpamSettings) {
         initSpamRBLList(tmpSpamSettings.getSpamRBLList());
     }
@@ -335,48 +205,33 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     protected void configureSpamSettings(SpamSettings tmpSpamSettings) {
         tmpSpamSettings.getBaseSettings().
-            setSmtpConfig(new SpamSMTPConfig(true,
-                                             SMTPSpamMessageAction.QUARANTINE,
-                                             SpamSMTPNotifyAction.NEITHER,
+            setSmtpConfig(new SpamSmtpConfig(true,
+                                             SmtpSpamMessageAction.QUARANTINE,
                                              SpamProtoConfig.DEFAULT_STRENGTH,
-                                             false,
-                                             true,
-                                             SpamSMTPConfig.DEFAULT_SUPER_STRENGTH,
-                                             true,
-                                             "Scan SMTP e-mail",
-                                             getDefaultSubjectWrapperTemplate(),
-                                             getDefaultBodyWrapperTemplate(),
-                                             getDefaultIndicatorHeaderName(),
-                                             getDefaultIndicatorHeaderValue(true),
-                                             getDefaultIndicatorHeaderValue(false),
-                                             getDefaultNotifySubjectTemplate(),
-                                             getDefaultNotifyBodyTemplate(),
-                                             false,
-                                             15));
+                                             SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
+                                             SpamSmtpConfig.DEFAULT_BLOCK_SUPER_SPAM,
+                                             SpamSmtpConfig.DEFAULT_SUPER_STRENGTH,
+                                             SpamSmtpConfig.DEFAULT_FAIL_CLOSED,
+                                             SpamProtoConfig.DEFAULT_HEADER_NAME,
+                                             SpamSmtpConfig.DEFAULT_TARPIT,
+                                             SpamSmtpConfig.DEFAULT_TARPIT_TIMEOUT,
+                                             SpamSmtpConfig.DEFAULT_LIMIT_LOAD,
+                                             SpamSmtpConfig.DEFAULT_LIMIT_SCANS,
+                                             SpamSmtpConfig.DEFAULT_SCAN_WAN_MAIL ));
 
         tmpSpamSettings.getBaseSettings().
-            setPopConfig(new SpamPOPConfig(true,
+            setPopConfig(new SpamPopConfig(true,
                                            SpamMessageAction.MARK,
                                            SpamProtoConfig.DEFAULT_STRENGTH,
-                                           false,
-                                           "Scan POP e-mail",
-                                           getDefaultSubjectWrapperTemplate(),
-                                           getDefaultBodyWrapperTemplate(),
-                                           getDefaultIndicatorHeaderName(),
-                                           getDefaultIndicatorHeaderValue(true),
-                                           getDefaultIndicatorHeaderValue(false) ));
+                                           SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
+                                           SpamProtoConfig.DEFAULT_HEADER_NAME ));
 
         tmpSpamSettings.getBaseSettings().
-            setImapConfig(new SpamIMAPConfig(true,
+            setImapConfig(new SpamImapConfig(true,
                                              SpamMessageAction.MARK,
                                              SpamProtoConfig.DEFAULT_STRENGTH,
-                                             false,
-                                             "Scan IMAP e-mail",
-                                             getDefaultSMTPSubjectWrapperTemplate(),
-                                             getDefaultSMTPBodyWrapperTemplate(),
-                                             getDefaultIndicatorHeaderName(),
-                                             getDefaultIndicatorHeaderValue(true),
-                                             getDefaultIndicatorHeaderValue(false) ));
+                                             SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
+                                             SpamProtoConfig.DEFAULT_HEADER_NAME ));
     }
 
     public SpamSettings getSpamSettings()
@@ -390,8 +245,6 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     public void setSpamSettings(final SpamSettings newSpamSettings)
     {
-        // TEMP HACK, Until we move the templates to database
-        ensureTemplateSettings(newSpamSettings);
         // set lists if not already set
         initSpamRBLList(newSpamSettings);
 
@@ -400,7 +253,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
                 public boolean doWork(Session s)
                 {
                     s.merge(newSpamSettings);
-                    SpamImpl.this.spamSettings = newSpamSettings;
+                    SpamNodeImpl.this.spamSettings = newSpamSettings;
 
                     return true;
                 }
@@ -465,9 +318,6 @@ public class SpamImpl extends AbstractNode implements SpamNode
 
     public void setBaseSettings(final SpamBaseSettings baseSettings)
     {
-        //TEMP HACK, Until we move the templates to database
-        ensureTemplateSettings(baseSettings);
-
         TransactionWork tw = new TransactionWork() {
                 public boolean doWork(Session s) {
                     spamSettings.setBaseSettings(baseSettings);
@@ -577,7 +427,6 @@ public class SpamImpl extends AbstractNode implements SpamNode
                     q.setParameter("tid", getTid());
                     spamSettings = (SpamSettings)q.uniqueResult();
 
-                    ensureTemplateSettings(spamSettings);
                     // set lists if not already set
                     initSpamRBLList(spamSettings);
 
@@ -608,7 +457,7 @@ public class SpamImpl extends AbstractNode implements SpamNode
         eventLogger.log(se);
     }
 
-    void logRBL(SpamSMTPRBLEvent spamSmtpRBLEvent) {
+    void logRBL(SpamSmtpRblEvent spamSmtpRBLEvent) {
         rblEventLogger.log(spamSmtpRBLEvent);
     }
 

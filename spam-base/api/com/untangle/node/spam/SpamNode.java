@@ -56,5 +56,5 @@ public interface SpamNode extends Node
     void updateAll( SpamBaseSettings baseSettings, List[] rblRules );
 
     EventManager<SpamEvent> getEventManager();
-    EventManager<SpamSMTPRBLEvent> getRBLEventManager();
+    EventManager<SpamSmtpRblEvent> getRBLEventManager();
 }

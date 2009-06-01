@@ -47,7 +47,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="n_spam_pop_config", schema="settings")
-public class SpamPOPConfig extends SpamProtoConfig
+public class SpamPopConfig extends SpamProtoConfig
 {
     private static final long serialVersionUID = 7520156745253589117L;
 
@@ -58,28 +58,18 @@ public class SpamPOPConfig extends SpamProtoConfig
 
     // constructor ------------------------------------------------------------
 
-    public SpamPOPConfig() {}
+    public SpamPopConfig() {}
 
-    public SpamPOPConfig(boolean bScan,
+    public SpamPopConfig(boolean bScan,
                          SpamMessageAction zMsgAction,
                          int strength,
                          boolean addSpamHeaders,
-                         String zNotes,
-                         String subjectTemplate,
-                         String bodyTemplate,
-                         String headerName,
-                         String isSpamHeaderValue,
-                         String isHamHeaderValue)
+                         String headerName)
     {
         super(bScan,
               strength,
               addSpamHeaders,
-              zNotes,
-              subjectTemplate,
-              bodyTemplate,
-              headerName,
-              isSpamHeaderValue,
-              isHamHeaderValue);
+              headerName);
         this.zMsgAction = zMsgAction;
     }
 

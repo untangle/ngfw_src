@@ -1,6 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
+ * $HeadURL: svn://chef/work/src/mail-casing/localapi/com/untangle/node/mail/papi/smtp/SpamLoadChecker.java $
+ * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,48 +33,38 @@
 
 package com.untangle.node.spam;
 
+import org.apache.log4j.Logger;
 
-public enum SMTPSpamMessageAction
-{
-    PASS('P', "pass message"),
-    MARK('M', "mark message"),
-    BLOCK('B', "block message"),
-    QUARANTINE('Q', "quarantine message"),
-    SAFELIST('S', "safelist message"),
-    OVERSIZE('Z', "oversize message");
+import com.untangle.uvm.util.LoadAvg;
+import com.untangle.uvm.util.MetaEnv;
 
-    private static final long serialVersionUID = -6364692037092527263L;
+public final class SpamLoadChecker {
 
-    public static final char PASS_KEY = 'P';
-    public static final char MARK_KEY = 'M';
-    public static final char BLOCK_KEY = 'B';
-    public static final char QUARANTINE_KEY = 'Q';
-    public static final char SAFELIST_KEY = 'S'; // special pass case
-    public static final char OVERSIZE_KEY = 'Z'; // special pass case
+    public static final float ALLOW_ANYWAY_CHANCE = 0.05f;
 
-    private String name;
-    private char key;
-
-    private SMTPSpamMessageAction(char key, String name)
-    {
-        this.key = key;
-        this.name = name;
-    }
-
-    public static SMTPSpamMessageAction getInstance(char key) {
-        SMTPSpamMessageAction[] values = values();
-        for (int i = 0; i < values.length; i++) {
-            if (values[i].getKey() == key){
-                return values[i];
-            }
+    private SpamLoadChecker() { }
+    
+    /**
+     * Call this to determine if session request should be rejected for load too high.
+     *
+     * @param logger a <code>Logger</code> used to log the warning if the load is too high
+     * @return a <code>boolean</code> value
+     */
+    public static boolean reject(int activeCount, Logger logger, int scanLimit, float loadLimit) {
+        LoadAvg la = LoadAvg.get();
+        float oneMinLA = la.getOneMin();
+        if (activeCount >= scanLimit) {
+            logger.warn("Too many concurrent scans: " + activeCount);
+            return true;
         }
-        return null;
-    }
-
-    public char getKey() {
-        return key;
-    }
-    public String getName() {
-        return name;
+        if (oneMinLA >= loadLimit) {
+            if (MetaEnv.rng().nextFloat() < ALLOW_ANYWAY_CHANCE) {
+                logger.warn("Load too high, but allowing anyway: " + la);
+                return false;
+            }
+            logger.warn("Load too high: " + la);
+            return true;
+        }
+        return false;
     }
 }

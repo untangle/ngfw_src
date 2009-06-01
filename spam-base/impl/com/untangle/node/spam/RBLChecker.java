@@ -41,9 +41,9 @@ public class RBLChecker {
 
     private Map<RBLClient, RBLClientContext> clientMap;
     private List<SpamRBL> spamRBLList;
-    private final SpamImpl m_spamImpl;
+    private final SpamNodeImpl m_spamImpl;
 
-    public RBLChecker(List<SpamRBL> spamRBLList,SpamImpl m_spamImpl) {
+    public RBLChecker(List<SpamRBL> spamRBLList,SpamNodeImpl m_spamImpl) {
         this.spamRBLList = spamRBLList;
         this.m_spamImpl = m_spamImpl;
     }
@@ -142,12 +142,12 @@ public class RBLChecker {
                 // -> functionality requested by dmorris
                 logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist but ignoring this time");
                 
-                tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), true));
+                tsr.attach(new SpamSmtpRblEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), true));
                 rblCnt = 0;
                 isBlacklisted = false;
             } else {
                 logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
-                tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
+                tsr.attach(new SpamSmtpRblEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
 
                 /* Indicate that there was a block event */
                 this.m_spamImpl.incrementBlockCount();

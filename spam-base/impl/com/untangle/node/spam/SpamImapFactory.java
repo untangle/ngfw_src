@@ -33,11 +33,11 @@ public class SpamImapFactory
 
     private final Logger m_logger = Logger.getLogger(getClass());
 
-    private final SpamImpl m_impl;
+    private final SpamNodeImpl m_impl;
     private final MailExport m_mailExport;
     private SafelistNodeView m_safelist;
 
-    SpamImapFactory(SpamImpl impl) {
+    SpamImapFactory(SpamNodeImpl impl) {
         m_impl = impl;
         /* XXX RBS I don't know if this will work */
         m_mailExport = MailExportFactory.factory().getExport();
@@ -47,7 +47,7 @@ public class SpamImapFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
 
-        SpamIMAPConfig config = m_impl.getSpamSettings().getBaseSettings().getImapConfig();
+        SpamImapConfig config = m_impl.getSpamSettings().getBaseSettings().getImapConfig();
 
         if(!config.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");

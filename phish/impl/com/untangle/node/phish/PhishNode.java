@@ -30,7 +30,7 @@ import java.util.Set;
 import com.sleepycat.je.DatabaseException;
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.spam.SpamBaseSettings;
-import com.untangle.node.spam.SpamImpl;
+import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
@@ -59,35 +59,9 @@ import org.hibernate.Session;
 
 import static com.untangle.node.util.Ascii.CRLF;
 
-public class PhishNode extends SpamImpl implements Phish
+public class PhishNode extends SpamNodeImpl implements Phish
 {
     private final Logger logger = Logger.getLogger(getClass());
-
-    private static final String MOD_SUB_TEMPLATE =
-        "[PHISH] $MIMEMessage:SUBJECT$";
-    private static final String MOD_BODY_TEMPLATE =
-        "The attached message from $MIMEMessage:FROM$\r\n" +
-        "was determined by the Phish Blocker to be PHISH (a\r\n" +
-        "fraudulent email intended to steal information).  The kind of PHISH that was\r\n" +
-        "found was $SPAMReport:FULL$";
-
-    private static final String MOD_BODY_SMTP_TEMPLATE =
-        "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
-        "was determined by the Phish Blocker to be PHISH (a\r\n" +
-        "fraudulent email intended to steal information).  The kind of PHISH that was\r\n" +
-        "found was $SPAMReport:FULL$";
-
-    private static final String PHISH_HEADER_NAME = "X-Phish-Flag";
-
-    private static final String NOTIFY_SUB_TEMPLATE =
-        "[PHISH NOTIFICATION] re: $MIMEMessage:SUBJECT$";
-
-    private static final String NOTIFY_BODY_TEMPLATE =
-        "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
-        "was received by $SMTPTransaction:TO$.  The message was determined\r\n" +
-        "by the Phish Blocker to be PHISH (a fraudulent\r\n" +
-        "email intended to steal information).  The kind of PHISH that was found was\r\n" +
-        "$SPAMReport:FULL$";
 
     private static final URL URL_BASE;
 
@@ -270,41 +244,6 @@ public class PhishNode extends SpamImpl implements Phish
         Query q = s.createQuery("from PhishSettings ss where ss.tid = :tid");
         q.setParameter("tid", getTid());
         return q;
-    }
-
-    @Override
-    public String getDefaultSubjectWrapperTemplate() {
-        return MOD_SUB_TEMPLATE;
-    }
-
-    @Override
-    public String getDefaultBodyWrapperTemplate() {
-        return MOD_BODY_TEMPLATE;
-    }
-
-    @Override
-    public String getDefaultSMTPSubjectWrapperTemplate() {
-        return getDefaultSubjectWrapperTemplate();
-    }
-
-    @Override
-    public String getDefaultSMTPBodyWrapperTemplate() {
-        return MOD_BODY_SMTP_TEMPLATE;
-    }
-
-    @Override
-    public String getDefaultIndicatorHeaderName() {
-        return PHISH_HEADER_NAME;
-    }
-
-    @Override
-    public String getDefaultNotifySubjectTemplate() {
-        return NOTIFY_SUB_TEMPLATE;
-    }
-
-    @Override
-    public String getDefaultNotifyBodyTemplate() {
-        return NOTIFY_BODY_TEMPLATE;
     }
 
     @Override

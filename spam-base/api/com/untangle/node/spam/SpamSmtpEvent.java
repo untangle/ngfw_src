@@ -60,7 +60,7 @@ public class SpamSmtpEvent extends SpamEvent
     private MessageInfo messageInfo;
     private float score;
     private boolean isSpam;
-    private SMTPSpamMessageAction action;
+    private SmtpSpamMessageAction action;
     private String vendorName;
 
     // constructors -----------------------------------------------------------
@@ -68,7 +68,7 @@ public class SpamSmtpEvent extends SpamEvent
     public SpamSmtpEvent() { }
 
     public SpamSmtpEvent(MessageInfo messageInfo, float score, boolean isSpam,
-                         SMTPSpamMessageAction action, String vendorName)
+                         SmtpSpamMessageAction action, String vendorName)
     {
         this.messageInfo = messageInfo;
         this.score = score;
@@ -88,14 +88,14 @@ public class SpamSmtpEvent extends SpamEvent
     @Transient
     public int getActionType()
     {
-        char type = (null == action) ? SMTPSpamMessageAction.PASS_KEY : action.getKey();
-        if (SMTPSpamMessageAction.PASS_KEY == type) {
+        char type = (null == action) ? SmtpSpamMessageAction.PASS_KEY : action.getKey();
+        if (SmtpSpamMessageAction.PASS_KEY == type) {
             return PASSED;
-        } else if (SMTPSpamMessageAction.MARK_KEY == type) {
+        } else if (SmtpSpamMessageAction.MARK_KEY == type) {
             return MARKED;
-        } else if (SMTPSpamMessageAction.BLOCK_KEY == type) {
+        } else if (SmtpSpamMessageAction.BLOCK_KEY == type) {
             return BLOCKED;
-        } else if (SMTPSpamMessageAction.SAFELIST_KEY == type) {
+        } else if (SmtpSpamMessageAction.SAFELIST_KEY == type) {
             return SAFELISTED;
         } else { // QUARANTINE_KEY
             return QUARANTINED;
@@ -106,7 +106,7 @@ public class SpamSmtpEvent extends SpamEvent
     public String getActionName()
     {
         if (null == action) {
-            return SMTPSpamMessageAction.PASS.getName();
+            return SmtpSpamMessageAction.PASS.getName();
         } else {
             return action.getName();
         }
@@ -194,13 +194,13 @@ public class SpamSmtpEvent extends SpamEvent
      *
      * @return action.
      */
-    @Type(type="com.untangle.node.spam.SMTPSpamMessageActionUserType")
-    public SMTPSpamMessageAction getAction()
+    @Type(type="com.untangle.node.spam.SmtpSpamMessageActionUserType")
+    public SmtpSpamMessageAction getAction()
     {
         return action;
     }
 
-    public void setAction(SMTPSpamMessageAction action)
+    public void setAction(SmtpSpamMessageAction action)
     {
         this.action = action;
     }

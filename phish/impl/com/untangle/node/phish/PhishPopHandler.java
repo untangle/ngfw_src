@@ -20,13 +20,29 @@ package com.untangle.node.phish;
 
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.WrappedMessageGenerator;
 import com.untangle.node.spam.SpamPopHandler;
 
 public class PhishPopHandler extends SpamPopHandler
 {
-    // constructors -----------------------------------------------------------
+    private static final String MOD_SUB_TEMPLATE =
+        "[PHISH] $MIMEMessage:SUBJECT$";
+    private static final String MOD_BODY_TEMPLATE =
+        "The attached message from $MIMEMessage:FROM$\r\n" +
+        "was determined by the Phish Blocker to be PHISH (a\r\n" +
+        "fraudulent email intended to steal information).  The kind of PHISH that was\r\n" +
+        "found was $SPAMReport:FULL$";
+    private static WrappedMessageGenerator msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
+
     PhishPopHandler(TCPSession session, PhishNode node, MailExport zMExport)
     {
         super(session, node, zMExport);
+        this.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
     }
+
+    @Override
+    protected WrappedMessageGenerator getMsgGenerator() {
+        return this.msgGenerator;
+    }
+
 }

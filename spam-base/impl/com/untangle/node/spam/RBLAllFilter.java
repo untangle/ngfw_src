@@ -22,7 +22,7 @@ import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.util.I18nUtil;
 
-public class RBLAllFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
+public class RBLAllFilter implements SimpleEventFilter<SpamSmtpRblEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
 
@@ -32,7 +32,7 @@ public class RBLAllFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
 
     public RBLAllFilter()
     {
-        rblQuery = "FROM SpamSMTPRBLEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        rblQuery = "FROM SpamSmtpRblEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     }
 
     // SimpleEventFilter methods ----------------------------------------------
@@ -47,7 +47,7 @@ public class RBLAllFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
         return new String[] { rblQuery };
     }
 
-    public boolean accept(SpamSMTPRBLEvent e)
+    public boolean accept(SpamSmtpRblEvent e)
     {
         return true;
     }

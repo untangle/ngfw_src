@@ -21,33 +21,49 @@ package com.untangle.node.phish;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
+import com.untangle.node.mail.papi.WrappedMessageGenerator;
 import com.untangle.node.spam.SpamReport;
-import com.untangle.node.spam.SpamSMTPConfig;
+import com.untangle.node.spam.SpamSmtpConfig;
 
 /**
  * Protocol Handler which is called-back as scanable messages
  * are encountered.
  */
-public class PhishSmtpHandler extends com.untangle.node.spam.SmtpSessionHandler {
+public class PhishSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler {
 
+    private static final String MOD_SUB_TEMPLATE =
+        "[PHISH] $MIMEMessage:SUBJECT$";
+    private static final String MOD_BODY_TEMPLATE =
+        "The attached message from $MIMEMessage:FROM$\r\n" +
+        "was determined by the Phish Blocker to be PHISH (a\r\n" +
+        "fraudulent email intended to steal information).  The kind of PHISH that was\r\n" +
+        "found was $SPAMReport:FULL$";
+    private static WrappedMessageGenerator msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
+    
     PhishSmtpHandler(TCPSession session,
                      long maxClientWait,
                      long maxSvrWait,
                      PhishNode impl,
-                     SpamSMTPConfig config,
+                     SpamSmtpConfig config,
                      QuarantineNodeView quarantine,
                      SafelistNodeView safelist) {
         super(session, maxClientWait, maxSvrWait, impl, config, quarantine, safelist);
+        this.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
     }
 
     @Override
     protected String getQuarantineCategory() {
-        return "FRAUD";
+        return "PHISH";
     }
 
     @Override
     protected String getQuarantineDetail(SpamReport report) {
-        //TODO bscott Do something real here
-        return "Identity Theft";
+        return "PHISH";
     }
+
+    @Override
+    protected WrappedMessageGenerator getMsgGenerator() {
+        return this.msgGenerator;
+    }
+
 }

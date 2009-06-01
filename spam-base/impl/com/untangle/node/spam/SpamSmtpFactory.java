@@ -23,7 +23,6 @@ import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.mail.papi.MailNodeSettings;
 import com.untangle.node.mail.papi.quarantine.QuarantineNodeView;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
-import com.untangle.node.mail.papi.smtp.ScanLoadChecker;
 import com.untangle.node.mail.papi.smtp.sapi.Session;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
@@ -39,9 +38,9 @@ public class SpamSmtpFactory implements TokenHandlerFactory
     private MailExport m_mailExport;
     private QuarantineNodeView m_quarantine;
     private SafelistNodeView m_safelist;
-    private SpamImpl m_spamImpl;
+    private SpamNodeImpl m_spamImpl;
 
-    public SpamSmtpFactory(SpamImpl impl) {
+    public SpamSmtpFactory(SpamNodeImpl impl) {
         Policy p = impl.getTid().getPolicy();
         m_mailExport = MailExportFactory.factory().getExport();
         m_quarantine = m_mailExport.getQuarantineNodeView();
@@ -51,7 +50,7 @@ public class SpamSmtpFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session) {
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();
-        SpamSMTPConfig spamConfig = spamSettings.getBaseSettings().getSmtpConfig();
+        SpamSmtpConfig spamConfig = spamSettings.getBaseSettings().getSmtpConfig();
 
         if(!spamConfig.getScan()) {
             m_logger.debug("Scanning disabled. Return passthrough token handler");
@@ -62,15 +61,15 @@ public class SpamSmtpFactory implements TokenHandlerFactory
         long timeout = casingSettings.getSmtpTimeout();
         boolean allowTLS = casingSettings.getSmtpAllowTLS();
         return new Session(session,
-                           new SmtpSessionHandler(session, timeout, timeout, m_spamImpl,
-                                                  spamConfig, m_quarantine, m_safelist),
+                           new SpamSmtpHandler(session, timeout, timeout, m_spamImpl,
+                                               spamConfig, m_quarantine, m_safelist),
                            allowTLS);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();
-        SpamSMTPConfig spamConfig = spamSettings.getBaseSettings().getSmtpConfig();
+        SpamSmtpConfig spamConfig = spamSettings.getBaseSettings().getSmtpConfig();
 
         // Note that we may *****NOT***** release the session here.  This is because
         // the mail casings currently assume that there will be at least one node
@@ -81,7 +80,7 @@ public class SpamSmtpFactory implements TokenHandlerFactory
         }
 
         int activeCount = m_spamImpl.getScanner().getActiveScanCount();
-        if (ScanLoadChecker.reject(activeCount, m_logger)) {
+        if (SpamLoadChecker.reject(activeCount, m_logger, spamConfig.getScanLimit(), spamConfig.getLoadLimit())) {
             m_logger.warn("Load too high, rejecting connection from: " + tsr.clientAddr());
             tsr.rejectReturnRst();
         }

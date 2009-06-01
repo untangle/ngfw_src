@@ -37,9 +37,9 @@ import javax.persistence.Transient;
 @Embeddable
 public class SpamBaseSettings implements Serializable
 {
-    private SpamSMTPConfig smtpConfig;
-    private SpamPOPConfig popConfig;
-    private SpamIMAPConfig imapConfig;
+    private SpamSmtpConfig smtpConfig;
+    private SpamPopConfig popConfig;
+    private SpamImapConfig imapConfig;
 
     private int rblListLength;
 
@@ -56,12 +56,12 @@ public class SpamBaseSettings implements Serializable
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="smtp_config", nullable=false)
-    public SpamSMTPConfig getSmtpConfig()
+    public SpamSmtpConfig getSmtpConfig()
     {
         return smtpConfig;
     }
 
-    public void setSmtpConfig(SpamSMTPConfig smtpConfig)
+    public void setSmtpConfig(SpamSmtpConfig smtpConfig)
     {
         this.smtpConfig = smtpConfig;
     }
@@ -73,12 +73,12 @@ public class SpamBaseSettings implements Serializable
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="pop_config", nullable=false)
-    public SpamPOPConfig getPopConfig()
+    public SpamPopConfig getPopConfig()
     {
         return popConfig;
     }
 
-    public void setPopConfig(SpamPOPConfig popConfig)
+    public void setPopConfig(SpamPopConfig popConfig)
     {
         this.popConfig = popConfig;
     }
@@ -90,12 +90,12 @@ public class SpamBaseSettings implements Serializable
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="imap_config", nullable=false)
-    public SpamIMAPConfig getImapConfig()
+    public SpamImapConfig getImapConfig()
     {
         return imapConfig;
     }
 
-    public void setImapConfig(SpamIMAPConfig imapConfig)
+    public void setImapConfig(SpamImapConfig imapConfig)
     {
         this.imapConfig = imapConfig;
     }

@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.LinkedList;
 
 import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.WrappedMessageGenerator;
 import com.untangle.node.mail.papi.imap.BufferingImapTokenStreamHandler;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.mime.HeaderParseException;
@@ -32,22 +33,30 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.TCPSession;
 import org.apache.log4j.Logger;
 
-public class SpamImapHandler
-    extends BufferingImapTokenStreamHandler {
+public class SpamImapHandler extends BufferingImapTokenStreamHandler
+{
+    private final Logger m_logger = Logger.getLogger(SpamImapHandler.class);
 
-    private final Logger m_logger =
-        Logger.getLogger(SpamImapHandler.class);
-
-    private final SpamImpl m_spamImpl;
-    private final SpamIMAPConfig m_config;
+    private final SpamNodeImpl m_spamImpl;
+    private final SpamImapConfig m_config;
     private final TempFileFactory m_fileFactory;
     private final SafelistNodeView m_safelist;
 
+    private static final String MOD_SUB_TEMPLATE =
+        "[SPAM] $MIMEMessage:SUBJECT$";
+
+    private static final String MOD_BODY_TEMPLATE =
+        "The attached message from $MIMEMessage:FROM$\r\n" +
+        "was determined by the Spam Blocker to be spam based on a score\r\n" +
+        "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
+
+    private static WrappedMessageGenerator msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
+    
     public SpamImapHandler(TCPSession session,
                            long maxClientWait,
                            long maxSvrWait,
-                           SpamImpl impl,
-                           SpamIMAPConfig config,
+                           SpamNodeImpl impl,
+                           SpamImapConfig config,
                            SafelistNodeView safelist) {
 
         super(maxClientWait, maxSvrWait, config.getMsgSizeLimit());
@@ -112,8 +121,7 @@ public class SpamImapHandler
         if (m_config.getAddSpamHeaders()) {
             try {
                 msg.getMMHeaders().removeHeaderFields(new LCString(m_config.getHeaderName()));
-                msg.getMMHeaders().addHeaderField(m_config.getHeaderName(),
-                                                  m_config.getHeaderValue(report.isSpam()));
+                msg.getMMHeaders().addHeaderField(m_config.getHeaderName(),(report.isSpam() ? "YES" : "NO"));
             } catch(HeaderParseException shouldNotHappen) {
                 m_logger.error(shouldNotHappen);
             }
@@ -130,7 +138,7 @@ public class SpamImapHandler
             else {
                 m_logger.debug("Marking message as-per policy");
                 m_spamImpl.incrementMarkCount();
-                MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, report);
+                MIMEMessage wrappedMsg = this.getMsgGenerator().wrap(msg, report);
                 return HandleMailResult.forReplaceMessage(wrappedMsg);
             }
         }//ENDOF SPAM
@@ -194,4 +202,13 @@ public class SpamImapHandler
             return null;
         }
     }
+
+    /**
+     * Method for returning the generator used to mark messages
+     */
+    protected WrappedMessageGenerator getMsgGenerator()
+    {
+        return this.msgGenerator;
+    }
+
 }
