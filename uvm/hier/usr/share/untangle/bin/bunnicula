@@ -75,8 +75,8 @@ fi
 
 # add user and uvm database just in case
 echo "ALTER DATABASE mvvm RENAME TO uvm" | psql -X -U postgres template1 2>/dev/null
-createuser -U postgres ${PG_CREATEUSER_OPTIONS} metavize 2>/dev/null
-createuser -U postgres ${PG_CREATEUSER_OPTIONS} untangle 2>/dev/null
+createuser -U postgres -dSR metavize 2>/dev/null
+createuser -U postgres -dSR untangle 2>/dev/null
 createdb -O postgres -U postgres uvm 2>/dev/null
 createlang -U postgres plpgsql uvm 2>/dev/null
 

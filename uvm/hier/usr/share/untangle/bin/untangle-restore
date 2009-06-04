@@ -15,7 +15,7 @@ restore_db()
     infile=$1
 
     dropdb -U postgres uvm >/dev/null 2>&1
-    createuser -U postgres ${PG_CREATEUSER_OPTIONS} untangle 2>/dev/null
+    createuser -U postgres -dSR untangle 2>/dev/null
     createdb -O postgres -U postgres uvm >/dev/null 2>&1
 
 #    if confirm "Restore settings?"; then
