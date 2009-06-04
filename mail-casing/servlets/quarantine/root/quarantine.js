@@ -241,21 +241,21 @@ Ung.Quarantine.prototype = {
         this.releaseButton= new Ext.Button( {
             handler : function() { this.releaseOrDelete( quarantine.rpc.releaseMessages ) }.createDelegate( this ),
 	    iconCls : 'icon-move-mails',
-            text : i18n._( "Move to Inbox" ),
+            text : i18n._( "Move to Inbox (0  messages)" ),
             disabled : true
                     } );
 
         this.deleteButton = new Ext.Button( {
             handler : function() { this.releaseOrDelete( quarantine.rpc.purgeMessages ) }.createDelegate( this ),
 	    iconCls:'icon-delete-row',			
-            text : i18n._( "Delete Messages" ),
+            text : i18n._( "Delete (0  messages)" ),
             disabled : true
                 } );
         
         this.safelistButton = new Ext.Button( {
-	    iconCls:'icon-safe-list',
             handler : function() { this.safelist() }.createDelegate( this ),
-            text : i18n._( "Add Sender(s) to Safelist" ),
+	    iconCls:'icon-safe-list',
+            text : i18n._( "Add to Safelist (0  Senders)" ),
             disabled : true
         } );
 
@@ -392,31 +392,31 @@ Ung.Quarantine.prototype = {
         
         var count = this.actionItems.size;
         if ( count == 0 ) {
-            deleteText = i18n._( "Delete Messages" );
-            releaseText = i18n._( "Move to Inbox" );
+            deleteText = i18n._( "Delete (0  messages)" );
+            releaseText = i18n._( "Move to Inbox (0  messages)" );
             this.releaseButton.setDisabled( true );
             this.deleteButton.setDisabled( true );
         } else if ( count == 1 ) {
-            deleteText = i18n._( "Delete one Message" );
-            releaseText = i18n._( "Move one Message to Inbox" );
+            deleteText = i18n._( "Delete (1  message)" );
+            releaseText = i18n._( "Move to Inbox (1  message)" );
             this.releaseButton.setDisabled( false );
             this.deleteButton.setDisabled( false );
         } else {
-            deleteText = String.format( i18n._( "Delete {0} Messages" ), count );
-            releaseText = String.format( i18n._( "Move {0} Messages to Inbox" ), count );
+            deleteText = String.format( i18n._( "Delete ({0} messages)" ), count );
+            releaseText = String.format( i18n._( "Move to Inbox ({0} messages)" ), count );
             this.releaseButton.setDisabled( false );
             this.deleteButton.setDisabled( false );
         }
 
         count = this.addresses.size;
         if ( count == 0 ) {
-            safelistText = i18n._( "Add Sender(s) to Safelist" );
+            safelistText = i18n._( "Add to Safelist (0  Senders)" );
             this.safelistButton.setDisabled( true );
         } else if ( count == 1 ) {
-            safelistText = i18n._( "Add Sender to Safelist" );
+            safelistText = i18n._( "Add to Safelist (1  Sender)" );
             this.safelistButton.setDisabled( false );
         } else {
-            safelistText = String.format( i18n._( "Add {0} Senders to Safelist" ), count );
+            safelistText = String.format( i18n._( "Add to Safelist ({0} Senders)" ), count );
             this.safelistButton.setDisabled( false );
         }
 
