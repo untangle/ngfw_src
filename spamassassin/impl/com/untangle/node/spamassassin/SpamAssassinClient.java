@@ -333,8 +333,6 @@ public final class SpamAssassinClient implements Runnable {
             spamdHdrList = null;
             spamdDtlList = null;
 
-            bufReader = null;
-            bufOutputStream = null;
         } catch (ClosedByInterruptException e) {
             // not thrown
             logger.warn(dbgName + ", spamc i/o channel interrupted: " + socket + ": " + e);
