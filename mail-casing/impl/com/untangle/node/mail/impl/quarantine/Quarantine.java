@@ -197,11 +197,11 @@ public class Quarantine
      * digests and purge the store.
      */
     void cronCallback() {
-        //TODO bscott  There should be a way to combine
-        //pruning with collection of inboxes
-        m_logger.debug("Cron callback for sending digests/pruning things");
+        m_logger.debug("Cron callback for Quarantine management");
         pruneStoreNow();
-        sendDigestsNow();
+
+        if (m_settings.getSendDailyDigests())
+            sendDigestsNow();
     }
 
     public void pruneStoreNow() {
@@ -218,7 +218,6 @@ public class Quarantine
         long cutoff = System.currentTimeMillis() - ONE_DAY;
 
         for(Inbox inbox : allInboxes) {
-            try {Thread.sleep(DIGEST_SEND_DELAY_MILLISEC);} catch (java.lang.InterruptedException e) {}
 
             Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
                 m_store.getIndex(inbox.getAddress());
@@ -235,16 +234,14 @@ public class Quarantine
                         } else {
                             m_logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
                         }
+
+                        try {Thread.sleep(DIGEST_SEND_DELAY_MILLISEC);} catch (java.lang.InterruptedException e) {}
                     }
                 } else {
                     m_logger.debug("No need to send digest to \"" + inbox.getAddress() + "\", no mails");
                 }
             }
         }
-    }
-
-    private String getInternalIPAsString() {
-        return LocalUvmContextFactory.context().networkManager().getPublicAddress();
     }
 
     //--QuarantineNodeView--
@@ -268,10 +265,8 @@ public class Quarantine
 
         //If we do not have an internal IP, then
         //don't even bother quarantining
-        if(getInternalIPAsString() == null) {
-            //TODO bscott It would be nice to not repeat
-            //     this warning msg
-            m_logger.warn("No inside interface, so no way for folks to release inbox.  Abort quarantining");
+        if(LocalUvmContextFactory.context().networkManager().getPublicAddress() == null) {
+            m_logger.warn("No valid IP, so no way for folks to connect to quarantine.  Abort quarantining");
             return false;
         }
 
@@ -750,7 +745,7 @@ public class Quarantine
 
         Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        String internalHost = getInternalIPAsString();
+        String internalHost = LocalUvmContextFactory.context().networkManager().getPublicAddress();
 
         if(internalHost == null) {
             m_logger.warn("Unable to determine internal interface");

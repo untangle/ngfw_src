@@ -680,7 +680,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         xtype : 'timefield',
                         name : 'Digest Sending Time',
 			id : 'quarantine_dailySendingTime',
-                        fieldLabel : this.i18n._('Digest Sending Time'),
+                        fieldLabel : this.i18n._('Quarantine Digest Sending Time'),
                         allowBlank : false,
                         format : "H:i",
 			minValue: '00:00',
@@ -697,6 +697,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 }.createDelegate(this)
                             }
                         }
+                    }, {
+                        cls: 'description',
+                        border : false,
+                        html : String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'),
+					     rpc.networkManager.getPublicAddress())
                     }]
                 }, {
                 	title : this.i18n._('User Quarantines'),

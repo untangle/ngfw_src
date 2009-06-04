@@ -25,7 +25,10 @@ $inbox_link - to access your spam quarantine
   <h3>$i18n_util.tr("Quarantine Digest for {0}", $user_email)</h3>
 
   <a href="$inbox_link">$i18n_util.tr("Click here to access your spam quarantine.")</a>
-  $i18n_util.tr("From this link you can have a specific email delivered to your email account or delete an email from the quarantine.")
+  <br/>
+  $i18n_util.tr("The spam quarantine contains emails that are being held from your email account.")
+  <br/>
+  $i18n_util.tr("Quarantined emails can be released to your inbox or deleted using the spam quarantine link.")
   
   </body>
 </html>
