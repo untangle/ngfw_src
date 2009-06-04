@@ -181,7 +181,8 @@ public abstract class Blacklist
             }
         }
 
-        if (settings.getBaseSettings().getBlockAllIpHosts()) {
+        // only check block all IP hosts on http traffic
+        if (80 == port && settings.getBaseSettings().getBlockAllIpHosts()) {
             if (null == host || IP_PATTERN.matcher(host).matches()) {
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
