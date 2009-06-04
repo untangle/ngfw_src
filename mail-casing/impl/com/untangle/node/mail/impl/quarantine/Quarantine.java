@@ -74,7 +74,8 @@ public class Quarantine
                QuarantineMaintenenceView, QuarantineUserView {
 
     private static final long ONE_DAY = (1000L * 60L * 60L * 24L);
-
+    private static final int DIGEST_SEND_DELAY_MILLISEC = 500; 
+    
     private final Logger m_logger = Logger.getLogger(Quarantine.class);
     private QuarantineStore m_store;
     private RescueEjectionHandler m_rescueHandler = new RescueEjectionHandler();
@@ -217,6 +218,8 @@ public class Quarantine
         long cutoff = System.currentTimeMillis() - ONE_DAY;
 
         for(Inbox inbox : allInboxes) {
+            try {Thread.sleep(DIGEST_SEND_DELAY_MILLISEC);} catch (java.lang.InterruptedException e) {}
+
             Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
                 m_store.getIndex(inbox.getAddress());
 

@@ -79,11 +79,9 @@ public class QuarantineSettings implements Serializable {
     private long m_maxQuarantineSz;
     private List<EmailAddressPairRule> m_addressRemaps;
     private List<EmailAddressRule> m_allowedAddressPatterns;
-
+    private boolean sendDailyDigests = true;
+    
     private boolean quarantineExternalMail = false;
-
-    // logger here caused proxy serialization to freak out.
-    // private final Logger logger = Logger.getLogger(getClass());
 
     @Id
     @Column(name="settings_id")
@@ -296,15 +294,21 @@ public class QuarantineSettings implements Serializable {
     public void setMaxIdleInbox(long max) {
         m_maxIdleInbox = max;
     }
-
-    @Column(name="quarantine_external_mail", nullable=false)
-    public boolean getQuarantineExternalMail()
-    {
-        return quarantineExternalMail;
+    
+    /**
+     *
+     * @return a boolean to determine whether to send daily digests
+     */
+    @Column(name="send_daily_digests")
+    public boolean getSendDailyDigests() {
+        return this.sendDailyDigests;
     }
 
-    public void setQuarantineExternalMail(boolean quarantineExternalMail)
-    {
-        this.quarantineExternalMail = quarantineExternalMail;
+    /**
+     * Set whether to send daily digests
+     */
+    public void setSendDailyDigests(boolean sendDailyDigests) {
+        this.sendDailyDigests = sendDailyDigests;
     }
+
 }

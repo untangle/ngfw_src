@@ -42,7 +42,7 @@ CREATE TABLE settings.n_mail_quarantine_settings (
     hour_in_day int4,
     minute_in_day int4,
     max_quarantine_sz int8 NOT NULL,
-    quarantine_external_mail bool NOT NULL,
+    send_daily_digests bool NOT NULL,
     PRIMARY KEY (settings_id));
 
 -- com.untangle.tran.mail.papi.safelist.SafelistRecipient

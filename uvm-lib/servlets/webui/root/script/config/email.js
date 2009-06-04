@@ -47,6 +47,12 @@ if (!Ung.hasResource["Ung.Email"]) {
             // call superclass renderer first
             Ung.Email.superclass.onRender.call(this, container, position);
             this.initSubCmps.defer(1, this);
+
+	    if(Ext.getCmp('quarantine_sendDailyDigest')) {
+                Ext.getCmp('quarantine_dailySendingTime').enable();
+	    } else {
+                Ext.getCmp('quarantine_dailySendingTime').disable();
+	    }
         },
         initSubCmps : function() {
             var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
@@ -642,17 +648,47 @@ if (!Ung.hasResource["Ung.Email"]) {
                             }
                         }
                     }, {
+                        xtype : 'checkbox',
+                        name : 'Send Daily Quarantine Digest Emails',
+			id : 'quarantine_sendDailyDigest',
+                        fieldLabel : this.i18n._('Send Daily Quarantine Digest Emails'),
+                        checked : this.getMailNodeSettings().quarantineSettings.sendDailyDigests,
+                        width : 70,
+                        listeners : {
+                            "render" : {
+                                fn : function(elem) {
+                                        if(elem.getValue()){
+                                        Ext.getCmp('quarantine_dailySendingTime').enable();
+                                    }else{
+                                        Ext.getCmp('quarantine_dailySendingTime').disable();
+                                    }
+                                }.createDelegate(this)
+                            },
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getMailNodeSettings().quarantineSettings.sendDailyDigests = newValue;
+                                    if(newValue){
+                                        Ext.getCmp('quarantine_dailySendingTime').enable();
+                                    }else{
+                                        Ext.getCmp('quarantine_dailySendingTime').disable();
+                                    }
+                                }.createDelegate(this)
+                            }
+
+                        }
+                    }, {
                         xtype : 'timefield',
                         name : 'Digest Sending Time',
+			id : 'quarantine_dailySendingTime',
                         fieldLabel : this.i18n._('Digest Sending Time'),
                         allowBlank : false,
                         format : "H:i",
-					    minValue: '00:00',
-					    maxValue: '23:59',
-					    increment: 1,
+			minValue: '00:00',
+			maxValue: '23:59',
+			increment: 1,
                         width : 70,
                         value : this.getFormattedTime(this.getMailNodeSettings().quarantineSettings.digestHourOfDay,this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay),
-					    listeners : {
+			listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
                                     var dt = Date.parseDate(newValue, "H:i");

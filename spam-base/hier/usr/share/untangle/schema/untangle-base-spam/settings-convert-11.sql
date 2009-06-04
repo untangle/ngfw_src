@@ -1,4 +1,4 @@
--- settings conversion for release-6.1
+-- settings conversion for release-6.3
 -- $HeadURL: svn://chef/work/src/spam-base/hier/usr/share/untangle/schema/untangle-base-spam/settings-convert-6.sql $
 -- Copyright (c) 2003-2007 Untangle, Inc.
 --
