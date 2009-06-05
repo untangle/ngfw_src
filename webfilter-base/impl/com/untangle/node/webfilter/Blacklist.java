@@ -167,7 +167,7 @@ public abstract class Blacklist
         if (isSiteBypassed(host, uri, clientIp)) {
             WebFilterEvent hbe = new WebFilterEvent
                 (requestLine.getRequestLine(), Action.PASS,
-                 Reason.PASS_URL, "bypassed",
+                 Reason.PASS_BYPASS, "bypassed",
                  node.getVendor());
             logger.debug("LOG: in bypass list: " + requestLine.getRequestLine());
             node.log(hbe, host, port);
