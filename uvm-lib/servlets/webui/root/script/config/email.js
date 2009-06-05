@@ -47,12 +47,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             // call superclass renderer first
             Ung.Email.superclass.onRender.call(this, container, position);
             this.initSubCmps.defer(1, this);
-
-	    if(Ext.getCmp('quarantine_sendDailyDigest')) {
-                Ext.getCmp('quarantine_dailySendingTime').enable();
-	    } else {
-                Ext.getCmp('quarantine_dailySendingTime').disable();
-	    }
         },
         initSubCmps : function() {
             var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
@@ -76,6 +70,15 @@ if (!Ung.hasResource["Ung.Email"]) {
                 Ext.getCmp('email_smtpLogin').enable();
                 Ext.getCmp('email_smtpPassword').enable();
             }
+
+	    if ( this.isMailLoaded() ) {
+		var sendDigest = Ext.getCmp('quarantine_sendDailyDigest').getValue();
+		if (sendDigest) {
+                    Ext.getCmp('quarantine_dailySendingTime').enable();
+		} else {
+                    Ext.getCmp('quarantine_dailySendingTime').disable();
+		}
+	    }
         },
         
         getMailNode : function(forceReload) {
