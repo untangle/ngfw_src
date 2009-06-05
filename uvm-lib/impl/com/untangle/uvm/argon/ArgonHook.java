@@ -249,7 +249,7 @@ abstract class ArgonHook implements Runnable
             } else if ( message.startsWith( "netcap_interface_dst_intf" )) {
                 logger.warn( "Unable to determine the outgoing interface." );
             } else {
-                logger.error( "Exception executing argon hook:", e );
+                logger.warn( "Exception executing argon hook:", e );
             }
         }
 
