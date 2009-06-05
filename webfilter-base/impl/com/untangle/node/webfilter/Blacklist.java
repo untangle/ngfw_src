@@ -20,6 +20,7 @@ package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -126,7 +127,8 @@ public abstract class Blacklist
                                RequestLineToken requestLine, Header header)
     {
         URI uri = requestLine.getRequestUri().normalize();
-
+        String description;
+        
         String path = uri.getPath();
         path = null == path ? "" : uri.getPath().toLowerCase();
 
@@ -137,56 +139,50 @@ public abstract class Blacklist
                 host = clientIp.getHostAddress();
             }
         }
+        host = normalizeHostname(host);
 
-        host = host.toLowerCase();
-        while (0 < host.length() && '.' == host.charAt(host.length() - 1)) {
-            host = host.substring(0, host.length() - 1);
-        }
-
-        String passCategory = passClient(clientIp);
-
-        if (null != passCategory) {
+        // check client IP address pass list
+        description = isClientPassListed(clientIp);
+        if (null != description) {
             WebFilterEvent hbe = new WebFilterEvent
                 (requestLine.getRequestLine(), Action.PASS, Reason.PASS_CLIENT,
-                 passCategory, node.getVendor());
+                 description, node.getVendor());
             logger.info(hbe);
             return null;
-        } else {
-            String dom = host;
+        } 
 
-            if (isUserWhitelistedDomain(dom, clientIp)) {
-                WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), Action.PASS,
-                     Reason.PASS_URL, "unblocked temporarily",
-                     node.getVendor());
-                node.log(hbe, host, port);
-
-                return null;
-            } else {
-                while (null != dom) {
-                    StringRule sr = findCategory(passedUrls, dom + path,
-                                                 settings.getPassedUrls());
-                    String category = null == sr ? null : sr.getDescription();
-
-                    if (null != category) {
-                        WebFilterEvent hbe = new WebFilterEvent
-                            (requestLine.getRequestLine(), Action.PASS,
-                             Reason.PASS_URL, category, node.getVendor());
-                        node.log(hbe, host, port);
-
-                        return null;
-                    }
-                    dom = nextHost(dom);
-                }
-            }
+        // check passlisted rules
+        description = isSitePassListed(host,uri);
+        if (null != description) {
+            WebFilterEvent hbe = new WebFilterEvent
+                (requestLine.getRequestLine(), Action.PASS,
+                 Reason.PASS_URL, description, node.getVendor());
+            logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
+            node.log(hbe, host, port);
+                    
+            return null;
         }
 
+        // check bypasses
+        if (isSiteBypassed(host, uri, clientIp)) {
+            WebFilterEvent hbe = new WebFilterEvent
+                (requestLine.getRequestLine(), Action.PASS,
+                 Reason.PASS_URL, "bypassed",
+                 node.getVendor());
+            logger.debug("LOG: in bypass list: " + requestLine.getRequestLine());
+            node.log(hbe, host, port);
+            return null;
+        }
+
+        logger.debug("CHECK: " + host + uri);
+        
         // only check block all IP hosts on http traffic
         if (80 == port && settings.getBaseSettings().getBlockAllIpHosts()) {
             if (null == host || IP_PATTERN.matcher(host).matches()) {
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_IP_HOST, host, node.getVendor());
+                logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 node.log(hbe, host, port);
 
                 Map<String,String> i18nMap = LocalUvmContextFactory.context().
@@ -217,6 +213,7 @@ public abstract class Blacklist
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_EXTENSION, exn, node.getVendor());
+                logger.debug("LOG: in extensions list: " + requestLine.getRequestLine());
                 node.log(hbe, host, port);
 
                 Map<String,String> i18nMap = LocalUvmContextFactory.context().
@@ -232,27 +229,37 @@ public abstract class Blacklist
 
         return null;
     }
-
+    
     public String checkResponse(InetAddress clientIp,
                                 RequestLineToken requestLine, Header header)
     {
         if (null == requestLine) {
             return null;
-        } else if (null != passClient(clientIp)) {
-            return null;
-        }
-
+        } 
+          
         String contentType = header.getValue("content-type");
+        URL url = requestLine.getRequestLine().getUrl();
+        URI uri = requestLine.getRequestUri().normalize();
+        String host = normalizeHostname(requestLine.getRequestLine().getUrl().getHost());
 
+        if (isClientPassListed(clientIp) != null)
+            return null;
+        if (isSitePassListed(host,uri) != null)
+            return null;
+        if (isSiteBypassed(host,uri,clientIp))
+            return null;
+        
+        logger.debug("CHECK: " + host + uri + " content: " + contentType);
+
+        // check mime-type list
         for (MimeTypeRule rule : settings.getBlockedMimeTypes()) {
             MimeType mt = rule.getMimeType();
             if (rule.isLive() && mt.matches(contentType)) {
                 WebFilterEvent hbe = new WebFilterEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_MIME, contentType, node.getVendor());
+                logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
                 node.log(hbe);
-                String host = header.getValue("host");
-                URI uri = requestLine.getRequestUri().normalize();
 
                 Map<String,String> i18nMap = LocalUvmContextFactory.context().
                     languageManager().getTranslations("untangle-node-webfilter");
@@ -264,11 +271,6 @@ public abstract class Blacklist
                 return node.generateNonce(bd);
             }
         }
-
-        WebFilterEvent e = new WebFilterEvent(requestLine.getRequestLine(),
-                                              null, null, null,
-                                              node.getVendor(), true);
-        node.log(e);
 
         return null;
     }
@@ -308,20 +310,87 @@ public abstract class Blacklist
     // private methods --------------------------------------------------------
 
     /**
-     * Check if client is whitelisted.
+     * isSitePassListed checks the host+uri against the pass list
      *
-     * @param clientIp address of the client machine.
-     * @return true if the client is whitelisted.
+     * @param host host of the URL
+     * @param uri URI of the URL
+     * @return description of the rule that passlist rule, null if DNE
      */
-    private String passClient(InetAddress clientIp)
+    private String isSitePassListed(String host, URI uri)
+    {
+        String dom;
+        for (dom = host ; null != dom ; dom = nextHost(dom)) {
+            StringRule sr = findCategory(passedUrls, dom + uri.getPath(), settings.getPassedUrls());
+            String category = null == sr ? null : sr.getDescription();
+
+            if (null != category) {
+                logger.debug("LOG: "+host+uri+" in pass list");
+                return category;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * isClientPassListed checks the clientIp against the client pass list
+     *
+     * @param clientIp IP of the host
+     * @return description of the rule that passlist rule, null if DNE
+     */
+    private String isClientPassListed(InetAddress clientIp)
     {
         for (IPMaddrRule rule : settings.getPassedClients()) {
             if (rule.getIpMaddr().contains(clientIp) && rule.isLive()) {
+                logger.debug("LOG: "+clientIp+" in client pass list");
                 return rule.getDescription();
             }
         }
 
         return null;
+    }
+
+    /**
+     * isSiteBypassed checks the host+uri against the current bypasses for clientIp
+     *
+     * @param host host of the URL
+     * @param uri URI of the URL
+     * @param clientIp IP of the host
+     * @return true if the site has been explicitly bypassed for that user, false otherwise
+     */
+    private boolean isSiteBypassed(String host, URI uri, InetAddress clientIp)
+    {
+        String dom;
+        for (dom = host ; null != dom ; dom = nextHost(dom)) {
+            if (isUserWhitelistedDomain(dom, clientIp)) {
+                logger.debug("LOG: "+host+uri+" in bypass list for "+ clientIp);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * normalize the hostname 
+     *
+     * @param host host of the URL
+     * @return the normalized string for that hostname, or null if param is null
+     */
+    private String normalizeHostname(String oldhost)
+    {
+        if (null == oldhost)
+            return null;
+        
+        // lowercase name
+        String host = oldhost.toLowerCase();
+
+        // remove dots at end
+        while (0 < host.length() && '.' == host.charAt(host.length() - 1)) {
+            host = host.substring(0, host.length() - 1);
+        }
+
+        return host;
     }
 
     private String checkBlacklist(InetAddress clientIp, String host, int port,
@@ -512,7 +581,6 @@ public abstract class Blacklist
      * @param host a <code>String</code> value
      * @return a <code>String</code> value
      */
-    // XXX duplicated code
     private String nextHost(String host)
     {
         int i = host.indexOf('.');
