@@ -64,7 +64,7 @@ public class SystemStatus
 
     private JitterThread jitter = null;
 
-    private static final String SPACER = "========================================================\n";
+    private static final String SPACER = "========================================================\r\n";
     private static final String RETCHAR = "\r\n";
 
     private volatile String staticConf = "";
