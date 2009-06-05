@@ -84,7 +84,7 @@ import com.untangle.uvm.util.TransactionWork;
 class MailSenderImpl implements MailSender, HasConfigFiles
 {
     // All error log emails go here.
-    public static final String ERROR_LOG_RECIPIENT = "exceptions@untangle.com";
+    public static final String ERROR_LOG_RECIPIENT = "dmorris@metaloft.com";
 
     public static final String UNTANGLE_SMTP_RELAY = "mail.untangle.com";
 
@@ -499,20 +499,6 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         }
     }
 
-    // Not currently used
-    /*
-      public void sendReport(String subject, String bodyText) {
-      String reportEmailAddr = mailSettings.getReportEmail();
-      if (reportEmailAddr == null) {
-      logger.info("Not sending report email, no address");
-      } else {
-      String[] recipients = new String[1];
-      recipients[0] = reportEmailAddr;
-      sendSimple(reportSession, recipients, subject, bodyText, null);
-      }
-      }
-    */
-
     public void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras) {
         String reportEmailAddr = mailSettings.getReportEmail();
         if (reportEmailAddr == null) {
@@ -570,12 +556,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         Session[] trySessions = new Session[] { utSession, alertSession };
         boolean success = false;
         for (Session session : trySessions) {
-            if (parts == null) {
-                // Do this simplest thing.  Shouldn't be used. XX
-                success = sendSimple(session, recipients, subject, bodyText, null);
-            } else {
-                success = sendMixed(session, recipients, subject, bodyText, parts);
-            }
+            success = sendMixedErrorLog(session, recipients, subject, bodyText, parts);
             if (success)
                 break;
         }
@@ -920,6 +901,38 @@ class MailSenderImpl implements MailSender, HasConfigFiles
             return false;
         }
     }
+
+    boolean sendMixedErrorLog(Session session, String[] to, String subject, String bodyText, List<MimeBodyPart> extras)
+    {
+        if (SessionDebug)
+            session.setDebug(true);
+
+        // construct the message
+        Message msg = prepMessage(session, to, subject);
+        if (msg == null)
+            return true;
+
+        try {
+            Multipart mp = new MimeMultipart("mixed");
+            MimeBodyPart main = new MimeBodyPart();
+            main.setHeader("Content-Type", "text/plain");
+            main.setDisposition(Part.INLINE);
+            main.setText(bodyText,"us-ascii");
+            mp.addBodyPart(main);
+            for (MimeBodyPart part : extras)
+                mp.addBodyPart(part);
+            msg.setContent(mp);
+
+            // send it
+            dosend(session, msg);
+            logIt(msg);
+            return true;
+        } catch (MessagingException x) {
+            logger.warn("Unable to send message", x);
+            return false;
+        }
+    }
+    
 
     // --
 
