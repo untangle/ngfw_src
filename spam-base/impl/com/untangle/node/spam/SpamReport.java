@@ -168,9 +168,9 @@ public class SpamReport
         }
 
         sb.append("score=");
-        sb.append(String.format("%.1f", score / 10.0f));
+        sb.append(String.format("%.1f", score));
         sb.append(" required=");
-        sb.append(String.format("%.1f", threshold / 10.0f));
+        sb.append(String.format("%.1f", threshold));
 
         sb.append(" tests=");
 
