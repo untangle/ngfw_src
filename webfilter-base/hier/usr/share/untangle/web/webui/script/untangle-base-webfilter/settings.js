@@ -969,7 +969,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             case 'PASS_CLIENT' :
                                 return this.i18n._("in Clients Pass list");
                             case 'PASS_BYPASS' :
-                                return this.i18n._("Client Bypassed");
+                                return this.i18n._("Client Bypass");
                             default :
                             case 'DEFAULT' :
                                 return this.i18n._("no rule applied");
