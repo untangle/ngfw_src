@@ -25,10 +25,11 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
 
   @JSP_PRE_COMPILED_SERVLETS@
 
-  <display-name>Untangle Reports</display-name>
+  <display-name>Reports</display-name>
 
   <servlet-mapping>
     <servlet-name>com.untangle.uvm.reports.jsp.ReportsIndex_jsp</servlet-name>
     <url-pattern>/archive</url-pattern>
   </servlet-mapping>
+
 </web-app>
