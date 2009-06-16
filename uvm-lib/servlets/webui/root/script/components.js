@@ -137,6 +137,12 @@ Ung.Util= {
                 return true;
             }else {
                 var message=exception.message;
+                if (exception.lineNumber && exception.fileName) {
+                    message = message + " " + i18n._("on line")+" "+exception.lineNumber +" "+ i18n._("in file")+" "+exception.fileName;
+                }
+                if (exception.stack) {
+                    message = exception.stack;
+                }
                 if(exception.name=="com.untangle.uvm.toolbox.MackageException" && exception.message=="mkg timed out") {
                     message=i18n._("Service busy or timed out.");
                 }
@@ -435,12 +441,12 @@ Ung.Util= {
             return results[1];
     },
     maximize: function() {
-        top.window.moveTo(0,0);
+        top.window.moveTo(1,1);
         if(Ext.isIE) {
             top.window.resizeTo(screen.availWidth,screen.availHeight);
         } else {
-            top.window.outerHeight = top.screen.availHeight;
-            top.window.outerWidth = top.screen.availWidth;
+            top.window.outerHeight = top.screen.availHeight-30;
+            top.window.outerWidth = top.screen.availWidth-30;
 
         }
     }

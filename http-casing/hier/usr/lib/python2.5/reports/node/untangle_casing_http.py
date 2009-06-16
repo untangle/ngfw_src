@@ -30,7 +30,7 @@ class HttpCasing(Node):
                         Column('s2c_content_length', 'bigint',
                                    'sum(s2c_content_length)'),
                         Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
-                        Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')]);
+                        Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
 
     @print_timing
@@ -106,7 +106,16 @@ INSERT INTO reports.n_http_events
             conn.rollback()
             raise e
 
-    def teardown(self):
-        print "TEARDOWN"
+    def events_cleanup(self, cutoff):
+        sql_helper.run_sql("""\
+DELETE FROM events.n_http_evt_req WHERE time_stamp < %s""", (cutoff,))
+        sql_helper.run_sql("""\
+DELETE FROM events.n_http_req_line WHERE time_stamp < %s""", (cutoff,))
+        sql_helper.run_sql("""\
+DELETE FROM events.n_http_evt_resp WHERE time_stamp < %s""", (cutoff,))
+
+    def reports_cleanup(self, cutoff):
+        pass
+
 
 reports.engine.register_node(HttpCasing())

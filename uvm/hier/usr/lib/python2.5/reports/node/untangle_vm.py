@@ -1,17 +1,38 @@
+import gettext
 import logging
+import mx
 import psycopg
 import reports.engine
 import sql_helper
 
-from sql_helper import print_timing
-from reports.engine import Node
-from psycopg import DateFromMx
 from mx.DateTime import DateTimeDelta
+from psycopg import DateFromMx
+from psycopg import QuotedString
+from psycopg import TimestampFromMx
+from reports import Chart
+from reports import ColumnDesc
+from reports import DATE_FORMATTER
+from reports import DetailSection
+from reports import Graph
+from reports import KeyStatistic
+from reports import PIE_CHART
+from reports import Report
+from reports import STACKED_BAR_CHART
+from reports import SummarySection
+from reports import TIME_OF_DAY_FORMATTER
+from reports import TIME_SERIES_CHART
+from reports.engine import Column
+from reports.engine import FactTable
+from reports.engine import Node
+from sql_helper import print_timing
 
 EVT_TYPE_REGISTER = 0
 EVT_TYPE_RENEW    = 1
 EVT_TYPE_EXPIRE   = 2
 EVT_TYPE_RELEASE  = 3
+
+_ = gettext.gettext
+def N_(message): return message
 
 class UvmNode(Node):
     def __init__(self):
@@ -22,10 +43,64 @@ class UvmNode(Node):
         self.__generate_address_map(start_date, end_date)
 
         self.__make_sessions_table(start_date, end_date)
+        self.__make_session_counts_table(start_date, end_date)
 
         self.__make_hnames_table(start_date, end_date)
 
         self.__make_users_table(start_date, end_date)
+
+        ft = FactTable('reports.session_totals',
+                       'reports.sessions',
+                       'time_stamp',
+                       [Column('hname', 'text'),
+                        Column('uid', 'text'),
+                        Column('c_server_port', 'int4')],
+                       [Column('new_sessions', 'bigint', 'count(*)'),
+                        Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
+                        Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
+        reports.engine.register_fact_table(ft)
+
+    def events_cleanup(self, cutoff):
+        sql_helper.run_sql("""\
+DELETE FROM events.u_lookup_evt WHERE time_stamp < %s""", (cutoff,))
+
+        sql_helper.run_sql("""\
+DELETE FROM events.pl_endp WHERE time_stamp < %s""", (cutoff,))
+
+        sql_helper.run_sql("""\
+DELETE FROM events.pl_stats WHERE time_stamp < %s""", (cutoff,))
+
+        sql_helper.run_sql("""\
+DELETE FROM events.n_router_evt_dhcp_abs WHERE time_stamp < %s""", (cutoff,))
+
+        sql_helper.run_sql("""\
+DELETE FROM events.n_router_evt_dhcp WHERE time_stamp < %s""", (cutoff,))
+
+        sql_helper.run_sql("""\
+DELETE FROM events.n_router_dhcp_abs_lease WHERE end_of_lease < %s""", (cutoff,))
+
+        sql_helper.run_sql("""\
+DELETE FROM events.n_router_evt_dhcp_abs_leases glue
+WHERE NOT EXISTS
+  (SELECT *
+   FROM events.n_router_evt_dhcp_abs evt
+   WHERE evt.event_id = glue.event_id)""")
+
+        sql_helper.run_sql("""\
+DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
+
+    def reports_cleanup(self, cutoff):
+        pass
+
+    def get_report(self):
+        sections = []
+
+        s = SummarySection('summary', N_('Summary Report'),
+                           [BandwidthUsage(), ActiveSessions(),
+                            DestinationPorts()])
+        sections.append(s)
+
+        return Report(self.name, N_('Platform'), sections)
 
     @print_timing
     def __make_users_table(self, start_date, end_date):
@@ -100,6 +175,7 @@ INSERT INTO reports.hnames
 CREATE TABLE reports.sessions (
         pl_endp_id int8 NOT NULL,
         time_stamp timestamp NOT NULL,
+        end_time timestamp NOT NULL,
         hname text,
         uid text,
         c_client_addr inet,
@@ -109,11 +185,10 @@ CREATE TABLE reports.sessions (
         c2p_bytes int8,
         p2c_bytes int8,
         s2p_bytes int8,
-        p2s_bytes int8,
-        PRIMARY KEY (pl_endp_id))
-""", 'time_stamp', start_date, end_date)
+        p2s_bytes int8)""", 'time_stamp', start_date, end_date)
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.sessions', start_date))
+        sd = DateFromMx(sql_helper.get_update_info('reports.sessions',
+                                                   start_date))
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
@@ -133,7 +208,10 @@ CREATE TEMPORARY TABLE newsessions AS
 
             sql_helper.run_sql("""\
 INSERT INTO reports.sessions
-  SELECT ses.event_id, ses.time_stamp,
+    (pl_endp_id, time_stamp, end_time, hname, uid, c_client_addr,
+     c_server_addr, c_server_port, client_intf, c2p_bytes, p2c_bytes,
+     s2p_bytes, p2s_bytes)
+    SELECT ses.event_id, ses.time_stamp, stats.time_stamp,
          COALESCE(NULLIF(ses.name, ''), HOST(ses.c_client_addr)) AS hname,
          stats.uid, c_client_addr, c_server_addr, c_server_port, client_intf,
          stats.c2p_bytes, stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
@@ -142,6 +220,40 @@ INSERT INTO reports.sessions
                                connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.sessions', ed,
+                                       connection=conn, auto_commit=False)
+
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
+
+    @print_timing
+    def __make_session_counts_table(self, start_date, end_date):
+        sql_helper.create_partitioned_table("""\
+CREATE TABLE reports.session_counts (
+        trunc_time timestamp,
+        uid text,
+        hname text,
+        num_sessions int8)""", 'trunc_time', start_date, end_date)
+
+        sd = DateFromMx(sql_helper.get_update_info('reports.session_counts',
+                                                   start_date))
+        ed = DateFromMx(end_date)
+
+        conn = sql_helper.get_connection()
+
+        try:
+            sql_helper.run_sql("""\
+INSERT INTO reports.session_counts
+    (trunc_time, uid, hname, num_sessions)
+SELECT (date_trunc('minute', time_stamp)
+        + (generate_series(0, (extract('epoch' from (end_time - time_stamp))
+        / 60)::int) || ' minutes')::interval) AS time, uid, hname, count(*)
+FROM reports.sessions
+WHERE time_stamp >= %s AND time_stamp < %s
+GROUP BY time, uid, hname""", (sd, ed), connection=conn, auto_commit=False)
+
+            sql_helper.set_update_info('reports.session_counts', ed,
                                        connection=conn, auto_commit=False)
 
             conn.commit()
@@ -201,7 +313,8 @@ CREATE TABLE reports.merged_address_map (
 
         for v in m.values():
             for l in v:
-                values.append(l.values())
+                if l.hostname:
+                    values.append(l.values())
 
         conn = sql_helper.get_connection()
 
@@ -227,7 +340,8 @@ SELECT evt.time_stamp, lease.end_of_lease, lease.ip, lease.hostname,
 FROM events.n_router_evt_dhcp_abs_leases AS glue,
      events.n_router_evt_dhcp_abs AS evt,
      events.n_router_dhcp_abs_lease AS lease
-WHERE glue.event_id=evt.event_id AND glue.lease_id = lease.event_id
+WHERE lease.hostname != '' AND glue.event_id = evt.event_id
+      AND glue.lease_id = lease.event_id
       AND ((%s <= evt.time_stamp and evt.time_stamp <= %s)
       OR ((%s <= lease.end_of_lease and lease.end_of_lease <= %s)))
 ORDER BY evt.time_stamp""", start_date, end_date)
@@ -237,8 +351,8 @@ ORDER BY evt.time_stamp""", start_date, end_date)
         self.__generate_leases(m, """\
 SELECT evt.time_stamp, evt.end_of_lease, evt.ip, evt.hostname, evt.event_type
 FROM events.n_router_evt_dhcp AS evt
-WHERE (%s <= evt.time_stamp AND evt.time_stamp <= %s)
-    OR (%s <= evt.end_of_lease AND evt.end_of_lease <= %s)
+WHERE hostname != '' AND ((%s <= evt.time_stamp AND evt.time_stamp <= %s)
+    OR (%s <= evt.end_of_lease AND evt.end_of_lease <= %s))
 ORDER BY evt.time_stamp""", start_date, end_date)
 
     @print_timing
@@ -400,6 +514,317 @@ ON min_idx = position""")
                     lease.end_of_lease = event.start
                     return
 
+class BandwidthUsage(Graph):
+    def __init__(self):
+        Graph.__init__(self, 'bandwidth-usage', _('Bandwidth Usage'))
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        conn = sql_helper.get_connection()
+
+        lks = []
+
+        ks_query = """\
+SELECT coalesce(sum(s2c_bytes + c2s_bytes) / 1000, 0) / (24 * 60 * 60) AS avg_rate,
+       coalesce(max(s2c_bytes + c2s_bytes) / 1000, 0) AS peak_rate
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        if user:
+            ks_query += "AND uid = %s"
+        elif host:
+            ks_query += "AND hname = %s"
+
+        curs = conn.cursor()
+
+        if user:
+            curs.execute(ks_query, (one_day, ed, user))
+        elif host:
+            curs.execute(ks_query, (one_day, ed, host))
+        else:
+            curs.execute(ks_query, (one_day, ed))
+
+        r = curs.fetchone()
+
+        avg_rate = r[0]
+        peak_rate = r[1]
+
+        ks = KeyStatistic(N_('Average data rate (1-day)'),
+                          avg_rate, N_('Kb/sec'))
+        lks.append(ks)
+        ks = KeyStatistic(N_('Peak data rate (1-day)'),
+                          peak_rate, N_('Kb/sec'))
+        lks.append(ks)
+
+        ks_query = """\
+SELECT coalesce(sum(s2c_bytes + c2s_bytes) / 1000000000, 0) / %s AS avg_rate,
+       coalesce(sum(s2c_bytes + c2s_bytes) / 1000000000, 0) AS total
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s
+"""
+
+        if user:
+            ks_query += "AND uid = %s"
+        elif host:
+            ks_query += "AND hname = %s"
+
+        curs = conn.cursor()
+
+        if user:
+            curs.execute(ks_query, (report_days, one_week, ed, user))
+        elif host:
+            curs.execute(ks_query, (report_days, one_week, ed, host))
+        else:
+            curs.execute(ks_query, (report_days, one_week, ed))
+
+        r = curs.fetchone()
+
+        avg_rate = r[0]
+        total = r[1]
+
+        ks = KeyStatistic(N_('Average data rate (%s-day)') % report_days,
+                          avg_rate, N_('Gb/day'))
+        lks.append(ks)
+        ks = KeyStatistic(N_('Data Transfered (%s-day)') % report_days,
+                          total, N_('Gb'))
+        lks.append(ks)
+
+        curs = conn.cursor()
+
+        plot_query = """\
+SELECT (date_part('hour', trunc_time) || ':'
+        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
+       sum(s2c_bytes + c2s_bytes) / (1000 * 10 * 60) AS throughput
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        if user:
+            plot_query += " AND uid = %s"
+        elif host:
+            plot_query += " AND hname = %s"
+
+        plot_query += """\
+GROUP BY time
+ORDER BY time asc"""
+
+        dates = []
+        throughput = []
+
+        curs = conn.cursor()
+
+        if user:
+            curs.execute(plot_query, (one_week, ed, user))
+        elif host:
+            curs.execute(plot_query, (one_week, ed, host))
+        else:
+            curs.execute(plot_query, (one_week, ed))
+
+        for r in curs.fetchall():
+            dates.append(r[0])
+            throughput.append(r[1])
+
+        conn.commit()
+
+        plot = Chart(type=TIME_SERIES_CHART,
+                     title=_('Bandwidth Usage'),
+                     xlabel=_('Hour of Day'),
+                     ylabel=_('Throughput (Kb/sec)'),
+                     major_formatter=TIME_OF_DAY_FORMATTER)
+
+        plot.add_dataset(dates, throughput, _('Usage'))
+
+        return (lks, plot)
+
+class ActiveSessions(Graph):
+    def __init__(self):
+        Graph.__init__(self, 'active-sessions', _('Active Sessions'))
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        conn = sql_helper.get_connection()
+
+        lks = []
+
+        ks_query = """\
+SELECT coalesce(sum(num_sessions), 0) / (24 * 60) AS avg_sessions,
+       coalesce(max(num_sessions), 0) AS max_sessions
+FROM reports.session_counts
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        if user:
+            ks_query += "AND uid = %s"
+        elif host:
+            ks_query += "AND hname = %s"
+
+        curs = conn.cursor()
+
+        if user:
+            curs.execute(ks_query, (one_day, ed, user))
+        elif host:
+            curs.execute(ks_query, (one_day, ed, host))
+        else:
+            curs.execute(ks_query, (one_day, ed))
+
+        r = curs.fetchone()
+
+        avg_sessions = r[0]
+        max_sessions = r[1]
+
+        ks = KeyStatistic(N_('Average active sessions (1-day)'),
+                          avg_sessions, N_('sessions'))
+        lks.append(ks)
+        ks = KeyStatistic(N_('Maximum active sessions (1-day)'),
+                          max_sessions, N_('sessions'))
+        lks.append(ks)
+
+        ks_query = """\
+SELECT sum(num_sessions) AS total_sessions
+FROM reports.session_counts
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        if user:
+            ks_query += "AND uid = %s"
+        elif host:
+            ks_query += "AND hname = %s"
+
+        curs = conn.cursor()
+
+        if user:
+            curs.execute(ks_query, (one_week, ed, user))
+        elif host:
+            curs.execute(ks_query, (one_week, ed, host))
+        else:
+            curs.execute(ks_query, (one_week, ed))
+
+        r = curs.fetchone()
+
+        total_sessions = r[0]
+
+        ks = KeyStatistic(N_('Total Sessions (%s-day)') % report_days,
+                          total_sessions, N_('sessions'))
+        lks.append(ks)
+
+        curs = conn.cursor()
+
+        plot_query = """\
+SELECT (date_part('hour', trunc_time) || ':'
+        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
+       sum(num_sessions) AS sessions
+FROM reports.session_counts
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        if user:
+            plot_query += " AND uid = %s"
+        elif host:
+            plot_query += " AND hname = %s"
+
+        plot_query += """\
+GROUP BY time
+ORDER BY time asc"""
+
+        dates = []
+        num_sessions = []
+
+        curs = conn.cursor()
+
+        if user:
+            curs.execute(plot_query, (one_week, ed, user))
+        elif host:
+            curs.execute(plot_query, (one_week, ed, host))
+        else:
+            curs.execute(plot_query, (one_week, ed))
+
+        for r in curs.fetchall():
+            dates.append(r[0])
+            num_sessions.append(r[1])
+
+        conn.commit()
+
+        plot = Chart(type=TIME_SERIES_CHART,
+                     title=_('Bandwidth Usage'),
+                     xlabel=_('Hour of Day'),
+                     ylabel=_('Number of Sessions'),
+                     major_formatter=TIME_OF_DAY_FORMATTER)
+
+        plot.add_dataset(dates, num_sessions, _('Sessions'))
+
+        return (lks, plot)
+
+class DestinationPorts(Graph):
+    def __init__(self):
+        Graph.__init__(self, 'top-dest-ports', _('Top Destination Ports'))
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT c_server_port, sum(new_sessions) as sessions
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+
+        query += """\
+GROUP BY c_server_port
+ORDER BY sessions ASC
+LIMIT 10"""
+
+        conn = sql_helper.get_connection()
+
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
+
+        lks = []
+        pds = {}
+
+        for r in curs.fetchall():
+            port = r[0]
+            sessions = r[1]
+            ks = KeyStatistic(str(port), sessions, N_('sessions'))
+            lks.append(ks)
+            pds[port] = sessions
+        conn.commit()
+
+        plot = Chart(type=PIE_CHART,
+                     title=_('Spyware Subnets Detected'),
+                     xlabel=_('Subnet'),
+                     ylabel=_('Blocks per Day'))
+
+        plot.add_pie_dataset(pds)
+
+        return (lks, plot)
 
 class Lease:
     def __init__(self, row):
@@ -434,9 +859,8 @@ class Lease:
                 and ( self.end_of_lease == event.end_of_lease
                       or self.end_of_lease < event.end_of_lease))
 
-    def values(self, ):
-        return (self.ip, self.hostname, DateFromMx(self.start),
-                DateFromMx(self.end_of_lease))
-
+    def values(self):
+        return (self.ip, self.hostname, TimestampFromMx(self.start),
+                TimestampFromMx(self.end_of_lease))
 
 reports.engine.register_node(UvmNode())

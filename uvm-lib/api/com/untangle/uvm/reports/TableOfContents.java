@@ -44,14 +44,17 @@ public class TableOfContents implements Serializable
 
     private final List<User> users;
     private final List<Host> hosts;
+    private final List<Email> emails;
 
     public TableOfContents(Application platform, List<Application> applications,
-                           List<User> users, List<Host> hosts)
+                           List<User> users, List<Host> hosts,
+                           List<Email> emails)
     {
         this.platform = platform;
         this.applications = applications;
         this.users = users;
         this.hosts = hosts;
+        this.emails = emails;
     }
 
     public Application getPlatform()
@@ -69,8 +72,13 @@ public class TableOfContents implements Serializable
         return users;
     }
 
-    private final List<Host> getHosts()
+    public List<Host> getHosts()
     {
         return hosts;
+    }
+
+    public List<Email> getEmails()
+    {
+        return emails;
     }
 }

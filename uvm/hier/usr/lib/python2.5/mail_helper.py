@@ -46,7 +46,7 @@ class HtmlWriter():
 
     def mail(self):
         strFrom = 'amread@untangle.com'
-        strTo = 'amread@hippiesoft.com'
+        strTo = 'amread@tweek'
 
         msgRoot = MIMEMultipart('related')
         msgRoot['Subject'] = 'test message' # XXX
@@ -75,7 +75,7 @@ class HtmlWriter():
                 msgRoot.attach(msgImage)
 
         smtp = smtplib.SMTP()
-        smtp.connect('mail.untangle.com')
+        smtp.connect('localhost')
         smtp.sendmail(strFrom, strTo, msgRoot.as_string())
         smtp.quit()
 

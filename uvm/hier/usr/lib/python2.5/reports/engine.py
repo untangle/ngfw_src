@@ -7,7 +7,11 @@ import sets
 import sql_helper
 import string
 
+from sql_helper import print_timing
 from psycopg import DateFromMx
+from mx.DateTime import DateTimeDelta
+
+REPORT_JAR_DIR = '@PREFIX@/usr/share/java/reports/'
 
 class Node:
     def __init__(self, name):
@@ -15,6 +19,12 @@ class Node:
 
     def get_report(self):
         return None
+
+    def events_cleanup(self, cutoff):
+        pass
+
+    def reports_cleanup(self, cutoff):
+        pass
 
     @property
     def name(self):
@@ -39,9 +49,16 @@ class FactTable:
     def measures(self):
         return self.__measures
 
+    @property
+    def dimensions(self):
+        return self.__dimensions
+
     def process(self, start_date, end_date):
         tables = sql_helper.create_partitioned_table(self.__ddl(), 'trunc_time',
                                                      start_date, end_date)
+
+        for c in (self.measures + self.dimensions):
+            sql_helper.add_column(self.__name, c.name, c.type)
 
         sd = DateFromMx(sql_helper.get_update_info(self.__name, start_date))
         ed = DateFromMx(end_date)
@@ -122,24 +139,25 @@ def register_fact_table(fact_table):
     __fact_tables[fact_table.name] = fact_table
     logging.info('AFTER: %s' % __fact_tables)
 
-
 def get_fact_table(name):
     global __fact_tables
 
     return __fact_tables.get(name, None)
 
+@print_timing
 def process_fact_tables(start_date, end_date):
     global __fact_tables
 
     for ft in __fact_tables.values():
         ft.process(start_date, end_date)
 
-def generate_reports(report_base, end_date):
+@print_timing
+def generate_reports(report_base, end_date, main_only=False):
     global __nodes
 
-    writer = mail_helper.HtmlWriter()
-
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
+
+    mail_reports = []
 
     for node_name in __get_node_partial_order():
         logging.info('doing process_graphs for: %s' % node_name)
@@ -150,17 +168,68 @@ def generate_reports(report_base, end_date):
             report = node.get_report()
             if report:
                 report.generate(report_base, date_base, end_date)
-                report.to_html(writer, report_base, date_base, end_date)
-                for u in __get_users(end_date - mx.DateTime.DateTimeDelta(1)):
-                    report.generate(report_base, date_base, end_date, user=u)
-                for h in __get_hosts(end_date - mx.DateTime.DateTimeDelta(1)):
-                    report.generate(report_base, date_base, end_date, host=h)
+                mail_reports.append(report)
+                if not main_only:
+                    for u in __get_users(end_date - DateTimeDelta(1)):
+                        report.generate(report_base, date_base, end_date,
+                                        user=u)
+                    for h in __get_hosts(end_date - DateTimeDelta(1)):
+                        report.generate(report_base, date_base, end_date,
+                                        host=h)
+                    for e in __get_emails(end_date - DateTimeDelta(1)):
+                        report.generate(report_base, date_base, end_date,
+                                        email=e)
 
+    return mail_reports
+
+@print_timing
+def generate_plots(report_base, end_date):
+    path = []
+
+    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/')
+    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/')
+    path.append('@PREFIX@/usr/share/untangle/conf/')
+
+    for f in os.listdir(REPORT_JAR_DIR):
+        if f.endswith('.jar'):
+            path.append('%s/%s' % (REPORT_JAR_DIR, f))
+
+    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
+
+    os.system('java -Dlog4j.configuration=log4j-reporter.xml -cp %s com.untangle.uvm.reports.GraphGenerator %s %s'
+              % (string.join(path, ':'), report_base, date_base))
+
+# xxx not used or complete
+def generate_mail(report_base, end_date, mail_reports):
+    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
+
+    writer = mail_helper.HtmlWriter()
+    for r in mail_reports:
+        r.to_html(writer, report_base, date_base, end_date)
     writer.close()
     writer.generate(end_date)
     writer.mail()
     writer.cleanup()
 
+@print_timing
+def events_cleanup(cutoff):
+    co = DateFromMx(cutoff)
+
+    for name in __get_node_partial_order():
+        node = __nodes.get(name, None)
+        node.events_cleanup(co)
+
+
+@print_timing
+def reports_cleanup(cutoff):
+    co = DateFromMx(cutoff)
+
+    for name in __get_node_partial_order():
+        node = __nodes.get(name, None)
+        node.reports_cleanup(co)
+
+
+@print_timing
 def init_engine(node_module_dir, locale):
     gettext.bindtextdomain('untangle-node-reporting')
     gettext.textdomain('untangle-node-reporting')
@@ -174,6 +243,7 @@ def init_engine(node_module_dir, locale):
 
     __get_nodes(node_module_dir)
 
+@print_timing
 def setup(start_date, end_date):
     global __nodes
 
@@ -208,6 +278,28 @@ def __get_hosts(date):
     try:
         curs = conn.cursor()
         curs.execute("SELECT hname from reports.hnames WHERE date = %s", (d,))
+        rows = curs.fetchall()
+        rv = [rows[i][0] for i in range(len(rows))]
+    finally:
+        conn.commit()
+
+    return rv
+
+def __get_emails(date):
+    conn = sql_helper.get_connection()
+
+    d = DateFromMx(date)
+
+    try:
+        curs = conn.cursor()
+        curs.execute("""\
+SELECT addr, sum(msgs)
+FROM reports.n_mail_addr_totals
+WHERE addr_kind = 'T' AND date_trunc('day', trunc_time) = %s
+GROUP BY addr
+ORDER BY sum DESC
+LIMIT 100
+""", (d,))
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
     finally:

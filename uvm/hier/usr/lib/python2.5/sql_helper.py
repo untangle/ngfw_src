@@ -1,3 +1,4 @@
+import inspect
 import logging
 import mx
 import psycopg
@@ -15,10 +16,17 @@ def print_timing(func):
         res = func(*arg)
         t2 = time.time()
 
-        if hasattr(func, 'im_class'):
-            fun_name = "%s.%s" % (func.im_class, func.func_name)
-        else:
-            fun_name = func.func_name
+        filename = 'unknown'
+        line_number = '?'
+
+        for k, v in inspect.getmembers(func):
+            if k == 'func_code':
+                m = re.search('/(reports/.*).py', v.co_filename)
+                filename = m.group(1)
+                line_number = v.co_firstlineno
+
+        fun_name = "%s (%s:%s)" % (func.func_name, filename, line_number)
+
 
         logging.info('%s took %0.3f ms' % (fun_name, (t2-t1)*1000.0))
         return res
@@ -76,6 +84,15 @@ def run_sql(sql, args=None, connection=get_connection(), auto_commit=True):
         if auto_commit:
             connection.rollback()
         raise e
+
+def add_column(tablename, column, type, ignore_errors=True):
+    sql = "ALTER TABLE %s ADD COLUMN %s %s" % (tablename, column, type)
+    try:
+        run_sql(sql)
+    except Exception, e:
+        logging.warn("exception running '%s', %s" % (sql, e))
+        if not ignore_errors:
+            raise e
 
 def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
                              clear_tables=False):
@@ -195,7 +212,7 @@ def table_exists(schemaname, tablename):
     try:
         curs = conn.cursor()
 
-        curs.execute("""
+        curs.execute("""\
 SELECT tablename FROM pg_catalog.pg_tables
 WHERE schemaname = %s AND tablename = %s""", (schemaname, tablename))
 

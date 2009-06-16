@@ -1,5 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.reports.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.vnet.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
-<%--
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.reports.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.vnet.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %><%--
  * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
@@ -15,9 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
---%>
-
-<%
+--%><%
 LocalUvmContext uvm = LocalUvmContextFactory.context();
 
 BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
@@ -29,10 +26,7 @@ RemoteReportingManager reportingManager = uvm.reportingManager();
 boolean reportingEnabled = reportingManager.isReportingEnabled();
 boolean reportsAvailable = reportingManager.isReportsAvailable();
 if (!reportsAvailable) {
-%>
-
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=company%> | Reports</title>
@@ -102,9 +96,7 @@ if (!reportsAvailable) {
    // We can redirect them. If it fails (shouldn't with any modern
    // browser), serve them the following backup page.
    response.sendRedirect("./current");
-%>
-
-<html><head><title><%=company%> Reports</title>
+%><html><head><title><%=company%> Reports</title>
 <style><!---
 H1{font-family : sans-serif,Arial,Tahoma;color : white;
   background-color : #0086b2;}
@@ -124,4 +116,3 @@ to a new location.</u></p>
 <%
 }
 %>
-

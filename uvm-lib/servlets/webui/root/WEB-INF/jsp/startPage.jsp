@@ -69,13 +69,7 @@
 </c:if>
 <c:if test="${param['console']==1}">
     <script type="text/javascript">
-        top.window.moveTo(0,0);
-        if(Ext.isIE) {
-            top.window.resizeTo(screen.availWidth,screen.availHeight);
-        } else {
-            top.window.outerHeight = top.screen.availHeight;
-            top.window.outerWidth = top.screen.availWidth;
-        }
+        Ung.Util.maximize();
      </script>
 </c:if>
     <script type="text/javascript">

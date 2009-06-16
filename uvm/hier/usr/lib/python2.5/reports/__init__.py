@@ -1,12 +1,13 @@
 import csv
+import logging
 import gettext
 import mx
 import os
-import pylab
 import string
 import sql_helper
+import popen2
+import re
 
-from matplotlib.ticker import FuncFormatter
 from mx.DateTime import DateTimeDeltaFromSeconds
 from lxml.etree import Element
 from lxml.etree import CDATA
@@ -19,17 +20,32 @@ def __time_of_day_formatter(x, pos):
     t = DateTimeDeltaFromSeconds(x)
     return "%02d:%02d" % (t.hour, t.minute)
 
-TIME_OF_DAY_FORMATTER = FuncFormatter(__time_of_day_formatter)
-EVEN_HOURS_OF_A_DAY = [i * 7200 for i in range(12)]
+def __date_formatter(x, pos):
+    return "%d-%02d-%02d" % (x.year, x.month, x.day)
 
-params = {'axes.labelsize': 8,
-          'text.fontsize': 8,
-          'xtick.labelsize': 8,
-          'ytick.labelsize': 8,
-          'legend.fontsize': 8,
-          'figure.dpi': 100,
-          'figure.figsize': (3.5,2.5)}
-pylab.rcParams.update(params)
+def __identity_formatter(x, pos):
+    return x
+
+class Formatter:
+    def __init__(self, name, function):
+        self.__name = name
+        self.__function = function
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def function(self):
+        return self.__function
+
+TIME_OF_DAY_FORMATTER = Formatter('time-of-day', __time_of_day_formatter)
+DATE_FORMATTER = Formatter('date', __date_formatter)
+IDENTITY_FORMATTER = Formatter('identity', __identity_formatter)
+
+TIME_SERIES_CHART = 'time-series-chart'
+STACKED_BAR_CHART = 'stacked-bar-chart'
+PIE_CHART = 'pie-chart'
 
 class Report:
     def __init__(self, name, title, sections):
@@ -37,8 +53,9 @@ class Report:
         self.__title = title
         self.__sections = sections
 
-    def generate(self, report_base, date_base, end_date, host=None, user=None):
-        node_base = self.__get_node_base(date_base, host, user)
+    def generate(self, report_base, date_base, end_date, host=None, user=None,
+                 email=None):
+        node_base = self.__get_node_base(date_base, host, user, email)
 
         element = Element('report')
         element.set('name', self.__name)
@@ -47,18 +64,27 @@ class Report:
             element.set('host', host)
         if user:
             element.set('user', user)
+        if email:
+            element.set('email', email)
 
         for s in self.__sections:
-            element.append(s.generate(report_base, node_base, end_date, host,
-                                      user))
+            section_element = s.generate(report_base, node_base, end_date, host,
+                                         user, email)
 
-        tree = ElementTree(element)
+            if section_element:
+                element.append(section_element)
 
-        if not os.path.exists(node_base):
-            os.makedirs(node_base)
+        if len(element.getchildren()):
+            tree = ElementTree(element)
 
-        tree.write("%s/%s/report.xml" % (report_base, node_base),
-                   encoding='utf-8', pretty_print=True, xml_declaration=True)
+            if not os.path.exists('%s/%s' % (report_base, node_base)):
+                os.makedirs('%s/%s' % (report_base, node_base))
+
+            report_file = "%s/%s/report.xml" % (report_base, node_base)
+
+            logging.info('writing %s' % report_file)
+            tree.write(report_file, encoding='utf-8', pretty_print=True,
+                       xml_declaration=True)
 
     def to_html(self, writer, report_base, date_base, end_date):
         ni = writer.add_node_anchor(self.__name)
@@ -81,11 +107,13 @@ class Report:
         for s in self.__sections:
             s.to_html(writer, report_base, node_base, end_date)
 
-    def __get_node_base(self, date_base, host=None, user=None):
+    def __get_node_base(self, date_base, host=None, user=None, email=None):
         if host:
-            return '%s/%s/host/%s' % (date_base, self.__name, host)
+            return '%s/host//%s/%s' % (date_base, host, self.__name)
         elif user:
-            return '%s/%s/user/%s' % (date_base, self.__name, user)
+            return '%s/user/%s/%s' % (date_base, user, self.__name)
+        elif email:
+            return '%s/email/%s/%s' % (date_base, email, self.__name)
         else:
             return '%s/%s' % (date_base, self.__name)
 
@@ -102,7 +130,8 @@ class Section:
     def title(self):
         return self.__title
 
-    def generate(self, report_base, node_base, end_date, host=None, user=None):
+    def generate(self, report_base, node_base, end_date, host=None, user=None,
+                 email=None):
         pass
 
     def to_html(self, writer, report_base, section_base, end_date):
@@ -114,7 +143,8 @@ class SummarySection(Section):
 
         self.__summary_items = summary_items
 
-    def generate(self, report_base, node_base, end_date, host=None, user=None):
+    def generate(self, report_base, node_base, end_date, host=None, user=None,
+                 email=None):
         section_base = "%s/%s" % (node_base, self.name)
 
         element = Element('summary-section')
@@ -122,10 +152,15 @@ class SummarySection(Section):
         element.set('title', self.title)
 
         for summary_item in self.__summary_items:
-            element.append(summary_item.generate(report_base, section_base,
-                                                 end_date, host, user))
+            report_element = summary_item.generate(report_base, section_base,
+                                                   end_date, host, user, email)
+            if report_element:
+                element.append(report_element)
 
-        return element
+        if len(element.getchildren()):
+            return element
+        else:
+            return None
 
     def to_html(self, writer, report_base, node_base, end_date):
         writer.write("""\
@@ -149,30 +184,45 @@ class DetailSection(Section):
     def __init__(self, name, title):
         Section.__init__(self, name, title)
 
-    def get_columns(self, host=None, user=None):
+    def get_columns(self, host=None, user=None, email=None):
         pass
 
-    def get_sql(self, start_date, end_date, host=None, user=None):
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         pass
 
-    def generate(self, report_base, node_base, end_date, host=None, user=None):
+    def generate(self, report_base, node_base, end_date, host=None, user=None,
+                 email=None):
         element = Element('detail-section')
         element.set('name', self.name)
         element.set('title', self.title)
 
         start_date = end_date - mx.DateTime.DateTimeDelta(1)
-        sql = self.get_sql(start_date, end_date, host, user)
+        sql = self.get_sql(start_date, end_date, host, user, email)
+
+        if not sql:
+            logging.warn('no sql for DetailSection: %s' % self.name)
+            sql = ''
 
         sql_element = Element('sql')
         sql_element.text = CDATA(sql)
         element.append(sql_element)
 
-        for c in self.get_columns(host, user):
+        columns = self.get_columns(host, user, email)
+        if not columns:
+            logging.warn('no columns for DetailSection: %s' % self.name)
+            columns = []
+
+        for c in columns:
             element.append(c.get_dom())
 
         return element
 
     def to_html(self, writer, report_base, section_base, end_date):
+        start_date = end_date - mx.DateTime.DateTimeDelta(1)
+        sql = self.get_sql(start_date, end_date)
+        if not sql:
+            return
+
         writer.write("""\
 <table style="width:100%%;border-bottom:1px #CCC dotted;margin-bottom:10px;">
   <tr>
@@ -196,8 +246,7 @@ class DetailSection(Section):
 
         try:
             curs = conn.cursor()
-            start_date = end_date - mx.DateTime.DateTimeDelta(1)
-            curs.execute(self.get_sql(start_date, end_date))
+            curs.execute(sql)
             rows = curs.fetchall()
         finally:
             conn.commit()
@@ -244,10 +293,15 @@ class Graph:
         self.__name = name
         self.__title = title
 
-    def get_key_statistics(self, end_date, host=None, user=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
+        return (self.get_key_statistics(end_date, report_days, host, user, email),
+                self.get_plot(end_date, report_days, host, user, email))
+
+    def get_key_statistics(self, report_days, end_date, host=None, user=None,
+                           email=None):
         return []
 
-    def get_plot(self, end_date, host=None, user=None):
+    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
         return None
 
     @property
@@ -255,9 +309,19 @@ class Graph:
         return self.__name
 
     def generate(self, report_base, section_base, end_date, host=None,
-                 user=None):
-        self.__key_statistics = self.get_key_statistics(end_date)
-        self.__plot = self.get_plot(end_date)
+                 user=None, email=None):
+        graph_data = self.get_graph(end_date, 7, host, user, email)
+
+        if not graph_data:
+            return None
+
+        self.__key_statistics, self.__plot = graph_data
+
+        if not self.__plot:
+            return None
+
+        if not self.__key_statistics:
+            self.__key_statistics = []
 
         filename_base = '%s-%s' % (section_base, self.__name)
 
@@ -265,7 +329,6 @@ class Graph:
         if not os.path.exists(dir):
             os.makedirs(dir)
 
-        self.__plot.generate_graph('%s/%s.png' % (report_base, filename_base))
         self.__plot.generate_csv('%s/%s.csv' % (report_base, filename_base))
 
         element = Element('graph')
@@ -280,6 +343,8 @@ class Graph:
             ks_element.set('value', str(ks.value))
             ks_element.set('unit', ks.unit)
             element.append(ks_element)
+
+        element.append(self.__plot.get_dom())
 
         return element
 
@@ -317,33 +382,67 @@ class Graph:
 </table>
 """)
 
-
-class LinePlot:
-    def __init__(self, title=None, xlabel=None, ylabel=None,
-                 major_formatter=None, xaxis_ticks=None):
+class Chart:
+    def __init__(self, type=TIME_SERIES_CHART, title=None, xlabel=None,
+                 ylabel=None, major_formatter=IDENTITY_FORMATTER):
+        self.__type = type
         self.__title = title
         self.__xlabel = xlabel
         self.__ylabel = ylabel
         self.__major_formatter = major_formatter
-        self.__xaxis_ticks = xaxis_ticks
 
         self.__datasets = []
 
+        self.__header = [xlabel]
+
     def add_dataset(self, xdata, ydata, label=None, linestyle='-'):
+        if self.__type == PIE_CHART:
+            raise ValueError('using 2D dataset for pie chart')
+
         m = {'xdata': xdata, 'ydata': ydata, 'label': label,
              'linestyle': linestyle}
         self.__datasets.append(m)
 
-    def generate_csv(self, filename, host=None, user=None):
+        self.__header.append(label)
+
+    def add_pie_dataset(self, data):
+        if self.__type != PIE_CHART:
+            raise ValueError('using pie dataset for non-pie chart')
+
+        self.__datasets = data
+
+    def generate_csv(self, filename, host=None, user=None, email=None):
+        if self.__type == PIE_CHART:
+            self.__generate_pie_csv(filename, host=host, user=user, email=email)
+        else:
+            self.__generate_2d_csv(filename, host=host, user=user, email=email)
+
+    def get_dom(self):
+        element = Element('plot')
+        if self.__type:
+            element.set('type', self.__type)
+        if self.__title:
+            element.set('title', self.__title)
+        if self.__xlabel:
+            element.set('x-label', self.__xlabel)
+        if self.__ylabel:
+            element.set('y-label', self.__ylabel)
+        if self.__major_formatter:
+            element.set('major-formatter', self.__major_formatter.name)
+
+        return element
+
+    def __generate_2d_csv(self, filename, host=None, user=None, email=None):
         data = {}
         z = 0
+
         for ds in self.__datasets:
             for x, y in zip(ds['xdata'], ds['ydata']):
                 a = data.get(x, None)
                 if a:
                     a[z] = y
                 else:
-                    a = [None for i in range(len(self.__datasets))]
+                    a = [0 for i in range(len(self.__datasets))]
                     a[z] = y
                     data[x] = a
             z = z + 1
@@ -352,31 +451,19 @@ class LinePlot:
         rows.sort()
 
         if self.__major_formatter:
-            rows = map(lambda a: [self.__major_formatter(a[0], None)] + a[1:],
-                       rows)
+            fn = self.__major_formatter.function
+            rows = map(lambda a: [fn(a[0], None)] + a[1:], rows)
 
         w = csv.writer(open(filename, 'w'))
+        w.writerow(self.__header)
         w.writerows(rows)
 
-    def generate_graph(self, filename, host=None, user=None):
-        fix = pylab.figure()
-        axes = pylab.axes()
+    def __generate_pie_csv(self, filename, host=None, user=None, email=None):
+        rows = [self.__datasets.keys(), self.__datasets.values()]
 
-        if self.__major_formatter:
-            axes.xaxis.set_major_formatter(self.__major_formatter)
-        if self.__xaxis_ticks:
-            axes.xaxis.set_ticks(self.__xaxis_ticks)
-        pylab.title(self.__title)
-        pylab.xlabel(self.__xlabel)
-        pylab.ylabel(self.__ylabel)
-        fix.autofmt_xdate()
-
-        for ds in self.__datasets:
-            pylab.plot(ds['xdata'], ds['ydata'], linestyle=ds['linestyle'],
-                       label=ds['label'])
-
-        pylab.legend()
-        pylab.savefig(filename)
+        w = csv.writer(open(filename, 'w'))
+        w.writerow([_('slice'), _('value')])
+        w.writerows(self.__datasets.items())
 
 class KeyStatistic:
     def __init__(self, name, value, unit):

@@ -27,12 +27,12 @@
 
 <c:if test="${param['console']==1}">
     <script type="text/javascript">
-        top.window.moveTo(0,0);
+        top.window.moveTo(1,1);
         if(Ext.isIE) {
-            top.window.resizeTo(screen.availWidth,screen.availHeight); 
+            top.window.resizeTo(screen.availWidth,screen.availHeight);
         } else {
-            top.window.outerHeight = top.screen.availHeight; 
-            top.window.outerWidth = top.screen.availWidth; 
+            top.window.outerHeight = top.screen.availHeight-30;
+            top.window.outerWidth = top.screen.availWidth-30;
         }
      </script>
 </c:if>

@@ -1,0 +1,558 @@
+import gettext
+import logging
+import mx
+import reports.engine
+import sql_helper
+import sys
+
+from psycopg import DateFromMx
+from psycopg import QuotedString
+from reports import Chart
+from reports import ColumnDesc
+from reports import DATE_FORMATTER
+from reports import DetailSection
+from reports import Graph
+from reports import KeyStatistic
+from reports import PIE_CHART
+from reports import Report
+from reports import STACKED_BAR_CHART
+from reports import SummarySection
+from reports import TIME_OF_DAY_FORMATTER
+from reports import TIME_SERIES_CHART
+from reports.engine import Column
+from reports.engine import FactTable
+from reports.engine import Node
+from sql_helper import print_timing
+
+_ = gettext.gettext
+def N_(message): return message
+
+class Firewall(Node):
+    def __init__(self):
+        Node.__init__(self, 'untangle-node-firewall')
+
+    @sql_helper.print_timing
+    def setup(self, start_date, end_date):
+        self.__update_sessions(start_date, end_date)
+
+        ft = reports.engine.get_fact_table('reports.session_totals')
+
+        ft.measures.append(Column('firewall_blocks', 'integer',
+                                  "count(CASE WHEN NOT firewall_was_blocked ISNULL THEN 1 ELSE null END)"))
+
+        ft.dimensions.append(Column('firewall_rule_index', 'integer'))
+
+
+    def parents(self):
+        return ['untangle-vm']
+
+    def get_report(self):
+        sections = []
+        s = reports.SummarySection('summary', N_('Summary Report'),
+                                   [DailyRules(),
+                                    TopTenBlockingRulesByHits(),
+                                    TopTenBlockedHostsByHits(),
+                                    TopTenBlockedUsersByHits()])
+        sections.append(s)
+
+        sections.append(FirewallDetail())
+
+        return reports.Report(self.name, 'Firewall', sections)
+
+
+    def events_cleanup(self, cutoff):
+        try:
+            sql_helper.run_sql("""\
+DELETE FROM events.n_firewall_evt WHERE time_stamp < %s""", (cutoff,))
+            sql_helper.run_sql("""\
+DELETE FROM events.n_firewall_statistic_evt WHERE time_stamp < %s""", (cutoff,))
+        except: pass
+
+    def reports_cleanup(self, cutoff):
+        pass
+
+    @sql_helper.print_timing
+    def __update_sessions(self, start_date, end_date):
+        try:
+            sql_helper.run_sql("""
+ALTER TABLE reports.sessions ADD COLUMN firewall_was_blocked boolean""")
+        except: pass
+        try:
+            sql_helper.run_sql("""
+ALTER TABLE reports.sessions ADD COLUMN firewall_rule_index integer""")
+        except: pass
+
+        sd = DateFromMx(sql_helper.get_update_info('sessions[firewall]',
+                                                   start_date))
+        ed = DateFromMx(end_date)
+
+        conn = sql_helper.get_connection()
+
+        try:
+            sql_helper.run_sql("""\
+UPDATE reports.sessions
+SET firewall_was_blocked = was_blocked, firewall_rule_index = rule_index
+FROM events.n_firewall_evt
+WHERE reports.sessions.time_stamp >= %s
+  AND reports.sessions.time_stamp < %s
+  AND reports.sessions.pl_endp_id = events.n_firewall_evt.pl_endp_id""",
+                               (sd, ed), connection=conn, auto_commit=False)
+
+            sql_helper.set_update_info('sessions[firewall]', ed,
+                                       connection=conn, auto_commit=False)
+
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
+
+class DailyRules(reports.Graph):
+    def __init__(self):
+        reports.Graph.__init__(self, 'daily-rules', _('Daily Rules'))
+
+    @sql_helper.print_timing
+    def get_key_statistics(self, end_date, report_days, host=None, user=None,
+                           email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        avg_max_query = """\
+SELECT avg(sessions_logged) as avg_sessions_logged, max(sessions_logged) as max_sessions_logged,
+       avg(sessions_blocked) as avg_sessions_blocked, max(sessions_blocked) as max_sessions_blocked
+FROM (select date_trunc('day', time_stamp) AS day,
+      count(CASE WHEN firewall_rule_index IS NOT NULL THEN 1 ELSE null END) AS sessions_logged,
+      count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END) AS sessions_blocked
+      FROM reports.sessions
+      WHERE time_stamp >= %s AND time_stamp < %s"""
+
+        if host:
+            avg_max_query = avg_max_query + " AND hname = %s"
+        elif user:
+            avg_max_query = avg_max_query + " AND uid = %s"
+
+        avg_max_query = avg_max_query + " GROUP BY day) AS foo"
+
+        conn = sql_helper.get_connection()
+
+        lks = []
+
+        curs = conn.cursor()
+        if host:
+            curs.execute(avg_max_query, (one_week, ed, host))
+        elif user:
+            curs.execute(avg_max_query, (one_week, ed, user))
+        else:
+            curs.execute(avg_max_query, (one_week, ed))
+        r = curs.fetchone()
+        ks = reports.KeyStatistic(N_('avg (1-week)'), r[0], N_('logged/day'))
+        lks.append(ks)
+        ks = reports.KeyStatistic(N_('max (1-week)'), r[1], N_('logged/day'))
+        lks.append(ks)
+        ks = reports.KeyStatistic(N_('avg (1-week)'), r[2], N_('blocked/day'))
+        lks.append(ks)
+        ks = reports.KeyStatistic(N_('max (1-week)'), r[3], N_('blocked/day'))
+        lks.append(ks)
+
+        conn.commit()
+
+        return lks
+
+    @sql_helper.print_timing
+    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        conn = sql_helper.get_connection()
+
+        q = """\
+SELECT date_trunc('day', time_stamp) AS time,
+      count(CASE WHEN firewall_rule_index IS NOT NULL THEN 1 ELSE null END) AS sessions_logged,
+      count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END) AS sessions_blocked
+FROM reports.sessions
+WHERE time_stamp >= %s AND time_stamp < %s"""
+        if host:
+            q = q + " AND hname = %s"
+        elif user:
+            q = q + " AND uid = %s"
+        q = q + """
+GROUP BY time
+ORDER BY time asc"""
+
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(q, (one_week, ed, host))
+        elif user:
+            curs.execute(q, (one_week, ed, user))
+        else:
+            curs.execute(q, (one_week, ed))
+
+        dates = []
+        logs = []
+        blocks = []
+
+        while 1:
+            r = curs.fetchone()
+            if not r:
+                break
+
+            dates.append(r[0])
+            logs.append(r[1])
+            blocks.append(r[2])
+
+        conn.commit()
+
+        plot = reports.Chart(type=reports.STACKED_BAR_CHART,
+                     title=_('Daily Rules'),
+                     xlabel=_('Day'),
+                     ylabel=_('sessions/day'),
+                     major_formatter=reports.DATE_FORMATTER)
+
+        plot.add_dataset(dates, logs, label=_('logged'))
+        plot.add_dataset(dates, blocks, label=_('blocked'))
+
+        return plot
+
+class TopTenBlockedHostsByHits(Graph):
+    TEN="10"
+
+    def __init__(self):
+        Graph.__init__(self, 'top-ten-firewall-blocked-hosts-by-hits', _('Top Ten Firewall Blocked Hosts By Hits'))
+
+    @print_timing
+    def get_key_statistics(self, end_date, report_days, host=None, user=None,
+                           email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT hname, count(*) as hits_sum
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s
+AND firewall_blocks > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+
+        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
+
+        conn = sql_helper.get_connection()
+
+        lks = []
+
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
+        for r in curs.fetchall():
+            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            lks.append(ks)
+
+        conn.commit()
+
+        return lks
+
+    @print_timing
+    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT hname, count(*) as hits_sum
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s
+AND firewall_blocks > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+
+        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
+
+        conn = sql_helper.get_connection()
+
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
+        dataset = {}
+
+        for r in curs.fetchall():
+            dataset[r[0]] = r[1]
+
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Ten Firewall Blocked Hosts (by hits)'),
+                     xlabel=_('Host'),
+                     ylabel=_('Blocks per Day'))
+
+        plot.add_pie_dataset(dataset)
+
+        return plot
+
+class TopTenBlockingRulesByHits(Graph):
+    TEN="10"
+
+    def __init__(self):
+        Graph.__init__(self, 'top-ten-firewall-blocking-rules-by-hits', _('Top Ten Firewall Blocking Rules By Hits'))
+
+    @print_timing
+    def get_key_statistics(self, end_date, report_days, host=None, user=None,
+                           email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT firewall_rule_index, count(*) as hits_sum
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s
+AND firewall_blocks > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+
+        query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC LIMIT " + self.TEN
+
+        conn = sql_helper.get_connection()
+
+        lks = []
+
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
+        for r in curs.fetchall():
+            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            lks.append(ks)
+
+        conn.commit()
+
+        return lks
+
+    @print_timing
+    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT firewall_rule_index, count(*) as hits_sum
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s
+AND firewall_blocks > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+
+        query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC LIMIT " + self.TEN
+
+        conn = sql_helper.get_connection()
+
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
+        dataset = {}
+
+        for r in curs.fetchall():
+            dataset[r[0]] = r[1]
+
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Ten Firewall Blocking Rules (by hits)'),
+                     xlabel=_('Rule #'),
+                     ylabel=_('Blocks per Day'))
+
+        plot.add_pie_dataset(dataset)
+
+        return plot
+
+class TopTenBlockedUsersByHits(Graph):
+    TEN="10"
+
+    def __init__(self):
+        Graph.__init__(self, 'top-ten-firewall-blocked-users-by-hits', _('Top Ten Firewall Blocked Users By Hits'))
+
+    @print_timing
+    def get_key_statistics(self, end_date, report_days, host=None, user=None,
+                           email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT uid, count(*) as hits_sum
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s
+AND uid != ''
+AND firewall_blocks > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+
+        query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
+
+        conn = sql_helper.get_connection()
+
+        lks = []
+
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
+        for r in curs.fetchall():
+            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            lks.append(ks)
+
+        conn.commit()
+
+        return lks
+
+    @print_timing
+    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT uid, count(*) as hits_sum
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s
+AND firewall_blocks > 0
+AND firewall_rule_index IS NOT NULL"""
+
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+
+        query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
+
+        conn = sql_helper.get_connection()
+
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
+        dataset = {}
+
+        for r in curs.fetchall():
+            dataset[r[0]] = r[1]
+
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Ten Firewall Blocked Users (by hits)'),
+                     xlabel=_('User'),
+                     ylabel=_('Blocks per Day'))
+
+        plot.add_pie_dataset(dataset)
+
+        return plot
+
+class FirewallDetail(DetailSection):
+    def __init__(self):
+        DetailSection.__init__(self, 'incidents', N_('Incident Report'))
+
+    def get_columns(self, host=None, user=None, email=None):
+        if email:
+            return None
+
+        rv = [ColumnDesc('time_stamp', N_('Time'), 'Date')]
+
+        if not host:
+            rv.append(ColumnDesc('hname', N_('Client'), 'HostLink'))
+        if not user:
+            rv.append(ColumnDesc('uid', N_('User'), 'UserLink'))
+
+        rv = rv + [ColumnDesc('c_server_addr', N_('Server'), 'Server')]
+
+        return rv
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        if email:
+            return None
+
+        sql = "SELECT time_stamp, "
+
+        if not host:
+            sql = sql + "hname, "
+        if not user:
+            sql = sql + "uid, "
+
+        sql = sql + ("""c_server_addr
+FROM reports.sessions
+WHERE time_stamp >= %s AND time_stamp < %s
+      AND NOT firewall_was_blocked ISNULL""" % (DateFromMx(start_date),
+                                                DateFromMx(end_date)))
+
+        if host:
+            sql = sql + (" AND host = %s" % QuotedString(host))
+        if user:
+            sql = sql + (" AND host = %s" % QuotedString(user))
+
+        return sql
+
+
+reports.engine.register_node(Firewall())

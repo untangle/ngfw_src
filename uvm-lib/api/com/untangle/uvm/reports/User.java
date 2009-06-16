@@ -35,7 +35,7 @@ package com.untangle.uvm.reports;
 
 import java.io.Serializable;
 
-public class User implements Serializable
+public class User implements Serializable, Comparable<User>
 {
     private final String name;
 
@@ -47,5 +47,15 @@ public class User implements Serializable
     public String getName()
     {
         return name;
+    }
+
+    public String toString()
+    {
+        return name;
+    }
+
+    public int compareTo(User u)
+    {
+        return name.compareTo(u.name);
     }
 }

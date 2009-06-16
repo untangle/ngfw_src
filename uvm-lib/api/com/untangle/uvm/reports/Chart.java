@@ -33,9 +33,12 @@
 
 package com.untangle.uvm.reports;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 public class Chart extends SummaryItem implements Serializable
 {
@@ -45,12 +48,19 @@ public class Chart extends SummaryItem implements Serializable
     private final List<KeyStatistic> keyStatistics =
         new ArrayList<KeyStatistic>();
 
+    private Plot plot;
+
     public Chart(String name, String title, String imageUrl, String csvUrl)
     {
         super(name, title);
 
         this.imageUrl = imageUrl;
         this.csvUrl = csvUrl;
+    }
+
+    public void setPlot(Plot plot)
+    {
+        this.plot = plot;
     }
 
     public String getImageUrl()
@@ -76,5 +86,19 @@ public class Chart extends SummaryItem implements Serializable
     public void addKeyStatistic(KeyStatistic ks)
     {
         keyStatistics.add(ks);
+    }
+
+    public void generate(String reportBase)
+        throws IOException
+    {
+        Logger logger = Logger.getLogger(getClass());
+
+        System.out.println("generating: " + imageUrl + " from: " + csvUrl);
+
+        if (null == plot) {
+            logger.warn("no plot: " + imageUrl);
+        } else {
+            plot.generate(reportBase, csvUrl, imageUrl);
+        }
     }
 }

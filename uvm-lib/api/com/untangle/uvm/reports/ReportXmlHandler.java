@@ -31,18 +31,11 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.engine;
+package com.untangle.uvm.reports;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.uvm.reports.ApplicationData;
-import com.untangle.uvm.reports.Chart;
-import com.untangle.uvm.reports.ColumnDesc;
-import com.untangle.uvm.reports.DetailSection;
-import com.untangle.uvm.reports.KeyStatistic;
-import com.untangle.uvm.reports.Section;
-import com.untangle.uvm.reports.SummarySection;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -54,7 +47,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class ReportXmlHandler extends DefaultHandler
+public class ReportXmlHandler extends DefaultHandler
 {
     private String reportName;
     private String reportTitle;
@@ -111,6 +104,30 @@ class ReportXmlHandler extends DefaultHandler
                                                    attrs.getValue("value"),
                                                    attrs.getValue("unit"));
                 currentChart.addKeyStatistic(ks);
+            }
+        } else if (qName.equals("plot")) {
+            Plot p = null;
+
+            String type = attrs.getValue("type");
+            String title = attrs.getValue("title");
+            String xLabel = attrs.getValue("x-label");
+            String yLabel = attrs.getValue("y-label");
+            String majorFormatter = attrs.getValue("major-formatter");
+            if (null == type) {
+                logger.warn("null plot type");
+            }
+            if (type.equals("time-series-chart")) {
+                p = new TimeSeriesChart(title, xLabel, yLabel, majorFormatter);
+            } else if (type.equals("stacked-bar-chart")) {
+                p = new StackedBarChart(title, xLabel, yLabel, majorFormatter);
+            } else if (type.equals("pie-chart")) {
+                p = new PieChart(title, xLabel, yLabel, majorFormatter);
+            } else {
+                logger.warn("unknown plot: " + type);
+            }
+
+            if (null != p) {
+                currentChart.setPlot(p);
             }
         } else if (qName.equals("detail-section")) {
             currentDetailSection = new DetailSection(attrs.getValue("name"),
