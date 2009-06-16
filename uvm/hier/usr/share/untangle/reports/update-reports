@@ -95,9 +95,6 @@ function doesEventTableExist()
     fi
 }
 
-
-REPORT_DIR=@UVM_WEB@/reports
-
 # New for 4.2 -- if we're still reporting from yesterday, just keep going.
 isrunning=$(@USR_BIN@/ucli -t 3600 isReportingRunning)
 if [ "${isrunning}x" = "truex" ]; then
@@ -105,12 +102,28 @@ if [ "${isrunning}x" = "truex" ]; then
     exit 1
 fi
 
+
+################################################################################
+# GET ENV
+
+REPORT_DIR=@UVM_WEB@/reports
+
+# Build the DHCP Merged Address Map (needed for running start-reports scripts)
+@USR_BIN@/ucli -t 3600 prepareReports -o $REPORT_DIR -d 60 -n $midnight
+exitOnUvmError $? reporter
+# note that Reporter has just created settings.env and daystoadd
+
+if [ -h $REPORT_DIR/current -a -f $REPORT_DIR/current/settings.env ]; then
+    source $REPORT_DIR/current/settings.env
+fi
+
+
 ################################################################################
 # CLEANUP SECTION
 
-# We keep more than 30 days so that we'll have all the session starts, dhcp
-# starts, etc for the 30 day period.
-NUMDAYSTOKEEP=${MV_EG_DAYS_TO_KEEP:-33}
+# We keep more than 7 days so that we'll have all the session starts, dhcp
+# starts, etc for the 7 day period.
+NUMDAYSTOKEEP=${MV_EG_DAYS_TO_KEEP:-8}
 
 # Build list of event & report days for which generation is needed.
 $PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="events.event_data_days" -v outtable="events.daystoadd" -f @UVM_SCHEMA@/uvm/getdaystoadd.sql uvm
@@ -172,11 +185,6 @@ exitOnUvmError $? uvm
 
 # Only generate today's reports if the reporting node is running
 if [ "$is_reporting_enabled" != 'false' ]; then
-
-    # Build the DHCP Merged Address Map (needed for running start-reports scripts)
-    @USR_BIN@/ucli -t 3600 prepareReports -o $REPORT_DIR -d 60 -n $midnight
-    exitOnUvmError $? reporter
-    # note that Reporter has just created settings.env and daystoadd
 
     if [ -h $REPORT_DIR/current -a -f $REPORT_DIR/current/settings.env ]; then
         source $REPORT_DIR/current/settings.env

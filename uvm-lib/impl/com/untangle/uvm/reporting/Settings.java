@@ -121,7 +121,7 @@ public class Settings
             logger.error("Could not get JDBC connection", exn);
             // set to defaults
             ed = false;
-            dtk = 33;
+            dtk = 8;
             dy = true;
             wyL.clear();
             wyL.add(Calendar.SUNDAY);
@@ -148,7 +148,7 @@ public class Settings
         monthly = 30 > daysToKeep ? false : getMonthly(cal);
 
         //logger.info("reporting schedule: weekly list: " + weeklyList + ", monthly daily: " + monthlyNDaily + ", monthly weekly: " + monthlyNDayOfWk + ", monthly first: " + monthlyNFirst);
-        logger.info("reporting schedule: email detail: " + emailDetail + ", daily: " + daily + ", weekly: " + weekly + ", monthly: " + monthly);
+        logger.info("reporting schedule: email detail: " + emailDetail + ", daily: " + daily + ", weekly: " + weekly + ", monthly: " + monthly + " daysToKeep: " + daysToKeep);
     }
 
     public boolean getEmailDetail() {
