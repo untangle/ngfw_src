@@ -121,7 +121,7 @@ public class Settings
             logger.error("Could not get JDBC connection", exn);
             // set to defaults
             ed = false;
-            dtk = 33;
+            dtk = 8;
             dy = true;
             wyL.clear();
             wyL.add(Calendar.SUNDAY);
