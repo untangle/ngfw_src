@@ -108,6 +108,8 @@ fi
 
 REPORT_DIR=@UVM_WEB@/reports
 
+rm -rf $REPORT_DIR/current
+rm -f $REPORT_DIR/index.html # Just in case left over (we use a jsp now)
 # Build the DHCP Merged Address Map (needed for running start-reports scripts)
 @USR_BIN@/ucli -t 3600 prepareReports -o $REPORT_DIR -d 60 -n $midnight
 exitOnUvmError $? reporter
@@ -172,10 +174,6 @@ echo "VACUUM ANALYZE;" | $PSQL uvm
 
 # END CLEANUP SECTION
 ################################################################################
-
-rm -rf $REPORT_DIR/current
-# Just in case left over (we use a jsp now)
-rm -f $REPORT_DIR/index.html
 
 # can't use shell to assign default value for unset parameter because
 # when an exception occurs in ucli,
