@@ -539,9 +539,9 @@ ORDER BY time asc"""
         return plot
 
 
-class TopVirusesDetected(reports.Graph):
+class TopWebVirusesDetected(reports.Graph):
     def __init__(self, vendor_name):
-        reports.Graph.__init__(self, 'top-viruses-detected', _('Top Viruses Detected'))
+        reports.Graph.__init__(self, 'top-web-viruses-detected', _('Top Web Viruses Detected'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
@@ -558,15 +558,14 @@ class TopVirusesDetected(reports.Graph):
         conn = sql_helper.get_connection()
 
         q = """\
-SELECT virus_"""+self.__vendor_name+"""_name, count(*) as count_viruses_detected
-FROM reports.n_http_events
-WHERE time_stamp >= %s AND time_stamp < %s AND virus_"""+self.__vendor_name+"""_clean = false"""
+SELECT virus_"""+self.__vendor_name+"""_name, virus_"""+self.__vendor_name+"""_detected
+FROM reports.n_virus_http_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
             q = q + " AND hname = %s"
         elif user:
             q = q + " AND uid = %s"
-        q = q + """
-GROUP BY virus_%s_name ORDER BY count_viruses_detected desc""" % self.__vendor_name
+        q = q + "ORDER BY virus_"+self.__vendor_name+"_detected DESC"
 
         curs = conn.cursor()
 
@@ -592,7 +591,7 @@ GROUP BY virus_%s_name ORDER BY count_viruses_detected desc""" % self.__vendor_n
         conn.commit()
 
         plot = reports.Chart(type=reports.PIE_CHART,
-                     title=_('Top Viruses Detected'),
+                     title=_('Top Web Viruses Detected'),
                      xlabel=_('name'),
                      ylabel=_('count'))
 
@@ -602,7 +601,6 @@ GROUP BY virus_%s_name ORDER BY count_viruses_detected desc""" % self.__vendor_n
 
 
 class TopEmailVirusesDetected(reports.Graph):
-    """ TODO actually implement this """
     def __init__(self, vendor_name):
         reports.Graph.__init__(self, 'top-email-viruses-detected', _('Top Email Viruses Detected'))
         self.__vendor_name = vendor_name
@@ -617,18 +615,15 @@ class TopEmailVirusesDetected(reports.Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
-        avg_max_query = """\
-SELECT virus_"""+self.__vendor_name+"""_name as name, count(*) AS foo
-      FROM reports.n_mail_msgs
-      WHERE time_stamp >= %s AND time_stamp < %s
-      AND virus_"""+self.__vendor_name+"""_name != ''"""
-
+        avg_max_query = """
+SELECT virus_"""+self.__vendor_name+"""_name, virus_"""+self.__vendor_name+"""_detected
+FROM reports.n_virus_mail_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
             avg_max_query = avg_max_query + " AND hname = %s"
         elif user:
             avg_max_query = avg_max_query + " AND uid = %s"
-
-        avg_max_query = avg_max_query + " GROUP BY name ORDER BY foo DESC"
+        avg_max_query = avg_max_query + "ORDER BY virus_"+self.__vendor_name+"_detected DESC"
 
         conn = sql_helper.get_connection()
 
@@ -663,18 +658,15 @@ SELECT virus_"""+self.__vendor_name+"""_name as name, count(*) AS foo
 
         conn = sql_helper.get_connection()
 
-        avg_max_query = """\
-SELECT virus_"""+self.__vendor_name+"""_name as name, count(*) AS foo
-      FROM reports.n_mail_msgs
-      WHERE time_stamp >= %s AND time_stamp < %s
-      AND virus_"""+self.__vendor_name+"""_name != ''"""
-
+        avg_max_query = """
+SELECT virus_"""+self.__vendor_name+"""_name, virus_"""+self.__vendor_name+"""_detected
+FROM reports.n_virus_mail_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
             avg_max_query = avg_max_query + " AND hname = %s"
         elif user:
             avg_max_query = avg_max_query + " AND uid = %s"
-
-        avg_max_query = avg_max_query + " GROUP BY name ORDER BY foo DESC"
+        avg_max_query = avg_max_query + " ORDER BY virus_"+self.__vendor_name+"_detected DESC"
 
         curs = conn.cursor()
 
@@ -699,9 +691,9 @@ SELECT virus_"""+self.__vendor_name+"""_name as name, count(*) AS foo
 
         return plot
 
-class TopWebVirusesDetected(reports.Graph):
+class TopVirusesDetected(reports.Graph):
     def __init__(self, vendor_name):
-        reports.Graph.__init__(self, 'daily-viruses-blocked', _('Daily Viruses Blocked'))
+        reports.Graph.__init__(self, 'top-viruses-detected', _('Top Viruses Detected'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
@@ -715,17 +707,18 @@ class TopWebVirusesDetected(reports.Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
-SELECT avg(viruses_"""+self.__vendor_name+"""_blocked), max(viruses_"""+self.__vendor_name+"""_blocked)
-FROM (select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+"""_blocked) AS viruses_"""+self.__vendor_name+"""_blocked
-      FROM reports.n_http_totals
-      WHERE trunc_time >= %s AND trunc_time < %s"""
+SELECT m.virus_"""+self.__vendor_name+"""_name as name,
+       (h.virus_"""+self.__vendor_name+"""_detected + m.virus_"""+self.__vendor_name+"""_detected) AS foo
+FROM reports.n_virus_mail_totals AS m, reports.n_virus_http_totals AS h
+WHERE m.trunc_time >= %s AND m.trunc_time < %s
+AND  h.trunc_time >= %s AND h.trunc_time < %s
+AND h.virus_"""+self.__vendor_name+"""_name = m.virus_"""+self.__vendor_name+"""_name
+AND m.virus_"""+self.__vendor_name+"""_name != ''"""
 
         if host:
             avg_max_query = avg_max_query + " AND hname = %s"
         elif user:
             avg_max_query = avg_max_query + " AND uid = %s"
-
-        avg_max_query = avg_max_query + " GROUP BY day) AS foo"
 
         conn = sql_helper.get_connection()
 
@@ -733,16 +726,18 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor
 
         curs = conn.cursor()
         if host:
-            curs.execute(avg_max_query, (one_week, ed, host))
+            curs.execute(avg_max_query, (one_week, ed, one_week, ed, host))
         elif user:
-            curs.execute(avg_max_query, (one_week, ed, user))
+            curs.execute(avg_max_query, (one_week, ed, one_week, ed, user))
         else:
-            curs.execute(avg_max_query, (one_week, ed))
-        r = curs.fetchone()
-        ks = reports.KeyStatistic(N_('max (1-week)'), r[1], N_('viruses/day'))
-        lks.append(ks)
-        ks = reports.KeyStatistic(N_('avg (1-week)'), r[0], N_('viruses/day'))
-        lks.append(ks)
+            curs.execute(avg_max_query, (one_week, ed, one_week, ed))
+
+        while 1:
+            r = curs.fetchone()
+            if not r:
+                break
+            ks = reports.KeyStatistic(r[0], r[1], N_('viruses'))
+            lks.append(ks)
 
         conn.commit()
 
@@ -758,47 +753,43 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor
 
         conn = sql_helper.get_connection()
 
-        q = """\
-SELECT date_trunc('day', trunc_time) AS time,
-       sum(viruses_"""+self.__vendor_name+"""_blocked) as viruses_"""+self.__vendor_name+"""_blocked
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+        avg_max_query = """\
+SELECT m.virus_"""+self.__vendor_name+"""_name as name, count(*) AS foo
+FROM reports.n_virus_mail_totals AS m, reports.n_virus_http_totals AS h
+WHERE m.trunc_time >= %s AND m.trunc_time < %s
+AND  h.trunc_time >= %s AND h.trunc_time < %s
+AND h.virus_"""+self.__vendor_name+"""_name = m.virus_"""+self.__vendor_name+"""_name
+AND m.virus_"""+self.__vendor_name+"""_name != ''"""
+
         if host:
-            q = q + " AND hname = %s"
+            avg_max_query = avg_max_query + " AND hname = %s"
         elif user:
-            q = q + " AND uid = %s"
-        q = q + """
-GROUP BY time
-ORDER BY time asc"""
+            avg_max_query = avg_max_query + " AND uid = %s"
+
+        avg_max_query = avg_max_query + " GROUP BY name"
+
+        conn = sql_helper.get_connection()
+
+        lks = []
 
         curs = conn.cursor()
-
         if host:
-            curs.execute(q, (one_week, ed, host))
+            curs.execute(avg_max_query, (one_week, ed, one_week, ed, host))
         elif user:
-            curs.execute(q, (one_week, ed, user))
+            curs.execute(avg_max_query, (one_week, ed, one_week, ed, user))
         else:
-            curs.execute(q, (one_week, ed))
+            curs.execute(avg_max_query, (one_week, ed, one_week, ed))
 
-        dates = []
-        blocks = []
+        dataset = {}
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
+        for r in curs.fetchall():
+            dataset[r[0]] = r[1]
 
-            dates.append(r[0])
-            blocks.append(r[1])
+        plot = reports.Chart(type=reports.PIE_CHART,
+                             title=_('Top Email Viruses Detected'),
+                             xlabel=_('Viruses'),
+                             ylabel=_('Count'))
 
-        conn.commit()
-
-        plot = reports.Chart(type=reports.STACKED_BAR_CHART,
-                     title=_('Daily Virus Blocked'),
-                     xlabel=_('Day'),
-                     ylabel=_('viruses/day'),
-                     major_formatter=reports.DATE_FORMATTER)
-
-        plot.add_dataset(dates, blocks, label=_('viruses blocked'))
+        plot.add_pie_dataset(dataset)
 
         return plot
