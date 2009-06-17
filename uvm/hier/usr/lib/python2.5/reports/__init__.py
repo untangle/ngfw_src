@@ -8,10 +8,11 @@ import sql_helper
 import popen2
 import re
 
-from mx.DateTime import DateTimeDeltaFromSeconds
-from lxml.etree import Element
 from lxml.etree import CDATA
+from lxml.etree import Element
 from lxml.etree import ElementTree
+from mx.DateTime import DateTimeDeltaFromSeconds
+from reports.engine import get_node_base
 
 _ = gettext.gettext
 def N_(message): return message
@@ -55,7 +56,7 @@ class Report:
 
     def generate(self, report_base, date_base, end_date, host=None, user=None,
                  email=None):
-        node_base = self.__get_node_base(date_base, host, user, email)
+        node_base = get_node_base(self.__name, date_base, host, user, email)
 
         element = Element('report')
         element.set('name', self.__name)
@@ -71,7 +72,7 @@ class Report:
             section_element = s.generate(report_base, node_base, end_date, host,
                                          user, email)
 
-            if section_element:
+            if section_element is not None:
                 element.append(section_element)
 
         if len(element.getchildren()):
@@ -102,20 +103,10 @@ class Report:
         </tr>
       </table>""" % (ni.display_name, ni.anchor))
 
-        node_base = self.__get_node_base(date_base)
+        node_base = get_node_base(self.__name, date_base)
 
         for s in self.__sections:
             s.to_html(writer, report_base, node_base, end_date)
-
-    def __get_node_base(self, date_base, host=None, user=None, email=None):
-        if host:
-            return '%s/host//%s/%s' % (date_base, host, self.__name)
-        elif user:
-            return '%s/user/%s/%s' % (date_base, user, self.__name)
-        elif email:
-            return '%s/email/%s/%s' % (date_base, email, self.__name)
-        else:
-            return '%s/%s' % (date_base, self.__name)
 
 class Section:
     def __init__(self, name, title):
@@ -154,7 +145,7 @@ class SummarySection(Section):
         for summary_item in self.__summary_items:
             report_element = summary_item.generate(report_base, section_base,
                                                    end_date, host, user, email)
-            if report_element:
+            if report_element is not None:
                 element.append(report_element)
 
         if len(element.getchildren()):

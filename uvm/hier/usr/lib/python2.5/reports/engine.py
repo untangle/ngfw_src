@@ -155,7 +155,8 @@ def process_fact_tables(start_date, end_date):
 def generate_reports(report_base, end_date, main_only=False):
     global __nodes
 
-    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
+    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
+                                       end_date.day)
 
     mail_reports = []
 
@@ -183,21 +184,37 @@ def generate_reports(report_base, end_date, main_only=False):
     return mail_reports
 
 @print_timing
+def generate_sub_report(report_base, node_name, end_date, host=None, user=None,
+                        email=None):
+    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
+                                       end_date.day)
+
+    node = __nodes.get(node_name, None)
+
+    if not node:
+        msg = 'UNKNOWN_NODE: %s' % node_name
+        logging.warn(msg)
+        return msg
+
+    report = node.get_report()
+
+    if user:
+        report.generate(report_base, date_base, end_date, user=user)
+    if host:
+        report.generate(report_base, date_base, end_date, host=host)
+    if email:
+        report.generate(report_base, date_base, end_date, email=email)
+
+    dir = get_node_base(node_name, date_base, host, user, email)
+
+    __generate_plots(report_base, dir)
+
+    return 'DONE'
+
+@print_timing
 def generate_plots(report_base, end_date):
-    path = []
-
-    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/')
-    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/')
-    path.append('@PREFIX@/usr/share/untangle/conf/')
-
-    for f in os.listdir(REPORT_JAR_DIR):
-        if f.endswith('.jar'):
-            path.append('%s/%s' % (REPORT_JAR_DIR, f))
-
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
-
-    os.system('java -Dlog4j.configuration=log4j-reporter.xml -cp %s com.untangle.uvm.reports.GraphGenerator %s %s'
-              % (string.join(path, ':'), report_base, date_base))
+    __generate_plots(report_base, date_base)
 
 # xxx not used or complete
 def generate_mail(report_base, end_date, mail_reports):
@@ -254,6 +271,31 @@ def setup(start_date, end_date):
             logger.warn("could not get node %s" % name)
         else:
             node.setup(start_date, end_date)
+
+def get_node_base(name, date_base, host=None, user=None, email=None):
+    if host:
+        return '%s/host/%s/%s' % (date_base, host, name)
+    elif user:
+        return '%s/user/%s/%s' % (date_base, user, name)
+    elif email:
+        return '%s/email/%s/%s' % (date_base, email, name)
+    else:
+        return '%s/%s' % (date_base, name)
+
+def __generate_plots(report_base, dir):
+    path = []
+
+    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/')
+    path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/')
+    path.append('@PREFIX@/usr/share/untangle/conf/')
+
+    for f in os.listdir(REPORT_JAR_DIR):
+        if f.endswith('.jar'):
+            path.append('%s/%s' % (REPORT_JAR_DIR, f))
+
+    os.system('java -Dlog4j.configuration=log4j-reporter.xml -cp %s com.untangle.uvm.reports.GraphGenerator %s %s'
+              % (string.join(path, ':'), report_base, dir))
+
 
 def __get_users(date):
     conn = sql_helper.get_connection()
