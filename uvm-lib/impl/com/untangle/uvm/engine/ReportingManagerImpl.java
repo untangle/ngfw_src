@@ -18,9 +18,15 @@
 
 package com.untangle.uvm.engine;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.Socket;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -228,8 +234,17 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         ReportXmlHandler h = new ReportXmlHandler();
 
-        return readXml(new File(getAppDir(d, appName, type, value)
-                                + "/report.xml"));
+        File f = new File(getAppDir(d, appName, type, value) + "/report.xml");
+
+        if (!f.exists() && type != null) {
+            generateReport(d, appName, type, value);
+        }
+
+        if (!f.exists()) {
+            return null;
+        }
+
+        return readXml(f);
     }
 
     private ApplicationData readXml(File f)
@@ -349,6 +364,81 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         }
 
         return apps;
+    }
+
+    private boolean generateReport(Date d, String appName, String type,
+                                String value)
+    {
+        String user = "";
+        String host = "";
+        String email = "";
+
+        if (type == null) {
+            logger.warn("request to generate main report ignored");
+            return false;
+        } else if (type.equals("user")) {
+            user = value; host = ""; email = "";
+        } else if (type.equals("host")) {
+            user = ""; host = value; email = "";
+        } else if (type.equals("email")) {
+            user = ""; host = ""; email = value;
+        }
+
+        String cmdStr = "generate_sub_report," + appName + "," + d + "," + host
+            + "," + user + "," + email;
+
+
+        Socket s = null;
+        Writer w = null;
+        BufferedReader r = null;
+
+        boolean rv = false;
+
+        try {
+            s = new Socket("localhost", 55204);
+            w = new OutputStreamWriter(s.getOutputStream());
+            InputStream is = s.getInputStream();
+            r = new BufferedReader(new InputStreamReader(is));
+
+            w.write(cmdStr);
+            String l = r.readLine();
+
+            if (l.equals("DONE")) {
+                rv = true;
+            } else {
+                logger.warn("could not generate graph: '" + cmdStr
+                            + "' result: '" + l + "'");
+                rv = false;
+            }
+        } catch (IOException exn) {
+            logger.warn("could not generate report: '" + cmdStr + "'", exn);
+        } finally {
+            if (null != r) {
+                try {
+                    r.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close reader", exn);
+                }
+            }
+
+            if (null != w) {
+                try {
+                    w.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close writer", exn);
+                }
+            }
+
+            if (null != s) {
+                try {
+                    s.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close writer", exn);
+                }
+            }
+        }
+
+        return rv;
     }
 
     // OLD SHIT ----------------------------------------------------------------
