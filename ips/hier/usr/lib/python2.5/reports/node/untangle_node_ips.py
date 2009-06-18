@@ -226,7 +226,7 @@ class DailyUsage(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT max(attacks), avg(attacks)
+SELECT COALESCE(max(attacks), 0), COALESCE(avg(attacks), 0)
 FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS attacks
       FROM reports.session_totals
       WHERE trunc_time >= %s AND trunc_time < %s

@@ -11,7 +11,6 @@ def usage():
 usage: %s [options]
 Options:
   -h | --help                 help
-  -m | --main-only            do no process sub-reports
   -n | --no-migration         skip schema migration
   -c | --no-cleanup           skip cleanups
   -g | --no-data-gen          skip graph data processing
@@ -20,17 +19,16 @@ Options:
 """ % sys.argv[0]
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hnmcgpvd:",
-                                ['help', 'no-migration', 'main-only',
-                                 'no-cleanup', 'no-data-gen', 'no-plot-gen',
-                                 'verbose', 'date='])
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpvd:",
+                                ['help', 'no-migration', 'no-cleanup',
+                                 'no-data-gen', 'no-plot-gen', 'verbose',
+                                 'date='])
 except getopt.GetoptError, err:
      print str(err)
      usage()
      sys.exit(2)
 
 logging.basicConfig(level=logging.INFO)
-main_only = False
 no_migration = False
 no_cleanup = False
 no_data_gen = False
@@ -46,8 +44,6 @@ for opt in opts:
           sys.exit(0)
      elif k == '-n' or k == '--no-migration':
           no_migration = True
-     elif k == '-m' or k == '--main-only':
-          main_only = True
      elif k == '-c' or k == '--no-cleanup':
           no_cleanup = True
      elif k == '-g' or k == '--no-data-gen':
@@ -78,12 +74,10 @@ if not no_migration:
 
 if not no_data_gen:
      mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
-                                                    end_date,
-                                                    main_only)
+                                                    end_date)
      if not no_mail:
           reports.engine.generate_mail(REPORTS_OUTPUT_BASE, end_date,
                                        mail_reports[0:2])
-
 
 if not no_plot_gen:
      reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date)

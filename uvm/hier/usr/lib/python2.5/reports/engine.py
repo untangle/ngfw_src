@@ -152,7 +152,7 @@ def process_fact_tables(start_date, end_date):
         ft.process(start_date, end_date)
 
 @print_timing
-def generate_reports(report_base, end_date, main_only=False):
+def generate_reports(report_base, end_date):
     global __nodes
 
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
@@ -170,16 +170,6 @@ def generate_reports(report_base, end_date, main_only=False):
             if report:
                 report.generate(report_base, date_base, end_date)
                 mail_reports.append(report)
-                if not main_only:
-                    for u in __get_users(end_date - DateTimeDelta(1)):
-                        report.generate(report_base, date_base, end_date,
-                                        user=u)
-                    for h in __get_hosts(end_date - DateTimeDelta(1)):
-                        report.generate(report_base, date_base, end_date,
-                                        host=h)
-                    for e in __get_emails(end_date - DateTimeDelta(1)):
-                        report.generate(report_base, date_base, end_date,
-                                        email=e)
 
     return mail_reports
 

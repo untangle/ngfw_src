@@ -458,6 +458,11 @@ class Chart:
 
 class KeyStatistic:
     def __init__(self, name, value, unit):
+        if name is None:
+            raise ValueError('KeyStatistic name is None')
+        if value is None:
+            raise ValueError('KeyStatistic for %s value is None' % name)
+
         self.__name = name
         self.__value = value
         self.__unit = unit
