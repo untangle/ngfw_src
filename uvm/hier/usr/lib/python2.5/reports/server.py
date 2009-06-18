@@ -62,12 +62,23 @@ class Worker(Thread):
                 for l in lines:
                     response = self.__process_line(l)
                     self.__socket.send('%s\n' % response)
+                    if response == 'PONG': # FIXME: maybe for BAD_CMD too ?
+                         self.__socket.shutdown(socket.SHUT_RDWR)
+                         self.__socket.close()
+                         return
+                        
         self.__socket.shutdown(socket.SHUT_RDWR)
         self.__socket.close()
 
     def __process_line(self, line):
-        (cmd, node_name, end_date, host, user, email) = line.split(',')
-
+        try: 
+            (cmd, node_name, end_date, host, user, email) = line.split(',')
+        except:
+            if line == 'PING':
+                return "PONG"
+            else:
+                return 'BAD_CMD: %s' % line
+       
         end_date = mx.DateTime.DateFrom(end_date)
 
         if host == '':

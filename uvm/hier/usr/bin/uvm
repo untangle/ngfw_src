@@ -125,6 +125,11 @@ restartServiceIfNeeded() {
       isServiceRunning $PG_DAEMON_NAME && return
       serviceName=$PGSERVICE
       ;;
+    untangle-reports)
+      pidFile=/var/run/untangle-reports.pid
+      isServiceRunning --find-shell server.py && return
+      serviceName=untangle-reports
+      ;;
     mongrel)
       pidFile=/tmp/foo-doesnt-exist
       isServiceRunning --find-shell mongrel_rails && return
@@ -320,6 +325,7 @@ while true; do
                 break
             fi
             restartServiceIfNeeded postgresql
+            restartServiceIfNeeded untangle-reports
             restartServiceIfNeeded clamav-freshclam
             restartServiceIfNeeded clamav-daemon
             restartServiceIfNeeded spamassassin
@@ -348,10 +354,15 @@ while true; do
 		  fi
 		done
 
+  		case "`$BANNER_NANNY $REPORTS_PORT $TIMEOUT`" in
+                  *success*) true ;;
+                  *) restartService untangle-reports $REPORTS_PID_FILE "hung" stopFirst ;;
+                esac
+
 	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
 	          [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst "$SPAMD_RESTART_HOOK"
 		  [ `tail -n 50 /var/log/mail.info | grep -c -E 'spamd.*child states: .*K'` -gt 5 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "child-killing" stopFirst "$SPAMD_RESTART_HOOK"
-  		   case "`$BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT`" in
+  		  case "`$BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT`" in
                     *success*) true ;;
                     *) restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst "$SPAMD_RESTART_HOOK" ;;
                   esac

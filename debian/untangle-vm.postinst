@@ -63,6 +63,8 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
     # (remove to allow replacement when upgrading from 5.2 to 5.3)
     update-rc.d -f untangle-vm remove
     update-rc.d untangle-vm defaults 95 5 > /dev/null
+    update-rc.d -f untangle-reports remove
+    update-rc.d untangle-reports defaults 96 5 > /dev/null
 fi
 
 # It's almost never right to just start the untangle-vm after installation, so let
