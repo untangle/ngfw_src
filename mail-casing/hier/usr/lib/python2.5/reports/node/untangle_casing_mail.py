@@ -23,6 +23,7 @@ class MailCasing(Node):
         ft = FactTable('reports.n_mail_msg_totals', 'reports.n_mail_msgs',
                        'time_stamp',
                        [Column('hname', 'text'), Column('uid', 'text'),
+                        Column('client_intf', 'smallint'),
                         Column('server_type', 'char(1)')],
                        [Column('msgs', 'bigint', 'count(*)'),
                         Column('msg_bytes', 'bigint',
@@ -34,6 +35,7 @@ class MailCasing(Node):
         ft = FactTable('reports.n_mail_addr_totals', 'reports.n_mail_addrs',
                        'time_stamp',
                        [Column('hname', 'text'), Column('uid', 'text'),
+                        Column('client_intf', 'smallint'),
                         Column('server_type', 'char(1)'),
                         Column('addr_pos', 'text'), Column('addr', 'text'),
                         Column('addr_kind', 'char(1)')],
@@ -43,6 +45,9 @@ class MailCasing(Node):
                         Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
+
+    def post_facttable_setup(self, start_date, end_date):
+        self.__make_email_table(start_date, end_date)
 
     def events_cleanup(self, cutoff):
         pass
@@ -118,7 +123,8 @@ INSERT INTO reports.n_mail_addrs
     JOIN events.n_mail_message_info_addr mia ON mia.msg_id = mi.id
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
-        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
+        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time
+           AND pe.time_stamp < mam.end_time
     WHERE pe.time_stamp >= %s AND pe.time_stamp < %s""",
                                (sd, ed), connection=conn, auto_commit=False)
 
@@ -127,6 +133,39 @@ INSERT INTO reports.n_mail_addrs
 
             conn.commit()
         except Exception, e:
+            conn.rollback()
+            raise e
+
+    @print_timing
+    def __make_email_table(self, start_date, end_date):
+        sql_helper.create_partitioned_table("""\
+CREATE TABLE reports.email (
+        date date NOT NULL,
+        email text NOT NULL,
+        PRIMARY KEY (date, email));
+""", 'date', start_date, end_date)
+
+        sd = DateFromMx(sql_helper.get_update_info('reports.email',
+                                                   start_date))
+        ed = DateFromMx(end_date)
+
+        conn = sql_helper.get_connection()
+
+        try:
+            sql_helper.run_sql("""\
+INSERT INTO reports.email (date, email)
+    SELECT DISTINCT date_trunc('day', trunc_time)::date, addr
+    FROM reports.n_mail_addr_totals
+    WHERE trunc_time >= %s AND trunc_time < %s
+          AND client_intf = 1 AND NOT addr ISNULL""", (sd, ed),
+                               connection=conn, auto_commit=False)
+
+            sql_helper.set_update_info('reports.email', ed,
+                                       connection=conn, auto_commit=False)
+
+            conn.commit()
+        except Exception, e:
+            print e
             conn.rollback()
             raise e
 
