@@ -28,6 +28,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Socket;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,7 +37,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -268,51 +268,89 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     private List<Host> getHosts(Date d)
     {
-        File dd = new File(getDateDir(d) + "/host");
-
         List<Host> l = new ArrayList<Host>();
-        if (dd.isDirectory()) {
-            for (String s : dd.list()) {
+
+        Connection conn = null;
+        try {
+            conn = DataSourceFactory.factory().getConnection();
+
+            PreparedStatement ps = conn.prepareStatement("SELECT hname FROM reports.hnames WHERE date = ?");
+            ps.setDate(1, new java.sql.Date(getDayBefore(d)));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String s = rs.getString(1);
                 l.add(new Host(s));
+            }
+        } catch (SQLException exn) {
+            logger.warn("could not get hosts", exn);
+        } finally {
+            if (conn != null) {
+                try {
+                    DataSourceFactory.factory().closeConnection(conn);
+                } catch (Exception x) { }
+                conn = null;
             }
         }
 
-        Collections.sort(l);
-
-        return l.subList(0, Math.min(l.size(), 50));
+        return l;
     }
 
     private List<User> getUsers(Date d)
     {
-        File dd = new File(getDateDir(d) + "/user");
-
         List<User> l = new ArrayList<User>();
-        if (dd.isDirectory()) {
-            for (String s : dd.list()) {
+
+        Connection conn = null;
+        try {
+            conn = DataSourceFactory.factory().getConnection();
+
+            PreparedStatement ps = conn.prepareStatement("SELECT hname FROM reports.hnames WHERE date = ?");
+            ps.setDate(1, new java.sql.Date(getDayBefore(d)));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String s = rs.getString(1);
                 l.add(new User(s));
+            }
+        } catch (SQLException exn) {
+            logger.warn("could not get users", exn);
+        } finally {
+            if (conn != null) {
+                try {
+                    DataSourceFactory.factory().closeConnection(conn);
+                } catch (Exception x) { }
+                conn = null;
             }
         }
 
-        Collections.sort(l);
-
-        return l.subList(0, Math.min(l.size(), 50));
+        return l;
     }
 
     private List<Email> getEmails(Date d)
     {
-        File dd = new File(getDateDir(d) + "/email");
-
         List<Email> l = new ArrayList<Email>();
-        if (dd.isDirectory()) {
-            for (String s : dd.list()) {
+
+        Connection conn = null;
+        try {
+            conn = DataSourceFactory.factory().getConnection();
+
+            PreparedStatement ps = conn.prepareStatement("SELECT hname FROM reports.hnames WHERE date = ?");
+            ps.setDate(1, new java.sql.Date(getDayBefore(d)));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String s = rs.getString(1);
                 l.add(new Email(s));
+            }
+        } catch (SQLException exn) {
+            logger.warn("could not get email", exn);
+        } finally {
+            if (conn != null) {
+                try {
+                    DataSourceFactory.factory().closeConnection(conn);
+                } catch (Exception x) { }
+                conn = null;
             }
         }
 
-
-        Collections.sort(l);
-
-        return l.subList(0, Math.min(l.size(), 50));
+        return l;
     }
 
     private String getDateDir(Date d)
@@ -439,6 +477,14 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         }
 
         return rv;
+    }
+
+    private long getDayBefore(Date d)
+    {
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        c.add(Calendar.DATE, -1);
+        return c.getTimeInMillis();
     }
 
     // OLD SHIT ----------------------------------------------------------------
