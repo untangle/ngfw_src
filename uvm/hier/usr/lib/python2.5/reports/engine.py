@@ -20,6 +20,12 @@ class Node:
     def get_report(self):
         return None
 
+    def setup(self):
+        pass
+
+    def post_facttable_setup(self, start_date, end_date):
+        pass
+
     def events_cleanup(self, cutoff):
         pass
 
@@ -261,6 +267,18 @@ def setup(start_date, end_date):
             logger.warn("could not get node %s" % name)
         else:
             node.setup(start_date, end_date)
+
+@print_timing
+def post_facttable_setup(start_date, end_date):
+    global __nodes
+
+    for name in __get_node_partial_order():
+        logging.info('doing post_facttable_setup for: %s' % name)
+        node = __nodes.get(name, None)
+        if not node:
+            logger.warn("could not get node %s" % name)
+        else:
+            node.post_facttable_setup(start_date, end_date)
 
 def get_node_base(name, date_base, host=None, user=None, email=None):
     if host:

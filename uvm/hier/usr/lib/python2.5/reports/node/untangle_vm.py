@@ -45,20 +45,21 @@ class UvmNode(Node):
         self.__make_sessions_table(start_date, end_date)
         self.__make_session_counts_table(start_date, end_date)
 
-        self.__make_hnames_table(start_date, end_date)
-
-        self.__make_users_table(start_date, end_date)
-
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
                        'time_stamp',
                        [Column('hname', 'text'),
                         Column('uid', 'text'),
+                        Column('client_intf', 'smallint'),
                         Column('c_server_port', 'int4')],
                        [Column('new_sessions', 'bigint', 'count(*)'),
                         Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
+
+    def post_facttable_setup(self, start_date, end_date):
+        self.__make_hnames_table(start_date, end_date)
+        self.__make_users_table(start_date, end_date)
 
     def events_cleanup(self, cutoff):
         sql_helper.run_sql("""\
@@ -111,23 +112,21 @@ CREATE TABLE reports.users (
         PRIMARY KEY (date, username));
 """, 'date', start_date, end_date)
 
-        start_date = sql_helper.get_update_info('reports.users', start_date)
+        sd = DateFromMx(sql_helper.get_update_info('reports.users', start_date))
+        ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
 
         try:
-            for sd in sql_helper.get_date_range(start_date, end_date):
-                sql_helper.run_sql("""\
-INSERT INTO reports.users
-    SELECT DISTINCT %s::date, username
-    FROM events.u_lookup_evt
-    WHERE time_stamp >= %s AND time_stamp < %s AND NOT username ISNULL""",
-                                   (DateFromMx(sd), DateFromMx(sd),
-                                    DateFromMx(sd + DateTimeDelta(1))),
-                                   connection=conn, auto_commit=False)
+            sql_helper.run_sql("""\
+INSERT INTO reports.users (date, username)
+    SELECT DISTINCT date_trunc('day', trunc_time)::date AS day, uid
+    FROM reports.session_totals
+    WHERE trunc_time >= %s AND trunc_time < %s AND NOT uid ISNULL""",
+                               (sd, ed), connection=conn, auto_commit=False)
 
-            sql_helper.set_update_info('reports.users', DateFromMx(end_date),
-                                       connection=conn, auto_commit=False)
+            sql_helper.set_update_info('reports.users', ed, connection=conn,
+                                       auto_commit=False)
 
             conn.commit()
         except Exception, e:
@@ -144,23 +143,22 @@ CREATE TABLE reports.hnames (
         PRIMARY KEY (date, hname));
 """, 'date', start_date, end_date)
 
-        start_date = sql_helper.get_update_info('reports.hnames', start_date)
+        sd = DateFromMx(sql_helper.get_update_info('reports.hnames',
+                                                   start_date))
+        ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
 
         try:
-            for sd in sql_helper.get_date_range(start_date, end_date):
-                sql_helper.run_sql("""\
-INSERT INTO reports.hnames
-    SELECT DISTINCT %s::date, hname
-    FROM reports.sessions
-    WHERE time_stamp >= %s AND time_stamp < %s
-          AND client_intf = 1 AND NOT hname ISNULL""",
-                                   (DateFromMx(sd), DateFromMx(sd),
-                                    DateFromMx(sd + DateTimeDelta(1))),
-                                   connection=conn, auto_commit=False)
+            sql_helper.run_sql("""\
+INSERT INTO reports.hnames (date, hname)
+    SELECT DISTINCT date_trunc('day', trunc_time)::date, hname
+    FROM reports.session_totals
+    WHERE trunc_time >= %s AND trunc_time < %s
+          AND client_intf = 1 AND NOT hname ISNULL""", (sd, ed),
+                               connection=conn, auto_commit=False)
 
-            sql_helper.set_update_info('reports.hnames', DateFromMx(end_date),
+            sql_helper.set_update_info('reports.hnames', ed,
                                        connection=conn, auto_commit=False)
 
             conn.commit()

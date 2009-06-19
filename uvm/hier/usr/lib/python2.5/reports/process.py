@@ -71,6 +71,7 @@ reports.engine.init_engine(NODE_MODULE_DIR, 'en')
 if not no_migration:
      reports.engine.setup(start_date, end_date)
      reports.engine.process_fact_tables(start_date, end_date)
+     reports.engine.post_facttable_setup(start_date, end_date)
 
 if not no_data_gen:
      mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
