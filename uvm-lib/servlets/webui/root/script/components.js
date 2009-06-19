@@ -1717,7 +1717,6 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="values"><span name="memory_pages_inactive"></span> MBs '+i18n._("inactive")+'</div>',
             '<div class="title">'+i18n._("VM Statistics:")+'</div>',
             '<div class="values"><span name="vm_pageins"></span> '+i18n._("pageins")+', <span name="vm_pageouts"></span> '+i18n._("pageouts")+'</div>',
-            '<div class="values"><span name="vm_page_faults"></span> '+i18n._("page faults")+'</div>',
             '<div class="title">'+i18n._("Swap Files:")+'</div>',
             '<div class="values"><span name="swap_total"></span> MBs '+i18n._("total swap space")+' (<span name="swap_used"></span> MBs '+i18n._("used")+')</div>'
         ];
@@ -1816,7 +1815,6 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
             toolTipEl.child("span[name=vm_pageins]").dom.innerHTML=stats.map.pgpgin;
             toolTipEl.child("span[name=vm_pageouts]").dom.innerHTML=stats.map.pgpgout;
-            toolTipEl.child("span[name=vm_page_faults]").dom.innerHTML=stats.map.pgfault;
             toolTipEl.child("span[name=swap_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal);
             toolTipEl.child("span[name=swap_used]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal-stats.map.SwapFree);
         }
