@@ -14,9 +14,9 @@ from lxml.etree import ElementTree
 from mx.DateTime import DateTimeDeltaFromSeconds
 from reports.engine import get_node_base
 
-HNAME_LINK = 'hname'
-USER_LINK = 'user'
-EMAIL_LINK = 'email'
+HNAME_LINK = 'HostLink'
+USER_LINK = 'UserLink'
+EMAIL_LINK = 'EmailLink'
 
 _ = gettext.gettext
 def N_(message): return message
@@ -467,9 +467,11 @@ class Chart:
 class KeyStatistic:
     def __init__(self, name, value, unit, link_type=None):
         if name is None:
-            raise ValueError('KeyStatistic name is None')
+            logging.warn('KeyStatistic name is None')
+            name = _("Unknown")
         if value is None:
-            raise ValueError('KeyStatistic for %s value is None' % name)
+            logging.warn('KeyStatistic for %s value is None' % name)
+            value = 0
 
         self.__name = name
         self.__value = value
