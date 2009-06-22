@@ -251,77 +251,20 @@ Ung.Reports = Ext.extend(Object, {
             treeNodes.push(tn);
         }
         if(tableOfContents.users!=null) {
-            var tn = {
+            treeNodes.push({
                 text : i18n._("Users"),
-                name : "users" };
-            var tc = tableOfContents.users;
-
-          if (tc.list != null && tc.list.length > 0) {
-                tn.leaf = false;
-                tn.children = [];
-                for (var i = 0; i < tc.list.length; i++) {
-                    tn.children.push({
-                        text : tc.list[i].name,
-                        name : tc.list[i].name,
-                        leaf : true,
-                        iconCls : tc.list[i].name
-                      });
-                    tn.expanded = false;
-                }
-            } else {
-                tn.leaf = true;
-            }
-            treeNodes.push(tn);
+                name : "users",
+                leaf: true
+            });
         }
         if(tableOfContents.hosts!=null) {
-            var tn = {
+            treeNodes.push({
                 text : i18n._("Hosts"),
-                name : "hosts"
-            };
-            var tc = tableOfContents.hosts;
-            if (tc.list != null && tc.list.length > 0) {
-                tn.leaf = false;
-                tn.children = [];
-                for (var i = 0; i < tc.list.length; i++) {
-                    tn.children.push({
-                        text : tc.list[i].name,
-                        name : tc.list[i].name,
-                        leaf : true,
-                        iconCls : tc.list[i].name
-                    });
-                    tn.expanded = false;
-                }
-            } else {
-                tn.leaf = true;
-            }
-            treeNodes.push(tn);
+                name : "hosts",
+                leaf: true
+            });
         }
-
-        if(tableOfContents.emails!=null) {
-            var tn = {
-                text : i18n._("Emails"),
-                name : "emails"
-            };
-            var tc = tableOfContents.emails;
-            if (tc.list != null && tc.list.length > 0) {
-                tn.leaf = false;
-                tn.children = [];
-                for (var i = 0; i < tc.list.length; i++) {
-                    tn.children.push({
-                        text : tc.list[i].name,
-                        name : tc.list[i].name,
-                        leaf : true,
-                        iconCls : tc.list[i].name
-                    });
-                    tn.expanded = false;
-                }
-            } else {
-                tn.leaf = true;
-            }
-            treeNodes.push(tn);
-        }
-
-      return treeNodes;
+        return treeNodes;
     },
     changeDate : function(date) {
         this.reportsDate=date;

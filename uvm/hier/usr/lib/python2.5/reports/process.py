@@ -33,7 +33,7 @@ no_migration = False
 no_cleanup = False
 no_data_gen = False
 no_plot_gen = False
-no_mail = True
+no_mail = False
 end_date = mx.DateTime.today()
 
 no_cleanup = False
@@ -76,12 +76,12 @@ if not no_migration:
 if not no_data_gen:
      mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
                                                     end_date)
-     if not no_mail:
-          reports.engine.generate_mail(REPORTS_OUTPUT_BASE, end_date,
-                                       mail_reports[0:2])
 
 if not no_plot_gen:
      reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date)
+
+if not no_mail:
+     reports.engine.generate_mail(REPORTS_OUTPUT_BASE, end_date, mail_reports)
 
 if not no_cleanup:
      events_cutoff = end_date - mx.DateTime.DateTimeDelta(2)

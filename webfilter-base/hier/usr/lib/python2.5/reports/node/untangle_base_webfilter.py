@@ -695,7 +695,7 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
 
         curs.execute(query, (one_day, ed))
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
             lks.append(ks)
 
         conn.commit()

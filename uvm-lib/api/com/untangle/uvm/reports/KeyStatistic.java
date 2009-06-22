@@ -40,12 +40,14 @@ public class KeyStatistic implements Serializable
     private final String label;
     private final Object value;
     private final String unit;
+    private final String linkType;
 
-    public KeyStatistic(String label, Object value, String unit)
+    public KeyStatistic(String label, Object value, String unit, String linkType)
     {
         this.label = label;
         this.value = value;
         this.unit = unit;
+        this.linkType = linkType;
     }
 
     public String getLabel()

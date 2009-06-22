@@ -14,6 +14,10 @@ from lxml.etree import ElementTree
 from mx.DateTime import DateTimeDeltaFromSeconds
 from reports.engine import get_node_base
 
+HNAME_LINK = 'hname'
+USER_LINK = 'user'
+EMAIL_LINK = 'email'
+
 _ = gettext.gettext
 def N_(message): return message
 
@@ -209,6 +213,8 @@ class DetailSection(Section):
         return element
 
     def to_html(self, writer, report_base, section_base, end_date):
+        return
+
         start_date = end_date - mx.DateTime.DateTimeDelta(1)
         sql = self.get_sql(start_date, end_date)
         if not sql:
@@ -333,6 +339,8 @@ class Graph:
             ks_element.set('name', ks.name)
             ks_element.set('value', str(ks.value))
             ks_element.set('unit', ks.unit)
+            if ks.link_type:
+                ks_element.set('link-type', ks.link_type)
             element.append(ks_element)
 
         element.append(self.__plot.get_dom())
@@ -457,7 +465,7 @@ class Chart:
         w.writerows(self.__datasets.items())
 
 class KeyStatistic:
-    def __init__(self, name, value, unit):
+    def __init__(self, name, value, unit, link_type=None):
         if name is None:
             raise ValueError('KeyStatistic name is None')
         if value is None:
@@ -466,6 +474,7 @@ class KeyStatistic:
         self.__name = name
         self.__value = value
         self.__unit = unit
+        self.__link_type = link_type
 
     @property
     def name(self):
@@ -478,3 +487,7 @@ class KeyStatistic:
     @property
     def unit(self):
         return self.__unit
+
+    @property
+    def link_type(self):
+        return self.__link_type

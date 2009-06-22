@@ -44,9 +44,11 @@ class HtmlWriter():
         for f in input_files:
             os.remove(f)
 
+        print "FILE: %s" % output_file
+
     def mail(self):
-        strFrom = 'amread@untangle.com'
-        strTo = 'amread@tweek'
+        strFrom = 'foo'
+        strTo = 'bar'
 
         msgRoot = MIMEMultipart('related')
         msgRoot['Subject'] = 'test message' # XXX
@@ -102,7 +104,7 @@ class HtmlWriter():
 
         shutil.copyfile(filename, '%s/%s' % (self.__dir, cid))
 
-        return 'cid:%s' % cid
+        return cid
 
     def add_node_anchor(self, name):
         self.__table_of_contents.append(name)
