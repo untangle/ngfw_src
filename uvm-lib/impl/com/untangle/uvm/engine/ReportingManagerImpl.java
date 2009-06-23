@@ -168,18 +168,21 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     public ApplicationData getApplicationDataForUser(Date d, String appName,
                                                      String username)
     {
+        System.out.println("GET APPLICATION DATA FOR USER APP: " + appName + " USER: " + username);
         return readXml(d, appName, "user", username);
     }
 
     public ApplicationData getApplicationDataForHost(Date d, String appName,
                                                      String hostname)
     {
+        System.out.println("GET APPLICATION DATA FOR host APP: " + appName + " HOSt: " + hostname);
         return readXml(d, appName, "host", hostname);
     }
 
     public ApplicationData getApplicationDataForEmail(Date d, String appName,
                                                       String emailAddr)
     {
+        System.out.println("GET APPLICATION DATA FOR EMAIL APP: " + appName + " EMAIL: " + emailAddr);
         return readXml(d, appName, "email", emailAddr);
     }
 

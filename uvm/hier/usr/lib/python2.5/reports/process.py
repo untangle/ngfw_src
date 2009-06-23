@@ -75,6 +75,28 @@ import reports.engine
 
 start_date = end_date - mx.DateTime.DateTimeDelta(30)
 
+try:
+     sql_helper.run_sql("CREATE SCHEMA reports");
+except Exception:
+     pass
+
+try:
+     sql_helper.run_sql("""\
+CREATE TABLE reports.report_data_days (
+        day_name text NOT NULL,
+        day_begin date NOT NULL)""")
+except Exception:
+     pass
+
+try:
+     sql_helper.run_sql("""\
+CREATE TABLE reports.table_updates (
+    tablename text NOT NULL,
+    last_update timestamp NOT NULL,
+    PRIMARY KEY (tablename))""")
+except Exception:
+     pass
+
 reports.engine.init_engine(NODE_MODULE_DIR, 'en')
 if not no_migration:
      reports.engine.setup(start_date, end_date)

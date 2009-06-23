@@ -397,14 +397,15 @@ Ung.ReportDetails = Ext.extend(Object, {
             var data = [];
             for(var j=0;j<summaryItem.keyStatistics.list.length;j++) {
               var keyStatistic = summaryItem.keyStatistics.list[j];
-              data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit]);
+              data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType]);
             }
             items.push( new Ext.grid.GridPanel({
                     store: new Ext.data.SimpleStore({
                         fields: [
                            {name: 'label'},
                            {name: 'value'},
-                           {name: 'unit'}
+                           {name: 'unit'},
+                           {name: 'linkType'}
                         ],
                         data: data
                     }),
@@ -415,7 +416,15 @@ Ung.ReportDetails = Ext.extend(Object, {
                         sortable: false,
                         dataIndex: 'label',
                         renderer: function(value) {
-                            return this.i18n._(value);
+                            if (linkType == "UserLink") {
+                              return '<a href="javascript:reports.reportDetails.getApplicationDataForUser(\'' + value + '\')">' + value + '</a>';
+                            } else if (linkType == "HostLink") {
+                              return '<a href="javascript:reports.reportDetails.getApplicationDataForHost(\'' + value + '\')">' + value + '</a>';
+                            } else if (linkType == "EmailLink") {
+                              return '<a href="javascript:reports.reportDetails.getApplicationDataForEmail(\'' + value + '\')">' + value + '</a>';
+                            } else {
+                              return this.i18n._(value);
+                            }
                         }.createDelegate(this)
                     },{
                         header: "Value",
@@ -530,37 +539,37 @@ Ung.ReportDetails = Ext.extend(Object, {
         return detailSection;
     },
 
-    getApplicationDataForUser: function(value) {
+    getApplicationDataForUser: function(app, user) {
         rpc.reportingManager.getApplicationDataForUser(function (result, exception) {
             if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
             rpc.applicationData=result;
             reports.breadcrumbs.push({
-                text: value +" "+i18n._("Reports"),
-                handler: this.getApplicationDataForUser.createDelegate(this,[value])
+                text: user +" "+i18n._("Reports"),
+                handler: this.getApplicationDataForUser.createDelegate(this,[app, user])
             });
             this.buildReportDetails();
-        }.createDelegate(this),reports.reportsDate, reports.selectedNode.attributes.name, value);
+        }.createDelegate(this),reports.reportsDate, reports.selectedNode.attributes.name, app, user);
     },
-    getApplicationDataForHost: function(value) {
+    getApplicationDataForHost: function(app, host) {
         rpc.reportingManager.getApplicationDataForHost(function (result, exception) {
             if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
             rpc.applicationData=result;
             reports.breadcrumbs.push({
-                text: value +" "+i18n._("Reports"),
-                handler: this.getApplicationDataForHost.createDelegate(this,[value])
+                text: host +" "+i18n._("Reports"),
+                handler: this.getApplicationDataForHost.createDelegate(this,[app, host])
             });
             this.buildReportDetails();
-        }.createDelegate(this),reports.reportsDate, reports.selectedNode.attributes.name, value);
+        }.createDelegate(this),reports.reportsDate, reports.selectedNode.attributes.name, app, host);
     },
-    getApplicationDataForEmail: function(value) {
+    getApplicationDataForEmail: function(email) {
         rpc.reportingManager.getApplicationDataForEmail(function (result, exception) {
             if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
             rpc.applicationData=result;
             reports.breadcrumbs.push({
-                text: value +" "+i18n._("Reports"),
-                handler: this.getApplicationDataForEmail.createDelegate(this,[value])
+                text: email +" "+i18n._("Reports"),
+                handler: this.getApplicationDataForEmail.createDelegate(this,[app, email])
             });
             this.buildReportDetails();
-        }.createDelegate(this),reports.reportsDate, reports.selectedNode.attributes.name, value);
+        }.createDelegate(this),reports.reportsDate, reports.selectedNode.attributes.name, app, value);
     }
 });
