@@ -15,14 +15,16 @@ Options:
   -c | --no-cleanup           skip cleanups
   -g | --no-data-gen          skip graph data processing
   -p | --no-plot-gen          skip graph image processing
+  -e | --events-days          number of days in events schema to keep
+  -r | --reports-days         number of days in reports schema to keep
   -d y-m-d | --date=y-m-d\
 """ % sys.argv[0]
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpvd:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpve:r:d:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-plot-gen', 'verbose',
-                                 'date='])
+                                 'events-days', 'reports-days', 'date='])
 except getopt.GetoptError, err:
      print str(err)
      usage()
@@ -33,7 +35,9 @@ no_migration = False
 no_cleanup = False
 no_data_gen = False
 no_plot_gen = False
-no_mail = False
+no_mail = True
+events_days = 3
+reports_days = 30
 end_date = mx.DateTime.today()
 
 no_cleanup = False
@@ -50,6 +54,10 @@ for opt in opts:
           no_data_gen = True
      elif k == '-p' or k == '--no-plot-gen':
           no_plot_gen = True
+     elif k == '-e' or k == '--events-days':
+          events_days = int(v)
+     elif k == '-r' or k == '--reports-days':
+          reports_days = int(v)
      elif k == '-v' or k == '--verbose':
           logging.basicConfig(level=logging.DEBUG)
      elif k == '-d' or k == '--date':
@@ -84,8 +92,8 @@ if not no_mail:
      reports.engine.generate_mail(REPORTS_OUTPUT_BASE, end_date, mail_reports)
 
 if not no_cleanup:
-     events_cutoff = end_date - mx.DateTime.DateTimeDelta(2)
+     events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_days)
      reports.engine.events_cleanup(events_cutoff)
 
-     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(30)
+     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(reports_days)
      reports.engine.reports_cleanup(reports_cutoff)
