@@ -84,7 +84,7 @@ import com.untangle.uvm.util.TransactionWork;
 class MailSenderImpl implements MailSender, HasConfigFiles
 {
     // All error log emails go here.
-    public static final String ERROR_LOG_RECIPIENT = "dmorris@metaloft.com";
+    public static final String ERROR_LOG_RECIPIENT = "exceptions@untangle.com";
 
     public static final String UNTANGLE_SMTP_RELAY = "mail.untangle.com";
 
