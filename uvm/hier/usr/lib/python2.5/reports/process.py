@@ -4,6 +4,7 @@ import sys
 import logging
 import mx
 import psycopg
+import sql_helper
 import getopt
 
 def usage():
