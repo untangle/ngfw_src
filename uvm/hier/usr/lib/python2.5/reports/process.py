@@ -4,7 +4,6 @@ import sys
 import logging
 import mx
 import psycopg
-import sql_helper
 import getopt
 
 def usage():
@@ -73,6 +72,7 @@ if (PREFIX != ''):
      sys.path.insert(0, REPORTS_PYTHON_DIR)
 
 import reports.engine
+import sql_helper
 
 start_date = end_date - mx.DateTime.DateTimeDelta(30)
 
