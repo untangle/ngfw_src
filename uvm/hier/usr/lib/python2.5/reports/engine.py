@@ -10,8 +10,15 @@ import string
 from sql_helper import print_timing
 from psycopg import DateFromMx
 from mx.DateTime import DateTimeDelta
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.rl_config import defaultPageSize
+from reportlab.lib.units import inch
 
 REPORT_JAR_DIR = '@PREFIX@/usr/share/java/reports/'
+
+PAGE_HEIGHT = defaultPageSize[1]
+PAGE_WIDTH = defaultPageSize[0]
 
 class Node:
     def __init__(self, name):
@@ -216,14 +223,16 @@ def generate_plots(report_base, end_date):
 def generate_mail(report_base, end_date, mail_reports):
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
 
-    writer = mail_helper.HtmlWriter()
-    for r in mail_reports:
-        r.to_html(writer, report_base, date_base, end_date)
-    writer.close()
-    writer.generate(end_date)
+    styles = getSampleStyleSheet()
 
-    #writer.mail()
-    #writer.cleanup()
+    doc = SimpleDocTemplate("/home/amread/report.pdf")
+    story = [Spacer(1,2*inch)]
+
+    for r in mail_reports:
+        story += r.get_flowables(report_base, date_base, end_date)
+        story.append(Spacer(1,0.2*inch))
+
+    doc.build(story, onFirstPage=_first_page, onLaterPages=_later_pages)
 
 @print_timing
 def events_cleanup(cutoff):
@@ -232,7 +241,6 @@ def events_cleanup(cutoff):
     for name in __get_node_partial_order():
         node = __nodes.get(name, None)
         node.events_cleanup(co)
-
 
 @print_timing
 def reports_cleanup(cutoff):
@@ -290,6 +298,20 @@ def get_node_base(name, date_base, host=None, user=None, email=None):
         return '%s/email/%s/%s' % (date_base, email, name)
     else:
         return '%s/%s' % (date_base, name)
+
+def _first_page(canvas, doc):
+    canvas.saveState()
+    canvas.setFont('Times-Bold',16)
+    canvas.drawCentredString(PAGE_WIDTH/2.0, PAGE_HEIGHT-108, "Reports")
+    canvas.setFont('Times-Roman',9)
+    canvas.drawString(inch, 0.75 * inch, "First Page / foo")
+    canvas.restoreState()
+
+def _later_pages(canvas, doc):
+    canvas.saveState()
+    canvas.setFont('Times-Roman',9)
+    canvas.drawString(inch, 0.75 * inch, "Page %d foo" % doc.page)
+    canvas.restoreState()
 
 def __generate_plots(report_base, dir):
     path = []

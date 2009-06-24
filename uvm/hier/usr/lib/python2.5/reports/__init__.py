@@ -13,6 +13,10 @@ from lxml.etree import Element
 from lxml.etree import ElementTree
 from mx.DateTime import DateTimeDeltaFromSeconds
 from reports.engine import get_node_base
+from reportlab.platypus import Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+
+styles = getSampleStyleSheet()
 
 HNAME_LINK = 'HostLink'
 USER_LINK = 'UserLink'
@@ -111,6 +115,9 @@ class Report:
 
         for s in self.__sections:
             s.to_html(writer, report_base, node_base, end_date)
+
+    def get_flowables(self, report_base, date_base, end_date):
+        return [Paragraph('test', styles['Normal'])]
 
 class Section:
     def __init__(self, name, title):
