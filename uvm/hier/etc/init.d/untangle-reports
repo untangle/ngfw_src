@@ -17,6 +17,7 @@ DESC="Untangle Reports"
 NAME="reports"
 DAEMON="/usr/lib/python2.5/reports/server.py"
 PID_FILE="/var/run/untangle-reports.pid"
+LOG_FILE="/var/log/uvm/report.log"
 
 start() {
   log_daemon_msg "Starting $DESC"
@@ -34,7 +35,7 @@ start() {
   fi
 
   log_progress_msg "untangle-shield"    
-  start-stop-daemon -m --pidfile ${PID_FILE} --name ${NAME} --start --background --exec ${DAEMON}
+  start-stop-daemon -m --pidfile ${PID_FILE} --name ${NAME} --start --background --exec ${DAEMON} >> ${LOG_FILE} 2>&1
   RET=$?
   log_end_msg $RET
   [ $RET = 0 ] || exit $RET
