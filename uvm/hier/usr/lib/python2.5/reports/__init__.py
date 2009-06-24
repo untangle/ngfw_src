@@ -13,8 +13,10 @@ from lxml.etree import Element
 from lxml.etree import ElementTree
 from mx.DateTime import DateTimeDeltaFromSeconds
 from reports.engine import get_node_base
-from reportlab.platypus import Paragraph
+from reportlab.platypus import Paragraph, Spacer
+from reportlab.platypus.flowables import Image
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
 
 styles = getSampleStyleSheet()
 
@@ -117,7 +119,16 @@ class Report:
             s.to_html(writer, report_base, node_base, end_date)
 
     def get_flowables(self, report_base, date_base, end_date):
-        return [Paragraph('test', styles['Normal'])]
+        node_base = get_node_base(self.__name, date_base)
+
+        story = []
+        story.append(Paragraph(self.__name, styles['Normal']))
+
+        for s in self.__sections:
+            story += s.get_flowables(report_base, node_base, end_date)
+            story.append(Spacer(1, 0.2 * inch))
+
+        return story
 
 class Section:
     def __init__(self, name, title):
@@ -138,6 +149,9 @@ class Section:
 
     def to_html(self, writer, report_base, section_base, end_date):
         pass
+
+    def get_flowables(self, report_base, date_base, end_date):
+        return []
 
 class SummarySection(Section):
     def __init__(self, name, title, summary_items=[]):
@@ -181,6 +195,17 @@ class SummarySection(Section):
 
         for si in self.__summary_items:
             si.to_html(writer, report_base, section_base, end_date)
+
+    def get_flowables(self, report_base, node_base, end_date):
+        section_base = "%s/%s" % (node_base, self.name)
+
+        story = []
+
+        for si in self.__summary_items:
+            story += si.get_flowables(report_base, section_base, end_date)
+            story.append(Spacer(1, 0.2 * inch))
+
+        return story
 
 class DetailSection(Section):
     def __init__(self, name, title):
@@ -273,6 +298,9 @@ class DetailSection(Section):
         writer.write("""\
           </tbody></table>
 """)
+
+    def get_flowables(self, report_base, date_base, end_date):
+        return []
 
 class ColumnDesc():
     def __init__(self, name, title, type=None):
@@ -387,6 +415,13 @@ class Graph:
   </tbody>
 </table>
 """)
+
+    def get_flowables(self, report_base, section_base, end_date):
+        img = '%s/%s-%s.png' % (report_base, section_base, self.__name)
+        if not os.path.exists(img):
+            logging.warn('skipping summary for missing png: %s' % img)
+            return []
+        return [Image(img)]
 
 class Chart:
     def __init__(self, type=TIME_SERIES_CHART, title=None, xlabel=None,
