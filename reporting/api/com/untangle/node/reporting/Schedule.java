@@ -75,7 +75,7 @@ public class Schedule implements Serializable
 
         // create weekly reports every day of week
         weeklySched = new LinkedList<WeeklyScheduleRule>();
-        weeklySched.add(new WeeklyScheduleRule(SUNDAY););
+        weeklySched.add(new WeeklyScheduleRule(SUNDAY));
 
         // create monthly reports only on 1st of month
         monthlyNDaily = false;
