@@ -65,6 +65,11 @@ public class KeyStatistic implements Serializable
         return unit;
     }
 
+    public String getLinkType()
+    {
+        return linkType;
+    }
+
     public String toString()
     {
         return "[KeyStatistic label: " + label + " value: " + value

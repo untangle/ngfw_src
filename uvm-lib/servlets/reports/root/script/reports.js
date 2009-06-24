@@ -416,15 +416,15 @@ Ung.ReportDetails = Ext.extend(Object, {
                         sortable: false,
                         dataIndex: 'label',
                         renderer: function(value, medata, record) {
-                            if (record.data.linkType == "UserLink") {
-                              return '<a href="javascript:reports.reportDetails.getApplicationDataForUser(\'' + value + '\')">' + value + '</a>';
-                            } else if (record.data.linkType == "HostLink") {
-                              return '<a href="javascript:reports.reportDetails.getApplicationDataForHost(\'' + value + '\')">' + value + '</a>';
-                            } else if (record.data.linkType == "EmailLink") {
-                              return '<a href="javascript:reports.reportDetails.getApplicationDataForEmail(\'' + value + '\')">' + value + '</a>';
-                            } else {
-                              return this.i18n._(value);
-                            }
+                          if (record.data.linkType == "UserLink") {
+                            return '<a href="javascript:reports.reportDetails.getApplicationDataForUser(\'' + value + '\')">' + value + '</a>';
+                          } else if (record.data.linkType == "HostLink") {
+                            return '<a href="javascript:reports.reportDetails.getApplicationDataForHost(\'' + value + '\')">' + value + '</a>';
+                          } else if (record.data.linkType == "EmailLink") {
+                            return '<a href="javascript:reports.reportDetails.getApplicationDataForEmail(\'' + value + '\')">' + value + '</a>';
+                          } else {
+                            return this.i18n._(value);
+                          }
                         }.createDelegate(this)
                     },{
                         header: "Value",
