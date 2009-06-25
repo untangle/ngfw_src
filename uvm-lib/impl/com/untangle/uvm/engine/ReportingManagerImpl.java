@@ -123,9 +123,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d));
-//         List<Application> apps = getApplications(getDateDir(d)
-//                                                  + "/host/" + hostname);
+        List<Application> apps = getApplications(getDateDir(d)
+                                                 + "/host/" + hostname);
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
@@ -139,9 +138,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d));
-//         List<Application> apps = getApplications(getDateDir(d)
-//                                                  + "/user/" + username);
+        List<Application> apps = getApplications(getDateDir(d)
+                                                 + "/user/" + username);
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
@@ -155,9 +153,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d));
-//         List<Application> apps = getApplications(getDateDir(d)
-//                                                  + "/email/" + email);
+        List<Application> apps = getApplications(getDateDir(d)
+                                                 + "/email/" + email);
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
