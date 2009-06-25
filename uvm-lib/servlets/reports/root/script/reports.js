@@ -303,10 +303,62 @@ Ung.Reports = Ext.extend(Object, {
 
             Ung.Util.loadModuleTranslations( nodeName, i18n,
                 function(){
-                    reports.reportDetails = new Ung.ReportDetails();
+                    reports.reportDetails = new Ung.ReportDetails({reportType:nodeName});
                 }
             );
         }.createDelegate(this), reports.reportsDate,nodeName);
+    },
+    getTableOfContentsForUser : function(user){
+         rpc.reportingManager.getTableOfContentsForUser(function (result, exception) {
+            if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
+            rpc.applicationData=result;
+            reports.breadcrumbs.push({
+                text: user +" "+i18n._("Reports"),
+                handler: this.getTableOfContentsForUser.createDelegate(this,user)
+            });
+            this.reportDetails.buildReportDetails(); // XXX take to correct page
+        }.createDelegate(this), reports.reportsDate, user);
+    },
+    getApplicationDataForUser: function(app, user) {
+        rpc.reportingManager.getApplicationDataForUser(function (result, exception) {
+            if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
+            rpc.applicationData=result;
+            reports.breadcrumbs.push({
+                text: user +" "+i18n._("Reports"),
+                handler: this.getApplicationDataForUser.createDelegate(this,[app, user])
+            });
+            this.buildReportDetails(); // XXX take to correct page
+        }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, app, user);
+    },
+    /**
+     *  This method is being used to display the list of users in the short term because users are being fetched
+     *  as part of the table of contents and not like other "Applications" 
+     *  So when users are being fetched like other applciations, stop using this method and use getApplicationDateForHost
+     */              
+    showUserList : function(){
+        
+    },
+    getApplicationDataForHost: function(app, host) {
+        rpc.reportingManager.getApplicationDataForHost(function (result, exception) {
+            if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message);return};
+            rpc.applicationData=result;
+            reports.breadcrumbs.push({
+                text: host +" "+i18n._("Reports"),
+                handler: this.getApplicationDataForHost.createDelegate(this,[app, host])
+            });
+            this.buildReportDetails(); // XXX take to correct page
+        }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, app, host);
+    },
+    getApplicationDataForEmail: function(email) {
+        rpc.reportingManager.getApplicationDataForEmail(function (result, exception) {
+            if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message);return};
+            rpc.applicationData=result;
+            reports.breadcrumbs.push({
+                text: email +" "+i18n._("Reports"),
+                handler: this.getApplicationDataForEmail.createDelegate(this,[app, email])
+            });
+            this.buildReportDetails(); // XXX take to correct page
+        }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, app, value);
     },
     openBreadcrumb: function(breadcrumbIndex) {
         if(this.breadcrumbs.length>breadcrumbIndex) {
@@ -316,14 +368,102 @@ Ung.Reports = Ext.extend(Object, {
         }
     }
 });
-
 // Right section object class
 Ung.ReportDetails = Ext.extend(Object, {
+    reportType : null,
     constructor : function(config) {
-        Ext.apply(this, config);
-        // this.i18n should be used in ReportDetails to have i18n context based
-        this.i18n = Ung.i18nModuleInstances[reports.selectedNode.attributes.name];
-        this.buildReportDetails();
+      Ext.apply(this, config);
+      // this.i18n should be used in ReportDetails to have i18n context based
+      this.appName = reports.selectedNode.attributes.name;
+      this.i18n = Ung.i18nModuleInstances[reports.selectedNode.attributes.name];
+      this.reportType = config.reportType;
+      this.buildReportDetails();
+    },
+    buildUserTableOfContents : function(){
+        var data = [],
+            i = 0,
+            list = rpc.applicationData.applications.list;
+        for(i=0;i<list.length;i++){
+            
+            data.push([list[i].javaClass,list[i].name,list[i].title]);
+        }
+        return new Ext.grid.GridPanel({
+                            store: new Ext.data.SimpleStore({
+                                fields: [
+                                   {name: 'javaClass'},
+                                   {name: 'name'},
+                                   {name: 'title'} 
+                                ],
+                                data: data
+                            }),
+                            columns: [{
+                                id:'title',
+                                header: "Application Name",
+                                width: 500,
+                                sortable: false,
+                                dataIndex: 'title',
+                                renderer: function(value, medata, record) {
+                                    return '<a href="javascript:reports.getApplicationDataForUser(\'' + record.data.name + '\', \'' + value + '\')">' + value + '</a>';
+                                  if (record.data.linkType == "UserLink") {
+                                    return '<a href="javascript:reports.getApplicationDataForUser(\'' + record.data.name + '\', \'' + value + '\')">' + value + '</a>';
+                                  } else if (record.data.linkType == "HostLink") {
+                                    return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                  } else if (record.data.linkType == "EmailLink") {
+                                    return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                  } else {
+                                    return this.i18n._(value);
+                                  }
+                                }.createDelegate(this)
+                            }], title:this.i18n._('Application List'),
+                    stripeRows: true,
+                    hideHeaders: true,
+                    enableHdMenu : false,
+                    enableColumnMove: false
+                });    
+    },
+    buildUserList : function(){
+        
+        var data = [],
+            i = 0;
+        for(i=0;i<reports.tableOfContents.users.list.length;i++){
+            data.push([reports.tableOfContents.users.list[i].javaClass,reports.tableOfContents.users.list[i].name,null]);
+        }
+        return new Ext.grid.GridPanel({
+                            store: new Ext.data.SimpleStore({
+                                fields: [
+                                   {name: 'javaClass'},
+                                   {name: 'name'},
+                                   {name: 'linkType'} //this is not used currently
+                                ],
+                                data: data
+                            }),
+                            columns: [{
+                                id:'name',
+                                header: "User Name",
+                                width: 500,
+                                sortable: false,
+                                dataIndex: 'name',
+                                renderer: function(value, medata, record) {
+                                    return '<a href="javascript:reports.getTableOfContentsForUser(\''+ value + '\')">' + value + '</a>';
+                                  if (record.data.linkType == "UserLink") {
+                                    return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                  } else if (record.data.linkType == "HostLink") {
+                                    return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                  } else if (record.data.linkType == "EmailLink") {
+                                    return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                  } else {
+                                    return this.i18n._(value);
+                                  }
+                                }.createDelegate(this)
+                            }], title:this.i18n._('User List'),
+                    stripeRows: true,
+                    hideHeaders: true,
+                    enableHdMenu : false,
+                    enableColumnMove: false
+                });
+    },
+    buildHostReportDetails : function(){
+    
     },
     buildReportDetails: function() {
         var reportDetails=Ext.getCmp("report-details");
@@ -333,10 +473,12 @@ Ung.ReportDetails = Ext.extend(Object, {
         var itemsArray=[];
         //TODO rpc.applicationData should never be null
         if (rpc.applicationData != null) {
-            for(var i=0;i<rpc.applicationData.sections.list.length ;i++) {
-                var section=rpc.applicationData.sections.list[i];
-                var sectionPanel=this.buildSection(section);
-                itemsArray.push(sectionPanel);
+            if(rpc.applicationData.sections != null){
+                for(var i=0;i<rpc.applicationData.sections.list.length ;i++) {
+                  var section=rpc.applicationData.sections.list[i];
+                  var sectionPanel=this.buildSection(this.appName, section);
+                  itemsArray.push(sectionPanel);
+                }
             }
         }
         //create breadcrums item
@@ -366,15 +508,28 @@ Ung.ReportDetails = Ext.extend(Object, {
               layoutOnTabChange : true
           });
           reportDetails.add(this.tabPanel);
+        }else if(this.reportType != null){
+            
+            var selectedType = 'toc',
+                reportTypeMap = {
+                                    'users':{
+                                        'toc' : this.buildUserList.createDelegate(this),
+                                        'com.untangle.uvm.reports.TableOfContents' : this.buildUserTableOfContents.createDelegate(this)
+                                    }
+                };
+            if(rpc.applicationData != null && reportTypeMap[this.reportType][rpc.applicationData.javaClass] != null){
+                selectedType = rpc.applicationData.javaClass;
+            }
+            reportDetails.add(reportTypeMap[this.reportType][selectedType]());
         }
         reportDetails.doLayout();
     },
-    buildSection: function(section) {
+    buildSection: function(appName, section) {
         var sectionPanel=null;
         if(section.javaClass=="com.untangle.uvm.reports.SummarySection") {
-            sectionPanel=this.buildSummarySection(section);
+          sectionPanel=this.buildSummarySection(appName, section);
         } else if(section.javaClass=="com.untangle.uvm.reports.DetailSection") {
-            sectionPanel=this.buildDetailSection(section);
+          sectionPanel=this.buildDetailSection(appName, section);
         } else {
             //For test
           sectionPanel=new Ext.Panel({
@@ -387,7 +542,7 @@ Ung.ReportDetails = Ext.extend(Object, {
         return sectionPanel;
 
     },
-    buildSummarySection: function (section) {
+    buildSummarySection: function (appName, section) {
         var items = [];
         for (var i = 0; i < section.summaryItems.list.length; i++) {
             var summaryItem = section.summaryItems.list[i];
@@ -417,11 +572,11 @@ Ung.ReportDetails = Ext.extend(Object, {
                         dataIndex: 'label',
                         renderer: function(value, medata, record) {
                           if (record.data.linkType == "UserLink") {
-                            return '<a href="javascript:reports.reportDetails.getApplicationDataForUser(\'' + value + '\')">' + value + '</a>';
+                            return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
                           } else if (record.data.linkType == "HostLink") {
-                            return '<a href="javascript:reports.reportDetails.getApplicationDataForHost(\'' + value + '\')">' + value + '</a>';
+                            return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
                           } else if (record.data.linkType == "EmailLink") {
-                            return '<a href="javascript:reports.reportDetails.getApplicationDataForEmail(\'' + value + '\')">' + value + '</a>';
+                            return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
                           } else {
                             return this.i18n._(value);
                           }
@@ -471,7 +626,7 @@ Ung.ReportDetails = Ext.extend(Object, {
         });
     },
 
-    buildDetailSection: function (section) {
+    buildDetailSection: function (appName, section) {
         var columns = [];
         var fields = [];
         var c = null;
@@ -493,17 +648,17 @@ Ung.ReportDetails = Ext.extend(Object, {
             col.width = 160;
           } else if (c.type == "UserLink") {
             col.renderer = function(value) {
-              return '<a href="javascript:reports.reportDetails.getApplicationDataForUser(\'' + value + '\')">' + value + '</a>';
+              return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
             };
             col.width = 100;
           } else if (c.type == "HostLink") {
             col.renderer = function(value) {
-              return '<a href="javascript:reports.reportDetails.getApplicationDataForHost(\'' + value + '\')">' + value + '</a>';
+              return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
             };
             col.width = 100;
           } else if (c.type == "EmailLink") {
             col.renderer = function(value) {
-              return '<a href="javascript:reports.reportDetails.getApplicationDataForEmail(\'' + value + '\')">' + value + '</a>';
+              return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
             };
             col.width = 180;
           }
@@ -537,39 +692,5 @@ Ung.ReportDetails = Ext.extend(Object, {
         }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name);
 
         return detailSection;
-    },
-
-    getApplicationDataForUser: function(app, user) {
-        rpc.reportingManager.getApplicationDataForUser(function (result, exception) {
-            if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
-            rpc.applicationData=result;
-            reports.breadcrumbs.push({
-                text: user +" "+i18n._("Reports"),
-                handler: this.getApplicationDataForUser.createDelegate(this,[app, user])
-            });
-            this.buildReportDetails();
-        }.createDelegate(this),reports.reportsDate, reports.selectedNode.attributes.name, app, user);
-    },
-    getApplicationDataForHost: function(app, host) {
-        rpc.reportingManager.getApplicationDataForHost(function (result, exception) {
-            if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
-            rpc.applicationData=result;
-            reports.breadcrumbs.push({
-                text: host +" "+i18n._("Reports"),
-                handler: this.getApplicationDataForHost.createDelegate(this,[app, host])
-            });
-            this.buildReportDetails();
-        }.createDelegate(this),reports.reportsDate, reports.selectedNode.attributes.name, app, host);
-    },
-    getApplicationDataForEmail: function(email) {
-        rpc.reportingManager.getApplicationDataForEmail(function (result, exception) {
-            if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
-            rpc.applicationData=result;
-            reports.breadcrumbs.push({
-                text: email +" "+i18n._("Reports"),
-                handler: this.getApplicationDataForEmail.createDelegate(this,[app, email])
-            });
-            this.buildReportDetails();
-        }.createDelegate(this),reports.reportsDate, reports.selectedNode.attributes.name, app, value);
     }
 });

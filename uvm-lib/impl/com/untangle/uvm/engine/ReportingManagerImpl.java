@@ -115,49 +115,56 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         List<Host> hosts = getHosts(d);
         List<Email> emails = getEmails(d);
 
-        return new TableOfContents(platform, apps, users, hosts, emails);
+        return new TableOfContents(d, null, null, null, platform, apps, users,
+                                   hosts, emails);
     }
 
     public TableOfContents getTableOfContentsForHost(Date d, String hostname)
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d)
-                                                 + "/host/" + hostname);
+        List<Application> apps = getApplications(getDateDir(d));
+//         List<Application> apps = getApplications(getDateDir(d)
+//                                                  + "/host/" + hostname);
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
         List<Email> emails = new ArrayList<Email>();
 
-        return new TableOfContents(platform, apps, users, hosts, emails);
+        return new TableOfContents(d, null, hostname, null,
+                                   platform, apps, users, hosts, emails);
     }
 
     public TableOfContents getTableOfContentsForUser(Date d, String username)
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d)
-                                                 + "/user/" + username);
+        List<Application> apps = getApplications(getDateDir(d));
+//         List<Application> apps = getApplications(getDateDir(d)
+//                                                  + "/user/" + username);
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
         List<Email> emails = new ArrayList<Email>();
 
-        return new TableOfContents(platform, apps, users, hosts, emails);
+        return new TableOfContents(d, username, null, null, platform, apps,
+                                   users, hosts, emails);
     }
 
     public TableOfContents getTableOfContentsForEmail(Date d, String email)
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d)
-                                                 + "/email/" + email);
+        List<Application> apps = getApplications(getDateDir(d));
+//         List<Application> apps = getApplications(getDateDir(d)
+//                                                  + "/email/" + email);
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
         List<Email> emails = new ArrayList<Email>();
 
-        return new TableOfContents(platform, apps, users, hosts, emails);
+        return new TableOfContents(d, null, null, email, platform, apps, users,
+                                   hosts, emails);
     }
 
     public ApplicationData getApplicationData(Date d, String appName)
