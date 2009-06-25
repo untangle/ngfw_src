@@ -313,7 +313,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         try {
             conn = DataSourceFactory.factory().getConnection();
 
-            PreparedStatement ps = conn.prepareStatement("SELECT hname FROM reports.hnames WHERE date = ?");
+            PreparedStatement ps = conn.prepareStatement("SELECT username FROM reports.users WHERE date = ?");
             ps.setDate(1, new java.sql.Date(getDayBefore(d)));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -342,7 +342,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         try {
             conn = DataSourceFactory.factory().getConnection();
 
-            PreparedStatement ps = conn.prepareStatement("SELECT hname FROM reports.hnames WHERE date = ?");
+            PreparedStatement ps = conn.prepareStatement("SELECT email FROM reports.email WHERE date = ?");
             ps.setDate(1, new java.sql.Date(getDayBefore(d)));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
