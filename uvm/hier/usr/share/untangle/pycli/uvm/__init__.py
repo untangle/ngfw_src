@@ -9,7 +9,3 @@ from uvm.policy_manager import PolicyManager
 from uvm.license_manager import LicenseManager
 
 from uvm.manager import Manager
-
-    
-    
-

@@ -15,6 +15,7 @@ from mx.DateTime import DateTimeDeltaFromSeconds
 from reports.engine import get_node_base
 from reportlab.platypus import Paragraph, Spacer
 from reportlab.platypus.flowables import Image
+from reportlab.platypus.tables import Table
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 
@@ -417,11 +418,19 @@ class Graph:
 """)
 
     def get_flowables(self, report_base, section_base, end_date):
-        img = '%s/%s-%s.png' % (report_base, section_base, self.__name)
-        if not os.path.exists(img):
-            logging.warn('skipping summary for missing png: %s' % img)
+        img_file = '%s/%s-%s.png' % (report_base, section_base, self.__name)
+        if not os.path.exists(img_file):
+            logging.warn('skipping summary for missing png: %s' % img_file)
             return []
-        return [Image(img)]
+        image = Image(img_file)
+
+        data = []
+
+        for ks in self.__key_statistics:
+            data.append([ks.name, ks.value, ks.unit])
+        table = Table(data)
+
+        return [image, table]
 
 class Chart:
     def __init__(self, type=TIME_SERIES_CHART, title=None, xlabel=None,
