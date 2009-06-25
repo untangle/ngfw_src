@@ -332,11 +332,11 @@ Ung.Reports = Ext.extend(Object, {
     },
     /**
      *  This method is being used to display the list of users in the short term because users are being fetched
-     *  as part of the table of contents and not like other "Applications" 
+     *  as part of the table of contents and not like other "Applications"
      *  So when users are being fetched like other applciations, stop using this method and use getApplicationDateForHost
-     */              
+     */
     showUserList : function(){
-        
+
     },
     getApplicationDataForHost: function(app, host) {
         rpc.reportingManager.getApplicationDataForHost(function (result, exception) {
@@ -368,329 +368,325 @@ Ung.Reports = Ext.extend(Object, {
         }
     }
 });
+
 // Right section object class
-Ung.ReportDetails = Ext.extend(Object, {
-    reportType : null,
-    constructor : function(config) {
-      Ext.apply(this, config);
-      // this.i18n should be used in ReportDetails to have i18n context based
-      this.appName = reports.selectedNode.attributes.name;
-      this.i18n = Ung.i18nModuleInstances[reports.selectedNode.attributes.name];
-      this.reportType = config.reportType;
-      this.buildReportDetails();
-    },
-    buildUserTableOfContents : function(){
-        var data = [],
-            i = 0,
-            list = rpc.applicationData.applications.list;
-        for(i=0;i<list.length;i++){
-            
-            data.push([list[i].javaClass,list[i].name,list[i].title]);
-        }
-        return new Ext.grid.GridPanel({
-                            store: new Ext.data.SimpleStore({
-                                fields: [
-                                   {name: 'javaClass'},
-                                   {name: 'name'},
-                                   {name: 'title'} 
-                                ],
-                                data: data
-                            }),
-                            columns: [{
-                                id:'title',
-                                header: "Application Name",
-                                width: 500,
-                                sortable: false,
-                                dataIndex: 'title',
-                                renderer: function(value, medata, record) {
-                                    return '<a href="javascript:reports.getApplicationDataForUser(\'' + record.data.name + '\', \'' + value + '\')">' + value + '</a>';
-                                  if (record.data.linkType == "UserLink") {
-                                    return '<a href="javascript:reports.getApplicationDataForUser(\'' + record.data.name + '\', \'' + value + '\')">' + value + '</a>';
-                                  } else if (record.data.linkType == "HostLink") {
-                                    return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                  } else if (record.data.linkType == "EmailLink") {
-                                    return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                  } else {
-                                    return this.i18n._(value);
-                                  }
-                                }.createDelegate(this)
-                            }], title:this.i18n._('Application List'),
-                    stripeRows: true,
-                    hideHeaders: true,
-                    enableHdMenu : false,
-                    enableColumnMove: false
-                });    
-    },
-    buildUserList : function(){
-        
-        var data = [],
-            i = 0;
-        for(i=0;i<reports.tableOfContents.users.list.length;i++){
-            data.push([reports.tableOfContents.users.list[i].javaClass,reports.tableOfContents.users.list[i].name,null]);
-        }
-        return new Ext.grid.GridPanel({
-                            store: new Ext.data.SimpleStore({
-                                fields: [
-                                   {name: 'javaClass'},
-                                   {name: 'name'},
-                                   {name: 'linkType'} //this is not used currently
-                                ],
-                                data: data
-                            }),
-                            columns: [{
-                                id:'name',
-                                header: "User Name",
-                                width: 500,
-                                sortable: false,
-                                dataIndex: 'name',
-                                renderer: function(value, medata, record) {
-                                    return '<a href="javascript:reports.getTableOfContentsForUser(\''+ value + '\')">' + value + '</a>';
-                                  if (record.data.linkType == "UserLink") {
-                                    return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                  } else if (record.data.linkType == "HostLink") {
-                                    return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                  } else if (record.data.linkType == "EmailLink") {
-                                    return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                  } else {
-                                    return this.i18n._(value);
-                                  }
-                                }.createDelegate(this)
-                            }], title:this.i18n._('User List'),
-                    stripeRows: true,
-                    hideHeaders: true,
-                    enableHdMenu : false,
-                    enableColumnMove: false
-                });
-    },
-    buildHostReportDetails : function(){
-    
-    },
-    buildReportDetails: function() {
-        var reportDetails=Ext.getCmp("report-details");
-        while(reportDetails.items.length!=0) {
-            reportDetails.remove(reportDetails.items.get(0));
-        }
-        var itemsArray=[];
-        //TODO rpc.applicationData should never be null
-        if (rpc.applicationData != null) {
-            if(rpc.applicationData.sections != null){
-                for(var i=0;i<rpc.applicationData.sections.list.length ;i++) {
-                  var section=rpc.applicationData.sections.list[i];
-                  var sectionPanel=this.buildSection(this.appName, section);
-                  itemsArray.push(sectionPanel);
-                }
-            }
-        }
-        //create breadcrums item
-        var breadcrumbArr=[];
-        for(var i=0;i<reports.breadcrumbs.length;i++) {
-            if(i+1==reports.breadcrumbs.length) {
-                breadcrumbArr.push(reports.breadcrumbs[i].text);
-            } else {
-                breadcrumbArr.push('<a href="javascript:reports.openBreadcrumb('+i+')">'+reports.breadcrumbs[i].text+'</a>');
-            }
-        }
-        document.getElementById("breadcrumbs").innerHTML='<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>'+breadcrumbArr.join('<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
-        if (itemsArray && itemsArray.length > 0) {
-          this.tabPanel=new Ext.TabPanel({
-              anchor: '100% 100%',
-              autoWidth : true,
-              defaults: {
-                  anchor: '100% 100%',
-                  autoWidth : true,
-                  autoScroll: true
-              },
+Ung.ReportDetails = Ext.extend(Object,
+                               { reportType : null,
+                                 constructor : function(config) {
+                                   Ext.apply(this, config);
+                                   // this.i18n should be used in ReportDetails to have i18n context based
+                                   this.appName = reports.selectedNode.attributes.name;
+                                   this.i18n = Ung.i18nModuleInstances[reports.selectedNode.attributes.name];
+                                   this.reportType = config.reportType;
+                                   this.buildReportDetails();
+                                 },
 
-              height : 400,
-              activeTab : 0,
-              frame : true,
-              items : itemsArray,
-              layoutOnTabChange : true
-          });
-          reportDetails.add(this.tabPanel);
-        }else if(this.reportType != null){
-            
-            var selectedType = 'toc',
-                reportTypeMap = {
-                                    'users':{
-                                        'toc' : this.buildUserList.createDelegate(this),
-                                        'com.untangle.uvm.reports.TableOfContents' : this.buildUserTableOfContents.createDelegate(this)
-                                    }
-                };
-            if(rpc.applicationData != null && reportTypeMap[this.reportType][rpc.applicationData.javaClass] != null){
-                selectedType = rpc.applicationData.javaClass;
-            }
-            reportDetails.add(reportTypeMap[this.reportType][selectedType]());
-        }
-        reportDetails.doLayout();
-    },
-    buildSection: function(appName, section) {
-        var sectionPanel=null;
-        if(section.javaClass=="com.untangle.uvm.reports.SummarySection") {
-          sectionPanel=this.buildSummarySection(appName, section);
-        } else if(section.javaClass=="com.untangle.uvm.reports.DetailSection") {
-          sectionPanel=this.buildDetailSection(appName, section);
-        } else {
-            //For test
-          sectionPanel=new Ext.Panel({
-            title : this.i18n._(section.title),
-            layout : "form",
-            items : [{border:false, html:"TODO: "+section.title+" for "+"HIPPIES" +" on date "+ "DIPPIE"}]
-          //items : [{border:false, html:"TODO: "+section.title+" for "+this.selectedNode.attributes.text +" on date "+i18n.dateFormat(this.reportsDate)}]
-          });
-        }
-        return sectionPanel;
+                                 buildDrilldownTableOfContents : function(type)
+                                 {
+                                   var upperName = type[0].toUpperCase() + type.substr(1);
 
-    },
-    buildSummarySection: function (appName, section) {
-        var items = [];
-        for (var i = 0; i < section.summaryItems.list.length; i++) {
-            var summaryItem = section.summaryItems.list[i];
-            // graph
-            items.push({html:'<img src="'+summaryItem.imageUrl+'"/>', bodyStyle:'padding:20px'});
-            // key statistics
-            var data = [];
-            for(var j=0;j<summaryItem.keyStatistics.list.length;j++) {
-              var keyStatistic = summaryItem.keyStatistics.list[j];
-              data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType]);
-            }
-            items.push( new Ext.grid.GridPanel({
-                    store: new Ext.data.SimpleStore({
-                        fields: [
-                           {name: 'label'},
-                           {name: 'value'},
-                           {name: 'unit'},
-                           {name: 'linkType'}
-                        ],
-                        data: data
-                    }),
-                    columns: [{
-                        id:'label',
-                        header: "Label",
-                        width: 150,
-                        sortable: false,
-                        dataIndex: 'label',
-                        renderer: function(value, medata, record) {
-                          if (record.data.linkType == "UserLink") {
-                            return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                          } else if (record.data.linkType == "HostLink") {
-                            return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                          } else if (record.data.linkType == "EmailLink") {
-                            return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                          } else {
-                            return this.i18n._(value);
-                          }
-                        }.createDelegate(this)
-                    },{
-                        header: "Value",
-                        width: 150,
-                        sortable: false,
-                        dataIndex: 'value',
-                        renderer: function (value, medata, record) {
-                            return record.data.unit == null ? value :  (value + " " + this.i18n._(record.data.unit));
-                        }.createDelegate(this)
-                    }],
-                    // inline toolbars
-                    tbar:[{
-                        tooltip:this.i18n._('Export Excel'),
-                        iconCls:'export-excel',
-                        handler : function () {
-                          window.open(summaryItem.csvUrl);
-                        }
-                    }, '-', {
-                        tooltip:this.i18n._('Export Printer'),
-                        iconCls:'export-printer',
-                        handler : function () {
-                          window.open(summaryItem.printerUrl);
-                        }
-                    }],
-                    title:this.i18n._('Key Statistics'),
-                    stripeRows: true,
-                    hideHeaders: true,
-                    enableHdMenu : false,
-                    enableColumnMove: false
-                })
-            );
-        }
-        return new Ext.Panel({
-            title : section.title,
-            layout:'table',
-            defaults: {
-                border: false,
-                columnWidth: 0.5
-            },
-            layoutConfig: {
-                columns: 2
-            },
-            items : items
-        });
-    },
+                                   var data = [];
+                                   var i = 0;
+                                   var list = rpc.applicationData.applications.list;
 
-    buildDetailSection: function (appName, section) {
-        var columns = [];
-        var fields = [];
-        var c = null;
-        for (var i = 0; i < section.columns.list.length; i++) {
-          c = section.columns.list[i];
-          //TODO this case should not occur
-          if (c == null || c == undefined) { break; }
-          var col = { header:this.i18n._(c.title), dataIndex:c.name };
+                                   for (i=0; i<list.length; i++) {
+                                     data.push([list[i].javaClass,list[i].name,list[i].title]);
+                                   }
 
-          if (c.type == "Date") {
-            col.renderer = function(value) {
-              return i18n.timestampFormat(value);
-            };
-            col.width = 140;
-          } else if (c.type == "URL") {
-            col.renderer = function(value) {
-              return '<a href="' + value + '" target="_new">' + value + '</a>';
-            };
-            col.width = 160;
-          } else if (c.type == "UserLink") {
-            col.renderer = function(value) {
-              return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-            };
-            col.width = 100;
-          } else if (c.type == "HostLink") {
-            col.renderer = function(value) {
-              return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-            };
-            col.width = 100;
-          } else if (c.type == "EmailLink") {
-            col.renderer = function(value) {
-              return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-            };
-            col.width = 180;
-          }
-          columns.push(col);
-          fields.push({ name: c.name });
-        }
+                                   return new Ext.grid.GridPanel({ store: new Ext.data.SimpleStore({
+                                                                                                     fields: [
+                                                                                                       {name: 'javaClass'},
+                                                                                                       {name: 'name'},
+                                                                                                       {name: 'title'}
+                                                                                                     ],
+                                                                                                     data: data
+                                                                                                   }),
+                                                                   columns: [{ id:'title',
+                                                                               header: "Application Name",
+                                                                               width: 500,
+                                                                               sortable: false,
+                                                                               dataIndex: 'title',
+                                                                               renderer: function(value, medata, record) {
+                                                                                 return '<a href="javascript:reports.getApplicationDataFor' + upperName + '(\'' + record.data.name + '\', \'' + value + '\')">' + value + '</a>';
+                                                                               }.createDelegate(this)
+                                                                             }],
+                                                                   title:this.i18n._('Application List'),
+                                                                   stripeRows: true,
+                                                                   hideHeaders: true,
+                                                                   enableHdMenu : false,
+                                                                   enableColumnMove: false
+                                                                 });
+                                 },
 
-        var store = new Ext.data.SimpleStore({fields: fields, data: [] });
+                                 buildUserTableOfContents : function()
+                                 {
+                                   return this.buildDrilldownTableOfContents('user');
+                                 },
 
-        var detailSection=new Ext.grid.GridPanel({
-            title : section.title,
-            enableHdMenu : false,
-            enableColumnMove: false,
-            store: store,
-            columns: columns
-        });
+                                 buildDrilldownList : function(type, title, listTitle)
+                                 {
+                                   var upperName = type[0].toUpperCase() + type.substr(1);
 
-        rpc.reportingManager.getDetailData(function(result, exception) {
-          if (exception) {
-            Ext.MessageBox.alert("Failed", exception.message);
-            return;
-          };
+                                   var data = [];
+                                   var i = 0;
 
-          var data = [];
+                                   for(i=0;i<reports.tableOfContents[type].list.length;i++){
+                                     data.push([reports.tableOfContents[type].list[i].javaClass,
+                                                reports.tableOfContents[type].list[i].name,null]);
+                                   }
 
-          for (var i = 0; i < result.list.length; i++) {
-            data.push(result.list[i].list);
-          }
+                                   return new Ext.grid.GridPanel({ store: new Ext.data.SimpleStore({ fields: [
+                                                                                                       {name: 'javaClass'},
+                                                                                                       {name: 'name'},
+                                                                                                       {name: 'linkType'} //this is not used currently
+                                                                                                     ],
+                                                                                                     data: data }),
+                                                                   columns: [{ id:'name',
+                                                                               header: title,
+                                                                               width: 500,
+                                                                               sortable: false,
+                                                                               dataIndex: 'name',
+                                                                               renderer: function(value, medata, record) {
+                                                                                 return '<a href="javascript:reports.getTableOfContentsFor'
+                                                                                   + upperName + '(\''+ value + '\')">' + value + '</a>';
+                                                                               }.createDelegate(this)
+                                                                             }], title:listTitle,
+                                                                   stripeRows: true,
+                                                                   hideHeaders: true,
+                                                                   enableHdMenu : false,
+                                                                   enableColumnMove: false
+                                                                 });
+                                 },
 
-          store.loadData(data);
-        }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name);
+                                 buildUserList: function()
+                                 {
+                                   return this.buildDrilldownList('user', this.i18n._('User'),
+                                                                  this.i18n._('User List'));
+                                 },
 
-        return detailSection;
-    }
-});
+                                 buildReportDetails: function()
+                                 {
+                                   var reportDetails=Ext.getCmp("report-details");
+                                   while(reportDetails.items.length!=0) {
+                                     reportDetails.remove(reportDetails.items.get(0));
+                                   }
+
+                                   var itemsArray=[];
+                                   //TODO rpc.applicationData should never be null
+                                   if (rpc.applicationData != null) {
+                                     if(rpc.applicationData.sections != null){
+                                       for(var i=0;i<rpc.applicationData.sections.list.length ;i++) {
+                                         var section=rpc.applicationData.sections.list[i];
+                                         var sectionPanel=this.buildSection(this.appName, section);
+                                         itemsArray.push(sectionPanel);
+                                       }
+                                     }
+                                   }
+
+                                   //create breadcrums item
+                                   var breadcrumbArr=[];
+                                   for(var i=0;i<reports.breadcrumbs.length;i++) {
+                                     if(i+1==reports.breadcrumbs.length) {
+                                       breadcrumbArr.push(reports.breadcrumbs[i].text);
+                                     } else {
+                                       breadcrumbArr.push('<a href="javascript:reports.openBreadcrumb('+i+')">'+reports.breadcrumbs[i].text+'</a>');
+                                     }
+                                   }
+                                   document.getElementById("breadcrumbs").innerHTML='<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>'+breadcrumbArr.join('<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+                                   if (itemsArray && itemsArray.length > 0) {
+                                     this.tabPanel=new Ext.TabPanel({
+                                       anchor: '100% 100%',
+                                       autoWidth : true,
+                                       defaults: {
+                                         anchor: '100% 100%',
+                                         autoWidth : true,
+                                         autoScroll: true
+                                       },
+
+                                       height : 400,
+                                       activeTab : 0,
+                                       frame : true,
+                                       items : itemsArray,
+                                       layoutOnTabChange : true
+                                     });
+                                     reportDetails.add(this.tabPanel);
+                                   } else if(this.reportType != null) {
+                                     var selectedType = 'toc';
+                                     var reportTypeMap = { 'users':{ 'toc' : this.buildUserList.createDelegate(this),
+                                                                     'com.untangle.uvm.reports.TableOfContents' : this.buildUserTableOfContents.createDelegate(this)
+                                                                   }
+                                                         };
+                                     if (rpc.applicationData != null && reportTypeMap[this.reportType][rpc.applicationData.javaClass] != null){
+                                       selectedType = rpc.applicationData.javaClass;
+                                     }
+                                     reportDetails.add(reportTypeMap[this.reportType][selectedType]());
+                                   }
+                                   reportDetails.doLayout();
+                                 },
+
+                                 buildSection: function(appName, section) {
+                                   var sectionPanel=null;
+                                   if (section.javaClass=="com.untangle.uvm.reports.SummarySection") {
+                                     sectionPanel=this.buildSummarySection(appName, section);
+                                   } else if (section.javaClass=="com.untangle.uvm.reports.DetailSection") {
+                                     sectionPanel=this.buildDetailSection(appName, section);
+                                   } else {
+                                     //For test
+                                     sectionPanel = new Ext.Panel({ title : this.i18n._(section.title),
+                                                                  layout : "form",
+                                                                  items : [{border:false, html:"TODO: "+section.title+" for "+"HIPPIES" +" on date "+ "DIPPIE"}]
+                                                                  });
+                                   }
+
+                                   return sectionPanel;
+                                 },
+
+                                 buildSummarySection: function (appName, section) {
+                                   var items = [];
+
+                                   for (var i = 0; i < section.summaryItems.list.length; i++) {
+                                     var summaryItem = section.summaryItems.list[i];
+                                     // graph
+                                     items.push({html:'<img src="'+summaryItem.imageUrl+'"/>', bodyStyle:'padding:20px'});
+                                     // key statistics
+                                     var data = [];
+                                     for (var j=0; j<summaryItem.keyStatistics.list.length; j++) {
+                                       var keyStatistic = summaryItem.keyStatistics.list[j];
+                                       data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType]);
+                                     }
+                                     items.push(new Ext.grid.GridPanel({ store: new Ext.data.SimpleStore({ fields: [
+                                                                                                             {name: 'label'},
+                                                                                                             {name: 'value'},
+                                                                                                             {name: 'unit'},
+                                                                                                             {name: 'linkType'}
+                                                                                                           ],
+                                                                                                           data: data
+                                                                                                         }),
+                                                                                                         columns: [{ id:'label',
+                                                                                                                     header: "Label",
+                                                                                                                     width: 150,
+                                                                                                                     sortable: false,
+                                                                                                                     dataIndex: 'label',
+                                                                                                                     renderer: function(value, medata, record) {
+                                                                                                                       if (record.data.linkType == "UserLink") {
+                                                                                                                         return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                                                                                                       } else if (record.data.linkType == "HostLink") {
+                                                                                                                         return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                                                                                                       } else if (record.data.linkType == "EmailLink") {
+                                                                                                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                                                                                                       } else {
+                                                                                                                         return this.i18n._(value);
+                                                                                                                       }
+                                                                                                                     }.createDelegate(this)
+                                                                                                                   },{
+                                                                                                                     header: "Value",
+                                                                                                                     width: 150,
+                                                                                                                     sortable: false,
+                                                                                                                     dataIndex: 'value',
+                                                                                                                     renderer: function (value, medata, record) {
+                                                                                                                       return record.data.unit == null ? value :  (value + " " + this.i18n._(record.data.unit));
+                                                                                                                     }.createDelegate(this)
+                                                                                                                   }],
+                                                                                                                   // inline toolbars
+                                                                                                                   tbar:[{ tooltip:this.i18n._('Export Excel'),
+                                                                                                                           iconCls:'export-excel',
+                                                                                                                           handler : function () {
+                                                                                                                             window.open(summaryItem.csvUrl);
+                                                                                                                           }
+                                                                                                                         }, '-', {
+                                                                                                                           tooltip:this.i18n._('Export Printer'),
+                                                                                                                           iconCls:'export-printer',
+                                                                                                                           handler : function () {
+                                                                                                                             window.open(summaryItem.printerUrl);
+                                                                                                                           }
+                                                                                                                         }],
+                                                                                                                         title:this.i18n._('Key Statistics'),
+                                                                                                                         stripeRows: true,
+                                                                                                                         hideHeaders: true,
+                                                                                                                         enableHdMenu : false,
+                                                                                                                         enableColumnMove: false
+                                                                       })
+                                               );
+                                   }
+                                   return new Ext.Panel({ title : section.title,
+                                                          layout:'table',
+                                                          defaults: {
+                                                            border: false,
+                                                            columnWidth: 0.5
+                                                          },
+                                                          layoutConfig: {
+                                                            columns: 2
+                                                          },
+                                                          items : items
+                                                        });
+                                 },
+
+                                 buildDetailSection: function (appName, section)
+                                 {
+                                   var columns = [];
+                                   var fields = [];
+                                   var c = null;
+
+                                   for (var i = 0; i < section.columns.list.length; i++) {
+                                     c = section.columns.list[i];
+                                     //TODO this case should not occur
+                                     if (c == null || c == undefined) { break; }
+                                     var col = { header:this.i18n._(c.title), dataIndex:c.name };
+
+                                     if (c.type == "Date") {
+                                       col.renderer = function(value) {
+                                         return i18n.timestampFormat(value);
+                                       };
+                                       col.width = 140;
+                                     } else if (c.type == "URL") {
+                                       col.renderer = function(value) {
+                                         return '<a href="' + value + '" target="_new">' + value + '</a>';
+                                       };
+                                       col.width = 160;
+                                     } else if (c.type == "UserLink") {
+                                       col.renderer = function(value) {
+                                         return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                       };
+                                       col.width = 100;
+                                     } else if (c.type == "HostLink") {
+                                       col.renderer = function(value) {
+                                         return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                       };
+                                       col.width = 100;
+                                     } else if (c.type == "EmailLink") {
+                                       col.renderer = function(value) {
+                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                       };
+                                       col.width = 180;
+                                     }
+                                     columns.push(col);
+                                     fields.push({ name: c.name });
+                                   }
+
+                                   var store = new Ext.data.SimpleStore({fields: fields, data: [] });
+
+                                   var detailSection=new Ext.grid.GridPanel({
+                                                                              title : section.title,
+                                                                              enableHdMenu : false,
+                                                                              enableColumnMove: false,
+                                                                              store: store,
+                                                                              columns: columns
+                                                                            });
+
+                                   rpc.reportingManager.getDetailData(function(result, exception) {
+                                                                        if (exception) {
+                                                                          Ext.MessageBox.alert("Failed", exception.message);
+                                                                          return;
+                                                                        };
+
+                                                                        var data = [];
+
+                                                                        for (var i = 0; i < result.list.length; i++) {
+                                                                          data.push(result.list[i].list);
+                                                                        }
+
+                                                                        store.loadData(data);
+                                                                      }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name);
+
+                                   return detailSection;
+                                 }});
