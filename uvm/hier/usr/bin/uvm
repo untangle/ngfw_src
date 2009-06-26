@@ -283,6 +283,8 @@ trap reapChildHardest 6
 trap reapChildHarder 15
 trap reapChild 2
 
+@PREFIX@/usr/share/untangle/bin/migrate-postgres.sh >> $UVM_WRAPPER_LOG
+
 while true; do
     echo > $UVM_CONSOLE_LOG
     echo "============================" >> $UVM_CONSOLE_LOG
