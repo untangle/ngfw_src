@@ -20,12 +20,20 @@ REPORT_JAR_DIR = '@PREFIX@/usr/share/java/reports/'
 PAGE_HEIGHT = defaultPageSize[1]
 PAGE_WIDTH = defaultPageSize[0]
 
+TOP_LEVEL = 'top-level'
+USER_DRILLDOWN = 'user-drilldown'
+HOST_DRILLDOWN = 'host-drilldown'
+EMAIL_DRILLDOWN = 'email-drilldown'
+
 class Node:
     def __init__(self, name):
         self.__name = name
 
     def get_report(self):
         return None
+
+    def get_toc_membership(self):
+        return []
 
     def setup(self):
         pass
@@ -173,16 +181,36 @@ def generate_reports(report_base, end_date):
 
     mail_reports = []
 
+    top_level = []
+    user_drilldown = []
+    host_drilldown = []
+    email_drilldown = []
+
     for node_name in __get_node_partial_order():
         logging.info('doing process_graphs for: %s' % node_name)
         node = __nodes.get(node_name, None)
         if not node:
             logger.warn("could not get node %s" % node_name)
         else:
+            tocs = node.get_toc_membership()
+            if TOP_LEVEL in tocs:
+                top_level.append(node_name)
+            if USER_DRILLDOWN in tocs:
+                user_drilldown.append(node_name)
+            if HOST_DRILLDOWN in tocs:
+                host_drilldown.append(node_name)
+            if EMAIL_DRILLDOWN in tocs:
+                email_drilldown.append(node_name)
+
             report = node.get_report()
             if report:
                 report.generate(report_base, date_base, end_date)
                 mail_reports.append(report)
+
+    __write_toc(report_base, date_base, 'top-level', top_level)
+    __write_toc(report_base, date_base, 'user-drilldown', user_drilldown)
+    __write_toc(report_base, date_base, 'host-drilldown', host_drilldown)
+    __write_toc(report_base, date_base, 'email-drilldown', email_drilldown)
 
     return mail_reports
 
@@ -272,6 +300,7 @@ def setup(start_date, end_date):
     for name in __get_node_partial_order():
         logging.info('doing setup for: %s' % name)
         node = __nodes.get(name, None)
+
         if not node:
             logger.warn("could not get node %s" % name)
         else:
@@ -410,3 +439,16 @@ def __get_nodes(node_module_dir):
         if f.endswith('py'):
             (m, e) = os.path.splitext(f)
             __import__('reports.node.%s' % m)
+
+def __write_toc(report_base, date_base, type, list):
+    d = '%s/%s' % (report_base, date_base)
+    if not os.path.exists(d):
+        os.makedirs(d)
+
+    f = open('%s/%s' % (d, type), 'w')
+    try:
+        for l in list:
+            f.write(l)
+            f.write("\n")
+    finally:
+        f.close()

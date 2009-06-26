@@ -12,14 +12,16 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import KeyStatistic
+from reports import PIE_CHART
 from reports import Report
 from reports import STACKED_BAR_CHART
-from reports import PIE_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
+from reports.engine import EMAIL_DRILLDOWN
 from reports.engine import Node
+from reports.engine import TOP_LEVEL
 from sql_helper import print_timing
 
 _ = gettext.gettext
@@ -56,6 +58,8 @@ class SpamBaseNode(Node):
         ft = reports.engine.get_fact_table('reports.n_mail_addr_totals')
         ft.measures.append(column)
 
+    def get_toc_membership(self):
+        return [TOP_LEVEL]
 
     def get_report(self):
         sections = []

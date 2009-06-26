@@ -21,6 +21,7 @@ from reports import TIME_SERIES_CHART
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
+from reports.engine import TOP_LEVEL
 from sql_helper import print_timing
 
 _ = gettext.gettext
@@ -42,6 +43,9 @@ class OpenVpn(Node):
                        [Column('rx_bytes', 'bigint', 'sum(rx_bytes)'),
                         Column('tx_bytes', 'bigint', 'sum(tx_bytes)')])
         reports.engine.register_fact_table(ft)
+
+    def get_toc_membership(self):
+        return [TOP_LEVEL]
 
     def parents(self):
         return ['untangle-vm']

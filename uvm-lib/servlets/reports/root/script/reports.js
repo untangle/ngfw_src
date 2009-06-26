@@ -29,65 +29,65 @@ Ung.Reports = Ext.extend(Object,
                              this.initSemaphore = 3;
                              this.treeNodes =[];
                              rpc = {};
-                             // get JSONRpcClient
                              rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-                             // get language manager
-                             rpc.jsonrpc.RemoteUvmContext.languageManager(function(result, exception) {
+
+                             rpc.jsonrpc.RemoteUvmContext.languageManager(function(result, exception)
+                                                                          {
                                                                             if (exception) {
                                                                               Ext.MessageBox.alert("Failed", exception.message);
-                                                                              return;
                                                                             };
                                                                             rpc.languageManager = result;
                                                                             // get translations for main module
-                                                                            rpc.languageManager.getTranslations(function(result, exception) {
+                                                                            rpc.languageManager.getTranslations(function(result, exception)
+                                                                                                                {
                                                                                                                   if (exception) {
                                                                                                                     Ext.MessageBox.alert("Failed", exception.message);
-                                                                                                                    return
-                                                                                                                  };
-                                                                                                                  i18n = new Ung.I18N({
-                                                                                                                                        "map" : result.map
-                                                                                                                                      });
-                                                                                                                  this.postinit();// 1
+                                                                                                                    return;
+                                                                                                                  }
+                                                                                                                  i18n = new Ung.I18N({ "map" : result.map });
+                                                                                                                  this.postinit();
                                                                                                                 }.createDelegate(this), "untangle-libuvm");
-                                                                            // get language settings
-
                                                                           }.createDelegate(this));
-                             rpc.jsonrpc.RemoteUvmContext.skinManager(function(result, exception) {
+
+                             rpc.jsonrpc.RemoteUvmContext.skinManager(function(result, exception)
+                                                                      {
                                                                         if (exception) {
                                                                           Ext.MessageBox.alert("Failed", exception.message);
-                                                                          return;
                                                                         };
                                                                         rpc.skinManager = result;
                                                                         // Load Current Skin
-                                                                        rpc.skinManager.getSkinSettings(function(result, exception) {
+                                                                        rpc.skinManager.getSkinSettings(function(result, exception)
+                                                                                                        {
                                                                                                           if (exception) {
                                                                                                             Ext.MessageBox.alert("Failed", exception.message);
                                                                                                             return;
-                                                                                                          };
+                                                                                                          }
                                                                                                           rpc.skinSettings = result;
                                                                                                           Ung.Util.loadCss("/skins/" + rpc.skinSettings.userPagesSkin + "/css/ext-skin.css");
                                                                                                           Ung.Util.loadCss("/skins/"+rpc.skinSettings.userPagesSkin+"/css/reports.css");
-                                                                                                          this.postinit();// 2
+                                                                                                          this.postinit();
                                                                                                         }.createDelegate(this));
                                                                       }.createDelegate(this));
-                             // get node manager
+
                              rpc.jsonrpc.RemoteUvmContext.reportingManager(function(result, exception) {
                                                                              if (exception) {
                                                                                Ext.MessageBox.alert("Failed", exception.message);
-                                                                               return;
-                                                                             };
+                                                                             }
                                                                              rpc.reportingManager = result;
-                                                                             rpc.reportingManager.getDates(function(result, exception) {
+                                                                             rpc.reportingManager.getDates(function(result, exception)
+                                                                                                           {
                                                                                                              if (exception) {
                                                                                                                Ext.MessageBox.alert("Failed", exception.message);
                                                                                                                return;
                                                                                                              };
                                                                                                              rpc.dates = result;
-                                                                                                             this.postinit();// 3
+                                                                                                             this.postinit();
                                                                                                            }.createDelegate(this));
                                                                            }.createDelegate(this));
                            },
-                           postinit : function() {
+
+                           postinit : function()
+                           {
                              this.initSemaphore--;
                              if (this.initSemaphore != 0) {
                                return;
@@ -95,13 +95,14 @@ Ung.Reports = Ext.extend(Object,
                              this.startApplication();
                            },
 
-                           startApplication : function() {
+                           startApplication : function()
+                           {
                              this.reportDatesItems = [];
                              for (var i = 0; i < rpc.dates.list.length; i++) {
-                               this.reportDatesItems.push({
-                                                            text : i18n.dateFormat(rpc.dates.list[i]),
+                               this.reportDatesItems.push({ text : i18n.dateFormat(rpc.dates.list[i]),
                                                             dt : rpc.dates.list[i],
-                                                            handler : function() {
+                                                            handler : function()
+                                                            {
                                                               reports.changeDate(this.dt);
                                                             }
                                                           });
@@ -112,137 +113,122 @@ Ung.Reports = Ext.extend(Object,
                                                          cls : "base-container",
                                                          layout : 'border',
                                                          height : window.innerHeight-80,
-                                                         defaults : {
-                                                           border : false,
-                                                           bodyStyle : 'background-color: transparent;'
-                                                         },
-                                                         items : [{
-                                                                    region : 'north',
+                                                         defaults : { border : false,
+                                                                      bodyStyle : 'background-color: transparent;'
+                                                                    },
+                                                         items : [{ region : 'north',
                                                                     layout : 'border',
                                                                     style : 'padding: 7px 5px 7px 7px;',
                                                                     height : 65,
-                                                                    defaults : {
-                                                                      border : false,
-                                                                      bodyStyle : 'background-color: transparent;'
+                                                                    defaults : { border : false,
+                                                                                 bodyStyle : 'background-color: transparent;'
 
-                                                                    },
-                                                                    items : [{
-                                                                               html: '<img src="/images/BrandingLogo.gif?'+(new Date()).getTime()+'" border="0" height="50"/>',
+                                                                               },
+                                                                    items : [{ html: '<img src="/images/BrandingLogo.gif?'+(new Date()).getTime()+'" border="0" height="50"/>',
                                                                                region : 'west',
                                                                                width : 100
+                                                                             }, { html : '<h1>'+i18n._('Untangle Reports')+'</h1>',
+                                                                                  region : 'center'
+                                                                             }, { region : 'east',
+                                                                                  width : 200,
+                                                                                  layout : 'fit',
+                                                                                  items : [{ xtype : "fieldset",
+                                                                                             align : 'right',
+                                                                                             border : false,
+                                                                                             items : [{ xtype : 'splitbutton',
+                                                                                                        id : 'report-day-menu',
+                                                                                                        text : this.reportDatesItems[0].text,
+                                                                                                        menu : new Ext.menu.Menu({ items : this.reportDatesItems })
+                                                                                                      }]
+                                                                                           }]
+                                                                                }]
+                                                                  }, { region : "center",
+                                                                       layout : 'border',
+                                                                       width : 960,
+                                                                       height : window.innerHeight-30,
+                                                                       items : [{ xtype : 'treepanel',
+                                                                                  id : 'tree-panel',
+                                                                                  region : 'center',
+                                                                                  margins : '2 2 0 2',
+                                                                                  autoScroll : true,
+                                                                                  rootVisible : false,
+                                                                                  title : i18n._('Reports'),
+                                                                                  enableDD: false,
+                                                                                  enableDrag: false,
+                                                                                  root : new Ext.tree.AsyncTreeNode({ draggable : false,
+                                                                                                                      //id : 'source',
+                                                                                                                      children : []
+                                                                                                                    }),
+                                                                                  loader : new Ext.tree.TreeLoader(),
+                                                                                  listeners : { 'load' : function(node)
+                                                                                                {
+                                                                                                  // Select the firs element form the tableOfContent tree to load it's report details
+                                                                                                  Ext.getCmp('tree-panel').getSelectionModel().select(Ext.getCmp('tree-panel').getRootNode().firstChild);
+                                                                                                },
+                                                                                                'render' : function(tp)
+                                                                                                {
+                                                                                                  tp.getSelectionModel().on('selectionchange',
+                                                                                                                            function(tree, node)
+                                                                                                                            {
+                                                                                                                              reports.selectedNode=node;
+                                                                                                                              reports.breadcrumbs=[];
+                                                                                                                              if(node!=null) {
+                                                                                                                                reports.getApplicationData(node.attributes.name);
+                                                                                                                              }
+                                                                                                                            });
 
-                                                                             }, {
-                                                                               html : '<h1>'+i18n._('Untangle Reports')+'</h1>',
-                                                                               region : 'center'
-                                                                             }, {
-                                                                               region : 'east',
-                                                                               width : 200,
-                                                                               layout : 'fit',
-                                                                               items : [{
-                                                                                          xtype : "fieldset",
-                                                                                          align : 'right',
-                                                                                          border : false,
-                                                                                          items : [{
-                                                                                                     xtype : 'splitbutton',
-                                                                                                     id : 'report-day-menu',
-                                                                                                     text : this.reportDatesItems[0].text,
-                                                                                                     menu : new Ext.menu.Menu({
-                                                                                                                                items : this.reportDatesItems
-                                                                                                                              })
-                                                                                                   }]
-                                                                                        }]
-                                                                             }]
-                                                                  }, {
-                                                                    region : "center",
-                                                                    layout : 'border',
-                                                                    width : 960,
-                                                                    height : window.innerHeight-30,
-                                                                    items : [{
-                                                                               xtype : 'treepanel',
-                                                                               id : 'tree-panel',
-                                                                               region : 'center',
-                                                                               margins : '2 2 0 2',
-                                                                               autoScroll : true,
-                                                                               rootVisible : false,
-                                                                               title : i18n._('Reports'),
-                                                                               enableDD: false,
-                                                                               enableDrag: false,
-                                                                               root : new Ext.tree.AsyncTreeNode({
-                                                                                                                   draggable : false,
-                                                                                                                   //id : 'source',
-                                                                                                                   children : []
-                                                                                                                 }),
-                                                                               loader : new Ext.tree.TreeLoader(),
+                                                                                                  p = Ext.urlDecode(window.location.search.substring(1));
+                                                                                                  qsDate = p.date;
+                                                                                                  if (qsDate) {
+                                                                                                    dp = qsDate.split('-');
+                                                                                                    d = new Date(parseInt(dp[0]), parseInt(dp[1]) - 1, parseInt(dp[2]));
 
-                                                                               listeners : {
-                                                                                 'load' : function(node) {
-                                                                                   // Select the firs element form the tableOfContent tree to load it's report details
-                                                                                   Ext.getCmp('tree-panel').getSelectionModel().select(Ext.getCmp('tree-panel').getRootNode().firstChild);
-                                                                                 },
-                                                                                 'render' : function(tp) {
-                                                                                   tp.getSelectionModel().on('selectionchange', function(tree, node) {
-                                                                                                               reports.selectedNode=node;
-                                                                                                               reports.breadcrumbs=[];
-                                                                                                               if(node!=null) {
-                                                                                                                 reports.getApplicationData(node.attributes.name)
-                                                                                                               }
-                                                                                                             });
-
-                                                                                   p = Ext.urlDecode(window.location.search.substring(1));
-                                                                                   qsDate = p.date;
-                                                                                   if (qsDate) {
-                                                                                     dp = qsDate.split('-');
-                                                                                     d = new Date(parseInt(dp[0]), parseInt(dp[1]) - 1, parseInt(dp[2]));
-
-                                                                                     reports.changeDate({javaClass: 'java.util.Date',
-                                                                                                         time: d.getTime()});
-                                                                                   } else if (rpc.dates && rpc.dates.list.length > 0) {
-                                                                                     reports.changeDate(rpc.dates.list[0])
-                                                                                   }
-                                                                                 }
-                                                                               }
-                                                                             }, {
-                                                                               region : 'east',
-                                                                               title : 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
-                                                                               id : 'report-details',
-                                                                               layout:"anchor",
-                                                                               autoScroll : true,
-                                                                               collapsible : false,
-                                                                               split : true,
-                                                                               margins : '2 2 0 2',
-                                                                               cmargins : '2 2 2 2',
-                                                                               width : "80%",
-                                                                               defaults: {
-                                                                                 border: false
-                                                                               },
-                                                                               items : [{
-                                                                                          html:""
-                                                                                        }]
-                                                                             }]
-                                                                  }]
+                                                                                                    reports.changeDate({ javaClass: 'java.util.Date',
+                                                                                                                         ime: d.getTime()
+                                                                                                                       });
+                                                                                                  } else if (rpc.dates && rpc.dates.list.length > 0) {
+                                                                                                    reports.changeDate(rpc.dates.list[0]);
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                }, { region : 'east',
+                                                                                     title : 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
+                                                                                     id : 'report-details',
+                                                                                     layout:"anchor",
+                                                                                     autoScroll : true,
+                                                                                     collapsible : false,
+                                                                                     split : true,
+                                                                                     margins : '2 2 0 2',
+                                                                                     cmargins : '2 2 2 2',
+                                                                                     width : "80%",
+                                                                                     defaults: { border: false },
+                                                                                     items : [{ html:"" }]
+                                                                                   }]
+                                                                     }]
                                                        });
                            },
-                           getTreeNodesFromTableOfContent : function(tableOfContents) {
+
+                           getTreeNodesFromTableOfContent : function(tableOfContents)
+                           {
                              var treeNodes = [];
-                             if(tableOfContents.platform!=null) {
-                               treeNodes.push({
-                                                text : i18n._(tableOfContents.platform.title),
+                             if (tableOfContents.platform != null) {
+                               treeNodes.push({ text : i18n._(tableOfContents.platform.title),
                                                 name : tableOfContents.platform.name,
                                                 leaf: true
                                               });
                              }
-                             if(tableOfContents.applications!=null) {
-                               var tn = {
-                                 text : i18n._("Applications"),
-                                 name : "applications"
-                               };
+
+                             if (tableOfContents.applications != null) {
+                               var tn = { text : i18n._("Applications"),
+                                          name : "applications"
+                                        };
                                var tc = tableOfContents.applications;
+
                                if (tc.list != null && tc.list.length > 0) {
                                  tn.leaf = false;
                                  tn.children = [];
                                  for (var i = 0; i < tc.list.length; i++) {
-                                   tn.children.push({
-                                                      text : i18n._(tc.list[i].title),
+                                   tn.children.push({ text : i18n._(tc.list[i].title),
                                                       name : tc.list[i].name,
                                                       leaf : true,
                                                       iconCls : tc.list[i].name
@@ -252,48 +238,56 @@ Ung.Reports = Ext.extend(Object,
                                } else {
                                  tn.leaf = true;
                                }
+
                                treeNodes.push(tn);
                              }
-                             if(tableOfContents.users!=null) {
-                               treeNodes.push({
-                                                text : i18n._("Users"),
+
+                             if (tableOfContents.users != null) {
+                               treeNodes.push({ text : i18n._("Users"),
                                                 name : "users",
                                                 leaf: true
                                               });
                              }
-                             if(tableOfContents.hosts!=null) {
-                               treeNodes.push({
-                                                text : i18n._("Hosts"),
+
+                             if (tableOfContents.hosts != null) {
+                               treeNodes.push({ text : i18n._("Hosts"),
                                                 name : "hosts",
                                                 leaf: true
                                               });
                              }
-                             if (tableOfContents.emails!=null) {
-                               treeNodes.push({
-                                                text : i18n._("Emails"),
+
+                             if ( tableOfContents.emails!=null ) {
+                               treeNodes.push({ text : i18n._("Emails"),
                                                 name : "emails",
                                                 leaf: true
                                               });
                              }
+
                              return treeNodes;
                            },
-                           changeDate : function(date) {
+
+                           changeDate : function(date)
+                           {
                              this.reportsDate=date;
 
                              for (var i = 0; i < this.reportDatesItems.length; i++) {
-                               item = this.reportDatesItems[i];
+                               var item = this.reportDatesItems[i];
+                               var found = false;
+
                                if (item.dt.time == date.time) {
                                  Ext.getCmp('report-day-menu').setText(item.text);
-                                 found = true;
+                                 var found = true;
                                  break;
                                }
                              }
 
-                             rpc.reportingManager.getTableOfContents(function(result, exception) {
+                             rpc.reportingManager.getTableOfContents(function(result, exception)
+                                                                     {
                                                                        if (exception) {
                                                                          Ext.MessageBox.alert("Failed", exception.message);
                                                                          return;
                                                                        };
+
                                                                        this.tableOfContents = result;
                                                                        var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
                                                                        Ext.getCmp('tree-panel').getSelectionModel().clearSelections();
@@ -303,12 +297,16 @@ Ung.Reports = Ext.extend(Object,
                                                                        Ext.getCmp('tree-panel').getLoader().load(root);
                                                                      }.createDelegate(this), this.reportsDate);
                            },
+
                            getApplicationData: function(nodeName) {
-                             rpc.reportingManager.getApplicationData(function (result, exception) {
-                                                                       if(exception) {Ext.MessageBox.alert("Failed",exception.message);return};
+                             rpc.reportingManager.getApplicationData(function (result, exception)
+                                                                     {
+                                                                       if (exception) {
+                                                                         Ext.MessageBox.alert("Failed",exception.message);
+                                                                         return;
+                                                                       }
                                                                        rpc.applicationData=result;
-                                                                       reports.breadcrumbs.push({
-                                                                                                  text: this.selectedNode.attributes.text,
+                                                                       reports.breadcrumbs.push({ text: this.selectedNode.attributes.text,
                                                                                                   handler: this.getApplicationData.createDelegate(this,[nodeName])
                                                                                                 });
 
@@ -319,58 +317,68 @@ Ung.Reports = Ext.extend(Object,
                                                                                                       );
                                                                      }.createDelegate(this), reports.reportsDate,nodeName);
                            },
-                           getTableOfContentsForUser : function(user){
-                             rpc.reportingManager.getTableOfContentsForUser(function (result, exception) {
-                                                                              if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
-                                                                              rpc.applicationData=result;
-                                                                              reports.breadcrumbs.push({
-                                                                                                         text: user +" "+i18n._("Reports"),
-                                                                                                         handler: this.getTableOfContentsForUser.createDelegate(this,user)
-                                                                                                       });
-                                                                              this.reportDetails.buildReportDetails(); // XXX take to correct page
-                                                                            }.createDelegate(this), reports.reportsDate, user);
-                           },
-                           getApplicationDataForUser: function(app, user) {
-                             rpc.reportingManager.getApplicationDataForUser(function (result, exception) {
-                                                                              if(exception) {Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);return};
-                                                                              rpc.applicationData=result;
-                                                                              reports.breadcrumbs.push({
-                                                                                                         text: user +" "+i18n._("Reports"),
-                                                                                                         handler: this.getApplicationDataForUser.createDelegate(this,[app, user])
-                                                                                                       });
-                                                                              this.buildReportDetails(); // XXX take to correct page
-                                                                            }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, app, user);
-                           },
-                           /**
-                            *  This method is being used to display the list of users in the short term because users are being fetched
-                            *  as part of the table of contents and not like other "Applications"
-                            *  So when users are being fetched like other applciations, stop using this method and use getApplicationDateForHost
-                            */
-                           showUserList : function(){
 
+                           getDrilldownTableOfContents: function(fnName, value)
+                           {
+                             rpc.reportingManager[fnName](function (result, exception)
+                                                          {
+                                                            if (exception) {
+                                                              Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
+                                                            }
+                                                            rpc.applicationData=result;
+                                                            reports.breadcrumbs.push({ text: value +" "+i18n._("Reports"),
+                                                                                       handler: this[fnName].createDelegate(this,value)
+                                                                                     });
+                                                            this.reportDetails.buildReportDetails(); // XXX take to correct page
+                                                          }.createDelegate(this), reports.reportsDate, value);
                            },
-                           getApplicationDataForHost: function(app, host) {
-                             rpc.reportingManager.getApplicationDataForHost(function (result, exception) {
-                                                                              if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message);return};
-                                                                              rpc.applicationData=result;
-                                                                              reports.breadcrumbs.push({
-                                                                                                         text: host +" "+i18n._("Reports"),
-                                                                                                         handler: this.getApplicationDataForHost.createDelegate(this,[app, host])
-                                                                                                       });
-                                                                              this.buildReportDetails(); // XXX take to correct page
-                                                                            }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, app, host);
+
+                           getTableOfContentsForUser: function(user)
+                           {
+                             return this.getDrilldownTableOfContents('getTableOfContentsForUser', user);
                            },
-                           getApplicationDataForEmail: function(email) {
-                             rpc.reportingManager.getApplicationDataForEmail(function (result, exception) {
-                                                                               if(exception) {Ext.MessageBox.alert(i18n._("Failed"),exception.message);return};
-                                                                               rpc.applicationData=result;
-                                                                               reports.breadcrumbs.push({
-                                                                                                          text: email +" "+i18n._("Reports"),
-                                                                                                          handler: this.getApplicationDataForEmail.createDelegate(this,[app, email])
-                                                                                                        });
-                                                                               this.buildReportDetails(); // XXX take to correct page
-                                                                             }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, app, value);
+
+                           getTableOfContentsForHost: function(host)
+                           {
+                             return this.getDrilldownTableOfContents('getTableOfContentsForHost', host);
                            },
+
+                           getTableOfContentsForEmail: function(email)
+                           {
+                             return this.getDrilldownTableOfContents('getTableOfContentsForEmail', email);
+                           },
+
+                           getDrilldownApplicationData: function(fnName, app, value)
+                           {
+                             rpc.reportingManager[fnName](function (result, exception)
+                                                          {
+                                                            if (exception) {
+                                                              Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
+                                                              return;
+                                                            }
+                                                            rpc.applicationData=result;
+                                                            reports.breadcrumbs.push({ text: value +" "+i18n._("Reports"),
+                                                                                       handler: this[fnName].createDelegate(this,[app, user])
+                                                                                     });
+                                                            this.buildReportDetails(); // XXX take to correct page
+                                                          }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, app, user);
+                           },
+
+                           getApplicationDataForUser: function(app, user)
+                           {
+                             this.getDrilldownApplicationData('getApplicationDataForUser', app, user);
+                           },
+
+                           getApplicationDataForHost: function(app, host)
+                           {
+                             this.getDrilldownApplicationData('getApplicationDataForHost', app, host);
+                           },
+
+                           getApplicationDataForHost: function(app, host)
+                           {
+                             this.getDrilldownApplicationData('getApplicationDataForHost', app, host);
+                           },
+
                            openBreadcrumb: function(breadcrumbIndex) {
                              if(this.breadcrumbs.length>breadcrumbIndex) {
                                var breadcrumb=this.breadcrumbs[breadcrumbIndex];

@@ -22,6 +22,7 @@ from reports.engine import Column
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
+from reports.engine import TOP_LEVEL
 from sql_helper import print_timing
 
 _ = gettext.gettext
@@ -53,6 +54,9 @@ class Shield(Node):
                         Column('dropped', 'integer', 'sum(dropped)'),
                         Column('rejected', 'integer', 'sum(rejected)')])
         reports.engine.register_fact_table(ft)
+
+    def get_toc_membership(self):
+        return [TOP_LEVEL]
 
     def parents(self):
         return ['untangle-vm']

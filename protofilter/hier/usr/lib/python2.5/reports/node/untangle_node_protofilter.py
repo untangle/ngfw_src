@@ -21,7 +21,10 @@ from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
 from reports.engine import FactTable
+from reports.engine import HOST_DRILLDOWN
 from reports.engine import Node
+from reports.engine import TOP_LEVEL
+from reports.engine import USER_DRILLDOWN
 from sql_helper import print_timing
 
 _ = gettext.gettext
@@ -40,6 +43,9 @@ class Protofilter(Node):
                                   "count(CASE WHEN NOT pf_blocked ISNULL THEN 1 ELSE null END)"))
 
         ft.dimensions.append(Column('pf_protocol', 'text'))
+
+    def get_toc_membership(self):
+        return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
     def get_report(self):
         sections = []

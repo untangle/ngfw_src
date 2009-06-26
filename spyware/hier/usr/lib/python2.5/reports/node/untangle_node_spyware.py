@@ -19,7 +19,10 @@ from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
+from reports.engine import HOST_DRILLDOWN
 from reports.engine import Node
+from reports.engine import TOP_LEVEL
+from reports.engine import USER_DRILLDOWN
 from sql_helper import print_timing
 
 _ = gettext.gettext
@@ -33,6 +36,9 @@ class Spyware(Node):
         self.__update_access(start_date, end_date)
         self.__update_blacklist(start_date, end_date)
         self.__update_cookie(start_date, end_date)
+
+    def get_toc_membership(self):
+        return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
     def parents(self):
         return ['untangle-vm', 'untangle-casing-http']

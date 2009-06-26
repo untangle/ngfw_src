@@ -9,7 +9,10 @@ import sys
 from psycopg import DateFromMx
 from reports.engine import Column
 from reports.engine import FactTable
+from reports.engine import HOST_DRILLDOWN
 from reports.engine import Node
+from reports.engine import TOP_LEVEL
+from reports.engine import USER_DRILLDOWN
 from sql_helper import print_timing
 
 _ = gettext.gettext
@@ -63,6 +66,9 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
                                   'integer', """\
 count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE null END)\
 """ % (self.__vendor_name, self.__vendor_name)))
+
+    def get_toc_membership(self):
+        return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
     def get_report(self):
         sections = []

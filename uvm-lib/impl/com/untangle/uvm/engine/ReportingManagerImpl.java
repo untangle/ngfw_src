@@ -109,7 +109,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d));
+        List<Application> apps = getApplications(getDateDir(d),
+                                                 "top-level");
 
         List<User> users = getUsers(d);
         List<Host> hosts = getHosts(d);
@@ -123,8 +124,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d)
-                                                 + "/host/" + hostname);
+        List<Application> apps = getApplications(getDateDir(d),
+                                                 "user-drilldown");
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
@@ -138,8 +139,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d)
-                                                 + "/user/" + username);
+        List<Application> apps = getApplications(getDateDir(d),
+                                                 "user-drilldown");
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
@@ -153,8 +154,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "Platform");
 
-        List<Application> apps = getApplications(getDateDir(d)
-                                                 + "/email/" + email);
+        List<Application> apps = getApplications(getDateDir(d),
+                                                 "email-drilldown");
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
@@ -172,21 +173,18 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     public ApplicationData getApplicationDataForUser(Date d, String appName,
                                                      String username)
     {
-        System.out.println("GET APPLICATION DATA FOR USER APP: " + appName + " USER: " + username);
         return readXml(d, appName, "user", username);
     }
 
     public ApplicationData getApplicationDataForHost(Date d, String appName,
                                                      String hostname)
     {
-        System.out.println("GET APPLICATION DATA FOR host APP: " + appName + " HOSt: " + hostname);
         return readXml(d, appName, "host", hostname);
     }
 
     public ApplicationData getApplicationDataForEmail(Date d, String appName,
                                                       String emailAddr)
     {
-        System.out.println("GET APPLICATION DATA FOR EMAIL APP: " + appName + " EMAIL: " + emailAddr);
         return readXml(d, appName, "email", emailAddr);
     }
 
@@ -392,23 +390,52 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return String.format(sb.toString());
     }
 
-    private List<Application> getApplications(String dirName)
+    private List<Application> getApplications(String dirName, String type)
     {
+        List<String> appNames = getAppNames(dirName, type);
+
         List<Application> apps = new ArrayList<Application>();
-        File dir = new File(dirName);
-        if (dir.exists()) {
-            for (String s : dir.list()) {
-                File f = new File(new File(dir, s), "report.xml");
-                if (f.exists()) {
-                    ApplicationData ad = readXml(f);
-                    if (null != ad) {
-                        apps.add(new Application(ad.getName(), ad.getTitle()));
-                    }
+        for (String s : appNames) {
+            File f = new File(dirName + "/" + s + "/report.xml");
+            if (f.exists()) {
+                ApplicationData ad = readXml(f);
+                if (null != ad) {
+                    apps.add(new Application(ad.getName(), ad.getTitle()));
                 }
             }
         }
 
         return apps;
+    }
+
+    private List<String> getAppNames(String dirName, String type)
+    {
+        List<String> l = new ArrayList<String>();
+
+        String f = dirName + "/" + type;
+
+        BufferedReader br = null;
+
+        try {
+            InputStream is = new FileInputStream(f);
+            br = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while (null != (line = br.readLine())) {
+                l.add(line);
+            }
+        } catch (IOException exn) {
+            logger.warn("could not read: " + f, exn);
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close: " + f, exn);
+                }
+            }
+        }
+
+        return l;
     }
 
     private boolean generateReport(Date d, String appName, String type,
