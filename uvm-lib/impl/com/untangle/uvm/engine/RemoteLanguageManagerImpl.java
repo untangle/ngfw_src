@@ -39,9 +39,9 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocaleInfo;
-import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.client.RemoteUvmContext;
@@ -112,10 +112,10 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             }
         };
         uvmContext.runTransaction(tw);
-        
+
         allLanguages = loadAllLanguages();
         allCountries = loadAllCountries();
-        
+
     }
 
     // public methods ---------------------------------------------------------
@@ -200,9 +200,9 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         }
         return success;
     }
-    
+
     /*
-     * Check if a language pack entry conform to the correct naming: <lang_code>/<module_name>.po 
+     * Check if a language pack entry conform to the correct naming: <lang_code>/<module_name>.po
      */
     private boolean isValid(ZipEntry entry) {
         String tokens[] = entry.getName().split(File.separator);
@@ -238,7 +238,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             p.waitFor();
             if (p.exitValue() != 0) {
                 success = false;
-                logProcessError(p, "Error compiling to resource bundle");                
+                logProcessError(p, "Error compiling to resource bundle");
             }
 
         } catch (Exception e) {
@@ -271,7 +271,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             p.waitFor();
             if (p.exitValue() != 0) {
                 success = false;
-                logProcessError(p, "Error compiling to mo file");                
+                logProcessError(p, "Error compiling to mo file");
             }
 
         } catch (Exception e) {
@@ -280,7 +280,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         }
         return success;
     }
-    
+
     private void logProcessError(Process p, String errorMsg) throws IOException {
         InputStream stderr = p.getErrorStream ();
         BufferedReader br = new BufferedReader(new InputStreamReader(stderr));
@@ -315,15 +315,21 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             String countryName = countryCode == null ? null : allCountries.get(countryCode);
             locales.add(new LocaleInfo(langCode, langName, countryCode, countryName));
         }
-        
+
         return locales;
     }
 
     public Map<String, String> getTranslations(String module){
         Map<String, String> map = new HashMap<String, String>();
+
+        if (null == module) {
+            logger.warn("getTranslations called with no module, returning no empty map");
+            return map;
+        }
+
         String i18nModule = module.replaceAll("-", "_");
-        Locale locale = getLocale(); 
-        
+        Locale locale = getLocale();
+
         try {
             I18n i18n = null;
             ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
@@ -363,7 +369,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
                 }
             }
         }
-        
+
         return map;
     }
 
@@ -379,13 +385,13 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         }
         return locale;
     }
-    
+
     private void saveSettings(LanguageSettings settings) {
         DeletingDataSaver<LanguageSettings> saver =
             new DeletingDataSaver<LanguageSettings>(uvmContext,"LanguageSettings");
         this.settings = saver.saveData(settings);
     }
-    
+
     private Map<String, String> loadAllLanguages() {
         Map<String, String> languages = new HashMap<String, String>();
 
@@ -410,7 +416,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
         return languages;
     }
-    
+
     private Map<String, String> loadAllCountries() {
         Map<String, String> countries = new HashMap<String, String>();
 
@@ -435,7 +441,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
         return countries;
     }
-    
+
     private boolean isValidLocaleCode(String code) {
         if (code == null) {
             return false;
@@ -444,19 +450,19 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         if (tokens.length == 0 || tokens.length > 2) {
             return false;
         }
-        
+
         String langCode = tokens[0];
         String countryCode = tokens.length == 2 ? tokens[1] : null;
-        return isValidLanguageCode(langCode) 
+        return isValidLanguageCode(langCode)
             && (countryCode == null || isValidCountryCode(countryCode));
     }
-    
+
     private boolean isValidLanguageCode(String code) {
         return allLanguages.containsKey(code);
     }
-    
+
     private boolean isValidCountryCode(String code) {
         return allCountries.containsKey(code);
     }
-    
+
 }

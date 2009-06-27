@@ -353,15 +353,15 @@ Ung.Reports = Ext.extend(Object,
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
                                                             if (exception) {
-                                                              Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
+                                                              Ext.MessageBox.alert(i18n._("Failed"),exception.message);
                                                               return;
                                                             }
                                                             rpc.applicationData=result;
                                                             reports.breadcrumbs.push({ text: value +" "+i18n._("Reports"),
-                                                                                       handler: this[fnName].createDelegate(this,[app, user])
+                                                                                       handler: this[fnName].createDelegate(this,[app, value])
                                                                                      });
-                                                            this.buildReportDetails(); // XXX take to correct page
-                                                          }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, app, user);
+                                                            this.reportDetails.buildReportDetails(); // XXX take to correct page
+                                                          }.createDelegate(this), reports.reportsDate, app, value);
                            },
 
                            getApplicationDataForUser: function(app, user)
@@ -508,8 +508,8 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                  buildReportDetails: function()
                                  {
-                                   var reportDetails=Ext.getCmp("report-details");
-                                   while(reportDetails.items.length!=0) {
+                                   var reportDetails = Ext.getCmp("report-details");
+                                   while (reportDetails.items.length!=0) {
                                      reportDetails.remove(reportDetails.items.get(0));
                                    }
 
