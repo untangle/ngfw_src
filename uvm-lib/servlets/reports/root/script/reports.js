@@ -21,6 +21,9 @@ Ung.Reports = Ext.extend(Object,
                            reportDetails:null,
                            // breadcrumbs object for the report details
                            breadcrumbs: null,
+
+                           appNames: { },
+
                            constructor : function(config) {
                              Ext.apply(this, config);
                              this.init();
@@ -228,6 +231,7 @@ Ung.Reports = Ext.extend(Object,
                                  tn.leaf = false;
                                  tn.children = [];
                                  for (var i = 0; i < tc.list.length; i++) {
+                                   this.appNames[tc.list[i].name] = tc.list[i].title;
                                    tn.children.push({ text : i18n._(tc.list[i].title),
                                                       name : tc.list[i].name,
                                                       leaf : true,
@@ -320,7 +324,7 @@ Ung.Reports = Ext.extend(Object,
 
                            getDrilldownTableOfContents: function(fnName, value)
                            {
-                             this.drilldownValue = value;
+                             rpc.drilldownValue = value;
 
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
@@ -352,7 +356,7 @@ Ung.Reports = Ext.extend(Object,
 
                            getDrilldownApplicationData: function(fnName, app, value)
                            {
-                             this.drilldownValue = value;
+                             rpc.drilldownValue = value;
 
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
@@ -361,7 +365,7 @@ Ung.Reports = Ext.extend(Object,
                                                               return;
                                                             }
                                                             rpc.applicationData=result;
-                                                            reports.breadcrumbs.push({ text: value +" "+i18n._("Reports"),
+                                                            reports.breadcrumbs.push({ text: i18n.sprintf("%s reports ", this.appNames[app]),
                                                                                        handler: this[fnName].createDelegate(this,[app, value])
                                                                                      });
                                                             this.reportDetails.buildReportDetails(); // XXX take to correct page
@@ -412,6 +416,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                    var i = 0;
                                    var list = rpc.applicationData.applications.list;
 
+
                                    for (i=0; i<list.length; i++) {
                                      data.push([list[i].javaClass,list[i].name,list[i].title]);
                                    }
@@ -429,7 +434,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                sortable: false,
                                                                                dataIndex: 'title',
                                                                                renderer: function(value, medata, record) {
-                                                                                 return '<a href="javascript:reports.getApplicationDataFor' + upperName + '(\'' + record.data.name + '\', \'' + this.drilldownValue + '\')">' + value + '</a>';
+                                                                                 return '<a href="javascript:reports.getApplicationDataFor' + upperName + '(\'' + record.data.name + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
                                                                                }.createDelegate(this)
                                                                              }],
                                                                    title:this.i18n._('Application List'),
@@ -690,17 +695,17 @@ Ung.ReportDetails = Ext.extend(Object,
                                        col.width = 160;
                                      } else if (c.type == "UserLink") {
                                        col.renderer = function(value) {
-                                         return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + this.drilldownValue + '\')">' + value + '</a>';
+                                         return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
                                        };
                                        col.width = 100;
                                      } else if (c.type == "HostLink") {
                                        col.renderer = function(value) {
-                                         return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + this.drilldownValue + '\')">' + value + '</a>';
+                                         return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
                                        };
                                        col.width = 100;
                                      } else if (c.type == "EmailLink") {
                                        col.renderer = function(value) {
-                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + this.drilldownValue + '\')">' + value + '</a>';
+                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
                                        };
                                        col.width = 180;
                                      }

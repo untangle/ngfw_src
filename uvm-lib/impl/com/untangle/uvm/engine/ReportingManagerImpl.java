@@ -190,14 +190,17 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     public List<List> getDetailData(Date d, String appName, String detailName)
     {
-        List<List> rv = null;
+        List<List> rv = new ArrayList<List>();
 
         ApplicationData ad = readXml(d, appName, null, null);
+        if (null == ad) {
+            return rv;
+        }
+
         for (Section section : ad.getSections()) {
             if (section instanceof DetailSection) {
                 DetailSection sds = (DetailSection)section;
                 if (sds.getName().equals(detailName)) {
-                    rv = new ArrayList<List>();
                     String sql = sds.getSql();
 
                     Connection conn = null;
@@ -455,7 +458,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         } else if (type.equals("email")) {
             user = ""; host = ""; email = value;
         }
-
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
