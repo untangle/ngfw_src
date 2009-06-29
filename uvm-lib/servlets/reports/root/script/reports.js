@@ -311,12 +311,12 @@ Ung.Reports = Ext.extend(Object,
                                                                        }
                                                                        rpc.applicationData=result;
                                                                        reports.breadcrumbs.push({ text: this.selectedNode.attributes.text,
-                                                                                                  handler: this.getApplicationData.createDelegate(this,[nodeName])
+                                                                                                  handler: this.getApplicationData.createDelegate(this, [nodeName])
                                                                                                 });
 
                                                                        Ung.Util.loadModuleTranslations( nodeName, i18n,
                                                                                                         function(){
-                                                                                                          reports.reportDetails = new Ung.ReportDetails({reportType:nodeName});
+                                                                                                          reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
                                                                                                         }
                                                                                                       );
                                                                      }.createDelegate(this), reports.reportsDate,nodeName);
@@ -333,7 +333,7 @@ Ung.Reports = Ext.extend(Object,
                                                             }
                                                             rpc.applicationData=result;
                                                             reports.breadcrumbs.push({ text: value +" "+i18n._("Reports"),
-                                                                                       handler: this[fnName].createDelegate(this,value)
+                                                                                       handler: this.getDrilldownTableOfContents.createDelegate(this, [fnName, value])
                                                                                      });
                                                             this.reportDetails.buildReportDetails(); // XXX take to correct page
                                                           }.createDelegate(this), reports.reportsDate, value);
@@ -388,9 +388,9 @@ Ung.Reports = Ext.extend(Object,
                            },
 
                            openBreadcrumb: function(breadcrumbIndex) {
-                             if(this.breadcrumbs.length>breadcrumbIndex) {
-                               var breadcrumb=this.breadcrumbs[breadcrumbIndex];
-                               reports.breadcrumbs.splice(breadcrumbIndex,this.breadcrumbs.length-breadcrumbIndex);
+                             if (this.breadcrumbs.length>breadcrumbIndex) {
+                               var breadcrumb = this.breadcrumbs[breadcrumbIndex];
+                               reports.breadcrumbs.splice(breadcrumbIndex, this.breadcrumbs.length-breadcrumbIndex);
                                breadcrumb.handler.call(this);
                              }
                            }
