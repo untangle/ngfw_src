@@ -456,9 +456,11 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
             user = ""; host = ""; email = value;
         }
 
-        String cmdStr = "generate_sub_report," + appName + "," + d + "," + host
-            + "," + user + "," + email;
 
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+        String cmdStr = "generate_sub_report," + appName + "," + df.format(d)
+            + "," + host + "," + user + "," + email + "\n";
 
         Socket s = null;
         Writer w = null;
@@ -473,6 +475,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
             r = new BufferedReader(new InputStreamReader(is));
 
             w.write(cmdStr);
+            w.flush();
             String l = r.readLine();
 
             if (l.equals("DONE")) {

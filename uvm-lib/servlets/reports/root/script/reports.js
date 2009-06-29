@@ -320,6 +320,8 @@ Ung.Reports = Ext.extend(Object,
 
                            getDrilldownTableOfContents: function(fnName, value)
                            {
+                             this.drilldownValue = value;
+
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
                                                             if (exception) {
@@ -350,6 +352,8 @@ Ung.Reports = Ext.extend(Object,
 
                            getDrilldownApplicationData: function(fnName, app, value)
                            {
+                             this.drilldownValue = value;
+
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
                                                             if (exception) {
@@ -374,9 +378,9 @@ Ung.Reports = Ext.extend(Object,
                              this.getDrilldownApplicationData('getApplicationDataForHost', app, host);
                            },
 
-                           getApplicationDataForHost: function(app, host)
+                           getApplicationDataForEmail: function(app, email)
                            {
-                             this.getDrilldownApplicationData('getApplicationDataForHost', app, host);
+                             this.getDrilldownApplicationData('getApplicationDataForEmail', app, email);
                            },
 
                            openBreadcrumb: function(breadcrumbIndex) {
@@ -412,11 +416,10 @@ Ung.ReportDetails = Ext.extend(Object,
                                      data.push([list[i].javaClass,list[i].name,list[i].title]);
                                    }
 
-                                   return new Ext.grid.GridPanel({ store: new Ext.data.SimpleStore({
-                                                                                                     fields: [
-                                                                                                       {name: 'javaClass'},
-                                                                                                       {name: 'name'},
-                                                                                                       {name: 'title'}
+                                   return new Ext.grid.GridPanel({ store: new Ext.data.SimpleStore({ fields: [
+                                                                                                       { name: 'javaClass' },
+                                                                                                       { name: 'name' },
+                                                                                                       { name: 'title' }
                                                                                                      ],
                                                                                                      data: data
                                                                                                    }),
@@ -426,7 +429,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                sortable: false,
                                                                                dataIndex: 'title',
                                                                                renderer: function(value, medata, record) {
-                                                                                 return '<a href="javascript:reports.getApplicationDataFor' + upperName + '(\'' + record.data.name + '\', \'' + value + '\')">' + value + '</a>';
+                                                                                 return '<a href="javascript:reports.getApplicationDataFor' + upperName + '(\'' + record.data.name + '\', \'' + this.drilldownValue + '\')">' + value + '</a>';
                                                                                }.createDelegate(this)
                                                                              }],
                                                                    title:this.i18n._('Application List'),
@@ -578,12 +581,6 @@ Ung.ReportDetails = Ext.extend(Object,
                                      sectionPanel=this.buildSummarySection(appName, section);
                                    } else if (section.javaClass=="com.untangle.uvm.reports.DetailSection") {
                                      sectionPanel=this.buildDetailSection(appName, section);
-                                   } else {
-                                     //For test
-                                     sectionPanel = new Ext.Panel({ title : this.i18n._(section.title),
-                                                                  layout : "form",
-                                                                  items : [{border:false, html:"TODO: "+section.title+" for "+"HIPPIES" +" on date "+ "DIPPIE"}]
-                                                                  });
                                    }
 
                                    return sectionPanel;
@@ -693,17 +690,17 @@ Ung.ReportDetails = Ext.extend(Object,
                                        col.width = 160;
                                      } else if (c.type == "UserLink") {
                                        col.renderer = function(value) {
-                                         return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                         return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + this.drilldownValue + '\')">' + value + '</a>';
                                        };
                                        col.width = 100;
                                      } else if (c.type == "HostLink") {
                                        col.renderer = function(value) {
-                                         return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                         return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + this.drilldownValue + '\')">' + value + '</a>';
                                        };
                                        col.width = 100;
                                      } else if (c.type == "EmailLink") {
                                        col.renderer = function(value) {
-                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + this.drilldownValue + '\')">' + value + '</a>';
                                        };
                                        col.width = 180;
                                      }

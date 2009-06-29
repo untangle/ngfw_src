@@ -43,6 +43,7 @@ class Worker(Thread):
     def run(self):
         while 1:
             buf = self.__socket.recv(4096)
+            print "got '%s'" % buf
 
             if not buf:
                 break
@@ -66,19 +67,19 @@ class Worker(Thread):
                          self.__socket.shutdown(socket.SHUT_RDWR)
                          self.__socket.close()
                          return
-                        
+
         self.__socket.shutdown(socket.SHUT_RDWR)
         self.__socket.close()
 
     def __process_line(self, line):
-        try: 
+        try:
             (cmd, node_name, end_date, host, user, email) = line.split(',')
         except:
             if line == 'PING':
                 return "PONG"
             else:
                 return 'BAD_CMD: %s' % line
-       
+
         end_date = mx.DateTime.DateFrom(end_date)
 
         if host == '':
@@ -89,8 +90,8 @@ class Worker(Thread):
             email = None
 
         if cmd == 'generate_sub_report':
-            reports.engine.generate_sub_report(REPORTS_OUTPUT_BASE, node_name, end_date,
-                                               host, user, email)
+            reports.engine.generate_sub_report(REPORTS_OUTPUT_BASE, node_name,
+                                               end_date, host, user, email)
             return 'DONE'
         else:
             return 'BAD_CMD: %s' % cmd
