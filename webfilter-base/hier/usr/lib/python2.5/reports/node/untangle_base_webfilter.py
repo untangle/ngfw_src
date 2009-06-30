@@ -681,7 +681,7 @@ class TopTenWebUsageByHits(Graph):
     @print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
                            email=None):
-        if email:
+        if host or user or email:
             return None
 
         ed = DateFromMx(end_date)
@@ -710,7 +710,7 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
 
     @print_timing
     def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
+        if host or user or email:
             return None
 
         ed = DateFromMx(end_date)
@@ -755,7 +755,7 @@ class TopTenWebPolicyViolatorsByHits(Graph):
     @print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
                            email=None):
-        if email:
+        if host or user or email:
             return None
 
         ed = DateFromMx(end_date)
@@ -787,7 +787,7 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
 
     @print_timing
     def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
+        if host or user or email:
             return None
 
         ed = DateFromMx(end_date)
@@ -835,7 +835,7 @@ class TopTenWebPolicyViolatorsADByHits(Graph):
     @print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
                            email=None):
-        if email:
+        if host or user or email:
             return None
 
         ed = DateFromMx(end_date)
@@ -868,7 +868,7 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
 
     @print_timing
     def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
+        if host or user or email:
             return None
 
         ed = DateFromMx(end_date)
@@ -917,7 +917,7 @@ class TopTenWebUsageBySize(Graph):
     @print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
                            email=None):
-        if email:
+        if host or user or email:
             return None
 
         ed = DateFromMx(end_date)
@@ -946,7 +946,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
     @print_timing
     def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
+        if host or user or email:
             return None
 
         ed = DateFromMx(end_date)

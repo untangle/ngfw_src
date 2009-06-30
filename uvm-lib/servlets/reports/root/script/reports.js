@@ -315,7 +315,7 @@ Ung.Reports = Ext.extend(Object,
 
                                                                        Ung.Util.loadModuleTranslations( nodeName, i18n,
                                                                                                         function(){
-                                                                                                          reports.reportDetails = new Ung.ReportDetails({reportType: null});
+                                                                                                          reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
                                                                                                         }
                                                                                                       );
                                                                      }.createDelegate(this), reports.reportsDate,nodeName);
@@ -571,11 +571,10 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                      'com.untangle.uvm.reports.TableOfContents' : this.buildEmailTableOfContents.createDelegate(this)
                                                                    }
                                                          };
-                                     if (reportTypeMap[this.reportType] == null) {
-                                       alert(this.reportType);
-                                     }
-                                     if (rpc.applicationData != null && reportTypeMap[this.reportType][rpc.applicationData.javaClass] != null){
-                                       selectedType = rpc.applicationData.javaClass;
+                                     if (reportTypeMap[this.reportType] != null) {
+                                       if (rpc.applicationData != null && reportTypeMap[this.reportType][rpc.applicationData.javaClass] != null) {
+                                         selectedType = rpc.applicationData.javaClass;
+                                       }
                                      }
                                      reportDetails.add(reportTypeMap[this.reportType][selectedType]());
                                    }
