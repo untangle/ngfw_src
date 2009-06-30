@@ -315,7 +315,7 @@ Ung.Reports = Ext.extend(Object,
 
                                                                        Ung.Util.loadModuleTranslations( nodeName, i18n,
                                                                                                         function(){
-                                                                                                          reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
+                                                                                                          reports.reportDetails = new Ung.ReportDetails({reportType: null});
                                                                                                         }
                                                                                                       );
                                                                      }.createDelegate(this), reports.reportsDate,nodeName);
@@ -571,6 +571,9 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                      'com.untangle.uvm.reports.TableOfContents' : this.buildEmailTableOfContents.createDelegate(this)
                                                                    }
                                                          };
+                                     if (reportTypeMap[this.reportType] == null) {
+                                       alert(this.reportType);
+                                     }
                                      if (rpc.applicationData != null && reportTypeMap[this.reportType][rpc.applicationData.javaClass] != null){
                                        selectedType = rpc.applicationData.javaClass;
                                      }
@@ -642,8 +645,9 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                                                          unit = s.join("/");
                                                                                                                        }
 
+                                                                                                                       var v = this.i18n.numberFormat(value);
 
-                                                                                                                       return unit == null ? value :  (value + " " + this.i18n._(unit));
+                                                                                                                       return unit == null ? v : (v + " " + this.i18n._(unit));
                                                                                                                      }.createDelegate(this)
                                                                                                                    }],
                                                                                                                    // inline toolbars
