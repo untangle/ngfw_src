@@ -373,6 +373,8 @@ class Graph:
         for ks in self.__key_statistics:
             ks_element = Element('key-statistic')
             ks_element.set('name', ks.name)
+            if type(ks.value) == float:
+                ks.value = '%.2f' % ks.value
             ks_element.set('value', str(ks.value))
             ks_element.set('unit', ks.unit)
             if ks.link_type:

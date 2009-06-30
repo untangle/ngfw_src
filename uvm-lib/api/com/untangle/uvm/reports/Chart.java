@@ -75,7 +75,7 @@ public class Chart extends SummaryItem implements Serializable
 
     public String getPrinterUrl()
     {
-        return csvUrl;
+        return imageUrl;
     }
 
     public List<KeyStatistic> getKeyStatistics()
