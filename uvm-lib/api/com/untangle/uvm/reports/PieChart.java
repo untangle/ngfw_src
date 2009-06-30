@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.io.CSV;
@@ -86,14 +87,24 @@ public class PieChart extends Plot
             String columnKey = (String)cd.getColumnKey(i);
 
             for (int j = 0; j < cd.getRowCount(); j++) {
-                Comparable rowKey = cd.getRowKey(j);
+                String rowKey = cd.getRowKey(j).toString();
 
-                dpd.setValue(rowKey, cd.getValue(rowKey, columnKey));
+                String rowLabel;
+                if (10 < rowKey.length()) {
+                    rowLabel = rowKey.substring(0, 10);
+                } else {
+                    rowLabel = rowKey;
+                }
+
+                dpd.setValue(rowLabel, cd.getValue(rowKey, columnKey));
             }
         }
 
         JFreeChart jfChart =
             ChartFactory.createPieChart(getTitle(), dpd, true, false, false);
+
+        PiePlot plot = (PiePlot)jfChart.getPlot();
+        plot.setLabelGenerator(null);
 
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
                                       jfChart, CHART_WIDTH, CHART_HEIGHT,
