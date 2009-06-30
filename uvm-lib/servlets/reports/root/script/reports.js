@@ -125,7 +125,6 @@ Ung.Reports = Ext.extend(Object,
                                                                     height : 65,
                                                                     defaults : { border : false,
                                                                                  bodyStyle : 'background-color: transparent;'
-
                                                                                },
                                                                     items : [{ html: '<img src="/images/BrandingLogo.gif?'+(new Date()).getTime()+'" border="0" height="50"/>',
                                                                                region : 'west',
@@ -618,11 +617,12 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                                                      sortable: false,
                                                                                                                      dataIndex: 'label',
                                                                                                                      renderer: function(value, medata, record) {
-                                                                                                                       if (record.data.linkType == "UserLink") {
+                                                                                                                       var linkType = record.data.linkType;
+                                                                                                                       if (linkType == "UserLink") {
                                                                                                                          return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                                                                                                       } else if (record.data.linkType == "HostLink") {
+                                                                                                                       } else if (linkType == "HostLink") {
                                                                                                                          return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                                                                                                       } else if (record.data.linkType == "EmailLink") {
+                                                                                                                       } else if (linkType == "EmailLink") {
                                                                                                                          return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
                                                                                                                        } else {
                                                                                                                          return this.i18n._(value);
@@ -634,7 +634,16 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                                                      sortable: false,
                                                                                                                      dataIndex: 'value',
                                                                                                                      renderer: function (value, medata, record) {
-                                                                                                                       return record.data.unit == null ? value :  (value + " " + this.i18n._(record.data.unit));
+                                                                                                                       var unit = record.data.unit;
+                                                                                                                       if (unit && unit.indexOf('bytes') == 0) {
+                                                                                                                         value = Math.round(value / 1000000);
+                                                                                                                         var s = unit.split("/");
+                                                                                                                         s[0] = "MB";
+                                                                                                                         unit = s.join("/");
+                                                                                                                       }
+
+
+                                                                                                                       return unit == null ? value :  (value + " " + this.i18n._(unit));
                                                                                                                      }.createDelegate(this)
                                                                                                                    }],
                                                                                                                    // inline toolbars

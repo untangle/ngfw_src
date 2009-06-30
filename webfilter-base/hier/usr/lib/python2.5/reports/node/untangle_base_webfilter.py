@@ -937,7 +937,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         curs.execute(query, (one_day, ed))
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('size'))
+            ks = KeyStatistic(r[0], r[1], N_('bytes'))
             lks.append(ks)
 
         conn.commit()
@@ -973,7 +973,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Web Usage (by size)'),
                      xlabel=_('Host'),
-                     ylabel=_('Size per Day'))
+                     ylabel=_('bytes/day'))
 
         plot.add_pie_dataset(dataset)
 
@@ -1089,7 +1089,7 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
 
         curs.execute(query, (one_day, ed))
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('size'))
+            ks = KeyStatistic(r[0], r[1], N_('bytes'))
             lks.append(ks)
 
         conn.commit()
@@ -1125,7 +1125,7 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Websites (by size)'),
                      xlabel=_('Hosts'),
-                     ylabel=_('Size per Day'))
+                     ylabel=_('bytes/day'))
 
         plot.add_pie_dataset(dataset)
 
