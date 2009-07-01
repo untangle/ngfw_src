@@ -27,9 +27,9 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
 
   <display-name>Reports</display-name>
 
-  <servlet-mapping>
-    <servlet-name>com.untangle.uvm.reports.jsp.index_jsp</servlet-name>
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-
+  <welcome-file-list>
+    <welcome-file>
+      index.jsp
+    </welcome-file>
+  </welcome-file-list>
 </web-app>
