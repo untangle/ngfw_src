@@ -18,6 +18,7 @@ from reportlab.platypus.flowables import Image
 from reportlab.platypus.tables import Table
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
+from popen2 import popen2
 
 styles = getSampleStyleSheet()
 
@@ -62,7 +63,7 @@ PIE_CHART = 'pie-chart'
 class Report:
     def __init__(self, name, sections):
         self.__name = name
-        self.__title = __get_node_title(self.__name)
+        self.__title = self.__get_node_title(self.__name)
         self.__sections = sections
 
     def generate(self, report_base, date_base, end_date, host=None, user=None,
@@ -114,7 +115,7 @@ class Report:
         </tr>
       </table>""" % (ni.display_name, ni.anchor))
 
-        node_base = get_node_base(self.__name, date_base)
+        node_base = self.get_node_base(self.__name, date_base)
 
         for s in self.__sections:
             s.to_html(writer, report_base, node_base, end_date)
@@ -130,6 +131,22 @@ class Report:
             story.append(Spacer(1, 0.2 * inch))
 
         return story
+
+    def __get_node_title(self, name):
+        title = None
+
+        (stdout, stdin) = popen2('apt-cache show untangle-node-webfilter')
+        try:
+            for l in stdout:
+                m = re.search('Description: (.*)', l)
+                if m:
+                    title = m.group(1)
+                    break
+        finally:
+            stdout.close()
+            stdin.close()
+
+        return title
 
 class Section:
     def __init__(self, name, title):
@@ -546,19 +563,3 @@ class KeyStatistic:
     @property
     def link_type(self):
         return self.__link_type
-
-def __get_node_title(name):
-    title = None
-
-    (stdout, stdin) = popen2.popen2('apt-cache show untangle-node-webfilter')
-    try:
-        for l in stdout:
-            m = re.search('Description: (.*)', l)
-            if m:
-                title = m.group(1)
-                break
-    finally:
-        stdout.close()
-        stdin.close()
-
-    return title

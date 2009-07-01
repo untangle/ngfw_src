@@ -15,7 +15,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib.units import inch
 
-REPORT_JAR_DIR = '@PREFIX@/usr/share/java/reports/'
+UVM_JAR_DIR = '@PREFIX@/usr/share/java/uvm/'
 
 PAGE_HEIGHT = defaultPageSize[1]
 PAGE_WIDTH = defaultPageSize[0]
@@ -349,9 +349,9 @@ def __generate_plots(report_base, dir):
     path.append('@PREFIX@/usr/share/untangle/lib/untangle-libuvm-api/')
     path.append('@PREFIX@/usr/share/untangle/conf/')
 
-    for f in os.listdir(REPORT_JAR_DIR):
+    for f in os.listdir(UVM_JAR_DIR):
         if f.endswith('.jar'):
-            path.append('%s/%s' % (REPORT_JAR_DIR, f))
+            path.append('%s/%s' % (UVM_JAR_DIR, f))
 
     os.system('java -Dlog4j.configuration=log4j-reporter.xml -cp %s com.untangle.uvm.reports.GraphGenerator %s %s'
               % (string.join(path, ':'), report_base, dir))
