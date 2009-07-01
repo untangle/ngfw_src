@@ -75,7 +75,7 @@ class WebFilterBaseNode(Node):
 
         sections.append(WebFilterDetail(self.__vendor_name))
 
-        return Report(self.name, self.__title, sections)
+        return Report(self.name, sections)
 
     def events_cleanup(self, cutoff):
         sql_helper.run_sql("""\

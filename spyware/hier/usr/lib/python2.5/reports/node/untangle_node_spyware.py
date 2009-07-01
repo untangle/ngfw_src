@@ -89,7 +89,7 @@ DELETE FROM events.n_spyware_evt_cookie
 
         sections.append(SpywareDetail())
 
-        return Report(self.name, "Spyware", sections)
+        return Report(self.name, sections)
 
     @print_timing
     def __update_access(self, start_date, end_date):

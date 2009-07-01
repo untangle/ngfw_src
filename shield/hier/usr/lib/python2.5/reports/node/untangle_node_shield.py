@@ -70,7 +70,7 @@ class Shield(Node):
 
         sections.append(ShieldDetail())
 
-        return Report(self.name, "Attack Blocker", sections)
+        return Report(self.name, sections)
 
 class DailyRequest(Graph):
     def __init__(self):

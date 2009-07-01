@@ -84,7 +84,7 @@ class SpamBaseNode(Node):
 
         sections.append(SpamDetail())
 
-        return Report(self.name, self.__title, sections)
+        return Report(self.name, sections)
 
     def events_cleanup(self, cutoff):
         pass

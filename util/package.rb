@@ -18,7 +18,7 @@
 
 buildutil = BuildEnv::SRC["untangle-buildutil"]
 
-jt = JarTarget.build_target(buildutil, [Jars::Becl , Jars::Reporting], 'impl', ["./util/impl"])
+jt = JarTarget.build_target(buildutil, [Jars::Becl], 'impl', ["./util/impl"])
 BuildEnv::SRC.installTarget.install_jars(jt, "#{buildutil.distDirectory}/usr/share/untangle/lib")
 BuildEnv::SRC.installTarget.install_jars(Jars::Becl, "#{buildutil.distDirectory}/usr/share/java/uvm")
 

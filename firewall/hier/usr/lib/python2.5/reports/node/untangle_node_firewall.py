@@ -62,7 +62,7 @@ class Firewall(Node):
 
         sections.append(FirewallDetail())
 
-        return reports.Report(self.name, 'Firewall', sections)
+        return reports.Report(self.name, sections)
 
 
     def events_cleanup(self, cutoff):

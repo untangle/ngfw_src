@@ -60,9 +60,9 @@ STACKED_BAR_CHART = 'stacked-bar-chart'
 PIE_CHART = 'pie-chart'
 
 class Report:
-    def __init__(self, name, title, sections):
+    def __init__(self, name, sections):
         self.__name = name
-        self.__title = title
+        self.__title = __get_node_title(self.__name)
         self.__sections = sections
 
     def generate(self, report_base, date_base, end_date, host=None, user=None,

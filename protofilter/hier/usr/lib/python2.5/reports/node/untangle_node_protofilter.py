@@ -62,7 +62,7 @@ class Protofilter(Node):
 
         sections.append(ProtofilterDetail())
 
-        return reports.Report(self.name, 'Protofilter', sections)
+        return reports.Report(self.name, sections)
 
     def events_cleanup(self, cutoff):
         try:

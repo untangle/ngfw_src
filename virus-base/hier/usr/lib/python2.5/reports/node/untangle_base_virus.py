@@ -83,7 +83,7 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
 
         sections.append(VirusDetail(self.__vendor_name))
 
-        return reports.Report(self.name, 'Virus Blocker', sections)
+        return reports.Report(self.name, sections)
 
     def events_cleanup(self, cutoff):
         sql_helper.run_sql("""\

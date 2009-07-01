@@ -117,8 +117,7 @@ class NodeBuilder
   ## Helper to retrieve the standard dependencies for an impl
   def NodeBuilder.baseJarsImpl
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
-    Jars::Base + [Jars::JFreeChart, uvm_lib['api'], uvm_lib['localapi'],
-      uvm_lib['reporting']]
+    Jars::Base + [Jars::JFreeChart, uvm_lib['api'], uvm_lib['localapi']]
   end
 
   ## Helper to retrieve the standard dependencies for local API

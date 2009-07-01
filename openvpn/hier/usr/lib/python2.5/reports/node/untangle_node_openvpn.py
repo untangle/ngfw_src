@@ -59,7 +59,7 @@ class OpenVpn(Node):
 
         sections.append(OpenVpnDetail())
 
-        return Report(self.name, "OpenVPN", sections)
+        return Report(self.name, sections)
 
     @print_timing
     def __create_n_openvpn_stats(self, start_date, end_date):

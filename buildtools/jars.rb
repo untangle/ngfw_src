@@ -167,8 +167,6 @@ class Jars
                    hibernate-3.2/lib/commons-logging-1.0.4.jar ).map { |f| downloadTarget(f) }
   Itext      = downloadTarget( "itext-1.3/itext-1.3.jar" )
 
-  Reporting   = Jars.makeGroup(Ant, Commons, Itext, JFreeChart, Log4j, Postgres )
-
   # A jar used to build one of the buildutil classes
   Becl        = downloadTarget('bcel-5.2/bcel-5.2.jar')
   JDKTools    = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/lib/tools.jar") ]

@@ -101,7 +101,7 @@ DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
                             DestinationPorts()])
         sections.append(s)
 
-        return Report(self.name, N_('Platform'), sections)
+        return Report(self.name, sections)
 
     @print_timing
     def __make_users_table(self, start_date, end_date):
