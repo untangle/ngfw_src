@@ -129,7 +129,7 @@ Ung.Reports = Ext.extend(Object,
                                                                     items : [{ html: '<img src="/images/BrandingLogo.gif?'+(new Date()).getTime()+'" border="0" height="50"/>',
                                                                                region : 'west',
                                                                                width : 100
-                                                                             }, { html : '<h1>'+i18n._('Untangle Reports')+'</h1>',
+                                                                             }, { html : '<h1>'+i18n._('Reports')+'</h1>',
                                                                                   region : 'center'
                                                                              }, { region : 'east',
                                                                                   width : 200,
