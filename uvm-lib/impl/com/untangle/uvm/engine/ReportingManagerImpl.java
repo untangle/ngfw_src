@@ -544,6 +544,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     public boolean isReportsAvailable()
     {
-        return true;
+        System.out.println(0 < getDates().size());
+        return 0 < getDates().size();
     }
 }
