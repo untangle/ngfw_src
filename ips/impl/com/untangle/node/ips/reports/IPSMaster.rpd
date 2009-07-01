@@ -1,8 +1,0 @@
-TEMPLATE=MasterOfThreeChildrenStacked
-REPORT_NAME=IPSMaster
-REPORT_TITLE=Intrusion Prevention - Summary
-EXTRA_PARAM_1.name=reportTitlePrefix
-EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=reports/IPSTopEvents.jasper
-SUBREPORT_2=reports/IPSTopClients.jasper
-SUBREPORT_3=reports/IPSTopServers.jasper

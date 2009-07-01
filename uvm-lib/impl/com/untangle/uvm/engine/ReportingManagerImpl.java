@@ -536,15 +536,15 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
             return false;
         // What if more than one? Shouldn't happen. XX
         NodeContext context = nodeManager.nodeContext(tids.get(0));
-        if (context == null)
+        if (context == null) {
             return false;
+        }
 
         return true;
     }
 
     public boolean isReportsAvailable()
     {
-        System.out.println(0 < getDates().size());
         return 0 < getDates().size();
     }
 }

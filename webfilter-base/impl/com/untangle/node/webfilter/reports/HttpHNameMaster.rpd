@@ -1,6 +1,0 @@
-TEMPLATE=MasterOfOneChild
-REPORT_NAME=HttpHNameMaster
-REPORT_TITLE=Web Filter - Client Summary
-EXTRA_PARAM_1.name=reportTitlePrefix
-EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=reports/HttpHNameDomains.jasper

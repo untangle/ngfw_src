@@ -1,6 +1,0 @@
-TEMPLATE=MasterOfOneChild
-REPORT_NAME=HttpUserMaster
-REPORT_TITLE=Web Filter - User Summary
-EXTRA_PARAM_1.name=reportTitlePrefix
-EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=reports/HttpUserDomains.jasper

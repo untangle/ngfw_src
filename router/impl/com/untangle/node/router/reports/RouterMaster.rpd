@@ -1,7 +1,0 @@
-TEMPLATE=MasterOfTwoChildren
-REPORT_NAME=RouterMaster
-REPORT_TITLE=Router - Summary
-EXTRA_PARAM_1.name=reportTitlePrefix
-EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=reports/RouterDmzSummary.jasper
-SUBREPORT_2=reports/RouterRedirectSummary.jasper

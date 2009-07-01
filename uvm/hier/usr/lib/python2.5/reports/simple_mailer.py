@@ -31,9 +31,9 @@ def mail(sender, receiver, date_str, host, port):
     msgRoot.attach(msgAlternative)
 
     if port == "443":
-        url_str = "https://%s/reports/new.jsp?date=%s" % (host, date_str)
+        url_str = "https://%s/reports/index.jsp?date=%s" % (host, date_str)
     else:
-        url_str = "https://%s:%s/reports/new.jsp?date=%s" \
+        url_str = "https://%s:%s/reports/index.jsp?date=%s" \
             % (host, port, date_str)
 
     msgText = MIMEText("""\

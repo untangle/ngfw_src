@@ -1,7 +1,0 @@
-TEMPLATE=MasterOfTwoChildren
-REPORT_NAME=ProtoFilterMaster
-REPORT_TITLE=Protocol Control - Summary
-EXTRA_PARAM_1.name=reportTitlePrefix
-EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=reports/ProtoFilterLogged.jasper
-SUBREPORT_2=reports/ProtoFilterBlocked.jasper
