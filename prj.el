@@ -30,7 +30,6 @@
               "hibernate-annotations-3.2.0.CR3/lib/ejb3-persistence.jar"
               "htmlparser1_6_20060319/htmlparser1_6/lib/htmllexer.jar"
               "htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar"
-              "jasperreports-1.1.1/dist/jasperreports-1.1.1.jar"
               "javamail-1.3.3_01/mail.jar"
               "jcifs_1.2.9/jcifs-1.2.9.jar"
               "je-3.2.13/lib/je-3.2.13.jar"

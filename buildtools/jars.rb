@@ -114,9 +114,6 @@ class Jars
   JFreeChart = [ 'jfreechart-1.0.13.jar', 'jcommon-1.0.16.jar' ].map { |p| Jars.downloadTarget("jfreechart-1.0.13/lib/#{p}") }
   Netbeans   = [ Jars.downloadTarget('netbeans-3.5/netbeans-3.5.jar') ]
 
-  ## Reporting Jars
-  Jasper     = [ Jars.downloadTarget('jasperreports-1.1.1/dist/jasperreports-1.1.1.jar') ]
-
   ## Miscellaneous Jars
   JavaMail   = [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ]
   Jcifs      = [ Jars.downloadTarget('jcifs_1.2.9/jcifs-1.2.9.jar') ]
@@ -170,7 +167,7 @@ class Jars
                    hibernate-3.2/lib/commons-logging-1.0.4.jar ).map { |f| downloadTarget(f) }
   Itext      = downloadTarget( "itext-1.3/itext-1.3.jar" )
 
-  Reporting   = Jars.makeGroup(Ant, Commons, Itext, Jasper, JFreeChart, Log4j, Postgres )
+  Reporting   = Jars.makeGroup(Ant, Commons, Itext, JFreeChart, Log4j, Postgres )
 
   # A jar used to build one of the buildutil classes
   Becl        = downloadTarget('bcel-5.2/bcel-5.2.jar')
