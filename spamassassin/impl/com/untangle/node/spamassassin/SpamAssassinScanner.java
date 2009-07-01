@@ -32,7 +32,7 @@ public class SpamAssassinScanner implements SpamScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final int timeout = 40000; /* XXX should be user configurable */
+    private static final int timeout = 45000; /* XXX should be user configurable */
 
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
