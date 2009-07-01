@@ -135,7 +135,7 @@ class Report:
     def __get_node_title(self, name):
         title = None
 
-        (stdout, stdin) = popen2('apt-cache show untangle-node-webfilter')
+        (stdout, stdin) = popen2(['apt-cache', 'show', name])
         try:
             for l in stdout:
                 m = re.search('Description: (.*)', l)
