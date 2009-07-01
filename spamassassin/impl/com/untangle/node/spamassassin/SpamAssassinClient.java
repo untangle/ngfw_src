@@ -94,7 +94,8 @@ public final class SpamAssassinClient implements Runnable {
     private String dbgName; // thread name and socket host
     private volatile boolean stop = false;
 
-    public SpamAssassinClient(File msgFile, String host, int port, float threshold, String userName) {
+    public SpamAssassinClient(File msgFile, String host, int port, float threshold, String userName)
+    {
         this.msgFile = msgFile;
         this.host = host;
         this.port = port;
@@ -105,23 +106,27 @@ public final class SpamAssassinClient implements Runnable {
         this.contentLenCHdr = new StringBuilder(REQ_CONTENTLEN_TAG).append(Long.toString(msgFile.length() + CRLF.length())).append(CRLF).toString();
     }
 
-    public void setThread(Thread cThread) {
+    public void setThread(Thread cThread)
+    {
         this.cThread = cThread;
         dbgName = new StringBuilder("<").append(cThread.getName()).append(">").append(host).append(":").append(port).toString();
         return;
     }
 
-    public void startScan() {
+    public void startScan()
+    {
         //logger.debug("start, thread: " + cThread + ", this: " + this);
         cThread.start(); // execute run() now
         return;
     }
 
-    public SpamReport getResult() {
+    public SpamReport getResult()
+    {
         return spamReport;
     }
 
-    public void checkProgress(long timeout) {
+    public void checkProgress(long timeout)
+    {
         //logger.debug("check, thread: " + cThread + ", this: " + this);
         if (false == cThread.isAlive()) {
             logger.debug(dbgName + ", is not alive; not waiting");
@@ -129,12 +134,10 @@ public final class SpamAssassinClient implements Runnable {
         }
 
         long startTime = System.currentTimeMillis();
+        long elapsedTime = 0;
         try {
             synchronized (this) {
-                this.wait(timeout); // wait for run() to finish/timeout
-
                 // retry when no result yet and time remains before timeout
-                long elapsedTime = System.currentTimeMillis() - startTime;
                 while (!done && elapsedTime < timeout) {
                     this.wait(timeout - elapsedTime);
                     elapsedTime = System.currentTimeMillis() - startTime;
@@ -147,8 +150,8 @@ public final class SpamAssassinClient implements Runnable {
         }
 
         if (null == this.spamReport) {
-            if (System.currentTimeMillis() - startTime > timeout)
-                logger.warn(dbgName + ", spamc timer expired");
+            if (elapsedTime > timeout)
+                logger.warn(dbgName + ", spamc timer expired (timeout:" + timeout + ") (elapsed: " + elapsedTime + ")");
             else
                 logger.warn(dbgName + ", spamc returned no result");
             stopScan();
@@ -157,7 +160,8 @@ public final class SpamAssassinClient implements Runnable {
         return;
     }
 
-    public void stopScan() {
+    public void stopScan()
+    {
         //logger.debug("stop, thread: " + cThread + ", this: " + this);
         if (false == cThread.isAlive()) {
             logger.debug(dbgName + ", is not alive; no need to stop");
@@ -360,7 +364,8 @@ public final class SpamAssassinClient implements Runnable {
         }
     }
 
-    private void cleanExit() {
+    private void cleanExit()
+    {
         synchronized (this) {
             this.done = true;
             this.notifyAll(); // notify waiting thread and finish run()
@@ -368,7 +373,8 @@ public final class SpamAssassinClient implements Runnable {
         }
     }
 
-    private boolean parseSpamdResponse(String response) throws Exception {
+    private boolean parseSpamdResponse(String response) throws Exception
+    {
         StringTokenizer sTokenizer = new StringTokenizer(response, " \t\n\r\f/");
         String tStr = null;
         int tIdx = 0;
@@ -430,7 +436,8 @@ public final class SpamAssassinClient implements Runnable {
         return isOK;
     }
 
-    private long parseSpamdContentLength(String contentLength) throws Exception {
+    private long parseSpamdContentLength(String contentLength) throws Exception
+    {
         StringTokenizer sTokenizer = new StringTokenizer(contentLength);
         long len = 0;
         int tIdx = 0;
@@ -461,7 +468,8 @@ public final class SpamAssassinClient implements Runnable {
         return len;
     }
 
-    private float parseSpamdReply(String reply) throws Exception {
+    private float parseSpamdReply(String reply) throws Exception
+    {
         StringTokenizer sTokenizer = new StringTokenizer(reply, " \t\n\r\f;/");
         int tIdx = 0;
         float score = 0;
@@ -507,7 +515,8 @@ public final class SpamAssassinClient implements Runnable {
     //  1.9 RCVD_IN_NJABL_DUL      RBL: NJABL: dialup sender did non-local SMTP
     //                             [61.73.86.111 listed in combined.njabl.org]
     // -1.8 AWL                    AWL: From: address is in the auto white-list
-    private void parseSpamdResult(List<String> detailList, long len, float score) throws Exception {
+    private void parseSpamdResult(List<String> detailList, long len, float score) throws Exception
+    {
         List<ReportItem> reportItemList = new LinkedList<ReportItem>();
         String firstLine = null;
         // CR terminates final line (e.g., ends detail block); count CR

@@ -21,10 +21,6 @@ import com.untangle.node.spam.SpamNodeImpl;
 
 public class SpamAssassinNode extends SpamNodeImpl
 {
-    /* XXX CONTINUE HERE XXX */
-    /* create spamassassin settings */
-    /* create setting-schema.xml and converters */
-
     public SpamAssassinNode()
     {
         super(new SpamAssassinScanner());
