@@ -172,6 +172,10 @@ Ung.Reports = Ext.extend(Object,
                                                                                                   tp.getSelectionModel().on('selectionchange',
                                                                                                                             function(tree, node)
                                                                                                                             {
+                                                                                                                              if (node.attributes.name == 'applications') {
+                                                                                                                                return;
+                                                                                                                              }
+
                                                                                                                               reports.selectedNode=node;
                                                                                                                               reports.breadcrumbs=[];
                                                                                                                               if(node!=null) {
