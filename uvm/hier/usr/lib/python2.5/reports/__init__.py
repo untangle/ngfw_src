@@ -546,3 +546,19 @@ class KeyStatistic:
     @property
     def link_type(self):
         return self.__link_type
+
+def __get_node_title(name):
+    title = None
+
+    (stdout, stdin) = popen2.popen2('apt-cache show untangle-node-webfilter')
+    try:
+        for l in stdout:
+            m = re.search('Description: (.*)', l)
+            if m:
+                title = m.group(1)
+                break
+    finally:
+        stdout.close()
+        stdin.close()
+
+    return title

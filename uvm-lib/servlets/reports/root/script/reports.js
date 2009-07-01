@@ -20,7 +20,9 @@ Ung.Reports = Ext.extend(Object,
                            //report details object
                            reportDetails:null,
                            // breadcrumbs object for the report details
-                           breadcrumbs: null,
+                           breadcrumbs: null,                           
+                           //progress bar for various actions
+                           progressBar : null,
 
                            appNames: { },
 
@@ -30,6 +32,7 @@ Ung.Reports = Ext.extend(Object,
                            },
                            init : function() {
                              this.initSemaphore = 3;
+                             this.progressBar = Ext.MessageBox;
                              this.treeNodes =[];
                              rpc = {};
                              rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
@@ -97,7 +100,6 @@ Ung.Reports = Ext.extend(Object,
                              }
                              this.startApplication();
                            },
-
                            startApplication : function()
                            {
                              this.reportDatesItems = [];
@@ -248,31 +250,50 @@ Ung.Reports = Ext.extend(Object,
 
                                treeNodes.push(tn);
                              }
-
+                                
                              if (tableOfContents.users != null) {
                                treeNodes.push({ text : i18n._("Users"),
                                                 name : "users",
-                                                leaf: true
+                                                leaf: true,
+                                                listeners : {
+                                                    'click' : this.refreshContentPane
+                                                }
                                               });
                              }
 
                              if (tableOfContents.hosts != null) {
                                treeNodes.push({ text : i18n._("Hosts"),
                                                 name : "hosts",
-                                                leaf: true
+                                                leaf: true,
+                                                listeners : {
+                                                    'click' : this.refreshContentPane
+                                                }
                                               });
                              }
 
                              if ( tableOfContents.emails!=null ) {
                                treeNodes.push({ text : i18n._("Emails"),
                                                 name : "emails",
-                                                leaf: true
+                                                leaf: true,
+                                                listeners : {
+                                                    'click' : this.refreshContentPane
+                                                }
                                               });
                              }
-
+                             
                              return treeNodes;
                            },
-
+                           /**
+                            * Refreshes the content pane when a selected node is clicked again 
+                            */                                                       
+                           refreshContentPane : function(node,e){
+                             //check if someone's clicking on the selected node
+                             var selModel = Ext.getCmp('tree-panel').getSelectionModel();
+                             if(selModel.getSelectedNode().id == node.id){
+                                 //refresh the content pane 
+                                 selModel.fireEvent('selectionchange',selModel,node);                           
+                             }                            
+                           },
                            changeDate : function(date)
                            {
                              this.reportsDate=date;
@@ -306,6 +327,7 @@ Ung.Reports = Ext.extend(Object,
                            },
 
                            getApplicationData: function(nodeName) {
+                             reports.progressBar.wait(i18n._("Please Wait"));
                              rpc.reportingManager.getApplicationData(function (result, exception)
                                                                      {
                                                                        if (exception) {
@@ -320,6 +342,7 @@ Ung.Reports = Ext.extend(Object,
                                                                        Ung.Util.loadModuleTranslations( nodeName, i18n,
                                                                                                         function(){
                                                                                                           reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
+                                                                                                          reports.progressBar.hide();
                                                                                                         }
                                                                                                       );
                                                                      }.createDelegate(this), reports.reportsDate,nodeName);
@@ -328,7 +351,7 @@ Ung.Reports = Ext.extend(Object,
                            getDrilldownTableOfContents: function(fnName, value)
                            {
                              rpc.drilldownValue = value;
-
+                             reports.progressBar.wait(i18n._("Please Wait"));
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
                                                             if (exception) {
@@ -339,6 +362,7 @@ Ung.Reports = Ext.extend(Object,
                                                                                        handler: this.getDrilldownTableOfContents.createDelegate(this, [fnName, value])
                                                                                      });
                                                             this.reportDetails.buildReportDetails(); // XXX take to correct page
+                                                            reports.progressBar.hide();                                                                                     
                                                           }.createDelegate(this), reports.reportsDate, value);
                            },
 
@@ -360,7 +384,7 @@ Ung.Reports = Ext.extend(Object,
                            getDrilldownApplicationData: function(fnName, app, value)
                            {
                              rpc.drilldownValue = value;
-
+                             reports.progressBar.wait(i18n._("Please Wait"));
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
                                                             if (exception) {
@@ -372,6 +396,7 @@ Ung.Reports = Ext.extend(Object,
                                                                                        handler: this[fnName].createDelegate(this,[app, value])
                                                                                      });
                                                             this.reportDetails.buildReportDetails(); // XXX take to correct page
+                                                            reports.progressBar.hide();                                                                                                                                                 
                                                           }.createDelegate(this), reports.reportsDate, app, value);
                            },
 
