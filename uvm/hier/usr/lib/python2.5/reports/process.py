@@ -37,7 +37,7 @@ no_data_gen = False
 no_plot_gen = False
 no_mail = True
 events_days = 3
-reports_days = 30
+reports_days = None
 end_date = mx.DateTime.today()
 
 no_cleanup = False
@@ -98,6 +98,27 @@ CREATE TABLE reports.table_updates (
 except Exception:
      pass
 
+if not reports_days:
+     conn = sql_helper.get_connection()
+
+     try:
+          curs = conn.cursor()
+          curs.execute("""\
+SELECT days_to_keep FROM settings.n_reporting_settings
+JOIN u_node_persistent_state USING (tid)
+WHERE target_state = 'running' OR target_state = 'initialized'
+""")
+          r = curs.fetchone()
+          if r:
+               reports_days = r[0]
+          else:
+               reports_days = 7
+     except Exception, e:
+          logging.warn("could not get report_days %s" % e)
+
+if not reports_days:
+     reports_days = 7
+
 reports.engine.init_engine(NODE_MODULE_DIR, 'en')
 if not no_migration:
      reports.engine.setup(start_date, end_date)
@@ -118,5 +139,8 @@ if not no_cleanup:
      events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_days)
      reports.engine.events_cleanup(events_cutoff)
 
-     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(reports_days)
+     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(2 * reports_days)
      reports.engine.reports_cleanup(reports_cutoff)
+
+     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(reports_days)
+     reports.engine.delete_old_reports(REPORTS_OUTPUT_BASE, reports_cutoff)

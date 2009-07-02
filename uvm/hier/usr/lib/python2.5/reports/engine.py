@@ -3,6 +3,7 @@ import logging
 import mail_helper
 import mx
 import os
+import re
 import sets
 import sql_helper
 import string
@@ -278,6 +279,13 @@ def reports_cleanup(cutoff):
         node = __nodes.get(name, None)
         node.reports_cleanup(co)
 
+@print_timing
+def delete_old_reports(dir, cutoff):
+    for f in os.listdir(dir):
+        if re.match('^\d+-\d+-\d+$', f):
+            d = mx.DateTime.DateFrom(f)
+            if d < cutoff:
+                shutil.rmtree('%s/%s' % (dir, f));
 
 @print_timing
 def init_engine(node_module_dir, locale):
