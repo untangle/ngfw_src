@@ -279,7 +279,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                    this.saveSemaphore = 2;
                                    Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                    if(!this.panelGeneration.rendered) {
-                                     var activeTab=this.tabs.getActiveTab()
+                                     var activeTab=this.tabs.getActiveTab();
                                      this.tabs.activate(this.panelGeneration);
                                      this.tabs.activate(activeTab);
                                    }
