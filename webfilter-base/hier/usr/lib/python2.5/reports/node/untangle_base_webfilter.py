@@ -533,9 +533,14 @@ class TopTenWebPolicyViolationsByHits(Graph):
 SELECT %s_wf_category, sum(%s_wf_blocks) AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''
-GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
-            % (4 * (self.__vendor_name,))
+AND %s_wf_category != ''""" % (3 * (self.__vendor_name,))
+        if host:
+            query = query + " AND hname = %s"
+        elif user:
+            query = query + " AND uid = %s"
+        query += """\
+GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
+""" % self.__vendor_name
 
         conn = sql_helper.get_connection()
 
@@ -543,7 +548,13 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('hits'))
             lks.append(ks)
@@ -566,14 +577,23 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
 SELECT %s_wf_category, sum(%s_wf_blocks) AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''
+AND %s_wf_category != ''""" % (3 * (self.__vendor_name,))
+        if host:
+            query = query + " AND hname = %s"
+        elif user:
+            query = query + " AND uid = %s"
+        query += """\
 GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
-            % (4 * (self.__vendor_name,))
+            % self.__vendor_name
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
 
         dataset = {}
 
@@ -612,9 +632,14 @@ SELECT %s_wf_category, sum(%s_wf_blocks) AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND %s_wf_category != ''
-AND %s_wf_blocks > 0
+AND %s_wf_blocks > 0""" % (4 * (self.__vendor_name,))
+        if host:
+            query = query + " AND hname = %s"
+        elif user:
+            query = query + " AND uid = %s"
+        query += """\
 GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
-            % (5 * (self.__vendor_name,))
+            % self.__vendor_name
 
         conn = sql_helper.get_connection()
 
@@ -622,7 +647,13 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('hits'))
             lks.append(ks)
@@ -646,14 +677,24 @@ SELECT %s_wf_category, sum(%s_wf_blocks) AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND %s_wf_category != ''
-AND %s_wf_blocks > 0
-GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
-            % (5 * (self.__vendor_name,))
+AND %s_wf_blocks > 0""" % (4 * (self.__vendor_name,))
+
+        if host:
+            query = query + " AND hname = %s"
+        elif user:
+            query = query + " AND uid = %s"
+        query += """\
+GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
+""" % self.__vendor_name
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
 
         dataset = {}
 
@@ -1003,6 +1044,10 @@ class TopTenWebsitesByHits(Graph):
 SELECT host, sum(hits) as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
         query += " GROUP BY host ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
@@ -1011,7 +1056,13 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('hits'))
             lks.append(ks)
@@ -1034,12 +1085,20 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 SELECT host, sum(hits) AS hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
         query += " GROUP BY host ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
 
         dataset = {}
 
@@ -1078,7 +1137,12 @@ class TopTenWebsitesBySize(Graph):
         query = """\
 SELECT host, sum(s2c_bytes) + sum(c2s_bytes) as size_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s AND trunc_time < %s"""
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+        query += """\
 GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
 
         conn = sql_helper.get_connection()
@@ -1087,7 +1151,13 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('bytes'))
             lks.append(ks)
@@ -1109,13 +1179,22 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
         query = """\
 SELECT host, sum(s2c_bytes) + sum(c2s_bytes) AS size_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s AND trunc_time < %s"""
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+        query += """\
 GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
 
         dataset = {}
 
@@ -1150,16 +1229,27 @@ class WebUsageByCategory(Graph):
         query = """\
 SELECT %s_wf_category, count(*) AS count_events
 FROM reports.n_http_events
-WHERE time_stamp >= %%s AND time_stamp < %%s
+WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__vendor_name
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+        query += """\
 GROUP BY %s_wf_category
-ORDER BY count_events DESC""" % (2 * (self.__vendor_name,))
+ORDER BY count_events DESC""" % self.__vendor_name
         conn = sql_helper.get_connection()
 
         lks = []
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
         for r in curs.fetchall():
             stat_key = r[0]
             if stat_key is None:
@@ -1184,14 +1274,23 @@ ORDER BY count_events DESC""" % (2 * (self.__vendor_name,))
         query = """\
 SELECT %s_wf_category, count(*) AS count_events
 FROM reports.n_http_events
-WHERE time_stamp >= %%s AND time_stamp < %%s
+WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__vendor_name
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+        query += """\
 GROUP BY %s_wf_category
-ORDER BY count_events DESC""" % (2 * (self.__vendor_name,))
+ORDER BY count_events DESC""" % self.__vendor_name
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
 
         dataset = {}
 
@@ -1230,16 +1329,27 @@ class ViolationsByCategory(Graph):
 SELECT %s_wf_category, count(*) as blocks_sum
 FROM reports.n_http_events
 WHERE time_stamp >= %%s AND time_stamp < %%s
-AND %s_wf_action IS NOT NULL
+AND %s_wf_action IS NOT NULL """ % (2 * (self.__vendor_name,))
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+        query += """\
 GROUP BY %s_wf_category
-ORDER BY blocks_sum DESC""" % ((self.__vendor_name,) * 3)
+ORDER BY blocks_sum DESC""" % self.__vendor_name
         conn = sql_helper.get_connection()
 
         lks = []
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
         for r in curs.fetchall():
             stat_key = r[0]
             if stat_key is None:
@@ -1265,14 +1375,23 @@ ORDER BY blocks_sum DESC""" % ((self.__vendor_name,) * 3)
 SELECT %s_wf_category, count(*) AS blocks_sum
 FROM reports.n_http_events
 WHERE time_stamp >= %%s AND time_stamp < %%s
-AND %s_wf_action IS NOT NULL
+AND %s_wf_action IS NOT NULL """ % ((self.__vendor_name,) * 2)
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+        query += """\
 GROUP BY %s_wf_category
-ORDER BY blocks_sum DESC""" % ((self.__vendor_name,) * 3)
+ORDER BY blocks_sum DESC""" % self.__vendor_name
 
         curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
 
         dataset = {}
 
