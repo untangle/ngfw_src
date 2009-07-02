@@ -454,7 +454,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         var result = ""
                         var store = Ung.Util.getProtocolStore();
                         if (store) {
-                            var index = store.find("key", value)
+                            var index = store.find("key", new RegExp("^"+value+"$"))
                             if (index >= 0) {
                                 result = store.getAt(index).get("name");
                             }
@@ -710,7 +710,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 customInputLines : [{
                     xtype : 'fieldset',
                     autoHeight : true,
-                    title : this.i18n._("Protocol"),
+                    title : this.i18n._("Protocols"),
                     items : [{
                         cls: 'description',
                         border : false,
