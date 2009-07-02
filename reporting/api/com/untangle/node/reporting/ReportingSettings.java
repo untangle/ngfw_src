@@ -48,7 +48,7 @@ public class ReportingSettings implements Serializable
     private Tid tid;
 
     private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
-    private int daysToKeep = 8;
+    private int daysToKeep = 7;
 
     public ReportingSettings() { }
 
