@@ -20,7 +20,7 @@ Ung.Reports = Ext.extend(Object,
                            //report details object
                            reportDetails:null,
                            // breadcrumbs object for the report details
-                           breadcrumbs: null,                           
+                           breadcrumbs: null,
                            //progress bar for various actions
                            progressBar : null,
 
@@ -240,7 +240,7 @@ Ung.Reports = Ext.extend(Object,
                                    tn.children.push({ text : i18n._(tc.list[i].title),
                                                       name : tc.list[i].name,
                                                       leaf : true,
-                                                      iconCls : tc.list[i].name
+                                                      icon : "./node-icons/" + tc.list[i].name + ".png"
                                                     });
                                    tn.expanded = true;
                                  }
@@ -250,7 +250,7 @@ Ung.Reports = Ext.extend(Object,
 
                                treeNodes.push(tn);
                              }
-                                
+
                              if (tableOfContents.users != null) {
                                treeNodes.push({ text : i18n._("Users"),
                                                 name : "users",
@@ -280,19 +280,19 @@ Ung.Reports = Ext.extend(Object,
                                                 }
                                               });
                              }
-                             
+
                              return treeNodes;
                            },
                            /**
-                            * Refreshes the content pane when a selected node is clicked again 
-                            */                                                       
+                            * Refreshes the content pane when a selected node is clicked again
+                            */
                            refreshContentPane : function(node,e){
                              //check if someone's clicking on the selected node
                              var selModel = Ext.getCmp('tree-panel').getSelectionModel();
                              if(selModel.getSelectedNode().id == node.id){
-                                 //refresh the content pane 
-                                 selModel.fireEvent('selectionchange',selModel,node);                           
-                             }                            
+                                 //refresh the content pane
+                                 selModel.fireEvent('selectionchange',selModel,node);
+                             }
                            },
                            changeDate : function(date)
                            {
@@ -362,7 +362,7 @@ Ung.Reports = Ext.extend(Object,
                                                                                        handler: this.getDrilldownTableOfContents.createDelegate(this, [fnName, value])
                                                                                      });
                                                             this.reportDetails.buildReportDetails(); // XXX take to correct page
-                                                            reports.progressBar.hide();                                                                                     
+                                                            reports.progressBar.hide();
                                                           }.createDelegate(this), reports.reportsDate, value);
                            },
 
@@ -396,7 +396,7 @@ Ung.Reports = Ext.extend(Object,
                                                                                        handler: this[fnName].createDelegate(this,[app, value])
                                                                                      });
                                                             this.reportDetails.buildReportDetails(); // XXX take to correct page
-                                                            reports.progressBar.hide();                                                                                                                                                 
+                                                            reports.progressBar.hide();
                                                           }.createDelegate(this), reports.reportsDate, app, value);
                            },
 
