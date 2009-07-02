@@ -86,51 +86,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                    }
                                  }
 
-                                 // WEEKLY SCHEDULE
-                                 var weeklySundayCurrent = false;
-                                 var weeklyMondayCurrent = false;
-                                 var weeklyTuesdayCurrent = false;
-                                 var weeklyWednesdayCurrent = false;
-                                 var weeklyThursdayCurrent = false;
-                                 var weeklyFridayCurrent = false;
-                                 var weeklySaturdayCurrent = false;
-                                 var weeklySched = this.getReportingSettings().schedule.weeklySched.list;
-                                 for(var i=0; i<weeklySched.length;i++) {
-                                   switch (weeklySched[i].day)
-                                   {
-                                   case 1: //Schedule.SUNDAY
-                                     weeklySundayCurrent = true;
-                                     break;
-                                   case 2: //Schedule.MONDAY:
-                                     weeklyMondayCurrent = true;
-                                     break;
-                                   case 3: //Schedule.TUESDAY:
-                                     weeklyTuesdayCurrent = true;
-                                     break;
-                                   case 4: //Schedule.WEDNESDAY:
-                                     weeklyWednesdayCurrent = true;
-                                     break;
-                                   case 5: //Schedule.THURSDAY:
-                                     weeklyThursdayCurrent = true;
-                                     break;
-                                   case 6: //Schedule.FRIDAY:
-                                     weeklyFridayCurrent = true;
-                                     break;
-                                   case 7: //Schedule.SATURDAY:
-                                     weeklySaturdayCurrent = true;
-                                     break;
-                                   }
-                                 }
-
-                                 // MONTHLY SCHEDULE
-                                 var schedule = this.getReportingSettings().schedule;
-                                 var monthlyFirstCurrent = schedule.monthlyNFirst;
-                                 var monthlyEverydayCurrent = schedule.monthlyNDaily;
-                                 var monthlyOnceCurrent = ( schedule.monthlyNDayOfWk != -1 /*Schedule.NONE*/ );
-                                 var monthlyOnceDayCurrent = schedule.monthlyNDayOfWk;
-                                 var monthlyNoneCurrent = !( monthlyFirstCurrent || monthlyEverydayCurrent || monthlyOnceCurrent );
-                                 var monthlyOnceComboCurrent = monthlyOnceCurrent ? schedule.monthlyNDayOfWk: 1 /*SUNDAY*/ ;
-
                                  this.panelGeneration = new Ext.Panel({
                                                                         // private fields
                                                                         name: 'Generation',
@@ -183,207 +138,30 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                                                                                                                                 sortField: 'emailAddress',
                                                                                                                                                 columnsDefaultSortable: true
                                                                                                                                               })]
-                                                                                          },{
-                                                                                            border: false,
-                                                                                            columnWidth:.5,
-                                                                                            layout: 'form',
-                                                                                            items: [{
-                                                                                                      xtype: 'fieldset',
-                                                                                                      border: false,
-                                                                                                      height: 300,
-                                                                                                      items: [{
-                                                                                                                xtype: 'checkbox',
-                                                                                                                name: 'Include Incident Reports in emailed reports',
-                                                                                                                id: 'reporting_emailDetail',
-                                                                                                                boxLabel: String.format(this.i18n._('Include {0}Incident Reports{1} in emailed reports'),'<b>','</b>'),
-                                                                                                                hideLabel: true,
-                                                                                                                checked: this.getReportingSettings().emailDetail,
-                                                                                                                listeners: {
-                                                                                                                  "check": {
-                                                                                                                    fn: function(elem, newValue) {
-                                                                                                                      this.getReportingSettings().emailDetail = newValue;
-                                                                                                                    }.createDelegate(this)
-                                                                                                                  }
-                                                                                                                }
-                                                                                                              }, {
-                                                                                                                border: false,
-                                                                                                                cls: 'description',
-                                                                                                                html: this.i18n._('This makes emailed reports larger, but includes information about each incident/violation.')
-                                                                                                              }]
-                                                                                                    }]
-                                                                                          }]
-                                                                                },{
-                                                                                  title: this.i18n._("Daily Reports"),
-                                                                                  labelWidth: 150,
-                                                                                  items: [{
-                                                                                            border: false,
-                                                                                            cls: 'description',
-                                                                                            html: this.i18n._('Daily Reports are generated at midnight and covers events from the previous 24 hours, up to, but not including the day of generation.')
-                                                                                          },  {
-                                                                                            xtype: 'checkbox',
-                                                                                            name: 'Generate Daily Reports',
-                                                                                            id: 'reporting_schedule_daily',
-                                                                                            fieldLabel: this.i18n._('Generate Daily Reports'),
-                                                                                            boxLabel: this.i18n._('Every Day'),
-                                                                                            checked: this.getReportingSettings().schedule.daily,
-                                                                                            listeners: {
-                                                                                              "check": {
-                                                                                                fn: function(elem, newValue) {
-                                                                                                  this.getReportingSettings().schedule.daily = newValue;
-                                                                                                }.createDelegate(this)
-                                                                                              }
-                                                                                            }
-                                                                                          }]
-                                                                                },{
-                                                                                  title: this.i18n._("Weekly Reports"),
-                                                                                  labelWidth: 150,
-                                                                                  items: [{
-                                                                                            border: false,
-                                                                                            cls: 'description',
-                                                                                            html: this.i18n._('Weekly Reports are generated at midnight and covers events from the previous 7 days, up to, but not including the day of generation.')
-                                                                                          },  {
-                                                                                            xtype: 'checkbox',
-                                                                                            name: 'Sunday',
-                                                                                            id: 'reporting_weeklySunday',
-                                                                                            fieldLabel: this.i18n._('Generate Weekly Reports'),
-                                                                                            boxLabel: this.i18n._('Sunday'),
-                                                                                            checked: weeklySundayCurrent
-                                                                                          },  {
-                                                                                            xtype: 'checkbox',
-                                                                                            name: 'Monday',
-                                                                                            id: 'reporting_weeklyMonday',
-                                                                                            boxLabel: this.i18n._('Monday'),
-                                                                                            hasLabel: false,
-                                                                                            labelSeparator: '',
-                                                                                            checked: weeklyMondayCurrent
-                                                                                          },  {
-                                                                                            xtype: 'checkbox',
-                                                                                            name: 'Tuesday',
-                                                                                            id: 'reporting_weeklyTuesday',
-                                                                                            boxLabel: this.i18n._('Tuesday'),
-                                                                                            hasLabel: false,
-                                                                                            labelSeparator: '',
-                                                                                            checked: weeklyTuesdayCurrent
-                                                                                          },  {
-                                                                                            xtype: 'checkbox',
-                                                                                            name: 'Wednesday',
-                                                                                            id: 'reporting_weeklyWednesday',
-                                                                                            boxLabel: this.i18n._('Wednesday'),
-                                                                                            hasLabel: false,
-                                                                                            labelSeparator: '',
-                                                                                            checked: weeklyWednesdayCurrent
-                                                                                          },  {
-                                                                                            xtype: 'checkbox',
-                                                                                            name: 'Thursday',
-                                                                                            id: 'reporting_weeklyThursday',
-                                                                                            boxLabel: this.i18n._('Thursday'),
-                                                                                            hasLabel: false,
-                                                                                            labelSeparator: '',
-                                                                                            checked: weeklyThursdayCurrent
-                                                                                          },  {
-                                                                                            xtype: 'checkbox',
-                                                                                            name: 'Friday',
-                                                                                            id: 'reporting_weeklyFriday',
-                                                                                            boxLabel: this.i18n._('Friday'),
-                                                                                            hasLabel: false,
-                                                                                            labelSeparator: '',
-                                                                                            checked: weeklyFridayCurrent
-                                                                                          },  {
-                                                                                            xtype: 'checkbox',
-                                                                                            name: 'Saturday',
-                                                                                            id: 'reporting_weeklySaturday',
-                                                                                            boxLabel: this.i18n._('Saturday'),
-                                                                                            hasLabel: false,
-                                                                                            labelSeparator: '',
-                                                                                            checked: weeklySaturdayCurrent
-                                                                                          }]
-                                                                                },{
-                                                                                  title: this.i18n._("Monthly Reports"),
-                                                                                  labelWidth: 150,
-                                                                                  items: [{
-                                                                                            border: false,
-                                                                                            cls: 'description',
-                                                                                            html: this.i18n._('Monthly Reports are generated at midnight and covers events from the previous 30 days, up to, but not including the day of generation.')
-                                                                                          },  {
-                                                                                            xtype: 'radiogroup',
-                                                                                            name: 'Generate Monthly Reports',
-                                                                                            fieldLabel: 'Generate Monthly Reports',
-                                                                                            itemCls: 'x-check-group-alt',
-                                                                                            columns: 1,
-                                                                                            items: [{
-                                                                                                      boxLabel: this.i18n._('Never'),
-                                                                                                      name: 'rb-col',
-                                                                                                      id: 'reporting_monthlyNone',
-                                                                                                      checked: monthlyNoneCurrent
-                                                                                                    },{
-                                                                                                      boxLabel: this.i18n._('First Day of Month'),
-                                                                                                      name: 'rb-col',
-                                                                                                      id: 'reporting_monthlyFirst',
-                                                                                                      checked: monthlyFirstCurrent
-                                                                                                    },{
-                                                                                                      boxLabel: this.i18n._('Everyday'),
-                                                                                                      name: 'rb-col',
-                                                                                                      id: 'reporting_monthlyEveryday',
-                                                                                                      checked: monthlyEverydayCurrent
-                                                                                                    },{
-                                                                                                      boxLabel: this.i18n._('Once Per Week'),
-                                                                                                      name: 'rb-col',
-                                                                                                      id: 'reporting_monthlyOnce',
-                                                                                                      checked: monthlyOnceCurrent,
-                                                                                                      listeners: {
-                                                                                                        "check": {
-                                                                                                          fn: function(elem, checked) {
-                                                                                                            Ext.getCmp('reporting_monthlyOnceCombo').setDisabled(!checked);
-                                                                                                          }
-                                                                                                        }
-                                                                                                      }
-                                                                                                    }]
-                                                                                          }, {
-                                                                                            xtype: 'combo',
-                                                                                            editable: false,
-                                                                                            mode: 'local',
-                                                                                            fieldLabel: '',
-                                                                                            labelSeparator: '',
-                                                                                            name: "Once Per Week combo",
-                                                                                            id: 'reporting_monthlyOnceCombo',
-                                                                                            store: new Ext.data.SimpleStore({
-                                                                                                                              fields: ['monthlyOnceValue', 'monthlyOnceName'],
-                                                                                                                              data: [[1, this.i18n._("Sunday")],
-                                                                                                                                     [2, this.i18n._("Monday")],
-                                                                                                                                     [3, this.i18n._("Tuesday")],
-                                                                                                                                     [4, this.i18n._("Wednesday")],
-                                                                                                                                     [5, this.i18n._("Thursday")],
-                                                                                                                                     [6, this.i18n._("Friday")],
-                                                                                                                                     [7, this.i18n._("Saturday")]]
-                                                                                                                            }),
-                                                                                            displayField: 'monthlyOnceName',
-                                                                                            valueField: 'monthlyOnceValue',
-                                                                                            value: monthlyOnceComboCurrent,
-                                                                                            disabled: !monthlyOnceCurrent,
-                                                                                            triggerAction: 'all',
-                                                                                            listClass: 'x-combo-list-small'
                                                                                           }]
                                                                                 },{
                                                                                   title: this.i18n._("Data Retention"),
                                                                                   labelWidth: 150,
-                                                                                  items: [{
-                                                                                            border: false,
+                                                                                  items: [{ border: false,
                                                                                             cls: 'description',
-                                                                                            html: this.i18n._("Limits data retention to one week, this allows reports to run faster on high traffic sites.")
-                                                                                          },  {
-                                                                                            xtype: 'checkbox',
-                                                                                            name: 'Limit data retention',
-                                                                                            id: 'reporting_daysToKeep',
-                                                                                            fieldLabel: this.i18n._('Limit data retention'),
-                                                                                            boxLabel: this.i18n._("Keep One Week's Data"),
-                                                                                            checked: this.getReportingSettings().daysToKeep == 8,
-                                                                                            listeners: {
-                                                                                              "check": {
-                                                                                                fn: function(elem, newValue) {
-                                                                                                  this.getReportingSettings().daysToKeep = newValue ? 8: 33;
-                                                                                                }.createDelegate(this)
-                                                                                              }
-                                                                                            }
+                                                                                            html: this.i18n._("Limit Data Retention to a number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
+                                                                                          }, { xtype : 'numberfield',
+                                                                                               fieldLabel : this.i18n._('Limit Data Retention'),
+                                                                                               name : 'Limit Data Retention',
+                                                                                               id: 'reporting_daysToKeep',
+                                                                                               value : this.getReportingSettings().daysToKeep,
+                                                                                               width: 25,
+                                                                                               allowDecimals: false,
+                                                                                               allowNegative: false,
+                                                                                               minValue: 1,
+                                                                                               maxValue: 30,
+                                                                                               listeners : {
+                                                                                                 "change" : {
+                                                                                                   fn : function(elem, newValue) {
+                                                                                                     this.getReportingSettings().daysToKeep = newValue;
+                                                                                                   }.createDelegate(this)
+                                                                                                 }
+                                                                                               }
                                                                                           }]
                                                                                 }]
                                                                       });
@@ -392,9 +170,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                buildIpMap: function() {
                                  this.gridIpMap = new Ung.EditorGrid({
                                                                        settingsCmp: this,
-                                                                       name: 'IP Addresses',
+                                                                       name: 'Name Map',
                                                                        helpSource: 'ip_addresses',
-                                                                       title: this.i18n._("IP Addresses"),
+                                                                       title: this.i18n._("Name Map"),
                                                                        emptyRow: {
                                                                          "ipMaddr": "0.0.0.0/32",
                                                                          "name": this.i18n._("[no name]"),
@@ -420,7 +198,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                                                        // the list of columns for the column model
                                                                        columns: [{
                                                                                    id: 'ipMaddr',
-                                                                                   header: this.i18n._("IP address"),
+                                                                                   header: this.i18n._("Name Map"),
                                                                                    width: 200,
                                                                                    dataIndex: 'ipMaddr',
                                                                                    editor: new Ext.form.TextField({})
@@ -436,7 +214,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                                                        rowEditorInputLines: [new Ext.form.TextField({
                                                                                                                       name: "Subnet",
                                                                                                                       dataIndex: "ipMaddr",
-                                                                                                                      fieldLabel: this.i18n._("IP Address"),
+                                                                                                                      fieldLabel: this.i18n._("Name Map"),
                                                                                                                       allowBlank: false,
                                                                                                                       width: 200
                                                                                                                     }), new Ext.form.TextField({
@@ -505,23 +283,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                      this.tabs.activate(this.panelGeneration);
                                      this.tabs.activate(activeTab);
                                    }
-                                   // set weekly schedule
-                                   var weeklySched = [];
-                                   if (Ext.getCmp('reporting_weeklySunday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:1});
-                                   if (Ext.getCmp('reporting_weeklyMonday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:2});
-                                   if (Ext.getCmp('reporting_weeklyTuesday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:3});
-                                   if (Ext.getCmp('reporting_weeklyWednesday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:4});
-                                   if (Ext.getCmp('reporting_weeklyThursday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:5});
-                                   if (Ext.getCmp('reporting_weeklyFriday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:6});
-                                   if (Ext.getCmp('reporting_weeklySaturday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:7});
-                                   this.getReportingSettings().schedule.weeklySched.list = weeklySched;
-
-                                   // set monthly schedule
-                                   var schedule = this.getReportingSettings().schedule;
-                                   schedule.monthlyNFirst = Ext.getCmp('reporting_monthlyFirst').getValue();
-                                   schedule.monthlyNDaily = Ext.getCmp('reporting_monthlyEveryday').getValue();
-                                   var monthlyOnce = Ext.getCmp('reporting_monthlyOnce').getValue();
-                                   schedule.monthlyNDayOfWk = monthlyOnce ? Ext.getCmp('reporting_monthlyOnceCombo').getValue(): -1;
 
                                    // set Ip Map list
                                    this.getReportingSettings().networkDirectory.entries.list = this.gridIpMap.getFullSaveList();
@@ -554,10 +315,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                },
                                isDirty: function() {
                                  if(this.panelGeneration.rendered) {
-                                   var cmpIds = ['reporting_weeklySunday', 'reporting_weeklyMonday', 'reporting_weeklyTuesday',
-                                                 'reporting_weeklyWednesday', 'reporting_weeklyThursday', 'reporting_weeklyFriday', 'reporting_weeklySaturday',
-                                                 'reporting_monthlyNone', 'reporting_monthlyFirst', 'reporting_monthlyEveryday', 'reporting_monthlyOnce', 'reporting_monthlyOnceCombo',
-                                                 'reporting_emailDetail', 'reporting_schedule_daily', 'reporting_daysToKeep'];
+                                   var cmpIds = ['reporting_emailDetail', 'reporting_daysToKeep'];
                                    for (var i = 0; i < cmpIds.length; i++) {
                                      if (Ext.getCmp(cmpIds[i]).isDirty()){
                                        return true;

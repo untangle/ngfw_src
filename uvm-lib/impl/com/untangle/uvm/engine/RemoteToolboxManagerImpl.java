@@ -902,6 +902,10 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         StringBuilder value = new StringBuilder();
         String line;
         while (null != (line = br.readLine())) {
+            if (line.startsWith("#")) {
+                continue;
+            }
+
             if (line.trim().equals("")) {
                 if (m.size() == 0) {
                     if (null == line) {

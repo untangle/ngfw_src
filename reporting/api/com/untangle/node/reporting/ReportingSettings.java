@@ -19,9 +19,6 @@
 package com.untangle.node.reporting;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,9 +27,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.untangle.uvm.node.IPMaddrDirectory;
 import com.untangle.uvm.security.Tid;
@@ -52,9 +47,7 @@ public class ReportingSettings implements Serializable
     private Long id;
     private Tid tid;
 
-    private boolean emailDetail = false; // do not email detail info
     private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
-    private Schedule schedule = new Schedule();
     private int daysToKeep = 8;
 
     public ReportingSettings() { }
@@ -90,24 +83,6 @@ public class ReportingSettings implements Serializable
     }
 
     /**
-     * email detail info with reports
-     * - false = do not email detail info, true = do email detail info
-     *
-     * @return email detail
-     */
-    @Column(name="email_detail", nullable=false)
-    public boolean getEmailDetail()
-    {
-        return emailDetail;
-    }
-
-    public void setEmailDetail(boolean emailDetail)
-    {
-        this.emailDetail = emailDetail;
-        return;
-    }
-
-    /**
      * Network Directory (maps IP addresses to reporting names)
      *
      * @return the network directory
@@ -122,24 +97,6 @@ public class ReportingSettings implements Serializable
     public void setNetworkDirectory(IPMaddrDirectory networkDirectory)
     {
         this.networkDirectory = networkDirectory;
-    }
-
-    /**
-     * Schedule (daily, weekly, monthly) for reports
-     *
-     * @return schedule for reports
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="schedule", nullable=false)
-    public Schedule getSchedule()
-    {
-        return schedule;
-    }
-
-    public void setSchedule(Schedule schedule)
-    {
-        this.schedule = schedule;
-        return;
     }
 
     @Column(name="days_to_keep", nullable=false)

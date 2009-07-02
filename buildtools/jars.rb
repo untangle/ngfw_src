@@ -160,7 +160,6 @@ class Jars
                               Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
                               Jnlp, JFreeChart)
 
-  # Jars for that are required to run reporting
   Commons    = %w( commons-beanutils-1.7.0/commons-beanutils.jar
                    hibernate-3.2/lib/commons-collections-2.1.1.jar
                    commons-digester-1.7/commons-digester-1.7.jar
