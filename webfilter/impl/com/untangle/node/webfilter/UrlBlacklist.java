@@ -49,7 +49,7 @@ class UrlBlacklist extends Blacklist
     private final Logger logger = Logger.getLogger(getClass());
 
     private final Pattern GOOGLE_MAPS_PATTERN
-        = Pattern.compile("(mt[0-9]*.google.com)|(khm[0-9]*.google.com)|(cbk[0-9]*.google.com)");
+        = Pattern.compile("(mt[0-9]*.google.com)|(khm[0-9]*.google.com)|(cbk[0-9]*.google.com)|maps.gstatic.com");
 
     private boolean unconfigured = true;
 
