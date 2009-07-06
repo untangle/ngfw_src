@@ -1,11 +1,20 @@
 import os
 import sets
+import shutil
 
 from untangle.ats.uvm_setup import UvmSetup
 
 PREFIX = "@PREFIX@"
 
+def setup_module(module):
+    shutil.rmtree("%s/usr/share/untangle/web/reports/data" % PREFIX)
+    os.system('dropdb -U postgres uvm')
+    os.system('createdb -U postgres uvm')
+    os.system('bzcat %s/usr/share/untangle/tests/untangle-node-reporting/dogfood.sql.bz2 | psql -U postgres uvm' % PREFIX)
+    os.system('%s/usr/lib/python2.5/reports/process.py --date=2009-6-3' % PREFIX)
+
 class TestReports(UvmSetup):
+
     def test_cvs_to_png(self):
         csv = sets.Set()
         png = sets.Set()
