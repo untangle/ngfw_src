@@ -1,7 +1,7 @@
 #! /bin/dash
 
 ### BEGIN INIT INFO
-# Provides:          untangle-shield
+# Provides:          untangle-reports
 # Required-Start:    $local_fs $remote_fs
 # Required-Stop:
 # Default-Start:     2 3 4 5
@@ -34,7 +34,7 @@ start() {
     fi
   fi
 
-  log_progress_msg "untangle-shield"    
+  log_progress_msg "untangle-reports"    
   start-stop-daemon -m --pidfile ${PID_FILE} --name ${NAME} --start --background --exec ${DAEMON} >> ${LOG_FILE} 2>&1
   RET=$?
   log_end_msg $RET
@@ -44,7 +44,7 @@ start() {
 stop() {
   log_daemon_msg "Stopping $DESC"
 
-  log_progress_msg "untangle-shield"    
+  log_progress_msg "untangle-reports"    
   start-stop-daemon --pidfile ${PID_FILE} --stop --retry USR1/4/USR1/4/USR1/2/INT/1/TERM/1/KILL/1 > /dev/null 2>&1
   RET=$?
   log_end_msg $RET
