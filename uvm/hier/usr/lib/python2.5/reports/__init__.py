@@ -443,13 +443,17 @@ class Graph:
             return []
         image = Image(img_file)
 
+        result = [image]
+
         data = []
 
         for ks in self.__key_statistics:
             data.append([ks.name, ks.value, ks.unit])
-        table = Table(data)
 
-        return [image, table]
+        if len(data) > 0:
+            result.append(Table(data))
+
+        return [Table([result])]
 
 class Chart:
     def __init__(self, type=TIME_SERIES_CHART, title=None, xlabel=None,
