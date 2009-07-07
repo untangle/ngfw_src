@@ -11,10 +11,14 @@ import string
 from sql_helper import print_timing
 from psycopg import DateFromMx
 from mx.DateTime import DateTimeDelta
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import Paragraph, Spacer
+from reportlab.platypus.frames import Frame
+from reportlab.platypus.tableofcontents import TableOfContents
+from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import ParagraphStyle as PS
 from reportlab.rl_config import defaultPageSize
-from reportlab.lib.units import inch
+from reportlab.lib.units import inch, cm
 
 UVM_JAR_DIR = '@PREFIX@/usr/share/java/uvm/'
 
@@ -254,14 +258,27 @@ def generate_mail(report_base, end_date, mail_reports):
 
     styles = getSampleStyleSheet()
 
-    doc = SimpleDocTemplate("/home/amread/report.pdf")
+    doc = ReportDocTemplate("/home/amread/report.pdf")
     story = [Spacer(1,2*inch)]
+    toc = TableOfContents()
+    toc.levelStyles = [PS(fontName='Times-Bold', fontSize=14,
+                          name='TOCHeading1', leftIndent=20,
+                          firstLineIndent=-20, spaceBefore=5, leading=16),
+                       PS(fontSize=12, name='TOCHeading2', leftIndent=40,
+                          firstLineIndent=-20, spaceBefore=0, leading=12),
+                       PS(fontSize=10, name='TOCHeading3', leftIndent=60,
+                          firstLineIndent=-20, spaceBefore=0, leading=12),
+                       PS(fontSize=10, name='TOCHeading4', leftIndent=100,
+                          firstLineIndent=-20, spaceBefore=0, leading=12),
+                       ]
+
+    story.append(toc);
 
     for r in mail_reports:
         story += r.get_flowables(report_base, date_base, end_date)
         story.append(Spacer(1,0.2*inch))
 
-    doc.build(story, onFirstPage=_first_page, onLaterPages=_later_pages)
+    doc.multiBuild(story)
 
 @print_timing
 def events_cleanup(cutoff):
@@ -460,3 +477,22 @@ def __write_toc(report_base, date_base, type, list):
             f.write("\n")
     finally:
         f.close()
+
+class ReportDocTemplate(BaseDocTemplate):
+    H1 = PS(name = 'Heading1', fontSize = 14, leading = 16)
+
+    def __init__(self, filename, **kw):
+        self.allowSplitting = 0
+        apply(BaseDocTemplate.__init__, (self, filename), kw)
+        template = PageTemplate('normal', [Frame(2.5*cm, 2.5*cm, 15*cm, 25*cm, id='F1')])
+        self.addPageTemplates(template)
+
+    def afterFlowable(self, flowable):
+        "Registers TOC entries."
+        if flowable.__class__.__name__ == 'Paragraph':
+            text = flowable.getPlainText()
+            style = flowable.style.name
+            if style == 'Heading1':
+                self.notify('TOCEntry', (0, text, self.page))
+            if style == 'Heading2':
+                self.notify('TOCEntry', (1, text, self.page))

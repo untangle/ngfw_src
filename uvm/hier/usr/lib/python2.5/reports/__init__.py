@@ -13,9 +13,11 @@ from lxml.etree import Element
 from lxml.etree import ElementTree
 from mx.DateTime import DateTimeDeltaFromSeconds
 from reports.engine import get_node_base
+from reports.engine import ReportDocTemplate
 from reportlab.platypus import Paragraph, Spacer
 from reportlab.platypus.flowables import Image
 from reportlab.platypus.tables import Table
+from reportlab.platypus.tables import TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from popen2 import popen2
@@ -124,7 +126,7 @@ class Report:
         node_base = get_node_base(self.__name, date_base)
 
         story = []
-        story.append(Paragraph(self.__name, styles['Normal']))
+        story.append(Paragraph(self.__name, ReportDocTemplate.H1))
 
         for s in self.__sections:
             story += s.get_flowables(report_base, node_base, end_date)
@@ -448,12 +450,16 @@ class Graph:
         data = []
 
         for ks in self.__key_statistics:
-            data.append([ks.name, ks.value, ks.unit])
+            data.append([ks.name, "%s %s" % (ks.value, ks.unit)])
 
         if len(data) > 0:
-            result.append(Table(data))
+            result.append([Paragraph('Key Statistics', styles['Normal']), Table(data)])
 
-        return [Table([result])]
+        t = Table([result])
+        if len(result) > 1:
+            t.setStyle(TableStyle([('VALIGN', (1, 0), (1, 0), 'MIDDLE')]))
+
+        return [t]
 
 class Chart:
     def __init__(self, type=TIME_SERIES_CHART, title=None, xlabel=None,
