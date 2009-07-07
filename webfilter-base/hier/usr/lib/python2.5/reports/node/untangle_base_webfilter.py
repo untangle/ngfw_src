@@ -819,7 +819,7 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
 
         curs.execute(query, (one_day, ed))
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK))
+            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
             lks.append(ks)
 
         conn.commit()
@@ -900,7 +900,7 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
 
         curs.execute(query, (one_day, ed))
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK))
+            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
             lks.append(ks)
 
         conn.commit()
@@ -978,7 +978,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         curs.execute(query, (one_day, ed))
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK))
+            ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
             lks.append(ks)
 
         conn.commit()
@@ -1159,7 +1159,7 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
             curs.execute(query, (one_day, ed))
 
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK))
+            ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
             lks.append(ks)
 
         conn.commit()
