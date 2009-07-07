@@ -244,7 +244,7 @@ LIMIT 10"""
             host = r[0]
             num = r[1]
 
-            lks.append(KeyStatistic(host, num, N_('limited')))
+            lks.append(KeyStatistic(host, num, N_('limited'), link_type=reports.HNAME_LINK))
             pds[host] = num
 
 

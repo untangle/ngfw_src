@@ -455,7 +455,7 @@ AND pf_protocol != ''"""
             curs.execute(query, (one_day, ed))
 
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
             lks.append(ks)
 
         conn.commit()
@@ -552,7 +552,7 @@ AND pf_protocol != ''"""
             curs.execute(query, (one_day, ed))
 
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
             lks.append(ks)
 
         conn.commit()
@@ -649,7 +649,7 @@ AND pf_protocol != ''"""
             curs.execute(query, (one_day, ed))
 
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
             lks.append(ks)
 
         conn.commit()
@@ -747,7 +747,7 @@ AND pf_protocol != ''"""
             curs.execute(query, (one_day, ed))
 
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
             lks.append(ks)
 
         conn.commit()

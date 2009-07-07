@@ -596,7 +596,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
             curs.execute(query, (one_day, ed))
 
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
             lks.append(ks)
 
         conn.commit()
@@ -985,7 +985,7 @@ AND sw_accesses > 0"""
             curs.execute(query, (one_day, ed))
 
         for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
+            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
             lks.append(ks)
 
         conn.commit()
