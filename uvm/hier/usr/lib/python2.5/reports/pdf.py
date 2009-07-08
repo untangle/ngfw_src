@@ -31,14 +31,6 @@ def __getStyleSheet():
                                   fontSize=10,
                                   leading=12))
 
-    stylesheet.add(ParagraphStyle(name='BodyText',
-                                  parent=stylesheet['Normal'],
-                                  spaceBefore=6))
-
-    stylesheet.add(ParagraphStyle(name='Italic',
-                                  parent=stylesheet['BodyText'],
-                                  fontName = 'Times-Italic'))
-
     stylesheet.add(ParagraphStyle(name='Heading1',
                                   parent=stylesheet['Normal'],
                                   fontName = 'Times-Bold',
@@ -55,47 +47,6 @@ def __getStyleSheet():
                                   alignment=TA_CENTER,
                                   spaceAfter=6),
                    alias='title')
-
-    stylesheet.add(ParagraphStyle(name='Heading2',
-                                  parent=stylesheet['Normal'],
-                                  fontName = 'Times-Bold',
-                                  fontSize=14,
-                                  leading=18,
-                                  spaceBefore=12,
-                                  spaceAfter=6),
-                   alias='h2')
-
-    stylesheet.add(ParagraphStyle(name='Heading3',
-                                  parent=stylesheet['Normal'],
-                                  fontName = 'Times-BoldItalic',
-                                  fontSize=12,
-                                  leading=14,
-                                  spaceBefore=12,
-                                  spaceAfter=6),
-                   alias='h3')
-
-    stylesheet.add(ParagraphStyle(name='Bullet',
-                                  parent=stylesheet['Normal'],
-                                  firstLineIndent=0,
-                                  spaceBefore=3),
-                   alias='bu')
-
-    stylesheet.add(ParagraphStyle(name='Definition',
-                                  parent=stylesheet['Normal'],
-                                  firstLineIndent=0,
-                                  leftIndent=36,
-                                  bulletIndent=0,
-                                  spaceBefore=6,
-                                  bulletFontName='Times-BoldItalic'),
-                   alias='df')
-
-    stylesheet.add(ParagraphStyle(name='Code',
-                                  parent=stylesheet['Normal'],
-                                  fontName='Courier',
-                                  fontSize=8,
-                                  leading=8.8,
-                                  firstLineIndent=0,
-                                  leftIndent=36))
 
     stylesheet.add(ParagraphStyle(name='TocHeading1', leftIndent=20,
                                   firstLineIndent=-20, spaceBefore=5,
@@ -148,7 +99,8 @@ class TocTemplate(PageTemplate):
         canvas.drawRightString(self.pageWidth - inch, y+8,
                                _('Table of Contents'))
         canvas.line(inch, y, self.pageWidth - inch, y)
-        canvas.drawCentredString(doc.pagesize[0] / 2, 0.75*inch, 'Page %d' % canvas.getPageNumber())
+        canvas.drawCentredString(doc.pagesize[0] / 2, 0.75*inch,
+                                 'Page %d' % canvas.getPageNumber())
         canvas.restoreState()
 
 class BodyTemplate(PageTemplate):
