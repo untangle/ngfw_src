@@ -29,13 +29,13 @@ class CurlRequestHandler(object):
         self.__curl.setopt( pycurl.COOKIEFILE, "" )
         self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
 
-    def make_request(self, url, postdata, content_type = "text/plain" ):
+    def make_request(self, url, postdata, content_type = None ):
         response = StringIO()
 
         self.__curl.setopt( pycurl.URL, url )
         self.__curl.setopt( pycurl.POST, 1 )
-        if not content_type == None:
-            self.__curl.setopt( pycurl.HTTPHEADER, [ "Content-type: ", content_type ] )
+        if content_type != None:
+            self.__curl.setopt( pycurl.HTTPHEADER, [ "Content-Type: %s" % content_type ] )
         self.__curl.setopt( pycurl.VERBOSE, False )
         self.__curl.setopt( pycurl.POSTFIELDS, str( postdata ))
         self.__curl.setopt( pycurl.WRITEFUNCTION, response.write )

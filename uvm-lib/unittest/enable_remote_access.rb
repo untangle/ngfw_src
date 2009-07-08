@@ -13,6 +13,3 @@ nm.setAccessSettings( access_settings )
 access_settings =  nm.getAccessSettings()
 is_enabled = access_settings["isOutsideAdministrationEnabled"]
 puts "remote administration is now #{is_enabled ? "enabled" : "disabled"}"
-
-
-
