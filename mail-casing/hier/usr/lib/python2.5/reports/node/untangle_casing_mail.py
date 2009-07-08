@@ -157,7 +157,8 @@ INSERT INTO reports.email (date, email)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, addr
     FROM reports.n_mail_addr_totals
     WHERE trunc_time >= %s AND trunc_time < %s
-          AND client_intf = 1 AND NOT addr ISNULL""", (sd, ed),
+          AND client_intf = 0 AND addr_kind = 'T'
+          AND NOT addr ISNULL""", (sd, ed),
                                connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.email', ed,
