@@ -8,23 +8,12 @@ import sets
 import sql_helper
 import string
 
-from sql_helper import print_timing
-from psycopg import DateFromMx
 from mx.DateTime import DateTimeDelta
-from reportlab.lib.sequencer import getSequencer
-from reportlab.platypus import Paragraph, Spacer
-from reportlab.platypus.frames import Frame
-from reportlab.platypus.tableofcontents import TableOfContents
-from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.styles import ParagraphStyle as PS
-from reportlab.rl_config import defaultPageSize
-from reportlab.lib.units import inch, cm
+from psycopg import DateFromMx
+from reports.pdf import ReportDocTemplate
+from sql_helper import print_timing
 
 UVM_JAR_DIR = '@PREFIX@/usr/share/java/uvm/'
-
-PAGE_HEIGHT = defaultPageSize[1]
-PAGE_WIDTH = defaultPageSize[0]
 
 TOP_LEVEL = 'top-level'
 USER_DRILLDOWN = 'user-drilldown'
@@ -254,34 +243,6 @@ def generate_plots(report_base, end_date):
     __generate_plots(report_base, date_base)
 
 @print_timing
-def generate_mail(report_base, end_date, mail_reports):
-    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
-
-    styles = getSampleStyleSheet()
-
-    doc = ReportDocTemplate("/home/amread/report.pdf")
-    story = [Spacer(1,2*inch)]
-    toc = TableOfContents()
-    toc.levelStyles = [PS(fontName='Times-Bold', fontSize=14,
-                          name='TOCHeading1', leftIndent=20,
-                          firstLineIndent=-20, spaceBefore=5, leading=16),
-                       PS(fontSize=12, name='TOCHeading2', leftIndent=40,
-                          firstLineIndent=-20, spaceBefore=0, leading=12),
-                       PS(fontSize=10, name='TOCHeading3', leftIndent=60,
-                          firstLineIndent=-20, spaceBefore=0, leading=12),
-                       PS(fontSize=10, name='TOCHeading4', leftIndent=100,
-                          firstLineIndent=-20, spaceBefore=0, leading=12),
-                       ]
-
-    story.append(toc);
-
-    for r in mail_reports:
-        story += r.get_flowables(report_base, date_base, end_date)
-        story.append(Spacer(1,0.2*inch))
-
-    doc.multiBuild(story)
-
-@print_timing
 def events_cleanup(cutoff):
     co = DateFromMx(cutoff)
 
@@ -479,23 +440,3 @@ def __write_toc(report_base, date_base, type, list):
     finally:
         f.close()
 
-class ReportDocTemplate(BaseDocTemplate):
-    H1 = PS(name = 'Heading1', fontSize = 14, leading = 16)
-
-    def __init__(self, filename, **kw):
-        self.allowSplitting = 0
-        apply(BaseDocTemplate.__init__, (self, filename), kw)
-        template = PageTemplate('normal', [Frame(2.5*cm, 2.5*cm, 15*cm, 25*cm, id='F1')])
-        self.addPageTemplates(template)
-        self.seq = getSequencer()
-
-    def afterFlowable(self, flowable):
-        "Registers TOC entries."
-        if flowable.__class__.__name__ == 'Paragraph':
-            text = flowable.getPlainText()
-            style = flowable.style.name
-            if style == 'Heading1':
-                key = 'h1-%s' % self.seq.nextf('heading1')
-                self.canv.addOutlineEntry(text, key)
-                self.canv.bookmarkPage(key)
-                self.notify('TOCEntry', (0, text, self.page, key))

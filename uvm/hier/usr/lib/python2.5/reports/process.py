@@ -133,7 +133,7 @@ if not no_plot_gen:
      reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date)
 
 if not no_mail:
-     reports.engine.generate_mail(REPORTS_OUTPUT_BASE, end_date, mail_reports)
+     reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date, mail_reports)
 
 if not no_cleanup:
      events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_days)
