@@ -104,6 +104,7 @@ public class UvmContextImpl extends UvmContextBase
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
     private static final String PROPERTY_IS_UNTANGLE_APPLIANCE = "com.untangle.isUntangleAppliance";
     private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM";
+    private static final String PROPERTY_INSTALLTION_TYPE = "com.untangle.installationType";
 
     private static final String PROPERTY_CLI_SERVER_HOME = "com.untangle.cli.server.home";
 
@@ -640,6 +641,11 @@ public class UvmContextImpl extends UvmContextBase
     public boolean isInsideVM()
     {
         return Boolean.getBoolean(PROPERTY_IS_INSIDE_VM);
+    }
+
+    public String installationType()
+    {
+        return System.getProperty(PROPERTY_INSTALLTION_TYPE, "iso");
     }
 
     public boolean activate(String key, RegistrationInfo regInfo) {
