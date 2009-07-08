@@ -325,6 +325,13 @@ public interface LocalUvmContext
     boolean isInsideVM();
 
     /**
+     * Returns the Untangle Installation type.  Currently there is
+     * iso and u4w.
+     * @return a <code>string</code> for the Untangle installation type.
+     */
+    String installationType();
+
+    /**
      * Activates the Untangle Server using the given key and registration info.
      * Returns true if the activation succeeds, false otherwise (if the key is
      * bogus).

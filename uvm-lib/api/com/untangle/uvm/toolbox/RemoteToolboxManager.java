@@ -54,6 +54,17 @@ public interface RemoteToolboxManager
      */
     RackView getRackView(Policy p);
 
+    /**
+     * Get the view of the rack for a policy.
+     *
+     * @param p policy.
+     * @param installationType The type of installation. If null, this
+     * will use the value from the system(remoteUvmContext.getInstallationType).
+     * Use the empty string to not hide any of the apps.
+     * @return visible nodes for this policy.
+     */
+    RackView getRackView(Policy p,String installationType);
+
     UpgradeStatus getUpgradeStatus(boolean doUpdate)
         throws MackageException, InterruptedException;
 

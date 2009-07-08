@@ -272,6 +272,13 @@ public interface RemoteUvmContext
     boolean isInsideVM();
 
     /**
+     * Returns the Untangle Installation type.  Currently there is
+     * iso and u4w.
+     * @return a <code>string</code> for the Untangle installation type.
+     */
+    String installationType();
+
+    /**
      * Create a backup which the client can save to a local disk.  The
      * returned bytes are for a .tar.gz file, so it is a good idea to
      * either use a ".tar.gz" extension so basic validation can be

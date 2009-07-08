@@ -227,6 +227,11 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         return context.isInsideVM();
     }
 
+    public String installationType()
+    {
+        return context.installationType();
+    }
+
     public byte[] createBackup() throws IOException
     {
         return context.createBackup();

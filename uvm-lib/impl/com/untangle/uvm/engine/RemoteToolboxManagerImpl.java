@@ -166,6 +166,19 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     public RackView getRackView(Policy p)
     {
+        return getRackView(p,null);
+    }
+
+    public RackView getRackView(Policy p,String installationType)
+    {
+        if (installationType == null) {
+            installationType = LocalUvmContextFactory.context().installationType();
+        }
+
+        if (installationType == null || installationType.length()==0) {
+            installationType="!nevermatchflag,,!";
+        }
+
         MackageDesc[] available = this.available;
         MackageDesc[] installed = this.installed;
 
@@ -173,12 +186,16 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         Map<String, MackageDesc> trials = new HashMap<String, MackageDesc>();
         Map<String, MackageDesc> libitems = new HashMap<String, MackageDesc>();
         Set<String> displayNames = new HashSet<String>();
+        Set<String> hiddenApps = new HashSet<String>();
         for (MackageDesc md : available) {
             String dn = md.getDisplayName();
             MackageDesc.Type type = md.getType();
             if (type == MackageDesc.Type.LIB_ITEM) {
                 displayNames.add(dn);
                 libitems.put(dn, md);
+                if (md.getHideOn().contains(installationType)) {
+                    hiddenApps.add(dn);
+                }
             } else if (type == MackageDesc.Type.TRIAL) {
                 //Workaround for Trial display names. better solution is welcome.
                 String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
@@ -194,16 +211,19 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             if (type == MackageDesc.Type.LIB_ITEM) {
                 libitems.remove(dn);
                 trials.remove(dn);
+                hiddenApps.remove(dn);
             } else if (type == MackageDesc.Type.TRIAL) {
                 //Workaround for Trial display names. better solution is welcome.
                 String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
                 realDn=realDn.replaceFirst(" Limited Trial","");
                 trials.remove(realDn);
+                hiddenApps.remove(dn);
             } else if (!md.isInvisible()
                        && (type == MackageDesc.Type.NODE
                            || type == MackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);
                 nodes.put(dn, md);
+                hiddenApps.remove(dn);
             }
         }
 
@@ -230,7 +250,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             MackageDesc t = trials.get(dn);
             MackageDesc n = nodes.get(dn);
 
-            if (l != null || t != null || n != null) {
+            if (!hiddenApps.contains(dn) && ( l != null || t != null || n != null)) {
                 Application a = new Application(l, t, n);
                 apps.add(a);
             }

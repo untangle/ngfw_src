@@ -107,6 +107,10 @@ if ( lspci | grep -qi VMWare ) then
     JAVA_OPTS="-Dcom.untangle.isInsideVM=true $JAVA_OPTS"
 fi
 
+if ( dpkg -l untangle-windows-installer > /dev/null 2>&1 ) then
+    JAVA_OPTS="-Dcom.untangle.installationType=u4w $JAVA_OPTS"
+fi
+
 unset DISPLAY
 export PATH LD_LIBRARY_PATH CLASSPATH JAVA_HOME
 

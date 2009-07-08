@@ -78,6 +78,8 @@ public class MackageDesc implements Serializable
     private final int viewPosition;
     private final boolean autoStart;
     private final boolean invisible;
+    private final String hideOn;
+    
 
     public MackageDesc(Map<String, String> m, String installedVersion)
     {
@@ -140,6 +142,10 @@ public class MackageDesc implements Serializable
         }
 
         this.installedVersion = installedVersion;
+
+        // hide on
+        v = m.get("untangle-hide-on");
+        this.hideOn = null == v ? "" : v;
     }
 
     public String getName()
@@ -217,6 +223,11 @@ public class MackageDesc implements Serializable
     public boolean isInvisible()
     {
         return invisible;
+    }
+
+    public String getHideOn()
+    {
+        return hideOn;
     }
 
     // Object methods ----------------------------------------------------------
