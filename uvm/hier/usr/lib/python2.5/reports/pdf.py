@@ -129,7 +129,7 @@ class BodyTemplate(PageTemplate):
 def generate_pdf(report_base, end_date, mail_reports):
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
 
-    title = 'Report for %s' % end_date
+    title = 'Report for %s' % end_date.strftime("%A %d %B %Y")
 
     story = []
 
@@ -147,4 +147,3 @@ def generate_pdf(report_base, end_date, mail_reports):
         story.append(Spacer(1,0.2*inch))
 
     doc.multiBuild(story)
-
