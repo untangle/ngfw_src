@@ -1,12 +1,17 @@
+import gettext
+import reportlab.pdfgen.canvas as canvas
+
 from reportlab.lib.enums import TA_LEFT, TA_CENTER
 from reportlab.lib.sequencer import getSequencer
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import StyleSheet1
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch, cm
-from reportlab.platypus import Paragraph, Spacer
-from reportlab.platypus.flowables import PageBreak
+from reportlab.platypus import NextPageTemplate
+from reportlab.platypus import Paragraph
+from reportlab.platypus import Spacer
 from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
+from reportlab.platypus.flowables import PageBreak
 from reportlab.platypus.frames import Frame
 from reportlab.platypus.tableofcontents import TableOfContents
 from reportlab.rl_config import defaultPageSize
@@ -14,6 +19,8 @@ from sql_helper import print_timing
 
 PAGE_HEIGHT = defaultPageSize[1]
 PAGE_WIDTH = defaultPageSize[0]
+
+_ = gettext.gettext
 
 def __getStyleSheet():
     """Returns a stylesheet object"""
@@ -96,15 +103,19 @@ def __getStyleSheet():
 
     return stylesheet
 
-STYLE_SHEET = __getStyleSheet()
+STYLESHEET = __getStyleSheet()
 
 class ReportDocTemplate(BaseDocTemplate):
     def __init__(self, filename, **kw):
-        self.allowSplitting = 0
         apply(BaseDocTemplate.__init__, (self, filename), kw)
-        template = PageTemplate('normal', [Frame(2.5*cm, 2.5*cm, 15*cm, 25*cm, id='F1')])
-        self.addPageTemplates(template)
+
+        self.allowSplitting = 0
         self.seq = getSequencer()
+        self.chapter = ""
+
+    def afterInit(self):
+        self.addPageTemplates(TocTemplate('TOC', self.pagesize))
+        self.addPageTemplates(BodyTemplate('Body', self.pagesize))
 
     def afterFlowable(self, flowable):
         "Registers TOC entries."
@@ -116,17 +127,67 @@ class ReportDocTemplate(BaseDocTemplate):
                 self.canv.addOutlineEntry(text, key)
                 self.canv.bookmarkPage(key)
                 self.notify('TOCEntry', (0, text, self.page, key))
+                self.chapter = text
+
+class TocTemplate(PageTemplate):
+    def __init__(self, id, pageSize=defaultPageSize):
+        self.pageWidth = pageSize[0]
+        self.pageHeight = pageSize[1]
+        frame1 = Frame(inch,
+                       inch,
+                       self.pageWidth - 2*inch,
+                       self.pageHeight - 2*inch,
+                       id='normal')
+        PageTemplate.__init__(self, id, [frame1])
+
+    def afterDrawPage(self, canvas, doc):
+        y = self.pageHeight - 50
+        canvas.saveState()
+        canvas.setFont('Times-Roman', 10)
+        canvas.drawString(inch, y+8, doc.title)
+        canvas.drawRightString(self.pageWidth - inch, y+8,
+                               _('Table of Contents'))
+        canvas.line(inch, y, self.pageWidth - inch, y)
+        canvas.drawCentredString(doc.pagesize[0] / 2, 0.75*inch, 'Page %d' % canvas.getPageNumber())
+        canvas.restoreState()
+
+class BodyTemplate(PageTemplate):
+    def __init__(self, id, pageSize=defaultPageSize):
+        self.pageWidth = pageSize[0]
+        self.pageHeight = pageSize[1]
+        frame1 = Frame(inch,
+                       inch,
+                       self.pageWidth - 2*inch,
+                       self.pageHeight - 2*inch,
+                       id='normal')
+        PageTemplate.__init__(self, id, [frame1])
+
+    def afterDrawPage(self, canvas, doc):
+        y = self.pageHeight - 50
+        canvas.saveState()
+        canvas.setFont('Times-Roman', 10)
+        canvas.drawString(inch, y+8, doc.title)
+        canvas.drawRightString(self.pageWidth - inch, y+8, doc.chapter)
+        canvas.line(inch, y, self.pageWidth - inch, y)
+        canvas.drawCentredString(doc.pagesize[0] / 2, 0.75*inch,
+                                 _('Page %d') % canvas.getPageNumber())
+        canvas.restoreState()
 
 @print_timing
 def generate_pdf(report_base, end_date, mail_reports):
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
 
-    doc = ReportDocTemplate("/home/amread/report.pdf")
-    story = [Spacer(1,2*inch)]
+    title = 'Report for %s' % end_date
+
+    story = []
+
+    doc = ReportDocTemplate("/home/amread/report.pdf", title=title)
+    story.append(Paragraph(title, STYLESHEET['Title']))
     toc = TableOfContents()
-    toc.levelStyles = [STYLE_SHEET['TocHeading1']]
+    toc.levelStyles = [STYLESHEET['TocHeading1']]
 
     story.append(toc);
+    story.append(NextPageTemplate('Body'))
     story.append(PageBreak())
 
     for r in mail_reports:

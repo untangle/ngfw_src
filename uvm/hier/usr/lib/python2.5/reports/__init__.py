@@ -22,7 +22,7 @@ from reportlab.platypus.tables import Table
 from reportlab.platypus.tables import TableStyle
 from reports.engine import ReportDocTemplate
 from reports.engine import get_node_base
-from reports.pdf import STYLE_SHEET
+from reports.pdf import STYLESHEET
 
 HNAME_LINK = 'HostLink'
 USER_LINK = 'UserLink'
@@ -105,7 +105,7 @@ class Report:
         node_base = get_node_base(self.__name, date_base)
 
         story = []
-        story.append(Paragraph(self.__title, STYLE_SHEET['Heading1']))
+        story.append(Paragraph(self.__title, STYLESHEET['Heading1']))
 
         for s in self.__sections:
             story += s.get_flowables(report_base, node_base, end_date)
