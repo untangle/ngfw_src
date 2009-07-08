@@ -1,26 +1,27 @@
 import csv
-import logging
 import gettext
+import logging
 import mx
 import os
-import string
-import sql_helper
 import popen2
 import re
+import reportlab.lib.colors as colors
+import sql_helper
+import string
 
 from lxml.etree import CDATA
 from lxml.etree import Element
 from lxml.etree import ElementTree
 from mx.DateTime import DateTimeDeltaFromSeconds
-from reports.engine import get_node_base
-from reports.engine import ReportDocTemplate
-from reportlab.platypus import Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.platypus import Paragraph
+from reportlab.platypus import Spacer
 from reportlab.platypus.flowables import Image
 from reportlab.platypus.tables import Table
 from reportlab.platypus.tables import TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
-from popen2 import popen2
+from reports.engine import ReportDocTemplate
+from reports.engine import get_node_base
 
 styles = getSampleStyleSheet()
 
@@ -137,7 +138,7 @@ class Report:
     def __get_node_title(self, name):
         title = None
 
-        (stdout, stdin) = popen2(['apt-cache', 'show', name])
+        (stdout, stdin) = popen2.popen2(['apt-cache', 'show', name])
         try:
             for l in stdout:
                 m = re.search('Description: (.*)', l)
@@ -445,19 +446,21 @@ class Graph:
             return []
         image = Image(img_file)
 
-        result = [image]
-
-        data = []
+        data = [[_('Key Statistics'), '']]
 
         for ks in self.__key_statistics:
             data.append([ks.name, "%s %s" % (ks.value, ks.unit)])
 
-        if len(data) > 0:
-            result.append([Paragraph('Key Statistics', styles['Normal']), Table(data)])
+        ks_table = Table(data, style=[('ROWBACKGROUNDS', (0, 0), (-1, -1),
+                                       (colors.lightgrey, None)),
+                                      ('SPAN', (0, 0), (1, 0)),
+                                      ('BACKGROUND', (0, 0), (1, 0),
+                                       colors.grey),
+                                      ('BOX', (0, 0), (-1, -1),
+                                       1, colors.grey)])
 
-        t = Table([result])
-        if len(result) > 1:
-            t.setStyle(TableStyle([('VALIGN', (1, 0), (1, 0), 'MIDDLE')]))
+        t = Table([[image, ks_table]])
+        t.setStyle(TableStyle([('VALIGN', (1, 0), (1, 0), 'TOP')]))
 
         return [t]
 

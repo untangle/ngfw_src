@@ -11,6 +11,7 @@ import string
 from sql_helper import print_timing
 from psycopg import DateFromMx
 from mx.DateTime import DateTimeDelta
+from reportlab.lib.sequencer import getSequencer
 from reportlab.platypus import Paragraph, Spacer
 from reportlab.platypus.frames import Frame
 from reportlab.platypus.tableofcontents import TableOfContents
@@ -486,6 +487,7 @@ class ReportDocTemplate(BaseDocTemplate):
         apply(BaseDocTemplate.__init__, (self, filename), kw)
         template = PageTemplate('normal', [Frame(2.5*cm, 2.5*cm, 15*cm, 25*cm, id='F1')])
         self.addPageTemplates(template)
+        self.seq = getSequencer()
 
     def afterFlowable(self, flowable):
         "Registers TOC entries."
@@ -493,6 +495,6 @@ class ReportDocTemplate(BaseDocTemplate):
             text = flowable.getPlainText()
             style = flowable.style.name
             if style == 'Heading1':
-                self.notify('TOCEntry', (0, text, self.page))
-            if style == 'Heading2':
-                self.notify('TOCEntry', (1, text, self.page))
+                key = 'h1-%s' % self.seq.nextf('heading1')
+                self.canv.bookmarkPage(key)
+                self.notify('TOCEntry', (0, text, self.page, key))
