@@ -102,27 +102,6 @@ class Report:
             tree.write(report_file, encoding='utf-8', pretty_print=True,
                        xml_declaration=True)
 
-    def to_html(self, writer, report_base, date_base, end_date):
-        ni = writer.add_node_anchor(self.__name)
-
-        writer.write("""\
-      <table style="width:100%%;border-bottom:1px #CCC solid;margin-bottom:10px;">
-        <tr>
-          <td>
-            <span style="font-size:16px;font-weight:bold;">%s</span><a name="%s"></a>
-          </td>
-          <td style="text-align:right;">
-            <a href="#" style="font-size:12px;">Back To Top</a>
-          </td>
-
-        </tr>
-      </table>""" % (ni.display_name, ni.anchor))
-
-        node_base = self.get_node_base(self.__name, date_base)
-
-        for s in self.__sections:
-            s.to_html(writer, report_base, node_base, end_date)
-
     def get_flowables(self, report_base, date_base, end_date):
         node_base = get_node_base(self.__name, date_base)
 
@@ -168,9 +147,6 @@ class Section:
                  email=None):
         pass
 
-    def to_html(self, writer, report_base, section_base, end_date):
-        pass
-
     def get_flowables(self, report_base, date_base, end_date):
         return []
 
@@ -198,24 +174,6 @@ class SummarySection(Section):
             return element
         else:
             return None
-
-    def to_html(self, writer, report_base, node_base, end_date):
-        writer.write("""\
-      <div style="margin-left:10px;">
-        <table style="width:100%%;border-bottom:1px #CCC dotted;margin-bottom:10px;">
-          <tr>
-            <td>
-              <span style="font-size:14px;font-weight:bold;;color:#009933">%s</span>
-            </td>
-
-          </tr>
-        </table>
-""" % _(self.title))
-
-        section_base = "%s/%s" % (node_base, self.name)
-
-        for si in self.__summary_items:
-            si.to_html(writer, report_base, section_base, end_date)
 
     def get_flowables(self, report_base, node_base, end_date):
         section_base = "%s/%s" % (node_base, self.name)
@@ -264,61 +222,6 @@ class DetailSection(Section):
             element.append(c.get_dom())
 
         return element
-
-    def to_html(self, writer, report_base, section_base, end_date):
-        return
-
-        start_date = end_date - mx.DateTime.DateTimeDelta(1)
-        sql = self.get_sql(start_date, end_date)
-        if not sql:
-            return
-
-        writer.write("""\
-<table style="width:100%%;border-bottom:1px #CCC dotted;margin-bottom:10px;">
-  <tr>
-    <td>
-      <span style="font-size:14px;font-weight:bold;;color:#009933">%s</span>
-    </td>
-
-  </tr>
-</table>
-<table style="width:100%%;font-size:12px;"><tbody><tr><td colspan="2">
-        <div style="float: left; width: 100%%;"><table  style="width:100%%;"><thead>
-              <tr style="background-color:#EFEFEF;text-align:left;"><th >Client Address</th>
-""" % _(self.title))
-
-        columns = self.get_columns()
-
-        for c in columns:
-            writer.write('<th >%s</th>' % _(c.title))
-
-        conn = sql_helper.get_connection()
-
-        try:
-            curs = conn.cursor()
-            curs.execute(sql)
-            rows = curs.fetchall()
-        finally:
-            conn.commit()
-
-        row_num = 0;
-        for r in rows:
-            if row_num % 2 == 0:
-                writer.write("<tr>")
-            else:
-                writer.write('<tr style="background-color:#EFEFEF;">')
-
-            row_num = row_num + 1
-
-            for i, d in enumerate(r):
-                # XXX custom formatters/units?
-                writer.write('<td>%s</td>' % d)
-
-            writer.write('</tr>')
-
-        writer.write("""\
-          </tbody></table>
-""")
 
     def get_flowables(self, report_base, date_base, end_date):
         return []
@@ -404,40 +307,6 @@ class Graph:
         element.append(self.__plot.get_dom())
 
         return element
-
-    def to_html(self, writer, report_base, section_base, end_date):
-        image_cid = writer.encode_image('%s/%s-%s.png' % (report_base,
-                                                          section_base,
-                                                          self.__name))
-
-        writer.write("""\
-<table  style="width:100%%;border:1px #ccc solid;font-size:11px;">
-  <tbody>
-    <tr><td style="vertical-align:top;padding-bottom:1em;padding-right:1em;" ><img src="%s"/></td><td style="vertical-align:top;padding-bottom:1em;">
-        <div style=" width: 236px;background-color:#cccccc;border:1px #ccc solid;border-bottom:none;padding:0.2em;color:#333;clear:left;font-weight:bold;">%s</div>
-
-        <table style="border:1px #EFEFEF solid;" >
-          <tbody>""" % (image_cid, _('Key Statistics')))
-
-        row_num = 0
-        for ks in self.__key_statistics:
-            if row_num % 2 == 0:
-                writer.write("""\
-            <tr><td style="width:150px;">%s</td><td  style="width:80px;">%s %s</td></tr>"""
-                             % (ks.name, ks.value, ks.unit))
-            else:
-                writer.write("""\
-            <tr style="background-color:#EFEFEF;"><td style="width:150px;">%s</td><td style="width:80px;">%s %s</td></tr>""" % (ks.name, ks.value, ks.unit))
-
-            row_num = row_num + 1
-
-        writer.write("""\
-          </tbody>
-        </table>
-    </td></tr>
-  </tbody>
-</table>
-""")
 
     def get_flowables(self, report_base, section_base, end_date):
         img_file = '%s/%s-%s.png' % (report_base, section_base, self.__name)

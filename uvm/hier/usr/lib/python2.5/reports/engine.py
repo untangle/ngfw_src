@@ -496,5 +496,6 @@ class ReportDocTemplate(BaseDocTemplate):
             style = flowable.style.name
             if style == 'Heading1':
                 key = 'h1-%s' % self.seq.nextf('heading1')
+                self.canv.addOutlineEntry(text, key)
                 self.canv.bookmarkPage(key)
                 self.notify('TOCEntry', (0, text, self.page, key))
