@@ -312,23 +312,22 @@ class Graph:
         if not os.path.exists(img_file):
             logging.warn('skipping summary for missing png: %s' % img_file)
             return []
-        image = Image(img_file)
+        image = Image(img_file, width=(3.5 * inch))
 
         data = [[_('Key Statistics'), '']]
 
         for ks in self.__key_statistics:
             data.append([ks.name, "%s %s" % (ks.value, ks.unit)])
 
-        ks_table = Table(data, style=[('ROWBACKGROUNDS', (0, 0), (-1, -1),
-                                       (colors.lightgrey, None)),
-                                      ('SPAN', (0, 0), (1, 0)),
-                                      ('BACKGROUND', (0, 0), (1, 0),
-                                       colors.grey),
-                                      ('BOX', (0, 0), (-1, -1),
-                                       1, colors.grey)])
+        ks_table = Table(data, colWidths=[1.5 * inch, 1.5 * inch],
+                         style=[('ROWBACKGROUNDS', (0, 0), (-1, -1),
+                                 (colors.lightgrey, None)),
+                                ('SPAN', (0, 0), (1, 0)),
+                                ('BACKGROUND', (0, 0), (1, 0), colors.grey),
+                                ('BOX', (0, 0), (-1, -1), 1, colors.grey)])
 
-        t = Table([[image, ks_table]])
-        t.setStyle(TableStyle([('VALIGN', (1, 0), (1, 0), 'TOP')]))
+        t = Table([[image, ks_table]],
+                  style=[('VALIGN', (1, 0), (1, 0), 'MIDDLE')])
 
         return [t]
 

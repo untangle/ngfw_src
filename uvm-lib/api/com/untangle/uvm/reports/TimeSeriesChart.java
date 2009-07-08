@@ -120,7 +120,7 @@ public class TimeSeriesChart extends Plot
             ChartFactory.createTimeSeriesChart(getTitle(),
                                                this.xLabel, this.yLabel,
                                                tsc,
-                                               true, true, false);
+                                               false, true, false);
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
                                       jfChart, CHART_WIDTH, CHART_HEIGHT,
                                       null, false, CHART_COMPRESSION_PNG);

@@ -69,16 +69,19 @@ class ReportDocTemplate(BaseDocTemplate):
         self.addPageTemplates(BodyTemplate('Body', self.pagesize))
 
     def afterFlowable(self, flowable):
-        "Registers TOC entries."
         if flowable.__class__.__name__ == 'Paragraph':
             text = flowable.getPlainText()
             style = flowable.style.name
             if style == 'Heading1':
                 key = 'h1-%s' % self.seq.nextf('heading1')
-                self.canv.addOutlineEntry(text, key)
                 self.canv.bookmarkPage(key)
+                self.canv.addOutlineEntry(text, key)
                 self.notify('TOCEntry', (0, text, self.page, key))
                 self.chapter = text
+        elif flowable.__class__.__name__ == 'TableOfContents':
+            key = 'toc-%s' % self.seq.nextf('TOC')
+            self.canv.bookmarkPage(key)
+            self.canv.addOutlineEntry(_('Table of Contents'), key)
 
 class TocTemplate(PageTemplate):
     def __init__(self, id, pageSize=defaultPageSize):
