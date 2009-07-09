@@ -73,6 +73,7 @@ if (PREFIX != ''):
 
 import reports.engine
 import sql_helper
+import reports.mailer
 
 start_date = end_date - mx.DateTime.DateTimeDelta(30)
 
@@ -125,6 +126,8 @@ if not no_migration:
      reports.engine.process_fact_tables(start_date, end_date)
      reports.engine.post_facttable_setup(start_date, end_date)
 
+mail_reports = []
+
 if not no_data_gen:
      mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
                                                     end_date)
@@ -133,7 +136,8 @@ if not no_plot_gen:
      reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date)
 
 if not no_mail:
-     reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date, mail_reports)
+     f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date, mail_reports)
+     reports.mailer.mail_reports(end_date, f)
 
 if not no_cleanup:
      events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_days)

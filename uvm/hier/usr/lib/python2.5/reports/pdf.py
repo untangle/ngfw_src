@@ -130,13 +130,15 @@ class BodyTemplate(PageTemplate):
 
 @print_timing
 def generate_pdf(report_base, end_date, mail_reports):
+    file = "/home/amread/report.pdf";
+
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
 
     title = 'Report for %s' % end_date.strftime("%A %d %B %Y")
 
     story = []
 
-    doc = ReportDocTemplate("/home/amread/report.pdf", title=title)
+    doc = ReportDocTemplate(file, title=title)
     story.append(Paragraph(title, STYLESHEET['Title']))
     toc = TableOfContents()
     toc.levelStyles = [STYLESHEET['TocHeading1']]
@@ -150,3 +152,5 @@ def generate_pdf(report_base, end_date, mail_reports):
         story.append(Spacer(1,0.2*inch))
 
     doc.multiBuild(story)
+
+    return file
