@@ -118,7 +118,7 @@ class Report:
         (stdout, stdin) = popen2.popen2(['apt-cache', 'show', name])
         try:
             for l in stdout:
-                m = re.search('Description: (.*)', l)
+                m = re.search('Display-Name: (.*)', l)
                 if m:
                     title = m.group(1)
                     break

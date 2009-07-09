@@ -1,5 +1,5 @@
 import gettext
-import reportlab.pdfgen.canvas as canvas
+import reportlab.lib.colors as colors
 
 from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_LEFT, TA_CENTER
@@ -12,8 +12,10 @@ from reportlab.platypus import NextPageTemplate
 from reportlab.platypus import Paragraph
 from reportlab.platypus import Spacer
 from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
+from reportlab.platypus.flowables import Image
 from reportlab.platypus.flowables import PageBreak
 from reportlab.platypus.frames import Frame
+from reportlab.platypus.tables import Table
 from reportlab.platypus.tableofcontents import TableOfContents
 from reportlab.rl_config import defaultPageSize
 from sql_helper import print_timing
@@ -45,7 +47,6 @@ def __getStyleSheet():
                                   fontName = 'Helvetica-Bold',
                                   fontSize=18,
                                   leading=22,
-                                  alignment=TA_CENTER,
                                   spaceAfter=6),
                    alias='title')
 
@@ -141,12 +142,20 @@ def generate_pdf(report_base, end_date, mail_reports):
 
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
 
-    title = 'Report for %s' % end_date.strftime("%A %d %B %Y")
-
     story = []
 
-    doc = ReportDocTemplate(file, title=title)
-    story.append(Paragraph(title, STYLESHEET['Title']))
+    date_str = end_date.strftime("%A %d %B %Y")
+    doc = ReportDocTemplate(file, title=_('Report for %s') % date_str)
+
+    t = Table([[_('Report')], [date_str]],
+              style=[('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+                     ('FONTSIZE', (0, 0), (0, 0), 18),
+                     ('FONTSIZE', (0, 1), (0, 1), 14),
+                     ('TEXTCOLOR', (0, 1), (0, 1), HexColor(0x009933))])
+
+    story.append(Table([[Image('/var/www/images/BrandingLogo.gif'), t]],
+                       style=[('VALIGN', (1, 0), (1, 0), 'TOP')]))
+
     toc = TableOfContents()
     toc.levelStyles = [STYLESHEET['TocHeading1']]
 
