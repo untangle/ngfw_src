@@ -318,7 +318,7 @@ class Graph:
         data = [[_('Key Statistics'), '']]
 
         for ks in self.__key_statistics:
-            data.append([ks.name, "%s %s" % (ks.value, ks.unit)])
+            data.append([ks.name, "%s %s" % ks.scaled_value])
 
         ks_table = Table(data, colWidths=[1.5 * inch, 1.5 * inch],
                          style=[('ROWBACKGROUNDS', (0, 0), (-1, -1),
@@ -428,6 +428,17 @@ class KeyStatistic:
         self.__value = value
         self.__unit = unit
         self.__link_type = link_type
+
+    @property
+    def scaled_value(self):
+        if self.__unit.startswith('bytes'):
+            s = string.split(self.__unit, '/')
+            s[0] = _('MB')
+            return ('%.2f' % (self.__value / 1000000), string.join(s, '/'))
+        elif type(self.__value) is float:
+            return ('%.2f' % self.__value, self.__unit)
+        else:
+            return (self.__value, self.__unit)
 
     @property
     def name(self):
