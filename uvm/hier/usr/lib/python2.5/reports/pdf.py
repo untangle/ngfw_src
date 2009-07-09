@@ -1,6 +1,7 @@
 import gettext
 import reportlab.pdfgen.canvas as canvas
 
+from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_LEFT, TA_CENTER
 from reportlab.lib.sequencer import getSequencer
 from reportlab.lib.styles import ParagraphStyle
@@ -97,6 +98,7 @@ class TocTemplate(PageTemplate):
     def afterDrawPage(self, canvas, doc):
         y = self.pageHeight - 50
         canvas.saveState()
+        canvas.setStrokeColor(HexColor(0xCCCCCC))
         canvas.setFont('Helvetica', 10)
         canvas.drawString(inch, y+8, doc.title)
         canvas.drawRightString(self.pageWidth - inch, y+8,
@@ -120,6 +122,7 @@ class BodyTemplate(PageTemplate):
     def afterDrawPage(self, canvas, doc):
         y = self.pageHeight - 50
         canvas.saveState()
+        canvas.setStrokeColor(HexColor(0xCCCCCC))
         canvas.setFont('Helvetica', 10)
         canvas.drawString(inch, y+8, doc.title)
         canvas.drawRightString(self.pageWidth - inch, y+8, doc.chapter)
