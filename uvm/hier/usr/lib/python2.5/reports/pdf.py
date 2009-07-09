@@ -27,13 +27,13 @@ def __getStyleSheet():
     stylesheet = StyleSheet1()
 
     stylesheet.add(ParagraphStyle(name='Normal',
-                                  fontName='Times-Roman',
+                                  fontName='Helvetica-Roman',
                                   fontSize=10,
                                   leading=12))
 
     stylesheet.add(ParagraphStyle(name='Heading1',
                                   parent=stylesheet['Normal'],
-                                  fontName = 'Times-Bold',
+                                  fontName = 'Helvetica-Bold',
                                   fontSize=18,
                                   leading=22,
                                   spaceAfter=6),
@@ -41,7 +41,7 @@ def __getStyleSheet():
 
     stylesheet.add(ParagraphStyle(name='Title',
                                   parent=stylesheet['Normal'],
-                                  fontName = 'Times-Bold',
+                                  fontName = 'Helvetica-Bold',
                                   fontSize=18,
                                   leading=22,
                                   alignment=TA_CENTER,
@@ -50,7 +50,7 @@ def __getStyleSheet():
 
     stylesheet.add(ParagraphStyle(name='TocHeading1', leftIndent=20,
                                   firstLineIndent=-20, spaceBefore=5,
-                                  leading=16))
+                                  leading=5))
 
     return stylesheet
 
@@ -97,7 +97,7 @@ class TocTemplate(PageTemplate):
     def afterDrawPage(self, canvas, doc):
         y = self.pageHeight - 50
         canvas.saveState()
-        canvas.setFont('Times-Roman', 10)
+        canvas.setFont('Helvetica', 10)
         canvas.drawString(inch, y+8, doc.title)
         canvas.drawRightString(self.pageWidth - inch, y+8,
                                _('Table of Contents'))
@@ -120,7 +120,7 @@ class BodyTemplate(PageTemplate):
     def afterDrawPage(self, canvas, doc):
         y = self.pageHeight - 50
         canvas.saveState()
-        canvas.setFont('Times-Roman', 10)
+        canvas.setFont('Helvetica', 10)
         canvas.drawString(inch, y+8, doc.title)
         canvas.drawRightString(self.pageWidth - inch, y+8, doc.chapter)
         canvas.line(inch, y, self.pageWidth - inch, y)

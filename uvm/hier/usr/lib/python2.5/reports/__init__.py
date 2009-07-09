@@ -17,7 +17,9 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph
 from reportlab.platypus import Spacer
+from reportlab.platypus.flowables import CondPageBreak
 from reportlab.platypus.flowables import Image
+from reportlab.platypus.flowables import KeepTogether
 from reportlab.platypus.tables import Table
 from reportlab.platypus.tables import TableStyle
 from reports.engine import ReportDocTemplate
@@ -104,12 +106,11 @@ class Report:
     def get_flowables(self, report_base, date_base, end_date):
         node_base = get_node_base(self.__name, date_base)
 
-        story = []
-        story.append(Paragraph(self.__title, STYLESHEET['Heading1']))
+        story = [CondPageBreak(4 * inch),
+                 Paragraph(self.__title, STYLESHEET['Heading1'])]
 
         for s in self.__sections:
             story += s.get_flowables(report_base, node_base, end_date)
-            story.append(Spacer(1, 0.2 * inch))
 
         return story
 
