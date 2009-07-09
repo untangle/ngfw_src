@@ -28,7 +28,7 @@ def __getStyleSheet():
     stylesheet = StyleSheet1()
 
     stylesheet.add(ParagraphStyle(name='Normal',
-                                  fontName='Helvetica-Roman',
+                                  fontName='Helvetica',
                                   fontSize=10,
                                   leading=12))
 
@@ -49,7 +49,9 @@ def __getStyleSheet():
                                   spaceAfter=6),
                    alias='title')
 
-    stylesheet.add(ParagraphStyle(name='TocHeading1', leftIndent=20,
+    stylesheet.add(ParagraphStyle(name='TocHeading1',
+                                  parent=stylesheet['Normal'],
+                                  leftIndent=20,
                                   firstLineIndent=-20, spaceBefore=5,
                                   leading=5))
 
@@ -99,6 +101,7 @@ class TocTemplate(PageTemplate):
         y = self.pageHeight - 50
         canvas.saveState()
         canvas.setStrokeColor(HexColor(0xCCCCCC))
+        canvas.setFillColor(HexColor(0xCCCCCC))
         canvas.setFont('Helvetica', 10)
         canvas.drawString(inch, y+8, doc.title)
         canvas.drawRightString(self.pageWidth - inch, y+8,
@@ -123,6 +126,7 @@ class BodyTemplate(PageTemplate):
         y = self.pageHeight - 50
         canvas.saveState()
         canvas.setStrokeColor(HexColor(0xCCCCCC))
+        canvas.setFillColor(HexColor(0xCCCCCC))
         canvas.setFont('Helvetica', 10)
         canvas.drawString(inch, y+8, doc.title)
         canvas.drawRightString(self.pageWidth - inch, y+8, doc.chapter)
@@ -152,7 +156,7 @@ def generate_pdf(report_base, end_date, mail_reports):
 
     for r in mail_reports:
         story += r.get_flowables(report_base, date_base, end_date)
-        story.append(Spacer(1,0.2*inch))
+        story.append(PageBreak())
 
     doc.multiBuild(story)
 

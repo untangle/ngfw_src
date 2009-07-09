@@ -17,7 +17,6 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph
 from reportlab.platypus import Spacer
-from reportlab.platypus.flowables import CondPageBreak
 from reportlab.platypus.flowables import Image
 from reportlab.platypus.flowables import KeepTogether
 from reportlab.platypus.tables import Table
@@ -106,8 +105,7 @@ class Report:
     def get_flowables(self, report_base, date_base, end_date):
         node_base = get_node_base(self.__name, date_base)
 
-        story = [CondPageBreak(4 * inch),
-                 Paragraph(self.__title, STYLESHEET['Heading1'])]
+        story = [Paragraph(self.__title, STYLESHEET['Heading1'])]
 
         for s in self.__sections:
             story += s.get_flowables(report_base, node_base, end_date)
@@ -325,7 +323,8 @@ class Graph:
                                  (colors.lightgrey, None)),
                                 ('SPAN', (0, 0), (1, 0)),
                                 ('BACKGROUND', (0, 0), (1, 0), colors.grey),
-                                ('BOX', (0, 0), (-1, -1), 1, colors.grey)])
+                                ('BOX', (0, 0), (-1, -1), 1, colors.grey),
+                                ('FONTNAME', (0, 0), (-1, -1), 'Helvetica')])
 
         t = Table([[image, ks_table]],
                   style=[('VALIGN', (1, 0), (1, 0), 'MIDDLE')])
