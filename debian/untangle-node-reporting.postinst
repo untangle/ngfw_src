@@ -3,4 +3,7 @@
 
 /usr/bin/ucli -t 30 register untangle-node-reporting 2>/dev/null || true
 
+rm -fr /usr/share/untangle/web/reports/current
+rm -fr /usr/share/untangle/web/reports/200[6-9]*
+
 exit 0
