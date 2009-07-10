@@ -47,6 +47,9 @@ if (!Ung.hasResource["Ung.Email"]) {
             // call superclass renderer first
             Ung.Email.superclass.onRender.call(this, container, position);
             this.initSubCmps.defer(1, this);
+
+                              
+           
         },
         initSubCmps : function() {
             var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
@@ -164,6 +167,30 @@ if (!Ung.hasResource["Ung.Email"]) {
                 layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
+                listeners: {
+                    'activate': {
+                        fn : function (){
+                            (new Ext.ToolTip({
+                        			html : 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
+                        			target :Ext.getCmp('email_fromAddress').container.id,
+                        			autoWidth : true,
+                        			autoHeight : true,
+                        			showDelay : 200,
+                        			dismissDelay : 0,
+                        			hideDelay : 0
+                        		}));
+                            (new Ext.ToolTip({
+                                    html : 'Some servers may require this but other servers may not support it.',
+                                        target :Ext.getCmp('email_smtpUseAuthentication').container.id,
+                                        autoWidth : true,
+                                        autoHeight : true,
+                                        showDelay : 200,
+                                        dismissDelay : 0,
+                                        hideDelay : 0
+                                        }));
+                        }
+                    }
+                },
                 
                 onEmailTest : function(saveBefore) {
                     var emailTestMessage = this.i18n._("Enter an email address to send a test message and then press \"Send\". That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses.");
@@ -296,7 +323,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             itemCls : 'left-indent-5',
                             name : 'Use Authentication',
                             id : 'email_smtpUseAuthentication',
-                            boxLabel : this.i18n._('Use Authentication. (<i>Note:</i> Some servers may require this but other servers may not support it.)'),
+                            boxLabel : this.i18n._('Use Authentication.'),
                             hideLabel : true,
                             listeners : {
                                 "check" : {
@@ -328,18 +355,18 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items : [{
                         cls: 'description',
                         border : false,
-                    	html : String.format(this.i18n._("The {0} Server will send email from this address. <br/><i>Note:</i> It is recommended to use a valid email address. (example: untangle@mydomain.com)"),
+                    	html : String.format(this.i18n._("The {0} Server will send email from this address."),
                                              main.getBrandingBaseSettings().companyName)
                     }, {
                         xtype : 'textfield',
                         name : 'Email From Address',
                         id : 'email_fromAddress',
                         vtype : 'email',
-                        tpl: '<tpl for="."><div ext:qtip="Test" class="x-combo-list-item">Hello</div></tpl>',
                         hideLabel : true,
                         allowBlank : false,
                         width : 200,
-                        value : this.getMailSettings().fromAddress
+                        value : this.getMailSettings().fromAddress,
+                     
                         
                     }]
                 }, {
