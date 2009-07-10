@@ -111,7 +111,7 @@ case "$1" in
                 updateStatusExit "x]\n" "Stopped"
             fi
 
-            EXPC="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i exception `"
+            EXPC="`cat $UVM_CONSOLE_LOG 2>/dev/null | egrep -i '(fatal error|exception)' `"
             FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'vegetables' `"
             sleep 1
             echo -n "."
