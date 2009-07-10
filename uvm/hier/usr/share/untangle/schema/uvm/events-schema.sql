@@ -132,16 +132,5 @@ CREATE INDEX u_login_evt_ts_idx ON u_login_evt (time_stamp);
 CREATE INDEX u_lookup_evt_ts_idx ON u_lookup_evt (time_stamp);
 CREATE INDEX n_shield_rejection_evt_ts_idx ON n_shield_rejection_evt (time_stamp);
 
---------------------------------------------------------------------------------
--- Reports
 
-CREATE SCHEMA reports;
 
-CREATE TABLE reports.report_data_days (
-        day_name text NOT NULL,
-        day_begin date NOT NULL);
-
-CREATE TABLE reports.table_updates (
-    tablename text NOT NULL,
-    last_update timestamp NOT NULL,
-    PRIMARY KEY (tablename));

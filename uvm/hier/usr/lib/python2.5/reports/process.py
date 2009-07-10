@@ -77,6 +77,12 @@ import reports.mailer
 
 start_date = end_date - mx.DateTime.DateTimeDelta(30)
 
+if not sql_helper.table_exists('reports', 'table_updates'):
+     try:
+          sql_helper.run_sql('DROP SCHEMA reports CASCADE')
+     except psycopg.ProgrammingError:
+          pass
+
 try:
      sql_helper.run_sql("CREATE SCHEMA reports");
 except Exception:

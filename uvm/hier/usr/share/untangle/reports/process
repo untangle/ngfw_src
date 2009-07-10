@@ -1,8 +1,0 @@
-#!/usr/bin/ruby
-
-require '@PREFIX@/usr/lib/ruby/1.8/reports/process-data'
-
-re = ReportEngine.new(DateTime.now, [:monthly])
-re.setup
-re.process_reports
-re.teardown
