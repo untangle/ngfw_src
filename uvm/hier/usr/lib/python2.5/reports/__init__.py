@@ -19,6 +19,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph
 from reportlab.platypus import Spacer
+from reportlab.platypus.flowables import CondPageBreak
 from reportlab.platypus.flowables import Image
 from reportlab.platypus.flowables import KeepTogether
 from reportlab.platypus.tables import Table
@@ -327,25 +328,22 @@ class Graph:
         if not os.path.exists(img_file):
             logging.warn('skipping summary for missing png: %s' % img_file)
             return []
-        image = Image(img_file, width=(3.5 * inch))
+        image = Image(img_file)
 
         data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']), '']]
 
         for ks in self.__key_statistics:
             data.append([ks.name, "%s %s" % ks.scaled_value])
 
-        ks_table = Table(data, colWidths=[1.5 * inch, 1.5 * inch],
+        ks_table = Table(data,
                          style=[('ROWBACKGROUNDS', (0, 0), (-1, -1),
                                  (colors.lightgrey, None)),
                                 ('SPAN', (0, 0), (1, 0)),
                                 ('BACKGROUND', (0, 0), (1, 0), colors.grey),
-                                ('BOX', (0, 0), (-1, -1), 1, colors.grey),
-                                ('FONTNAME', (0, 0), (-1, -1), 'Helvetica')])
+                                ('BOX', (0, 0), (-1, -1), 1, colors.grey)])
 
-        t = Table([[image, ks_table]],
-                  style=[('VALIGN', (1, 0), (1, 0), 'MIDDLE')])
-
-        return [t]
+        return [CondPageBreak(5 * inch), image, Spacer(1, 0.125 * inch),
+                ks_table]
 
 class Chart:
     def __init__(self, type=TIME_SERIES_CHART, title=None, xlabel=None,

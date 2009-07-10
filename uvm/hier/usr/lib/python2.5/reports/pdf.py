@@ -66,6 +66,11 @@ def __getStyleSheet():
                                   parent=stylesheet['Normal'],
                                   alignment=TA_RIGHT))
 
+    stylesheet.add(ParagraphStyle(name='KeyStatistic',
+                                  parent=stylesheet['Normal'],
+                                  fontsize=8,
+                                  alignment=TA_RIGHT))
+
     stylesheet.add(ParagraphStyle(name='TocHeading1',
                                   parent=stylesheet['Normal'],
                                   textColor='blue',
