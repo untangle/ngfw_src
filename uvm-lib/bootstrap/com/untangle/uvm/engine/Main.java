@@ -117,7 +117,7 @@ public class Main
     public void fatalError(String throwingLocation, Throwable x)
     {
         try {
-            System.err.println("Fatal Error in UVM in " + throwingLocation);
+            System.err.println("FATAL ERROR: " + throwingLocation);
             if (x != null) {
                 System.err.println("Throwable: " + x.getMessage());
                 x.printStackTrace(System.err);
