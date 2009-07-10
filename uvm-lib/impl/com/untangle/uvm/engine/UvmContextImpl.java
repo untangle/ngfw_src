@@ -78,6 +78,7 @@ import com.untangle.uvm.vnet.MPipeManager;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 
 /**
  * Implements LocalUvmContext.
@@ -738,6 +739,11 @@ public class UvmContextImpl extends UvmContextBase
         cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
         UvmRepositorySelector repositorySelector = UvmRepositorySelector.selector();
+
+        if (!testHibernateConnection()) {
+            fatalError("Can not connect to database. Is postgres running?", null);
+        }
+
         loggingManager = new RemoteLoggingManagerImpl(repositorySelector);
         loggingManager.initSchema("uvm");
         loadRup(false);
@@ -867,7 +873,8 @@ public class UvmContextImpl extends UvmContextBase
     {
         state = UvmState.DESTROYED;
 
-        localMessageManager.stop();
+        if (localMessageManager != null)
+            localMessageManager.stop();
 
         // stop cli server
         if (cliServerManager != null)
@@ -1225,6 +1232,26 @@ public class UvmContextImpl extends UvmContextBase
     {
         if (cliServerManager != null)
         cliServerManager.doStop();
+    }
+
+
+    private boolean testHibernateConnection()
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    org.hibernate.SQLQuery q = s.createSQLQuery("select 1");
+                    Object o = q.uniqueResult();
+
+                    if (null != o)
+                        return true;
+                    else
+                        return false;
+                }
+            };
+
+        return this.context().runTransaction(tw);
     }
 
     // static initializer -----------------------------------------------------
