@@ -69,8 +69,16 @@ PIE_CHART = 'pie-chart'
 class Report:
     def __init__(self, name, sections):
         self.__name = name
-        self.__title = self.__get_node_title(self.__name)
+        self.__title, self.__view_position = self.__get_node_info(self.__name)
         self.__sections = sections
+
+    @property
+    def title(self):
+        return self.__title
+
+    @property
+    def view_position(self):
+        return self.__view_position
 
     def generate(self, report_base, date_base, end_date, host=None, user=None,
                  email=None):
@@ -117,8 +125,9 @@ class Report:
 
         return story
 
-    def __get_node_title(self, name):
+    def __get_node_info(self, name):
         title = None
+        view_position = None
 
         (stdout, stdin) = popen2.popen2(['apt-cache', 'show', name])
         try:
@@ -126,12 +135,14 @@ class Report:
                 m = re.search('Display-Name: (.*)', l)
                 if m:
                     title = m.group(1)
-                    break
+                m = re.search('View-Position: ([0-9]*)', l)
+                if m:
+                    view_position = int(m.group(1))
         finally:
             stdout.close()
             stdin.close()
 
-        return title
+        return (title, view_position)
 
 class Section:
     def __init__(self, name, title):

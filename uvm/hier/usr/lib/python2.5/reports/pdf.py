@@ -203,6 +203,8 @@ def generate_pdf(report_base, end_date, mail_reports):
     story.append(NextPageTemplate('Body'))
     story.append(PageBreak())
 
+    mail_reports.sort(__node_cmp)
+
     for r in mail_reports:
         story += r.get_flowables(report_base, date_base, end_date)
         story.append(PageBreak())
@@ -210,3 +212,6 @@ def generate_pdf(report_base, end_date, mail_reports):
     doc.multiBuild(story)
 
     return file
+
+def __node_cmp(x, y):
+    return cmp(x.view_position, y.view_position)
