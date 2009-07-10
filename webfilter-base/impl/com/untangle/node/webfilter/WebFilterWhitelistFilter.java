@@ -33,7 +33,7 @@ public class WebFilterWhitelistFilter
     implements SimpleEventFilter<WebFilterEvent>
 {
     private static final RepositoryDesc REPO_DESC
-        = new RepositoryDesc(I18nUtil.marktr("Whitelisted HTTP Traffic"));
+        = new RepositoryDesc(I18nUtil.marktr("Passlisted HTTP Traffic"));
 
     private final String warmQuery;
 
