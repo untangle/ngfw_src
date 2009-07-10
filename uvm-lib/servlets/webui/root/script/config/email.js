@@ -166,12 +166,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                 autoScroll : true,
                 
                 onEmailTest : function(saveBefore) {
-                    var emailTestMessage = this.i18n._("Enter an email address which you would like to send a test message to, and then press \"Proceed\". You should receive an email shortly after running the test. If not, your email settings may not be correct.");
+                    var emailTestMessage = this.i18n._("Enter an email address to send a test message and then press \"Send\". That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses.");
                     Ext.MessageBox.show({
                         title : this.i18n._('Email Test'),
                         buttons : { 
                             cancel:this.i18n._('Close'), 
-                            ok:this.i18n._('Proceed') 
+                            ok:this.i18n._('Send') 
                         },
                         msg : emailTestMessage,
                         modal : true,
@@ -183,7 +183,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     msg : emailTestMessage,
 		                    buttons : { 
 		                        cancel:this.i18n._('Close'), 
-		                        ok:this.i18n._('Proceed') 
+		                        ok:this.i18n._('Send') 
 		                    },
                                     modal : true,
                                     prompt : true,
@@ -201,7 +201,7 @@ if (!Ung.hasResource["Ung.Email"]) {
 		                        msg : emailTestMessage,
                                         buttons : { 
                                             cancel:this.i18n._('Close'), 
-                                            ok:this.i18n._('Proceed') 
+                                            ok:this.i18n._('Send') 
                                         },
 		                        modal : true,
                                         prompt : true,
@@ -229,7 +229,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         cls: 'description',
                         border : false,
                         html : String.format(this.i18n
-                                ._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. In most cases the default setting should work, but if not, you should specify an SMTP server that will relay mail for the {0} Server."),
+                                ._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify an valid SMTP server that will relay mail for the {0} Server."),
                                 main.getBrandingBaseSettings().companyName)
                     }, {
                         xtype : 'radio',
@@ -293,11 +293,11 @@ if (!Ung.hasResource["Ung.Email"]) {
 
                         }, {
                             xtype : 'checkbox',
+                            itemCls : 'left-indent-5',
                             name : 'Use Authentication',
                             id : 'email_smtpUseAuthentication',
-                            boxLabel : this.i18n._('Use Authentication'),
+                            boxLabel : this.i18n._('Use Authentication. (<i>Note:</i> Some servers may require this but other servers may not support it.)'),
                             hideLabel : true,
-                            style : "margin-left: 100px;",
                             listeners : {
                                 "check" : {
                                     fn : function(elem, checked) {
@@ -328,17 +328,19 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items : [{
                         cls: 'description',
                         border : false,
-                    	html : String.format(this.i18n._("The {0} Server will send email from this address."),
-                                    main.getBrandingBaseSettings().companyName)
+                    	html : String.format(this.i18n._("The {0} Server will send email from this address. <br/><i>Note:</i> It is recommended to use a valid email address. (example: untangle@mydomain.com)"),
+                                             main.getBrandingBaseSettings().companyName)
                     }, {
                         xtype : 'textfield',
                         name : 'Email From Address',
                         id : 'email_fromAddress',
                         vtype : 'email',
+                        tpl: '<tpl for="."><div ext:qtip="Test" class="x-combo-list-item">Hello</div></tpl>',
                         hideLabel : true,
                         allowBlank : false,
                         width : 200,
                         value : this.getMailSettings().fromAddress
+                        
                     }]
                 }, {
                     title : this.i18n._('Email Test'),
@@ -390,6 +392,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }]
                 }]
             });
+
+	    
         },
         buildFromSafeList : function() {
             var smUserSafelist = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
