@@ -2,7 +2,9 @@ import gettext
 import reportlab.lib.colors as colors
 
 from reportlab.lib.colors import HexColor
-from reportlab.lib.enums import TA_LEFT, TA_CENTER
+from reportlab.lib.enums import TA_LEFT
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.enums import TA_RIGHT
 from reportlab.lib.sequencer import getSequencer
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import StyleSheet1
@@ -11,7 +13,9 @@ from reportlab.lib.units import inch, cm
 from reportlab.platypus import NextPageTemplate
 from reportlab.platypus import Paragraph
 from reportlab.platypus import Spacer
-from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
+from reportlab.platypus.doctemplate import BaseDocTemplate
+from reportlab.platypus.doctemplate import PageTemplate
+from reportlab.platypus.flowables import Flowable
 from reportlab.platypus.flowables import Image
 from reportlab.platypus.flowables import PageBreak
 from reportlab.platypus.frames import Frame
@@ -37,21 +41,34 @@ def __getStyleSheet():
     stylesheet.add(ParagraphStyle(name='Heading1',
                                   parent=stylesheet['Normal'],
                                   fontName = 'Helvetica-Bold',
-                                  fontSize=18,
-                                  leading=22,
-                                  spaceAfter=6),
-                   alias='h1')
+                                  fontSize=18))
 
     stylesheet.add(ParagraphStyle(name='Title',
                                   parent=stylesheet['Normal'],
                                   fontName = 'Helvetica-Bold',
                                   fontSize=18,
                                   leading=22,
-                                  spaceAfter=6),
-                   alias='title')
+                                  spaceAfter=6))
+
+    stylesheet.add(ParagraphStyle(name='SubTitle',
+                                  parent=stylesheet['Normal'],
+                                  fontName = 'Helvetica-Bold',
+                                  fontSize=14,
+                                  textColor='0x009933',
+                                  leading=22,
+                                  spaceAfter=6))
+
+    stylesheet.add(ParagraphStyle(name='TableTitle',
+                                  parent=stylesheet['Normal'],
+                                  fontName = 'Helvetica-Bold'))
+
+    stylesheet.add(ParagraphStyle(name='HeaderLink',
+                                  parent=stylesheet['Normal'],
+                                  alignment=TA_RIGHT))
 
     stylesheet.add(ParagraphStyle(name='TocHeading1',
                                   parent=stylesheet['Normal'],
+                                  textColor='blue',
                                   leftIndent=20,
                                   firstLineIndent=-20, spaceBefore=5,
                                   leading=5))
@@ -59,6 +76,32 @@ def __getStyleSheet():
     return stylesheet
 
 STYLESHEET = __getStyleSheet()
+
+class SectionHeader(Flowable):
+    def __init__(self, title):
+        self.__title = title
+
+        self.__table = Table([[Paragraph(title, STYLESHEET['Heading1']),
+                               Paragraph("<a href='#TOP' color='blue'>Back to Top</a>",
+                                         STYLESHEET['HeaderLink'])]],
+                             style=[('LINEBELOW', (0, 0), (1, 0), 1,
+                                     HexColor(0xCCCCCC))])
+
+    @property
+    def title(self):
+        return self.__title
+
+    def wrap(self, availWidth, availHeight):
+        return self.__table.wrap(availWidth, availHeight)
+
+    def split(self, availWidth, availHeight):
+        return self.__table.split(availWidth, availHeight)
+
+    def draw(self):
+        self.__table.draw()
+
+    def drawOn(self, canvas, x, y, _sW=0):
+        self.__table.drawOn(canvas, x, y, _sW=_sW)
 
 class ReportDocTemplate(BaseDocTemplate):
     def __init__(self, filename, **kw):
@@ -73,15 +116,13 @@ class ReportDocTemplate(BaseDocTemplate):
         self.addPageTemplates(BodyTemplate('Body', self.pagesize))
 
     def afterFlowable(self, flowable):
-        if flowable.__class__.__name__ == 'Paragraph':
-            text = flowable.getPlainText()
-            style = flowable.style.name
-            if style == 'Heading1':
-                key = 'h1-%s' % self.seq.nextf('heading1')
-                self.canv.bookmarkPage(key)
-                self.canv.addOutlineEntry(text, key)
-                self.notify('TOCEntry', (0, text, self.page, key))
-                self.chapter = text
+        if flowable.__class__.__name__ == 'SectionHeader':
+            title = flowable.title
+            key = 'h1-%s' % self.seq.nextf('SectionHeader')
+            self.canv.bookmarkPage(key)
+            self.canv.addOutlineEntry(title, key)
+            self.notify('TOCEntry', (0, title, self.page, key))
+            self.chapter = title
         elif flowable.__class__.__name__ == 'TableOfContents':
             key = 'toc-%s' % self.seq.nextf('TOC')
             self.canv.bookmarkPage(key)
@@ -147,11 +188,10 @@ def generate_pdf(report_base, end_date, mail_reports):
     date_str = end_date.strftime("%A %d %B %Y")
     doc = ReportDocTemplate(file, title=_('Report for %s') % date_str)
 
-    t = Table([[_('Report')], [date_str]],
-              style=[('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-                     ('FONTSIZE', (0, 0), (0, 0), 18),
-                     ('FONTSIZE', (0, 1), (0, 1), 14),
-                     ('TEXTCOLOR', (0, 1), (0, 1), HexColor(0x009933))])
+
+    t = Table([[Paragraph('<a name="TOP"/>' + _('Report'),
+                          STYLESHEET['Title'])],
+               [Paragraph(date_str, STYLESHEET['SubTitle'])]])
 
     story.append(Table([[Image('/var/www/images/BrandingLogo.gif'), t]],
                        style=[('VALIGN', (1, 0), (1, 0), 'TOP')]))

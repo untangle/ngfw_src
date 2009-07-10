@@ -13,6 +13,8 @@ from lxml.etree import CDATA
 from lxml.etree import Element
 from lxml.etree import ElementTree
 from mx.DateTime import DateTimeDeltaFromSeconds
+from reportlab.lib.colors import HexColor
+from reportlab.lib.colors import Color
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph
@@ -24,6 +26,7 @@ from reportlab.platypus.tables import TableStyle
 from reports.engine import ReportDocTemplate
 from reports.engine import get_node_base
 from reports.pdf import STYLESHEET
+from reports.pdf import SectionHeader
 
 HNAME_LINK = 'HostLink'
 USER_LINK = 'UserLink'
@@ -105,7 +108,9 @@ class Report:
     def get_flowables(self, report_base, date_base, end_date):
         node_base = get_node_base(self.__name, date_base)
 
-        story = [Paragraph(self.__title, STYLESHEET['Heading1'])]
+        sh = SectionHeader(self.__title)
+
+        story = [sh, Spacer(1, 0.25 * inch)]
 
         for s in self.__sections:
             story += s.get_flowables(report_base, node_base, end_date)
@@ -313,7 +318,7 @@ class Graph:
             return []
         image = Image(img_file, width=(3.5 * inch))
 
-        data = [[_('Key Statistics'), '']]
+        data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']), '']]
 
         for ks in self.__key_statistics:
             data.append([ks.name, "%s %s" % ks.scaled_value])
