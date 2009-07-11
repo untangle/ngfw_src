@@ -1,6 +1,5 @@
 import gettext
 import logging
-import mail_helper
 import mx
 import os
 import re
