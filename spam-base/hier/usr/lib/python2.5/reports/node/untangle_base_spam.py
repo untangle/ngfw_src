@@ -43,10 +43,16 @@ class SpamBaseNode(Node):
 
     @print_timing
     def setup(self, start_date, end_date):
-        self.__update_n_mail_events('events.n_spam_evt', 'reports.n_mail_addrs', start_date, end_date)
-        self.__update_n_mail_events('events.n_spam_evt_smtp', 'reports.n_mail_addrs', start_date, end_date)
-        self.__update_n_mail_events('events.n_spam_evt', 'reports.n_mail_msgs', start_date, end_date)
-        self.__update_n_mail_events('events.n_spam_evt_smtp', 'reports.n_mail_msgs', start_date, end_date)
+        self.__update_n_mail_events('events.n_spam_evt', 'reports.n_mail_addrs',
+                                    'pop/imap', start_date, end_date)
+        self.__update_n_mail_events('events.n_spam_evt_smtp',
+                                    'reports.n_mail_addrs', 'smtp',
+                                    start_date, end_date)
+        self.__update_n_mail_events('events.n_spam_evt', 'reports.n_mail_msgs',
+                                    'pop/imap', start_date, end_date)
+        self.__update_n_mail_events('events.n_spam_evt_smtp',
+                                    'reports.n_mail_msgs', 'smtp', start_date,
+                                    end_date)
 
         column = Column('%s_spam_msgs' % self.__short_name, 'integer',
                         "count(CASE WHEN %s_is_spam THEN 1 ELSE null END)" \
@@ -93,7 +99,7 @@ class SpamBaseNode(Node):
         pass
 
     @print_timing
-    def __update_n_mail_events(self, src_table, target_table,
+    def __update_n_mail_events(self, src_table, target_table, protocol,
                                start_date, end_date):
         try:
             sql_helper.run_sql("ALTER TABLE %s ADD COLUMN %s_score real" \
@@ -110,8 +116,9 @@ class SpamBaseNode(Node):
                                    % (target_table, self.__short_name))
         except: pass
 
-        sd = DateFromMx(sql_helper.get_update_info('%s[%s]' % (target_table,
-                                                               self.name),
+        sd = DateFromMx(sql_helper.get_update_info('%s[%s.%s]' % (target_table,
+                                                                  self.name,
+                                                                  protocol),
                                                    start_date))
         ed = DateFromMx(end_date)
 
@@ -135,7 +142,8 @@ WHERE %s.time_stamp >= %%s
                                (sd, ed, self.__vendor_name), connection=conn,
                                auto_commit=False)
 
-            sql_helper.set_update_info('%s[%s]' % (target_table, self.name),
+            sql_helper.set_update_info('%s[%s.%s]' % (target_table, self.name,
+                                                      protocol),
                                        ed, connection=conn, auto_commit=False)
 
             conn.commit()
