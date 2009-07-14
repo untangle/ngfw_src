@@ -1,4 +1,5 @@
 import gettext
+import platform
 import reportlab.lib.colors as colors
 
 from reportlab.lib.colors import HexColor
@@ -38,25 +39,31 @@ def __getStyleSheet():
                                   fontSize=10,
                                   leading=12))
 
-    stylesheet.add(ParagraphStyle(name='Heading1',
-                                  parent=stylesheet['Normal'],
-                                  fontName = 'Helvetica-Bold',
-                                  fontSize=18))
-
     stylesheet.add(ParagraphStyle(name='Title',
                                   parent=stylesheet['Normal'],
                                   fontName = 'Helvetica-Bold',
-                                  fontSize=18,
-                                  leading=22,
-                                  spaceAfter=6))
+                                  fontSize=24,
+                                  alignment=TA_CENTER,
+                                  spaceAfter=12))
 
     stylesheet.add(ParagraphStyle(name='SubTitle',
                                   parent=stylesheet['Normal'],
                                   fontName = 'Helvetica-Bold',
-                                  fontSize=14,
+                                  fontSize=18,
                                   textColor='0x009933',
-                                  leading=22,
-                                  spaceAfter=6))
+                                  alignment=TA_CENTER,
+                                  spaceAfter=12))
+
+    stylesheet.add(ParagraphStyle(name='Heading1',
+                                  parent=stylesheet['Normal'],
+                                  fontName = 'Helvetica-Bold',
+                                  fontSize=24))
+
+    stylesheet.add(ParagraphStyle(name='Heading2',
+                                  parent=stylesheet['Normal'],
+                                  fontName = 'Helvetica-Bold',
+                                  fontSize=18,
+                                  textColor='0x009933'))
 
     stylesheet.add(ParagraphStyle(name='TableTitle',
                                   parent=stylesheet['Normal'],
@@ -89,8 +96,9 @@ class SectionHeader(Flowable):
         self.__table = Table([[Paragraph(title, STYLESHEET['Heading1']),
                                Paragraph("<a href='#TOP' color='blue'>Back to Top</a>",
                                          STYLESHEET['HeaderLink'])]],
-                             style=[('LINEBELOW', (0, 0), (1, 0), 1,
-                                     HexColor(0xCCCCCC))])
+                             style=[('BOTTOMPADDING', (0,0), (-1,-1), 10),
+                                     ('LINEBELOW', (0,0), (1,0), 1,
+                                      HexColor(0xCCCCCC))])
 
     @property
     def title(self):
@@ -117,6 +125,7 @@ class ReportDocTemplate(BaseDocTemplate):
         self.chapter = ""
 
     def afterInit(self):
+        self.addPageTemplates(TitleTemplate('Title', self.pagesize))
         self.addPageTemplates(TocTemplate('TOC', self.pagesize))
         self.addPageTemplates(BodyTemplate('Body', self.pagesize))
 
@@ -128,6 +137,14 @@ class ReportDocTemplate(BaseDocTemplate):
             self.canv.addOutlineEntry(title, key)
             self.notify('TOCEntry', (0, title, self.page, key))
             self.chapter = title
+        elif flowable.__class__.__name__ == 'Paragraph' and flowable:
+            text = flowable.getPlainText()
+            style = flowable.style.name
+            if style == 'Title':
+                self.notify('TOCEntry', (0, text, self.page))
+                key = 'title-%s' % self.seq.nextf('Title')
+                self.canv.bookmarkPage(key)
+                self.canv.addOutlineEntry(_('Title Page'), key)
         elif flowable.__class__.__name__ == 'TableOfContents':
             key = 'toc-%s' % self.seq.nextf('TOC')
             self.canv.bookmarkPage(key)
@@ -158,6 +175,17 @@ class TocTemplate(PageTemplate):
                                  'Page %d' % canvas.getPageNumber())
         canvas.restoreState()
 
+class TitleTemplate(PageTemplate):
+    def __init__(self, id, pageSize=defaultPageSize):
+        self.pageWidth = pageSize[0]
+        self.pageHeight = pageSize[1]
+        frame1 = Frame(inch,
+                       inch,
+                       self.pageWidth - 2*inch,
+                       self.pageHeight - 2*inch,
+                       id='normal')
+        PageTemplate.__init__(self, id, [frame1])
+
 class BodyTemplate(PageTemplate):
     def __init__(self, id, pageSize=defaultPageSize):
         self.pageWidth = pageSize[0]
@@ -187,19 +215,29 @@ def generate_pdf(report_base, end_date, mail_reports):
     file = "/home/amread/report.pdf";
 
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
+    date_str = end_date.strftime("%A %d %B %Y")
+
+    doc = ReportDocTemplate(file, title=_('Report for %s') % date_str)
 
     story = []
 
-    date_str = end_date.strftime("%A %d %B %Y")
-    doc = ReportDocTemplate(file, title=_('Report for %s') % date_str)
+    story.append(Spacer(1, 3 * inch))
 
+    story.append(Image('/var/www/images/BrandingLogo.gif'))
+    story.append(Spacer(1, 0.5 * inch))
+    story.append(Paragraph('Daily Report', STYLESHEET['Title']))
+    story.append(Paragraph(date_str, STYLESHEET['SubTitle']))
+    story.append(Paragraph(platform.node(), STYLESHEET['SubTitle']))
+
+    story.append(NextPageTemplate('TOC'))
+    story.append(PageBreak())
 
     t = Table([[Paragraph('<a name="TOP"/>' + _('Report'),
-                          STYLESHEET['Title'])],
-               [Paragraph(date_str, STYLESHEET['SubTitle'])]])
+                          STYLESHEET['Heading1'])],
+               [Paragraph(date_str, STYLESHEET['Heading2'])]])
 
     story.append(Table([[Image('/var/www/images/BrandingLogo.gif'), t]],
-                       style=[('VALIGN', (1, 0), (1, 0), 'TOP')]))
+                       style=[('VALIGN', (1,0), (1,0), 'TOP')]))
 
     toc = TableOfContents()
     toc.levelStyles = [STYLESHEET['TocHeading1']]
@@ -212,7 +250,6 @@ def generate_pdf(report_base, end_date, mail_reports):
 
     for r in mail_reports:
         story += r.get_flowables(report_base, date_base, end_date)
-        story.append(PageBreak())
 
     doc.multiBuild(story)
 

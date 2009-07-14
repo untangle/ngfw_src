@@ -19,7 +19,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph
 from reportlab.platypus import Spacer
-from reportlab.platypus.flowables import CondPageBreak
+from reportlab.platypus.flowables import PageBreak
 from reportlab.platypus.flowables import Image
 from reportlab.platypus.flowables import KeepTogether
 from reportlab.platypus.tables import Table
@@ -197,7 +197,7 @@ class SummarySection(Section):
 
         for si in self.__summary_items:
             story += si.get_flowables(report_base, section_base, end_date)
-            story.append(Spacer(1, 0.2 * inch))
+            story.append(PageBreak())
 
         return story
 
@@ -342,8 +342,7 @@ class Graph:
                                 ('BACKGROUND', (0, 0), (1, 0), colors.grey),
                                 ('BOX', (0, 0), (-1, -1), 1, colors.grey)])
 
-        return [CondPageBreak(5 * inch), image, Spacer(1, 0.125 * inch),
-                ks_table]
+        return [image, Spacer(1, 0.125 * inch), ks_table]
 
 class Chart:
     def __init__(self, type=TIME_SERIES_CHART, title=None, xlabel=None,
