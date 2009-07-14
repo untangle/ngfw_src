@@ -730,26 +730,27 @@ AND m.virus_%s_name != ''""" % (6 * (self.__vendor_name,))
 
         conn = sql_helper.get_connection()
 
-        curs = conn.cursor()
-        if host:
-            curs.execute(avg_max_query, (one_week, ed, one_week, ed, host))
-        elif user:
-            curs.execute(avg_max_query, (one_week, ed, one_week, ed, user))
-        else:
-            curs.execute(avg_max_query, (one_week, ed, one_week, ed))
+        try:
+            curs = conn.cursor()
+            if host:
+                curs.execute(avg_max_query, (one_week, ed, one_week, ed, host))
+            elif user:
+                curs.execute(avg_max_query, (one_week, ed, one_week, ed, user))
+            else:
+                curs.execute(avg_max_query, (one_week, ed, one_week, ed))
 
-        lks = []
-        dataset = {}
+            lks = []
+            dataset = {}
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
-            ks = reports.KeyStatistic(r[0], r[1], N_('viruses'))
-            lks.append(ks)
-            dataset[r[0]] = r[1]
-
-        conn.commit()
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                ks = reports.KeyStatistic(r[0], r[1], N_('viruses'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = reports.Chart(type=reports.PIE_CHART,
                              title=_('Top Email Viruses Detected'),
