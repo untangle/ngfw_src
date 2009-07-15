@@ -138,27 +138,27 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
         query += "GROUP BY day) AS foo"
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        r = curs.fetchone()
-        ks = KeyStatistic(N_('max detections (7-days)'), r[0],
-                          N_('detections/day'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('avg detections (7-days)'), r[1],
-                          N_('detections/day'))
-        lks.append(ks)
-
-        conn.commit()
+            r = curs.fetchone()
+            ks = KeyStatistic(N_('max detections (7-days)'), r[0],
+                              N_('detections/day'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('avg detections (7-days)'), r[1],
+                              N_('detections/day'))
+            lks.append(ks)
+        finally:
+            conn.commit()
 
         return lks
 
@@ -171,41 +171,41 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         conn = sql_helper.get_connection()
-
-        query = """\
+        try:
+            query = """\
 SELECT date_trunc('day', trunc_time) AS day,
        count(*) AS detections
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND pf_protocol != ''"""
 
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
+            if host:
+                query += " AND hname = %s"
+            elif user:
+                query += " AND uid = %s"
 
-        query += "GROUP BY day ORDER BY day asc"
+            query += "GROUP BY day ORDER BY day asc"
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        dates = []
-        detections = []
+            dates = []
+            detections = []
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
-            dates.append(r[0])
-            detections.append(r[1])
-
-        conn.commit()
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                dates.append(r[0])
+                detections.append(r[1])
+        finally:
+            conn.commit()
 
         plot = Chart(type=STACKED_BAR_CHART,
                      title=_('Daily Usage'),
@@ -225,8 +225,8 @@ class TopTenBlockedProtocolsByHits(Graph):
                        _('Top Ten Blocked Protocols By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -248,63 +248,25 @@ AND pf_protocol != ''"""
         query += " GROUP BY pf_protocol ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT pf_protocol, count(*) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND pf_blocks > 0
-AND pf_protocol != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY pf_protocol ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Blocked Protocols (by hits)'),
@@ -313,7 +275,7 @@ AND pf_protocol != ''"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenDetectedProtocolsByHits(Graph):
     TEN="10"
@@ -322,8 +284,8 @@ class TopTenDetectedProtocolsByHits(Graph):
         Graph.__init__(self, 'top-ten-detected-protocols-by-hits', _('Top Ten Detected Protocols By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -345,62 +307,25 @@ AND pf_protocol != ''"""
         query = query + " GROUP BY pf_protocol ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT pf_protocol, count(*) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND pf_protocol != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY pf_protocol ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Detected Protocols (by hits)'),
@@ -409,7 +334,7 @@ AND pf_protocol != ''"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenBlockedHostsByHits(Graph):
     TEN="10"
@@ -418,8 +343,8 @@ class TopTenBlockedHostsByHits(Graph):
         Graph.__init__(self, 'top-ten-blocked-hosts-by-hits', _('Top Ten Blocked Hosts By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -442,63 +367,25 @@ AND pf_protocol != ''"""
         query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT hname, count(*) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND pf_blocks > 0
-AND pf_protocol != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Blocked Hosts (by hits)'),
@@ -507,7 +394,7 @@ AND pf_protocol != ''"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenLoggedHostsByHits(Graph):
     TEN="10"
@@ -517,8 +404,8 @@ class TopTenLoggedHostsByHits(Graph):
                        _('Top Ten Logged Hosts By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -539,62 +426,25 @@ AND pf_protocol != ''"""
         query +=" GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT hname, count(*) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND pf_protocol != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Logged Hosts (by hits)'),
@@ -603,7 +453,7 @@ AND pf_protocol != ''"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenBlockedUsersByHits(Graph):
     TEN="10"
@@ -612,8 +462,8 @@ class TopTenBlockedUsersByHits(Graph):
         Graph.__init__(self, 'top-ten-blocked-users-by-hits', _('Top Ten Blocked Users By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -636,64 +486,25 @@ AND pf_protocol != ''"""
         query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT uid, count(*) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND uid != ''
-AND pf_blocks > 0
-AND pf_protocol != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Blocked Users (by hits)'),
@@ -702,7 +513,7 @@ AND pf_protocol != ''"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenLoggedUsersByHits(Graph):
     TEN="10"
@@ -711,8 +522,8 @@ class TopTenLoggedUsersByHits(Graph):
         Graph.__init__(self, 'top-ten-logged-users-by-hits', _('Top Ten Logged Users By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -734,63 +545,25 @@ AND pf_protocol != ''"""
         query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT uid, count(*) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND uid != ''
-AND pf_protocol != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Logged Users (by hits)'),
@@ -799,8 +572,7 @@ AND pf_protocol != ''"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
-
+        return (lks, plot)
 
 class ProtofilterDetail(DetailSection):
     def __init__(self):
