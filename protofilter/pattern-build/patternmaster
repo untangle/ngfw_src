@@ -45,6 +45,7 @@
 390|: Gnutella|: Peer to Peer
 400|: GoBoogy|: Peer to Peer
 410|: Gopher|: Networking
+415|: Guild Wars|: Video Game      
 420|: H.323|: Voice over IP
 430|: Half-Life 2 Deathmatch|: Video Game
 440|: hddtemp|: System Administration
@@ -60,6 +61,7 @@
 530|: live365|: Music
 540|: LPD|: Printing
 545|: Medal of Honor Allied Assault|: Video Game
+546|: MSN (Micosoft Network) Messenger file transfers (MSNFTP and MSNSLP)|: Instant Messenger
 550|: MSN (Microsoft Network) Messenger file transfers (MSNFTP and MSNSLP)|: Instant Messenger
 560|: MSN Messenger|: Instant Messenger
 570|: MUTE|: Peer to Peer
@@ -75,13 +77,16 @@
 660|: OpenFT|: Peer to Peer
 670|: POCO and PP365|: Peer to Peer
 680|: POP3|: Email
+685|: PPLive|: Peer to Peer
 690|: pressplay|: Music
 700|: Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)|: Video Game
 710|: Quake 1|: Video Game
 720|: RDP|: Remote Deskop
+721|: RDP2|: Remote Deskop
 725|: ReplayTV Internet Video Sharing|: Streaming Video
 730|: rlogin|: System Administration
 740|: RTSP|: Streaming Video
+745|: Runes of Magic|: Video GAmes
 750|: Shoutcast and Icecast|: Music
 760|: Samba/SMB|: Networking
 770|: SIP|: Voice over IP

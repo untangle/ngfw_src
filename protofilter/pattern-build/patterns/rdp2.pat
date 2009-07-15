@@ -1,4 +1,4 @@
-# RDP - Remote Desktop Protocol (used in Windows Terminal Services)
+# RDP2 - Remote Desktop Protocol (used in Windows Terminal Services)
 # Pattern attributes: ok notsofast notsofast
 # Protocol groups: remote_access proprietary
 # Wiki: http://www.protocolinfo.org/wiki/RDP
@@ -11,8 +11,8 @@
 
 # At least one other person has reported it to work as well.
 
-rdp
-rdpdr.*cliprdr.*rdpsnd
+rdp2
+rdpdr.*rdpsnd.*drdynvc.*cliprdr
 
 # Old pattern, submitted by Daniel Weatherford.
 # rdpdr.*cliprdp.*rdpsnd 
