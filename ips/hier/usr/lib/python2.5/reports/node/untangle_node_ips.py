@@ -127,7 +127,8 @@ class TopTenAttacksByHits(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None, email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -149,64 +150,25 @@ AND ips_name != ''"""
 
         conn = sql_helper.get_connection()
 
-        lks = []
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT ips_name, count(*) AS hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND ips_name != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query += """\
-GROUP BY ips_name
-ORDER BY hits_sum DESC
-LIMIT """ + self.TEN
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Attacks (by hits)'),
@@ -215,7 +177,7 @@ LIMIT """ + self.TEN
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class DailyUsage(Graph):
     def __init__(self, vendor_name):
@@ -246,25 +208,27 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS attacks
         query += "GROUP BY day) AS foo"
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        r = curs.fetchone()
-        ks = KeyStatistic(N_('max attacks (7-days)'), r[0], N_('attacks/day'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('avg attacks (7-days)'), r[1], N_('attacks/day'))
-        lks.append(ks)
-
-        conn.commit()
+            r = curs.fetchone()
+            ks = KeyStatistic(N_('max attacks (7-days)'), r[0],
+                              N_('attacks/day'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('avg attacks (7-days)'), r[1],
+                              N_('attacks/day'))
+            lks.append(ks)
+        finally:
+            conn.commit()
 
         return lks
 
@@ -278,40 +242,41 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS attacks
 
         conn = sql_helper.get_connection()
 
-        query = """\
+        try:
+            query = """\
 SELECT date_trunc('day', trunc_time) AS day,
        count(*) AS attacks
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND ips_name != ''"""
 
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
+            if host:
+                query += " AND hname = %s"
+            elif user:
+                query += " AND uid = %s"
 
-        query += "GROUP BY day ORDER BY day asc"
+            query += "GROUP BY day ORDER BY day asc"
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        dates = []
-        attacks = []
+            dates = []
+            attacks = []
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
-            dates.append(r[0])
-            attacks.append(r[1])
-
-        conn.commit()
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                dates.append(r[0])
+                attacks.append(r[1])
+        finally:
+            conn.commit()
 
         plot = Chart(type=STACKED_BAR_CHART,
                      title=_('Daily Web Usage'),

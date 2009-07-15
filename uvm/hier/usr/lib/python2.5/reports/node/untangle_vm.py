@@ -527,109 +527,109 @@ class BandwidthUsage(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
-
-        ks_query = """\
+            ks_query = """\
 SELECT coalesce(sum(s2c_bytes + c2s_bytes) / 1000, 0) / (24 * 60 * 60) AS avg_rate,
        coalesce(max(s2c_bytes + c2s_bytes) / 1000, 0) AS peak_rate
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
-        if user:
-            ks_query += "AND uid = %s"
-        elif host:
-            ks_query += "AND hname = %s"
+            if user:
+                ks_query += "AND uid = %s"
+            elif host:
+                ks_query += "AND hname = %s"
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if user:
-            curs.execute(ks_query, (one_day, ed, user))
-        elif host:
-            curs.execute(ks_query, (one_day, ed, host))
-        else:
-            curs.execute(ks_query, (one_day, ed))
+            if user:
+                curs.execute(ks_query, (one_day, ed, user))
+            elif host:
+                curs.execute(ks_query, (one_day, ed, host))
+            else:
+                curs.execute(ks_query, (one_day, ed))
 
-        r = curs.fetchone()
+            r = curs.fetchone()
 
-        avg_rate = r[0]
-        peak_rate = r[1]
+            avg_rate = r[0]
+            peak_rate = r[1]
 
-        ks = KeyStatistic(N_('Average data rate (1-day)'),
-                          avg_rate, N_('Kb/sec'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('Peak data rate (1-day)'),
-                          peak_rate, N_('Kb/sec'))
-        lks.append(ks)
+            ks = KeyStatistic(N_('Average data rate (1-day)'),
+                              avg_rate, N_('Kb/sec'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('Peak data rate (1-day)'),
+                              peak_rate, N_('Kb/sec'))
+            lks.append(ks)
 
-        ks_query = """\
+            ks_query = """\
 SELECT coalesce(sum(s2c_bytes + c2s_bytes) / 1000000000, 0) / %s AS avg_rate,
        coalesce(sum(s2c_bytes + c2s_bytes) / 1000000000, 0) AS total
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 """
 
-        if user:
-            ks_query += "AND uid = %s"
-        elif host:
-            ks_query += "AND hname = %s"
+            if user:
+                ks_query += "AND uid = %s"
+            elif host:
+                ks_query += "AND hname = %s"
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if user:
-            curs.execute(ks_query, (report_days, one_week, ed, user))
-        elif host:
-            curs.execute(ks_query, (report_days, one_week, ed, host))
-        else:
-            curs.execute(ks_query, (report_days, one_week, ed))
+            if user:
+                curs.execute(ks_query, (report_days, one_week, ed, user))
+            elif host:
+                curs.execute(ks_query, (report_days, one_week, ed, host))
+            else:
+                curs.execute(ks_query, (report_days, one_week, ed))
 
-        r = curs.fetchone()
+            r = curs.fetchone()
 
-        avg_rate = r[0]
-        total = r[1]
+            avg_rate = r[0]
+            total = r[1]
 
-        ks = KeyStatistic(N_('Average data rate (%s-day)') % report_days,
-                          avg_rate, N_('Gb/day'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('Data Transfered (%s-day)') % report_days,
-                          total, N_('Gb'))
-        lks.append(ks)
+            ks = KeyStatistic(N_('Average data rate (%s-day)') % report_days,
+                              avg_rate, N_('Gb/day'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('Data Transfered (%s-day)') % report_days,
+                              total, N_('Gb'))
+            lks.append(ks)
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        plot_query = """\
+            plot_query = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        sum(s2c_bytes + c2s_bytes) / (1000 * 10 * 60) AS throughput
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
-        if user:
-            plot_query += " AND uid = %s"
-        elif host:
-            plot_query += " AND hname = %s"
+            if user:
+                plot_query += " AND uid = %s"
+            elif host:
+                plot_query += " AND hname = %s"
 
-        plot_query += """\
+            plot_query += """\
 GROUP BY time
 ORDER BY time asc"""
 
-        dates = []
-        throughput = []
+            dates = []
+            throughput = []
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if user:
-            curs.execute(plot_query, (one_week, ed, user))
-        elif host:
-            curs.execute(plot_query, (one_week, ed, host))
-        else:
-            curs.execute(plot_query, (one_week, ed))
+            if user:
+                curs.execute(plot_query, (one_week, ed, user))
+            elif host:
+                curs.execute(plot_query, (one_week, ed, host))
+            else:
+                curs.execute(plot_query, (one_week, ed))
 
-        for r in curs.fetchall():
-            dates.append(r[0])
-            throughput.append(r[1])
-
-        conn.commit()
+            for r in curs.fetchall():
+                dates.append(r[0])
+                throughput.append(r[1])
+        finally:
+            conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART,
                      title=_('Bandwidth Usage'),
@@ -656,103 +656,103 @@ class ActiveSessions(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
-
-        ks_query = """\
+            ks_query = """\
 SELECT coalesce(sum(num_sessions), 0) / (24 * 60) AS avg_sessions,
        coalesce(max(num_sessions), 0) AS max_sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
-        if user:
-            ks_query += "AND uid = %s"
-        elif host:
-            ks_query += "AND hname = %s"
+            if user:
+                ks_query += "AND uid = %s"
+            elif host:
+                ks_query += "AND hname = %s"
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if user:
-            curs.execute(ks_query, (one_day, ed, user))
-        elif host:
-            curs.execute(ks_query, (one_day, ed, host))
-        else:
-            curs.execute(ks_query, (one_day, ed))
+            if user:
+                curs.execute(ks_query, (one_day, ed, user))
+            elif host:
+                curs.execute(ks_query, (one_day, ed, host))
+            else:
+                curs.execute(ks_query, (one_day, ed))
 
-        r = curs.fetchone()
+            r = curs.fetchone()
 
-        avg_sessions = r[0]
-        max_sessions = r[1]
+            avg_sessions = r[0]
+            max_sessions = r[1]
 
-        ks = KeyStatistic(N_('Average active sessions (1-day)'),
-                          avg_sessions, N_('sessions'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('Maximum active sessions (1-day)'),
-                          max_sessions, N_('sessions'))
-        lks.append(ks)
+            ks = KeyStatistic(N_('Average active sessions (1-day)'),
+                              avg_sessions, N_('sessions'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('Maximum active sessions (1-day)'),
+                              max_sessions, N_('sessions'))
+            lks.append(ks)
 
-        ks_query = """\
+            ks_query = """\
 SELECT sum(num_sessions) AS total_sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
-        if user:
-            ks_query += "AND uid = %s"
-        elif host:
-            ks_query += "AND hname = %s"
+            if user:
+                ks_query += "AND uid = %s"
+            elif host:
+                ks_query += "AND hname = %s"
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if user:
-            curs.execute(ks_query, (one_week, ed, user))
-        elif host:
-            curs.execute(ks_query, (one_week, ed, host))
-        else:
-            curs.execute(ks_query, (one_week, ed))
+            if user:
+                curs.execute(ks_query, (one_week, ed, user))
+            elif host:
+                curs.execute(ks_query, (one_week, ed, host))
+            else:
+                curs.execute(ks_query, (one_week, ed))
 
-        r = curs.fetchone()
+            r = curs.fetchone()
 
-        total_sessions = r[0]
+            total_sessions = r[0]
 
-        ks = KeyStatistic(N_('Total Sessions (%s-day)') % report_days,
-                          total_sessions, N_('sessions'))
-        lks.append(ks)
+            ks = KeyStatistic(N_('Total Sessions (%s-day)') % report_days,
+                              total_sessions, N_('sessions'))
+            lks.append(ks)
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        plot_query = """\
+            plot_query = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        sum(num_sessions) AS sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
-        if user:
-            plot_query += " AND uid = %s"
-        elif host:
-            plot_query += " AND hname = %s"
+            if user:
+                plot_query += " AND uid = %s"
+            elif host:
+                plot_query += " AND hname = %s"
 
-        plot_query += """\
+            plot_query += """\
 GROUP BY time
 ORDER BY time asc"""
 
-        dates = []
-        num_sessions = []
+            dates = []
+            num_sessions = []
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if user:
-            curs.execute(plot_query, (one_week, ed, user))
-        elif host:
-            curs.execute(plot_query, (one_week, ed, host))
-        else:
-            curs.execute(plot_query, (one_week, ed))
+            if user:
+                curs.execute(plot_query, (one_week, ed, user))
+            elif host:
+                curs.execute(plot_query, (one_week, ed, host))
+            else:
+                curs.execute(plot_query, (one_week, ed))
 
-        for r in curs.fetchall():
-            dates.append(r[0])
-            num_sessions.append(r[1])
-
-        conn.commit()
+            for r in curs.fetchall():
+                dates.append(r[0])
+                num_sessions.append(r[1])
+        finally:
+            conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART,
                      title=_('Bandwidth Usage'),
@@ -793,27 +793,28 @@ ORDER BY sessions ASC
 LIMIT 10"""
 
         conn = sql_helper.get_connection()
+        try:
+            curs = conn.cursor()
 
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
 
-        lks = []
-        pds = {}
+            lks = []
+            pds = {}
 
-        for r in curs.fetchall():
-            port = r[0]
-            sessions = r[1]
-            ks = KeyStatistic(str(port), sessions, N_('sessions'))
-            lks.append(ks)
-            pds[port] = sessions
-        conn.commit()
+            for r in curs.fetchall():
+                port = r[0]
+                sessions = r[1]
+                ks = KeyStatistic(str(port), sessions, N_('sessions'))
+                lks.append(ks)
+                pds[port] = sessions
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Spyware Subnets Detected'),
