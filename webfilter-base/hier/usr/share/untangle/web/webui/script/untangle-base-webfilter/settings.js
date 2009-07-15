@@ -848,7 +848,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().passedClientsLength,
                 emptyRow : {
-                    "ipMaddr" : "0.0.0.0/32",
+                    "ipMaddr" : "1.2.3.4",
                     "live" : true,
                     "description" : this.i18n._("[no description]")
                 },
