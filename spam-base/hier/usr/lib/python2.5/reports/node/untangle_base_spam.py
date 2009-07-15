@@ -183,34 +183,33 @@ FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if email:
+                curs.execute(query, (email, one_week, ed))
+            else:
+                curs.execute(query, (one_week, ed))
+            r = curs.fetchone()
 
-        if email:
-            curs.execute(query, (email, one_week, ed))
-        else:
-            curs.execute(query, (one_week, ed))
-        r = curs.fetchone()
+            total = r[0]
+            spam = r[1]
+            ham = total - spam
 
-        total = r[0]
-        spam = r[1]
-        ham = total - spam
+            ks = KeyStatistic(N_('total'), total, N_('total'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('spam'), spam, self.__spam_label)
+            lks.append(ks)
+            ks = KeyStatistic(N_('ham'), ham, self.__ham_label)
+            lks.append(ks)
 
-        ks = KeyStatistic(N_('total'), total, N_('total'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('spam'), spam, self.__spam_label)
-        lks.append(ks)
-        ks = KeyStatistic(N_('ham'), ham, self.__ham_label)
-        lks.append(ks)
+            plot = Chart(type=PIE_CHART, title=_('Total Email'))
 
-        plot = Chart(type=PIE_CHART,
-                     title=_('Total Email'))
-
-        plot.add_pie_dataset({_('spam'): spam, _('ham'): ham})
-
-        conn.commit()
+            plot.add_pie_dataset({_('spam'): spam, _('ham'): ham})
+        finally:
+            conn.commit()
 
         return (lks, plot)
 
@@ -234,50 +233,50 @@ class HourlySpamRate(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
-
-        if email:
-            ks_query = """\
+            if email:
+                ks_query = """\
 SELECT coalesce(sum(msgs), 0) / (%%s * 24) AS email_rate,
        coalesce(sum(%s_spam_msgs), 0) / (%%s * 24) AS spam_rate
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
-        else:
-            ks_query = """\
+            else:
+                ks_query = """\
 SELECT coalesce(sum(msgs), 0) / %%s * 24 AS email_rate,
        coalesce(sum(%s_spam_msgs), 0) / %%s * 24 AS spam_rate
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
 
-        if email:
-            curs.execute(ks_query, (report_days, report_days, email, one_week,
-                                    ed))
-        else:
-            curs.execute(ks_query, (report_days, report_days, one_week, ed))
-        r = curs.fetchone()
+            if email:
+                curs.execute(ks_query, (report_days, report_days, email,
+                                        one_week, ed))
+            else:
+                curs.execute(ks_query, (report_days, report_days, one_week, ed))
+            r = curs.fetchone()
 
-        email_rate = r[0]
-        spam_rate = r[1]
-        ham_rate = email_rate - spam_rate
+            email_rate = r[0]
+            spam_rate = r[1]
+            ham_rate = email_rate - spam_rate
 
-        ks = KeyStatistic(N_('mail rate'), email_rate, N_('messages/hour'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('%s rate') % self.__spam_label, spam_rate,
-                          N_('messages/hour'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('%s rate') % self.__ham_label, ham_rate,
-                          N_('messages/hour'))
-        lks.append(ks)
+            ks = KeyStatistic(N_('mail rate'), email_rate, N_('messages/hour'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('%s rate') % self.__spam_label, spam_rate,
+                              N_('messages/hour'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('%s rate') % self.__ham_label, ham_rate,
+                              N_('messages/hour'))
+            lks.append(ks)
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if email:
-            plot_query = """\
+            if email:
+                plot_query = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        sum(msgs) AS msgs,
@@ -286,8 +285,8 @@ FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
 ORDER BY time asc""" % (2 * (self.__short_name,))
-        else:
-            plot_query = """\
+            else:
+                plot_query = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        sum(msgs) AS msgs,
@@ -297,26 +296,26 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
 ORDER BY time asc""" % (2 * (self.__short_name,))
 
-        dates = []
-        ham = []
-        spam = []
+            dates = []
+            ham = []
+            spam = []
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if email:
-            curs.execute(plot_query, (email, one_week, ed))
-        else:
-            curs.execute(plot_query, (one_week, ed))
+            if email:
+                curs.execute(plot_query, (email, one_week, ed))
+            else:
+                curs.execute(plot_query, (one_week, ed))
 
-        for r in curs.fetchall():
-            dates.append(r[0])
-            m = r[1]
-            s = r[2]
-            h = m - s
-            spam.append(s)
-            ham.append(h)
-
-        conn.commit()
+            for r in curs.fetchall():
+                dates.append(r[0])
+                m = r[1]
+                s = r[2]
+                h = m - s
+                spam.append(s)
+                ham.append(h)
+        finally:
+            conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART,
                      title=_('Hourly Web Usage'),
@@ -349,50 +348,50 @@ class DailySpamRate(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
-
-        if email:
-            ks_query = """\
+            if email:
+                ks_query = """\
 SELECT coalesce(sum(msgs), 0) / %%s AS email_rate,
        coalesce(sum(%s_spam_msgs), 0) / %%s AS spam_rate
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
-        else:
-            ks_query = """\
+            else:
+                ks_query = """\
 SELECT coalesce(sum(msgs), 0) / %%s AS email_rate,
        coalesce(sum(%s_spam_msgs), 0) / %%s AS spam_rate
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
 
-        curs = conn.cursor()
-        if email:
-            curs.execute(ks_query, (report_days, report_days, email, one_week,
-                                    ed))
-        else:
-            curs.execute(ks_query, (report_days, report_days, one_week, ed))
+            curs = conn.cursor()
+            if email:
+                curs.execute(ks_query, (report_days, report_days, email,
+                                        one_week, ed))
+            else:
+                curs.execute(ks_query, (report_days, report_days, one_week, ed))
 
-        r = curs.fetchone()
+            r = curs.fetchone()
 
-        email_rate = r[0]
-        spam_rate = r[1]
-        ham_rate = email_rate - spam_rate
+            email_rate = r[0]
+            spam_rate = r[1]
+            ham_rate = email_rate - spam_rate
 
-        ks = KeyStatistic(N_('mail rate'), email_rate, N_('messages/day'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('%s rate') % self.__spam_label, spam_rate,
-                          N_('messages/day'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('%s rate') % self.__ham_label, ham_rate,
-                          N_('messages/day'))
-        lks.append(ks)
+            ks = KeyStatistic(N_('mail rate'), email_rate, N_('messages/day'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('%s rate') % self.__spam_label, spam_rate,
+                              N_('messages/day'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('%s rate') % self.__ham_label, ham_rate,
+                              N_('messages/day'))
+            lks.append(ks)
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if email:
-            plot_query = """\
+            if email:
+                plot_query = """\
 SELECT date_trunc('day', trunc_time) AS day,
        sum(msgs) AS msgs,
        sum(%s_spam_msgs) AS %s_spam_msgs
@@ -400,8 +399,8 @@ FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY day
 ORDER BY day asc""" % (2 * (self.__short_name,))
-        else:
-            plot_query = """\
+            else:
+                plot_query = """\
 SELECT date_trunc('day', trunc_time) AS day,
        sum(msgs) AS msgs,
        sum(%s_spam_msgs) AS %s_spam_msgs
@@ -410,26 +409,26 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY day
 ORDER BY day asc""" % (2 * (self.__short_name,))
 
-        dates = []
-        ham = []
-        spam = []
+            dates = []
+            ham = []
+            spam = []
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if email:
-            curs.execute(plot_query, (email, one_week, ed))
-        else:
-            curs.execute(plot_query, (one_week, ed))
+            if email:
+                curs.execute(plot_query, (email, one_week, ed))
+            else:
+                curs.execute(plot_query, (one_week, ed))
 
-        for r in curs.fetchall():
-            dates.append(r[0])
-            m = r[1]
-            s = r[2]
-            h = m - s
-            spam.append(s)
-            ham.append(h)
-
-        conn.commit()
+            for r in curs.fetchall():
+                dates.append(r[0])
+                m = r[1]
+                s = r[2]
+                h = m - s
+                spam.append(s)
+                ham.append(h)
+        finally:
+            conn.commit()
 
         plot = Chart(type=STACKED_BAR_CHART,
                      title=_('Daily Web Usage'),
@@ -462,8 +461,8 @@ class TopSpammedUsers(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
-
-        query = """\
+        try:
+            query = """\
 SELECT addr, sum(%s_spam_msgs) AS spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
@@ -471,37 +470,37 @@ GROUP BY addr
 ORDER BY spam_msgs desc
 LIMIT 10""" % (self.__short_name,)
 
-        curs = conn.cursor()
-        curs.execute(query, (one_week, ed))
+            curs = conn.cursor()
+            curs.execute(query, (one_week, ed))
 
-        lks = []
-        pds = {}
+            lks = []
+            pds = {}
 
-        counted_spam = 0
+            counted_spam = 0
 
-        for r in curs.fetchall():
-            addr = r[0]
-            num = r[1]
-            counted_spam += num
+            for r in curs.fetchall():
+                addr = r[0]
+                num = r[1]
+                counted_spam += num
 
-            lks.append(KeyStatistic(addr, num, N_('spam')))
-            pds[addr] = num
+                lks.append(KeyStatistic(addr, num, N_('spam')))
+                pds[addr] = num
 
-        query = """\
+            query = """\
 SELECT sum(%s_spam_msgs) AS spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
 
-        curs = conn.cursor()
-        curs.execute(query, (one_week, ed))
-        r = curs.fetchone()
-        if r[0]:
-            other = r[0] - counted_spam
-            lks.append(KeyStatistic(N_('other'), other, N_('spam')))
-            pds[N_('other')] = other
-
-        conn.commit()
+            curs = conn.cursor()
+            curs.execute(query, (one_week, ed))
+            r = curs.fetchone()
+            if r[0]:
+                other = r[0] - counted_spam
+                lks.append(KeyStatistic(N_('other'), other, N_('spam')))
+                pds[N_('other')] = other
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Spammed List'))
