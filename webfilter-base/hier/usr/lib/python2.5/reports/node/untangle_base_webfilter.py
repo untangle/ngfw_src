@@ -173,59 +173,60 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
 
         conn = sql_helper.get_connection()
 
-        lks = []
+        try:
+            lks = []
 
-        curs = conn.cursor()
-        if host:
-            curs.execute(hits_query, (one_day, ed, host))
-        elif user:
-            curs.execute(hits_query, (one_day, ed, user))
-        else:
-            curs.execute(hits_query, (one_day, ed))
-        r = curs.fetchone()
-        ks = KeyStatistic(N_('max hits (1-day)'), r[0], N_('hits/minute'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('avg hits (1-day)'), r[1], N_('hits/minute'))
-        lks.append(ks)
+            curs = conn.cursor()
+            if host:
+                curs.execute(hits_query, (one_day, ed, host))
+            elif user:
+                curs.execute(hits_query, (one_day, ed, user))
+            else:
+                curs.execute(hits_query, (one_day, ed))
+            r = curs.fetchone()
+            ks = KeyStatistic(N_('max hits (1-day)'), r[0], N_('hits/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('avg hits (1-day)'), r[1], N_('hits/minute'))
+            lks.append(ks)
 
-        curs = conn.cursor()
-        if host:
-            curs.execute(hits_query, (one_week, ed, host))
-        elif user:
-            curs.execute(hits_query, (one_week, ed, user))
-        else:
-            curs.execute(hits_query, (one_week, ed))
-        r = curs.fetchone()
-        ks = KeyStatistic(N_('max hits (1-week)'), r[0], N_('hits/minute'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('avg hits (1-week)'), r[1], N_('hits/minute'))
-        lks.append(ks)
+            curs = conn.cursor()
+            if host:
+                curs.execute(hits_query, (one_week, ed, host))
+            elif user:
+                curs.execute(hits_query, (one_week, ed, user))
+            else:
+                curs.execute(hits_query, (one_week, ed))
+            r = curs.fetchone()
+            ks = KeyStatistic(N_('max hits (1-week)'), r[0], N_('hits/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('avg hits (1-week)'), r[1], N_('hits/minute'))
+            lks.append(ks)
 
-        curs = conn.cursor()
-        if host:
-            curs.execute(violations_query, (one_day, ed, host))
-        elif user:
-            curs.execute(violations_query, (one_day, ed, user))
-        else:
-            curs.execute(violations_query, (one_day, ed))
-        r = curs.fetchone()
-        ks = KeyStatistic(N_('avg violations (1-day)'), r[0],
-                          N_('violations/hour'))
-        lks.append(ks)
+            curs = conn.cursor()
+            if host:
+                curs.execute(violations_query, (one_day, ed, host))
+            elif user:
+                curs.execute(violations_query, (one_day, ed, user))
+            else:
+                curs.execute(violations_query, (one_day, ed))
+            r = curs.fetchone()
+            ks = KeyStatistic(N_('avg violations (1-day)'), r[0],
+                              N_('violations/hour'))
+            lks.append(ks)
 
-        curs = conn.cursor()
-        if host:
-            curs.execute(violations_query, (one_week, ed, host))
-        elif user:
-            curs.execute(violations_query, (one_week, ed, user))
-        else:
-            curs.execute(violations_query, (one_week, ed))
-        r = curs.fetchone()
-        ks = KeyStatistic(N_('avg violations (1-week)'), r[0],
-                          N_('violations/hour'))
-        lks.append(ks)
-
-        conn.commit()
+            curs = conn.cursor()
+            if host:
+                curs.execute(violations_query, (one_week, ed, host))
+            elif user:
+                curs.execute(violations_query, (one_week, ed, user))
+            else:
+                curs.execute(violations_query, (one_week, ed))
+            r = curs.fetchone()
+            ks = KeyStatistic(N_('avg violations (1-week)'), r[0],
+                              N_('violations/hour'))
+            lks.append(ks)
+        finally:
+            conn.commit()
 
         return lks
 
@@ -239,45 +240,45 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
 
         conn = sql_helper.get_connection()
 
-        q = """\
+        try:
+            q = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        sum(hits) / 10 AS hits,
        sum(%s_wf_blocks) / 10 AS %s_wf_blocks
 FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" \
-            % (2 * (self.__vendor_name,))
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + """
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY time
 ORDER BY time asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
-        dates = []
-        hits = []
-        blocks = []
+            dates = []
+            hits = []
+            blocks = []
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
 
-            dates.append(r[0].seconds)
-            hits.append(r[1])
-            blocks.append(r[2])
-
-        conn.commit()
+                dates.append(r[0].seconds)
+                hits.append(r[1])
+                blocks.append(r[2])
+        finally:
+            conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART,
                      title=_('Hourly Web Usage'),
@@ -320,30 +321,31 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(hits) AS hits,
 
         query = query + " GROUP BY day) AS foo"
 
-        conn = sql_helper.get_connection()
+        try:
+            conn = sql_helper.get_connection()
 
-        lks = []
+            lks = []
 
-        curs = conn.cursor()
-        if host:
-            curs.execute(query, (one_week, ed, host))
-        elif user:
-            curs.execute(query, (one_week, ed, user))
-        else:
-            curs.execute(query, (one_week, ed))
-        r = curs.fetchone()
-        ks = KeyStatistic(N_('max hits (7-days)'), r[0], N_('hits/day'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('avg hits (7-days)'), r[1], N_('hits/day'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('max violations (7-days)'), r[2],
-                          N_('violations/day'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('avg violations (7-days)'), r[3],
-                          N_('violations/day'))
-        lks.append(ks)
-
-        conn.commit()
+            curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
+            r = curs.fetchone()
+            ks = KeyStatistic(N_('max hits (7-days)'), r[0], N_('hits/day'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('avg hits (7-days)'), r[1], N_('hits/day'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('max violations (7-days)'), r[2],
+                              N_('violations/day'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('avg violations (7-days)'), r[3],
+                              N_('violations/day'))
+            lks.append(ks)
+        finally:
+            conn.commit()
 
         return lks
 
@@ -357,43 +359,44 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(hits) AS hits,
 
         conn = sql_helper.get_connection()
 
-        q = """\
+        try:
+            q = """\
 SELECT date_trunc('day', trunc_time) AS day,
        sum(hits) AS hits,
        sum(%s_wf_blocks) AS %s_wf_blocks
 FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" \
-            % (2 * (self.__vendor_name,))
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + """
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY day
 ORDER BY day asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
-        dates = []
-        hits = []
-        blocks = []
+            dates = []
+            hits = []
+            blocks = []
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
-            dates.append(r[0])
-            hits.append(r[1])
-            blocks.append(r[2])
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                dates.append(r[0])
+                hits.append(r[1])
+                blocks.append(r[2])
 
-        conn.commit()
+        finally:
+            conn.commit()
 
         plot = Chart(type=STACKED_BAR_CHART,
                      title=_('Daily Web Usage'),
@@ -433,40 +436,43 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
 
         conn = sql_helper.get_connection()
 
-        lks = []
+        try:
+            lks = []
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_week, ed, host))
-        elif user:
-            curs.execute(query, (one_week, ed, user))
-        else:
-            curs.execute(query, (one_week, ed))
-        r = curs.fetchone()
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
+            r = curs.fetchone()
 
-        ks = KeyStatistic(N_('total hits (7-days)'), r[0], N_('hits'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('total violations (7-days)'), r[1],
-                          N_('violations'))
-        lks.append(ks)
+            ks = KeyStatistic(N_('total hits (7-days)'), r[0], N_('hits'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('total violations (7-days)'), r[1],
+                              N_('violations'))
+            lks.append(ks)
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-        r = curs.fetchone()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
+            r = curs.fetchone()
 
-        hits = r[0]
-        violations = r[1]
+            hits = r[0]
+            violations = r[1]
 
-        ks = KeyStatistic(N_('total hits (1-day)'), hits, N_('hits'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('total violations (1-day)'), violations,
-                          N_('violations'))
-        lks.append(ks)
+            ks = KeyStatistic(N_('total hits (1-day)'), hits, N_('hits'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('total violations (1-day)'), violations,
+                              N_('violations'))
+            lks.append(ks)
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Total Web Usage'),
@@ -474,9 +480,6 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
                      ylabel=_('Hits per Day'))
 
         plot.add_pie_dataset({_('hits'): hits, _('violations'): violations})
-
-
-        conn.commit()
 
         return (lks, plot)
 
@@ -512,25 +515,25 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
 """ % self.__vendor_name
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
-        dataset = {}
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-            dataset[r[0]] = r[1]
-
-        conn.commit()
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Web Policy Violations (by hits)'),
@@ -538,7 +541,6 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
                      ylabel=_('Hits per Day'))
 
         plot.add_pie_dataset(dataset)
-
 
         return (lks, plot)
 
@@ -576,24 +578,25 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
 
         conn = sql_helper.get_connection()
 
-        lks = []
-        dataset = {}
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-            dataset[r[0]] = r[1]
-
-        conn.commit()
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Web Blocked Policy Violations (by hits)'),
@@ -629,18 +632,20 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
 
         conn = sql_helper.get_connection()
 
-        lks = []
-        dataset = {}
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
-            lks.append(ks)
-            dataset[r[0]] = r[1]
+            curs.execute(query, (one_day, ed))
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
 
-        conn.commit()
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Web Users (by hits)'),
@@ -680,18 +685,20 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
 
         conn = sql_helper.get_connection()
 
-        lks = []
-        dataset = {}
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
-            lks.append(ks)
-            dataset[r[0]] = r[1]
+            curs.execute(query, (one_day, ed))
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
 
-        conn.commit()
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Policy Violators (by hits)'),
@@ -732,18 +739,19 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
 
         conn = sql_helper.get_connection()
 
-        lks = []
-        dataset = {}
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
-            lks.append(ks)
-            dataset[r[0]] = r[1]
-
-        conn.commit()
+            curs.execute(query, (one_day, ed))
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Violators UIDs (by hits)'),
@@ -780,18 +788,20 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         conn = sql_helper.get_connection()
 
-        lks = []
-        dataset = {}
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        curs.execute(query, (one_day, ed))
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
-            lks.append(ks)
-            dataset[r[0]] = r[1]
+            curs.execute(query, (one_day, ed))
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
 
-        conn.commit()
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Web Usage (by size)'),
@@ -834,24 +844,25 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         conn = sql_helper.get_connection()
 
-        lks = []
-        dataset = {}
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-            dataset[r[0]] = r[1]
-
-        conn.commit()
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Websites (by hits)'),
@@ -895,24 +906,25 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
 
         conn = sql_helper.get_connection()
 
-        lks = []
-        dataset = {}
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
-            lks.append(ks)
-            dataset[r[0]] = r[1]
-
-        conn.commit()
+                for r in curs.fetchall():
+                    ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Websites (by size)'),
@@ -950,29 +962,30 @@ WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__vendor_name
         query += """\
 GROUP BY %s_wf_category
 ORDER BY count_events DESC""" % self.__vendor_name
+
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
-        dataset = {}
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            stat_key = r[0]
-            if stat_key is None:
-                stat_key = _('Uncategorized')
-            ks = KeyStatistic(stat_key, r[1], N_('hits'))
-            lks.append(ks)
-            dataset[stat_key] = r[1]
-
-        conn.commit()
+            for r in curs.fetchall():
+                stat_key = r[0]
+                if stat_key is None:
+                    stat_key = _('Uncategorized')
+                ks = KeyStatistic(stat_key, r[1], N_('hits'))
+                lks.append(ks)
+                dataset[stat_key] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Web Usage By Category (by hits)'),
@@ -1010,29 +1023,31 @@ AND %s_wf_action IS NOT NULL """ % (2 * (self.__vendor_name,))
         query += """\
 GROUP BY %s_wf_category
 ORDER BY blocks_sum DESC""" % self.__vendor_name
+
         conn = sql_helper.get_connection()
 
-        lks = []
-        dataset = {}
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        for r in curs.fetchall():
-            stat_key = r[0]
-            if stat_key is None:
-                stat_key = _('Uncategorized')
-            ks = KeyStatistic(stat_key, r[1], N_('hits'))
-            lks.append(ks)
-            dataset[stat_key] = r[1]
-
-        conn.commit()
+            for r in curs.fetchall():
+                stat_key = r[0]
+                if stat_key is None:
+                    stat_key = _('Uncategorized')
+                ks = KeyStatistic(stat_key, r[1], N_('hits'))
+                lks.append(ks)
+                dataset[stat_key] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Web Usage By Category (by hits)'),
