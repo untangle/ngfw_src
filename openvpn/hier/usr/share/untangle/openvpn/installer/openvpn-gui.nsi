@@ -19,12 +19,13 @@
 !define BIN "${HOME}\bin"
 
 !define PRODUCT_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.0.5"
+!define OPENVPN_VERSION "2.1_RC18"
 !define GUI_VERSION "1.0.3"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 
-!define TAP "tap0801"
+!define TAP "tap0901"
 !define TAPDRV "${TAP}.sys"
+!define TAPCAT "${TAP}.cat"
 
 ; something like "-DBG2"
 !define OUTFILE_LABEL ""
@@ -227,6 +228,7 @@ Section "OpenVPN GUI" SecGUI
   SetOverwrite on
   SetOutPath "$INSTDIR\bin"
   File "${HOME}\openvpn-gui.exe"
+  File "${BIN}\libpkcs11-helper-1.dll"
 
   # Include your custom config file(s) here.
   SetOutPath "$INSTDIR\config"
@@ -318,6 +320,7 @@ Section "TAP-Win32 Virtual Ethernet Adapter" SecTAP
 
   SetOutPath "$INSTDIR\driver"
   File "${HOME}\tap-win32\i386\${TAPDRV}"
+  File "${HOME}\tap-win32\i386\${TAPCAT}"
 
   SectionGetFlags ${SecTAPHidden} $R0
   IntOp $R0 $R0 & ${SF_SELECTED}
