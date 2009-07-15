@@ -141,27 +141,31 @@ FROM (select date_trunc('day', time_stamp) AS day,
         avg_max_query = avg_max_query + " GROUP BY day) AS foo"
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
-
-        curs = conn.cursor()
-        if host:
-            curs.execute(avg_max_query, (one_week, ed, host))
-        elif user:
-            curs.execute(avg_max_query, (one_week, ed, user))
-        else:
-            curs.execute(avg_max_query, (one_week, ed))
-        r = curs.fetchone()
-        ks = reports.KeyStatistic(N_('avg (1-week)'), r[0], N_('logged/day'))
-        lks.append(ks)
-        ks = reports.KeyStatistic(N_('max (1-week)'), r[1], N_('logged/day'))
-        lks.append(ks)
-        ks = reports.KeyStatistic(N_('avg (1-week)'), r[2], N_('blocked/day'))
-        lks.append(ks)
-        ks = reports.KeyStatistic(N_('max (1-week)'), r[3], N_('blocked/day'))
-        lks.append(ks)
-
-        conn.commit()
+            curs = conn.cursor()
+            if host:
+                curs.execute(avg_max_query, (one_week, ed, host))
+            elif user:
+                curs.execute(avg_max_query, (one_week, ed, user))
+            else:
+                curs.execute(avg_max_query, (one_week, ed))
+            r = curs.fetchone()
+            ks = reports.KeyStatistic(N_('avg (1-week)'), r[0],
+                                      N_('logged/day'))
+            lks.append(ks)
+            ks = reports.KeyStatistic(N_('max (1-week)'), r[1],
+                                      N_('logged/day'))
+            lks.append(ks)
+            ks = reports.KeyStatistic(N_('avg (1-week)'), r[2],
+                                      N_('blocked/day'))
+            lks.append(ks)
+            ks = reports.KeyStatistic(N_('max (1-week)'), r[3],
+                                      N_('blocked/day'))
+            lks.append(ks)
+        finally:
+            conn.commit()
 
         return lks
 
@@ -174,44 +178,43 @@ FROM (select date_trunc('day', time_stamp) AS day,
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
-
-        q = """\
+        try:
+            q = """\
 SELECT date_trunc('day', time_stamp) AS time,
       count(CASE WHEN firewall_rule_index IS NOT NULL THEN 1 ELSE null END) AS sessions_logged,
       count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END) AS sessions_blocked
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s"""
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + """
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY time
 ORDER BY time asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
-        dates = []
-        logs = []
-        blocks = []
+            dates = []
+            logs = []
+            blocks = []
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
-
-            dates.append(r[0])
-            logs.append(r[1])
-            blocks.append(r[2])
-
-        conn.commit()
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                dates.append(r[0])
+                logs.append(r[1])
+                blocks.append(r[2])
+        finally:
+            conn.commit()
 
         plot = reports.Chart(type=reports.STACKED_BAR_CHART,
                      title=_('Daily Rules'),
@@ -231,8 +234,8 @@ class TopTenBlockedHostsByHits(Graph):
         Graph.__init__(self, 'top-ten-firewall-blocked-hosts-by-hits', _('Top Ten Firewall Blocked Hosts By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -254,72 +257,34 @@ AND firewall_rule_index IS NOT NULL"""
         query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT hname, count(*) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND firewall_blocks > 0
-AND firewall_rule_index IS NOT NULL"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+                for r in curs.fetchall():
+                    ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Firewall Blocked Hosts (by hits)'),
                      xlabel=_('Host'),
                      ylabel=_('Blocks per Day'))
-
         plot.add_pie_dataset(dataset)
 
-        return plot
+
+        return (lks, plot)
 
 class TopTenBlockingRulesByHits(Graph):
     TEN="10"
@@ -328,8 +293,8 @@ class TopTenBlockingRulesByHits(Graph):
         Graph.__init__(self, 'top-ten-firewall-blocking-rules-by-hits', _('Top Ten Firewall Blocking Rules By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -351,63 +316,25 @@ AND firewall_rule_index IS NOT NULL"""
         query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT firewall_rule_index, count(*) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND firewall_blocks > 0
-AND firewall_rule_index IS NOT NULL"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Firewall Blocking Rules (by hits)'),
@@ -416,7 +343,7 @@ AND firewall_rule_index IS NOT NULL"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenBlockedUsersByHits(Graph):
     TEN="10"
@@ -425,8 +352,8 @@ class TopTenBlockedUsersByHits(Graph):
         Graph.__init__(self, 'top-ten-firewall-blocked-users-by-hits', _('Top Ten Firewall Blocked Users By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -449,63 +376,25 @@ AND firewall_rule_index IS NOT NULL"""
         query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT uid, count(*) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND firewall_blocks > 0
-AND firewall_rule_index IS NOT NULL"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Firewall Blocked Users (by hits)'),
@@ -514,7 +403,7 @@ AND firewall_rule_index IS NOT NULL"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class FirewallDetail(DetailSection):
     def __init__(self):
