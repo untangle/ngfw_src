@@ -123,7 +123,6 @@ class SpamBaseNode(Node):
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE %s

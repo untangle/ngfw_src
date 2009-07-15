@@ -99,7 +99,6 @@ ALTER TABLE reports.sessions ADD COLUMN ips_name text""")
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE reports.sessions
@@ -149,7 +148,6 @@ AND ips_name != ''"""
         query = query + " GROUP BY ips_name ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}
@@ -241,7 +239,6 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS attacks
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         conn = sql_helper.get_connection()
-
         try:
             query = """\
 SELECT date_trunc('day', trunc_time) AS day,

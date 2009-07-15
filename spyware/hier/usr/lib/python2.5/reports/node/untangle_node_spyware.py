@@ -103,7 +103,6 @@ ALTER TABLE reports.sessions ADD COLUMN sw_access_ident text""")
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE reports.sessions
@@ -139,7 +138,6 @@ ALTER TABLE reports.n_http_events ADD COLUMN sw_blacklisted boolean""")
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
@@ -174,7 +172,6 @@ ALTER TABLE reports.n_http_events ADD COLUMN sw_cookie_ident text""")
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
@@ -253,8 +250,6 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             elif user:
                 sessions_query = sessions_query + " AND uid = %s"
 
-
-            conn = sql_helper.get_connection()
 
             curs = conn.cursor()
             for n in (1, report_days):
@@ -602,7 +597,6 @@ AND sw_cookies > 0"""
         query = query + " GROUP BY sw_cookie_ident ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}
@@ -837,7 +831,6 @@ AND sw_access_ident != ''"""
         query = query + " GROUP BY sw_access_ident ORDER BY sw_access_ident ASC"
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}

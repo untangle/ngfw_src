@@ -119,7 +119,6 @@ ALTER TABLE reports.n_http_events ADD COLUMN virus_%s_name text""" \
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
@@ -154,7 +153,6 @@ ALTER TABLE reports.n_mail_msgs ADD COLUMN virus_%s_name text""" % self.__vendor
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_mail_msgs
@@ -274,23 +272,23 @@ select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+
 
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
-
-        curs = conn.cursor()
-        if host:
-            curs.execute(avg_max_query, (one_week, ed, host, one_week, ed, host))
-        elif user:
-            curs.execute(avg_max_query, (one_week, ed, user, one_week, ed, user))
-        else:
-            curs.execute(avg_max_query, (one_week, ed, one_week, ed))
-        r = curs.fetchone()
-        ks = reports.KeyStatistic(N_('max (1-week)'), r[1], N_('viruses/day'))
-        lks.append(ks)
-        ks = reports.KeyStatistic(N_('avg (1-week)'), r[0], N_('viruses/day'))
-        lks.append(ks)
-
-        conn.commit()
+            curs = conn.cursor()
+            if host:
+                curs.execute(avg_max_query, (one_week, ed, host, one_week, ed, host))
+            elif user:
+                curs.execute(avg_max_query, (one_week, ed, user, one_week, ed, user))
+            else:
+                curs.execute(avg_max_query, (one_week, ed, one_week, ed))
+            r = curs.fetchone()
+            ks = reports.KeyStatistic(N_('max (1-week)'), r[1], N_('viruses/day'))
+            lks.append(ks)
+            ks = reports.KeyStatistic(N_('avg (1-week)'), r[0], N_('viruses/day'))
+            lks.append(ks)
+        finally:
+            conn.commit()
 
         return lks
 
@@ -300,75 +298,71 @@ select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
-
-        q = """\
+        try:
+            q = """\
 SELECT date_trunc('day', trunc_time) AS time,
        sum(viruses_"""+self.__vendor_name+"""_blocked) as viruses_"""+self.__vendor_name+"""_blocked
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + """
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY time
 ORDER BY time asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
-        blocks_by_date = {}
+            blocks_by_date = {}
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
 
-            blocks_by_date[r[0]] = r[1]
+                blocks_by_date[r[0]] = r[1]
 
-        conn.commit()
-
-        conn = sql_helper.get_connection()
-
-        q = """\
+            q = """\
 SELECT date_trunc('day', trunc_time) AS time,
        sum(viruses_"""+self.__vendor_name+"""_blocked) as viruses_"""+self.__vendor_name+"""_blocked
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + """
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY time
 ORDER BY time asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
-
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
-
-            if blocks_by_date.has_key(r[0]):
-                blocks_by_date[r[0]] =  blocks_by_date[r[0]]+r[1]
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
             else:
-                blocks_by_date[r[0]] = r[1]
+                curs.execute(q, (one_week, ed))
 
-        conn.commit()
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+
+                if blocks_by_date.has_key(r[0]):
+                    blocks_by_date[r[0]] =  blocks_by_date[r[0]]+r[1]
+                else:
+                    blocks_by_date[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         dates = []
         blocks = []
@@ -430,23 +424,23 @@ select date_trunc('hour', trunc_time) AS day, sum(viruses_"""+self.__vendor_name
 
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
-
-        curs = conn.cursor()
-        if host:
-            curs.execute(avg_max_query, (one_week, ed, host, one_week, ed, host))
-        elif user:
-            curs.execute(avg_max_query, (one_week, ed, user, one_week, ed, user))
-        else:
-            curs.execute(avg_max_query, (one_week, ed, one_week, ed))
-        r = curs.fetchone()
-        ks = reports.KeyStatistic(N_('max (1-week)'), r[1], N_('viruses/hour'))
-        lks.append(ks)
-        ks = reports.KeyStatistic(N_('avg (1-week)'), r[0], N_('viruses/hour'))
-        lks.append(ks)
-
-        conn.commit()
+            curs = conn.cursor()
+            if host:
+                curs.execute(avg_max_query, (one_week, ed, host, one_week, ed, host))
+            elif user:
+                curs.execute(avg_max_query, (one_week, ed, user, one_week, ed, user))
+            else:
+                curs.execute(avg_max_query, (one_week, ed, one_week, ed))
+            r = curs.fetchone()
+            ks = reports.KeyStatistic(N_('max (1-week)'), r[1], N_('viruses/hour'))
+            lks.append(ks)
+            ks = reports.KeyStatistic(N_('avg (1-week)'), r[0], N_('viruses/hour'))
+            lks.append(ks)
+        finally:
+            conn.commit()
 
         return lks
 
@@ -456,75 +450,71 @@ select date_trunc('hour', trunc_time) AS day, sum(viruses_"""+self.__vendor_name
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
-
-        q = """\
+        try:
+            q = """\
 SELECT date_trunc('hour', trunc_time) AS time,
        sum(viruses_"""+self.__vendor_name+"""_blocked) as viruses_"""+self.__vendor_name+"""_blocked
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + """
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY time
 ORDER BY time asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
-        blocks_by_date = {}
+            blocks_by_date = {}
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
 
-            blocks_by_date[r[0]] = r[1]
+                blocks_by_date[r[0]] = r[1]
 
-        conn.commit()
-
-        conn = sql_helper.get_connection()
-
-        q = """\
+            q = """\
 SELECT date_trunc('hour', trunc_time) AS time,
        sum(viruses_"""+self.__vendor_name+"""_blocked) as viruses_"""+self.__vendor_name+"""_blocked
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + """
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY time
 ORDER BY time asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
-
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
-
-            if blocks_by_date.has_key(r[0]):
-                blocks_by_date[r[0]] =  blocks_by_date[r[0]]+r[1]
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
             else:
-                blocks_by_date[r[0]] = r[1]
+                curs.execute(q, (one_week, ed))
 
-        conn.commit()
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+
+                if blocks_by_date.has_key(r[0]):
+                    blocks_by_date[r[0]] =  blocks_by_date[r[0]]+r[1]
+                else:
+                    blocks_by_date[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         dates = []
         blocks = []
@@ -562,39 +552,39 @@ class TopWebVirusesDetected(reports.Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
-
-        q = """\
+        try:
+            q = """\
 SELECT virus_"""+self.__vendor_name+"""_name, virus_"""+self.__vendor_name+"""_detected
 FROM reports.n_virus_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + "ORDER BY virus_"+self.__vendor_name+"_detected DESC"
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + "ORDER BY virus_"+self.__vendor_name+"_detected DESC"
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
-        dataset = {}
+            dataset = {}
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
 
-            key_name = r[0]
-            if key_name is None or len(key_name) == 0 or key_name == 'unknown':
-                key_name = _('unknown')
-            dataset[str(key_name)] = r[1]
-
-        conn.commit()
+                key_name = r[0]
+                if key_name is None or len(key_name) == 0 or key_name == 'unknown':
+                    key_name = _('unknown')
+                dataset[str(key_name)] = r[1]
+        finally:
+            conn.commit()
 
         plot = reports.Chart(type=reports.PIE_CHART,
                      title=_('Top Web Viruses Detected'),
@@ -612,8 +602,8 @@ class TopEmailVirusesDetected(reports.Graph):
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if host or user:
             return None
 
@@ -634,61 +624,27 @@ WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
         avg_max_query += " ORDER BY virus_%s_detected DESC" % self.__vendor_name
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
+            if host:
+                curs.execute(avg_max_query, (one_week, ed, host))
+            elif user:
+                curs.execute(avg_max_query, (one_week, ed, user))
+            else:
+                curs.execute(avg_max_query, (one_week, ed))
 
-        curs = conn.cursor()
-        if host:
-            curs.execute(avg_max_query, (one_week, ed, host))
-        elif user:
-            curs.execute(avg_max_query, (one_week, ed, user))
-        else:
-            curs.execute(avg_max_query, (one_week, ed))
-
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
-            ks = reports.KeyStatistic(r[0], r[1], N_('viruses'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @sql_helper.print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if host or user:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-        conn = sql_helper.get_connection()
-
-        avg_max_query = """
-SELECT virus_"""+self.__vendor_name+"""_name, virus_"""+self.__vendor_name+"""_detected
-FROM reports.n_virus_mail_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            avg_max_query = avg_max_query + " AND hname = %s"
-        elif user:
-            avg_max_query = avg_max_query + " AND uid = %s"
-        avg_max_query = avg_max_query + " ORDER BY virus_"+self.__vendor_name+"_detected DESC"
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(avg_max_query, (one_week, ed, host))
-        elif user:
-            curs.execute(avg_max_query, (one_week, ed, user))
-        else:
-            curs.execute(avg_max_query, (one_week, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                ks = reports.KeyStatistic(r[0], r[1], N_('viruses'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = reports.Chart(type=reports.PIE_CHART,
                              title=_('Top Email Viruses Detected'),
@@ -697,7 +653,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopVirusesDetected(reports.Graph):
     def __init__(self, vendor_name):
@@ -729,7 +685,6 @@ AND m.virus_%s_name != ''""" % (6 * (self.__vendor_name,))
             avg_max_query = avg_max_query + " AND uid = %s"
 
         conn = sql_helper.get_connection()
-
         try:
             curs = conn.cursor()
             if host:

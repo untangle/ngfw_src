@@ -107,7 +107,6 @@ ALTER TABLE reports.n_http_events ADD COLUMN %s_wf_category text"""
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
@@ -172,7 +171,6 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
         violations_query = violations_query + " GROUP BY hour) AS foo"
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
 
@@ -239,7 +237,6 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
-
         try:
             q = """\
 SELECT (date_part('hour', trunc_time) || ':'
@@ -321,9 +318,8 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(hits) AS hits,
 
         query = query + " GROUP BY day) AS foo"
 
+        conn = sql_helper.get_connection()
         try:
-            conn = sql_helper.get_connection()
-
             lks = []
 
             curs = conn.cursor()
@@ -358,7 +354,6 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(hits) AS hits,
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
-
         try:
             q = """\
 SELECT date_trunc('day', trunc_time) AS day,
@@ -435,7 +430,6 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
             query = query + " AND uid = %s"
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
 
@@ -577,7 +571,6 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
             % self.__vendor_name
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}
@@ -631,7 +624,6 @@ WHERE trunc_time >= %s AND trunc_time < %s
 GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}
@@ -684,7 +676,6 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
             % (3 * (self.__vendor_name,))
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}
@@ -738,7 +729,6 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
             % (3 * (self.__vendor_name,))
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}
@@ -787,7 +777,6 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         query += " GROUP BY hname ORDER BY size_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}
@@ -843,7 +832,6 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         query += " GROUP BY host ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}
@@ -905,7 +893,6 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}
@@ -1025,7 +1012,6 @@ GROUP BY %s_wf_category
 ORDER BY blocks_sum DESC""" % self.__vendor_name
 
         conn = sql_helper.get_connection()
-
         try:
             lks = []
             dataset = {}

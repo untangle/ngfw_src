@@ -88,7 +88,6 @@ CREATE TABLE reports.n_mail_addrs (
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_mail_addrs
@@ -150,7 +149,6 @@ CREATE TABLE reports.email (
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.email (date, email)
@@ -199,7 +197,6 @@ CREATE TABLE reports.n_mail_msgs (
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_mail_msgs

@@ -92,7 +92,6 @@ ALTER TABLE reports.sessions ADD COLUMN firewall_rule_index integer""")
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE reports.sessions

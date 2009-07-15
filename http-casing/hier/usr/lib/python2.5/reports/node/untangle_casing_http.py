@@ -59,7 +59,6 @@ CREATE TABLE reports.n_http_events (
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_http_events
