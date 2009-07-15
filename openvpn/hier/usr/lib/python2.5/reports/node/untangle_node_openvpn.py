@@ -77,7 +77,6 @@ CREATE TABLE reports.n_openvpn_stats (
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_openvpn_stats

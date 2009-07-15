@@ -182,7 +182,6 @@ ORDER BY blocked desc
 LIMIT 10"""
 
         conn = sql_helper.get_connection()
-
         try:
             curs = conn.cursor()
 

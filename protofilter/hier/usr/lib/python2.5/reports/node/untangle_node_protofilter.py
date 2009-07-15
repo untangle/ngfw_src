@@ -90,7 +90,6 @@ ALTER TABLE reports.sessions ADD COLUMN pf_blocked boolean""")
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 UPDATE reports.sessions

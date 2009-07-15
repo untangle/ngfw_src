@@ -116,7 +116,6 @@ CREATE TABLE reports.users (
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.users (date, username)
@@ -148,7 +147,6 @@ CREATE TABLE reports.hnames (
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.hnames (date, hname)
@@ -190,7 +188,6 @@ CREATE TABLE reports.sessions (
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 CREATE TEMPORARY TABLE newsessions AS
@@ -239,7 +236,6 @@ CREATE TABLE reports.session_counts (
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.session_counts
@@ -315,7 +311,6 @@ CREATE TABLE reports.merged_address_map (
                     values.append(l.values())
 
         conn = sql_helper.get_connection()
-
         try:
             curs = conn.cursor()
 
@@ -356,7 +351,6 @@ ORDER BY evt.time_stamp""", start_date, end_date)
     @print_timing
     def __generate_static_leases(self, m, start_date, end_date):
         conn = sql_helper.get_connection()
-
         try:
             curs = conn.cursor()
 
@@ -384,7 +378,6 @@ WHERE rule.rule_id = list.rule_id
     @print_timing
     def __generate_manual_map(self, m, start_date, end_date):
         conn = sql_helper.get_connection()
-
         try:
             curs = conn.cursor()
 
@@ -424,7 +417,6 @@ ON min_idx = position""")
         et = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
-
         try:
             curs = conn.cursor()
 
