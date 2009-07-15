@@ -772,7 +772,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             defaultType : 'textfield',
             items : [{
                 xtype : 'fieldset',
-                title : i18n._( "DHCP Settings" ),
+                title : i18n._( "DHCP Status" ),
                 defaultType : 'textfield',
                 defaults : {
                     readOnly : true,
