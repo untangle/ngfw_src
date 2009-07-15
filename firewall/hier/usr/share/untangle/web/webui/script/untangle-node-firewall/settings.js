@@ -42,9 +42,56 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 	autoScroll: true
                 },
                 autoScroll : true,
+                listeners: {
+                    'activate': {
+                        fn : function (){
+                            (new Ext.ToolTip({
+                        	html : 'Examples:<br/>80<br/>80,443,8080<br/>80-90',
+                        			target :Ext.getCmp('srcPort').container.id,
+                        			autoWidth : true,
+                        			autoHeight : true,
+                        			showDelay : 200,
+                        			dismissDelay : 0,
+                        			hideDelay : 0
+                        		}));
+                            (new Ext.ToolTip({
+                        	html : 'Examples:<br/>80<br/>80,443,8080<br/>80-90',
+                        			target :Ext.getCmp('dstPort').container.id,
+                        			autoWidth : true,
+                        			autoHeight : true,
+                        			showDelay : 200,
+                        			dismissDelay : 0,
+                        			hideDelay : 0
+                        		}));
+                            (new Ext.ToolTip({
+                        	html : 'Examples:<br/>1.2.3.4<br/>1.2.3.4,1.2.3.5<br/>1.2.3.4-1.2.3.100<br/>1.2.3.0/24',
+                        			target :Ext.getCmp('srcAddress').container.id,
+                        			autoWidth : true,
+                        			autoHeight : true,
+                        			showDelay : 200,
+                        			dismissDelay : 0,
+                        			hideDelay : 0
+                        		}));
+                            (new Ext.ToolTip({
+                        	html : 'Examples:<br/>1.2.3.4<br/>1.2.3.4,1.2.3.5<br/>1.2.3.4-1.2.3.100<br/>1.2.3.0/24',
+                        			target :Ext.getCmp('dstAddress').container.id,
+                        			autoWidth : true,
+                        			autoHeight : true,
+                        			showDelay : 200,
+                        			dismissDelay : 0,
+                        			hideDelay : 0
+                        		}));
+                        }
+                    }
+                },
                 border : false,
                 cls: 'ung-panel',
-                items : [this.gridRules = new Ung.EditorGrid({
+                items : [{
+                    title : this.i18n._('Note'),
+                    cls: 'description',
+                    bodyStyle : 'padding:5px 5px 5px; 5px;',
+                    html : String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and log network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."),main.getBrandingBaseSettings().companyName)
+                        },this.gridRules= new Ung.EditorGrid({
                         name : 'Rules',
                         settingsCmp : this,
                         height : 500,
@@ -282,12 +329,14 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                     width : 150
                                 }), new Ext.form.TextField({
                                     name : "Source Address",
+                                    id : "srcAddress",
                                     dataIndex: "srcAddress",
                                     fieldLabel : this.i18n._("Source Address"),
                                     allowBlank : false,
                                     width : 150
                                 }), new Ext.form.TextField({
                                     name : "Destination Address",
+                                    id : "dstAddress",
                                     dataIndex: "dstAddress",
                                     itemCls:'firewall-spacing-3',                                                                                            
                                     fieldLabel : this.i18n._("Destination Address"),
@@ -295,12 +344,14 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                     width : 150
                                 }), new Ext.form.TextField({
                                     name : "Source Port",
+				    id : "srcPort",
                                     dataIndex: "srcPort",
                                     fieldLabel : this.i18n._("Source Port"),
                                     width : 150,
                                     allowBlank : false
                                 }), new Ext.form.TextField({
                                     name : "Destination Port",
+				    id : "dstPort",
                                     dataIndex: "dstPort",
                                     fieldLabel : this.i18n._("Destination Port"),
                                     allowBlank : false,
