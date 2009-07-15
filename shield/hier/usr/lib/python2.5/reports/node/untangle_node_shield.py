@@ -87,10 +87,10 @@ class DailyRequest(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
+        try:
+            curs = conn.cursor()
 
-        curs = conn.cursor()
-
-        query = """\
+            query = """\
 SELECT sum(accepted) / 1440 as avg_accepted, max(accepted) as max_accepted,
        sum(limited) / 1440 as avg_limited, max(limited) as max_limited,
        sum(dropped + rejected) / 1440 as avg_blocked,
@@ -98,31 +98,31 @@ SELECT sum(accepted) / 1440 as avg_accepted, max(accepted) as max_accepted,
 FROM reports.n_shield_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
-        curs.execute(query, (one_week, ed))
+            curs.execute(query, (one_week, ed))
 
-        r = curs.fetchone()
+            r = curs.fetchone()
 
-        lks = []
-        ks = KeyStatistic(N_('avg requests/minute (7-days)'), r[0],
-                          N_('sessions/minute'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('max requests/minute (7-days)'), r[1],
-                          N_('sessions/minute'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('avg limited/minute (7-days)'), r[2],
-                          N_('sessions/minute'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('max limited/minute (7-days)'), r[3],
-                          N_('sessions/minute'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('avg blocked/minute (7-days)'), r[4],
-                          N_('sessions/minute'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('max blocked/minute (7-days)'), r[5],
-                          N_('sessions/minute'))
-        lks.append(ks)
+            lks = []
+            ks = KeyStatistic(N_('avg requests/minute (7-days)'), r[0],
+                              N_('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('max requests/minute (7-days)'), r[1],
+                              N_('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('avg limited/minute (7-days)'), r[2],
+                              N_('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('max limited/minute (7-days)'), r[3],
+                              N_('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('avg blocked/minute (7-days)'), r[4],
+                              N_('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('max blocked/minute (7-days)'), r[5],
+                              N_('sessions/minute'))
+            lks.append(ks)
 
-        query = """\
+            query = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        sum(accepted) as accepted, sum(limited) as limited,
@@ -132,20 +132,20 @@ WHERE trunc_time >= %s AND trunc_time < %s
 GROUP BY time
 ORDER BY time asc"""
 
-        curs.execute(query, (one_week, ed))
+            curs.execute(query, (one_week, ed))
 
-        times = []
-        accepted = []
-        limited = []
-        blocked = []
+            times = []
+            accepted = []
+            limited = []
+            blocked = []
 
-        for r in curs.fetchall():
-            times.append(r[0])
-            accepted.append(r[1])
-            limited.append(r[2])
-            blocked.append(r[3])
-
-        conn.commit()
+            for r in curs.fetchall():
+                times.append(r[0])
+                accepted.append(r[1])
+                limited.append(r[2])
+                blocked.append(r[3])
+        finally:
+            conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART,
                      title=_('Daily Request'),
@@ -183,28 +183,28 @@ LIMIT 10"""
 
         conn = sql_helper.get_connection()
 
+        try:
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            curs.execute(query, (one_week, ed))
 
-        curs.execute(query, (one_week, ed))
+            lks = []
+            pds = {}
 
-        lks = []
-        pds = {}
+            for r in curs.fetchall():
+                host = r[0]
+                num = r[1]
 
-        for r in curs.fetchall():
-            host = r[0]
-            num = r[1]
-
-            lks.append(KeyStatistic(host, num, N_('blocks')))
-            pds[host] = num
-
+                lks.append(KeyStatistic(host, num, N_('blocks')))
+                pds[host] = num
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Blocked Hosts'))
 
         plot.add_pie_dataset(pds)
 
-        conn.commit()
 
         return (lks, plot)
 
@@ -231,29 +231,27 @@ ORDER BY limited desc
 LIMIT 10"""
 
         conn = sql_helper.get_connection()
+        try:
+            curs = conn.cursor()
 
+            curs.execute(query, (one_week, ed))
 
-        curs = conn.cursor()
+            lks = []
+            pds = {}
 
-        curs.execute(query, (one_week, ed))
+            for r in curs.fetchall():
+                host = r[0]
+                num = r[1]
 
-        lks = []
-        pds = {}
+                lks.append(KeyStatistic(host, num, N_('limited'),
+                                        link_type=reports.HNAME_LINK))
+                pds[host] = num
+        finally:
+            conn.commit()
 
-        for r in curs.fetchall():
-            host = r[0]
-            num = r[1]
-
-            lks.append(KeyStatistic(host, num, N_('limited'), link_type=reports.HNAME_LINK))
-            pds[host] = num
-
-
-        plot = Chart(type=PIE_CHART,
-                     title=_('Top Limited Hosts'))
+        plot = Chart(type=PIE_CHART, title=_('Top Limited Hosts'))
 
         plot.add_pie_dataset(pds)
-
-        conn.commit()
 
         return (lks, plot)
 
