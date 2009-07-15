@@ -413,8 +413,8 @@ class TotalWebUsage(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -459,48 +459,14 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
             curs.execute(query, (one_day, ed))
         r = curs.fetchone()
 
-        ks = KeyStatistic(N_('total hits (1-day)'), r[0], N_('hits'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('total violations (1-day)'), r[1],
-                          N_('violations'))
-        lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT coalesce(sum(hits), 0), coalesce(sum(%s_wf_blocks), 0)
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name)
-        if host:
-            query = query + " AND hname = %s"
-        elif user:
-            query = query + " AND uid = %s"
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_week, ed, host))
-        elif user:
-            curs.execute(query, (one_week, ed, user))
-        else:
-            curs.execute(query, (one_week, ed))
-
-        r = curs.fetchone()
-
         hits = r[0]
         violations = r[1]
+
+        ks = KeyStatistic(N_('total hits (1-day)'), hits, N_('hits'))
+        lks.append(ks)
+        ks = KeyStatistic(N_('total violations (1-day)'), violations,
+                          N_('violations'))
+        lks.append(ks)
 
         plot = Chart(type=PIE_CHART,
                      title=_('Total Web Usage'),
@@ -509,7 +475,10 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name)
 
         plot.add_pie_dataset({_('hits'): hits, _('violations'): violations})
 
-        return plot
+
+        conn.commit()
+
+        return (lks, plot)
 
 class TopTenWebPolicyViolationsByHits(Graph):
     TEN="10"
@@ -521,8 +490,8 @@ class TopTenWebPolicyViolationsByHits(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -545,6 +514,7 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
         conn = sql_helper.get_connection()
 
         lks = []
+        dataset = {}
 
         curs = conn.cursor()
 
@@ -558,47 +528,9 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('hits'))
             lks.append(ks)
+            dataset[r[0]] = r[1]
 
         conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT %s_wf_category, sum(%s_wf_blocks) AS blocks_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''""" % (3 * (self.__vendor_name,))
-        if host:
-            query = query + " AND hname = %s"
-        elif user:
-            query = query + " AND uid = %s"
-        query += """\
-GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
-            % self.__vendor_name
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Web Policy Violations (by hits)'),
@@ -607,7 +539,8 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+
+        return (lks, plot)
 
 class TopTenWebBlockedPolicyViolationsByHits(Graph):
     TEN="10"
@@ -619,8 +552,8 @@ class TopTenWebBlockedPolicyViolationsByHits(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -644,6 +577,7 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
         conn = sql_helper.get_connection()
 
         lks = []
+        dataset = {}
 
         curs = conn.cursor()
 
@@ -657,58 +591,17 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('hits'))
             lks.append(ks)
+            dataset[r[0]] = r[1]
 
         conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT %s_wf_category, sum(%s_wf_blocks) AS blocks_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''
-AND %s_wf_blocks > 0""" % (4 * (self.__vendor_name,))
-
-        if host:
-            query = query + " AND hname = %s"
-        elif user:
-            query = query + " AND uid = %s"
-        query += """\
-GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
-""" % self.__vendor_name
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Web Blocked Policy Violations (by hits)'),
                      xlabel=_('Policy'),
                      ylabel=_('Blocks per Day'))
-
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenWebUsageByHits(Graph):
     TEN="10"
@@ -720,8 +613,8 @@ class TopTenWebUsageByHits(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if host or user or email:
             return None
 
@@ -737,6 +630,7 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
         conn = sql_helper.get_connection()
 
         lks = []
+        dataset = {}
 
         curs = conn.cursor()
 
@@ -744,36 +638,9 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
             lks.append(ks)
+            dataset[r[0]] = r[1]
 
         conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if host or user or email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT hname, sum(hits) AS hits_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-        query += " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        curs = conn.cursor()
-
-        curs.execute(query, (one_day, ed))
-
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Web Users (by hits)'),
@@ -782,7 +649,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenWebPolicyViolatorsByHits(Graph):
     TEN="10"
@@ -794,8 +661,8 @@ class TopTenWebPolicyViolatorsByHits(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if host or user or email:
             return None
 
@@ -814,6 +681,7 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
         conn = sql_helper.get_connection()
 
         lks = []
+        dataset = {}
 
         curs = conn.cursor()
 
@@ -821,39 +689,9 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
             lks.append(ks)
+            dataset[r[0]] = r[1]
 
         conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if host or user or email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT hname, sum(%s_wf_blocks) as blocks_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''
-AND %s_wf_blocks > 0
-GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
-            % (3 * (self.__vendor_name,))
-
-        curs = conn.cursor()
-
-        curs.execute(query, (one_day, ed))
-
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Policy Violators (by hits)'),
@@ -862,7 +700,7 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenWebPolicyViolatorsADByHits(Graph):
     TEN="10"
@@ -874,7 +712,7 @@ class TopTenWebPolicyViolatorsADByHits(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
+    def get_graph(self, end_date, report_days, host=None, user=None,
                            email=None):
         if host or user or email:
             return None
@@ -895,6 +733,7 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
         conn = sql_helper.get_connection()
 
         lks = []
+        dataset = {}
 
         curs = conn.cursor()
 
@@ -902,40 +741,9 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
             lks.append(ks)
+            dataset[r[0]] = r[1]
 
         conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if host or user or email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT uid, sum(%s_wf_blocks) as blocks_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''
-AND %s_wf_blocks > 0
-AND uid != ''
-GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
-            % (3 * (self.__vendor_name,))
-
-        curs = conn.cursor()
-
-        curs.execute(query, (one_day, ed))
-
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Violators UIDs (by hits)'),
@@ -944,7 +752,7 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenWebUsageBySize(Graph):
     TEN="10"
@@ -956,8 +764,8 @@ class TopTenWebUsageBySize(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if host or user or email:
             return None
 
@@ -973,6 +781,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         conn = sql_helper.get_connection()
 
         lks = []
+        dataset = {}
 
         curs = conn.cursor()
 
@@ -980,36 +789,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
             lks.append(ks)
+            dataset[r[0]] = r[1]
 
         conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if host or user or email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT hname, sum(s2c_bytes) + sum (c2s_bytes) AS size_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-        query += " GROUP BY hname ORDER BY size_sum DESC LIMIT " + self.TEN
-
-        curs = conn.cursor()
-
-        curs.execute(query, (one_day, ed))
-
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Web Usage (by size)'),
@@ -1018,7 +800,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenWebsitesByHits(Graph):
     TEN="10"
@@ -1032,8 +814,8 @@ class TopTenWebsitesByHits(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -1053,6 +835,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         conn = sql_helper.get_connection()
 
         lks = []
+        dataset = {}
 
         curs = conn.cursor()
 
@@ -1066,44 +849,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('hits'))
             lks.append(ks)
+            dataset[r[0]] = r[1]
 
         conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT host, sum(hits) AS hits_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-        query += " GROUP BY host ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Websites (by hits)'),
@@ -1112,7 +860,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenWebsitesBySize(Graph):
     TEN="10"
@@ -1126,8 +874,8 @@ class TopTenWebsitesBySize(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -1148,6 +896,7 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
         conn = sql_helper.get_connection()
 
         lks = []
+        dataset = {}
 
         curs = conn.cursor()
 
@@ -1161,45 +910,9 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
         for r in curs.fetchall():
             ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
             lks.append(ks)
+            dataset[r[0]] = r[1]
 
         conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT host, sum(s2c_bytes) + sum(c2s_bytes) AS size_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-        query += """\
-GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Websites (by size)'),
@@ -1208,7 +921,7 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class WebUsageByCategory(Graph):
     def __init__(self, vendor_name):
@@ -1218,8 +931,8 @@ class WebUsageByCategory(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -1240,74 +953,34 @@ ORDER BY count_events DESC""" % self.__vendor_name
         conn = sql_helper.get_connection()
 
         lks = []
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            stat_key = r[0]
-            if stat_key is None:
-                stat_key = _('Uncategorized')
-            ks = KeyStatistic(str(r[0]), r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT %s_wf_category, count(*) AS count_events
-FROM reports.n_http_events
-WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__vendor_name
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-        query += """\
-GROUP BY %s_wf_category
-ORDER BY count_events DESC""" % self.__vendor_name
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
         dataset = {}
 
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
         for r in curs.fetchall():
             stat_key = r[0]
             if stat_key is None:
                 stat_key = _('Uncategorized')
-            dataset[str(r[0])] = r[1]
+            ks = KeyStatistic(stat_key, r[1], N_('hits'))
+            lks.append(ks)
+            dataset[stat_key] = r[1]
+
+        conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Web Usage By Category (by hits)'),
                      xlabel=_('Category'),
                      ylabel=_('Hits per Day'))
-
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class ViolationsByCategory(Graph):
     def __init__(self, vendor_name):
@@ -1317,8 +990,8 @@ class ViolationsByCategory(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -1340,66 +1013,26 @@ ORDER BY blocks_sum DESC""" % self.__vendor_name
         conn = sql_helper.get_connection()
 
         lks = []
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            stat_key = r[0]
-            if stat_key is None:
-                stat_key = _('Uncategorized')
-            ks = KeyStatistic(str(r[0]), r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        conn = sql_helper.get_connection()
-
-        query = """\
-SELECT %s_wf_category, count(*) AS blocks_sum
-FROM reports.n_http_events
-WHERE time_stamp >= %%s AND time_stamp < %%s
-AND %s_wf_action IS NOT NULL """ % ((self.__vendor_name,) * 2)
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-        query += """\
-GROUP BY %s_wf_category
-ORDER BY blocks_sum DESC""" % self.__vendor_name
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
         dataset = {}
 
+        curs = conn.cursor()
+
+        if host:
+            curs.execute(query, (one_day, ed, host))
+        elif user:
+            curs.execute(query, (one_day, ed, user))
+        else:
+            curs.execute(query, (one_day, ed))
+
         for r in curs.fetchall():
             stat_key = r[0]
             if stat_key is None:
                 stat_key = _('Uncategorized')
-            dataset[str(r[0])] = r[1]
+            ks = KeyStatistic(stat_key, r[1], N_('hits'))
+            lks.append(ks)
+            dataset[stat_key] = r[1]
+
+        conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Web Usage By Category (by hits)'),
@@ -1408,7 +1041,7 @@ ORDER BY blocks_sum DESC""" % self.__vendor_name
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class WebFilterDetail(DetailSection):
     def __init__(self, vendor_name):
