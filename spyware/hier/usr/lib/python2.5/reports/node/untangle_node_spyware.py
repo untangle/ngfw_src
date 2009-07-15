@@ -224,54 +224,54 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             url_query = url_query + " AND uid = %s"
 
         conn = sql_helper.get_connection()
+        try:
+            curs = conn.cursor()
+            for n in (1, report_days):
+                sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
 
-        curs = conn.cursor()
-        for n in (1, report_days):
-            sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
+                if host:
+                    curs.execute(url_query, (sd, ed, host))
+                elif user:
+                    curs.execute(url_query, (sd, ed, user))
+                else:
+                    curs.execute(url_query, (sd, ed))
+                    r = curs.fetchone()
+                    ks = KeyStatistic(N_('avg URLs blocked (%s-day)' % n), r[0],
+                                      N_('blocks/hour'))
+                    lks.append(ks)
+                    ks = KeyStatistic(N_('avg cookies blocked (%s-day)' % n), r[1],
+                                      N_('blocks/hour'))
+                    lks.append(ks)
 
-            if host:
-                curs.execute(url_query, (sd, ed, host))
-            elif user:
-                curs.execute(url_query, (sd, ed, user))
-            else:
-                curs.execute(url_query, (sd, ed))
-            r = curs.fetchone()
-            ks = KeyStatistic(N_('avg URLs blocked (%s-day)' % n), r[0],
-                              N_('blocks/hour'))
-            lks.append(ks)
-            ks = KeyStatistic(N_('avg cookies blocked (%s-day)' % n), r[1],
-                              N_('blocks/hour'))
-            lks.append(ks)
-
-        sessions_query = """\
+            sessions_query = """\
 SELECT avg(sw_accesses) AS sw_accesses
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
-        if host:
-            sessions_query = sessions_query + " AND hname = %s"
-        elif user:
-            sessions_query = sessions_query + " AND uid = %s"
-
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-        for n in (1, report_days):
-            sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
-
             if host:
-                curs.execute(url_query, (sd, ed, host))
+                sessions_query = sessions_query + " AND hname = %s"
             elif user:
-                curs.execute(url_query, (sd, ed, user))
-            else:
-                curs.execute(url_query, (sd, ed))
-            r = curs.fetchone()
-            ks = KeyStatistic(N_('avg subnets blocked (%s-day)' % n), r[0],
-                              N_('blocks/hour'))
-            lks.append(ks)
+                sessions_query = sessions_query + " AND uid = %s"
 
-        conn.commit()
+
+            conn = sql_helper.get_connection()
+
+            curs = conn.cursor()
+            for n in (1, report_days):
+                sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
+
+                if host:
+                    curs.execute(url_query, (sd, ed, host))
+                elif user:
+                    curs.execute(url_query, (sd, ed, user))
+                else:
+                    curs.execute(url_query, (sd, ed))
+                r = curs.fetchone()
+                ks = KeyStatistic(N_('avg subnets blocked (%s-day)' % n), r[0],
+                                  N_('blocks/hour'))
+                lks.append(ks)
+        finally:
+            conn.commit()
 
         return lks
 
@@ -290,84 +290,80 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
-
-        q = """\
+        try:
+            q = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        coalesce(sum(sw_blacklisted) / 10, 0) AS sw_blacklisted,
        coalesce(sum(sw_cookies) / 10, 0) AS sw_cookies
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + """
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY time
 ORDER BY time asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
-        dates = []
-        sw_blacklisted = []
-        sw_cookies = []
+            dates = []
+            sw_blacklisted = []
+            sw_cookies = []
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                dates.append(r[0].seconds)
+                sw_blacklisted.append(r[1])
+                sw_cookies.append(r[2])
 
-            dates.append(r[0].seconds)
-            sw_blacklisted.append(r[1])
-            sw_cookies.append(r[2])
+            plot.add_dataset(dates, sw_blacklisted, label=_('URLs'))
+            plot.add_dataset(dates, sw_cookies, label=_('cookies'))
 
-        conn.commit()
-
-        plot.add_dataset(dates, sw_blacklisted, label=_('URLs'))
-        plot.add_dataset(dates, sw_cookies, label=_('cookies'))
-
-        q = """\
+            q = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        coalesce(sum(sw_accesses) / 10, 0) AS sw_accesses
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            q = q + " AND hname = %s"
-        elif user:
-            q = q + " AND uid = %s"
-        q = q + """
+            if host:
+                q = q + " AND hname = %s"
+            elif user:
+                q = q + " AND uid = %s"
+            q = q + """
 GROUP BY time
 ORDER BY time asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
-        dates = []
-        sw_accesses = []
+            dates = []
+            sw_accesses = []
 
-        while 1:
-            r = curs.fetchone()
-            if not r:
-                break
-
-            dates.append(r[0].seconds)
-            sw_accesses.append(r[1])
-
-        conn.commit()
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                dates.append(r[0].seconds)
+                sw_accesses.append(r[1])
+        finally:
+            conn.commit()
 
         plot.add_dataset(dates, sw_accesses, label=_('Subnets'))
 
@@ -398,56 +394,56 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             query += " AND uid = %s"
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
 
-        lks = []
+            curs = conn.cursor()
+            if host:
+                curs.execute(query, (report_days, one_week, ed, host))
+            elif user:
+                curs.execute(query, (report_days, one_week, ed, user))
+            else:
+                curs.execute(query, (report_days, one_week, ed))
 
-        curs = conn.cursor()
-        if host:
-            curs.execute(query, (report_days, one_week, ed, host))
-        elif user:
-            curs.execute(query, (report_days, one_week, ed, user))
-        else:
-            curs.execute(query, (report_days, one_week, ed))
+            r = curs.fetchone()
+            ks = KeyStatistic(N_('Average URLs blocked (7-days)'), r[0],
+                              N_('hits/day'))
+            lks.append(ks)
+            ks = KeyStatistic(N_('Maximum URLs blocked (7-days)'), r[1],
+                              N_('hits/day'))
+            lks.append(ks)
 
-        r = curs.fetchone()
-        ks = KeyStatistic(N_('Average URLs blocked (7-days)'), r[0],
-                          N_('hits/day'))
-        lks.append(ks)
-        ks = KeyStatistic(N_('Maximum URLs blocked (7-days)'), r[1],
-                          N_('hits/day'))
-        lks.append(ks)
-
-        q = """\
+            q = """\
 SELECT date_trunc('day', trunc_time) AS day,
        coalesce(sum(sw_blacklisted), 0)
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
-        if host:
-            q += " AND hname = %s"
-        elif user:
-            q += " AND uid = %s"
-        q = q + """
+            if host:
+                q += " AND hname = %s"
+            elif user:
+                q += " AND uid = %s"
+            q = q + """
 GROUP BY day
 ORDER BY day asc"""
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(q, (one_week, ed, host))
-        elif user:
-            curs.execute(q, (one_week, ed, user))
-        else:
-            curs.execute(q, (one_week, ed))
+            if host:
+                curs.execute(q, (one_week, ed, host))
+            elif user:
+                curs.execute(q, (one_week, ed, user))
+            else:
+                curs.execute(q, (one_week, ed))
 
-        dates = []
-        blocks = []
+            dates = []
+            blocks = []
 
-        for r in curs.fetchall():
-            dates.append(r[0])
-            blocks.append(r[1])
-
-        conn.commit()
+            for r in curs.fetchall():
+                dates.append(r[0])
+                blocks.append(r[1])
+        finally:
+            conn.commit()
 
         plot = Chart(type=STACKED_BAR_CHART,
                      title=_('Spyware URLs Blocked'),
@@ -466,7 +462,7 @@ class TopTenBlockedSpywareSitesByHits(Graph):
         Graph.__init__(self, 'top-ten-blocked-spyware-sites-by-hits', _('Top Ten Blocked Spyware Sites By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
+    def get_graph(self, end_date, report_days, host=None, user=None,
                            email=None):
         if email:
             return None
@@ -488,62 +484,25 @@ AND (sw_blacklisted + sw_cookies) > 0"""
         query = query + " GROUP BY host ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        ed = DateFromMx(end_date)
-        if email:
-            return None
-
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT host, sum(sw_blacklisted + sw_cookies) as hits_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND (sw_blacklisted + sw_cookies) > 0"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query += " GROUP BY host ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Blocked Spyware Sites (by hits)'),
@@ -552,7 +511,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenBlockedHostsByHits(Graph):
     TEN="10"
@@ -561,8 +520,8 @@ class TopTenBlockedHostsByHits(Graph):
         Graph.__init__(self, 'top-ten-blocked-hosts-by-hits', _('Top Ten Blocked Hosts By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -583,62 +542,26 @@ AND (sw_blacklisted + sw_cookies) > 0"""
         query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        ed = DateFromMx(end_date)
-        if email:
-            return None
-
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT hname, sum(sw_blacklisted + sw_cookies) as hits_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND (sw_blacklisted + sw_cookies) > 0"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'),
+                                  link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Blocked Hosts (by hits)'),
@@ -647,7 +570,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenBlockedCookies(Graph):
     TEN="10"
@@ -656,8 +579,8 @@ class TopTenBlockedCookies(Graph):
         Graph.__init__(self, 'top-ten-blocked-cookies', _('Top Ten Blocked Cookies'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -680,62 +603,25 @@ AND sw_cookies > 0"""
 
         conn = sql_helper.get_connection()
 
-        lks = []
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT sw_cookie_ident, count(*) as hits_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND sw_cookie_ident != ''
-AND sw_cookies > 0"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY sw_cookie_ident ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Blocked Cookies'),
@@ -744,7 +630,7 @@ AND sw_cookies > 0"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class SpywareCookiesBlocked(Graph):
     TEN="10"
@@ -753,8 +639,8 @@ class SpywareCookiesBlocked(Graph):
         Graph.__init__(self, 'blocked-cookies', _('Blocked Cookies'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -776,63 +662,25 @@ AND sw_cookies > 0"""
         query = query + " GROUP BY sw_cookie_ident ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT sw_cookie_ident, count(*) as hits_sum
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND sw_cookie_ident != ''
-AND sw_cookies > 0"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY sw_cookie_ident ORDER BY hits_sum DESC"
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Blocked Cookies'),
@@ -841,7 +689,7 @@ AND sw_cookies > 0"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class TopTenSuspiciousTrafficSubnetsByHits(Graph):
     TEN="10"
@@ -850,8 +698,8 @@ class TopTenSuspiciousTrafficSubnetsByHits(Graph):
         Graph.__init__(self, 'top-ten-suspicious-traffic-subnets-by-hits', _('Top Ten Suspicious Traffic Subnets By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -873,64 +721,25 @@ AND sw_accesses > 0"""
         query = query + " GROUP BY sw_access_ident ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT sw_access_ident, sum(sw_accesses) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND sw_access_ident != ''
-AND sw_accesses > 0"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query += " GROUP BY sw_access_ident ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Suspicious Traffic Subnets (by hits)'),
@@ -939,8 +748,7 @@ AND sw_accesses > 0"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
-
+        return (lks, plot)
 
 class TopTenSuspiciousTrafficHostsByHits(Graph):
     TEN="10"
@@ -949,8 +757,8 @@ class TopTenSuspiciousTrafficHostsByHits(Graph):
         Graph.__init__(self, 'top-ten-suspicious-traffic-hosts-by-hits', _('Top Ten Suspicious Traffic Hosts By Hits'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -972,63 +780,26 @@ AND sw_accesses > 0"""
         query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
 
-        lks = []
+            curs = conn.cursor()
 
-        curs = conn.cursor()
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        ed = DateFromMx(end_date)
-        if email:
-            return None
-
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT hname, sum(sw_accesses) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND sw_access_ident != ''
-AND sw_accesses > 0"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query += " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'),
+                                  link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Top Ten Suspicious Traffic Hosts (by hits)'),
@@ -1037,15 +808,15 @@ AND sw_accesses > 0"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class SpywareSubnetsDetected(Graph):
     def __init__(self):
         Graph.__init__(self, 'spyware-subnets-detected', _('Spyware Subnets Detected'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         if email:
             return None
 
@@ -1067,61 +838,25 @@ AND sw_access_ident != ''"""
 
         conn = sql_helper.get_connection()
 
-        lks = []
+        try:
+            lks = []
+            dataset = {}
 
-        curs = conn.cursor()
+            curs = conn.cursor()
 
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
 
-        for r in curs.fetchall():
-            ks = KeyStatistic(r[0], r[1], N_('hits'))
-            lks.append(ks)
-
-        conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        ed = DateFromMx(end_date)
-        if email:
-            return None
-
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT sw_access_ident, sum(sw_accesses) as hits_sum
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND sw_access_ident != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query = query + " GROUP BY sw_access_ident ORDER BY sw_access_ident ASC"
-
-        conn = sql_helper.get_connection()
-
-        curs = conn.cursor()
-
-        if host:
-            curs.execute(query, (one_day, ed, host))
-        elif user:
-            curs.execute(query, (one_day, ed, user))
-        else:
-            curs.execute(query, (one_day, ed))
-
-        dataset = {}
-
-        for r in curs.fetchall():
-            dataset[r[0]] = r[1]
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
 
         plot = Chart(type=PIE_CHART,
                      title=_('Spyware Subnets Detected'),
@@ -1130,7 +865,7 @@ AND sw_access_ident != ''"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 class SpywareDetail(DetailSection):
 
