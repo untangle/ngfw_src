@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
-import sys
+import getopt
 import logging
 import mx
+import os
 import psycopg
-import getopt
+import sys
 
 def usage():
      print """\
@@ -145,7 +146,8 @@ if not no_plot_gen:
 
 if not no_mail:
      f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date, mail_reports)
-     #reports.mailer.mail_reports(end_date, f)
+     reports.mailer.mail_reports(end_date, f)
+     os.remove(f)
 
 if not no_cleanup:
      events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_days)
