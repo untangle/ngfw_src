@@ -232,14 +232,14 @@ class SingleNicManager
 
         private final List<String> readyList = new LinkedList<String>();
 
-        private long nextTransmit = System.currentTimeMillis() + UPDATE_TIMEOUT_MS;
+        private long nextTransmit = System.nanoTime() + UPDATE_TIMEOUT_MS;
         private long nextCleanup = 0;
         
         public void work() throws InterruptedException
         {
             boolean sendNow = handleQueue();
 
-            long now = System.currentTimeMillis();
+            long now = System.nanoTime();
             
             if ( sendNow || ( now > this.nextTransmit )) {
                 try {
@@ -249,7 +249,7 @@ class SingleNicManager
                 } finally {
                     this.readyList.clear();
 
-                    this.nextTransmit = System.currentTimeMillis() + UPDATE_TIMEOUT_MS;
+                    this.nextTransmit = System.nanoTime() + UPDATE_TIMEOUT_MS;
                 }
             }
 
@@ -276,7 +276,7 @@ class SingleNicManager
                     }
                 }
 
-                nextCleanup = System.currentTimeMillis() + CLEANUP_INTERVAL_MS;
+                nextCleanup = System.nanoTime() + CLEANUP_INTERVAL_MS;
             }
         }
 
@@ -295,7 +295,7 @@ class SingleNicManager
                 this.readyList.add( address.getHostAddress());
                 return true;
             } else {
-                long now = System.currentTimeMillis();
+                long now = System.nanoTime();
                 /* host hasn't expired yet, nothing to do. */
                 if ( now < expiration ) return false;
                 
