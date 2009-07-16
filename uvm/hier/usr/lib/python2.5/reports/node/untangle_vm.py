@@ -523,8 +523,8 @@ class BandwidthUsage(Graph):
             lks = []
 
             ks_query = """\
-SELECT coalesce(sum(s2c_bytes + c2s_bytes) / 1000, 0) / (24 * 60 * 60) AS avg_rate,
-       coalesce(max(s2c_bytes + c2s_bytes) / 1000, 0) AS peak_rate
+SELECT coalesce(sum(s2c_bytes + c2s_bytes), 0) / (24 * 60 * 60) AS avg_rate,
+       coalesce(max(s2c_bytes + c2s_bytes), 0) AS peak_rate
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -548,15 +548,15 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             peak_rate = r[1]
 
             ks = KeyStatistic(N_('Average data rate (1-day)'),
-                              avg_rate, N_('Kb/sec'))
+                              avg_rate, N_('bytes/s'))
             lks.append(ks)
             ks = KeyStatistic(N_('Peak data rate (1-day)'),
-                              peak_rate, N_('Kb/sec'))
+                              peak_rate, N_('bytes/s'))
             lks.append(ks)
 
             ks_query = """\
-SELECT coalesce(sum(s2c_bytes + c2s_bytes) / 1000000000, 0) / %s AS avg_rate,
-       coalesce(sum(s2c_bytes + c2s_bytes) / 1000000000, 0) AS total
+SELECT coalesce(sum(s2c_bytes + c2s_bytes), 0) / %s AS avg_rate,
+       coalesce(sum(s2c_bytes + c2s_bytes), 0) AS total
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 """
@@ -581,10 +581,10 @@ WHERE trunc_time >= %s AND trunc_time < %s
             total = r[1]
 
             ks = KeyStatistic(N_('Average data rate (%s-day)') % report_days,
-                              avg_rate, N_('Gb/day'))
+                              avg_rate, N_('bytes/day'))
             lks.append(ks)
             ks = KeyStatistic(N_('Data Transfered (%s-day)') % report_days,
-                              total, N_('Gb'))
+                              total, N_('bytes'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -626,7 +626,7 @@ ORDER BY time asc"""
         plot = Chart(type=TIME_SERIES_CHART,
                      title=_('Bandwidth Usage'),
                      xlabel=_('Hour of Day'),
-                     ylabel=_('Throughput (Kb/sec)'),
+                     ylabel=_('Throughput (Kb/s)'),
                      major_formatter=TIME_OF_DAY_FORMATTER)
 
         plot.add_dataset(dates, throughput, _('Usage'))
