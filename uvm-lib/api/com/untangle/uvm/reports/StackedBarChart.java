@@ -44,6 +44,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.io.CSV;
@@ -95,12 +96,13 @@ public class StackedBarChart extends Plot
         }
 
 
+        String title = getTitle();
         JFreeChart jfChart =
-            ChartFactory.createStackedBarChart(getTitle(),
-                                               this.xLabel, this.yLabel,
+            ChartFactory.createStackedBarChart(title, this.xLabel, this.yLabel,
                                                rotated,
                                                PlotOrientation.VERTICAL,
                                                true, false, false);
+        jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
                                       jfChart, CHART_WIDTH, CHART_HEIGHT,
                                       null, false, CHART_COMPRESSION_PNG);

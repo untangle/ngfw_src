@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.io.CSV;
 import org.jfree.data.time.Minute;
@@ -116,11 +117,11 @@ public class TimeSeriesChart extends Plot
             tsc.addSeries(ds);
         }
 
+        String title = getTitle();
         JFreeChart jfChart =
-            ChartFactory.createTimeSeriesChart(getTitle(),
-                                               this.xLabel, this.yLabel,
-                                               tsc,
-                                               false, true, false);
+            ChartFactory.createTimeSeriesChart(title, this.xLabel, this.yLabel,
+                                               tsc, false, true, false);
+        jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
                                       jfChart, CHART_WIDTH, CHART_HEIGHT,
                                       null, false, CHART_COMPRESSION_PNG);

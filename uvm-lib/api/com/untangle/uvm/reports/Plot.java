@@ -33,6 +33,7 @@
 
 package com.untangle.uvm.reports;
 
+import java.awt.Font;
 import java.io.IOException;
 
 public abstract class Plot
@@ -40,6 +41,8 @@ public abstract class Plot
     public static final int CHART_COMPRESSION_PNG = 9;  // for PNG
     public static final int CHART_WIDTH = 338;
     public static final int CHART_HEIGHT = 230;
+    public static final Font TITLE_FONT = new Font("Helvetica", Font.PLAIN, 14);
+
 
     private final String title;
 

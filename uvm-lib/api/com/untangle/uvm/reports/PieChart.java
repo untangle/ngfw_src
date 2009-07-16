@@ -44,6 +44,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.io.CSV;
@@ -100,9 +101,10 @@ public class PieChart extends Plot
             }
         }
 
-        JFreeChart jfChart =
-            ChartFactory.createPieChart(getTitle(), dpd, true, false, false);
-
+        String title = getTitle();
+        JFreeChart jfChart
+            = ChartFactory.createPieChart(title, dpd, true, false, false);
+        jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         PiePlot plot = (PiePlot)jfChart.getPlot();
         plot.setLabelGenerator(null);
 
