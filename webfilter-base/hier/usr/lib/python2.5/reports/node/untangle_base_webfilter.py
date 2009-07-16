@@ -44,7 +44,8 @@ class WebFilterBaseNode(Node):
 
         ft = reports.engine.get_fact_table('reports.n_http_totals')
 
-        ft.measures.append(Column('%s_wf_blocks' % self.__vendor_name, 'integer',
+        ft.measures.append(Column('%s_wf_blocks' % self.__vendor_name,
+                                  'integer',
                                   "count(CASE WHEN NOT %s_wf_action ISNULL THEN 1 ELSE null END)"
                                   % self.__vendor_name))
 
@@ -478,8 +479,6 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
         return (lks, plot)
 
 class TopTenWebPolicyViolationsByHits(Graph):
-    TEN="10"
-
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-policy-violations-by-hits',
                        _('Top Ten Web Policy Violations By Hits'))
@@ -539,8 +538,6 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
         return (lks, plot)
 
 class TopTenWebBlockedPolicyViolationsByHits(Graph):
-    TEN="10"
-
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-blocked-policy-violations-by-hits',
                        _('Top Ten Web Blocked Policy Violations By Hits'))
@@ -600,8 +597,6 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
         return (lks, plot)
 
 class TopTenWebUsageByHits(Graph):
-    TEN="10"
-
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-usage-by-hits',
                        _('Top Ten Web Users By Hits'))
@@ -649,8 +644,6 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
         return (lks, plot)
 
 class TopTenWebPolicyViolatorsByHits(Graph):
-    TEN="10"
-
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-policy-violators-by-hits',
                        _('Top Ten Web Policy Violators By Hits'))
@@ -701,8 +694,6 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
         return (lks, plot)
 
 class TopTenWebPolicyViolatorsADByHits(Graph):
-    TEN="10"
-
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-policy-violator-ad-by-hits',
                        _('Top Ten Web Policy Violators UIDs By Hits'))
@@ -753,8 +744,6 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
         return (lks, plot)
 
 class TopTenWebUsageBySize(Graph):
-    TEN="10"
-
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-usage-by-size',
                        _('Top Ten Web Usage By Size'))
@@ -774,7 +763,7 @@ class TopTenWebUsageBySize(Graph):
 SELECT hname, sum(s2c_bytes) + sum (c2s_bytes) as size_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
-        query += " GROUP BY hname ORDER BY size_sum DESC LIMIT " + self.TEN
+        query += " GROUP BY hname ORDER BY size_sum DESC LIMIT 10"
 
         conn = sql_helper.get_connection()
         try:
@@ -802,8 +791,6 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         return (lks, plot)
 
 class TopTenWebsitesByHits(Graph):
-    TEN="10"
-
     def __init__(self, vendor_name):
         print "=" * 72
         print
@@ -829,7 +816,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             query += " AND hname = %s"
         elif user:
             query += " AND uid = %s"
-        query += " GROUP BY host ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query += " GROUP BY host ORDER BY hits_sum DESC LIMIT 10"
 
         conn = sql_helper.get_connection()
         try:
@@ -862,8 +849,6 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         return (lks, plot)
 
 class TopTenWebsitesBySize(Graph):
-    TEN="10"
-
     def __init__(self, vendor_name):
         print "=" * 72
         print

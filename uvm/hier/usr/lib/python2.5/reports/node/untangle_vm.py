@@ -684,7 +684,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             lks.append(ks)
 
             ks_query = """\
-SELECT sum(num_sessions) AS total_sessions
+SELECT sum(num_sessions)::int AS total_sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -809,9 +809,9 @@ LIMIT 10"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Spyware Subnets Detected'),
-                     xlabel=_('Subnet'),
-                     ylabel=_('Blocks per Day'))
+                     title=_('Top Destination Ports'),
+                     xlabel=_('Port'),
+                     ylabel=_('Sessions'))
 
         plot.add_pie_dataset(pds)
 
