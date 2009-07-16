@@ -21,7 +21,6 @@ package com.untangle.node.webfilter;
 
 import java.io.IOException;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -55,26 +54,26 @@ public class BlockPageServlet extends HttpServlet
 
         NodeContext nodeContext = nm.nodeContext( tid );
         if ( nodeContext == null ) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE,
                                 I18nUtil.tr( "Feature is not installed.", i18n_map ));
             return;
         }
-        
+
         WebFilterBlockDetails blockDetails = null;
         UserWhitelistMode whitelistMode = null;
 
         Object oNode = nodeContext.node();
         if ( !(oNode instanceof WebFilter) || ( oNode == null )) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE,
                                 I18nUtil.tr( "Feature is not installed.", i18n_map ));
             return;
         }
         WebFilter node = (WebFilter)oNode;
         String nonce = request.getParameter("nonce");
-        
+
         blockDetails = node.getDetails(nonce);
         if (blockDetails == null) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE,
                                 I18nUtil.tr( "This request has expired.", i18n_map ));
             return;
         }
@@ -143,5 +142,5 @@ public class BlockPageServlet extends HttpServlet
         {
             return this.userWhitelistMode;
         }
-    }    
+    }
 }
