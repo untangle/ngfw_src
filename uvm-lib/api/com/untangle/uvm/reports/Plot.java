@@ -42,7 +42,7 @@ public abstract class Plot
     public static final int CHART_WIDTH = 338;
     public static final int CHART_HEIGHT = 230;
     public static final Font TITLE_FONT = new Font("Helvetica", Font.PLAIN, 14);
-
+    public static final Font AXIS_FONT = new Font("Helvetica", Font.PLAIN, 10);
 
     private final String title;
 

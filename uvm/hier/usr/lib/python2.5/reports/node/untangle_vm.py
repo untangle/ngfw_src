@@ -770,7 +770,7 @@ class DestinationPorts(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT c_server_port, sum(new_sessions) as sessions
+SELECT c_server_port, sum(new_sessions)::int as sessions
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -781,7 +781,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         query += """\
 GROUP BY c_server_port
-ORDER BY sessions ASC
+ORDER BY sessions DESC
 LIMIT 10"""
 
         conn = sql_helper.get_connection()
