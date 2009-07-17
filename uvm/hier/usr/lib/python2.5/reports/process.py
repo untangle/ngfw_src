@@ -16,16 +16,18 @@ Options:
   -c | --no-cleanup           skip cleanups
   -g | --no-data-gen          skip graph data processing
   -p | --no-plot-gen          skip graph image processing
+  -m | --no-mail              skip mailing
   -e | --events-days          number of days in events schema to keep
   -r | --reports-days         number of days in reports schema to keep
   -d y-m-d | --date=y-m-d\
 """ % sys.argv[0]
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpve:r:d:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmve:r:d:",
                                 ['help', 'no-migration', 'no-cleanup',
-                                 'no-data-gen', 'no-plot-gen', 'verbose',
-                                 'events-days', 'reports-days', 'date='])
+                                 'no-data-gen', 'no-mail', 'no-plot-gen',
+                                 'verbose', 'events-days', 'reports-days',
+                                 'date='])
 except getopt.GetoptError, err:
      print str(err)
      usage()
@@ -55,6 +57,8 @@ for opt in opts:
           no_data_gen = True
      elif k == '-p' or k == '--no-plot-gen':
           no_plot_gen = True
+     elif k == '-m' or k == '--no-mail':
+          no_mail = True
      elif k == '-e' or k == '--events-days':
           events_days = int(v)
      elif k == '-r' or k == '--reports-days':
