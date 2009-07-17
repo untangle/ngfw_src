@@ -1294,9 +1294,39 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
         this.card = {
             title : i18n._( "Internal Network" ),
             panel : this.panel,
+            onLoad : this.onLoadInternalSuggestion.createDelegate(this),
             onNext : this.saveInternalNetwork.createDelegate( this ),
             onValidate : this.validateInternalNetwork.createDelegate(this)
         }
+    },
+    onLoadInternalSuggestion : function( complete )
+    {
+        /* If the user modified the value, do not fetch a new value */
+        if (( this.panel.find( "name", "netmask" )[0].getRawValue() != "255.255.255.0" ) ||
+            (( this.panel.find( "name", "network" )[0].getValue() != "192.168.1.1" ) &&
+             ( this.panel.find( "name", "network" )[0].getValue() != "172.16.0.1" ))) {
+            complete();
+            return;
+        }
+            
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.loadInternalSuggestion.createDelegate( this, [ complete ] ));
+    },
+    loadInternalSuggestion : function( complete )
+    {
+        rpc.networkManager.getWizardInternalAddressSuggesstion( this.completeLoadInternalSuggestion.createDelegate( this, [ complete ], true ), null );
+    },
+    completeLoadInternalSuggestion : function( result, exception, foo, handler )
+    {
+        if ( exception ) {
+            /* Just ignore the attempt */
+            handler();
+            return;
+        }
+
+        this.panel.find( "name", "network" )[0].setValue( result["network"] );
+        this.panel.find( "name", "netmask" )[0].setValue( result["netmask"] );
+        handler();
+        
     },
     onSetRouter : function(isSet){
         var ar = [this.panel.find('name','network')[0],this.panel.find('name','netmask')[0],this.panel.find('name','enableDhcpServer')[0]];
@@ -1767,7 +1797,7 @@ Ung.Setup = {
         if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 2 );
+                this.wizard.goToPage( 4 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
 

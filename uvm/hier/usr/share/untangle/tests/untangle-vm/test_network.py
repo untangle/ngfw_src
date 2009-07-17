@@ -18,8 +18,6 @@ class TestNetwork(UvmSetup):
         expected = "%s/%s" % ( expected["network"], expected["netmask"] )
         yield self.check_get_internal_address, network_manager, None, expected
         
-        
-        
     def check_get_internal_address( self, network_manager, address, expected ):
         response = network_manager.getWizardInternalAddressSuggesstion( address )
 
