@@ -63,10 +63,10 @@ class SingleNicManager
     private static long POLL_TIMEOUT_MS = 2500;
 
     /* How often to tell the arp eater about a host. */
-    private static long UPDATE_TIMEOUT_MS = 5000;
+    private static long UPDATE_TIMEOUT_NS = 5l * 1000l * 1000l * 1000l;
 
     /* How often to clean off any expired nodes. */
-    private static final long CLEANUP_INTERVAL_MS = 600000;
+    private static final long CLEANUP_INTERVAL_NS = 600l * 1000l * 1000l * 1000l;
 
     private static final int STATUS_SUCCESS = 104;    
 
@@ -232,7 +232,7 @@ class SingleNicManager
 
         private final List<String> readyList = new LinkedList<String>();
 
-        private long nextTransmit = System.nanoTime() + UPDATE_TIMEOUT_MS;
+        private long nextTransmit = System.nanoTime() + UPDATE_TIMEOUT_NS;
         private long nextCleanup = 0;
         
         public void work() throws InterruptedException
@@ -249,17 +249,17 @@ class SingleNicManager
                 } finally {
                     this.readyList.clear();
 
-                    this.nextTransmit = System.nanoTime() + UPDATE_TIMEOUT_MS;
+                    this.nextTransmit = System.nanoTime() + UPDATE_TIMEOUT_NS;
                 }
             }
 
             /* clock has gone weird, time to reset it */
-            if (( this.nextTransmit - now ) > ( UPDATE_TIMEOUT_MS * 10 )) {
+            if (( this.nextTransmit - now ) > ( UPDATE_TIMEOUT_NS * 10 )) {
                 logger.warn( "serious clock skew : " + this.nextTransmit + " - " + now );
                 for ( InetAddress address : this.addressMap.keySet()) this.addressMap.put( address, 0L );
-                this.nextTransmit = now + UPDATE_TIMEOUT_MS;
+                this.nextTransmit = now + UPDATE_TIMEOUT_NS;
             } else if (( now > this.nextCleanup ) || 
-                       (( this.nextCleanup - now ) > ( 10 * CLEANUP_INTERVAL_MS ))) {
+                       (( this.nextCleanup - now ) > ( 10 * CLEANUP_INTERVAL_NS ))) {
                 for ( Iterator<Map.Entry<InetAddress,Long>> iter = this.addressMap.entrySet().iterator() ; 
                       iter.hasNext() ;  ) {
                     Map.Entry<InetAddress,Long> entry = iter.next();
@@ -276,7 +276,7 @@ class SingleNicManager
                     }
                 }
 
-                nextCleanup = System.nanoTime() + CLEANUP_INTERVAL_MS;
+                nextCleanup = System.nanoTime() + CLEANUP_INTERVAL_NS;
             }
         }
 
@@ -291,7 +291,7 @@ class SingleNicManager
             /* This is a fresh entry, it needs to be sent immediately. */
             if ( expiration == null ) {
                 if ( logger.isDebugEnabled()) logger.debug( "new host <" + address.getHostAddress() + ">" );
-                this.addressMap.put( address, this.nextTransmit + UPDATE_TIMEOUT_MS );
+                this.addressMap.put( address, this.nextTransmit + UPDATE_TIMEOUT_NS );
                 this.readyList.add( address.getHostAddress());
                 return true;
             } else {
@@ -301,7 +301,7 @@ class SingleNicManager
                 
                 if ( logger.isDebugEnabled()) logger.debug( "host <" + address.getHostAddress() + "> is ready" );
                 this.readyList.add( address.getHostAddress());
-                this.addressMap.put( address, this.nextTransmit + UPDATE_TIMEOUT_MS );
+                this.addressMap.put( address, this.nextTransmit + UPDATE_TIMEOUT_NS );
             }
 
             return false;
