@@ -41,6 +41,8 @@ import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
@@ -438,6 +440,34 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return getBasicSettings();
     }
 
+    /* returns a recommendation for the internal network. */
+    /* @param externalAddress The external address, if null, this uses
+     * the external address of the box. */
+    public IPNetwork getWizardInternalAddressSuggesstion(IPaddr externalAddress)
+    {
+        try {
+            if ( externalAddress == null ) { 
+                BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings );
+                externalAddress = basic.getHost();
+            }
+
+            /* rare case. */
+            if ( externalAddress == null ) {
+                return IPNetwork.parse( "172.16.0.1/24" );
+            }
+
+            IPMatcher matcher = IPMatcherFactory.getInstance().parse( "192.0.0.0/8" );
+            
+            if ( matcher.isMatch( externalAddress.getAddr())) {
+                return IPNetwork.parse( "172.16.0.1/24" );
+            }
+            
+            return IPNetwork.parse( "192.168.1.1/24" );
+        } catch ( Exception e ) {
+            /* This should never happen */
+            throw new RuntimeException( "Unable to suggest an internal address", e );
+        }
+    }
 
     public void setWizardNatEnabled( IPaddr address, IPaddr netmask, boolean enableDhcpServer )
         throws NetworkException

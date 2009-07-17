@@ -157,6 +157,11 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         return lnm.getPublicAddress();
     }
 
+    public IPNetwork getWizardInternalAddressSuggesstion(IPaddr externalAddress)
+    {
+        return lnm.getWizardInternalAddressSuggesstion(externalAddress);
+    }
+
     /* Allow the setup wizard to setup NAT properly, or disable it. */
     public void setWizardNatEnabled( IPaddr address, IPaddr netmask, boolean enableDhcpServer )
         throws NetworkException

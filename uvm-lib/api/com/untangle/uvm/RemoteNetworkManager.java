@@ -44,6 +44,7 @@ import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkSpacesSettingsImpl;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.node.ValidateException;
 
 public interface RemoteNetworkManager
@@ -131,6 +132,11 @@ public interface RemoteNetworkManager
     void setWizardNatEnabled(IPaddr address, IPaddr netmask, boolean enableDhcpServer ) 
         throws NetworkException;
     void setWizardNatDisabled() throws NetworkException;
+
+    /* returns a recommendation for the internal network. */
+    /* @param externalAddress The external address, if null, this uses
+     * the external address of the box. */
+    IPNetwork getWizardInternalAddressSuggesstion(IPaddr externalAddress);
 
     /* Returns true if address is local to the edgeguard */
     boolean isAddressLocal( IPaddr address );
