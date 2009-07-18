@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.ConnectTimeoutException;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 import com.untangle.uvm.networking.internal.InterfaceInternal;
@@ -622,11 +623,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public InetAddress getInternalHttpAddress( IPSessionDesc session )
     {
         byte argonIntf = session.clientIntf();
+        ArgonInterface ai = null;
 
-        /* ignore everything on the external or dmz interface */
-        if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
-        if ( this.singleNicManager.getIsEnabled()) argonIntf = IntfConstants.EXTERNAL_INTF;
+        try {
+            ai = LocalUvmContextFactory.context().localIntfManager().getIntfByArgon( argonIntf );
+        } catch ( Exception e ) {
+            ai = null;
+        }
 
+        if ( ai == null ) return null;
+        if ( ai.isWanInterface()) return null;
+        
         /* Retrieve the network settings */
         NetworkSpacesInternalSettings settings = this.networkSettings;
 
