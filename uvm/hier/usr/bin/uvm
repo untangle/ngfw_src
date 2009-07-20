@@ -97,120 +97,6 @@ getPopId() {
   @UVM_HOME@/bin/utactivate
 }
 
-isServiceRunning() {
-  extraArgs=""
-  if [[ -n $2 ]] ; then
-    extraArgs="-x"
-    shift
-  fi
-  # If you can believe it, pidof sometimes doesn't work!
-  # Calling it three times seems to be enough to work around the pidof
-  # bug and "make sure" (#2534)
-  let i=0
-  while [[ $i -lt 3 ]] ; do
-    pidof $extraArgs "$1" && return 0
-    let i=$i+1
-    sleep .5
-  done
-  return 1
-}
-
-restartServiceIfNeeded() {
-  serviceName=$1
-
-  case $serviceName in
-    postgresql)
-# Removing the postgres pid file just makes restarting harder.  The init.d script deals ok as is.
-      pidFile=/tmp/foo-doesnt-exist
-      isServiceRunning $PG_DAEMON_NAME && return
-      serviceName=$PGSERVICE
-      ;;
-    untangle-reports)
-      pidFile=/var/run/untangle-reports.pid
-      isServiceRunning --find-shell server.py && return
-      serviceName=untangle-reports
-      ;;
-    mongrel)
-      pidFile=/tmp/foo-doesnt-exist
-      isServiceRunning --find-shell mongrel_rails && return
-      serviceName="untangle-net-alpaca"
-      ;;
-    slapd)
-      pidFile=/var/run/untangle-ldap/slapd.pid
-      dpkg -l untangle-ldap-server | grep -q -E '^ii' || return
-      isServiceRunning slapd && return
-      ;;
-    snmpd)
-      pidFile=/var/run/snmpd.pid
-      dpkg -l snmpd | grep -q -E '^ii' || return
-      isServiceRunning snmpd && return
-      ;;
-    spamassassin)
-      pidFile=$SPAMASSASSIN_PID_FILE
-      dpkg -l untangle-spamassassin-update | grep -q -E '^ii' || return
-      isServiceRunning --find-shell spamd && return
-      hook="$SPAMD_RESTART_HOOK"
-      ;;
-    clamav-daemon)
-      pidFile=$CLAMD_PID_FILE
-      dpkg -l untangle-clamav-config | grep -q -E '^ii' || return
-      isServiceRunning clamd && return
-      ;;
-    clamav-freshclam)
-      pidFile="/var/run/clamav/freshclam.pid"
-      dpkg -l untangle-clamav-config | grep -q -E '^ii' || return
-      isServiceRunning freshclam && return
-      ;;
-    untangle-support-agent)
-      pidFile="/var/run/rbot.pid"
-      dpkg -l untangle-support-agent | grep -q -E '^ii' || return
-      # this is a bit janky, need something better...
-      isServiceRunning ruby && return
-      ;;
-    kav)
-      pidFile="/var/run/aveserver.pid"
-      dpkg -l untangle-kav | grep -q -E '^ii' || return
-      isServiceRunning aveserver && return
-      ;;
-    ctasd)
-      pidFile="/var/run/ctasd/ctasd.pid"
-      dpkg -l untangle-ctasd | grep -q -E '^ii' || return
-      # do nothing if ctasd is not configured, or explicitely disabled
-      [ -f /etc/default/untangle-ctasd ] || return
-      grep 'CTASD_DISABLED=true' /etc/default/untangle-ctasd && return
-      isServiceRunning ctasd.bin && return
-      serviceName=untangle-ctasd
-      ;;
-  esac
-
-  for service in $serviceName ; do
-    restartService $service $pidFile "missing" noStopFirst "$hook"
-  done
-
-  return 1 # we did restart something
-}
-
-restartService() {
-  serviceName=$1
-  pidFile=$2
-  reason=$3
-  stopFirst=$4
-  hook=$5
-  servicePid=
-  echo "*** restarting $reason $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
-  if [ "$stopFirst" = "stopFirst" ] ; then
-    # netstat -plunt >> $UVM_WRAPPER_LOG
-    [ -n "$pidFile" ] && servicePid=`cat $pidFile`
-    /etc/init.d/$serviceName stop
-    # just to be sure
-    [ -n "$servicePid" ] && kill -9 $servicePid
-  else # remove the pidfile
-    [ -n "$pidFile" ] && rm -f $pidFile
-  fi
-  [ -n "$hook" ] && eval "$hook"
-  /etc/init.d/$serviceName start
-}
-
 # Return true (0) when we need to reap and restart the uvm.
 needToRestart() {
     cheaphigh=`head -3 /proc/$pid/maps | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
@@ -244,24 +130,6 @@ needToRestart() {
                 echo "*** unexpected heap size ($bignibble) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
                 ;;
         esac
-    fi
-
-    # detect garbage collection failure due to heap full.  Continuous repeat of
-    # failure necessary, as a few can happen some temporary non-full conditions.
-    cmfcount=`tail -50 $UVM_GC_LOG | grep -ci "concurrent mode failure"`
-    if [ $cmfcount -gt 4 ]; then
-        echo "*** java heap cmf on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
-        return 0;
-    fi
-
-    # extra nightime checks
-    if [ `date +%H` -eq 1 ]; then
-        # VSZ greater than 1.1 gigs reboot
-        VIRT="`getVirtualMemUsage $pid`"
-        if [ $VIRT -gt $MAX_VIRTUAL_SIZE ] ; then
-            echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
-            return 0;
-        fi
     fi
 
     return 1;
@@ -305,16 +173,9 @@ while true; do
     pid=$!
     echo "Bunnicula launched. (pid:$pid) (`date`)" >> $UVM_WRAPPER_LOG
 
-# Instead of waiting, we now monitor.
-
-    counter=0
-    counter2=120
-
+    # Instead of waiting, we now monitor.
     while true; do
-
         sleep $SLEEP_TIME
-	let counter=${counter}+$SLEEP_TIME
-	let counter2=${counter2}-$SLEEP_TIME
 
         if [ "x" = "x@PREFIX@" ] ; then
             if [ ! -d /proc/$pid ] ; then
@@ -326,81 +187,6 @@ while true; do
                 nukeIt
                 break
             fi
-            restartServiceIfNeeded postgresql
-            restartServiceIfNeeded untangle-reports
-            restartServiceIfNeeded clamav-freshclam
-            restartServiceIfNeeded clamav-daemon
-            restartServiceIfNeeded spamassassin
-            restartServiceIfNeeded slapd
-            restartServiceIfNeeded untangle-support-agent
-            restartServiceIfNeeded kav
-            restartServiceIfNeeded ctasd
-
-	    if [ $counter2 -lt 0 ] ; then
-                restartServiceIfNeeded mongrel || counter2=120 # so we don't check again before 120s have passed
-	    fi
-	    
-	    if [ $counter -gt 60 ] ; then # fire up the other nannies
-                curl -sf -m 10 "http://localhost:3000/alpaca/dns?argyle=`head -n 1 /etc/untangle-net-alpaca/nonce`" > /dev/null
-	        rc=$?
-	        if [ $counter2 -lt 0 ] && [ $rc -ne 0 ] ; then
-		  restartService untangle-net-alpaca /tmp/foo-doesnt-exist "non-functional (RC=$rc)"
-		  counter2=120 # so we don't check again before 120s have passed
-		fi
-                # memory-management for alpaca
-		pidof -x mongrel_rails | xargs -n 1 | while read pid ; do
-		  VIRT="`getVirtualMemUsage $pid`"
-		  if [ $counter2 -lt 0 ] && [ $VIRT -gt $ALPACA_MAX_VIRTUAL_SIZE ] ; then
-		    restartService untangle-net-alpaca /tmp/foo-doesnt-exist "memory-hogging ($VIRT)" stopFirst
-		    counter2=120 # so we don't check again before 120s have passed
-		  fi
-		done
-
-  		case "`$BANNER_NANNY $REPORTS_PORT $TIMEOUT`" in
-                  *success*) true ;;
-                  *) restartService untangle-reports $REPORTS_PID_FILE "hung" stopFirst ;;
-                esac
-
-	        if dpkg -l untangle-spamassassin-update | grep -q ii ; then # we're managing spamassassin
-	          [ `tail -n 50 /var/log/mail.info | grep -c "$SPAMASSASSIN_LOG_ERROR"` -gt 2 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "non-functional" stopFirst "$SPAMD_RESTART_HOOK"
-		  [ `tail -n 50 /var/log/mail.info | grep -c -E 'spamd.*child states: .*K'` -gt 5 ] && restartService spamassassin $SPAMASSASSIN_PID_FILE "child-killing" stopFirst "$SPAMD_RESTART_HOOK"
-  		  case "`$BANNER_NANNY $SPAMASSASSIN_PORT $TIMEOUT`" in
-                    *success*) true ;;
-                    *) restartService spamassassin $SPAMASSASSIN_PID_FILE "hung" stopFirst "$SPAMD_RESTART_HOOK" ;;
-                  esac
-		  # memory-management
-		  pidof -x spamd | xargs -n 1 | while read pid ; do
-		    VIRT="`getVirtualMemUsage $pid`"
-		    if [ $VIRT -gt $SPAMD_MAX_VIRTUAL_SIZE ] ; then
-		      restartService spamassassin $SPAMASSASSIN_PID_FILE "memory-hogging ($VIRT)" stopFirst "$SPAMD_RESTART_HOOK"
-		    fi
-		  done
-
-                fi
-	        if dpkg -l untangle-clamav-config | grep -q -E '^ii' ; then # we're managing clamav
-	          [ `tail -n 50 /var/log/clamav/clamav.log  | grep -c -E "$CLAMAV_LOG_ERROR"` -gt 2 ] && restartService clamav-daemon $CLAMD_PID_FILE "non-functional" stopFirst "$CLAMD_NONFUNCTIONAL_HOOK"
-                  case "`$BANNER_NANNY $CLAMD_PORT $TIMEOUT`" in
-                    *success*) true ;;
-                    *) restartService clamav-daemon $CLAMD_PID_FILE "hung" stopFirst ;;
-                  esac
-		  # memory-management
-		  pidof -x clamd | xargs -n 1 | while read pid ; do 
-		    VIRT="`getVirtualMemUsage $pid`"
-		    if [ $VIRT -gt $CLAMD_MAX_VIRTUAL_SIZE ] ; then
-		      restartService clamav-daemon $CLAMD_PID_FILE "memory-hogging ($VIRT)" stopFirst
-		    fi
-		  done
-	        fi
-	        if dpkg -l untangle-support-agent | grep -q ii ; then # support-agent is supposed to run
-	            if [ -f "$SUPPORT_AGENT_PID_FILE" ] && ps `cat $SUPPORT_AGENT_PID_FILE` > /dev/null ; then # it runs
-	                if [ $(ps -o %cpu= `cat $SUPPORT_AGENT_PID_FILE` | perl -pe 's/\..*//') -gt $SUPPORT_AGENT_MAX_ALLOWED_CPU ] ; then
-		            restartService untangle-support-agent $SUPPORT_AGENT_PID_FILE "spinning" stopFirst
-	                fi
-	            fi
-	        fi
-	        counter=0
-	    fi
-
         fi
 
     done
