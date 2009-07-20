@@ -110,10 +110,15 @@ class Util
                 String line;
                 while (null != (line = br.readLine())) {
                     try {
+                        /* skip blank lines */
+                        line = line.trim();
+                        if (line.length() == 0) {
+                            continue;
+                        }
                         Class c = cl.loadClass(line);
                         cfg.addAnnotatedClass(c);
                     } catch (ClassNotFoundException exn) {
-                        logger.warn("skipping unknown class: " + line, exn);
+                        logger.warn("skipping unknown class: '" + line + "'", exn);
                     }
                 }
             } catch (IOException exn) {
