@@ -66,13 +66,13 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
 	},
         //enable super spam if quarantine is selected from the drop down
         enableSuperSpam: function(elem){
-            var dsfq = Ext.getCmp('drop-spam-from-quarantine');
+            var dsfq = Ext.getCmp('drop-super-spam');
             var ssv = Ext.getCmp('spamassassin_smtpSuperStrengthValue');
             var newValue = elem.getValue();
             if(elem.disabled==true){
                 dsfq.disable();
                 ssv.disable();
-            }else if(newValue == 'QUARANTINE'){
+            }else if(newValue == 'QUARANTINE' || newValue == 'MARK'){
                 dsfq.enable();
                 if(dsfq.getValue()){
                    ssv.enable();
@@ -80,6 +80,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                    ssv.enable();                                        
                 }            
             }else{
+                dsfq.setValue(0);
                 dsfq.disable();
                 ssv.disable();
             }
@@ -250,8 +251,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     }, {
                         xtype : 'checkbox',
                         name : 'Enable Super Spam Blocking',
-                        id : 'drop-spam-from-quarantine',
-                        boxLabel : this.i18n._('Drop Super Spam from Quarantine'),
+                        id : 'drop-super-spam',
+                        boxLabel : this.i18n._('Drop Super Spam'),
                         hideLabel : true,
                         itemCls : 'left-indent-4',                        
                         checked : this.getBaseSettings().smtpConfig.blockSuperSpam,
