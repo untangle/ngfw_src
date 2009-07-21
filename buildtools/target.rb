@@ -335,6 +335,14 @@ class ServletBuilder < Target
                             "#{suffix}-apache")
     end
 
+    if File.exist? "#{path}/unrestricted.conf"
+      deps << CopyFiles.new(package,
+                            MoveSpec.fileMove("#{path}/unrestricted.conf",
+                                              "#{package.distDirectory}/usr/share/untangle/apache2/unrestricted-conf.d/",
+                                              "#{name}.conf"),
+                            "#{suffix}-apache")
+    end
+
     unless 0 == ms.length
       deps << CopyFiles.new(package, ms, "#{suffix}-ms", nil, @destRoot)
     end
@@ -382,7 +390,7 @@ class ServletBuilder < Target
          @srcJar.register_dependency(t)
       end
     end
-    
+
     super(package, deps + jardeps, suffix)
   end
 
@@ -620,7 +628,7 @@ class YuiCompressorTarget < Target
     YuiCompressorTarget.listFiles(src, type).each do |f|
       ts << YuiCompressorTarget.new(package, "#{f}", src, dest, type)
     end
-    
+
     ts
   end
 
@@ -641,15 +649,15 @@ class YuiCompressorTarget < Target
   def build()
     info "YUI Compressor #{@filename}"
 
-    ensureDirectory(File.dirname(@filename))    
+    ensureDirectory(File.dirname(@filename))
     args = [@script_file, "--type", @type, "-o", @filename]
     yuiCompressorJar = Jars.downloadTarget('yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar').filename
     raise "YUI compress failed" unless
       JavaCompiler.runJar([], yuiCompressorJar, *args )
   end
-    
-  private 
-  
+
+  private
+
   def YuiCompressorTarget.listFiles(src, type, relative_path = nil)
     files = []
     Dir.new("#{src}").each do |f|
@@ -660,7 +668,7 @@ class YuiCompressorTarget < Target
     end
     files
   end
-  
+
 end
 
 ## This is a JAR that must be built from Java Files

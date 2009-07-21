@@ -529,11 +529,25 @@ class TomcatManager
         if (null == bh) {
             bh = "/usr/share/untangle";
         }
-
         FileWriter fw = null;
         try {
             fw = new FileWriter("/etc/apache2/untangle-conf.d/uvm.conf");
             fw.write("Include " + bh + "/apache2/conf.d/*.conf\n");
+        } catch (IOException exn) {
+            logger.warn("could not write includes: conf.d");
+        } finally {
+            if (null != fw) {
+                try {
+                    fw.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close file", exn);
+                }
+            }
+        }
+
+        try {
+            fw = new FileWriter("/etc/apache2/untangle-unrestricted-conf.d/uvm.conf");
+            fw.write("Include " + bh + "/apache2/unrestricted-conf.d/*.conf\n");
         } catch (IOException exn) {
             logger.warn("could not write includes: conf.d");
         } finally {
