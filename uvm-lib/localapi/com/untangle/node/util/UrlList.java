@@ -42,7 +42,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -86,9 +85,10 @@ public abstract class UrlList
 
     private static final Set<String> DB_LOCKS = new HashSet<String>();
 
+    protected final Database db;
+
     private final URL baseUrl;
     private final String dbName;
-    private final Database db;
     private final String dbLock;
     private final File initFile;
 
@@ -154,27 +154,12 @@ public abstract class UrlList
     }
 
     // this method for pre-normalized parts
-    public boolean contains(String proto, String host, String uri)
-    {
-        String url = proto + "://" + host + uri;
-
-        for (String p : getPatterns(host)) {
-            if (matches(url, p)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    public abstract boolean contains(String proto, String host, String uri);
 
     // protected methods -----------------------------------------------------
 
     protected abstract boolean updateDatabase(Database db, BufferedReader br)
         throws IOException;
-
-    protected abstract byte[] getKey(byte[] host);
-    protected abstract List<String> getValues(byte[] host, byte[] data);
-    protected abstract boolean matches(String str, String pattern);
 
     protected List<String> split(byte[] buf)
     {
@@ -238,38 +223,6 @@ public abstract class UrlList
     }
 
     // private methods -------------------------------------------------------
-
-    private List<String> getPatterns(String hostStr)
-    {
-        byte[] host = hostStr.getBytes();
-
-        byte[] hash = getKey(host);
-
-        byte[] hippie = new byte[hash.length + 1];
-        System.arraycopy(hash, 0, hippie, 1, hash.length);
-
-        if (null == hash) {
-            return Collections.emptyList();
-        }
-        DatabaseEntry k = new DatabaseEntry(hash);
-        DatabaseEntry v = new DatabaseEntry();
-
-        OperationStatus status;
-        try {
-            status = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
-        } catch (DatabaseException exn) {
-            logger.warn("could not access database", exn);
-            return Collections.emptyList();
-        }
-
-        if (OperationStatus.SUCCESS == status) {
-            byte[] data = v.getData();
-
-            return getValues(host, v.getData());
-        } else {
-            return Collections.emptyList();
-        }
-    }
 
     private String getAttr(byte[] key, Database db)
     {

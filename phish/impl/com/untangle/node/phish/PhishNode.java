@@ -35,7 +35,6 @@ import com.untangle.node.spam.SpamSettings;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.EncryptedUrlList;
-import com.untangle.node.util.PrefixUrlList;
 import com.untangle.node.util.UrlDatabase;
 import com.untangle.node.util.UrlList;
 import com.untangle.uvm.LocalAppServerManager;
@@ -103,7 +102,9 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
         synchronized (PhishNode.class) {
             if (null == urlDatabase) {
+                System.out.println("MAKE URLDATABASE");
                 urlDatabase = makeUrlDatabase();
+                System.out.println("MADE URLDATABASE");
             }
         }
 
@@ -356,9 +357,13 @@ public class PhishNode extends SpamNodeImpl implements Phish
     {
         urlDatabase = new UrlDatabase();
 
+        Map<String, String> m = new HashMap<String, String>(1);
+        m.put("apikey", "ABQIAAAAcF3DrVo7y87-tH8HDXqeYBTJqIcXJiJ1Klr7Vk1tUUBxWLpa4w");
+        m.put("client", "api");
+
         try {
-            UrlList ul = new PrefixUrlList(URL_BASE, "phish", "goog-black-url");
-            urlDatabase.addBlacklist("goog-black-url", ul);
+            UrlList ul = new EncryptedUrlList(URL_BASE, "phish", "goog-black-hash", m, null);
+            urlDatabase.addBlacklist("goog-black-hash", ul);
         } catch (DatabaseException exn) {
             logger.warn("could not open database", exn);
         } catch (IOException exn) {
@@ -366,8 +371,8 @@ public class PhishNode extends SpamNodeImpl implements Phish
         }
 
         try {
-            UrlList ul = new EncryptedUrlList(URL_BASE, "phish", "goog-black-enchash");
-            urlDatabase.addBlacklist("goog-black-enchash", ul);
+            UrlList ul = new EncryptedUrlList(URL_BASE, "phish", "goog-malware-hash", m, null);
+            urlDatabase.addBlacklist("goog-malware-hash", ul);
         } catch (DatabaseException exn) {
             logger.warn("could not open database", exn);
         } catch (IOException exn) {

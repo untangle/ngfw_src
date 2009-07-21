@@ -38,25 +38,21 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
-import java.security.GeneralSecurityException;
-import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
-import sun.misc.BASE64Decoder;
-
 /**
  * <code>UrlList</code> that holds entries that are encoded as
  * described in:
@@ -67,10 +63,9 @@ import sun.misc.BASE64Decoder;
  */
 public class EncryptedUrlList extends UrlList
 {
-    private static final byte[] DB_SALT = "oU3q.72p".getBytes();
-
-    private static final Pattern TUPLE_PATTERN = Pattern.compile("([+-])([0-9A-F]+)\t([A-Za-z0-9+/=]+)?");
-
+    private static final Pattern TUPLE_PATTERN = Pattern.compile("([+-])([0-9A-Fa-f]+)");
+    private static final DatabaseEntry EMPTY_ENTRY = new DatabaseEntry(new byte[] { ' ' });
+    private static final List<String> MATCH_ALL_LIST;
     private final Logger logger = Logger.getLogger(getClass());
 
     public EncryptedUrlList(URL databaseUrl, String owner, String dbName)
@@ -88,6 +83,19 @@ public class EncryptedUrlList extends UrlList
 
     // UrlList methods --------------------------------------------------------
 
+    public boolean contains(String proto, String host, String uri)
+    {
+        do {
+            String url = host + uri;
+
+            if (findKey(url)) {
+                return true;
+            }
+        } while (null != (uri = nextUri(uri)));
+
+        return false;
+    }
+
     protected boolean updateDatabase(Database db, BufferedReader br)
         throws IOException
     {
@@ -100,13 +108,11 @@ public class EncryptedUrlList extends UrlList
             Matcher matcher = TUPLE_PATTERN.matcher(line);
             if (matcher.find()) {
                 boolean add = matcher.group(1).equals("+");
-                byte[] host = new BigInteger(matcher.group(2), 16).toByteArray();
+                byte[] host = matcher.group(2).getBytes();
 
                 try {
                     if (add) {
-                        byte[] regexp = base64Decode(matcher.group(3));
-                        db.put(null, new DatabaseEntry(host),
-                               new DatabaseEntry(regexp));
+                        db.put(null, new DatabaseEntry(host), EMPTY_ENTRY);
                     } else {
                         db.delete(null, new DatabaseEntry(host));
                     }
@@ -119,79 +125,56 @@ public class EncryptedUrlList extends UrlList
         return blankLine;
     }
 
-    protected byte[] getKey(byte[] host)
+    private boolean findKey(String url)
     {
-        byte[] in = new byte[DB_SALT.length + host.length];
-        System.arraycopy(DB_SALT, 0, in, 0, DB_SALT.length);
-
-        System.arraycopy(host, 0, in, DB_SALT.length, host.length);
-
-        // XXX Switch to Fast MD5 http://www.twmacinta.com/myjava/fast_md5.php
-        MessageDigest md;
+        OperationStatus status;
         try {
-            md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(url.getBytes());
+            StringBuilder sb = new StringBuilder(new BigInteger(1, digest).toString(16));
+            while (sb.length() < 16) {
+                sb.insert(0, sb.charAt(0));
+            }
+            String hexDigest = sb.toString();
+            DatabaseEntry k = new DatabaseEntry(hexDigest.getBytes());
+            status = db.get(null, k, new DatabaseEntry(),
+                            LockMode.READ_UNCOMMITTED);
+            if (OperationStatus.SUCCESS == status) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (NoSuchAlgorithmException exn) {
             logger.warn("Could not get MD5 algorithm", exn);
-            return null;
-        }
-
-        return md.digest(in);
-    }
-
-    protected List<String> getValues(byte[] host, byte[] data)
-    {
-        byte[] buf = new byte[8 + DB_SALT.length + host.length];
-        System.arraycopy(DB_SALT, 0, buf, 0, DB_SALT.length);
-        System.arraycopy(data, 0, buf, DB_SALT.length, 8);
-        System.arraycopy(host, 0, buf, 8 + DB_SALT.length, host.length);
-
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException exn) {
-            logger.warn("Could not get MD5 algorithm", exn);
-            return Collections.emptyList();
-        }
-        buf = md.digest(buf);
-
-        Cipher arcfour;
-        try {
-            arcfour = Cipher.getInstance("ARCFOUR");
-            Key key = new SecretKeySpec(buf, "ARCFOUR");
-            arcfour.init(Cipher.DECRYPT_MODE, key);
-        } catch (GeneralSecurityException exn) {
-            logger.warn("could not get ARCFOUR algorithm", exn);
-            return Collections.emptyList();
-        }
-
-        try {
-            buf = arcfour.doFinal(data, 8, data.length - 8);
-        } catch (GeneralSecurityException exn) {
-            logger.warn("could not decrypt regexp", exn);
-            return Collections.emptyList();
-        }
-
-        return split(buf);
-    }
-
-    protected boolean matches(String str, String pat)
-    {
-        try {
-            return str.matches(pat);
-        } catch (PatternSyntaxException exn) {
-            logger.warn("bad pattern: " + exn.getMessage());
+            return false;
+        } catch (DatabaseException exn) {
+            logger.warn("could not access database", exn);
             return false;
         }
     }
 
     // private methods --------------------------------------------------------
 
-    private byte[] base64Decode(String s) {
-        try {
-            return new BASE64Decoder().decodeBuffer(s);
-        } catch (IOException exn) {
-            logger.warn("could not decode", exn);
-            return new byte[0];
+    private String nextUri(String uri)
+    {
+        int i = uri.indexOf('?');
+        if (i >= 0) {
+            return uri.substring(0, i);
+        } else {
+            i = uri.lastIndexOf("/", uri.length() - 2);
+            if (i >= 0) {
+                return uri.substring(0, i + 1);
+            } else {
+                return null;
+            }
         }
+    }
+
+    // static initializer -----------------------------------------------------
+
+    static {
+        List<String> l = new ArrayList<String>(1);
+        l.add("");
+        MATCH_ALL_LIST = Collections.unmodifiableList(l);
     }
 }

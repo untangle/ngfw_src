@@ -78,6 +78,20 @@ public class PrefixUrlList extends UrlList
 
     // UrlList methods -------------------------------------------------------
 
+    // this method for pre-normalized parts
+    public boolean contains(String proto, String host, String uri)
+    {
+        String url = proto + "://" + host + uri;
+
+        for (String p : getPatterns(host)) {
+            if (matches(url, p)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     protected boolean updateDatabase(Database db, BufferedReader br)
         throws IOException
     {
@@ -188,5 +202,32 @@ public class PrefixUrlList extends UrlList
     protected boolean matches(String str, String pat)
     {
         return !pat.equals("") && str.startsWith(pat);
+    }
+
+    private List<String> getPatterns(String hostStr)
+    {
+        byte[] host = hostStr.getBytes();
+
+        byte[] hash = getKey(host);
+
+        if (null == hash) {
+            return Collections.emptyList();
+        }
+        DatabaseEntry k = new DatabaseEntry(hash);
+        DatabaseEntry v = new DatabaseEntry();
+
+        OperationStatus status;
+        try {
+            status = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
+            if (OperationStatus.SUCCESS == status) {
+                byte[] data = v.getData();
+                return getValues(host, v.getData());
+            } else {
+                return Collections.emptyList();
+            }
+        } catch (DatabaseException exn) {
+            logger.warn("could not access database", exn);
+            return Collections.emptyList();
+        }
     }
 }
