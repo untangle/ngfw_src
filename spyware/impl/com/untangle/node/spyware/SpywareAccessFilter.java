@@ -24,7 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class SpywareAccessFilter implements SimpleEventFilter<SpywareEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Access Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Traffic Events"));
 
     private static final String WARM_QUERY
         = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
