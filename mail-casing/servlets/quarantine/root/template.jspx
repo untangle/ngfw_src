@@ -31,7 +31,7 @@
 
   <head>
     <title><c:out value="${pageTitle}"/></title>
-
+    <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
       @import "/ext/resources/css/ext-all.css";
     </style>

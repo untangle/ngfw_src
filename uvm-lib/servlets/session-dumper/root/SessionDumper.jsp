@@ -21,6 +21,7 @@
 <HEAD>
 <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <TITLE>Live Sessions</title>
+    <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
 </HEAD>
 <BODY>
 <%

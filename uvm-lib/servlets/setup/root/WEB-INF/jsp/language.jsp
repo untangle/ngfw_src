@@ -7,7 +7,7 @@
       xmlns:uvm="http://java.untangle.com/jsp/uvm">
   <head>
     <title>Setup Wizard</title>
-    
+    <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>    
     <style type="text/css">
       @import "/ext/resources/css/ext-all.css";
     </style>

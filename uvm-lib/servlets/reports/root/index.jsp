@@ -22,6 +22,7 @@ if (!reportsAvailable || !reportingEnabled) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=company%> | Reports</title>
+<META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <style type="text/css">
 /* <![CDATA[ */
