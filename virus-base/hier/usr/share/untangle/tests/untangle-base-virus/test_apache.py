@@ -1,6 +1,6 @@
 from untangle.ats.apache_setup import ApacheSetup
 
-class TestApache(ApacheSetup):
+class TestApacheVirus(ApacheSetup):
     @classmethod
     def setup_class(cls):
         ApacheSetup.setup_class.im_func(cls)
