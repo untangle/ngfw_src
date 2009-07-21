@@ -102,9 +102,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
         synchronized (PhishNode.class) {
             if (null == urlDatabase) {
-                System.out.println("MAKE URLDATABASE");
                 urlDatabase = makeUrlDatabase();
-                System.out.println("MADE URLDATABASE");
             }
         }
 
