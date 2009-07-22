@@ -55,6 +55,7 @@ import org.apache.log4j.Logger;
 public abstract class OutsideValve extends ValveBase
 {
     private static final int DEFAULT_HTTP_PORT = 80;
+    private static final int SECONDARY_HTTP_PORT = 64156;
 
     private final Logger logger = Logger.getLogger(OutsideValve.class);
 
@@ -136,6 +137,8 @@ public abstract class OutsideValve extends ValveBase
 
         /* This is insecure access on port 80 */
         if (port == DEFAULT_HTTP_PORT) return isInsecureAccessAllowed();
+        if (port == SECONDARY_HTTP_PORT) return isInsecureAccessAllowed();
+
 
         /* This is secure access on the internal port */
         if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT) return true;

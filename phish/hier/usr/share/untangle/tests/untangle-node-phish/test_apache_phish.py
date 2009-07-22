@@ -19,8 +19,8 @@ class TestApachePhish(ApacheSetup):
         ## This should be run as root, so it should access these
         yield self.check_access, base % ( "", "" ), 406, "Feature is not installed"
         yield self.check_access, base % ( "", ":64156" ), 406, "Feature is not installed"
-        yield self.check_access, base % ( "s", "" ), 403, "You don't have permission to access"
-        yield self.check_access, base % ( "s", ":64157" ), 403, "You don't have permission to access"
+        yield self.check_access, base % ( "s", "" ), 406, "Feature is not installed"
+        yield self.check_access, base % ( "s", ":64157" ), 406, "Feature is not installed"
 
     def test_root_access_outside_admin_disabled( self ):
         self.set_access_settings({ "isOutsideAdministrationEnabled" : False })
@@ -30,8 +30,8 @@ class TestApachePhish(ApacheSetup):
         ## This should be run as root, so it should access these
         yield self.check_access, base % ( "", "" ), 406, "Feature is not installed"
         yield self.check_access, base % ( "", ":64156" ), 406, "Feature is not installed"
-        yield self.check_access, base % ( "s", "" ), 403, "You don't have permission to access"
-        yield self.check_access, base % ( "s", ":64157" ), 403, "You don't have permission to access"
+        yield self.check_access, base % ( "s", "" ), 406, "Feature is not installed"
+        yield self.check_access, base % ( "s", ":64157" ), 406, "Feature is not installed"
 
     def test_nonroot_access_outside_admin_enable( self ):
         self.set_access_settings({ "isOutsideAdministrationEnabled" : True })
@@ -40,8 +40,8 @@ class TestApachePhish(ApacheSetup):
         
         yield self.check_access, base % ( "", "" ), 406, "Feature is not installed"
         yield self.check_access, base % ( "", ":64156" ), 406, "Feature is not installed"
-        yield self.check_access, base % ( "s", "" ), 403, "You don't have permission to access"
-        yield self.check_access, base % ( "s", ":64157" ), 403, "You don't have permission to access"
+        yield self.check_access, base % ( "s", "" ), 403, "Off-site administration is disabled"
+        yield self.check_access, base % ( "s", ":64157" ), 406, "Feature is not installed"
 
     def test_nonroot_access_outside_admin_disabled( self ):
         self.set_access_settings({ "isOutsideAdministrationEnabled" : False })
@@ -51,5 +51,5 @@ class TestApachePhish(ApacheSetup):
         ## This should be run as root, so it should access these
         yield self.check_access, base % ( "", "" ), 406, "Feature is not installed"
         yield self.check_access, base % ( "", ":64156" ), 406, "Feature is not installed"
-        yield self.check_access, base % ( "s", "" ), 403, "You don't have permission to access"
-        yield self.check_access, base % ( "s", ":64157" ), 403, "You don't have permission to access"
+        yield self.check_access, base % ( "s", "" ), 403, "Off-site administration is disabled"
+        yield self.check_access, base % ( "s", ":64157" ), 406, "Feature is not installed"
