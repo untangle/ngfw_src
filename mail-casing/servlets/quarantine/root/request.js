@@ -53,7 +53,6 @@ Ung.QuarantineRequest.prototype = {
 
         this.requestForm  = new Ext.FormPanel({
             border : false,
-            bodyStyle : 'padding : 10px 10px 0px 10px;',
             autoScroll: true,
             defaults : {
                 selectOnFocus : true,
@@ -62,7 +61,6 @@ Ung.QuarantineRequest.prototype = {
 	    //title:'Request Quarantine Digest Email',
             //border: true,
 	    //frame:true,
-            bodyStyle : 'background-color : white;',
             items : items
         });
     },
