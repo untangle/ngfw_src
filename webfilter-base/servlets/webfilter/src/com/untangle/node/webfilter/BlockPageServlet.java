@@ -18,7 +18,6 @@
 
 package com.untangle.node.webfilter;
 
-
 import java.io.IOException;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -43,8 +42,6 @@ public class BlockPageServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
-        System.out.println("HI");
-
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         LocalNodeManager nm = uvm.nodeManager();

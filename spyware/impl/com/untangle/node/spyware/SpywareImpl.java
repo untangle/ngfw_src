@@ -163,28 +163,45 @@ public class SpywareImpl extends AbstractNode implements Spyware
         Thread t = new Thread(new Runnable() {
                 public void run()
                 {
-                    Map m = new HashMap();
-                    m.put("key", uvm.getActivationKey());
-                    RemoteToolboxManager tm = uvm.toolboxManager();
-                    Boolean rup = tm.hasPremiumSubscription();
-                    m.put("premium", rup.toString());
-                    m.put("client-version", uvm.getFullVersion());
+                    boolean fail = true;
 
-                    for (String list : getSpywareLists()) {
-                        if (list.startsWith("spyware-")
-                            && (list.endsWith("dom") || list.endsWith("url"))) {
+                    while (fail) {
+                        Map m = new HashMap();
+                        m.put("key", uvm.getActivationKey());
+                        RemoteToolboxManager tm = uvm.toolboxManager();
+                        Boolean rup = tm.hasPremiumSubscription();
+                        m.put("premium", rup.toString());
+                        m.put("client-version", uvm.getFullVersion());
+
+                        try {
+                            for (String list : getSpywareLists()) {
+                                if (list.startsWith("spyware-")
+                                    && (list.endsWith("dom")
+                                        || list.endsWith("url"))) {
+                                    UrlList l
+                                        = new PrefixUrlList(BLACKLIST_HOME,
+                                                            "spyware", list, m,
+                                                            null);
+                                    urlDatabase.addBlacklist(list, l);
+                                }
+                            }
+                            urlDatabase.updateAll(false);
+                            fail = false;
+                        } catch (IOException exn) {
+                            logger.warn("could not set up database", exn);
+                        } catch (DatabaseException exn) {
+                            logger.warn("could not set up database", exn);
+                        }
+
+                        if (fail) {
+                            logger.info("failed to update lists, retrying in 15 minutes");
                             try {
-                                UrlList l = new PrefixUrlList(BLACKLIST_HOME, "spyware",
-                                                              list, m, null);
-                                urlDatabase.addBlacklist(list, l);
-                            } catch (IOException exn) {
-                                logger.warn("could not set up database", exn);
-                            } catch (DatabaseException exn) {
-                                logger.warn("could not set up database", exn);
+                                Thread.currentThread().sleep(15 * 60 * 1000);
+                            } catch (InterruptedException exn) {
+                                logger.warn("could not sleep", exn);
                             }
                         }
                     }
-                    urlDatabase.updateAll(false);
                 }
             }, "spyware-init");
         t.setDaemon(true);
@@ -213,7 +230,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
-	// What was this supposed to be?
+    // What was this supposed to be?
         // spyPagesDetectedBlinger = c.addMetric("spydetected", I18nUtil.marktr("Spyware Pages Detected"), null);
         lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger);
     }
