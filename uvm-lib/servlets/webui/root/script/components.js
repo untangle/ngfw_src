@@ -582,6 +582,22 @@ Ung.SortTypes = {
      */
     asServer : function(value) {
         return value === null ? "" : value.SServerAddr + ":" + value.SServerPort;
+    },
+    /**
+     * @param value of the UID for users / groups
+     * @reutrn the comparison value
+     */              
+    asUID : function (value){
+        return value == "[any]" ? "" : value;
+    },
+    /**
+     * @param value of the last name field - if no value is given it is pushed to the last.
+     */
+    asLastName : function (value){
+        if(value == null || value == ""){
+            return null;
+        }  
+        return value;
     }};
 
 
@@ -3888,25 +3904,36 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.usersGrid=new Ext.grid.GridPanel({
            // title: i18n._('Users'),
            height: 210,
-           width: 290,
+           width: 500,
            enableHdMenu : false,
            enableColumnMove: false,
            store: new Ext.data.Store({
                 proxy : new Ung.MemoryProxy({
                     root : 'list'
                 }),
-                sortInfo : this.sortField ? {
-                    field : this.sortField,
-                    direction : "ASC"
-                } : null,
+                
+                sortInfo : this.sortField ? {                
+                    field: this.sortField,
+                    direction : 'ASC'                
+                }: null,
                 remoteSort : false,
                 reader : new Ext.data.JsonReader({
                     totalProperty : "totalRecords",
                     root : 'list',
                     fields : [{
-                        name: "UID"
+                        name : 'lastName',
+                        type : 'string',
+                        sortType : Ung.SortTypes.asLastName                    
+                    },{
+                        name : 'firstName',
+                        type : 'string'                    
+                    },{
+                        name: "UID",
+                        type : 'string',
+                        sortType : Ung.SortTypes.asUID,                        
                     }, {
                         name: "name",
+                        type : 'string',                        
                         mapping: "UID",
                         convert : function(val, rec) {
                             var name=val;
@@ -3928,12 +3955,21 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     }]
                 })
             }),
-            columns: [selModel, {
+            columns: [selModel,{
                 header : i18n._("user"),
                 width : 250,
                 fixed :true,
                 sortable : false,
-                dataIndex : 'name'
+                dataIndex : 'name',
+            },{
+                header : i18n._("Name"),
+                width: 250, 
+                fixed: true,
+                sortable : false,
+                dataIndex:'lastName',
+                renderer : function(value,metadata,record){
+                    return record.data.firstName +" "+ value;
+                }     
             }],
             selModel : selModel
         });
@@ -4020,7 +4056,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             }
         });
         this.populateSemaphore=2;
-        this.userEntries=this.singleSelectUser ? [] : [{UID: "[any]"}];
+        this.userEntries=this.singleSelectUser ? [] : [{firstName : '', lastName: '',UID: "[any]"}];
         if (this.loadActiveDirectoryUsers && main.isNodeRunning('untangle-node-adconnector')){
             main.getAppAddressBook().getUserEntries(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {

@@ -696,7 +696,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
                     this.usersWindow= new Ung.UsersWindow({
                         grid : this,
+                        title : i18n._('Select Users'),
                         userDataIndex : "user",
+                        sortField : 'UID',
                         loadLocalDirectoryUsers: false
                     });
 
