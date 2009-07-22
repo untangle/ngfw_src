@@ -3959,7 +3959,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 header : i18n._("user"),
                 width : 250,
                 fixed :true,
-                sortable : false,
+                sortable : true,
                 dataIndex : 'name',
             },{
                 header : i18n._("Name"),
