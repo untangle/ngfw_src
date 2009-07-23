@@ -55,12 +55,14 @@ import org.apache.log4j.Logger;
  */
 public class UrlDatabase<T>
 {
-    private static final int UPDATE_PERIOD = 21600000; // 6 hours
+    private static final int DEFAULT_UPDATE_PERIOD = 21600000; // 6 hours
 
     private final Map<T, UrlList> whitelists = new HashMap<T, UrlList>();
     private final Map<T, UrlList> blacklists = new HashMap<T, UrlList>();
 
     private final Logger logger = Logger.getLogger(getClass());
+
+    private int updatePeriod = DEFAULT_UPDATE_PERIOD;
 
     private Timer timer;
 
@@ -95,6 +97,11 @@ public class UrlDatabase<T>
                 ul.update(async);
             }
         }
+    }
+
+    public void setUpdatePeriod(int updatePeriod)
+    {
+        this.updatePeriod = updatePeriod;
     }
 
     public UrlDatabaseResult search(TCPSession session, URI uri,
@@ -179,7 +186,7 @@ public class UrlDatabase<T>
 
     public void startUpdateTimer()
     {
-        startUpdateTimer(UPDATE_PERIOD);
+        startUpdateTimer(updatePeriod);
     }
 
     public void startUpdateTimer(long updatePeriod)

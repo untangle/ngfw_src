@@ -103,6 +103,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         synchronized (PhishNode.class) {
             if (null == urlDatabase) {
                 urlDatabase = makeUrlDatabase();
+                urlDatabase.setUpdatePeriod(30 * 60 * 1000); // every 30 minutes
             }
         }
 
