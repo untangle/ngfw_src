@@ -679,7 +679,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             ks = KeyStatistic(N_('Avg active sessions (1-day)'),
                               avg_sessions, N_('sessions'))
             lks.append(ks)
-            ks = KeyStatistic(N_('Maximum active sessions (1-day)'),
+            ks = KeyStatistic(N_('Max active sessions (1-day)'),
                               max_sessions, N_('sessions'))
             lks.append(ks)
 

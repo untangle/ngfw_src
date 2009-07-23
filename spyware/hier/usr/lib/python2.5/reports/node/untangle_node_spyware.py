@@ -404,7 +404,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             ks = KeyStatistic(N_('Avg URLs blocked (7-days)'), r[0],
                               N_('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(N_('Maximum URLs blocked (7-days)'), r[1],
+            ks = KeyStatistic(N_('Max URLs blocked (7-days)'), r[1],
                               N_('hits/day'))
             lks.append(ks)
 
