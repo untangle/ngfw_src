@@ -288,7 +288,7 @@ static int  _redirect_ports_open( void )
         _tcp.redirect_socks[c] = -1;
     }
 
-    if ( unet_startlisten_on_portrange( RDR_TCP_LOCALS_SOCKS, &base_port, _tcp.redirect_socks, "192.0.2.42" ) < 0 ) {
+    if ( unet_startlisten_on_portrange( RDR_TCP_LOCALS_SOCKS, &base_port, _tcp.redirect_socks, "0.0.0.0" ) < 0 ) {
         return errlog( ERR_CRITICAL, "unet_startlisten_on_portrange\n" );
     }
     
