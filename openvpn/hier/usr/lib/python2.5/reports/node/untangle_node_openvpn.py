@@ -126,7 +126,7 @@ WHERE time_stamp >= %s AND time_stamp < %s"""
 
                 r = curs.fetchone()
                 if r:
-                    ks = KeyStatistic(N_('Average data rate (%s-day)' % n),
+                    ks = KeyStatistic(N_('Avg data rate (%s-day)' % n),
                                       r[0], N_('Kb/s'))
                     lks.append(ks)
                     ks = KeyStatistic(N_('Peak data rate (%s-day)' % n), r[0],

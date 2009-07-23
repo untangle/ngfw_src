@@ -547,7 +547,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             avg_rate = r[0]
             peak_rate = r[1]
 
-            ks = KeyStatistic(N_('Average data rate (1-day)'),
+            ks = KeyStatistic(N_('Avg data rate (1-day)'),
                               avg_rate, N_('bytes/s'))
             lks.append(ks)
             ks = KeyStatistic(N_('Peak data rate (1-day)'),
@@ -580,7 +580,7 @@ WHERE trunc_time >= %s AND trunc_time < %s
             avg_rate = r[0]
             total = r[1]
 
-            ks = KeyStatistic(N_('Average data rate (%s-day)') % report_days,
+            ks = KeyStatistic(N_('Avg data rate (%s-day)') % report_days,
                               avg_rate, N_('bytes/day'))
             lks.append(ks)
             ks = KeyStatistic(N_('Data Transfered (%s-day)') % report_days,
@@ -676,7 +676,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             avg_sessions = r[0]
             max_sessions = r[1]
 
-            ks = KeyStatistic(N_('Average active sessions (1-day)'),
+            ks = KeyStatistic(N_('Avg active sessions (1-day)'),
                               avg_sessions, N_('sessions'))
             lks.append(ks)
             ks = KeyStatistic(N_('Maximum active sessions (1-day)'),
