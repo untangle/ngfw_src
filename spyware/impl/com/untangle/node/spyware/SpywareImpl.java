@@ -283,9 +283,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public List<StringRule> getDomainWhitelist(int start, int limit,
                                                String... sortColumns)
     {
-        return listUtil.getItems( "select s.domainWhitelist from SpywareSettings s where s.tid = :tid ",
-                                  getNodeContext(), getTid(), start, limit,
-                                  sortColumns);
+        return listUtil.getItems("select s.domainWhitelist from SpywareSettings s where s.tid = :tid ",
+                                 getNodeContext(), getTid(), start, limit,
+                                 sortColumns);
     }
 
     public void updateDomainWhitelist(List<StringRule> added,

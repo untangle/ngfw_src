@@ -222,7 +222,8 @@ Ung.Reports = Ext.extend(Object,
                              if (tableOfContents.platform != null) {
                                treeNodes.push({ text : i18n._(tableOfContents.platform.title),
                                                 name : tableOfContents.platform.name,
-                                                leaf: true
+                                                leaf: true,
+                                                icon : "./node-icons/untangle-vm.png"
                                               });
                              }
 
