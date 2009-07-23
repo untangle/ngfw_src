@@ -339,7 +339,7 @@ def __generate_plots(report_base, dir):
         if f.endswith('.jar'):
             path.append('%s/%s' % (UVM_JAR_DIR, f))
 
-    os.system('java -Dlog4j.configuration=log4j-reporter.xml -cp %s com.untangle.uvm.reports.GraphGenerator %s %s'
+    os.system('java -Dlog4j.configuration=log4j-reporter.xml -Djava.awt.headless=true -cp %s com.untangle.uvm.reports.GraphGenerator %s %s'
               % (string.join(path, ':'), report_base, dir))
 
 

@@ -256,6 +256,7 @@ Ung.Reports = Ext.extend(Object,
                                treeNodes.push({ text : i18n._("Users"),
                                                 name : "users",
                                                 leaf: true,
+                                                icon : "./node-icons/users.png",
                                                 listeners : {
                                                     'click' : this.refreshContentPane
                                                 }
@@ -266,6 +267,7 @@ Ung.Reports = Ext.extend(Object,
                                treeNodes.push({ text : i18n._("Hosts"),
                                                 name : "hosts",
                                                 leaf: true,
+                                                icon : "./node-icons/hosts.png",
                                                 listeners : {
                                                     'click' : this.refreshContentPane
                                                 }
@@ -276,6 +278,7 @@ Ung.Reports = Ext.extend(Object,
                                treeNodes.push({ text : i18n._("Emails"),
                                                 name : "emails",
                                                 leaf: true,
+                                                icon : "./node-icons/emails.png",
                                                 listeners : {
                                                     'click' : this.refreshContentPane
                                                 }
