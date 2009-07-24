@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -55,6 +57,7 @@ import com.untangle.uvm.reports.Section;
 import com.untangle.uvm.reports.TableOfContents;
 import com.untangle.uvm.reports.User;
 import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.MackageDesc;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -397,18 +400,32 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         List<String> appNames = getAppNames(dirName, type);
 
-        List<Application> apps = new ArrayList<Application>();
+        RemoteToolboxManagerImpl tm = RemoteToolboxManagerImpl.toolboxManager();
+
+        Map<Integer, Application> m = new TreeMap<Integer, Application>();
+
         for (String s : appNames) {
+            MackageDesc md = tm.mackageDesc(s);
+
+            int pos;
+
+            if (null == md) {
+                logger.warn("cannot get viewposition for: " + s);
+                pos = 10000;
+            } else {
+                pos = md.getViewPosition();
+            }
+
             File f = new File(dirName + "/" + s + "/report.xml");
             if (f.exists()) {
                 ApplicationData ad = readXml(f);
                 if (null != ad) {
-                    apps.add(new Application(ad.getName(), ad.getTitle()));
+                    m.put(pos, new Application(ad.getName(), ad.getTitle()));
                 }
             }
         }
 
-        return apps;
+        return new ArrayList<Application>(m.values());
     }
 
     private List<String> getAppNames(String dirName, String type)
