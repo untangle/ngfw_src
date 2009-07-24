@@ -671,10 +671,22 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                                                      renderer: function (value, medata, record) {
                                                                                                                        var unit = record.data.unit;
                                                                                                                        if (unit && unit.indexOf('bytes') == 0) {
-                                                                                                                         value = Math.round(value / 1000000);
-                                                                                                                         var s = unit.split("/");
-                                                                                                                         s[0] = "MB";
-                                                                                                                         unit = s.join("/");
+                                                                                                                         if (value < 1000000) {
+                                                                                                                           value = Math.round(value/1000);
+                                                                                                                           var s = unit.split("/");
+                                                                                                                           s[0] = "KB";
+                                                                                                                           unit = s.join("/");
+                                                                                                                         } else if (value < 1000000000) {
+                                                                                                                           value = Math.round(value/1000000);
+                                                                                                                           var s = unit.split("/");
+                                                                                                                           s[0] = "MB";
+                                                                                                                           unit = s.join("/");
+                                                                                                                         } else {
+                                                                                                                           value = Math.round(value/1000000000);
+                                                                                                                           var s = unit.split("/");
+                                                                                                                           s[0] = "GB";
+                                                                                                                           unit = s.join("/");
+                                                                                                                         }
                                                                                                                        }
 
                                                                                                                        var v = this.i18n.numberFormat(value);
