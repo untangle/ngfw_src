@@ -70,8 +70,7 @@ class WebFilterBaseNode(Node):
                             TopTenWebUsageBySize(self.__vendor_name),
                             TopTenWebsitesByHits(self.__vendor_name),
                             TopTenWebsitesBySize(self.__vendor_name),
-                            ViolationsByCategory(self.__vendor_name),
-                            WebUsageByCategory(self.__vendor_name)])
+                            ViolationsByCategory(self.__vendor_name)])
         sections.append(s)
 
         sections.append(WebFilterDetail(self.__vendor_name))
@@ -279,7 +278,7 @@ ORDER BY time asc"""
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART,
-                     title=_('Hourly Web Usage'),
+                     title=self.title,
                      xlabel=_('Hour of Day'),
                      ylabel=_('Hits per Minute'),
                      major_formatter=TIME_OF_DAY_FORMATTER)
@@ -395,7 +394,7 @@ ORDER BY day asc"""
             conn.commit()
 
         plot = Chart(type=STACKED_BAR_CHART,
-                     title=_('Daily Web Usage'),
+                     title=self.title,
                      xlabel=_('Date'),
                      ylabel=_('Hits per Day'),
                      major_formatter=DATE_FORMATTER)
@@ -470,7 +469,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Total Web Usage'),
+                     title=self.title,
                      xlabel=_('Date'),
                      ylabel=_('Hits per Day'))
 
@@ -481,7 +480,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
 class TopTenWebPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-policy-violations-by-hits',
-                       _('Top Ten Web Policy Violations By Hits'))
+                       _('Top Ten Categories of Blocked Violations (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -529,7 +528,7 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Web Policy Violations (by hits)'),
+                     title=self.title,
                      xlabel=_('Policy'),
                      ylabel=_('Hits per Day'))
 
@@ -540,7 +539,7 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
 class TopTenWebBlockedPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-blocked-policy-violations-by-hits',
-                       _('Top Ten Web Blocked Policy Violations By Hits'))
+                       _('Top Ten Categories of Blocked Violations (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -589,7 +588,7 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Web Blocked Policy Violations (by hits)'),
+                     title=self.title,
                      xlabel=_('Policy'),
                      ylabel=_('Blocks per Day'))
         plot.add_pie_dataset(dataset)
@@ -635,7 +634,7 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Web Users (by hits)'),
+                     title=self.title,
                      xlabel=_('Host'),
                      ylabel=_('Hits per Day'))
 
@@ -685,7 +684,7 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Policy Violators (by hits)'),
+                     title=self.title,
                      xlabel=_('Host'),
                      ylabel=_('Hits per Day'))
 
@@ -735,7 +734,7 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Violators UIDs (by hits)'),
+                     title=self.title,
                      xlabel=_('UID'),
                      ylabel=_('Hits per Day'))
 
@@ -746,7 +745,7 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
 class TopTenWebUsageBySize(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-usage-by-size',
-                       _('Top Ten Web Usage By Size'))
+                       _('Top Ten Web Users (by size)'))
 
         self.__vendor_name = vendor_name
 
@@ -782,7 +781,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Web Usage (by size)'),
+                     title=self.title,
                      xlabel=_('Host'),
                      ylabel=_('bytes/day'))
 
@@ -840,7 +839,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Websites (by hits)'),
+                     title=self.title,
                      xlabel=_('Hosts'),
                      ylabel=_('Hits per Day'))
 
@@ -899,70 +898,10 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Websites (by size)'),
+                     title=self.title,
                      xlabel=_('Hosts'),
                      ylabel=_('bytes/day'))
 
-        plot.add_pie_dataset(dataset)
-
-        return (lks, plot)
-
-class WebUsageByCategory(Graph):
-    def __init__(self, vendor_name):
-        Graph.__init__(self, 'web-usage-by-category',
-                       _('Web Usage By Category'))
-
-        self.__vendor_name = vendor_name
-
-    @print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None,
-                  email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT %s_wf_category, count(*) AS count_events
-FROM reports.n_http_events
-WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__vendor_name
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-        query += """\
-GROUP BY %s_wf_category
-ORDER BY count_events DESC""" % self.__vendor_name
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-            dataset = {}
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(query, (one_day, ed, host))
-            elif user:
-                curs.execute(query, (one_day, ed, user))
-            else:
-                curs.execute(query, (one_day, ed))
-
-            for r in curs.fetchall():
-                stat_key = r[0]
-                if stat_key is None:
-                    stat_key = _('Uncategorized')
-                ks = KeyStatistic(stat_key, r[1], N_('hits'))
-                lks.append(ks)
-                dataset[stat_key] = r[1]
-        finally:
-            conn.commit()
-
-        plot = Chart(type=PIE_CHART,
-                     title=_('Web Usage By Category (by hits)'),
-                     xlabel=_('Category'),
-                     ylabel=_('Hits per Day'))
         plot.add_pie_dataset(dataset)
 
         return (lks, plot)
@@ -1021,7 +960,7 @@ ORDER BY blocks_sum DESC""" % self.__vendor_name
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Web Usage By Category (by hits)'),
+                     title=self.title,
                      xlabel=_('Category'),
                      ylabel=_('Hits per Day'))
 
@@ -1074,3 +1013,65 @@ WHERE time_stamp >= %s AND time_stamp < %s
             sql = sql + (" AND host = %s" % QuotedString(user))
 
         return sql
+
+# Unused reports --------------------------------------------------------------
+
+class WebUsageByCategory(Graph):
+    def __init__(self, vendor_name):
+        Graph.__init__(self, 'web-usage-by-category',
+                       _('Web Usage By Category'))
+
+        self.__vendor_name = vendor_name
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT %s_wf_category, count(*) AS count_events
+FROM reports.n_http_events
+WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__vendor_name
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+        query += """\
+GROUP BY %s_wf_category
+ORDER BY count_events DESC""" % self.__vendor_name
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
+
+            curs = conn.cursor()
+
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
+
+            for r in curs.fetchall():
+                stat_key = r[0]
+                if stat_key is None:
+                    stat_key = _('Uncategorized')
+                ks = KeyStatistic(stat_key, r[1], N_('hits'))
+                lks.append(ks)
+                dataset[stat_key] = r[1]
+        finally:
+            conn.commit()
+
+        plot = Chart(type=PIE_CHART,
+                     title=self.title,
+                     xlabel=_('Category'),
+                     ylabel=_('Hits per Day'))
+        plot.add_pie_dataset(dataset)
+
+        return (lks, plot)

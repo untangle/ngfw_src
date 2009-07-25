@@ -279,6 +279,10 @@ class Graph:
     def name(self):
         return self.__name
 
+    @property
+    def title(self):
+        return self.__title
+
     def generate(self, report_base, section_base, end_date, host=None,
                  user=None, email=None):
         graph_data = self.get_graph(end_date, 7, host, user, email)
