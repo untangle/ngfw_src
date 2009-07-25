@@ -159,7 +159,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         violations_query = """\
 SELECT avg(%s_wf_blocks)
 FROM (SELECT date_trunc('hour', trunc_time) AS hour,
-             sum(%s_wf_blocks) AS %s_wf_blocks
+             sum(%s_wf_blocks)::int AS %s_wf_blocks
       FROM reports.n_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s""" \
             % (3 * (self.__vendor_name,))
@@ -242,8 +242,8 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             q = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       sum(hits) / 10 AS hits,
-       sum(%s_wf_blocks) / 10 AS %s_wf_blocks
+       sum(hits)::int / 10 AS hits,
+       sum(%s_wf_blocks)::int / 10 AS %s_wf_blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
@@ -307,8 +307,8 @@ class DailyWebUsage(Graph):
 
         query = """\
 SELECT max(hits), avg(hits), max(%s_wf_blocks), avg(%s_wf_blocks)
-FROM (select date_trunc('day', trunc_time) AS day, sum(hits) AS hits,
-             sum(%s_wf_blocks) as %s_wf_blocks
+FROM (select date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
+             sum(%s_wf_blocks)::int as %s_wf_blocks
       FROM reports.n_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s""" \
             % (4 * (self.__vendor_name,))
@@ -358,8 +358,8 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(hits) AS hits,
         try:
             q = """\
 SELECT date_trunc('day', trunc_time) AS day,
-       sum(hits) AS hits,
-       sum(%s_wf_blocks) AS %s_wf_blocks
+       sum(hits)::int AS hits,
+       sum(%s_wf_blocks)::int AS %s_wf_blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
@@ -422,7 +422,7 @@ class TotalWebUsage(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT coalesce(sum(hits), 0), coalesce(sum(%s_wf_blocks), 0)
+SELECT coalesce(sum(hits)::int, 0), coalesce(sum(%s_wf_blocks)::int, 0)
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
         if host:
@@ -495,7 +495,7 @@ class TopTenWebPolicyViolationsByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT %s_wf_category, sum(%s_wf_blocks) AS blocks_sum
+SELECT %s_wf_category, sum(%s_wf_blocks)::int AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND %s_wf_category != ''""" % (3 * (self.__vendor_name,))
@@ -554,7 +554,7 @@ class TopTenWebBlockedPolicyViolationsByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT %s_wf_category, sum(%s_wf_blocks) AS blocks_sum
+SELECT %s_wf_category, sum(%s_wf_blocks)::int AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND %s_wf_category != ''
@@ -613,7 +613,7 @@ class TopTenWebUsageByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT hname, sum(hits) as hits_sum
+SELECT hname, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
@@ -660,7 +660,7 @@ class TopTenWebPolicyViolatorsByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT hname, sum(%s_wf_blocks) as blocks_sum
+SELECT hname, sum(%s_wf_blocks)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND %s_wf_category != ''
@@ -710,7 +710,7 @@ class TopTenWebPolicyViolatorsADByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT uid, sum(%s_wf_blocks) as blocks_sum
+SELECT uid, sum(%s_wf_blocks)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND %s_wf_category != ''
@@ -760,7 +760,7 @@ class TopTenWebUsageBySize(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT hname, sum(s2c_bytes) + sum (c2s_bytes) as size_sum
+SELECT hname, COALESCE(sum(s2c_bytes) + sum(c2s_bytes), 0)::bigint as size_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         query += " GROUP BY hname ORDER BY size_sum DESC LIMIT 10"
@@ -807,7 +807,7 @@ class TopTenWebsitesByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT host, sum(hits) as hits_sum
+SELECT host, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
@@ -863,7 +863,7 @@ class TopTenWebsitesBySize(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT host, sum(s2c_bytes) + sum(c2s_bytes) as size_sum
+SELECT host, coalesce(sum(s2c_bytes) + sum(c2s_bytes), 0)::bigint as size_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
@@ -920,7 +920,7 @@ class TopTenPolicyViolations(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT host, sum(hits) as hits_sum
+SELECT host, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
       AND NOT %s_wf_category IS NULL""" % self.__vendor_name
@@ -977,7 +977,7 @@ class TopTenBlockerPolicyViolations(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT host, sum(%s_wf_blocks) as hits_sum
+SELECT host, sum(%s_wf_blocks)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__vendor_name
         if host:
