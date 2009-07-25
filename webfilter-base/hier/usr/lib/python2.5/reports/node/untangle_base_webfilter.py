@@ -62,15 +62,14 @@ class WebFilterBaseNode(Node):
                            [HourlyWebUsage(self.__vendor_name),
                             DailyWebUsage(self.__vendor_name),
                             TotalWebUsage(self.__vendor_name),
-                            TopTenWebPolicyViolationsByHits(self.__vendor_name),
-                            TopTenWebBlockedPolicyViolationsByHits(self.__vendor_name),
-                            TopTenWebPolicyViolatorsByHits(self.__vendor_name),
-                            TopTenWebPolicyViolatorsADByHits(self.__vendor_name),
                             TopTenWebUsageByHits(self.__vendor_name),
                             TopTenWebUsageBySize(self.__vendor_name),
+                            TopTenWebPolicyViolationsByHits(self.__vendor_name),
+                            TopTenWebBlockedPolicyViolationsByHits(self.__vendor_name),
                             TopTenWebsitesByHits(self.__vendor_name),
                             TopTenWebsitesBySize(self.__vendor_name),
-                            ViolationsByCategory(self.__vendor_name)])
+                            TopTenWebPolicyViolatorsByHits(self.__vendor_name),
+                            TopTenWebPolicyViolatorsADByHits(self.__vendor_name)])
         sections.append(s)
 
         sections.append(WebFilterDetail(self.__vendor_name))
@@ -645,7 +644,7 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
 class TopTenWebPolicyViolatorsByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-policy-violators-by-hits',
-                       _('Top Ten Web Policy Violators By Hits'))
+                       _('Top Ten Host Policy Violators (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -695,7 +694,7 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
 class TopTenWebPolicyViolatorsADByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-policy-violator-ad-by-hits',
-                       _('Top Ten Web Policy Violators UIDs By Hits'))
+                       _('Top Ten User Violators (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -906,68 +905,6 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
 
         return (lks, plot)
 
-class ViolationsByCategory(Graph):
-    def __init__(self, vendor_name):
-        Graph.__init__(self, 'violations-by-category',
-                       _('Violations By Category'))
-
-        self.__vendor_name = vendor_name
-
-    @print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None,
-                  email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-
-        query = """\
-SELECT %s_wf_category, count(*) as blocks_sum
-FROM reports.n_http_events
-WHERE time_stamp >= %%s AND time_stamp < %%s
-AND %s_wf_action IS NOT NULL """ % (2 * (self.__vendor_name,))
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-        query += """\
-GROUP BY %s_wf_category
-ORDER BY blocks_sum DESC""" % self.__vendor_name
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-            dataset = {}
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(query, (one_day, ed, host))
-            elif user:
-                curs.execute(query, (one_day, ed, user))
-            else:
-                curs.execute(query, (one_day, ed))
-
-            for r in curs.fetchall():
-                stat_key = r[0]
-                if stat_key is None:
-                    stat_key = _('Uncategorized')
-                ks = KeyStatistic(stat_key, r[1], N_('hits'))
-                lks.append(ks)
-                dataset[stat_key] = r[1]
-        finally:
-            conn.commit()
-
-        plot = Chart(type=PIE_CHART,
-                     title=self.title,
-                     xlabel=_('Category'),
-                     ylabel=_('Hits per Day'))
-
-        plot.add_pie_dataset(dataset)
-
-        return (lks, plot)
-
 class WebFilterDetail(DetailSection):
     def __init__(self, vendor_name):
         DetailSection.__init__(self, 'incidents', N_('Incident Report'))
@@ -1072,6 +1009,68 @@ ORDER BY count_events DESC""" % self.__vendor_name
                      title=self.title,
                      xlabel=_('Category'),
                      ylabel=_('Hits per Day'))
+        plot.add_pie_dataset(dataset)
+
+        return (lks, plot)
+
+class ViolationsByCategory(Graph):
+    def __init__(self, vendor_name):
+        Graph.__init__(self, 'violations-by-category',
+                       _('Violations By Category'))
+
+        self.__vendor_name = vendor_name
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT %s_wf_category, count(*) as blocks_sum
+FROM reports.n_http_events
+WHERE time_stamp >= %%s AND time_stamp < %%s
+AND %s_wf_action IS NOT NULL """ % (2 * (self.__vendor_name,))
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+        query += """\
+GROUP BY %s_wf_category
+ORDER BY blocks_sum DESC""" % self.__vendor_name
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
+
+            curs = conn.cursor()
+
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
+
+            for r in curs.fetchall():
+                stat_key = r[0]
+                if stat_key is None:
+                    stat_key = _('Uncategorized')
+                ks = KeyStatistic(stat_key, r[1], N_('hits'))
+                lks.append(ks)
+                dataset[stat_key] = r[1]
+        finally:
+            conn.commit()
+
+        plot = Chart(type=PIE_CHART,
+                     title=self.title,
+                     xlabel=_('Category'),
+                     ylabel=_('Hits per Day'))
+
         plot.add_pie_dataset(dataset)
 
         return (lks, plot)
