@@ -69,7 +69,8 @@ class WebFilterBaseNode(Node):
                             TopTenWebsitesByHits(self.__vendor_name),
                             TopTenWebsitesBySize(self.__vendor_name),
                             TopTenWebPolicyViolatorsByHits(self.__vendor_name),
-                            TopTenWebPolicyViolatorsADByHits(self.__vendor_name)])
+                            TopTenWebPolicyViolatorsADByHits(self.__vendor_name),
+                            TopTenBlockerPolicyViolations(self.__vendor_name)])
         sections.append(s)
 
         sections.append(WebFilterDetail(self.__vendor_name))
@@ -790,8 +791,6 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class TopTenWebsitesByHits(Graph):
     def __init__(self, vendor_name):
-        print "=" * 72
-        print
         Graph.__init__(self, 'top-ten-websites-by-hits',
                        _('Top Ten Websites By Hits'))
 
@@ -848,8 +847,6 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class TopTenWebsitesBySize(Graph):
     def __init__(self, vendor_name):
-        print "=" * 72
-        print
         Graph.__init__(self, 'top-ten-websites-by-size',
                        _('Top Ten Websites By Size'))
 
@@ -900,6 +897,62 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
                      title=self.title,
                      xlabel=_('Hosts'),
                      ylabel=_('bytes/day'))
+
+        plot.add_pie_dataset(dataset)
+
+        return (lks, plot)
+
+class TopTenBlockerPolicyViolations(Graph):
+    def __init__(self, vendor_name):
+        Graph.__init__(self, 'top-ten-policy-violations',
+                       _('Top Ten Blocker Violations'))
+
+        self.__vendor_name = vendor_name
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+
+        query = """\
+SELECT host, sum(%s_wf_blocks) as hits_sum
+FROM reports.n_http_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__vendor_name
+        if host:
+            query += " AND hname = %s"
+        elif user:
+            query += " AND uid = %s"
+        query += " GROUP BY host ORDER BY hits_sum DESC LIMIT 10"
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
+
+            curs = conn.cursor()
+
+            if host:
+                curs.execute(query, (one_day, ed, host))
+            elif user:
+                curs.execute(query, (one_day, ed, user))
+            else:
+                curs.execute(query, (one_day, ed))
+
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+        finally:
+            conn.commit()
+
+        plot = Chart(type=PIE_CHART,
+                     title=self.title,
+                     xlabel=_('Hosts'),
+                     ylabel=_('Hits per Day'))
 
         plot.add_pie_dataset(dataset)
 
