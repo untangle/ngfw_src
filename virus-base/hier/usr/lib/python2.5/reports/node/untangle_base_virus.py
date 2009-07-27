@@ -673,18 +673,35 @@ class TopVirusesDetected(reports.Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
-SELECT m.virus_%s_name as name,
-       (h.virus_%s_detected + m.virus_%s_detected) AS foo
-FROM reports.n_virus_mail_totals AS m, reports.n_virus_http_totals AS h
-WHERE m.trunc_time >= %%s AND m.trunc_time < %%s
-AND  h.trunc_time >= %%s AND h.trunc_time < %%s
-AND h.virus_%s_name = m.virus_%s_name
-AND m.virus_%s_name != ''""" % (6 * (self.__vendor_name,))
+SELECT name, sum(sum)
+FROM (SELECT virus_%s_name AS name, sum(virus_%s_detected)
+      FROM reports.n_virus_mail_totals
+      WHERE trunc_time >= %%s AND trunc_time < %%s AND virus_%s_detected > 0
+""" % (3 * (self.__vendor_name,))
+        if host:
+            avg_max_query = avg_max_query + " AND hname = %s"
+        elif user:
+            avg_max_query = avg_max_query + " AND uid = %s"
+
+        avg_max_query += """
+      GROUP BY virus_%s_name
+
+      UNION
+
+      SELECT virus_%s_name AS name, sum(virus_%s_detected)
+      FROM reports.n_virus_http_totals
+      WHERE trunc_time >= %%s AND trunc_time < %%s AND virus_%s_detected > 0
+""" % (4 * (self.__vendor_name,))
 
         if host:
             avg_max_query = avg_max_query + " AND hname = %s"
         elif user:
             avg_max_query = avg_max_query + " AND uid = %s"
+
+        avg_max_query += """
+      GROUP BY virus_%s_name) AS foo
+GROUP BY name
+ORDER BY sum DESC""" % self.__vendor_name
 
         conn = sql_helper.get_connection()
         try:
