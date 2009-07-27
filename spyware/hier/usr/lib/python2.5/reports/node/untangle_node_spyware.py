@@ -83,8 +83,7 @@ DELETE FROM events.n_spyware_evt_cookie
                             TopTenSuspiciousTrafficSubnetsByHits(),
                             TopTenSuspiciousTrafficHostsByHits(),
                             SpywareSubnetsDetected(),
-                            SpywareCookiesBlocked()
-                            ])
+                            SpywareCookiesBlocked()])
         sections.append(s)
 
         sections.append(SpywareDetail())

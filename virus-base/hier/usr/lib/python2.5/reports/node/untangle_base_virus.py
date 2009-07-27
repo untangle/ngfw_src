@@ -621,7 +621,9 @@ WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
             avg_max_query += " AND hname = %s"
         elif user:
             avg_max_query += " AND uid = %s"
-        avg_max_query += " ORDER BY virus_%s_detected DESC" % self.__vendor_name
+        avg_max_query += """
+ORDER BY virus_%s_detected DESC
+LIMIT 10""" % self.__vendor_name
 
         conn = sql_helper.get_connection()
         try:

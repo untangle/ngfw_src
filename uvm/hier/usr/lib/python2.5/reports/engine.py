@@ -438,4 +438,3 @@ def __write_toc(report_base, date_base, type, list):
             f.write("\n")
     finally:
         f.close()
-

@@ -42,8 +42,8 @@ Your Report for %s is attached.
     part = MIMEBase('application', "pdf")
     part.set_payload(open(file, 'rb').read())
     Encoders.encode_base64(part)
-    part.add_header('Content-Disposition', 'attachment; filename="%s"'
-                    % os.path.basename(file))
+    part.add_header('Content-Disposition', 'attachment; filename="reports-%d%02d%02d"'
+                    % (date.year, date.month, date.day))
     msgRoot.attach(part)
 
     smtp = smtplib.SMTP()
