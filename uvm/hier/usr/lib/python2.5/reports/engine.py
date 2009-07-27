@@ -211,8 +211,8 @@ def generate_reports(report_base, end_date):
 @print_timing
 def generate_sub_report(report_base, node_name, end_date, host=None, user=None,
                         email=None):
-    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
-                                       end_date.day)
+    date_base = 'data/%d-%02d-%02d.pdf' % (end_date.year, end_date.month,
+                                           end_date.day)
 
     node = __nodes.get(node_name, None)
 
