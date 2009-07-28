@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"POT-Creation-Date: 2009-07-27 17:42-0700\n"
 "PO-Revision-Date: 2008-11-24 18:02-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -84,7 +84,8 @@ msgstr "Monitorar tráfego suspeito"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:167
 msgid "Spyware Blocker signatures were last updated"
-msgstr "As assinaturas do Bloqueador de Spyware foram atualizadas por último em"
+msgstr ""
+"As assinaturas do Bloqueador de Spyware foram atualizadas por último em"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:169
 msgid "Unknown"
@@ -169,7 +170,8 @@ msgstr "Registro"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:475
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
 msgstr ""
-"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro (https)"
+"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro "
+"(https)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:487
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:535
@@ -304,8 +306,9 @@ msgid "If you have any questions, Please contact {0}."
 msgstr "Se tiver perguntas, queira entrar em contato {0}."
 
 #: ../impl/com/untangle/node/spyware/SpywareAccessFilter.java:27
-msgid "Access Events"
-msgstr "Eventos de acesso"
+#, fuzzy
+msgid "Traffic Events"
+msgstr "Tráfego"
 
 #: ../impl/com/untangle/node/spyware/SpywareActiveXFilter.java:27
 msgid "ActiveX Events"
@@ -316,8 +319,9 @@ msgid "All Events"
 msgstr "Todos os eventos"
 
 #: ../impl/com/untangle/node/spyware/SpywareBlacklistFilter.java:27
-msgid "Blacklist Events"
-msgstr "Eventos de lista negra"
+#, fuzzy
+msgid "Web Events"
+msgstr "Todos os eventos"
 
 #: ../impl/com/untangle/node/spyware/SpywareBlockedFilter.java:27
 msgid "Blocked Events"
@@ -327,46 +331,52 @@ msgstr "Eventos bloqueados"
 msgid "Cookie Events"
 msgstr "Eventos de cookie"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "Pages scanned"
 msgstr "Páginas varridas"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "SCAN"
 msgstr "VARRER"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
 msgid "Pages blocked"
 msgstr "Páginas bloqueadas"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
 msgid "BLOCK"
 msgstr "BLOQUEAR"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
 msgid "Pages passed"
 msgstr "Páginas permitidas"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
 msgid "PASS"
 msgstr "PERMITIR"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:53
 msgid "Reason:"
 msgstr "Motivo:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:59
 msgid "Unblock For Now"
 msgstr "Desbloquear por enquanto"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:65
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
+
+#~ msgid "Access Events"
+#~ msgstr "Eventos de acesso"
+
+#~ msgid "Blacklist Events"
+#~ msgstr "Eventos de lista negra"

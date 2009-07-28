@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"POT-Creation-Date: 2009-07-27 17:42-0700\n"
 "PO-Revision-Date: 2008-11-24 15:50-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -305,8 +305,9 @@ msgid "If you have any questions, Please contact {0}."
 msgstr "Si tiene preguntas comuníquese con {0}."
 
 #: ../impl/com/untangle/node/spyware/SpywareAccessFilter.java:27
-msgid "Access Events"
-msgstr "Eventos de acceso"
+#, fuzzy
+msgid "Traffic Events"
+msgstr "Tráfico"
 
 #: ../impl/com/untangle/node/spyware/SpywareActiveXFilter.java:27
 msgid "ActiveX Events"
@@ -317,8 +318,9 @@ msgid "All Events"
 msgstr "Todos los eventos"
 
 #: ../impl/com/untangle/node/spyware/SpywareBlacklistFilter.java:27
-msgid "Blacklist Events"
-msgstr "Eventos de lista negra"
+#, fuzzy
+msgid "Web Events"
+msgstr "Todos los eventos"
 
 #: ../impl/com/untangle/node/spyware/SpywareBlockedFilter.java:27
 msgid "Blocked Events"
@@ -328,46 +330,52 @@ msgstr "Eventos bloqueados"
 msgid "Cookie Events"
 msgstr "Eventos de cookies"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "Pages scanned"
 msgstr "Páginas analizadas"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "SCAN"
 msgstr "ANALIZAR"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
 msgid "Pages blocked"
 msgstr "Páginas bloqueadas"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
 msgid "BLOCK"
 msgstr "BLOQUEAR"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
 msgid "Pages passed"
 msgstr "Páginas permitidas"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
 msgid "PASS"
 msgstr "PERMITIR"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:53
 msgid "Reason:"
 msgstr "Razón:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:59
 msgid "Unblock For Now"
 msgstr "Desbloquear por ahora"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:65
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
+
+#~ msgid "Access Events"
+#~ msgstr "Eventos de acceso"
+
+#~ msgid "Blacklist Events"
+#~ msgstr "Eventos de lista negra"

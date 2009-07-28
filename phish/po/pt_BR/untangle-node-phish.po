@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"POT-Creation-Date: 2009-07-27 17:42-0700\n"
 "PO-Revision-Date: 2008-11-24 17:58-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -29,8 +29,8 @@ msgid "Pass"
 msgstr "Permitir"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:50
-msgid "Block"
-msgstr "Bloquear"
+msgid "Drop"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:50
 msgid "Quarantine"
@@ -144,12 +144,14 @@ msgstr "permitir mensagem"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:345
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:354
-msgid "mark infection"
-msgstr "marcar infecção"
+#, fuzzy
+msgid "mark message"
+msgstr "permitir mensagem"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:356
-msgid "block message"
-msgstr "bloquear mensagem"
+#, fuzzy
+msgid "drop message"
+msgstr "permitir mensagem"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:358
 msgid "quarantine message"
@@ -244,22 +246,31 @@ msgstr "Bloqueado tráfego HTTP de Phish"
 msgid "Passed Phish HTTP Traffic"
 msgstr "Permitido tráfego HTTP de Phish"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:53
 msgid "Reason:"
 msgstr "Motivo:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:59
 msgid "Unblock For Now"
 msgstr "Desbloquear por agora"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:65
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
+
+#~ msgid "Block"
+#~ msgstr "Bloquear"
+
+#~ msgid "mark infection"
+#~ msgstr "marcar infecção"
+
+#~ msgid "block message"
+#~ msgstr "bloquear mensagem"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-04 13:57-0800\n"
+"POT-Creation-Date: 2009-07-27 17:42-0700\n"
 "PO-Revision-Date: 2009-03-06 14:05-0800\n"
 "Last-Translator: Ricardo Miguel P.M.Aroso <ricardo.aroso@ersuc.pt>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -23,18 +23,21 @@ msgstr "A conta {0} não possui mensagens em quarentena."
 
 #: ../servlets/quarantine/root/quarantine.js:244
 #: ../servlets/quarantine/root/quarantine.js:396
-msgid "Move to Inbox"
+#, fuzzy
+msgid "Move to Inbox (0  messages)"
 msgstr "Mover para caixa de entrada"
 
 #: ../servlets/quarantine/root/quarantine.js:251
 #: ../servlets/quarantine/root/quarantine.js:395
-msgid "Delete Messages"
-msgstr "Excluir mensagens"
+#, fuzzy
+msgid "Delete (0  messages)"
+msgstr "Excluir {0} mensagens"
 
 #: ../servlets/quarantine/root/quarantine.js:258
 #: ../servlets/quarantine/root/quarantine.js:413
-msgid "Add Sender(s) to Safelist"
-msgstr "Adicionar remetente(s) à lista segura"
+#, fuzzy
+msgid "Add to Safelist (0  Senders)"
+msgstr "Adicionar remetente à lista segura"
 
 #: ../servlets/quarantine/root/quarantine.js:356
 msgid "Deleted one Message"
@@ -61,28 +64,34 @@ msgid "Safelisted {0} Addresses"
 msgstr "Endereços {0} em lista segura"
 
 #: ../servlets/quarantine/root/quarantine.js:400
-msgid "Delete one Message"
-msgstr "Excluir uma mensagem"
+#, fuzzy
+msgid "Delete (1  message)"
+msgstr "Excluir mensagens"
 
 #: ../servlets/quarantine/root/quarantine.js:401
-msgid "Move one Message to Inbox"
-msgstr "Mover uma mensagem para a caixa de entrada"
+#, fuzzy
+msgid "Move to Inbox (1  message)"
+msgstr "Mover para caixa de entrada"
 
 #: ../servlets/quarantine/root/quarantine.js:405
-msgid "Delete {0} Messages"
+#, fuzzy
+msgid "Delete ({0} messages)"
 msgstr "Excluir {0} mensagens"
 
 #: ../servlets/quarantine/root/quarantine.js:406
-msgid "Move {0} Messages to Inbox"
-msgstr "Mover {0} mensagens para a caixa de entrada"
+#, fuzzy
+msgid "Move to Inbox ({0} messages)"
+msgstr "Mover para caixa de entrada"
 
 #: ../servlets/quarantine/root/quarantine.js:416
-msgid "Add Sender to Safelist"
+#, fuzzy
+msgid "Add to Safelist (1  Sender)"
 msgstr "Adicionar remetente à lista segura"
 
 #: ../servlets/quarantine/root/quarantine.js:419
-msgid "Add {0} Senders to Safelist"
-msgstr "Adicionar {0} remetentes à lista segura"
+#, fuzzy
+msgid "Add to Safelist ({0} Senders)"
+msgstr "Endereços {0} em lista segura"
 
 #: ../servlets/quarantine/root/quarantine.js:530
 msgid "From"
@@ -218,15 +227,15 @@ msgstr ""
 msgid "Request"
 msgstr "Solicitar"
 
-#: ../servlets/quarantine/root/request.js:86
+#: ../servlets/quarantine/root/request.js:84
 msgid "Successfully sent digest to '{0}'"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:88
+#: ../servlets/quarantine/root/request.js:86
 msgid "A quarantine does not exist for '{0}'"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:92
+#: ../servlets/quarantine/root/request.js:90
 msgid "Quarantine Request"
 msgstr ""
 
@@ -258,7 +267,7 @@ msgstr "Excluídos {0} endereços"
 msgid "Delete one Address"
 msgstr "Excluir um endereço"
 
-#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:747
+#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:755
 msgid "Quarantine Digest"
 msgstr "Resumo de Quarentena"
 
@@ -271,13 +280,17 @@ msgstr "Resumo de Quarentena para: {0}"
 msgid "Click here to access your spam quarantine."
 msgstr "Carregue aqui para aceder à quarentena de SPAM."
 
-#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:28
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:29
 msgid ""
-"From this link you can have a specific email delivered to your email account "
-"or delete an email from the quarantine."
+"The spam quarantine contains emails that are being held from your email "
+"account."
 msgstr ""
-"Através deste link pode especificar um email de devolução para a sua conta "
-"ou apagar qualquer email da lista de quarentena."
+
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:31
+msgid ""
+"Quarantined emails can be released to your inbox or deleted using the spam "
+"quarantine link."
+msgstr ""
 
 #: ../servlets/quarantine/root/inbox.jspx:34
 msgid "Quarantine Digest for: {0}"
@@ -288,12 +301,39 @@ msgid "{0} | Quarantine Digest for: {1}"
 msgstr "{0} | Sumário de Quarentena para: {1}"
 
 #: ../servlets/quarantine/root/request.jspx:36
-msgid "Request Quarantine Digest Email"
+#, fuzzy
+msgid "Request Quarantine Digest Emails"
 msgstr "Solicitar e-mail com Sumário de Quarentena"
 
 #: ../servlets/quarantine/root/request.jspx:40
 msgid "{0} | Request Quarantine Digest Email"
 msgstr "{0} | Solicitar e-mail de Sumário de Quarentena"
 
-#~ msgid "Your Remote Access Portal login has been configured without an email address or with an incorrect email address."
-#~ msgstr "Seu login do Portal de Acesso Remoto foi configurado sem um endereço de e-mail ou com um endereço de e-mail incorreto."
+#~ msgid "Add Sender(s) to Safelist"
+#~ msgstr "Adicionar remetente(s) à lista segura"
+
+#~ msgid "Delete one Message"
+#~ msgstr "Excluir uma mensagem"
+
+#~ msgid "Move one Message to Inbox"
+#~ msgstr "Mover uma mensagem para a caixa de entrada"
+
+#~ msgid "Move {0} Messages to Inbox"
+#~ msgstr "Mover {0} mensagens para a caixa de entrada"
+
+#~ msgid "Add {0} Senders to Safelist"
+#~ msgstr "Adicionar {0} remetentes à lista segura"
+
+#~ msgid ""
+#~ "From this link you can have a specific email delivered to your email "
+#~ "account or delete an email from the quarantine."
+#~ msgstr ""
+#~ "Através deste link pode especificar um email de devolução para a sua "
+#~ "conta ou apagar qualquer email da lista de quarentena."
+
+#~ msgid ""
+#~ "Your Remote Access Portal login has been configured without an email "
+#~ "address or with an incorrect email address."
+#~ msgstr ""
+#~ "Seu login do Portal de Acesso Remoto foi configurado sem um endereço de e-"
+#~ "mail ou com um endereço de e-mail incorreto."

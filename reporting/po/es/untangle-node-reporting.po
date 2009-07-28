@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"POT-Creation-Date: 2009-07-27 17:42-0700\n"
 "PO-Revision-Date: 2008-11-20 05:46-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -17,217 +17,198 @@ msgstr ""
 "X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Spanish\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:44
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:51
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:49
 msgid "Status"
 msgstr "Estado"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:60
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:77
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:56
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:70
 msgid "View Reports"
 msgstr "Ver informes"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:88
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:105
-msgid "Archived Reports"
-msgstr "Informes archivados"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:175
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:94
 msgid "Generation"
 msgstr "Generación"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:185
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:104
 msgid "Email"
 msgstr "Email"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:193
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:112
 msgid "Recipients"
 msgstr "Destinatarios"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:210
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:129
 msgid "email address"
 msgstr "dirección de email"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:216
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:135
 msgid "The email address cannot be blank."
 msgstr "La dirección de email no puede quedar en blanco."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:234
-msgid "Include {0}Incident Reports{1} in emailed reports"
-msgstr "Incluir {0}Informes de incidentes{1} en informes enviados por email."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:247
-msgid ""
-"This makes emailed reports larger, but includes information about each "
-"incident/violation."
-msgstr ""
-"Esto produce informes más grandes, pero incluye información sobre cada "
-"incidente o violación."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:252
-msgid "Daily Reports"
-msgstr "Informes diarios"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:257
-msgid ""
-"Daily Reports are generated at midnight and covers events from the previous "
-"24 hours, up to, but not including the day of generation."
-msgstr ""
-"Los informes diarios se generan a medianoche y cubren los eventos ocurridos "
-"en las 24 horas anteriores hasta el día de generación, no inclusive."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:262
-msgid "Generate Daily Reports"
-msgstr "Generar informes diarios"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:263
-msgid "Every Day"
-msgstr "Todos los días"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:274
-msgid "Weekly Reports"
-msgstr "Informes semanales"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:279
-msgid ""
-"Weekly Reports are generated at midnight and covers events from the previous "
-"7 days, up to, but not including the day of generation."
-msgstr ""
-"Los informes semanales se generan a medianoche y cubren los eventos "
-"ocurridos en los 7 días anteriores hasta el día de generación, no inclusive."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:284
-msgid "Generate Weekly Reports"
-msgstr "Generar informes semanales"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:285
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:387
-msgid "Sunday"
-msgstr "Domingo"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:291
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:388
-msgid "Monday"
-msgstr "Lunes"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:299
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:389
-msgid "Tuesday"
-msgstr "Martes"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:307
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:390
-msgid "Wednesday"
-msgstr "Miércoles"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:315
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:391
-msgid "Thursday"
-msgstr "Jueves"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:323
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:392
-msgid "Friday"
-msgstr "Viernes"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:331
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:393
-msgid "Saturday"
-msgstr "Sábado"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:337
-msgid "Monthly Reports"
-msgstr "Informes mensuales"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:342
-msgid ""
-"Monthly Reports are generated at midnight and covers events from the "
-"previous 30 days, up to, but not including the day of generation."
-msgstr ""
-"Los informes mensuales se generan a medianoche y cubren los eventos "
-"ocurridos en los 30 días anteriores hasta el día de generación, no "
-"inclusive."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:350
-msgid "Never"
-msgstr "Nunca"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:355
-msgid "First Day of Month"
-msgstr "Primer día del mes"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:360
-msgid "Everyday"
-msgstr "Todos los días"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:365
-msgid "Once Per Week"
-msgstr "Una vez a la semana"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:403
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:143
 msgid "Data Retention"
 msgstr "Retención de datos"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:408
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:147
 msgid ""
-"Limits data retention to one week, this allows reports to run faster on high "
-"traffic sites."
+"Limit Data Retention to a number of days. The smaller the number the lower "
+"the disk space requirements and resource usage during report generation."
 msgstr ""
-"Limita la retención de datos a una semana, lo cual acelera la ejecución de "
-"los informes en sitios de mucho tráfico."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:413
-msgid "Limit data retention"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:149
+#, fuzzy
+msgid "Limit Data Retention"
 msgstr "Limitar retención de datos"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:414
-msgid "Keep One Week's Data"
-msgstr "Conservar datos de una semana"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:175
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:201
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:217
+#, fuzzy
+msgid "Name Map"
+msgstr "Nombre"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:433
-msgid "IP Addresses"
-msgstr "Direcciones IP"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:436
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:178
 msgid "[no name]"
 msgstr "[sin nombre]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:437
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:179
 msgid "[no description]"
 msgstr "[sin descripción]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:459
-msgid "IP address"
-msgstr "Dirección IP"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:465
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:207
 msgid "name"
 msgstr "nombre"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:475
-msgid "IP Address"
-msgstr "Dirección IP"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:481
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:223
 msgid "Name"
 msgstr "Nombre"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:515
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:257
 msgid "Invalid \"IP address\" specified"
 msgstr "Ha especificado una \"dirección IP\" no válida."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:523
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:265
 msgid "Validation failed"
 msgstr "Error de validación"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:527
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:269
 msgid "Failed"
 msgstr "Falló"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:538
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:280
 msgid "Saving..."
 msgstr "Guardando..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:538
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:280
 msgid "Please wait"
 msgstr "Espere"
+
+#~ msgid "Archived Reports"
+#~ msgstr "Informes archivados"
+
+#~ msgid "Include {0}Incident Reports{1} in emailed reports"
+#~ msgstr ""
+#~ "Incluir {0}Informes de incidentes{1} en informes enviados por email."
+
+#~ msgid ""
+#~ "This makes emailed reports larger, but includes information about each "
+#~ "incident/violation."
+#~ msgstr ""
+#~ "Esto produce informes más grandes, pero incluye información sobre cada "
+#~ "incidente o violación."
+
+#~ msgid "Daily Reports"
+#~ msgstr "Informes diarios"
+
+#~ msgid ""
+#~ "Daily Reports are generated at midnight and covers events from the "
+#~ "previous 24 hours, up to, but not including the day of generation."
+#~ msgstr ""
+#~ "Los informes diarios se generan a medianoche y cubren los eventos "
+#~ "ocurridos en las 24 horas anteriores hasta el día de generación, no "
+#~ "inclusive."
+
+#~ msgid "Generate Daily Reports"
+#~ msgstr "Generar informes diarios"
+
+#~ msgid "Every Day"
+#~ msgstr "Todos los días"
+
+#~ msgid "Weekly Reports"
+#~ msgstr "Informes semanales"
+
+#~ msgid ""
+#~ "Weekly Reports are generated at midnight and covers events from the "
+#~ "previous 7 days, up to, but not including the day of generation."
+#~ msgstr ""
+#~ "Los informes semanales se generan a medianoche y cubren los eventos "
+#~ "ocurridos en los 7 días anteriores hasta el día de generación, no "
+#~ "inclusive."
+
+#~ msgid "Generate Weekly Reports"
+#~ msgstr "Generar informes semanales"
+
+#~ msgid "Sunday"
+#~ msgstr "Domingo"
+
+#~ msgid "Monday"
+#~ msgstr "Lunes"
+
+#~ msgid "Tuesday"
+#~ msgstr "Martes"
+
+#~ msgid "Wednesday"
+#~ msgstr "Miércoles"
+
+#~ msgid "Thursday"
+#~ msgstr "Jueves"
+
+#~ msgid "Friday"
+#~ msgstr "Viernes"
+
+#~ msgid "Saturday"
+#~ msgstr "Sábado"
+
+#~ msgid "Monthly Reports"
+#~ msgstr "Informes mensuales"
+
+#~ msgid ""
+#~ "Monthly Reports are generated at midnight and covers events from the "
+#~ "previous 30 days, up to, but not including the day of generation."
+#~ msgstr ""
+#~ "Los informes mensuales se generan a medianoche y cubren los eventos "
+#~ "ocurridos en los 30 días anteriores hasta el día de generación, no "
+#~ "inclusive."
+
+#~ msgid "Never"
+#~ msgstr "Nunca"
+
+#~ msgid "First Day of Month"
+#~ msgstr "Primer día del mes"
+
+#~ msgid "Everyday"
+#~ msgstr "Todos los días"
+
+#~ msgid "Once Per Week"
+#~ msgstr "Una vez a la semana"
+
+#~ msgid ""
+#~ "Limits data retention to one week, this allows reports to run faster on "
+#~ "high traffic sites."
+#~ msgstr ""
+#~ "Limita la retención de datos a una semana, lo cual acelera la ejecución "
+#~ "de los informes en sitios de mucho tráfico."
+
+#~ msgid "Keep One Week's Data"
+#~ msgstr "Conservar datos de una semana"
+
+#~ msgid "IP Addresses"
+#~ msgstr "Direcciones IP"
+
+#~ msgid "IP address"
+#~ msgstr "Dirección IP"
+
+#~ msgid "IP Address"
+#~ msgstr "Dirección IP"

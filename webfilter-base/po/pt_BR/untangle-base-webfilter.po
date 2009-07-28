@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"POT-Creation-Date: 2009-07-27 17:42-0700\n"
 "PO-Revision-Date: 2009-02-25 09:29-0800\n"
 "Last-Translator: André Henriques <andre.trouble@gmail.com>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -138,8 +138,8 @@ msgstr "Descrição"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:374
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
 msgstr ""
-"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro (https) "
-""
+"\"URL\" especificado não pode ser bloqueado porque utiliza http seguro "
+"(https) "
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:386
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:435
@@ -205,7 +205,8 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:748
 msgid "\"URL\" specified cannot be passed because it uses secure http (https)"
-msgstr "Especificado \"URL\" não pode passar porque utiliza http seguro (https) "
+msgstr ""
+"Especificado \"URL\" não pode passar porque utiliza http seguro (https) "
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:766
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:841
@@ -255,69 +256,74 @@ msgstr "em lista de URLs Permitidos"
 msgid "in Clients Pass list"
 msgstr "em lista de Clientes Permitidos"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:973
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:972
+#, fuzzy
+msgid "Client Bypass"
+msgstr "Desvio do usuário"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:975
 msgid "no rule applied"
 msgstr "nenhuma regra aplicada"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:980
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:982
 msgid "timestamp"
 msgstr "marcação de horário"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:988
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:990
 msgid "action"
 msgstr "ação"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:993
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:995
 msgid "client"
 msgstr "cliente"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1000
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1002
 msgid "request"
 msgstr "solicitação"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1006
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1008
 msgid "reason for action"
 msgstr "motivo para ação"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1011
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1013
 msgid "server"
 msgstr "servidor"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1085
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1087
 msgid "Invalid subnet specified"
 msgstr "Especificada sub-rede inválida"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1093
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1095
 msgid "Validation failed"
 msgstr "Falha de validação"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1097
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1099
 msgid "Failed"
 msgstr "Falhou"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1111
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1113
 msgid "Saving..."
 msgstr "Salvando..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1111
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1113
 msgid "Please wait"
 msgstr "Aguarde"
 
-#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:59
-#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:69
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:57
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:67
 msgid "Feature is not installed."
 msgstr "O recurso não está instalado."
 
-#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:78
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:76
 msgid "This request has expired."
 msgstr "Esta solicitação expirou."
 
-#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:110
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:108
 #, java-format
 msgid "{0} | {1} Warning"
 msgstr "{0} | {1} Aviso"
 
-#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:133
+#: ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java:131
 #, java-format
 msgid "{0}This web page was blocked{1} because it is considered inappropriate."
 msgstr "{0}Esta página web foi bloqueada{1} porque é considerada inapropriada."
@@ -368,28 +374,32 @@ msgid "Passed HTTP Traffic"
 msgstr "Tráfego HTTP permitido"
 
 #: ../impl/com/untangle/node/webfilter/WebFilterWhitelistFilter.java:36
-msgid "Whitelisted HTTP Traffic"
-msgstr "Tráfego HTTP em lista branca"
+#, fuzzy
+msgid "Passlisted HTTP Traffic"
+msgstr "Tráfego HTTP permitido"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:53
 msgid "Reason:"
 msgstr "Motivo:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:59
 msgid "Unblock For Now"
 msgstr "Desbloquear por enquanto"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:65
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
+
+#~ msgid "Whitelisted HTTP Traffic"
+#~ msgstr "Tráfego HTTP em lista branca"
 
 #~ msgid "IP addresses"
 #~ msgstr "Endereços IP"
