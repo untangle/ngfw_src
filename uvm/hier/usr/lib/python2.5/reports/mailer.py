@@ -11,6 +11,7 @@ if PREFIX != '':
     sys.path.insert(0, REPORTS_PYTHON_DIR)
 
 import gettext
+import locale
 import mx
 import os
 import smtplib
@@ -26,23 +27,24 @@ _ = gettext.gettext
 
 def mail_reports(date, file):
     receivers, sender = __get_mail_info()
+    company_name = __get_branding_info()
     for receiver in receivers:
-        mail(file, sender, receiver, date)
+        mail(file, sender, receiver, date, company_name)
 
-def mail(file, sender, receiver, date):
+def mail(file, sender, receiver, date, company_name):
     msgRoot = MIMEMultipart('related')
-    msgRoot['Subject'] = _('New Untangle Reports Available')
+    msgRoot['Subject'] = _('New %s Reports Available') % company_name
     msgRoot['From'] = sender
     msgRoot['To'] = receiver
 
     msgRoot.attach(MIMEText(_("""\
-Your Report for %s is attached.
-""") % date.strftime("%c")))
+%s Reports are attached for %s is attached. The pdf file requires Adobe Acrobat Reader to view.\
+""") % (company_name, date.strftime(locale.nl_langinfo(locale.D_FMT)))))
 
     part = MIMEBase('application', "pdf")
     part.set_payload(open(file, 'rb').read())
     Encoders.encode_base64(part)
-    part.add_header('Content-Disposition', 'attachment; filename="reports-%d%02d%02d"'
+    part.add_header('Content-Disposition', 'attachment; filename="reports-%d%02d%02d.pdf"'
                     % (date.year, date.month, date.day))
     msgRoot.attach(part)
 
@@ -67,6 +69,28 @@ SELECT report_email, from_address FROM settings.u_mail_settings""")
             rv = (row[0].split(','), row[1])
         else:
             rv = None
+    finally:
+        conn.commit()
+
+    return rv
+
+def __get_branding_info():
+    conn = sql_helper.get_connection()
+
+    try:
+        curs = conn.cursor()
+
+        curs.execute("""\
+SELECT company_name FROM settings.uvm_branding_settings""")
+
+        row = curs.fetchone()
+
+        if row:
+            rv = row[0]
+        else:
+            rv = 'Untangle'
+    except Exception, e:
+        rv = 'Untangle'
     finally:
         conn.commit()
 
