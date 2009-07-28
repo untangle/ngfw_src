@@ -19,13 +19,13 @@
 !define BIN "${HOME}\bin"
 
 !define PRODUCT_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.1_RC18"
+!define OPENVPN_VERSION "2.1_RC19"
 !define GUI_VERSION "1.0.3"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 
 !define TAP "tap0901"
 !define TAPDRV "${TAP}.sys"
-!define TAPCAT "${TAP}.cat"
+!define TAPDRVCAT "${TAP}.cat"
 
 ; something like "-DBG2"
 !define OUTFILE_LABEL ""
@@ -97,7 +97,7 @@
 
   !define MUI_WELCOMEPAGE_TITLE "Welcome to the ${PRODUCT_NAME} Setup Wizard"
 
-  !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of:\r\n\r\nOpenVPN -  an Open Source VPN package by James Yonan.\r\n\r\nOpenVPN GUI - A Graphical User Interface for OpenVPN by Mathias Sundman\r\n\r\nNote that the Windows version of OpenVPN will only run on Win 2000, XP, or higher.\r\n\r\n\r\n"
+  !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of:\r\n\r\nOpenVPN -  an Open Source VPN package by James Yonan.\r\n\r\nOpenVPN GUI - A Graphical User Interface for OpenVPN by Mathias Sundman\r\n\r\nNote that the Windows version of OpenVPN will only run on Win 2000, XP, or higher.\r\n\r\nVista and 64-Bit Support added by WebFooL\r\n\r\n\r\n"
 
   !define MUI_COMPONENTSPAGE_TEXT_TOP "Select the components to install/upgrade.  Stop any OpenVPN or OpenVPN GUI processes or the OpenVPN service if it is running."
 
@@ -124,8 +124,8 @@
  
  LangString DESC_SecOpenSSLDLLs ${LANG_ENGLISH} "Install OpenSSL DLLs locally (may be omitted if DLLs are already installed globally)."
 
-  LangString DESC_SecTAP ${LANG_ENGLISH} "Install/Upgrade the TAP-Win32 virtual device driver.  Will not interfere with CIPE."
-  
+  LangString DESC_SecTAP ${LANG_ENGLISH} "Install/Upgrade the TAP-Win32/Win64 virtual device driver.  Will not interfere with CIPE."
+
   LangString DESC_SecTAPHidden ${LANG_ENGLISH} "Install the TAP device as hidden. The TAP device will not be visible under Network Connections."
 
   LangString DESC_SecService ${LANG_ENGLISH} "Install the OpenVPN service wrapper (openvpnserv.exe)"
@@ -228,7 +228,6 @@ Section "OpenVPN GUI" SecGUI
   SetOverwrite on
   SetOutPath "$INSTDIR\bin"
   File "${HOME}\openvpn-gui.exe"
-  File "${BIN}\libpkcs11-helper-1.dll"
 
   # Include your custom config file(s) here.
   SetOutPath "$INSTDIR\config"
@@ -253,7 +252,7 @@ SectionEnd
 Section "AutoStart OpenVPN GUI" SecGUIAuto
 SectionEnd
 
-Section "Hide the TAP-Win32 Virtual Ethernet Adapter" SecTAPHidden
+Section "Hide the TAP-Win32/Win64 Virtual Ethernet Adapter" SecTAPHidden
 SectionEnd
 
 Section "OpenVPN Service" SecService
@@ -288,6 +287,7 @@ Section "OpenSSL DLLs" SecOpenSSLDLLs
   SetOutPath "$INSTDIR\bin"
   File "${BIN}\libeay32.dll"
   File "${BIN}\libssl32.dll"
+  File "${BIN}\libpkcs11-helper-1.dll"
 
 SectionEnd
 
@@ -299,41 +299,67 @@ Section "OpenSSL Utilities" SecOpenSSLUtilities
 
 SectionEnd
 
-Section "TAP-Win32 Virtual Ethernet Adapter" SecTAP
+Section "TAP-Win32/Win64 Virtual Ethernet Adapter" SecTAP
 
-  SetOverwrite on
-  SetOutPath "$INSTDIR\bin"
-  File "${BIN}\ti3790\tapinstall.exe"
+SetOverwrite on
+FileOpen $R0 "$INSTDIR\bin\addtap.bat" w
+FileWrite $R0 "rem Add a new TAP-Win32/Win64 virtual ethernet adapter$\r$\n"
+FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" install "$INSTDIR\driver\OemWin2k.inf" ${TAP}$\r$\n'
+FileWrite $R0 "pause$\r$\n"
+FileClose $R0
 
-  FileOpen $R0 "$INSTDIR\bin\addtap.bat" w
-  FileWrite $R0 "rem Add a new TAP-Win32 virtual ethernet adapter$\r$\n"
-  FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" install "$INSTDIR\driver\OemWin2k.inf" ${TAP}$\r$\n'
-  FileWrite $R0 "pause$\r$\n"
-  FileClose $R0
+FileOpen $R0 "$INSTDIR\bin\deltapall.bat" w
+FileWrite $R0 "echo WARNING: this script will delete ALL TAP-Win32/Win64 virtual adapters (use the device manager to delete adapters one at a time)$\r$\n"
+FileWrite $R0 "pause$\r$\n"
+FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}$\r$\n'
+FileWrite $R0 "pause$\r$\n"
+FileClose $R0
 
-  FileOpen $R0 "$INSTDIR\bin\deltapall.bat" w
-  FileWrite $R0 "echo WARNING: this script will delete ALL TAP-Win32 virtual adapters (use the device manager to delete adapters one at a time)$\r$\n"
-  FileWrite $R0 "pause$\r$\n"
-  FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}$\r$\n'
-  FileWrite $R0 "pause$\r$\n"
-  FileClose $R0
+ GetVersion::WindowsPlatformArchitecture
+  Pop $R0
 
-  SetOutPath "$INSTDIR\driver"
-  File "${HOME}\tap-win32\i386\${TAPDRV}"
-  File "${HOME}\tap-win32\i386\${TAPCAT}"
+StrCmp $R0 '64' 0 +3
+ DetailPrint "64 is  $R0"
+  Goto W64
+StrCmp $R0 '32' 0 +3
+ DetailPrint "32 is  $R0"
+  Goto W32
+# else
+goto end
 
-  SectionGetFlags ${SecTAPHidden} $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} "" nohiddentap nohiddentap
+W32:
+DetailPrint "We are running on a 32-bit system."
+SetOutPath "$INSTDIR\bin"
+File "${BIN}\ti3790\32\tapinstall.exe"
+SetOutPath "$INSTDIR\driver"
+File "${HOME}\tap-win32\i386\${TAPDRV}"
+File "${HOME}\tap-win32\i386\${TAPDRVCAT}"
+SectionGetFlags ${SecTAPHidden} $R0
+IntOp $R0 $R0 & ${SF_SELECTED}
+IntCmp $R0 ${SF_SELECTED} "" nohiddentap32 nohiddentap32
+File "${HOME}\tap-win32-hiddentap\i386\OemWin2k.inf"
+goto end
+nohiddentap32:
+File "${HOME}\tap-win32\i386\OemWin2k.inf"
+goto end
 
-  File "${HOME}\tap-win32-hiddentap\i386\OemWin2k.inf"
-  goto end
+W64:
+DetailPrint "We are running on a 64-bit system."
+SetOutPath "$INSTDIR\bin"
+File "${BIN}\ti3790\64\tapinstall.exe"
+SetOutPath "$INSTDIR\driver"
+File "${HOME}\tap-win64\i386\${TAPDRV}"
+File "${HOME}\tap-win64\i386\${TAPDRVCAT}"
+SectionGetFlags ${SecTAPHidden} $R0
+IntOp $R0 $R0 & ${SF_SELECTED}
+IntCmp $R0 ${SF_SELECTED} "" nohiddentap64 nohiddentap64
+File "${HOME}\tap-win64-hiddentap\i386\OemWin2k.inf"
+goto end
+nohiddentap64:
+File "${HOME}\tap-win64\i386\OemWin2k.inf"
+goto end
 
-  nohiddentap:
-  File "${HOME}\tap-win32\i386\OemWin2k.inf"
-
-  end:
-
+end:
 SectionEnd
 
 Section "Add OpenVPN to PATH" SecAddPath
@@ -704,7 +730,7 @@ Section "Uninstall"
 
   Sleep 2000
 
-  DetailPrint "TAP-Win32 REMOVE"
+  DetailPrint "TAP-Win32/Win64 REMOVE"
   nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}'
   Pop $R0 # return value/error/timeout
   DetailPrint "tapinstall remove returned: $R0"
@@ -719,16 +745,19 @@ Section "Uninstall"
   Delete "$INSTDIR\bin\openvpn-gui.exe"
   Delete "$INSTDIR\bin\libeay32.dll"
   Delete "$INSTDIR\bin\libssl32.dll"
+  Delete "$INSTDIR\bin\libpkcs11-helper-1.dll"
   Delete "$INSTDIR\bin\tapinstall.exe"
   Delete "$INSTDIR\bin\addtap.bat"
   Delete "$INSTDIR\bin\deltapall.bat"
-
+  
+  
   Delete "$INSTDIR\config\README.txt"
 
   Delete "$INSTDIR\log\README.txt"
 
   Delete "$INSTDIR\driver\OemWin2k.inf"
   Delete "$INSTDIR\driver\${TAPDRV}"
+  Delete "$INSTDIR\driver\${TAPDRVCAT}"
 
   Delete "$INSTDIR\bin\openssl.exe"
 
