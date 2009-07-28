@@ -6,7 +6,7 @@ import os
 import popen2
 import re
 import reportlab.lib.colors as colors
-import sql_helper
+import reports.sql_helper as sql_helper
 import string
 
 from lxml.etree import CDATA

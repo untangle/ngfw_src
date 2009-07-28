@@ -15,7 +15,7 @@ import locale
 import mx
 import os
 import smtplib
-import sql_helper
+import reports.sql_helper as sql_helper
 
 from email import Encoders
 from email.MIMEBase import MIMEBase

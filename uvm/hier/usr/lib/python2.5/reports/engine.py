@@ -4,7 +4,7 @@ import mx
 import os
 import re
 import sets
-import sql_helper
+import reports.sql_helper as sql_helper
 import string
 
 from mx.DateTime import DateTimeDelta

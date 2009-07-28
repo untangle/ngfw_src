@@ -2,7 +2,7 @@ import gettext
 import logging
 import mx
 import reports.engine
-import sql_helper
+import reports.sql_helper as sql_helper
 import sys
 
 from psycopg import DateFromMx

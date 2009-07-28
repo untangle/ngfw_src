@@ -77,7 +77,7 @@ if (PREFIX != ''):
      sys.path.insert(0, REPORTS_PYTHON_DIR)
 
 import reports.engine
-import sql_helper
+import reports.sql_helper as sql_helper
 import reports.mailer
 
 start_date = end_date - mx.DateTime.DateTimeDelta(30)
