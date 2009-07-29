@@ -696,7 +696,8 @@ ORDER BY day
 
 class TopTenSuspiciousTrafficSubnetsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-suspicious-traffic-subnets-by-hits', _('Top Ten Suspicious Traffic Subnets By Hits'))
+        Graph.__init__(self, 'top-ten-suspicious-traffic-subnets-by-hits',
+                       _('Top Ten Suspicious Traffic Subnets'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -719,7 +720,9 @@ AND sw_accesses > 0"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY sw_access_ident ORDER BY hits_sum DESC LIMIT 10"
+        query += """
+GROUP BY sw_access_ident
+ORDER BY hits_sum DESC LIMIT 10"""
 
         conn = sql_helper.get_connection()
         try:
@@ -743,7 +746,7 @@ AND sw_accesses > 0"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Suspicious Traffic Subnets (by hits)'),
+                     title=_('Top Ten Suspicious Traffic Subnets'),
                      xlabel=_('Subnet'),
                      ylabel=_('Blocks per Day'))
 
