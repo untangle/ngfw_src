@@ -204,7 +204,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
             ks = KeyStatistic(_('ham'), ham, self.__ham_label)
             lks.append(ks)
 
-            plot = Chart(type=PIE_CHART, title=_('Total Email'))
+            plot = Chart(type=PIE_CHART, title=self.title)
 
             plot.add_pie_dataset({_('spam'): spam, _('ham'): ham})
         finally:
@@ -214,7 +214,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
 class HourlySpamRate(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label):
-        Graph.__init__(self, 'hourly-email', _('Hourly Email'))
+        Graph.__init__(self, 'hourly-email', _('Hourly Spam Rate'))
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -317,7 +317,7 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART,
-                     title=_('Hourly Web Usage'),
+                     title=self.title,
                      xlabel=_('Hour of Day'),
                      ylabel=_('Hits per Minute'),
                      major_formatter=TIME_OF_DAY_FORMATTER)
@@ -430,7 +430,7 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
             conn.commit()
 
         plot = Chart(type=STACKED_BAR_CHART,
-                     title=_('Daily Web Usage'),
+                     title=self.title,
                      xlabel=_('Date'),
                      ylabel=_('Hits per Day'),
                      major_formatter=DATE_FORMATTER)
@@ -502,7 +502,7 @@ WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Spammed List'))
+                     title=self.title)
 
         plot.add_pie_dataset(pds)
 
