@@ -125,8 +125,7 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0}This web page was blocked{1} because it may be designed to steal personal information.", new Object[]{ "<b>","</b>" },
-                    i18n_map );
+            return I18nUtil.tr("{0}Warning - Suspected phishing page.{1} This page may be a forgery or imitation of another website, designed to trick users into sharing personal or financial information. Entering any personal information on this page may result in identity theft or other abuse. ", new Object[]{ "<b>","</b>" },i18n_map );
         }
     
         public PhishBlockDetails getBlockDetails()
