@@ -75,8 +75,8 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
 
         s = reports.SummarySection('summary', _('Summary Report'),
                                    [DailyVirusesBlocked(self.__vendor_name),
-                                    TopVirusesDetected(self.__vendor_name),
                                     HourlyVirusesBlocked(self.__vendor_name),
+                                    TopVirusesDetected(self.__vendor_name),
                                     TopEmailVirusesDetected(self.__vendor_name),
                                     TopWebVirusesDetected(self.__vendor_name)])
         sections.append(s)
