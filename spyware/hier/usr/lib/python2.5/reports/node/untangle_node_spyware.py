@@ -81,9 +81,9 @@ DELETE FROM events.n_spyware_evt_cookie
                             TopTenBlockedHostsByHits(),
                             TopTenBlockedCookies(),
                             SpywareCookiesBlocked(),
+                            SpywareSubnetsDetected(),
                             TopTenSuspiciousTrafficSubnetsByHits(),
-                            TopTenSuspiciousTrafficHostsByHits(),
-                            SpywareSubnetsDetected()])
+                            TopTenSuspiciousTrafficHostsByHits()])
         sections.append(s)
 
         sections.append(SpywareDetail())
@@ -690,7 +690,7 @@ ORDER BY day
                      ylabel=_('Blocks per Day'),
                      major_formatter=DATE_FORMATTER)
 
-        plot.add_dataset(dates, blocks, label=_('URLs'))
+        plot.add_dataset(dates, blocks, label=_('cookies'))
 
         return (lks, plot)
 
@@ -820,48 +820,66 @@ class SpywareSubnetsDetected(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT sw_access_ident, sum(sw_accesses) as hits_sum
+SELECT date_trunc('day', trunc_time) AS day,
+       sum(new_sessions)
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
-AND sw_access_ident != ''"""
+AND NOT sw_accesses IS NULL AND sw_access_ident != ''"""
 
         if host:
             query += " AND hname = %s"
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY sw_access_ident ORDER BY sw_access_ident ASC"
+        query += """
+GROUP BY day ORDER BY day ASC"""
 
         conn = sql_helper.get_connection()
         try:
-            lks = []
-            dataset = {}
-
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (sd, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (sd, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (sd, ed))
+
+            dates = []
+            blocks = []
+            blocks = []
+            total = 0
+            max = 0
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
-                lks.append(ks)
-                dataset[r[0]] = r[1]
+                s = r[1]
+                dates.append(r[0])
+                blocks.append(s)
+                total += s
+                if max < s:
+                    max = s
         finally:
             conn.commit()
 
-        plot = Chart(type=PIE_CHART,
-                     title=_('Spyware Subnets Detected'),
-                     xlabel=_('Subnet'),
-                     ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        lks = []
+
+        ks = KeyStatistic(_('avg subnets detected'), total / report_days,
+                          _('/day'))
+        lks.append(ks)
+        ks = KeyStatistic(_('max subnets detected'), max, _('/day'))
+        lks.append(ks)
+
+        plot = Chart(type=STACKED_BAR_CHART,
+                     title=_('Spyware Subnets Detected'),
+                     xlabel=_('Date'),
+                     ylabel=_('Detections per Day'),
+                     major_formatter=DATE_FORMATTER)
+
+        plot.add_dataset(dates, blocks, label=_('subnets'))
 
         return (lks, plot)
 
