@@ -707,9 +707,9 @@ ORDER BY sum DESC""" % self.__vendor_name
         try:
             curs = conn.cursor()
             if host:
-                curs.execute(avg_max_query, (one_week, ed, one_week, ed, host))
+                curs.execute(avg_max_query, (one_week, ed, host, one_week, ed, host))
             elif user:
-                curs.execute(avg_max_query, (one_week, ed, one_week, ed, user))
+                curs.execute(avg_max_query, (one_week, ed, user, one_week, ed, user))
             else:
                 curs.execute(avg_max_query, (one_week, ed, one_week, ed))
 
