@@ -103,8 +103,11 @@ class Worker(Thread):
                   reports.engine.generate_sub_report(REPORTS_OUTPUT_BASE,
                                                      node_name, end_date, host,
                                                      user, email)
-             except
-                  return 'ERROR: %s %s %s' % sys.exc_info()
+             except:
+                  logging.error("""\
+could not process request line: %s exception: %s %s %s\
+""" % ((line,) + sys.exc_info()))
+                  return 'ERROR: see server log'
              return 'DONE'
         else:
             return 'BAD_CMD: %s' % cmd
