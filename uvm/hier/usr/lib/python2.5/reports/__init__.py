@@ -24,6 +24,7 @@ from reportlab.platypus.flowables import Image
 from reportlab.platypus.flowables import KeepTogether
 from reportlab.platypus.tables import Table
 from reportlab.platypus.tables import TableStyle
+from reports.engine import i18n_helper
 from reports.engine import ReportDocTemplate
 from reports.engine import get_node_base
 from reports.pdf import STYLESHEET
@@ -33,8 +34,7 @@ HNAME_LINK = 'HostLink'
 USER_LINK = 'UserLink'
 EMAIL_LINK = 'EmailLink'
 
-_ = gettext.gettext
-def N_(message): return message
+_ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
 def __time_of_day_formatter(x, pos):
     t = DateTimeDeltaFromSeconds(x)

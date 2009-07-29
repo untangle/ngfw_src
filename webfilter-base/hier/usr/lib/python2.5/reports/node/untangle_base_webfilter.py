@@ -1,7 +1,7 @@
 import gettext
 import logging
 import mx
-import reports.engine
+import reports.i18n_helper
 import reports.sql_helper as sql_helper
 
 from psycopg import DateFromMx
@@ -25,7 +25,8 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from sql_helper import print_timing
 
-_ = gettext.gettext
+_ = reports.i18n_helper.get_translation('untangle-base-webfilter').lgettext
+
 def N_(message): return message
 
 class WebFilterBaseNode(Node):
@@ -58,7 +59,7 @@ class WebFilterBaseNode(Node):
     def get_report(self):
         sections = []
 
-        s = SummarySection('summary', N_('Summary Report'),
+        s = SummarySection('summary', _('Summary Report'),
                            [HourlyWebUsage(self.__vendor_name),
                             DailyWebUsage(self.__vendor_name),
                             TotalWebUsage(self.__vendor_name),
@@ -183,9 +184,9 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(hits_query, (one_day, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(N_('max hits (1-day)'), r[0], N_('hits/minute'))
+            ks = KeyStatistic(_('max hits (1-day)'), r[0], _('hits/minute'))
             lks.append(ks)
-            ks = KeyStatistic(N_('avg hits (1-day)'), r[1], N_('hits/minute'))
+            ks = KeyStatistic(_('avg hits (1-day)'), r[1], _('hits/minute'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -196,9 +197,9 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(hits_query, (one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(N_('max hits (1-week)'), r[0], N_('hits/minute'))
+            ks = KeyStatistic(_('max hits (1-week)'), r[0], _('hits/minute'))
             lks.append(ks)
-            ks = KeyStatistic(N_('avg hits (1-week)'), r[1], N_('hits/minute'))
+            ks = KeyStatistic(_('avg hits (1-week)'), r[1], _('hits/minute'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -209,8 +210,8 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(violations_query, (one_day, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(N_('avg violations (1-day)'), r[0],
-                              N_('violations/hour'))
+            ks = KeyStatistic(_('avg violations (1-day)'), r[0],
+                              _('violations/hour'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -221,8 +222,8 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(violations_query, (one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(N_('avg violations (1-week)'), r[0],
-                              N_('violations/hour'))
+            ks = KeyStatistic(_('avg violations (1-week)'), r[0],
+                              _('violations/hour'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -331,15 +332,15 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
             else:
                 curs.execute(query, (one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(N_('max hits (7-days)'), r[0], N_('hits/day'))
+            ks = KeyStatistic(_('max hits (7-days)'), r[0], _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(N_('avg hits (7-days)'), r[1], N_('hits/day'))
+            ks = KeyStatistic(_('avg hits (7-days)'), r[1], _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(N_('max violations (7-days)'), r[2],
-                              N_('violations/day'))
+            ks = KeyStatistic(_('max violations (7-days)'), r[2],
+                              _('violations/day'))
             lks.append(ks)
-            ks = KeyStatistic(N_('avg violations (7-days)'), r[3],
-                              N_('violations/day'))
+            ks = KeyStatistic(_('avg violations (7-days)'), r[3],
+                              _('violations/day'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -444,10 +445,10 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
                 curs.execute(query, (one_week, ed))
             r = curs.fetchone()
 
-            ks = KeyStatistic(N_('total hits (7-days)'), r[0], N_('hits'))
+            ks = KeyStatistic(_('total hits (7-days)'), r[0], _('hits'))
             lks.append(ks)
-            ks = KeyStatistic(N_('total violations (7-days)'), r[1],
-                              N_('violations'))
+            ks = KeyStatistic(_('total violations (7-days)'), r[1],
+                              _('violations'))
             lks.append(ks)
 
             if host:
@@ -461,10 +462,10 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
             hits = r[0]
             violations = r[1]
 
-            ks = KeyStatistic(N_('total hits (1-day)'), hits, N_('hits'))
+            ks = KeyStatistic(_('total hits (1-day)'), hits, _('hits'))
             lks.append(ks)
-            ks = KeyStatistic(N_('total violations (1-day)'), violations,
-                              N_('violations'))
+            ks = KeyStatistic(_('total violations (1-day)'), violations,
+                              _('violations'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -522,7 +523,7 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -582,7 +583,7 @@ GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -627,7 +628,8 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
 
             curs.execute(query, (one_day, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
+                ks = KeyStatistic(r[0], r[1], _('hits'),
+                                  link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 
@@ -677,7 +679,8 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
 
             curs.execute(query, (one_day, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
+                ks = KeyStatistic(r[0], r[1], _('hits'),
+                                  link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 
@@ -728,7 +731,8 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
 
             curs.execute(query, (one_day, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
+                ks = KeyStatistic(r[0], r[1], _('hits'),
+                                  link_type=reports.USER_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -774,7 +778,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             curs.execute(query, (one_day, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
+                ks = KeyStatistic(r[0], r[1], N_('bytes'),
+                                  link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 
@@ -831,7 +836,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -888,7 +893,8 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
                 curs.execute(query, (one_day, ed))
 
                 for r in curs.fetchall():
-                    ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.HNAME_LINK)
+                    ks = KeyStatistic(r[0], r[1], N_('bytes'),
+                                      link_type=reports.HNAME_LINK)
                     lks.append(ks)
                     dataset[r[0]] = r[1]
         finally:
@@ -945,7 +951,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -1001,7 +1007,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__vendor_name
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -1018,7 +1024,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__vendor_name
 
 class WebFilterDetail(DetailSection):
     def __init__(self, vendor_name):
-        DetailSection.__init__(self, 'incidents', N_('Incident Report'))
+        DetailSection.__init__(self, 'incidents', _('Incident Report'))
 
         self.__vendor_name = vendor_name
 
@@ -1026,14 +1032,14 @@ class WebFilterDetail(DetailSection):
         if email:
             return None
 
-        rv = [ColumnDesc('time_stamp', N_('Time'), 'Date')]
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if not host:
-            rv.append(ColumnDesc('hname', N_('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
         if not user:
-            rv.append(ColumnDesc('uid', N_('User'), 'UserLink'))
+            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('url', N_('URL'), 'URL')]
+        rv = rv + [ColumnDesc('url', _('URL'), 'URL')]
 
         return rv
 
@@ -1110,7 +1116,7 @@ ORDER BY count_events DESC""" % self.__vendor_name
                 stat_key = r[0]
                 if stat_key is None:
                     stat_key = _('Uncategorized')
-                ks = KeyStatistic(stat_key, r[1], N_('hits'))
+                ks = KeyStatistic(stat_key, r[1], _('hits'))
                 lks.append(ks)
                 dataset[stat_key] = r[1]
         finally:
@@ -1171,7 +1177,7 @@ ORDER BY blocks_sum DESC""" % self.__vendor_name
                 stat_key = r[0]
                 if stat_key is None:
                     stat_key = _('Uncategorized')
-                ks = KeyStatistic(stat_key, r[1], N_('hits'))
+                ks = KeyStatistic(stat_key, r[1], _('hits'))
                 lks.append(ks)
                 dataset[stat_key] = r[1]
         finally:

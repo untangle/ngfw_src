@@ -2,6 +2,7 @@ import gettext
 import logging
 import mx
 import psycopg
+import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 
@@ -31,7 +32,7 @@ EVT_TYPE_RENEW    = 1
 EVT_TYPE_EXPIRE   = 2
 EVT_TYPE_RELEASE  = 3
 
-_ = gettext.gettext
+_ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 def N_(message): return message
 
 class UvmNode(Node):
@@ -96,7 +97,7 @@ DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
     def get_report(self):
         sections = []
 
-        s = SummarySection('summary', N_('Summary Report'),
+        s = SummarySection('summary', _('Summary Report'),
                            [BandwidthUsage(), ActiveSessions(),
                             DestinationPorts()])
         sections.append(s)
@@ -547,10 +548,10 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             avg_rate = r[0]
             peak_rate = r[1]
 
-            ks = KeyStatistic(N_('Avg data rate (1-day)'),
+            ks = KeyStatistic(_('Avg data rate (1-day)'),
                               avg_rate, N_('bytes/s'))
             lks.append(ks)
-            ks = KeyStatistic(N_('Peak data rate (1-day)'),
+            ks = KeyStatistic(_('Peak data rate (1-day)'),
                               peak_rate, N_('bytes/s'))
             lks.append(ks)
 
@@ -580,10 +581,10 @@ WHERE trunc_time >= %s AND trunc_time < %s
             avg_rate = r[0]
             total = r[1]
 
-            ks = KeyStatistic(N_('Avg data rate (%s-day)') % report_days,
+            ks = KeyStatistic(_('Avg data rate (%s-day)') % report_days,
                               avg_rate, N_('bytes/day'))
             lks.append(ks)
-            ks = KeyStatistic(N_('Data Transfered (%s-day)') % report_days,
+            ks = KeyStatistic(_('Data Transfered (%s-day)') % report_days,
                               total, N_('bytes'))
             lks.append(ks)
 
@@ -676,11 +677,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             avg_sessions = r[0]
             max_sessions = r[1]
 
-            ks = KeyStatistic(N_('Avg active sessions (1-day)'),
-                              avg_sessions, N_('sessions'))
+            ks = KeyStatistic(_('Avg active sessions (1-day)'),
+                              avg_sessions, _('sessions'))
             lks.append(ks)
-            ks = KeyStatistic(N_('Max active sessions (1-day)'),
-                              max_sessions, N_('sessions'))
+            ks = KeyStatistic(_('Max active sessions (1-day)'),
+                              max_sessions, _('sessions'))
             lks.append(ks)
 
             ks_query = """\
@@ -706,8 +707,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             total_sessions = r[0]
 
-            ks = KeyStatistic(N_('Total Sessions (%s-day)') % report_days,
-                              total_sessions, N_('sessions'))
+            ks = KeyStatistic(_('Total Sessions (%s-day)') % report_days,
+                              total_sessions, _('sessions'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -802,7 +803,7 @@ LIMIT 10"""
             for r in curs.fetchall():
                 port = r[0]
                 sessions = r[1]
-                ks = KeyStatistic(str(port), sessions, N_('sessions'))
+                ks = KeyStatistic(str(port), sessions, _('sessions'))
                 lks.append(ks)
                 pds[port] = sessions
         finally:

@@ -12,6 +12,8 @@ from threading import Thread
 LOGFILE = "/var/log/uvm/report.log"
 sys.stdout = sys.stderr = open(LOGFILE, 'a+')
 
+locale = 'en'
+
 def usage():
      print """\
 usage: %s [options]
@@ -35,6 +37,7 @@ NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
 if (PREFIX != ''):
      sys.path.insert(0, REPORTS_PYTHON_DIR)
 
+import reports.i18n_helper
 import reports.engine
 
 class Worker(Thread):
@@ -102,7 +105,7 @@ class Worker(Thread):
         else:
             return 'BAD_CMD: %s' % cmd
 
-reports.engine.init_engine(NODE_MODULE_DIR, 'en')
+reports.engine.init_engine(NODE_MODULE_DIR)
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.bind(('localhost', 55204))

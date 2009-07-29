@@ -1,6 +1,7 @@
 import gettext
 import logging
 import mx
+import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 import string
@@ -15,8 +16,7 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from sql_helper import print_timing
 
-_ = gettext.gettext
-def N_(message): return message
+_ = reports.i18n_helper.get_translation('untangle-base-virus').lgettext
 
 class VirusBaseNode(reports.engine.Node):
     def __init__(self, node_name, vendor_name):
@@ -73,7 +73,7 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
     def get_report(self):
         sections = []
 
-        s = reports.SummarySection('summary', N_('Summary Report'),
+        s = reports.SummarySection('summary', _('Summary Report'),
                                    [DailyVirusesBlocked(self.__vendor_name),
                                     TopVirusesDetected(self.__vendor_name),
                                     HourlyVirusesBlocked(self.__vendor_name),
@@ -191,18 +191,18 @@ WHERE reports.n_mail_msgs.time_stamp >= %s
 
 class VirusDetail(reports.DetailSection):
     def __init__(self, vendor_name):
-        reports.DetailSection.__init__(self, 'incidents', N_('Incident Report'))
+        reports.DetailSection.__init__(self, 'incidents', _('Incident Report'))
         self.__vendor_name = vendor_name
 
     def get_columns(self, host=None, user=None, email=None):
-        rv = [reports.ColumnDesc('time_stamp', N_('Time'), 'Date')]
+        rv = [reports.ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if not host:
-            rv.append(reports.ColumnDesc('hname', N_('Client'), 'HostLink'))
+            rv.append(reports.ColumnDesc('hname', _('Client'), 'HostLink'))
         if not user:
-            rv.append(reports.ColumnDesc('uid', N_('User'), 'UserLink'))
+            rv.append(reports.ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [reports.ColumnDesc('url', N_('URL'), 'URL')]
+        rv = rv + [reports.ColumnDesc('url', _('URL'), 'URL')]
 
         return rv
 
@@ -283,9 +283,9 @@ select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+
             else:
                 curs.execute(avg_max_query, (one_week, ed, one_week, ed))
             r = curs.fetchone()
-            ks = reports.KeyStatistic(N_('max (1-week)'), r[1], N_('viruses/day'))
+            ks = reports.KeyStatistic(_('max (1-week)'), r[1], _('viruses/day'))
             lks.append(ks)
-            ks = reports.KeyStatistic(N_('avg (1-week)'), r[0], N_('viruses/day'))
+            ks = reports.KeyStatistic(_('avg (1-week)'), r[0], _('viruses/day'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -435,9 +435,9 @@ select date_trunc('hour', trunc_time) AS day, sum(viruses_"""+self.__vendor_name
             else:
                 curs.execute(avg_max_query, (one_week, ed, one_week, ed))
             r = curs.fetchone()
-            ks = reports.KeyStatistic(N_('max (1-week)'), r[1], N_('viruses/hour'))
+            ks = reports.KeyStatistic(_('max (1-week)'), r[1], _('viruses/hour'))
             lks.append(ks)
-            ks = reports.KeyStatistic(N_('avg (1-week)'), r[0], N_('viruses/hour'))
+            ks = reports.KeyStatistic(_('avg (1-week)'), r[0], _('viruses/hour'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -642,7 +642,7 @@ LIMIT 10""" % self.__vendor_name
                 r = curs.fetchone()
                 if not r:
                     break
-                ks = reports.KeyStatistic(r[0], r[1], N_('viruses'))
+                ks = reports.KeyStatistic(r[0], r[1], _('viruses'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -720,7 +720,7 @@ ORDER BY sum DESC""" % self.__vendor_name
                 r = curs.fetchone()
                 if not r:
                     break
-                ks = reports.KeyStatistic(r[0], r[1], N_('viruses'))
+                ks = reports.KeyStatistic(r[0], r[1], _('viruses'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:

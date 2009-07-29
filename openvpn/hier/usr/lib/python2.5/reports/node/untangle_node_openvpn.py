@@ -1,6 +1,7 @@
 import gettext
 import logging
 import mx
+import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 
@@ -24,7 +25,7 @@ from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from sql_helper import print_timing
 
-_ = gettext.gettext
+_ = reports.i18n_helper.get_translation('untangle-node-openvpn').lgettext
 def N_(message): return message
 
 class OpenVpn(Node):
@@ -53,7 +54,7 @@ class OpenVpn(Node):
     def get_report(self):
         sections = []
 
-        s = SummarySection('summary', N_('Summary Report'),
+        s = SummarySection('summary', _('Summary Report'),
                            [BandwidthUsage(), TopUsers()])
         sections.append(s)
 
@@ -111,8 +112,8 @@ class BandwidthUsage(Graph):
         conn = sql_helper.get_connection()
         try:
             ks_query = """\
-SELECT avg((rx_bytes + tx_bytes) / 1000 / seconds),
-       max((rx_bytes + tx_bytes) / 1000 / seconds)
+SELECT avg((rx_bytes + tx_bytes) / seconds),
+       max((rx_bytes + tx_bytes) / seconds)
 FROM reports.n_openvpn_stats
 WHERE time_stamp >= %s AND time_stamp < %s"""
 
@@ -126,11 +127,11 @@ WHERE time_stamp >= %s AND time_stamp < %s"""
 
                 r = curs.fetchone()
                 if r:
-                    ks = KeyStatistic(N_('Avg data rate (%s-day)' % n),
-                                      r[0], N_('Kb/s'))
+                    ks = KeyStatistic(_('Avg data rate (%s-day)' % n),
+                                      r[0], N_('bytes/s'))
                     lks.append(ks)
-                    ks = KeyStatistic(N_('Peak data rate (%s-day)' % n), r[0],
-                                      N_('Kb/s'))
+                    ks = KeyStatistic(_('Peak data rate (%s-day)' % n), r[0],
+                                      N_('bytes/s'))
                     lks.append(ks)
 
             plot = Chart(type=TIME_SERIES_CHART,
@@ -158,7 +159,7 @@ ORDER BY time"""
                 dates.append(r[0])
                 throughput.append(r[1])
 
-            plot.add_dataset(dates, throughput, _('Usage'))
+            plot.add_dataset(dates, throughput, _('Usage (KB/sec)'))
         finally:
             conn.commit()
 
@@ -199,7 +200,7 @@ LIMIT 10"""
                 client_name = r[0]
                 num = r[1]
 
-                lks.append(KeyStatistic(client_name, num, N_('blocks')))
+                lks.append(KeyStatistic(client_name, num, _('blocks')))
                 pds[client_name] = num
         finally:
             conn.commit()
@@ -212,17 +213,17 @@ LIMIT 10"""
 
 class OpenVpnDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', N_('Incident Report'))
+        DetailSection.__init__(self, 'incidents', _('Incident Report'))
 
     def get_columns(self, host=None, user=None, email=None):
         if host or user or email:
             return None
 
-        rv = [ColumnDesc('trunc_time', N_('Time'), 'Time')]
+        rv = [ColumnDesc('trunc_time', _('Time'), 'Time')]
 
-        rv = rv + [ColumnDesc('client_name', N_('Client'), 'Client')]
-        rv = rv + [ColumnDesc('remote_address', N_('Address'), 'Address')]
-        rv = rv + [ColumnDesc('remote_port', N_('Port'), 'Port')]
+        rv = rv + [ColumnDesc('client_name', _('Client'), 'Client')]
+        rv = rv + [ColumnDesc('remote_address', _('Address'), 'Address')]
+        rv = rv + [ColumnDesc('remote_port', _('Port'), 'Port')]
 
         return rv
 

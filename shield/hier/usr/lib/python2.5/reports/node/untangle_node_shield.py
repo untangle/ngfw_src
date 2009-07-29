@@ -1,6 +1,7 @@
 import gettext
 import logging
 import mx
+import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 
@@ -25,8 +26,7 @@ from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from sql_helper import print_timing
 
-_ = gettext.gettext
-def N_(message): return message
+_ = reports.i18n_helper.get_translation('untangle-node-shield').lgettext
 
 class Shield(Node):
     def __init__(self):
@@ -64,7 +64,7 @@ class Shield(Node):
     def get_report(self):
         sections = []
 
-        s = SummarySection('summary', N_('Summary Report'),
+        s = SummarySection('summary', _('Summary Report'),
                            [DailyRequest(), BlockedHosts(), LimitedHosts()])
         sections.append(s)
 
@@ -103,23 +103,23 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             r = curs.fetchone()
 
             lks = []
-            ks = KeyStatistic(N_('avg requests/minute (7-days)'), r[0],
-                              N_('sessions/minute'))
+            ks = KeyStatistic(_('avg requests/minute (7-days)'), r[0],
+                              _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(N_('max requests/minute (7-days)'), r[1],
-                              N_('sessions/minute'))
+            ks = KeyStatistic(_('max requests/minute (7-days)'), r[1],
+                              _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(N_('avg limited/minute (7-days)'), r[2],
-                              N_('sessions/minute'))
+            ks = KeyStatistic(_('avg limited/minute (7-days)'), r[2],
+                              _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(N_('max limited/minute (7-days)'), r[3],
-                              N_('sessions/minute'))
+            ks = KeyStatistic(_('max limited/minute (7-days)'), r[3],
+                              _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(N_('avg blocked/minute (7-days)'), r[4],
-                              N_('sessions/minute'))
+            ks = KeyStatistic(_('avg blocked/minute (7-days)'), r[4],
+                              _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(N_('max blocked/minute (7-days)'), r[5],
-                              N_('sessions/minute'))
+            ks = KeyStatistic(_('max blocked/minute (7-days)'), r[5],
+                              _('sessions/minute'))
             lks.append(ks)
 
             query = """\
@@ -194,7 +194,7 @@ LIMIT 10"""
                 host = r[0]
                 num = r[1]
 
-                lks.append(KeyStatistic(host, num, N_('blocks')))
+                lks.append(KeyStatistic(host, num, _('blocks')))
                 pds[host] = num
         finally:
             conn.commit()
@@ -242,7 +242,7 @@ LIMIT 10"""
                 host = r[0]
                 num = r[1]
 
-                lks.append(KeyStatistic(host, num, N_('limited'),
+                lks.append(KeyStatistic(host, num, _('limited'),
                                         link_type=reports.HNAME_LINK))
                 pds[host] = num
         finally:
@@ -257,15 +257,15 @@ LIMIT 10"""
 class ShieldDetail(DetailSection):
 
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', N_('Incident Report'))
+        DetailSection.__init__(self, 'incidents', _('Incident Report'))
 
     def get_columns(self, host=None, user=None, email=None):
         if host or user or email:
             return None
 
-        rv = [ColumnDesc('trunc_time', N_('Time'), 'Date')]
+        rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
 
-        rv = rv + [ColumnDesc('client_addr', N_('Client'), 'Client')]
+        rv = rv + [ColumnDesc('client_addr', _('Client'), 'Client')]
 
         return rv
 

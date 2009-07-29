@@ -15,6 +15,7 @@ import locale
 import mx
 import os
 import smtplib
+import reports.i18n_helper
 import reports.sql_helper as sql_helper
 
 from email import Encoders
@@ -23,7 +24,7 @@ from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 
-_ = gettext.gettext
+_ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
 def mail_reports(date, file):
     receivers, sender = __get_mail_info()

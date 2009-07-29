@@ -1,6 +1,7 @@
 import gettext
 import logging
 import mx
+import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 
@@ -24,8 +25,7 @@ from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from sql_helper import print_timing
 
-_ = gettext.gettext
-def N_(message): return message
+_ = reports.i18n_helper.get_translation('untangle-base-spam').lgettext
 
 class SpamBaseNode(Node):
     def __init__(self, node_name, title, short_name, vendor_name, spam_label,
@@ -70,7 +70,7 @@ class SpamBaseNode(Node):
     def get_report(self):
         sections = []
 
-        s = SummarySection('summary', N_('Summary Report'),
+        s = SummarySection('summary', _('Summary Report'),
                            [TotalEmail(self.__short_name, self.__vendor_name,
                                        self.__spam_label, self.__ham_label),
                             HourlySpamRate(self.__short_name,
@@ -197,11 +197,11 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
             spam = r[1]
             ham = total - spam
 
-            ks = KeyStatistic(N_('total'), total, N_('total'))
+            ks = KeyStatistic(_('total'), total, _('total'))
             lks.append(ks)
-            ks = KeyStatistic(N_('spam'), spam, self.__spam_label)
+            ks = KeyStatistic(_('spam'), spam, self.__spam_label)
             lks.append(ks)
-            ks = KeyStatistic(N_('ham'), ham, self.__ham_label)
+            ks = KeyStatistic(_('ham'), ham, self.__ham_label)
             lks.append(ks)
 
             plot = Chart(type=PIE_CHART, title=_('Total Email'))
@@ -263,13 +263,13 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             spam_rate = r[1]
             ham_rate = email_rate - spam_rate
 
-            ks = KeyStatistic(N_('mail rate'), email_rate, N_('messages/hour'))
+            ks = KeyStatistic(_('mail rate'), email_rate, _('messages/hour'))
             lks.append(ks)
-            ks = KeyStatistic(N_('%s rate') % self.__spam_label, spam_rate,
-                              N_('messages/hour'))
+            ks = KeyStatistic(_('%s rate') % self.__spam_label, spam_rate,
+                              _('messages/hour'))
             lks.append(ks)
-            ks = KeyStatistic(N_('%s rate') % self.__ham_label, ham_rate,
-                              N_('messages/hour'))
+            ks = KeyStatistic(_('%s rate') % self.__ham_label, ham_rate,
+                              _('messages/hour'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -378,13 +378,13 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             spam_rate = r[1]
             ham_rate = email_rate - spam_rate
 
-            ks = KeyStatistic(N_('mail rate'), email_rate, N_('messages/day'))
+            ks = KeyStatistic(_('mail rate'), email_rate, _('messages/day'))
             lks.append(ks)
-            ks = KeyStatistic(N_('%s rate') % self.__spam_label, spam_rate,
-                              N_('messages/day'))
+            ks = KeyStatistic(_('%s rate') % self.__spam_label, spam_rate,
+                              _('messages/day'))
             lks.append(ks)
-            ks = KeyStatistic(N_('%s rate') % self.__ham_label, ham_rate,
-                              N_('messages/day'))
+            ks = KeyStatistic(_('%s rate') % self.__ham_label, ham_rate,
+                              _('messages/day'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -482,7 +482,7 @@ LIMIT 10""" % (self.__short_name,)
                 num = r[1]
                 counted_spam += num
 
-                lks.append(KeyStatistic(addr, num, N_('spam')))
+                lks.append(KeyStatistic(addr, num, _('spam')))
                 pds[addr] = num
 
             query = """\
@@ -496,8 +496,8 @@ WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
             r = curs.fetchone()
             if r[0]:
                 other = r[0] - counted_spam
-                lks.append(KeyStatistic(N_('other'), other, N_('spam')))
-                pds[N_('other')] = other
+                lks.append(KeyStatistic(_('other'), other, _('spam')))
+                pds[_('other')] = other
         finally:
             conn.commit()
 
@@ -511,18 +511,18 @@ WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
 class SpamDetail(DetailSection):
 
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', N_('Incident Report'))
+        DetailSection.__init__(self, 'incidents', _('Incident Report'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
             return None
 
-        rv = [ColumnDesc('trunc_time', N_('Time'), 'Date')]
+        rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
 
         if not host:
-            rv.append(ColumnDesc('hname', N_('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
         if not user:
-            rv.append(ColumnDesc('uid', N_('User'), 'UserLink'))
+            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         return rv
 

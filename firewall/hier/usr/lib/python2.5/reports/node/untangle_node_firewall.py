@@ -1,6 +1,7 @@
 import gettext
 import logging
 import mx
+import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 import sys
@@ -27,8 +28,7 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from sql_helper import print_timing
 
-_ = gettext.gettext
-def N_(message): return message
+_ = reports.i18n_helper.get_translation('untangle-node-firewall').lgettext
 
 class Firewall(Node):
     def __init__(self):
@@ -53,7 +53,7 @@ class Firewall(Node):
 
     def get_report(self):
         sections = []
-        s = reports.SummarySection('summary', N_('Summary Report'),
+        s = reports.SummarySection('summary', _('Summary Report'),
                                    [DailyRules(),
                                     TopTenBlockingRulesByHits(),
                                     TopTenBlockedHostsByHits(),
@@ -151,17 +151,17 @@ FROM (select date_trunc('day', time_stamp) AS day,
             else:
                 curs.execute(avg_max_query, (one_week, ed))
             r = curs.fetchone()
-            ks = reports.KeyStatistic(N_('avg (1-week)'), r[0],
-                                      N_('logged/day'))
+            ks = reports.KeyStatistic(_('avg (1-week)'), r[0],
+                                      _('logged/day'))
             lks.append(ks)
-            ks = reports.KeyStatistic(N_('max (1-week)'), r[1],
-                                      N_('logged/day'))
+            ks = reports.KeyStatistic(_('max (1-week)'), r[1],
+                                      _('logged/day'))
             lks.append(ks)
-            ks = reports.KeyStatistic(N_('avg (1-week)'), r[2],
-                                      N_('blocked/day'))
+            ks = reports.KeyStatistic(_('avg (1-week)'), r[2],
+                                      _('blocked/day'))
             lks.append(ks)
-            ks = reports.KeyStatistic(N_('max (1-week)'), r[3],
-                                      N_('blocked/day'))
+            ks = reports.KeyStatistic(_('max (1-week)'), r[3],
+                                      _('blocked/day'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -270,7 +270,7 @@ AND firewall_rule_index IS NOT NULL"""
                 curs.execute(query, (one_day, ed))
 
                 for r in curs.fetchall():
-                    ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.HNAME_LINK)
+                    ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.HNAME_LINK)
                     lks.append(ks)
                     dataset[r[0]] = r[1]
         finally:
@@ -329,7 +329,7 @@ AND firewall_rule_index IS NOT NULL"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -389,7 +389,7 @@ AND firewall_rule_index IS NOT NULL"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'), link_type=reports.USER_LINK)
+                ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.USER_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -406,20 +406,20 @@ AND firewall_rule_index IS NOT NULL"""
 
 class FirewallDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', N_('Incident Report'))
+        DetailSection.__init__(self, 'incidents', _('Incident Report'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
             return None
 
-        rv = [ColumnDesc('time_stamp', N_('Time'), 'Date')]
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if not host:
-            rv.append(ColumnDesc('hname', N_('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
         if not user:
-            rv.append(ColumnDesc('uid', N_('User'), 'UserLink'))
+            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('c_server_addr', N_('Server'), 'Server')]
+        rv = rv + [ColumnDesc('c_server_addr', _('Server'), 'Server')]
 
         return rv
 

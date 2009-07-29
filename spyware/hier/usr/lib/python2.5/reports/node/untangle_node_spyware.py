@@ -1,6 +1,7 @@
 import gettext
 import logging
 import mx
+import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 
@@ -25,8 +26,7 @@ from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
 from sql_helper import print_timing
 
-_ = gettext.gettext
-def N_(message): return message
+_ = reports.i18n_helper.get_translation('untangle-node-spyware').lgettext
 
 class Spyware(Node):
     def __init__(self):
@@ -74,7 +74,7 @@ DELETE FROM events.n_spyware_evt_cookie
     def get_report(self):
         sections = []
 
-        s = SummarySection('summary', N_('Summary Report'),
+        s = SummarySection('summary', _('Summary Report'),
                            [HourlyRates(),
                             SpywareUrlsBlocked(),
                             TopTenBlockedSpywareSitesByHits(),
@@ -232,11 +232,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 else:
                     curs.execute(url_query, (sd, ed))
                     r = curs.fetchone()
-                    ks = KeyStatistic(N_('avg URLs blocked (%s-day)' % n), r[0],
-                                      N_('blocks/hour'))
+                    ks = KeyStatistic(_('avg URLs blocked (%s-day)' % n), r[0],
+                                      _('blocks/hour'))
                     lks.append(ks)
-                    ks = KeyStatistic(N_('avg cookies blocked (%s-day)' % n), r[1],
-                                      N_('blocks/hour'))
+                    ks = KeyStatistic(_('avg cookies blocked (%s-day)' % n), r[1],
+                                      _('blocks/hour'))
                     lks.append(ks)
 
             sessions_query = """\
@@ -261,8 +261,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 else:
                     curs.execute(url_query, (sd, ed))
                 r = curs.fetchone()
-                ks = KeyStatistic(N_('avg subnets blocked (%s-day)' % n), r[0],
-                                  N_('blocks/hour'))
+                ks = KeyStatistic(_('avg subnets blocked (%s-day)' % n), r[0],
+                                  _('blocks/hour'))
                 lks.append(ks)
         finally:
             conn.commit()
@@ -400,11 +400,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 curs.execute(query, (report_days, one_week, ed))
 
             r = curs.fetchone()
-            ks = KeyStatistic(N_('Avg URLs blocked (7-days)'), r[0],
-                              N_('hits/day'))
+            ks = KeyStatistic(_('Avg URLs blocked (7-days)'), r[0],
+                              _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(N_('Max URLs blocked (7-days)'), r[1],
-                              N_('hits/day'))
+            ks = KeyStatistic(_('Max URLs blocked (7-days)'), r[1],
+                              _('hits/day'))
             lks.append(ks)
 
             q = """\
@@ -492,7 +492,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -550,7 +550,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'),
+                ks = KeyStatistic(r[0], r[1], _('hits'),
                                   link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -610,7 +610,7 @@ AND sw_cookies > 0"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -669,7 +669,7 @@ AND sw_cookies > 0"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -728,7 +728,7 @@ AND sw_accesses > 0"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -787,7 +787,7 @@ AND sw_accesses > 0"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'),
+                ks = KeyStatistic(r[0], r[1], _('hits'),
                                   link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -844,7 +844,7 @@ AND sw_access_ident != ''"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -862,20 +862,20 @@ AND sw_access_ident != ''"""
 class SpywareDetail(DetailSection):
 
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', N_('Incident Report'))
+        DetailSection.__init__(self, 'incidents', _('Incident Report'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
             return None
 
-        rv = [ColumnDesc('time_stamp', N_('Time'), 'Date')]
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if not host:
-            rv.append(ColumnDesc('hname', N_('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
         if not user:
-            rv.append(ColumnDesc('uid', N_('User'), 'UserLink'))
+            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('c_server_addr', N_('Server'), 'Server')]
+        rv = rv + [ColumnDesc('c_server_addr', _('Server'), 'Server')]
 
         return rv
 

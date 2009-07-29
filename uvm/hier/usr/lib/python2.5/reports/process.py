@@ -42,6 +42,7 @@ no_mail = False
 events_days = 3
 reports_days = None
 end_date = mx.DateTime.today()
+locale = 'en'
 
 no_cleanup = False
 for opt in opts:
@@ -76,6 +77,7 @@ NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
 if (PREFIX != ''):
      sys.path.insert(0, REPORTS_PYTHON_DIR)
 
+import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 import reports.mailer
@@ -133,7 +135,7 @@ WHERE target_state = 'running' OR target_state = 'initialized'
 if not reports_days:
      reports_days = 7
 
-reports.engine.init_engine(NODE_MODULE_DIR, 'en')
+reports.engine.init_engine(NODE_MODULE_DIR)
 if not no_migration:
      reports.engine.setup(start_date, end_date)
      reports.engine.process_fact_tables(start_date, end_date)

@@ -2,6 +2,8 @@ import gettext
 import platform
 import tempfile
 import reportlab.lib.colors as colors
+import reports.i18n_helper
+import reports.engine
 
 from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_LEFT
@@ -29,7 +31,7 @@ from sql_helper import print_timing
 PAGE_HEIGHT = defaultPageSize[1]
 PAGE_WIDTH = defaultPageSize[0]
 
-_ = gettext.gettext
+_ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
 def __getStyleSheet():
     """Returns a stylesheet object"""

@@ -1,4 +1,3 @@
-import gettext
 import logging
 import mx
 import os
@@ -266,17 +265,7 @@ def delete_old_reports(dir, cutoff):
                 shutil.rmtree('%s/%s' % (dir, f));
 
 @print_timing
-def init_engine(node_module_dir, locale):
-    gettext.bindtextdomain('untangle-node-reporting')
-    gettext.textdomain('untangle-node-reporting')
-
-    try:
-        lang = gettext.translation('untangle-node-reporting',
-                                   languages=[locale])
-        lang.install()
-    except Exception, e:
-        logging.warn(e)
-
+def init_engine(node_module_dir):
     __get_nodes(node_module_dir)
 
 @print_timing
@@ -341,7 +330,6 @@ def __generate_plots(report_base, dir):
 
     os.system('java -Dlog4j.configuration=log4j-reporter.xml -Djava.awt.headless=true -cp %s com.untangle.uvm.reports.GraphGenerator %s %s'
               % (string.join(path, ':'), report_base, dir))
-
 
 def __get_users(date):
     conn = sql_helper.get_connection()
