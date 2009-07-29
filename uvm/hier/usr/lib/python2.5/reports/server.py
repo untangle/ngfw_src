@@ -99,9 +99,13 @@ class Worker(Thread):
             email = None
 
         if cmd == 'generate_sub_report':
-            reports.engine.generate_sub_report(REPORTS_OUTPUT_BASE, node_name,
-                                               end_date, host, user, email)
-            return 'DONE'
+             try:
+                  reports.engine.generate_sub_report(REPORTS_OUTPUT_BASE,
+                                                     node_name, end_date, host,
+                                                     user, email)
+             except
+                  return 'ERROR: %s %s %s' % sys.exc_info()
+             return 'DONE'
         else:
             return 'BAD_CMD: %s' % cmd
 
