@@ -7,6 +7,7 @@ import popen2
 import re
 import reportlab.lib.colors as colors
 import reports.sql_helper as sql_helper
+import reports.i18n_helper
 import string
 
 from lxml.etree import CDATA
@@ -24,7 +25,6 @@ from reportlab.platypus.flowables import Image
 from reportlab.platypus.flowables import KeepTogether
 from reportlab.platypus.tables import Table
 from reportlab.platypus.tables import TableStyle
-from reports.engine import i18n_helper
 from reports.engine import ReportDocTemplate
 from reports.engine import get_node_base
 from reports.pdf import STYLESHEET
