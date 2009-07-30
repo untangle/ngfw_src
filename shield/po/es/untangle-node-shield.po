@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
+"POT-Creation-Date: 2009-07-30 11:01-0700\n"
 "PO-Revision-Date: 2008-11-23 07:37-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -17,122 +17,178 @@ msgstr ""
 "X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Spanish\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:20
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:32
-msgid "Status"
-msgstr "Estado"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:28
-msgid "Statistics"
-msgstr "Estadísticas"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
-msgid "active"
-msgstr "activo"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
-msgid "inactive"
-msgstr "inactivo"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:43
-msgid "Note"
-msgstr "Nota"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:47
-msgid ""
-"Attack Blocker is a heuristic based intrusion prevention and requires no "
-"configuration. Users can modify the treatment of certain IP and/or networks "
-"on the exception tab."
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:67
+msgid "Summary Report"
 msgstr ""
-"Attack Blocker es un programa de prevención de intrusos basado en heurística "
-"y no requiere configuración. El usuario puede modificar el tratamiento de "
-"ciertas direcciones IP o redes en la ficha Excepciones."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:55
-msgid "enable"
-msgstr "habilitar"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:77
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:151
+msgid "Daily Request"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:60
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:61
-msgid "users"
-msgstr "usuarios"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:106
+msgid "avg requests/minute (7-days)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:61
-msgid "unlimited"
-msgstr "Sin límite"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:107
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:110
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:113
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:116
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:119
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:122
+msgid "sessions/minute"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:74
-msgid "[no description]"
-msgstr "[sin descripción]"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:109
+msgid "max requests/minute (7-days)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:76
-msgid "Exceptions"
-msgstr "Excepciones"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:112
+msgid "avg limited/minute (7-days)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:101
-msgid "address"
-msgstr "dirección"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:115
+msgid "max limited/minute (7-days)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:111
-msgid "user count"
-msgstr "recuento de usuarios"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:118
+msgid "avg blocked/minute (7-days)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:137
-msgid "description"
-msgstr "descripción"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:121
+msgid "max blocked/minute (7-days)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:151
-msgid "Enable"
-msgstr "Habilitar"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:152
+msgid "Hour of Day"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:155
-msgid "Address"
-msgstr "Dirección"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:153
+msgid "Requests per Minute"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:162
-msgid "User Count"
-msgstr "Recuento de usuarios"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:156
+msgid "accepted"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:177
-msgid "Description"
-msgstr "Descripción"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:213
-msgid "timestamp"
-msgstr "fecha y hora"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:221
-msgid "source"
-msgstr "origen"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:227
-msgid "source interface"
-msgstr "interfaz de origen"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:232
-msgid "reputation"
-msgstr "reputación"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:240
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:157
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:245
 msgid "limited"
 msgstr "limitado"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:248
-msgid "dropped"
-msgstr "interrumpido"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:158
+msgid "blocked"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:256
-msgid "reject"
-msgstr "rechazar"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:164
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:203
+msgid "Top Blocked Hosts"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
-msgid "Saving..."
-msgstr "Guardando..."
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:197
+msgid "blocks"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
-msgid "Please wait"
-msgstr "Espere"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:212
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:251
+msgid "Top Limited Hosts"
+msgstr ""
 
-#: ../impl/com/untangle/node/shield/LogIteration.java:194
-msgid "type"
-msgstr "tipo"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:260
+msgid "Incident Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:266
+msgid "Time"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:268
+msgid "Client"
+msgstr ""
+
+#~ msgid "Status"
+#~ msgstr "Estado"
+
+#~ msgid "Statistics"
+#~ msgstr "Estadísticas"
+
+#~ msgid "active"
+#~ msgstr "activo"
+
+#~ msgid "inactive"
+#~ msgstr "inactivo"
+
+#~ msgid "Note"
+#~ msgstr "Nota"
+
+#~ msgid ""
+#~ "Attack Blocker is a heuristic based intrusion prevention and requires no "
+#~ "configuration. Users can modify the treatment of certain IP and/or "
+#~ "networks on the exception tab."
+#~ msgstr ""
+#~ "Attack Blocker es un programa de prevención de intrusos basado en "
+#~ "heurística y no requiere configuración. El usuario puede modificar el "
+#~ "tratamiento de ciertas direcciones IP o redes en la ficha Excepciones."
+
+#~ msgid "enable"
+#~ msgstr "habilitar"
+
+#~ msgid "users"
+#~ msgstr "usuarios"
+
+#~ msgid "unlimited"
+#~ msgstr "Sin límite"
+
+#~ msgid "[no description]"
+#~ msgstr "[sin descripción]"
+
+#~ msgid "Exceptions"
+#~ msgstr "Excepciones"
+
+#~ msgid "address"
+#~ msgstr "dirección"
+
+#~ msgid "user count"
+#~ msgstr "recuento de usuarios"
+
+#~ msgid "description"
+#~ msgstr "descripción"
+
+#~ msgid "Enable"
+#~ msgstr "Habilitar"
+
+#~ msgid "Address"
+#~ msgstr "Dirección"
+
+#~ msgid "User Count"
+#~ msgstr "Recuento de usuarios"
+
+#~ msgid "Description"
+#~ msgstr "Descripción"
+
+#~ msgid "timestamp"
+#~ msgstr "fecha y hora"
+
+#~ msgid "source"
+#~ msgstr "origen"
+
+#~ msgid "source interface"
+#~ msgstr "interfaz de origen"
+
+#~ msgid "reputation"
+#~ msgstr "reputación"
+
+#~ msgid "dropped"
+#~ msgstr "interrumpido"
+
+#~ msgid "reject"
+#~ msgstr "rechazar"
+
+#~ msgid "Saving..."
+#~ msgstr "Guardando..."
+
+#~ msgid "Please wait"
+#~ msgstr "Espere"
+
+#~ msgid "type"
+#~ msgstr "tipo"

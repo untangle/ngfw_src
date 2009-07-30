@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"POT-Creation-Date: 2009-07-30 11:01-0700\n"
 "PO-Revision-Date: 2008-11-22 09:57-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -17,146 +17,233 @@ msgstr ""
 "X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Spanish\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:19
-msgid "block"
-msgstr "bloquear"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:52
+msgid "Summary Report"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:25
-msgid "log"
-msgstr "log"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:114
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:210
+msgid "Daily Usage"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:38
-msgid "[no category]"
-msgstr "[sin categoría]"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:153
+msgid "max detections (7-days)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:39
-msgid "[no protocol]"
-msgstr "[sin protocolo]"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:154
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:157
+msgid "detections/day"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:42
-msgid "[no description]"
-msgstr "[sin descripción]"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:156
+msgid "avg detections (7-days)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:43
-msgid "[no signature]"
-msgstr "[sin firma]"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:211
+msgid "Date"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
-msgid "Protocol List"
-msgstr "Lista de protocolos"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:212
+msgid "Detections per Day"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:77
-msgid "category"
-msgstr "categoría"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:86
-msgid "protocol"
-msgstr "protocolo"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
-msgid "description"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:215
+#, fuzzy
+msgid "detections"
 msgstr "descripción"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:108
-msgid "Category"
-msgstr "Categoría"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:224
+#, fuzzy
+msgid "Top Ten Blocked Protocols By Hits"
+msgstr "Eventos de protocolo bloqueados"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:114
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:264
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:323
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:383
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:442
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:502
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:561
+msgid "hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:271
+#, fuzzy
+msgid "Top Ten Blocked Protocols (by hits)"
+msgstr "Eventos de protocolo bloqueados"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:272
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:331
 msgid "Protocol"
 msgstr "Protocolo"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:120
-msgid "Block"
-msgstr "Bloquear"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:273
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:332
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:392
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:451
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:511
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:570
+msgid "Blocks per Day"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:124
-msgid "Log"
-msgstr "Log"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:283
+msgid "Top Ten Detected Protocols By Hits"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:128
-msgid "Description"
-msgstr "Descripción"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:330
+msgid "Top Ten Detected Protocols (by hits)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:134
-msgid "Signature"
-msgstr "Firma"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:342
+msgid "Top Ten Blocked Hosts By Hits"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
-msgid "blocked"
-msgstr "bloqueado"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:390
+msgid "Top Ten Blocked Hosts (by hits)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
-msgid "passed"
-msgstr "pasado"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:391
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:450
+msgid "Host"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:147
-msgid "blocked in block list"
-msgstr "bloqueado en la lista de bloqueo"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:403
+msgid "Top Ten Logged Hosts By Hits"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:147
-msgid "not blocked in block list"
-msgstr "no bloqueado en la lista de bloqueo"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:449
+msgid "Top Ten Logged Hosts (by hits)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:178
-msgid "timestamp"
-msgstr "fecha y hora"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:461
+msgid "Top Ten Blocked Users By Hits"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:186
-msgid "action"
-msgstr "medida"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:509
+msgid "Top Ten Blocked Users (by hits)"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:191
-msgid "client"
-msgstr "cliente"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:197
-msgid "request"
-msgstr "solicitud"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:202
-msgid "reason for action"
-msgstr "motivo de la medida tomada"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:207
-msgid "server"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:510
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:569
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:589
+#, fuzzy
+msgid "User"
 msgstr "servidor"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
-msgid "Saving..."
-msgstr "Guardando..."
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:521
+msgid "Top Ten Logged Users By Hits"
+msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
-msgid "Please wait"
-msgstr "Espere"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:568
+msgid "Top Ten Logged Users (by hits)"
+msgstr ""
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterAllFilter.java:27
-msgid "Protocol Events"
-msgstr "Eventos de protocolo"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:578
+msgid "Incident Report"
+msgstr ""
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterBlockedFilter.java:27
-msgid "Blocked Protocol Events"
-msgstr "Eventos de protocolo bloqueados"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:584
+msgid "Time"
+msgstr ""
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
-msgid "Sessions scanned"
-msgstr "Sesiones analizadas"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:587
+#, fuzzy
+msgid "Client"
+msgstr "cliente"
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
-msgid "SCAN"
-msgstr "ANALIZAR"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:591
+#, fuzzy
+msgid "Server"
+msgstr "servidor"
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
-msgid "Sessions blocked"
-msgstr "Sesiones bloqueadas"
+#~ msgid "block"
+#~ msgstr "bloquear"
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:91
-msgid "BLOCK"
-msgstr "BLOQUEAR"
+#~ msgid "log"
+#~ msgstr "log"
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
-msgid "Sessions logged"
-msgstr "Sesiones registradas"
+#~ msgid "[no category]"
+#~ msgstr "[sin categoría]"
 
-#: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
-msgid "DETECT"
-msgstr "DETECTAR"
+#~ msgid "[no protocol]"
+#~ msgstr "[sin protocolo]"
+
+#~ msgid "[no description]"
+#~ msgstr "[sin descripción]"
+
+#~ msgid "[no signature]"
+#~ msgstr "[sin firma]"
+
+#~ msgid "Protocol List"
+#~ msgstr "Lista de protocolos"
+
+#~ msgid "category"
+#~ msgstr "categoría"
+
+#~ msgid "protocol"
+#~ msgstr "protocolo"
+
+#~ msgid "Category"
+#~ msgstr "Categoría"
+
+#~ msgid "Block"
+#~ msgstr "Bloquear"
+
+#~ msgid "Log"
+#~ msgstr "Log"
+
+#~ msgid "Description"
+#~ msgstr "Descripción"
+
+#~ msgid "Signature"
+#~ msgstr "Firma"
+
+#~ msgid "blocked"
+#~ msgstr "bloqueado"
+
+#~ msgid "passed"
+#~ msgstr "pasado"
+
+#~ msgid "blocked in block list"
+#~ msgstr "bloqueado en la lista de bloqueo"
+
+#~ msgid "not blocked in block list"
+#~ msgstr "no bloqueado en la lista de bloqueo"
+
+#~ msgid "timestamp"
+#~ msgstr "fecha y hora"
+
+#~ msgid "action"
+#~ msgstr "medida"
+
+#~ msgid "request"
+#~ msgstr "solicitud"
+
+#~ msgid "reason for action"
+#~ msgstr "motivo de la medida tomada"
+
+#~ msgid "Saving..."
+#~ msgstr "Guardando..."
+
+#~ msgid "Please wait"
+#~ msgstr "Espere"
+
+#~ msgid "Protocol Events"
+#~ msgstr "Eventos de protocolo"
+
+#~ msgid "Sessions scanned"
+#~ msgstr "Sesiones analizadas"
+
+#~ msgid "SCAN"
+#~ msgstr "ANALIZAR"
+
+#~ msgid "Sessions blocked"
+#~ msgstr "Sesiones bloqueadas"
+
+#~ msgid "BLOCK"
+#~ msgstr "BLOQUEAR"
+
+#~ msgid "Sessions logged"
+#~ msgstr "Sesiones registradas"
+
+#~ msgid "DETECT"
+#~ msgstr "DETECTAR"

@@ -1,0 +1,145 @@
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:100
+msgid "Summary Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:510
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:628
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:751
+msgid "Bandwidth Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:551
+msgid "Avg data rate (1-day)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:554
+msgid "Peak data rate (1-day)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:584
+#, python-format
+msgid "Avg data rate (%s-day)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:587
+#, python-format
+msgid "Data Transfered (%s-day)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:629
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:752
+msgid "Hour of Day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:630
+msgid "Throughput (Kb/s)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:633
+msgid "Usage"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:639
+msgid "Active Sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:680
+msgid "Avg active sessions (1-day)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:681
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:684
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:711
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:806
+msgid "sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:683
+msgid "Max active sessions (1-day)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:710
+#, python-format
+msgid "Total Sessions (%s-day)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:753
+msgid "Number of Sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:756
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:815
+msgid "Sessions"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:762
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:813
+msgid "Top Destination Ports"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_vm.py:814
+msgid "Port"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/mailer.py:37
+#, python-format
+msgid "New %s Reports Available"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/mailer.py:41
+#, python-format
+msgid ""
+"%s Reports are attached for %s is attached. The pdf file requires Adobe "
+"Acrobat Reader to view."
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:337
+msgid "Key Statistics"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:431
+msgid "slice"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:431
+msgid "value"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:438
+msgid "Unknown"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:453
+msgid "KB"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:457
+msgid "MB"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/__init__.py:461
+msgid "GB"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:150
+msgid "Title Page"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:154
+#: ../hier/usr/lib/python2.5/reports/pdf.py:175
+msgid "Table of Contents"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:213
+#, python-format
+msgid "Page %d"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:223
+#, python-format
+msgid "Report for %s"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/pdf.py:238
+msgid "Report"
+msgstr ""

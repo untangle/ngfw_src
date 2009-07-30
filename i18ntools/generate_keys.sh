@@ -1,8 +1,8 @@
 #!/bin/sh
 
-ALL_MODULES='untangle-libuvm untangle-install-wizard untangle-apache2-config untangle-net-alpaca
-    untangle-casing-mail untangle-base-virus untangle-base-webfilter 
-    untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield 
+ALL_MODULES='untangle-vm untangle-libuvm untangle-install-wizard untangle-apache2-config untangle-net-alpaca
+    untangle-casing-mail untangle-base-virus untangle-base-webfilter
+    untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
     untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote untangle-node-adblocker
     untangle-node-faild untangle-node-splitd'
@@ -10,7 +10,14 @@ OFFICIAL_LANGUAGES='es zh pt_BR'
 
 function update_keys()
 {
-case "$1" in 
+case "$1" in
+"untangle-vm")
+    cd ../uvm/po/
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
+    msgmerge -U $1.pot tmp_keys.pot
+    rm tmp_keys.pot
+    update_po $1
+    ;;
 "untangle-libuvm")
     cd ../uvm-lib/po
     echo 'get main keys'
@@ -22,14 +29,14 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/setup/root/script/setup.js
     echo 'get config keys'
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/webui/root/script/config/*.js
-    
+
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../localapi/com/untangle/uvm/util/OutsideValve.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../localapi/com/untangle/uvm/util/ReportingOutsideAccessValve.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../bootstrap/com/untangle/uvm/engine/UvmErrorReportValve.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../impl/com/untangle/uvm/engine/MailSenderImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../api/com/untangle/uvm/BrandingBaseSettings.java
-    
+
     echo 'get blingers keys'
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/uvm/engine/Dispatcher.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../localapi/com/untangle/uvm/vnet/NodeBase.java
@@ -41,7 +48,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java
-    
+
     msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
@@ -84,6 +91,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/webfilter/src/com/untangle/node/webfilter/BlockPageServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/webfilter/*.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../i18ntools/xi18ntags.rb ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
@@ -98,6 +106,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spam-base/impl/com/untangle/node/spam/Spam*Filter.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../i18ntools/xi18ntags.rb ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
@@ -111,32 +120,35 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../i18ntools/xi18ntags.rb ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting"|untangle-node-adblocker)    
+"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting"|untangle-node-adblocker)
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../${moduleName}/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-spamassassin")    
+"untangle-node-spamassassin")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../${moduleName}/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spam-base/impl/com/untangle/node/spam/*.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-openvpn")    
+"untangle-node-openvpn")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../${moduleName}/po/
     echo 'get new keys'
@@ -144,32 +156,35 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
     #xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-adconnector")    
+"untangle-node-adconnector")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/rup/${moduleName}/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../../../work/src/i18ntools/xi18ntags.rb ../servlets/adpb/root/index.jsp dup>> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-boxbackup")    
+"untangle-node-boxbackup")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/rup/${moduleName}/po/
     echo 'get new keys'
     xgettext --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../hier/usr/share/untangle/web/webui/script/${1}/settings.js
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-splitd")    
+"untangle-node-splitd")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/rup/${moduleName}/po/
     echo 'get new keys'
@@ -190,7 +205,7 @@ case "$1" in
     update_po $1
     ;;
 
-"untangle-node-portal")    
+"untangle-node-portal")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/rup/${moduleName}/po/
     echo 'get new keys'
@@ -201,11 +216,12 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../common/login/error.jsp
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../common/login/login.jsp
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/${moduleName}/*.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-pcremote")    
+"untangle-node-pcremote")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/rup/${moduleName}/po/
     echo 'get new keys'
@@ -213,6 +229,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsa/src/com/untangle/node/rsa/RsaServlet.java
 #    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsaproxy/src/com/untangle/node/rsa/proxy/ForwardServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/rsaproxy/src/com/untangle/node/rsa/proxy/WebProxy.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../../../work/src/i18ntools/xi18ntags.rb ../servlets/rsa/root/rsa.jspx dup >> ./tmp_jspx_keys.pot
     msgcat tmp_keys.pot tmp_jspx_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
@@ -228,12 +245,13 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ki18n._ -o tmp_keys.pot ../servlets/quarantine/root/safelist.js
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Python -ktr -o tmp_keys.pot ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../i18ntools/xi18ntags.rb ../servlets/quarantine/root/inbox.jspx >> ./tmp_keys.pot
     ruby ../../i18ntools/xi18ntags.rb ../servlets/quarantine/root/request.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
-    ;;    
+    ;;
 "untangle-base-virus")
     cd ../virus-base/po/
     echo 'get new keys'
@@ -241,6 +259,7 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -ktr -o tmp_keys.pot ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../impl/com/untangle/node/virus/*.java
+    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     ruby ../../i18ntools/xi18ntags.rb ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx >> ./tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
@@ -260,8 +279,14 @@ function update_po( )
 {
     echo 'update po files'
     for lang in ${OFFICIAL_LANGUAGES}
-    do 
-        msgmerge -U ${lang}/$1.po $1.pot
+    do
+        pot=$1.pot
+        po=${lang}/$1.po
+        if [ ! -e $po ]; then
+            mkdir -p $(dirname $po)
+            touch $po
+        fi
+        msgmerge -U $po $pot
     done
 }
 
@@ -273,19 +298,19 @@ fi
 
 if [ $1 == 'all' ]
 then
-    
+
     current_dir=`pwd`
     for module in ${ALL_MODULES}
-    do 
+    do
         echo 'Updating keys for '${module}'...'
         update_keys ${module}
         cd ${current_dir}
     done
-    
+
 else
     update_keys $1
 fi
 
-    
+
 # All done, exit ok
 exit 0
