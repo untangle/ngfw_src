@@ -29,7 +29,8 @@ _ = reports.i18n_helper.get_translation('untangle-base-spam').lgettext
 
 class SpamBaseNode(Node):
     def __init__(self, node_name, title, short_name, vendor_name, spam_label,
-                 ham_label):
+                 ham_label, hourly_spam_rate_title, daily_spam_rate_title,
+                 top_spammed_title):
         Node.__init__(self, node_name)
 
         self.__title = title
@@ -37,6 +38,9 @@ class SpamBaseNode(Node):
         self.__vendor_name = vendor_name
         self.__spam_label = spam_label
         self.__ham_label = ham_label
+        self.__hourly_spam_rate_title = hourly_spam_rate_title
+        self.__daily_spam_rate_title = daily_spam_rate_title
+        self.__top_spammed_title = top_spammed_title
 
     def parents(self):
         return ['untangle-casing-mail']
@@ -76,15 +80,18 @@ class SpamBaseNode(Node):
                             HourlySpamRate(self.__short_name,
                                            self.__vendor_name,
                                            self.__spam_label,
-                                           self.__ham_label),
+                                           self.__ham_label,
+                                           self.__hourly_spam_rate_title),
                             DailySpamRate(self.__short_name,
                                           self.__vendor_name,
                                           self.__spam_label,
-                                          self.__ham_label),
+                                          self.__ham_label,
+                                          self.__daily_spam_rate_title),
                             TopSpammedUsers(self.__short_name,
-                                           self.__vendor_name,
-                                           self.__spam_label,
-                                           self.__ham_label)])
+                                            self.__vendor_name,
+                                            self.__spam_label,
+                                            self.__ham_label,
+                                            self.__top_spammed_title)])
 
         sections.append(s)
 
@@ -213,8 +220,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
         return (lks, plot)
 
 class HourlySpamRate(Graph):
-    def __init__(self, short_name, vendor_name, spam_label, ham_label):
-        Graph.__init__(self, 'hourly-email', _('Hourly Spam Rate'))
+    def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
+        Graph.__init__(self, 'hourly-email', title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -328,8 +335,8 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
         return (lks, plot)
 
 class DailySpamRate(Graph):
-    def __init__(self, short_name, vendor_name, spam_label, ham_label):
-        Graph.__init__(self, 'daily-spam', _('Daily Spam Rate'))
+    def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
+        Graph.__init__(self, 'daily-spam', title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -441,8 +448,8 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
         return (lks, plot)
 
 class TopSpammedUsers(Graph):
-    def __init__(self, short_name, vendor_name, spam_label, ham_label):
-        Graph.__init__(self, 'spammed-users', _('Top Ten Spammed List'))
+    def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
+        Graph.__init__(self, 'spammed-users', title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
