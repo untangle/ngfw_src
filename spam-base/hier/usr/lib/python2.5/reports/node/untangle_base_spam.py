@@ -276,20 +276,18 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 
             if email:
                 plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       sum(msgs) AS msgs,
-       sum(%s_spam_msgs) AS %s_spam_msgs
+SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
+       sum(msgs) / %%d AS msgs,
+       sum(%s_spam_msgs) / %%d AS %s_spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
 ORDER BY time asc""" % (2 * (self.__short_name,))
             else:
                 plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       sum(msgs) AS msgs,
-       sum(%s_spam_msgs) AS %s_spam_msgs
+SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
+       sum(msgs) / %%d AS msgs,
+       sum(%s_spam_msgs) / %%d AS %s_spam_msgs
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
@@ -302,9 +300,11 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
             curs = conn.cursor()
 
             if email:
-                curs.execute(plot_query, (email, one_week, ed))
+                curs.execute(plot_query, (report_days, report_days, email,
+                                          one_week, ed))
             else:
-                curs.execute(plot_query, (one_week, ed))
+                curs.execute(plot_query, (report_days, report_days, one_week,
+                                          ed))
 
             for r in curs.fetchall():
                 dates.append(r[0])
@@ -319,7 +319,7 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
         plot = Chart(type=TIME_SERIES_CHART,
                      title=self.title,
                      xlabel=_('Hour of Day'),
-                     ylabel=_('Hits per Minute'),
+                     ylabel=_('Emails per Hour'),
                      major_formatter=TIME_OF_DAY_FORMATTER)
 
         plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label))
@@ -432,7 +432,7 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
         plot = Chart(type=STACKED_BAR_CHART,
                      title=self.title,
                      xlabel=_('Date'),
-                     ylabel=_('Hits per Day'),
+                     ylabel=_('Emails per Day'),
                      major_formatter=DATE_FORMATTER)
 
         plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label))
