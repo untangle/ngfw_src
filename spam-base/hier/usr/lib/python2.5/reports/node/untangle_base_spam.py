@@ -171,13 +171,13 @@ class TotalEmail(Graph):
 
         if email:
             query = """\
-SELECT coalesce(sum(msgs), 0), coalesce(sum(%s_spam_msgs), 0)
+SELECT coalesce(sum(msgs), 0), coalesce(sum(%s_spam_msgs), 0)::int
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 """ % self.__short_name
         else:
             query = """\
-SELECT coalesce(sum(msgs), 0), coalesce(sum(%s_spam_msgs), 0)
+SELECT coalesce(sum(msgs), 0), coalesce(sum(%s_spam_msgs), 0)::int
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
@@ -239,15 +239,15 @@ class HourlySpamRate(Graph):
 
             if email:
                 ks_query = """\
-SELECT coalesce(sum(msgs), 0) / (%%s * 24) AS email_rate,
-       coalesce(sum(%s_spam_msgs), 0) / (%%s * 24) AS spam_rate
+SELECT coalesce(sum(msgs), 0)::int / (%%s * 24) AS email_rate,
+       coalesce(sum(%s_spam_msgs), 0)::int / (%%s * 24) AS spam_rate
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
             else:
                 ks_query = """\
-SELECT coalesce(sum(msgs), 0) / %%s * 24 AS email_rate,
-       coalesce(sum(%s_spam_msgs), 0) / %%s * 24 AS spam_rate
+SELECT coalesce(sum(msgs), 0)::int / %%s * 24 AS email_rate,
+       coalesce(sum(%s_spam_msgs), 0)::int / %%s * 24 AS spam_rate
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
@@ -277,8 +277,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             if email:
                 plot_query = """\
 SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
-       sum(msgs) / %%d AS msgs,
-       sum(%s_spam_msgs) / %%d AS %s_spam_msgs
+       sum(msgs)::int / %%d AS msgs,
+       sum(%s_spam_msgs)::int / %%d AS %s_spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
@@ -286,8 +286,8 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
             else:
                 plot_query = """\
 SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
-       sum(msgs) / %%d AS msgs,
-       sum(%s_spam_msgs) / %%d AS %s_spam_msgs
+       sum(msgs)::int / %%d AS msgs,
+       sum(%s_spam_msgs)::int / %%d AS %s_spam_msgs
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
@@ -352,15 +352,15 @@ class DailySpamRate(Graph):
 
             if email:
                 ks_query = """\
-SELECT coalesce(sum(msgs), 0) / %%s AS email_rate,
-       coalesce(sum(%s_spam_msgs), 0) / %%s AS spam_rate
+SELECT coalesce(sum(msgs), 0)::int / %%s AS email_rate,
+       coalesce(sum(%s_spam_msgs), 0)::int / %%s AS spam_rate
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
             else:
                 ks_query = """\
-SELECT coalesce(sum(msgs), 0) / %%s AS email_rate,
-       coalesce(sum(%s_spam_msgs), 0) / %%s AS spam_rate
+SELECT coalesce(sum(msgs), 0)::int / %%s AS email_rate,
+       coalesce(sum(%s_spam_msgs), 0)::int / %%s AS spam_rate
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
@@ -392,8 +392,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             if email:
                 plot_query = """\
 SELECT date_trunc('day', trunc_time) AS day,
-       sum(msgs) AS msgs,
-       sum(%s_spam_msgs) AS %s_spam_msgs
+       sum(msgs)::int AS msgs,
+       sum(%s_spam_msgs)::int AS %s_spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY day
@@ -401,8 +401,8 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
             else:
                 plot_query = """\
 SELECT date_trunc('day', trunc_time) AS day,
-       sum(msgs) AS msgs,
-       sum(%s_spam_msgs) AS %s_spam_msgs
+       sum(msgs)::int AS msgs,
+       sum(%s_spam_msgs)::int AS %s_spam_msgs
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY day
@@ -462,7 +462,7 @@ class TopSpammedUsers(Graph):
         conn = sql_helper.get_connection()
         try:
             query = """\
-SELECT addr, sum(%s_spam_msgs) AS spam_msgs
+SELECT addr, sum(%s_spam_msgs)::int AS spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY addr
@@ -486,7 +486,7 @@ LIMIT 10""" % (self.__short_name,)
                 pds[addr] = num
 
             query = """\
-SELECT sum(%s_spam_msgs) AS spam_msgs
+SELECT sum(%s_spam_msgs)::int AS spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
