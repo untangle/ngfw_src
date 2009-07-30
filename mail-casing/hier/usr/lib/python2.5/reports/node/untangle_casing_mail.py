@@ -111,7 +111,7 @@ INSERT INTO reports.n_mail_addrs
         -- n_message_info
         mi.id, mi.subject, mi.server_type,
         -- events.n_mail_message_info_addr
-        mia.position, mia.addr, mia.personal, mia.kind,
+        mia.position, lower(mia.addr), mia.personal, mia.kind,
         -- events.n_mail_message_stats
         mms.msg_bytes, mms.msg_attachments,
         -- from webpages
