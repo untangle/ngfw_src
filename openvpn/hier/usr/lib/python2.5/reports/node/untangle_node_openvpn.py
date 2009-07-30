@@ -200,7 +200,7 @@ LIMIT 10"""
                 client_name = r[0]
                 num = r[1]
 
-                lks.append(KeyStatistic(client_name, num, _('blocks')))
+                lks.append(KeyStatistic(client_name, num, _('bytes')))
                 pds[client_name] = num
         finally:
             conn.commit()
