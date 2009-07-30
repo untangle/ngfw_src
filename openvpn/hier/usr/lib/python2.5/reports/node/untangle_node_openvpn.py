@@ -143,7 +143,7 @@ WHERE time_stamp >= %s AND time_stamp < %s"""
             plot_query = """\
 SELECT (date_part('hour', time_stamp) || ':'
         || (date_part('minute', time_stamp)::int / 10 * 10))::time,
-       sum(rx_bytes + tx_bytes) / sum(seconds) / 1000
+       sum(rx_bytes + tx_bytes)::int / sum(seconds) / 1000
 FROM reports.n_openvpn_stats
 WHERE time_stamp >= %s AND time_stamp < %s
 GROUP BY time
@@ -180,7 +180,7 @@ class TopUsers(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT client_name, sum(rx_bytes + tx_bytes) AS throughput
+SELECT client_name, sum(rx_bytes + tx_bytes)::int AS throughput
 FROM reports.n_openvpn_connect_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 GROUP BY client_name
