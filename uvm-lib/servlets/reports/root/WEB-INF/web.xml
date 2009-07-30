@@ -27,6 +27,18 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
 
   <display-name>Reports</display-name>
 
+  <servlet>
+    <servlet-name>CsvDumper</servlet-name>
+    <servlet-class>com.untangle.uvm.reports.servlet.CsvServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- Installer, this will install a package based on the query string. -->
+  <servlet-mapping>
+    <servlet-name>CsvDumper</servlet-name>
+    <url-pattern>/csv</url-pattern>
+  </servlet-mapping>
+
   <welcome-file-list>
     <welcome-file>
       index.jsp

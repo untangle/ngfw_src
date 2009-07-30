@@ -46,7 +46,7 @@ BuildEnv::SRC.installTarget.install_jars(taglib, "#{uvm_lib.distDirectory}/usr/s
 
 # servlets
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
-                   "./uvm-lib/servlets/reports")
+                   "./uvm-lib/servlets/reports", [])
 
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.alpaca.jsp',
                    "./uvm-lib/servlets/alpaca")
