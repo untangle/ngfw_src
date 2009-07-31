@@ -361,7 +361,7 @@ class Chart:
 
         self.__header = [xlabel]
 
-    def add_dataset(self, xdata, ydata, label=None, linestyle='-'):
+    def add_dataset(self, xdata, ydata, label=None, color=None, linestyle='-'):
         if self.__type == PIE_CHART:
             raise ValueError('using 2D dataset for pie chart')
 
@@ -371,7 +371,7 @@ class Chart:
 
         self.__header.append(label)
 
-    def add_pie_dataset(self, data):
+    def add_pie_dataset(self, data, colors=None):
         if self.__type != PIE_CHART:
             raise ValueError('using pie dataset for non-pie chart')
 
