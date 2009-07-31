@@ -361,21 +361,28 @@ class Chart:
 
         self.__header = [xlabel]
 
+        self.__colors = {}
+
     def add_dataset(self, xdata, ydata, label=None, color=None, linestyle='-'):
         if self.__type == PIE_CHART:
             raise ValueError('using 2D dataset for pie chart')
 
         m = {'xdata': xdata, 'ydata': ydata, 'label': label,
-             'linestyle': linestyle}
+             'linestyle': linestyle, 'color': color}
         self.__datasets.append(m)
 
         self.__header.append(label)
+
+        if color:
+            self.__colors[label] = color
 
     def add_pie_dataset(self, data, colors=None):
         if self.__type != PIE_CHART:
             raise ValueError('using pie dataset for non-pie chart')
 
         self.__datasets = data
+        if colors:
+            self.__colors = colors
 
     def generate_csv(self, filename, host=None, user=None, email=None):
         if self.__type == PIE_CHART:
@@ -395,6 +402,7 @@ class Chart:
             element.set('y-label', self.__ylabel)
         if self.__major_formatter:
             element.set('major-formatter', self.__major_formatter.name)
+
 
         return element
 
