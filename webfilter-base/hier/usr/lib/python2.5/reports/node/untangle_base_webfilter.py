@@ -1,6 +1,7 @@
 import gettext
 import logging
 import mx
+import reportlab.lib.colors as colors
 import reports.i18n_helper
 import reports.sql_helper as sql_helper
 
@@ -401,8 +402,8 @@ ORDER BY day asc"""
                      ylabel=_('Hits per Day'),
                      major_formatter=DATE_FORMATTER)
 
-        plot.add_dataset(dates, hits, label=_('hits'))
-        plot.add_dataset(dates, blocks, label=_('violations'))
+        plot.add_dataset(dates, hits, label=_('hits'), color=colors.green)
+        plot.add_dataset(dates, blocks, label=_('violations'), color=colors.red)
 
         return plot
 
@@ -475,7 +476,9 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
                      xlabel=_('Date'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset({_('hits'): hits, _('violations'): violations})
+        plot.add_pie_dataset({_('hits'): hits, _('violations'): violations},
+                             colors={'hits': colors.green,
+                                     'violations': colors.red})
 
         return (lks, plot)
 
