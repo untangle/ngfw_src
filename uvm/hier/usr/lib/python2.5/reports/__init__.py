@@ -403,6 +403,10 @@ class Chart:
         if self.__major_formatter:
             element.set('major-formatter', self.__major_formatter.name)
 
+        for t, c in self.__colors.iteritems():
+            ce = Element('color')
+            ce.set('title', t)
+            ce.set('color', c.hexval())
 
         return element
 
