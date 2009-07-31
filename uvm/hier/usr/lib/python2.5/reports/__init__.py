@@ -407,6 +407,7 @@ class Chart:
             ce = Element('color')
             ce.set('title', t)
             ce.set('color', c.hexval())
+            element.append(ce)
 
         return element
 
