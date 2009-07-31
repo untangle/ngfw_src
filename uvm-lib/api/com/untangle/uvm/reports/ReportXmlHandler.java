@@ -55,6 +55,7 @@ public class ReportXmlHandler extends DefaultHandler
     private ApplicationData currentReport;
     private SummarySection currentSummary;
     private Chart currentChart;
+    private Plot currentPlot;
     private DetailSection currentDetailSection;
 
     private StringBuilder sqlBuilder;
@@ -107,7 +108,7 @@ public class ReportXmlHandler extends DefaultHandler
                 currentChart.addKeyStatistic(ks);
             }
         } else if (qName.equals("plot")) {
-            Plot p = null;
+            currentPlot = null;
 
             String type = attrs.getValue("type");
             String title = attrs.getValue("title");
@@ -118,18 +119,22 @@ public class ReportXmlHandler extends DefaultHandler
                 logger.warn("null plot type");
             }
             if (type.equals("time-series-chart")) {
-                p = new TimeSeriesChart(title, xLabel, yLabel, majorFormatter);
+                currentPlot = new TimeSeriesChart(title, xLabel, yLabel,
+                                                  majorFormatter);
             } else if (type.equals("stacked-bar-chart")) {
-                p = new StackedBarChart(title, xLabel, yLabel, majorFormatter);
+                currentPlot = new StackedBarChart(title, xLabel, yLabel,
+                                                  majorFormatter);
             } else if (type.equals("pie-chart")) {
-                p = new PieChart(title, xLabel, yLabel, majorFormatter);
+                currentPlot = new PieChart(title, xLabel, yLabel,
+                                           majorFormatter);
             } else {
                 logger.warn("unknown plot: " + type);
             }
 
-            if (null != p) {
-                currentChart.setPlot(p);
+            if (null != currentPlot) {
+                currentChart.setPlot(currentPlot);
             }
+
         } else if (qName.equals("detail-section")) {
             currentDetailSection = new DetailSection(attrs.getValue("name"),
                                                         attrs.getValue("title"));
@@ -145,6 +150,9 @@ public class ReportXmlHandler extends DefaultHandler
                                               attrs.getValue("type"));
                 currentDetailSection.addColumn(c);
             }
+        } else if (qName.equals("color")) {
+            currentPlot.setColor(attrs.getValue("title"),
+                                 attrs.getValue("value"));
         } else {
             logger.warn("ignoring unknown element: " + qName);
         }

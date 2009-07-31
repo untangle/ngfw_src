@@ -35,6 +35,8 @@ package com.untangle.uvm.reports;
 
 import java.awt.Font;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Plot
 {
@@ -43,6 +45,8 @@ public abstract class Plot
     public static final int CHART_HEIGHT = 230;
     public static final Font TITLE_FONT = new Font("Helvetica", Font.PLAIN, 14);
     public static final Font AXIS_FONT = new Font("Helvetica", Font.PLAIN, 10);
+
+    private final Map<String, String> colors = new HashMap<String, String>();
 
     private final String title;
 
@@ -54,6 +58,16 @@ public abstract class Plot
     public String getTitle()
     {
         return title;
+    }
+
+    public void setColor(String title, String value)
+    {
+        colors.put(title, value);
+    }
+
+    public Map<String, String> getColors()
+    {
+        return new HashMap<String, String>(colors);
     }
 
     public abstract void generate(String reportBase, String csvUrl,

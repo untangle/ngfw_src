@@ -406,7 +406,7 @@ class Chart:
         for t, c in self.__colors.iteritems():
             ce = Element('color')
             ce.set('title', t)
-            ce.set('color', c.hexval())
+            ce.set('value', c.hexval())
             element.append(ce)
 
         return element
