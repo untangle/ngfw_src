@@ -39,7 +39,7 @@ if [ "x" != "x@PREFIX@" ] ; then
     UVM_NICENESS="0"
     if [ "$USER" != "root" ] ; then
         echo "sudo $0 $*"
-        exec sudo $0 $*
+        exec sudo -E $0 $*
     fi
 fi
 
