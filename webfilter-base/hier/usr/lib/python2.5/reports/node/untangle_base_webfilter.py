@@ -46,12 +46,12 @@ class WebFilterBaseNode(Node):
 
         ft = reports.engine.get_fact_table('reports.n_http_totals')
 
-        ft.measures.append(Column('%s_wf_blocks' % self.__vendor_name,
+        ft.measures.append(Column('wf_%s_blocks' % self.__vendor_name,
                                   'integer',
-                                  "count(CASE WHEN NOT %s_wf_action ISNULL THEN 1 ELSE null END)"
+                                  "count(CASE WHEN NOT wf_%s_action ISNULL THEN 1 ELSE null END)"
                                   % self.__vendor_name))
 
-        ft.dimensions.append(Column('%s_wf_category' % self.__vendor_name,
+        ft.dimensions.append(Column('wf_%s_category' % self.__vendor_name,
                                     'text'))
 
     def get_toc_membership(self):
@@ -91,17 +91,17 @@ DELETE FROM events.n_webfilter_evt_blk WHERE time_stamp < %s""", (cutoff,))
     def __update_n_http_events(self, start_date, end_date):
         try:
             sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN %s_wf_action character(1)"""
+ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_action character(1)"""
                                % self.__vendor_name)
         except: pass
         try:
             sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN %s_wf_reason character(1)"""
+ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_reason character(1)"""
                                % self.__vendor_name)
         except: pass
         try:
             sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN %s_wf_category text"""
+ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_category text"""
                                % self.__vendor_name)
         except: pass
 
@@ -113,9 +113,9 @@ ALTER TABLE reports.n_http_events ADD COLUMN %s_wf_category text"""
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
-SET %s_wf_action = action,
-  %s_wf_reason = reason,
-  %s_wf_category = category
+SET wf_%s_action = action,
+  wf_%s_reason = reason,
+  wf_%s_category = category
 FROM events.n_webfilter_evt_blk
 WHERE reports.n_http_events.time_stamp >= %%s
   AND reports.n_http_events.time_stamp < %%s
@@ -159,9 +159,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             hits_query = hits_query + " AND uid = %s"
 
         violations_query = """\
-SELECT avg(%s_wf_blocks)
+SELECT avg(wf_%s_blocks)
 FROM (SELECT date_trunc('hour', trunc_time) AS hour,
-             sum(%s_wf_blocks)::int AS %s_wf_blocks
+             sum(wf_%s_blocks)::int AS wf_%s_blocks
       FROM reports.n_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s""" \
             % (3 * (self.__vendor_name,))
@@ -245,7 +245,7 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
        sum(hits)::int / 10 AS hits,
-       sum(%s_wf_blocks)::int / 10 AS %s_wf_blocks
+       sum(wf_%s_blocks)::int / 10 AS wf_%s_blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
@@ -308,9 +308,9 @@ class DailyWebUsage(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT max(hits), avg(hits), max(%s_wf_blocks), avg(%s_wf_blocks)
+SELECT max(hits), avg(hits), max(wf_%s_blocks), avg(wf_%s_blocks)
 FROM (select date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
-             sum(%s_wf_blocks)::int as %s_wf_blocks
+             sum(wf_%s_blocks)::int as wf_%s_blocks
       FROM reports.n_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s""" \
             % (4 * (self.__vendor_name,))
@@ -361,7 +361,7 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
             q = """\
 SELECT date_trunc('day', trunc_time) AS day,
        sum(hits)::int AS hits,
-       sum(%s_wf_blocks)::int AS %s_wf_blocks
+       sum(wf_%s_blocks)::int AS wf_%s_blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
@@ -424,7 +424,7 @@ class TotalWebUsage(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT coalesce(sum(hits)::int, 0), coalesce(sum(%s_wf_blocks)::int, 0)
+SELECT coalesce(sum(hits)::int, 0), coalesce(sum(wf_%s_blocks)::int, 0)
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
         if host:
@@ -499,16 +499,16 @@ class TopTenWebPolicyViolationsByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT %s_wf_category, sum(%s_wf_blocks)::int AS blocks_sum
+SELECT wf_%s_category, sum(wf_%s_blocks)::int AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''""" % (3 * (self.__vendor_name,))
+AND wf_%s_category != ''""" % (3 * (self.__vendor_name,))
         if host:
             query = query + " AND hname = %s"
         elif user:
             query = query + " AND uid = %s"
         query += """\
-GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10\
+GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10\
 """ % self.__vendor_name
 
         conn = sql_helper.get_connection()
@@ -558,17 +558,17 @@ class TopTenWebBlockedPolicyViolationsByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT %s_wf_category, sum(%s_wf_blocks)::int AS blocks_sum
+SELECT wf_%s_category, sum(wf_%s_blocks)::int AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''
-AND %s_wf_blocks > 0""" % (4 * (self.__vendor_name,))
+AND wf_%s_category != ''
+AND wf_%s_blocks > 0""" % (4 * (self.__vendor_name,))
         if host:
             query = query + " AND hname = %s"
         elif user:
             query = query + " AND uid = %s"
         query += """\
-GROUP BY %s_wf_category ORDER BY blocks_sum DESC LIMIT 10""" \
+GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10""" \
             % self.__vendor_name
 
         conn = sql_helper.get_connection()
@@ -665,11 +665,11 @@ class TopTenWebPolicyViolatorsByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT hname, sum(%s_wf_blocks)::int as blocks_sum
+SELECT hname, sum(wf_%s_blocks)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''
-AND %s_wf_blocks > 0
+AND wf_%s_category != ''
+AND wf_%s_blocks > 0
 GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
             % (3 * (self.__vendor_name,))
 
@@ -716,11 +716,11 @@ class TopTenWebPolicyViolatorsADByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT uid, sum(%s_wf_blocks)::int as blocks_sum
+SELECT uid, sum(wf_%s_blocks)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND %s_wf_category != ''
-AND %s_wf_blocks > 0
+AND wf_%s_category != ''
+AND wf_%s_blocks > 0
 AND uid != ''
 GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
             % (3 * (self.__vendor_name,))
@@ -932,7 +932,7 @@ class TopTenPolicyViolations(Graph):
 SELECT host, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-      AND NOT %s_wf_category IS NULL""" % self.__vendor_name
+      AND NOT wf_%s_category IS NULL""" % self.__vendor_name
         if host:
             query += " AND hname = %s"
         elif user:
@@ -986,7 +986,7 @@ class TopTenBlockerPolicyViolations(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT host, sum(%s_wf_blocks)::int as hits_sum
+SELECT host, sum(wf_%s_blocks)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__vendor_name
         if host:
@@ -1037,12 +1037,20 @@ class WebFilterDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        if not host:
+        if host:
+            rv.append(ColumnDesc('hname', _('Client'), 'String'))
+        else:
             rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
-        if not user:
+
+        if user:
+            rv.append(ColumnDesc('uid', _('User'), 'String'))
+        else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('url', _('URL'), 'URL')]
+
+        rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, 'String'),
+               ColumnDesc('url', _('URL'), 'URL'),
+               ColumnDesc('s_server_addr', _('Server IP'), 'ipaddr')]
 
         return rv
 
@@ -1050,19 +1058,15 @@ class WebFilterDetail(DetailSection):
         if email:
             return None
 
-        sql = "SELECT time_stamp, "
-
-        if not host:
-            sql = sql + "hname, "
-        if not user:
-            sql = sql + "uid, "
-
-        sql = sql + ("""'http://' || host || uri
+        sql = """\
+SELECT time_stamp, hname, uid, wf_%s_category, 'http://' || host || uri,
+       s_server_addr
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
-      AND NOT %s_wf_action ISNULL""" % (DateFromMx(start_date),
-                                     DateFromMx(end_date),
-                                     self.__vendor_name))
+      AND NOT wf_%s_action ISNULL""" % (self.__vendor_name,
+                                        DateFromMx(start_date),
+                                        DateFromMx(end_date),
+                                        self.__vendor_name)
 
         if host:
             sql = sql + (" AND host = %s" % QuotedString(host))
@@ -1090,7 +1094,7 @@ class WebUsageByCategory(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT %s_wf_category, count(*) AS count_events
+SELECT wf_%s_category, count(*) AS count_events
 FROM reports.n_http_events
 WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__vendor_name
         if host:
@@ -1098,7 +1102,7 @@ WHERE time_stamp >= %%s AND time_stamp < %%s""" % self.__vendor_name
         elif user:
             query += " AND uid = %s"
         query += """\
-GROUP BY %s_wf_category
+GROUP BY wf_%s_category
 ORDER BY count_events DESC""" % self.__vendor_name
 
         conn = sql_helper.get_connection()
@@ -1150,16 +1154,16 @@ class ViolationsByCategory(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT %s_wf_category, count(*) as blocks_sum
+SELECT wf_%s_category, count(*) as blocks_sum
 FROM reports.n_http_events
 WHERE time_stamp >= %%s AND time_stamp < %%s
-AND %s_wf_action IS NOT NULL """ % (2 * (self.__vendor_name,))
+AND wf_%s_action IS NOT NULL """ % (2 * (self.__vendor_name,))
         if host:
             query += " AND hname = %s"
         elif user:
             query += " AND uid = %s"
         query += """\
-GROUP BY %s_wf_category
+GROUP BY wf_%s_category
 ORDER BY blocks_sum DESC""" % self.__vendor_name
 
         conn = sql_helper.get_connection()

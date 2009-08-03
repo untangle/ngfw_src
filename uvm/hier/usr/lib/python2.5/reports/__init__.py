@@ -255,7 +255,8 @@ class ColumnDesc():
         element = Element('column')
         element.set('name', self.__name)
         element.set('title', self.__title)
-        element.set('type', self.__type)
+        if self.__type:
+            element.set('type', self.__type)
 
         return element
 
