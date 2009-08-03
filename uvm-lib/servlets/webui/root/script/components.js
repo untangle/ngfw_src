@@ -1691,20 +1691,16 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         var cpuArr=[
             '<div class="title">'+i18n._("Number of Processors / Type / Speed:")+'</div>',
             '<div class="values"><span name="num_cpus"></span>, <span name="cpu_model"></span>, <span name="cpu_speed"></span></div>',
-            '<div class="title">'+i18n._("Uptime:")+'</div>',
-            '<div class="values"><span name="uptime"></span></div>',
-            '<div class="title">'+i18n._("Tasks (Processes)")+
-            // "/"+i18n._("Threads")+
-            '</div>',
-            '<div class="values"><span name="tasks"></span>'+
-            // ', <span name="threads"></span>'+
-            '</div>',
+            '<div class="title">'+i18n._("Load average (1 min , 5 min , 15 min):")+'</div>',
+            '<div class="values"><span name="load_average_1_min"></span>, <span name="load_average_5_min"></span>, <span name="load_average_15_min"></span></div>',
             '<div class="title">'+i18n._("CPU Utilization by User:")+'</div>',
             '<div class="values"><span name="cpu_utilization_user"></span>  %</div>',
             '<div class="title">'+i18n._("CPU Utilization by System:")+'</div>',
             '<div class="values"><span name="cpu_utilization_system"></span> %</div>',
-            '<div class="title">'+i18n._("Load average (1 min / 5 min / 15 min):")+'</div>',
-            '<div class="values"><span name="load_average_1_min"></span>, <span name="load_average_5_min"></span>, <span name="load_average_15_min"></span></div>'
+            '<div class="title">'+i18n._("Tasks (Processes)")+'</div>',
+            '<div class="values"><span name="tasks"></span>'+'</div>',
+            '<div class="title">'+i18n._("Uptime:")+'</div>',
+            '<div class="values"><span name="uptime"></span></div>'
         ];
         this.cpuToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=cpu]"),
@@ -1775,7 +1771,8 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
     },
     update : function(stats) {
-        this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numCpus)+"%";
+            //this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numCpus)+"%";
+        this.getEl().child("div[class=cpu]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
         var txSpeed=Math.round(stats.map.txBps/10)/100;
         var rxSpeed=Math.round(stats.map.rxBps/10)/100;
         this.getEl().child("div[class=tx-value]").dom.innerHTML=txSpeed+"KB/s";
