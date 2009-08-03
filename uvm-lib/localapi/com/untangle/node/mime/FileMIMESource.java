@@ -45,10 +45,10 @@ import com.untangle.node.util.*;
 public class FileMIMESource
     implements MIMESource {
 
-    private File m_file;
-    private final boolean m_deleteFileOnClose;
-    private MIMEParsingInputStream m_cachedStream;
-    private Set<MIMEParsingInputStream> m_openStreams;//Cached is always in OpenStreams
+    private File file;
+    private final boolean deleteFileOnClose;
+    private MIMEParsingInputStream cachedStream;
+    private Set<MIMEParsingInputStream> openStreams;//Cached is always in OpenStreams
 
 
     /**
@@ -72,9 +72,9 @@ public class FileMIMESource
      *        {@link #close source is closed}
      */
     public FileMIMESource(File file, boolean deleteFileOnClose) {
-        m_file = file;
-        m_deleteFileOnClose = deleteFileOnClose;
-        m_openStreams = new HashSet<MIMEParsingInputStream>();
+        this.file = file;
+        this.deleteFileOnClose = deleteFileOnClose;
+        this.openStreams = new HashSet<MIMEParsingInputStream>();
     }
 
 
@@ -94,15 +94,15 @@ public class FileMIMESource
 
         MIMEParsingInputStream ret = null;
 
-        if(m_cachedStream != null) {
-            if(m_cachedStream.position() <= offset) {
-                ret = m_cachedStream;
+        if(cachedStream != null) {
+            if(cachedStream.position() <= offset) {
+                ret = cachedStream;
             }
             else {
-                destroyStream(m_cachedStream);
+                destroyStream(cachedStream);
                 ret = createBaseStream();
             }
-            m_cachedStream = null;//Make sure we do not give this out twice
+            cachedStream = null;//Make sure we do not give this out twice
         }
         else {
             ret = createBaseStream();
@@ -132,19 +132,17 @@ public class FileMIMESource
         //Bug 779 - Copy contents of open streams before
         //          attempting to iterate, as iteration
         //          removes from the list
-        MIMEParsingInputStream[] openStreams =
-            (MIMEParsingInputStream[]) m_openStreams.toArray(
-                                                             new MIMEParsingInputStream[m_openStreams.size()]);
+        MIMEParsingInputStream[] oStreams = (MIMEParsingInputStream[]) openStreams.toArray(new MIMEParsingInputStream[openStreams.size()]);
 
-        for(MIMEParsingInputStream s : openStreams) {
+        for(MIMEParsingInputStream s : oStreams) {
             destroyStream(s);
         }
 
-        destroyStream(m_cachedStream);//Should be redundant
-        m_cachedStream = null;
-        if(m_deleteFileOnClose) {
-            try {m_file.delete();}catch(Exception ignore){}
-            m_file = null;
+        destroyStream(cachedStream);//Should be redundant
+        cachedStream = null;
+        if(deleteFileOnClose) {
+            try {file.delete();}catch(Exception ignore){}
+            file = null;
         }
     }
 
@@ -155,53 +153,55 @@ public class FileMIMESource
      * you should copy the file.
      */
     public File getFile() {
-        return m_file;
+        return file;
     }
 
     //-------------------------
     // See doc on MIMESource
     //-------------------------
-    public File toFile(FileFactory factory) throws IOException {
+    public File toFile(FileFactory factory) throws IOException
+    {
         return getFile();
     }
 
     //-------------------------
     // See doc on MIMESource
     //-------------------------
-    public File toFile(FileFactory factory, String name) throws IOException {
+    public File toFile(FileFactory factory, String name) throws IOException
+    {
         return getFile();
     }
 
-    private MIMEParsingInputStream createBaseStream()
-        throws IOException {
-        MIMEParsingInputStream ret = new MIMEParsingInputStream(
-                                                                new BufferedInputStream(
-                                                                                        new FileInputStream(m_file)));
-        m_openStreams.add(ret);
+    private MIMEParsingInputStream createBaseStream() throws IOException
+    {
+        MIMEParsingInputStream ret = new MIMEParsingInputStream(new BufferedInputStream(new FileInputStream(file)));
+        openStreams.add(ret);
         return ret;
     }
 
-    private void destroyStream(MIMEParsingInputStream stream) {
+    private void destroyStream(MIMEParsingInputStream stream)
+    {
         if(stream == null) {return;}
         try {stream.close();}catch(Exception ignore){}
-        try {m_openStreams.remove(stream);}catch(Exception ignore){}
+        try {openStreams.remove(stream);}catch(Exception ignore){}
     }
 
-    private void returnStream(MIMEParsingInputStream stream) {
-        if(m_cachedStream != null) {
+    private void returnStream(MIMEParsingInputStream stream)
+    {
+        if(cachedStream != null) {
             //Test if we should replace the cached stream.  We do
             //this if the new stream is at a lower position (more
             //likely to be useful).
-            if(m_cachedStream.position() < stream.position()) {
+            if(cachedStream.position() < stream.position()) {
                 destroyStream(stream);
             }
             else {
-                destroyStream(m_cachedStream);
-                m_cachedStream = stream;
+                destroyStream(cachedStream);
+                cachedStream = stream;
             }
         }
         else {
-            m_cachedStream = stream;
+            cachedStream = stream;
         }
     }
 
@@ -222,81 +222,81 @@ public class FileMIMESource
     private class WrappedMIMEParsingInputStream
         extends MIMEParsingInputStream {
 
-        private final MIMEParsingInputStream m_wrap;
-        private boolean m_closed = false;
+        private final MIMEParsingInputStream wrap;
+        private boolean closed = false;
 
         public WrappedMIMEParsingInputStream(MIMEParsingInputStream wrap) {
             super(new NOOPInputStream());
-            m_wrap = wrap;
+            this.wrap = wrap;
         }
 
         @Override
         public long position() {
             checkClosedRE();
-            return m_wrap.position();
+            return wrap.position();
         }
 
         @Override
         public void unread(int b)
             throws IOException {
             checkClosed();
-            m_wrap.unread(b);
+            wrap.unread(b);
         }
 
         @Override
         public void unread(byte[] b)
             throws IOException {
             checkClosed();
-            m_wrap.unread(b);
+            wrap.unread(b);
         }
 
         @Override
         public void unread(byte[] b, int off, int len)
             throws IOException {
             checkClosed();
-            m_wrap.unread(b, off, len);
+            wrap.unread(b, off, len);
         }
 
         @Override
         public int read()
             throws IOException {
             checkClosed();
-            return m_wrap.read();
+            return wrap.read();
         }
 
         @Override
         public int read(byte[] b)
             throws IOException {
             checkClosed();
-            return m_wrap.read(b);
+            return wrap.read(b);
         }
 
         @Override
         public int read(byte[] b, int off, int len)
             throws IOException {
             checkClosed();
-            return m_wrap.read(b, off, len);
+            return wrap.read(b, off, len);
         }
 
         @Override
         public Line readLine(int maxLen)
             throws IOException, LineTooLongException {
             checkClosed();
-            return m_wrap.readLine(maxLen);
+            return wrap.readLine(maxLen);
         }
 
         @Override
         public Line readLine()
             throws IOException, LineTooLongException {
             checkClosed();
-            return m_wrap.readLine();
+            return wrap.readLine();
         }
 
         @Override
         public void unreadLine(Line line)
             throws IOException {
             checkClosed();
-            m_wrap.unreadLine(line);
+            wrap.unreadLine(line);
         }
 
         @Override
@@ -304,73 +304,73 @@ public class FileMIMESource
                                              final boolean leaveBoundary)
             throws IOException {
             checkClosed();
-            return m_wrap.skipToBoundary(boundaryStr, leaveBoundary);
+            return wrap.skipToBoundary(boundaryStr, leaveBoundary);
         }
 
         @Override
         public void advanceToNextLine()
             throws IOException {
             checkClosed();
-            m_wrap.advanceToNextLine();
+            wrap.advanceToNextLine();
         }
 
         @Override
         public void advanceToEOF()
             throws IOException {
             checkClosed();
-            m_wrap.advanceToEOF();
+            wrap.advanceToEOF();
         }
 
         @Override
         public long skip(long n)
             throws IOException {
             checkClosed();
-            return m_wrap.skip(n);
+            return wrap.skip(n);
         }
 
         @Override
         public int available()
             throws IOException {
             checkClosed();
-            return m_wrap.available();
+            return wrap.available();
         }
 
         @Override
         public void close()
             throws IOException {
-            if(m_closed) {
+            if(closed) {
                 return;
             }
-            m_closed = true;
-            returnStream(m_wrap);
+            closed = true;
+            returnStream(wrap);
         }
 
         @Override
         public void mark(int readlimit) {
             checkClosedRE();
-            m_wrap.mark(readlimit);
+            wrap.mark(readlimit);
         }
 
         @Override
         public void reset()
             throws IOException {
             checkClosed();
-            m_wrap.reset();
+            wrap.reset();
         }
 
         @Override
         public boolean markSupported() {
             checkClosedRE();
-            return m_wrap.markSupported();
+            return wrap.markSupported();
         }
 
         private void checkClosed() throws IOException {
-            if(m_closed) {
+            if(closed) {
                 throw new IOException("Stream already closed");
             }
         }
         private void checkClosedRE() throws RuntimeException {
-            if(m_closed) {
+            if(closed) {
                 throw new RuntimeException("Stream already closed");
             }
         }

@@ -87,10 +87,8 @@ import org.apache.log4j.Logger;
  * evaluated (see the docs on {@link com.untangle.node.mime.Headers Headers}
  * for a list of possible variables).
  */
-public class MIMEMessage
-    extends MIMEPart
-    implements TemplateValues {
-
+public class MIMEMessage extends MIMEPart implements TemplateValues
+{
     private static final String MIME_MESSAGE_TEMPLATE_PREFIX = "MIMEMessage:".toLowerCase();
     private static final String TO_TV = "TO".toLowerCase();
     private static final String CC_TV = "CC".toLowerCase();
@@ -100,75 +98,53 @@ public class MIMEMessage
 
     private final Logger m_logger = Logger.getLogger(MIMEPart.class);
 
-    public MIMEMessage() {
+    public MIMEMessage ()
+    {
         super();
     }
-    public MIMEMessage(MIMEMessageHeaders headers) {
+
+    public MIMEMessage (MIMEMessageHeaders headers)
+    {
         super(headers);
     }
 
     /**
      * Construct a MIME part, reading until the outerBoundary.
      */
-    public MIMEMessage(MIMEParsingInputStream stream,
-                       MIMESource source,
-                       boolean ownsSource,
-                       MIMEPolicy policy,
-                       String outerBoundary) throws IOException,
-                                                    InvalidHeaderDataException,
-                                                    HeaderParseException,
-                                                    MIMEPartParseException {
-
+    public MIMEMessage (MIMEParsingInputStream stream, MIMESource source, boolean ownsSource, MIMEPolicy policy, String outerBoundary) throws IOException, InvalidHeaderDataException, HeaderParseException, MIMEPartParseException
+    {
         super();
-
-        parse(new MailMessageHeaderFieldFactory(),
-              stream,
-              source,
-              ownsSource,
-              policy,
-              outerBoundary);
+        parse(new MailMessageHeaderFieldFactory(), stream, source, ownsSource, policy, outerBoundary);
     }
 
     /**
      * Construct a MIME part, reading until the outerBoundary.
      */
-    public MIMEMessage(MIMEParsingInputStream stream,
-                       MIMESource source,
-                       MIMEPolicy policy,
-                       String outerBoundary) throws IOException,
-                                                    InvalidHeaderDataException,
-                                                    HeaderParseException,
-                                                    MIMEPartParseException {
+    public MIMEMessage (MIMEParsingInputStream stream, MIMESource source, MIMEPolicy policy, String outerBoundary) throws IOException, InvalidHeaderDataException, HeaderParseException, MIMEPartParseException
+    {
         this(stream, source, true, policy, outerBoundary);
     }
 
     /**
      * Construct a MIMEMessage using the already-parsed headers.
      */
-    public MIMEMessage(MIMEParsingInputStream stream,
-                       MIMESource source,
-                       MIMEPolicy policy,
-                       String outerBoundary,
-                       MIMEMessageHeaders headers) throws IOException,
-                                                          InvalidHeaderDataException,
-                                                          HeaderParseException,
-                                                          MIMEPartParseException {
+    public MIMEMessage (MIMEParsingInputStream stream, MIMESource source, MIMEPolicy policy, String outerBoundary, MIMEMessageHeaders headers) throws IOException, InvalidHeaderDataException, HeaderParseException, MIMEPartParseException
+    {
         super(stream, source, true, policy, outerBoundary, headers);
     }
 
     /**
      * For use in a Template
      */
-    public String getTemplateValue(String key) {
-        //First, see if this key is for the child
-        //Headers
+    public String getTemplateValue ( String key )
+    {
+        //First, see if this key is for the child Headers
         String headerRet = getMMHeaders().getTemplateValue(key);
         if(headerRet != null) {
             return headerRet;
         }
 
-        //Not for the headers.  Evaluate if this
-        //is a MIMEMessage variable
+        //Not for the headers.  Evaluate if this is a MIMEMessage variable
         key = key.trim().toLowerCase();
         if(key.startsWith(MIME_MESSAGE_TEMPLATE_PREFIX)) {
             key = key.substring(MIME_MESSAGE_TEMPLATE_PREFIX.length());
@@ -220,14 +196,16 @@ public class MIMEMessage
      *
      * @return the headers
      */
-    public MIMEMessageHeaders getMMHeaders() {
+    public MIMEMessageHeaders getMMHeaders ()
+    {
         return (MIMEMessageHeaders) getMPHeaders();
     }
 
     /**
      * Convieience method to count attachments
      */
-    public int getAttachmentCount() {
+    public int getAttachmentCount ()
+    {
         MIMEPart[] kids = getLeafParts(true);
         if(kids == null) {
             return 0;
@@ -245,12 +223,8 @@ public class MIMEMessage
      * Get the contents of this MIMEPart as a file.  This applies to
      *
      */
-    public final File toFile(FileFactory fileFactory)
-        throws IOException {
-        //TODO bscott an optimization would be to accumulate old SourceRecords,
-        //     so if a changed MIMEMessage is written to file twice, we really only
-        //     write it once (and assign the new File as the SourceRecord).
-
+    public final File toFile ( FileFactory fileFactory ) throws IOException
+    {
         if(isChanged() || getSourceRecord() == null) {
             FileOutputStream fOut = null;
             try {
@@ -281,7 +255,8 @@ public class MIMEMessage
      *
      * Returned buffer is ready for reading.
      */
-    public ByteBuffer toByteBuffer() throws IOException {
+    public ByteBuffer toByteBuffer() throws IOException
+    {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         MIMEOutputStream mos = new MIMEOutputStream(baos);
         writeTo(mos);
@@ -291,7 +266,8 @@ public class MIMEMessage
 
     //------------- Debug/Test ---------------
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception
+    {
 
         File f = new File(args[0]);
 
@@ -399,7 +375,8 @@ public class MIMEMessage
      * Acts as a FileFactory, to create temp files
      * when a MIME part needs to be decoded to disk.
      */
-    private static class MyFileFactory implements FileFactory {
+    private static class MyFileFactory implements FileFactory
+    {
         private File m_dir;
         public MyFileFactory(File rootDir) {
             m_dir = rootDir;

@@ -44,10 +44,11 @@ import org.apache.log4j.Logger;
 /**
  * Utility methods for working with MIME
  */
-public class MIMEUtil {
+public class MIMEUtil
+{
     public static final String MAIL_FORMAT_STR = "EEE, d MMM yyyy HH:mm:ss Z";
 
-    private static final Logger s_logger = Logger.getLogger(MIMEUtil.class);
+    private static final Logger logger = Logger.getLogger(MIMEUtil.class);
 
     public static final byte[] MIME_SPECIALS = {
         (byte) '(',
@@ -78,7 +79,8 @@ public class MIMEUtil {
      * @param str the String to test
      * @return true if it needs quoting
      */
-    public static boolean needsHeaderQuote(final String str) {
+    public static boolean needsHeaderQuote(final String str)
+    {
         boolean needsQuote = str.indexOf(SP) > 0 ||
             str.indexOf(HTAB) > 0 ||
             str.indexOf(QUOTE) > 0;
@@ -103,7 +105,8 @@ public class MIMEUtil {
      * @return the quoted String, or <code>str</code>
      *         if quoting {@link #needsHeaderQuote was not required}.
      */
-    public static String headerQuoteIfNeeded(final String str) {
+    public static String headerQuoteIfNeeded(final String str)
+    {
         if(needsHeaderQuote(str)) {
             return headerQuote(str);
         }
@@ -117,7 +120,8 @@ public class MIMEUtil {
      *
      * @return the quoted String
      */
-    public static String headerQuote(final String str) {
+    public static String headerQuote(final String str)
+    {
         StringBuilder sb = new StringBuilder(str.length()+2);
         sb.append(QUOTE);
         for(int i = 0; i<str.length(); i++) {
@@ -141,9 +145,8 @@ public class MIMEUtil {
      *        such that lines are not longer than 76 chars).
      * @param oldMsg the old message
      */
-    public static MIMEMessage simpleWrap(String plainBodyContent,
-                                         MIMEMessage oldMsg) throws Exception/*TODO bscott exception is lazy*/ {
-
+    public static MIMEMessage simpleWrap(String plainBodyContent, MIMEMessage oldMsg) throws Exception /* FIXME */
+    {
         //First, we need to "steal" the old headers.  This
         // is easiest by simply re-parsing them
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -152,10 +155,9 @@ public class MIMEUtil {
         mimeOut.flush();
 
         ByteArrayMIMESource bams = new ByteArrayMIMESource(baos.toByteArray());
-        MIMEMessageHeaders newHeaders = MIMEMessageHeaders.parseMMHeaders(
-                                                                          bams.getInputStream(), bams);
+        MIMEMessageHeaders newHeaders = MIMEMessageHeaders.parseMMHeaders(bams.getInputStream(), bams);
 
-        //Modify new headers, changing the Content-XXX stuff
+        //Modify new headers, changing the Content-* stuff
         newHeaders.removeHeaderFields(CONTENT_TYPE_LC);
         newHeaders.removeHeaderFields(CONTENT_TRANSFER_ENCODING_LC);
         newHeaders.removeHeaderFields(CONTENT_DISPOSITION_LC);
@@ -193,12 +195,32 @@ public class MIMEUtil {
     }
 
     /**
+     * Appends the body of the given MIMEMessage with
+     * plaintext string
+     *
+     * @param plainBodyContent the new body content (should be line-formatted
+     *        such that lines are not longer than 76 chars).
+     * @param oldMsg the old message
+     */
+    public static MIMEMessage appendString ( String plainBodyContent, MIMEMessage oldMsg )
+    {
+        try {
+            logger.error("appendString: " + oldMsg.getSourceRecord().source.getInputStream().readLine().bufferToString());
+            logger.error("parts: " + oldMsg.getNumChildren());
+        }
+        catch (Exception e) {}
+
+        return oldMsg;
+    }
+    
+    /**
      * Get the RFC822-compliant representation of
      * the current time
      *
      * @return the formatted String
      */
-    public static String getRFC822Date() {
+    public static String getRFC822Date()
+    {
         return getRFC822Date(new Date());
     }
 
@@ -209,7 +231,8 @@ public class MIMEUtil {
      * @param d the date
      * @return the formatted String
      */
-    public static String getRFC822Date(Date d) {
+    public static String getRFC822Date(Date d)
+    {
         return new SimpleDateFormat(MAIL_FORMAT_STR).format(d);
     }
 
@@ -230,9 +253,8 @@ public class MIMEUtil {
      *
      * @param child the child to be removed from its parent.
      */
-    public static void removeChild(MIMEPart child)
-        throws HeaderParseException {
-
+    public static void removeChild (MIMEPart child) throws HeaderParseException
+    {
         MIMEPart parent = child.getParent();
         //Boundary-case.  If the parent is itself
         //a top-level MIMEMessage, and there are no other
@@ -255,28 +277,23 @@ public class MIMEUtil {
      * Changes the part into an empty "text/plain" part, discarding
      * any previous content
      */
-    public static void convertToEmptyTextPart(MIMEPart part)
-        throws HeaderParseException /*TODO bscott what about this exception!?!*/{
+    public static void convertToEmptyTextPart (MIMEPart part) throws HeaderParseException
+    {
         part.getMPHeaders().removeHeaderFields(CONTENT_TYPE_LC);
         part.getMPHeaders().removeHeaderFields(CONTENT_TRANSFER_ENCODING_LC);
         part.getMPHeaders().removeHeaderFields(CONTENT_DISPOSITION_LC);
 
-        part.getMPHeaders().addHeaderField(CONTENT_TYPE,
-                                           ContentTypeHeaderField.TEXT_PLAIN);
-        part.getMPHeaders().addHeaderField(CONTENT_TRANSFER_ENCODING,
-                                           ContentXFerEncodingHeaderField.SEVEN_BIT_STR);
+        part.getMPHeaders().addHeaderField(CONTENT_TYPE,ContentTypeHeaderField.TEXT_PLAIN);
+        part.getMPHeaders().addHeaderField(CONTENT_TRANSFER_ENCODING,ContentXFerEncodingHeaderField.SEVEN_BIT_STR);
 
-        part.setContent(
-                        new MIMESourceRecord(new ByteArrayMIMESource(new byte[0]),
-                                             0,
-                                             0,
-                                             false));
+        part.setContent(new MIMESourceRecord(new ByteArrayMIMESource(new byte[0]),0,0,false));
     }
 
     /**
      * Creates a unique boundary value
      */
-    public static String makeBoundary() {
+    public static String makeBoundary ()
+    {
         StringBuilder sb = new StringBuilder();
         sb.append("----");
         sb.append(System.identityHashCode(sb));
@@ -291,7 +308,8 @@ public class MIMEUtil {
      * be candidates for virus scanning.  Takes care of boundary
      * case where top-level part is actualy an attachment
      */
-    public static MIMEPart[] getCandidateParts(MIMEMessage msg) {
+    public static MIMEPart[] getCandidateParts(MIMEMessage msg)
+    {
         //Need to special-case the top-level message
         //which itsef is only an attachment
         if(msg.isMultipart()) {
@@ -299,8 +317,7 @@ public class MIMEUtil {
         }
         else {
             if(shouldScan(msg)) {
-                s_logger.debug("Message itself is scannable (no child parts, but not \"" +
-                               ContentTypeHeaderField.TEXT_PRIM_TYPE_STR + "/*\" content type");
+                logger.debug("Message itself is scannable (no child parts, but not \"" + ContentTypeHeaderField.TEXT_PRIM_TYPE_STR + "/*\" content type");
                 return new MIMEPart[] {msg};
             }
             else {

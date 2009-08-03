@@ -321,7 +321,7 @@ public class MIMEPart {
         checkDisposed();
         return !isAttachment()?
             null:
-        m_headers.getContentDispositionHF().getFilename();
+            m_headers.getContentDispositionHF().getFilename();
     }
 
     /**
@@ -351,9 +351,7 @@ public class MIMEPart {
      */
     public int getNumChildren() {
         checkDisposed();
-        return isMultipart()?
-            getChildList().size():
-            0;
+        return ( isMultipart() ? getChildList().size() : 0 );
     }
 
     /**
@@ -715,8 +713,7 @@ public class MIMEPart {
      *
      * @param out the output stream
      */
-    public void writeTo(MIMEOutputStream out)
-        throws IOException {
+    public void writeTo(MIMEOutputStream out) throws IOException {
 
         checkDisposed();
 
