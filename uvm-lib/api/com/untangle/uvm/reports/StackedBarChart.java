@@ -47,6 +47,7 @@ import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.StackedBarRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -106,6 +107,11 @@ public class StackedBarChart extends Plot
                                                true, false, false);
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         CategoryPlot p = (CategoryPlot)jfChart.getPlot();
+        StackedBarRenderer renderer = (StackedBarRenderer)p.getRenderer();
+        for (String key : colors.keySet()) {
+            int i = rotated.getRowIndex(key);
+            renderer.setSeriesPaint(i, colors.get(key));
+        }
         CategoryAxis domainAxis = p.getDomainAxis();
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
         p.getRangeAxis().setLabelFont(AXIS_FONT);
