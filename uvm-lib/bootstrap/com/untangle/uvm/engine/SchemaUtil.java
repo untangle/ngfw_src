@@ -78,9 +78,8 @@ public class SchemaUtil
 
         try {
             String bd = System.getProperty("bunnicula.home") + "/bin/";
-            String mvnice = bd + "utnice";
             String us = bd + "update-schema";
-            ProcessBuilder pb = new ProcessBuilder(mvnice, us, type, component);
+            ProcessBuilder pb = new ProcessBuilder(us, type, component);
             Process p = pb.start();
             InputStream is = p.getInputStream();
             // XXX we log in the script, maybe move up to here
