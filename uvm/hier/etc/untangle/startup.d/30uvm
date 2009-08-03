@@ -8,10 +8,18 @@ ARCH=`uname -m`
 MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
 if [ $MEM -gt 3900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
-        MAX_HEAP_SIZE=1200m
-        MAX_BERKDB_MEG=150
+        MAX_HEAP_SIZE=2500m
+        MAX_BERKDB_MEG=180
     else
-        MAX_HEAP_SIZE=960m
+        MAX_HEAP_SIZE=2500m
+        MAX_BERKDB_MEG=180
+    fi
+elif [ $MEM -gt 2900000 ] ; then
+    if [ $ARCH = 'x86_64' ]; then
+        MAX_HEAP_SIZE=1600m
+        MAX_BERKDB_MEG=120
+    else
+        MAX_HEAP_SIZE=1600m
         MAX_BERKDB_MEG=120
     fi
 elif [ $MEM -gt 1900000 ] ; then
@@ -19,7 +27,7 @@ elif [ $MEM -gt 1900000 ] ; then
         MAX_HEAP_SIZE=800m
         MAX_BERKDB_MEG=100
     else
-        MAX_HEAP_SIZE=640m
+        MAX_HEAP_SIZE=800m
         MAX_BERKDB_MEG=80
     fi
 elif [ $MEM -gt 900000 ] ; then
