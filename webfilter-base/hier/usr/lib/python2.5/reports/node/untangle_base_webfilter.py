@@ -286,8 +286,8 @@ ORDER BY time asc"""
                      ylabel=_('Hits per Minute'),
                      major_formatter=TIME_OF_DAY_FORMATTER)
 
-        plot.add_dataset(dates, hits, label=_('hits'))
-        plot.add_dataset(dates, blocks, label=_('violations'))
+        plot.add_dataset(dates, hits, label=_('hits'), color=colors.green)
+        plot.add_dataset(dates, blocks, label=_('violations'), color=colors.red)
 
         return plot
 

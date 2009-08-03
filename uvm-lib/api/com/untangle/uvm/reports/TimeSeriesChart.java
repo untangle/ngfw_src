@@ -33,17 +33,21 @@
 
 package com.untangle.uvm.reports;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.io.CSV;
@@ -86,8 +90,11 @@ public class TimeSeriesChart extends Plot
 
         TimeSeriesCollection tsc = new TimeSeriesCollection();
 
+        List<Color> seriesColors = new ArrayList<Color>();
         for (int i = 0; i < cd.getColumnCount(); i++) {
             String columnKey = (String)cd.getColumnKey(i);
+            Color c = colors.get(columnKey);
+            seriesColors.add(c);
 
             TimeSeries ds = new TimeSeries(columnKey);
             for (int j = 0; j < cd.getRowCount(); j++) {
@@ -124,6 +131,10 @@ public class TimeSeriesChart extends Plot
                                                tsc, false, true, false);
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         XYPlot p = (XYPlot)jfChart.getPlot();
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer)p.getRenderer();
+        for (int i = 0; i < seriesColors.size(); i++) {
+            renderer.setSeriesPaint(i, seriesColors.get(i));
+        }
         p.getRangeAxis().setLabelFont(AXIS_FONT);
         p.getDomainAxis().setLabelFont(AXIS_FONT);
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),

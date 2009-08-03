@@ -33,6 +33,7 @@
 
 package com.untangle.uvm.reports;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -110,7 +111,10 @@ public class StackedBarChart extends Plot
         StackedBarRenderer renderer = (StackedBarRenderer)p.getRenderer();
         for (String key : colors.keySet()) {
             int i = rotated.getRowIndex(key);
-            renderer.setSeriesPaint(i, colors.get(key));
+            Color c = colors.get(key);
+            if (null != c) {
+                renderer.setSeriesPaint(i, c);
+            }
         }
         CategoryAxis domainAxis = p.getDomainAxis();
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
@@ -119,6 +123,5 @@ public class StackedBarChart extends Plot
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
                                       jfChart, CHART_WIDTH, CHART_HEIGHT,
                                       null, false, CHART_COMPRESSION_PNG);
-
     }
 }
