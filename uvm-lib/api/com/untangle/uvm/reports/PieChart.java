@@ -106,6 +106,9 @@ public class PieChart extends Plot
             = ChartFactory.createPieChart(title, dpd, true, false, false);
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         PiePlot plot = (PiePlot)jfChart.getPlot();
+        for (String key : colors.keySet()) {
+            plot.setSectionPaint(key, colors.get(key));
+        }
         plot.setLabelGenerator(null);
 
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),

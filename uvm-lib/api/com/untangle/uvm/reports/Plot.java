@@ -33,6 +33,7 @@
 
 package com.untangle.uvm.reports;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public abstract class Plot
     public static final Font TITLE_FONT = new Font("Helvetica", Font.PLAIN, 14);
     public static final Font AXIS_FONT = new Font("Helvetica", Font.PLAIN, 10);
 
-    private final Map<String, String> colors = new HashMap<String, String>();
+    protected final Map<String, Color> colors = new HashMap<String, Color>();
 
     private final String title;
 
@@ -61,13 +62,9 @@ public abstract class Plot
     }
 
     public void setColor(String title, String value)
+        throws NumberFormatException
     {
-        colors.put(title, value);
-    }
-
-    public Map<String, String> getColors()
-    {
-        return new HashMap<String, String>(colors);
+        colors.put(title, Color.decode(value));
     }
 
     public abstract void generate(String reportBase, String csvUrl,
