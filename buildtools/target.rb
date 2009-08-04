@@ -532,13 +532,16 @@ class JavaCompilerTarget < Target
 end
 
 class JavaMsgFmtTarget < Target
-  def initialize(package, lang, po_file, dest, basename)
+  def initialize(src, package, lang, po_file, dest, basename)
     @po_file = po_file
     @dest = dest
     @basename = basename
     @lang = lang
 
     @filename = "#{dest}/#{@basename.gsub(/-/, '_')}_#{@lang}.class"
+
+    @src = src
+    @mo_dest = "#{package.distDirectory()}/usr/share/locale"
 
     super(package, [@po_file], @filename)
   end
@@ -548,7 +551,7 @@ class JavaMsgFmtTarget < Target
 
     Dir.new(src).select { |f| not f =~ /^\./ and File.directory?("#{src}/#{f}") }.each do |dir|
       Dir.new("#{src}/#{dir}").select { |f| /\.po$/ =~ f }.each do |f|
-        ts << JavaMsgFmtTarget.new(package, dir, "#{src}/#{dir}/#{f}", dest, basename)
+        ts << JavaMsgFmtTarget.new(src, package, dir, "#{src}/#{dir}/#{f}", dest, basename)
       end
     end
 
@@ -572,6 +575,8 @@ class JavaMsgFmtTarget < Target
   def build()
     ensureDirectory @dest
 
+    GetText::create_mofiles(false, @src, @mo_dest)
+
     info "[msgfmt] => #{@filename}"
 
     raise "msgfmt failed" unless
@@ -584,30 +589,6 @@ CMD
       Kernel.system <<CMD
 msgfmt -o #{@dest}/official/#{@lang}/#{@basename}.mo #{@po_file}
 CMD
-  end
-end
-
-class MsgFmtTarget < Target
-  def initialize(package, src)
-    po_files = FileList["#{src}/**/*.po"]
-    super(package, po_files, "#{package.name}-mo")
-
-    @src = src
-    @dest = "#{package.distDirectory()}/usr/share/locale"
-  end
-
-  def file?
-    false
-  end
-
-  def filename
-    @dest
-  end
-
-  protected
-
-  def build()
-    GetText::create_mofiles(false, @src, @dest)
   end
 end
 
