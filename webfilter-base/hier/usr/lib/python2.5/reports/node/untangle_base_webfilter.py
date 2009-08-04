@@ -1054,19 +1054,19 @@ class WebFilterDetail(DetailSection):
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if host:
-            rv.append(ColumnDesc('hname', _('Client'), 'String'))
+            rv.append(ColumnDesc('hname', _('Client')))
         else:
             rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
 
         if user:
-            rv.append(ColumnDesc('uid', _('User'), 'String'))
+            rv.append(ColumnDesc('uid', _('User')))
         else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
 
-        rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, 'String'),
+        rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
                ColumnDesc('url', _('URL'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server IP'), 'ipaddr')]
+               ColumnDesc('s_server_addr', _('Server IP'))]
 
         return rv
 
@@ -1085,9 +1085,9 @@ WHERE time_stamp >= %s AND time_stamp < %s
                                         self.__vendor_name)
 
         if host:
-            sql = sql + (" AND host = %s" % QuotedString(host))
+            sql += " AND host = %s" % QuotedString(host)
         if user:
-            sql = sql + (" AND host = %s" % QuotedString(user))
+            sql += " AND host = %s" % QuotedString(user)
 
         return sql
 

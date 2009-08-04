@@ -115,7 +115,6 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
         allLanguages = loadAllLanguages();
         allCountries = loadAllCountries();
-
     }
 
     // public methods ---------------------------------------------------------

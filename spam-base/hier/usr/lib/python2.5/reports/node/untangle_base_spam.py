@@ -111,7 +111,7 @@ class SpamBaseNode(Node):
 
         sections.append(s)
 
-        sections.append(SpamDetail())
+        sections.append(SpamDetail(self.__short_name))
 
         return Report(self.name, sections)
 
@@ -533,8 +533,10 @@ WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
 
 class SpamDetail(DetailSection):
 
-    def __init__(self):
+    def __init__(self, short_name):
         DetailSection.__init__(self, 'incidents', _('Incident Report'))
+
+        self.__short_name = short_name
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -542,10 +544,21 @@ class SpamDetail(DetailSection):
 
         rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
 
-        if not host:
+        if host:
+            rv.append(ColumnDesc('hname', _('Client'), 'String'))
+        else:
             rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
-        if not user:
+
+        if user:
+            rv.append(ColumnDesc('uid', _('User'), 'String'))
+        else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+
+        rv += [ColumnDesc('score', _('Score')),
+               ColumnDesc('subject', _('Subject')),
+               ColumnDesc('s_server_addr', _('Source IP')),
+               ColumnDesc('action', _('Action')),
+               ColumnDesc('receiver', _('Msg receiver'))]
 
         return rv
 
@@ -553,22 +566,17 @@ class SpamDetail(DetailSection):
         if email:
             return None
 
-        sql = "SELECT trunc_time "
-
-        if not host:
-            sql += ", hname "
-        if not user:
-            sql += ", uid "
-
-        sql = sql + ("""FROM reports.n_mail_msg_totals
+        sql = """\
+SELECT trunc_time, hname, uid, %s_score, subject, s_server_addr, %s_action, addr
+FROM reports.n_mail_addrs
 WHERE trunc_time >= %s AND trunc_time < %s
-      AND sa_spam_msgs > 0""" % (DateFromMx(start_date),
-                                                DateFromMx(end_date)))
+      AND %s_is_spam AND addr_kind = 'T'
+""" % (self.__short_name, self.__short_name, DateFromMx(start_date),
+       DateFromMx(end_date), self.__short_name)
 
         if host:
-            sql = sql + (" AND host = %s" % QuotedString(host))
+            sql += " AND host = %s" % QuotedString(host)
         if user:
-            sql = sql + (" AND host = %s" % QuotedString(user))
+            sql += " AND user = %s" % QuotedString(user)
 
         return sql
-
