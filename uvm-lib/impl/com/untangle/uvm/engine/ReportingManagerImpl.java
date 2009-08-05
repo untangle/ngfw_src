@@ -37,6 +37,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +105,9 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                 }
             }
         }
+
+        Collections.sort(l);
+        Collections.reverse(l);
 
         return l;
     }
