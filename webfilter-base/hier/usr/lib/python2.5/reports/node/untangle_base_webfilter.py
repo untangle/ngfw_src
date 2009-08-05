@@ -1063,7 +1063,6 @@ class WebFilterDetail(DetailSection):
         else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
                ColumnDesc('url', _('URL'), 'URL'),
                ColumnDesc('s_server_addr', _('Server IP'))]

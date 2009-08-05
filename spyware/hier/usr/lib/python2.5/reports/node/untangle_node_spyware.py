@@ -102,7 +102,7 @@ DELETE FROM events.n_spyware_evt_cookie
                             TopTenSuspiciousTrafficHostsByHits()])
         sections.append(s)
 
-        sections.append(SpywareDetail())
+        sections.append(CookieDetail())
 
         return Report(self.name, sections)
 
@@ -902,8 +902,7 @@ GROUP BY day ORDER BY day ASC"""
 
         return (lks, plot)
 
-class SpywareDetail(DetailSection):
-
+class CookieDetail(DetailSection):
     def __init__(self):
         DetailSection.__init__(self, 'incidents', _('Incident Report'))
 
@@ -913,12 +912,19 @@ class SpywareDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        if not host:
+        if host:
+            rv.append(ColumnDesc('hname', _('Client')))
+        else:
             rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
-        if not user:
+
+        if user:
+            rv.append(ColumnDesc('uid', _('User')))
+        else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('c_server_addr', _('Server'), 'Server')]
+        rv += [ColumnDesc('sw_cookie_ident', _('Cookie')),
+               ColumnDesc('s_server_addr', _('Server IP')),
+               ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
 
@@ -926,23 +932,17 @@ class SpywareDetail(DetailSection):
         if email:
             return None
 
-        sql = "SELECT time_stamp, "
-
-        if not host:
-            sql = sql + "hname, "
-        if not user:
-            sql = sql + "uid, "
-
-        sql = sql + ("""c_server_addr
-FROM reports.sessions
+        sql = """\
+SELECT time_stamp, hname, uid, sw_cookie_ident, s_server_addr, s_server_port
+FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
-      AND sw_access_ident != ''""" % (DateFromMx(start_date),
-                                                DateFromMx(end_date)))
+      AND NOT sw_cookie_ident IS NULL AND sw_cookie_ident != ''
+""" % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
-            sql = sql + (" AND host = %s" % QuotedString(host))
+            sql += " AND host = %s" % QuotedString(host)
         if user:
-            sql = sql + (" AND host = %s" % QuotedString(user))
+            sql += " AND host = %s" % QuotedString(user)
 
         return sql
 
