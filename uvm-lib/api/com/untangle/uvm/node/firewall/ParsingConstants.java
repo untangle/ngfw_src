@@ -59,6 +59,14 @@ public class ParsingConstants
      * more external than the other interface */
     public static final String MARKER_LESS_TRUSTED = "less_trusted";
 
+    /* User representation of a matcher that should return true if
+     * the interface is a wan interface. */
+    public static final String MARKER_WAN = "wan";
+
+    /* User representation of a matcher that should return true if
+     * the interface is not a wan interface */
+    public static final String MARKER_NON_WAN = "non_wan";
+
     /* String for when a matcher is not applicable to the application. */
     public static final String MARKER_NA = "n/a";
 

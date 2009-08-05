@@ -114,6 +114,9 @@ final class IntfMatcherEnumeration
             matchers.add(im);
         }
 
+        matchers.add( IntfWanMatcher.getWanMatcher());
+        matchers.add( IntfWanMatcher.getNonWanMatcher());
+
         matchers.add( IntfRelativeMatcher.getLessTrustedMatcher());
         matchers.add( IntfRelativeMatcher.getMoreTrustedMatcher());
 

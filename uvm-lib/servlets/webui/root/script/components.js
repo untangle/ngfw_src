@@ -259,6 +259,8 @@ Ung.Util= {
                 case "7": name = i18n._("VPN") ; break;
                 case "more_trusted": name = i18n._("More Trusted") ; break;
                 case "less_trusted": name = i18n._("Less Trusted") ; break;
+                case "wan": name = i18n._("Any WAN Interface") ; break;
+                case "non_wan": name = i18n._("Any non-WAN Interface") ; break;
                 default :
                     /* XXX need to do something here? for interfaces like External | Internal XXX */
                 }
@@ -529,6 +531,9 @@ Ung.Util.RetryHandler = {
 
 Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
     initComponent : function() {
+        if (( this.width == null ) && ( this.listWidth == null )) {
+            this.listWidth = 200
+        }
         this.store = Ung.Util.getInterfaceStore();
         Ung.Util.InterfaceCombo.superclass.initComponent.call(this);
     },
@@ -536,7 +541,7 @@ Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
     valueField : 'key',
     editable: false,
     mode : 'local',
-    triggerAction : 'all',
+    triggerAction : 'all',    
     listClass : 'x-combo-list-small'
 });
 

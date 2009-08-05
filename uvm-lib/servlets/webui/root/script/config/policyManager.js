@@ -737,7 +737,6 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         editable : false,
                         store : Ung.Util.getInterfaceStore(),
                         width : 350
-
                     }), new Ung.Util.InterfaceCombo({
                         name : 'Server',
                         id : 'gridRules_rowEditor_server_interface',

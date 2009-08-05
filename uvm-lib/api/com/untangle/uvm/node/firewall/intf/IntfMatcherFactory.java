@@ -33,10 +33,11 @@
 
 package com.untangle.uvm.node.firewall.intf;
 
+import java.util.BitSet;
+
 import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.ParsingFactory;
-
 
 /**
  * A factory for interface matchers.
@@ -55,6 +56,7 @@ public class IntfMatcherFactory
     {
         this.parser = new ParsingFactory<IntfDBMatcher>("intf matcher");
         this.parser.registerParsers(IntfSimpleMatcher.PARSER,
+                                    IntfWanMatcher.PARSER,
                                     IntfRelativeMatcher.PARSER,
                                     IntfSingleMatcher.PARSER,
                                     IntfSetMatcher.PARSER);
@@ -153,6 +155,11 @@ public class IntfMatcherFactory
         case 1: return makeSingleMatcher(intfArray[0]);
         default: return IntfSetMatcher.makeInstance(intfArray);
         }
+    }
+    
+    public void setWanBitSet(BitSet wanBitSet)
+    {
+        IntfWanMatcher.setWanBitSet(wanBitSet);
     }
 
     /**

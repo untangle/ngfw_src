@@ -772,6 +772,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Done before so these get called on the first update */
         registerListener(new IPMatcherListener());
+        registerListener(new IntfMatcherListener());
         registerListener(new CifsListener());
         registerListener(this.singleNicManager.getListener());
 
