@@ -809,14 +809,14 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 switch (value) {
                                     case 0 : // PASSED
                                         return this.i18n._("pass message");
-                                    default :
                                     case 1 : // MARKED
                                         return this.i18n._("mark message");
+                                    default :
+                                        return this.i18n._("unknown action");
                                 }
                                 break;
                             case 'SMTP' :
                                 switch (value) {
-                                    default :
                                     case 0 : // PASSED
                                         return this.i18n._("pass message");
                                     case 1 : // MARKED
@@ -829,6 +829,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                         return this.i18n._("safelist message");
                                     case 5 : // OVERSIZE
                                         return this.i18n._("oversize message");
+                                    default:
+                                        return this.i18n._("unknown action");
                                 }
                                 break;
                         }

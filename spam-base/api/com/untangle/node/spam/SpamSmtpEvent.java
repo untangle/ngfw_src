@@ -95,10 +95,14 @@ public class SpamSmtpEvent extends SpamEvent
             return MARKED;
         } else if (SmtpSpamMessageAction.BLOCK_KEY == type) {
             return BLOCKED;
+        } else if (SmtpSpamMessageAction.QUARANTINE_KEY == type) {
+            return QUARANTINED;
         } else if (SmtpSpamMessageAction.SAFELIST_KEY == type) {
             return SAFELISTED;
-        } else { // QUARANTINE_KEY
-            return QUARANTINED;
+        } else if (SmtpSpamMessageAction.OVERSIZE_KEY == type) {
+            return OVERSIZED;
+        } else { // unknown
+            return -1;
         }
     }
 

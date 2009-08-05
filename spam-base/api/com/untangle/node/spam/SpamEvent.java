@@ -52,6 +52,7 @@ public abstract class SpamEvent extends LogEvent
     public static final int BLOCKED = 2;
     public static final int QUARANTINED = 3;
     public static final int SAFELISTED = 4;
+    public static final int OVERSIZED = 5;
 
     // constructors -----------------------------------------------------------
 
@@ -161,6 +162,7 @@ public abstract class SpamEvent extends LogEvent
             default:
             case MARKED:
             case BLOCKED:
+            case OVERSIZED:
             case QUARANTINED:
                 return SyslogPriority.WARNING; // traffic altered
             }

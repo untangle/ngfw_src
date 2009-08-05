@@ -38,6 +38,8 @@ public enum SpamMessageAction
 {
     PASS('P', "pass message"),
     MARK('M', "mark message"),
+    BLOCK('B', "block message"),
+    QUARANTINE('Q', "quarantine message"),
     SAFELIST('S', "safelist message"),
     OVERSIZE('Z', "oversize message");
     
@@ -45,6 +47,8 @@ public enum SpamMessageAction
 
     public static final char PASS_KEY = 'P';
     public static final char MARK_KEY = 'M';
+    public static final char BLOCK_KEY = 'B';
+    public static final char QUARANTINE_KEY = 'Q';
     public static final char SAFELIST_KEY = 'S'; // special pass case
     public static final char OVERSIZE_KEY = 'Z'; // special pass case
 
