@@ -24,6 +24,7 @@ import string
 import sys
 
 from psycopg import DateFromMx
+from reports import ColumnDesc
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import HOST_DRILLDOWN
@@ -97,7 +98,7 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
                                     TopWebVirusesDetected(self.__vendor_name)])
         sections.append(s)
 
-        sections.append(VirusDetail(self.__vendor_name))
+        sections.append(VirusWebDetail(self.__vendor_name))
 
         return reports.Report(self.name, sections)
 
@@ -204,47 +205,6 @@ WHERE reports.n_mail_msgs.time_stamp >= %s
         except Exception, e:
             conn.rollback()
             raise e
-
-class VirusDetail(reports.DetailSection):
-    def __init__(self, vendor_name):
-        reports.DetailSection.__init__(self, 'incidents', _('Incident Report'))
-        self.__vendor_name = vendor_name
-
-    def get_columns(self, host=None, user=None, email=None):
-        rv = [reports.ColumnDesc('time_stamp', _('Time'), 'Date')]
-
-        if not host:
-            rv.append(reports.ColumnDesc('hname', _('Client'), 'HostLink'))
-        if not user:
-            rv.append(reports.ColumnDesc('uid', _('User'), 'UserLink'))
-
-        rv = rv + [reports.ColumnDesc('url', _('URL'), 'URL')]
-
-        return rv
-
-
-    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
-        sql = "SELECT time_stamp, "
-
-        if not host:
-            sql = sql + "hname, "
-        if not user:
-            sql = sql + "uid, "
-
-        sql = sql + ("""'http://' || host || uri
-FROM reports.n_http_events
-WHERE time_stamp >= %s AND time_stamp < %s
-      AND virus_%s_clean = false""" % (DateFromMx(start_date),
-                                       DateFromMx(end_date),
-                                       self.__vendor_name))
-
-        if host:
-            sql = sql + (" AND host = %s" % QuotedString(host))
-        if user:
-            sql = sql + (" AND host = %s" % QuotedString(user))
-
-        return sql
-
 
 class DailyVirusesBlocked(reports.Graph):
     def __init__(self, vendor_name):
@@ -750,3 +710,45 @@ ORDER BY sum DESC""" % self.__vendor_name
         plot.add_pie_dataset(dataset)
 
         return (lks, plot)
+
+class VirusWebDetail(reports.DetailSection):
+    def __init__(self, vendor_name):
+        reports.DetailSection.__init__(self, 'web-incidents',
+                                       _('Web Incidents'))
+        self.__vendor_name = vendor_name
+
+    def get_columns(self, host=None, user=None, email=None):
+        rv = [reports.ColumnDesc('time_stamp', _('Time'), 'Date')]
+
+        if host:
+            rv.append(ColumnDesc('hname', _('Client')))
+        else:
+            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+
+        if user:
+            rv.append(ColumnDesc('uid', _('User')))
+        else:
+            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+
+        rv += [reports.ColumnDesc('virus_ident', _('Virus Name')),
+               ColumnDesc('url', _('URL'), 'URL'),
+               ColumnDesc('s_server_addr', _('Server IP')),
+               ColumnDesc('s_server_port', _('Server Port'))]
+
+        return rv
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        sql = """\
+SELECT time_stamp, hname, uid, virus_%s_name, 'http://' || host || uri,
+       s_server_addr, s_server_port
+FROM reports.n_http_events
+WHERE time_stamp >= %s AND time_stamp < %s AND NOT virus_%s_clean
+""" % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
+       self.__vendor_name)
+
+        if host:
+            sql = sql + (" AND host = %s" % QuotedString(host))
+        if user:
+            sql = sql + (" AND host = %s" % QuotedString(user))
+
+        return sql

@@ -1013,8 +1013,8 @@ class SubnetDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('url', _('URL')),
-               ColumnDesc('s_server_addr', _('Server IP')),
-               ColumnDesc('s_server_port', _('Server Port'))]
+               ColumnDesc('c_server_addr', _('Server IP')),
+               ColumnDesc('c_server_port', _('Server Port'))]
 
         return rv
 
