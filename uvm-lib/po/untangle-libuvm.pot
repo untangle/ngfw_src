@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-27 17:42-0700\n"
+"POT-Creation-Date: 2009-08-04 16:58-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,11 +34,11 @@ msgstr ""
 #: ../servlets/webui/root/script/components.js:1196
 #: ../servlets/webui/root/script/components.js:1561
 #: ../servlets/webui/root/script/components.js:1580
-#: ../servlets/webui/root/script/components.js:2226
-#: ../servlets/webui/root/script/components.js:4011
-#: ../servlets/webui/root/script/components.js:4049
-#: ../servlets/webui/root/script/components.js:4266
-#: ../servlets/webui/root/script/components.js:4304
+#: ../servlets/webui/root/script/components.js:2223
+#: ../servlets/webui/root/script/components.js:4008
+#: ../servlets/webui/root/script/components.js:4046
+#: ../servlets/webui/root/script/components.js:4263
+#: ../servlets/webui/root/script/components.js:4301
 #: ../servlets/setup/root/script/setup.js:265
 #: ../servlets/setup/root/script/setup.js:455
 #: ../servlets/setup/root/script/setup.js:676
@@ -88,7 +88,7 @@ msgid "Skin Out of Date"
 msgstr ""
 
 #: ../servlets/webui/root/script/main.js:89
-#: ../servlets/webui/root/script/components.js:2057
+#: ../servlets/webui/root/script/components.js:2054
 msgid "Ok"
 msgstr ""
 
@@ -109,12 +109,12 @@ msgstr ""
 #: ../servlets/webui/root/script/components.js:1541
 #: ../servlets/webui/root/script/components.js:1549
 #: ../servlets/webui/root/script/components.js:1573
-#: ../servlets/webui/root/script/components.js:1969
-#: ../servlets/webui/root/script/components.js:2016
-#: ../servlets/webui/root/script/components.js:4063
-#: ../servlets/webui/root/script/components.js:4076
-#: ../servlets/webui/root/script/components.js:4318
-#: ../servlets/webui/root/script/components.js:4331
+#: ../servlets/webui/root/script/components.js:1966
+#: ../servlets/webui/root/script/components.js:2013
+#: ../servlets/webui/root/script/components.js:4060
+#: ../servlets/webui/root/script/components.js:4073
+#: ../servlets/webui/root/script/components.js:4315
+#: ../servlets/webui/root/script/components.js:4328
 #: ../servlets/setup/root/script/setup.js:69
 #: ../servlets/webui/root/script/config/administration.js:66
 #: ../servlets/webui/root/script/config/administration.js:929
@@ -159,8 +159,8 @@ msgstr ""
 
 #: ../servlets/webui/root/script/main.js:302
 #: ../servlets/webui/root/script/components.js:997
-#: ../servlets/webui/root/script/components.js:2624
-#: ../servlets/webui/root/script/components.js:2750
+#: ../servlets/webui/root/script/components.js:2621
+#: ../servlets/webui/root/script/components.js:2747
 #: ../servlets/webui/root/script/config/email.js:1341
 #: ../servlets/webui/root/script/config/policyManager.js:30
 msgid "Help"
@@ -219,11 +219,11 @@ msgid "Downloading updates..."
 msgstr ""
 
 #: ../servlets/webui/root/script/main.js:624
-#: ../servlets/webui/root/script/components.js:2492
-#: ../servlets/webui/root/script/components.js:2510
-#: ../servlets/webui/root/script/components.js:2940
-#: ../servlets/webui/root/script/components.js:4146
-#: ../servlets/webui/root/script/components.js:4401
+#: ../servlets/webui/root/script/components.js:2489
+#: ../servlets/webui/root/script/components.js:2507
+#: ../servlets/webui/root/script/components.js:2937
+#: ../servlets/webui/root/script/components.js:4143
+#: ../servlets/webui/root/script/components.js:4398
 #: ../servlets/webui/root/script/config/administration.js:1927
 #: ../servlets/webui/root/script/config/administration.js:1953
 #: ../servlets/webui/root/script/config/administration.js:1970
@@ -333,8 +333,8 @@ msgstr ""
 
 #: ../servlets/webui/root/script/main.js:892
 #: ../servlets/webui/root/script/main.js:1042
-#: ../servlets/webui/root/script/components.js:4011
-#: ../servlets/webui/root/script/components.js:4266
+#: ../servlets/webui/root/script/components.js:4008
+#: ../servlets/webui/root/script/components.js:4263
 msgid "Loading Config..."
 msgstr ""
 
@@ -683,141 +683,137 @@ msgid "Number of Processors / Type / Speed:"
 msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1694
-msgid "Uptime:"
+msgid "Load average (1 min , 5 min , 15 min):"
 msgstr ""
 
 #: ../servlets/webui/root/script/components.js:1696
-msgid "Tasks (Processes)"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1697
-msgid "Threads"
-msgstr ""
-
-#: ../servlets/webui/root/script/components.js:1702
 msgid "CPU Utilization by User:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1704
+#: ../servlets/webui/root/script/components.js:1698
 msgid "CPU Utilization by System:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1706
-msgid "Load average (1 min / 5 min / 15 min):"
+#: ../servlets/webui/root/script/components.js:1700
+msgid "Tasks (Processes)"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1725
+#: ../servlets/webui/root/script/components.js:1702
+msgid "Uptime:"
+msgstr ""
+
+#: ../servlets/webui/root/script/components.js:1721
 msgid "Total Memory:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1727
+#: ../servlets/webui/root/script/components.js:1723
 msgid "Memory Used:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1729
+#: ../servlets/webui/root/script/components.js:1725
 msgid "Memory Free:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1731
+#: ../servlets/webui/root/script/components.js:1727
 msgid "Memory Pages:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1732
+#: ../servlets/webui/root/script/components.js:1728
 msgid "active"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1733
+#: ../servlets/webui/root/script/components.js:1729
 msgid "inactive"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1734
+#: ../servlets/webui/root/script/components.js:1730
 msgid "VM Statistics:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1735
+#: ../servlets/webui/root/script/components.js:1731
 msgid "pageins"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1735
+#: ../servlets/webui/root/script/components.js:1731
 msgid "pageouts"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1736
+#: ../servlets/webui/root/script/components.js:1732
 msgid "Swap Files:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1737
+#: ../servlets/webui/root/script/components.js:1733
 msgid "total swap space"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1737
+#: ../servlets/webui/root/script/components.js:1733
 msgid "used"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1754
+#: ../servlets/webui/root/script/components.js:1750
 msgid "Total Disk Space:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1756
+#: ../servlets/webui/root/script/components.js:1752
 msgid "Free Disk Space:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1758
+#: ../servlets/webui/root/script/components.js:1754
 msgid "Data read:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1760
+#: ../servlets/webui/root/script/components.js:1756
 msgid "Data write:"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1813
+#: ../servlets/webui/root/script/components.js:1810
 msgid "Day"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1813
+#: ../servlets/webui/root/script/components.js:1810
 msgid "Days"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1813
+#: ../servlets/webui/root/script/components.js:1810
 msgid "Hour"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1813
+#: ../servlets/webui/root/script/components.js:1810
 msgid "Hours"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1813
+#: ../servlets/webui/root/script/components.js:1810
 msgid "Minute"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1813
+#: ../servlets/webui/root/script/components.js:1810
 msgid "Minutes"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1867
+#: ../servlets/webui/root/script/components.js:1864
 msgid "activity"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1948
+#: ../servlets/webui/root/script/components.js:1945
 msgid "system"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:1969
+#: ../servlets/webui/root/script/components.js:1966
 msgid "The node {0} has {1} metrics. The maximum number of metrics is {2}."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2016
+#: ../servlets/webui/root/script/components.js:2013
 msgid "Please set up to four items."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2047
+#: ../servlets/webui/root/script/components.js:2044
 msgid "Set up to four"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2064
-#: ../servlets/webui/root/script/components.js:2632
-#: ../servlets/webui/root/script/components.js:2758
-#: ../servlets/webui/root/script/components.js:2784
+#: ../servlets/webui/root/script/components.js:2061
+#: ../servlets/webui/root/script/components.js:2629
+#: ../servlets/webui/root/script/components.js:2755
+#: ../servlets/webui/root/script/components.js:2781
 #: ../../../pkgs/untangle-apache2-config/files/var/www/script/wizard.js:36
 #: ../servlets/webui/root/script/config/administration.js:2328
 #: ../servlets/webui/root/script/config/email.js:1334
@@ -825,122 +821,122 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2176
+#: ../servlets/webui/root/script/components.js:2173
 msgid "Event Log"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2221
-#: ../servlets/webui/root/script/components.js:2223
+#: ../servlets/webui/root/script/components.js:2218
+#: ../servlets/webui/root/script/components.js:2220
 #: ../servlets/setup/root/script/setup.js:514
 #: ../servlets/setup/root/script/setup.js:799
 #: ../servlets/setup/root/script/setup.js:924
 msgid "Refresh"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2226
+#: ../servlets/webui/root/script/components.js:2223
 #: ../servlets/setup/root/script/setup.js:1104
 msgid "Refreshing..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2233
-#: ../servlets/webui/root/script/components.js:2237
+#: ../servlets/webui/root/script/components.js:2230
+#: ../servlets/webui/root/script/components.js:2234
 msgid "Auto Refresh"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2492
-#: ../servlets/webui/root/script/components.js:2510
+#: ../servlets/webui/root/script/components.js:2489
+#: ../servlets/webui/root/script/components.js:2507
 msgid "There are unsaved settings which will be lost. Do you want to continue?"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2616
+#: ../servlets/webui/root/script/components.js:2613
 #: ../servlets/webui/root/script/config/policyManager.js:20
 msgid "Remove"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2640
-#: ../servlets/webui/root/script/components.js:2766
+#: ../servlets/webui/root/script/components.js:2637
+#: ../servlets/webui/root/script/components.js:2763
 #: ../servlets/webui/root/script/config/policyManager.js:46
 msgid "Save"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2791
+#: ../servlets/webui/root/script/components.js:2788
 msgid "Update"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2855
-#: ../servlets/webui/root/script/components.js:3186
+#: ../servlets/webui/root/script/components.js:2852
+#: ../servlets/webui/root/script/components.js:3183
 #: ../servlets/webui/root/script/config/policyManager.js:308
 msgid "Edit"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:2940
+#: ../servlets/webui/root/script/components.js:2937
 #: ../servlets/webui/root/script/config/policyManager.js:659
 msgid "The form is not valid!"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3202
+#: ../servlets/webui/root/script/components.js:3199
 #: ../servlets/webui/root/script/config/policyManager.js:307
 msgid "Delete"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3222
+#: ../servlets/webui/root/script/components.js:3219
 #: ../servlets/webui/root/script/config/policyManager.js:306
 msgid "Reorder"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3312
+#: ../servlets/webui/root/script/components.js:3309
 msgid "Loading ..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3417
+#: ../servlets/webui/root/script/components.js:3414
 msgid "Displaying topics {0} - {1} of {2}"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3418
+#: ../servlets/webui/root/script/components.js:3415
 msgid "No topics to display"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3441
+#: ../servlets/webui/root/script/components.js:3438
 msgid "Add"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3442
+#: ../servlets/webui/root/script/components.js:3439
 msgid "Add New Row"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3901
-#: ../servlets/webui/root/script/components.js:4176
+#: ../servlets/webui/root/script/components.js:3898
+#: ../servlets/webui/root/script/components.js:4173
 msgid "Portal Question"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3905
+#: ../servlets/webui/root/script/components.js:3902
 #: ../servlets/webui/root/script/config/policyManager.js:787
 #: ../servlets/webui/root/script/config/policyManager.js:798
 msgid "Users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3943
-#: ../servlets/webui/root/script/components.js:4207
+#: ../servlets/webui/root/script/components.js:3940
+#: ../servlets/webui/root/script/components.js:4204
 msgid "Active Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3945
-#: ../servlets/webui/root/script/components.js:4209
+#: ../servlets/webui/root/script/components.js:3942
+#: ../servlets/webui/root/script/components.js:4206
 msgid "Local"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3947
-#: ../servlets/webui/root/script/components.js:4211
+#: ../servlets/webui/root/script/components.js:3944
+#: ../servlets/webui/root/script/components.js:4208
 msgid "UNKNOWN"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3959
+#: ../servlets/webui/root/script/components.js:3956
 #: ../servlets/webui/root/script/config/administration.js:1463
 #: ../servlets/webui/root/script/config/policyManager.js:288
 msgid "user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3965
+#: ../servlets/webui/root/script/components.js:3962
 #: ../servlets/setup/root/script/setup.js:388
 #: ../servlets/setup/root/script/setup.js:538
 #: ../servlets/webui/root/script/config/localDirectory.js:186
@@ -950,130 +946,130 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3988
+#: ../servlets/webui/root/script/components.js:3985
 msgid "Select User"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3988
+#: ../servlets/webui/root/script/components.js:3985
 #: ../servlets/webui/root/script/config/policyManager.js:699
 msgid "Select Users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3993
+#: ../servlets/webui/root/script/components.js:3990
 msgid ""
 "You may choose user ID/Login that exists in the User Directory (either local "
 "or remote Active Directory), or you can add a new user to the User "
 "Directory, and then choose that user."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3994
+#: ../servlets/webui/root/script/components.js:3991
 msgid ""
 "You may choose user IDs/Logins that exist in the User Directory (either "
 "local or remote Active Directory), or you can add a new user to the User "
 "Directory, and then choose that user."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3997
+#: ../servlets/webui/root/script/components.js:3994
 msgid "Select an existing user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:3997
+#: ../servlets/webui/root/script/components.js:3994
 msgid "Select an existing user or users"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4002
+#: ../servlets/webui/root/script/components.js:3999
 msgid "Add a new user"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4008
-#: ../servlets/webui/root/script/components.js:4263
+#: ../servlets/webui/root/script/components.js:4005
+#: ../servlets/webui/root/script/components.js:4260
 msgid "Open Local Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4023
-#: ../servlets/webui/root/script/components.js:4278
+#: ../servlets/webui/root/script/components.js:4020
+#: ../servlets/webui/root/script/components.js:4275
 msgid "Open Active Directory"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4049
-#: ../servlets/webui/root/script/components.js:4304
+#: ../servlets/webui/root/script/components.js:4046
+#: ../servlets/webui/root/script/components.js:4301
 #: ../servlets/webui/root/script/config/email.js:563
 msgid "Loading..."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4063
+#: ../servlets/webui/root/script/components.js:4060
 msgid ""
 "There was a problem refreshing Active Directory users.  Please check your "
 "Active Directory settings and then try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4076
+#: ../servlets/webui/root/script/components.js:4073
 msgid ""
 "There was a problem refreshing Local Directory users.  Please check your "
 "Local Directory settings and try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4146
+#: ../servlets/webui/root/script/components.js:4143
 msgid "Please choose a user id/login or press Cancel!"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4180
+#: ../servlets/webui/root/script/components.js:4177
 #: ../servlets/webui/root/script/config/policyManager.js:814
 #: ../servlets/webui/root/script/config/policyManager.js:825
 msgid "Groups"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4223
+#: ../servlets/webui/root/script/components.js:4220
 msgid "group"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4243
+#: ../servlets/webui/root/script/components.js:4240
 msgid "Select Group"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4243
+#: ../servlets/webui/root/script/components.js:4240
 msgid "Select Groups"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4248
+#: ../servlets/webui/root/script/components.js:4245
 msgid ""
 "You may choose group ID/Login that exists in the Group Directory (either "
 "local or remote Active Directory), or you can add a new group to the Group "
 "Directory, and then choose that group."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4249
+#: ../servlets/webui/root/script/components.js:4246
 msgid ""
 "You may choose group IDs/Logins that exist in the Group Directory (either "
 "local or remote Active Directory), or you can add a new group to the Group "
 "Directory, and then choose that group."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4252
+#: ../servlets/webui/root/script/components.js:4249
 msgid "Select an existing group"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4252
+#: ../servlets/webui/root/script/components.js:4249
 msgid "Select an existing group or groups"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4257
+#: ../servlets/webui/root/script/components.js:4254
 msgid "Add a new group"
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4318
+#: ../servlets/webui/root/script/components.js:4315
 msgid ""
 "There was a problem refreshing Active Directory groups.  Please check your "
 "Active Directory settings and then try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4331
+#: ../servlets/webui/root/script/components.js:4328
 msgid ""
 "There was a problem refreshing Local Directory groups.  Please check your "
 "Local Directory settings and try again."
 msgstr ""
 
-#: ../servlets/webui/root/script/components.js:4401
+#: ../servlets/webui/root/script/components.js:4398
 msgid "Please choose a group id/login or press Cancel!"
 msgstr ""
 

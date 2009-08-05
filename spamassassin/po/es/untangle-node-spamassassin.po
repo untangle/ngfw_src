@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-30 11:01-0700\n"
+"POT-Creation-Date: 2009-08-04 16:58-0700\n"
 "PO-Revision-Date: 2009-02-10 08:51-0800\n"
 "Last-Translator: Juan Machado <juan@itos.uga.edu>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -17,23 +17,23 @@ msgstr ""
 "X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Spanish\n"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
 msgid "spam"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
 msgid "ham"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
 msgid "Hourly Spam Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
 msgid "Daily Spam Rate"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:7
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
 #, fuzzy
 msgid "Top Ten Spammed"
 msgstr "Super Bloqueo de Spam"

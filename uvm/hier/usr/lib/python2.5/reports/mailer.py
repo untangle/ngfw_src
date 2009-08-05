@@ -57,8 +57,9 @@ def mail(file, sender, receiver, date, company_name):
     msgRoot['To'] = receiver
 
     msgRoot.attach(MIMEText(_("""\
-%s Reports are attached for %s is attached. The pdf file requires Adobe Acrobat Reader to view.\
-""") % (company_name, date.strftime(locale.nl_langinfo(locale.D_FMT)))))
+%(company)s Reports are attached for %(date)s is attached. The pdf file requires Adobe Acrobat Reader to view.\
+""") % {'company': company_name,
+        'date': date.strftime(locale.nl_langinfo(locale.D_FMT))}))
 
     part = MIMEBase('application', "pdf")
     part.set_payload(open(file, 'rb').read())

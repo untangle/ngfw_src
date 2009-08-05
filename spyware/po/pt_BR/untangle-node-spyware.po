@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-30 11:01-0700\n"
+"POT-Creation-Date: 2009-08-04 16:58-0700\n"
 "PO-Revision-Date: 2008-11-24 18:02-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -17,235 +17,235 @@ msgstr ""
 "X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Portuguese\n"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:77
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:93
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:200
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:216
 msgid "Hourly Rates"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:236
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:252
 #, python-format
 msgid "avg URLs blocked (%s-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:237
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:240
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:266
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:253
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:256
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:282
 #, fuzzy
 msgid "blocks/hour"
 msgstr "bloquear"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:239
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:255
 #, python-format
 msgid "max cookies blocked (%s-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:265
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:281
 #, python-format
 msgid "avg subnets blocked (%s-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:279
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:295
 msgid "Hourly Web Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:280
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:296
 msgid "Hour of Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:281
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:297
 msgid "Hits per Minute"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:325
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:449
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:341
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:465
 #, fuzzy
 msgid "URLs"
 msgstr "URL:"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:326
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:693
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:342
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:709
 #, fuzzy
 msgid "cookies"
 msgstr "Cookies"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:363
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:379
 #, fuzzy
 msgid "Subnets"
 msgstr "Sub-rede"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:369
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:385
 msgid "Daily Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:404
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:420
 msgid "Avg URLs blocked (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:405
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:408
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:421
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:424
 msgid "hits/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:407
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:423
 msgid "Max URLs blocked (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:444
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:460
 #, fuzzy
 msgid "Spyware URLs Blocked"
 msgstr "{0} Bloqueador de Spyware"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:445
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:689
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:881
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:461
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:705
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:897
 msgid "Date"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:446
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:503
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:560
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:617
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:690
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:751
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:809
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:462
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:519
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:576
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:633
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:706
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:767
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:825
 msgid "Blocks per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:455
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:471
 msgid "Top Ten Blocked Spyware Sites By Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:494
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:550
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:608
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:742
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:799
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:510
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:566
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:624
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:758
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:815
 msgid "hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:501
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:517
 msgid "Top Ten Blocked Spyware Sites (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:502
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:518
 msgid "Site"
 msgstr "Site"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:511
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:527
 msgid "Top Ten Blocked Hosts By Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:558
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:574
 msgid "Top Ten Blocked Hosts (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:559
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:808
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:575
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:824
 #, fuzzy
 msgid "Host"
 msgstr "Host:"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:568
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:615
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:584
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:631
 msgid "Top Ten Blocked Cookies"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:616
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:632
 #, fuzzy
 msgid "Cookie"
 msgstr "Cookies"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:625
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:688
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:641
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:704
 #, fuzzy
 msgid "Spyware Cookies Blocked"
 msgstr "{0} Bloqueador de Spyware"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:681
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:697
 #, fuzzy
 msgid "avg cookies blocked"
 msgstr "Páginas bloqueadas"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:682
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:684
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:698
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:700
 #, fuzzy
 msgid "blocks/day"
 msgstr "bloquear"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:684
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:700
 #, fuzzy
 msgid "max cookies blocked"
 msgstr "Páginas bloqueadas"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:700
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:749
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:716
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:765
 #, fuzzy
 msgid "Top Ten Suspicious Traffic Subnets"
 msgstr "Monitorar tráfego suspeito"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:750
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:766
 msgid "Subnet"
 msgstr "Sub-rede"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:759
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:775
 #, fuzzy
 msgid "Top Ten Suspicious Traffic Hosts By Hits"
 msgstr "Monitorar tráfego suspeito"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:807
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:823
 #, fuzzy
 msgid "Top Ten Suspicious Traffic Hosts (by hits)"
 msgstr "Monitorar tráfego suspeito"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:817
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:880
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:833
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:896
 msgid "Spyware Subnets Detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:873
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:889
 msgid "avg subnets detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:874
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:876
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:890
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:892
 msgid "/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:876
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:892
 msgid "max subnets detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:882
-msgid "Detections per Day"
-msgstr ""
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:885
-#, fuzzy
-msgid "subnets"
-msgstr "sub-rede"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:892
-msgid "Incident Report"
-msgstr ""
-
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:898
-msgid "Time"
+msgid "Detections per Day"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:901
 #, fuzzy
+msgid "subnets"
+msgstr "sub-rede"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:908
+msgid "Incident Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:914
+msgid "Time"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:917
+#, fuzzy
 msgid "Client"
 msgstr "cliente"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:903
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:919
 #, fuzzy
 msgid "User"
 msgstr "servidor"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:905
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:921
 #, fuzzy
 msgid "Server"
 msgstr "servidor"

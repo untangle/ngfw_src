@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-30 11:01-0700\n"
+"POT-Creation-Date: 2009-08-04 16:58-0700\n"
 "PO-Revision-Date: 2008-11-13 08:48-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -17,140 +17,140 @@ msgstr ""
 "X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Portuguese\n"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:52
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:68
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:114
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:210
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:130
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:226
 msgid "Daily Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:153
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:169
 msgid "max detections (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:154
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:157
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:170
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:173
 msgid "detections/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:156
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:172
 msgid "avg detections (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:211
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:227
 msgid "Date"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:212
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:228
 msgid "Detections per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:215
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:231
 #, fuzzy
 msgid "detections"
 msgstr "descrição"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:224
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:240
 #, fuzzy
 msgid "Top Ten Blocked Protocols By Hits"
 msgstr "Eventos de protocolo bloqueados"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:264
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:323
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:383
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:442
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:502
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:561
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:280
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:339
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:399
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:458
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:518
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:577
 msgid "hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:271
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:287
 #, fuzzy
 msgid "Top Ten Blocked Protocols (by hits)"
 msgstr "Eventos de protocolo bloqueados"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:272
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:331
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:288
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:347
 msgid "Protocol"
 msgstr "Protocolo"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:273
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:332
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:392
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:451
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:511
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:570
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:289
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:348
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:408
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:467
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:527
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:586
 msgid "Blocks per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:283
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:299
 msgid "Top Ten Detected Protocols By Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:330
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:346
 msgid "Top Ten Detected Protocols (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:342
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:358
 msgid "Top Ten Blocked Hosts By Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:390
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:406
 msgid "Top Ten Blocked Hosts (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:391
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:450
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:407
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:466
 msgid "Host"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:403
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:419
 msgid "Top Ten Logged Hosts By Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:449
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:465
 msgid "Top Ten Logged Hosts (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:461
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:477
 msgid "Top Ten Blocked Users By Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:509
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:525
 msgid "Top Ten Blocked Users (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:510
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:569
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:589
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:526
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:585
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:605
 #, fuzzy
 msgid "User"
 msgstr "servidor"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:521
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:537
 msgid "Top Ten Logged Users By Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:568
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:584
 msgid "Top Ten Logged Users (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:578
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:594
 msgid "Incident Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:584
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:600
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:587
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:603
 #, fuzzy
 msgid "Client"
 msgstr "cliente"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:591
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:607
 #, fuzzy
 msgid "Server"
 msgstr "servidor"
