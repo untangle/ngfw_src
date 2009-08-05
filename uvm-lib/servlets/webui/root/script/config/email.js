@@ -47,9 +47,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             // call superclass renderer first
             Ung.Email.superclass.onRender.call(this, container, position);
             this.initSubCmps.defer(1, this);
-
-                              
-           
         },
         initSubCmps : function() {
             var smtpLoginCmp = Ext.getCmp('email_smtpLogin');
@@ -483,7 +480,15 @@ if (!Ung.hasResource["Ung.Email"]) {
                             reader : new Ung.JsonListReader({
                                 root : null,
                                 fields : ['emailAddress']
-                            })
+                            }),
+                            listeners : {
+                                "load" : {
+                                    fn : function( store, records, options ) 
+                                    {
+                                        this.loadedGlobalSafelist = true;
+                                    }.createDelegate( this )
+                                }
+                            }
                         }) 
                 }), this.gridSafelistUser = new Ung.EditorGrid({
                         name : 'Per User',
@@ -1282,15 +1287,20 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }.createDelegate(this), this.getMailNodeSettings());
     
                     // save global safelist
-                    var gridSafelistGlobalValues = this.gridSafelistGlobal.getFullSaveList();
-                    var globalList = [];
-                    for(var i=0; i<gridSafelistGlobalValues.length; i++) {
-                        globalList.push(gridSafelistGlobalValues[i].emailAddress);
-                    }
-                    this.getSafelistAdminView().replaceSafelist(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
+                    if ( this.loadedGlobalSafelist == true ) {
+                        var gridSafelistGlobalValues = this.gridSafelistGlobal.getFullSaveList();
+                        var globalList = [];
+                        for(var i=0; i<gridSafelistGlobalValues.length; i++) {
+                            globalList.push(gridSafelistGlobalValues[i].emailAddress);
+                        }
+                        this.getSafelistAdminView().replaceSafelist(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            this.afterSave();
+                        }.createDelegate(this), 'GLOBAL', globalList);
+                    } else {
+                        /* Decrement the save semaphore */
                         this.afterSave();
-                    }.createDelegate(this), 'GLOBAL', globalList);
+                    }
                 }
                 
             }
