@@ -828,7 +828,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                     case 4 : // SAFELISTED
                                         return this.i18n._("safelist message");
                                     case 5 : // OVERSIZE
-                                        return this.i18n._("oversize message");
+                                        return this.i18n._("pass oversize message");
                                     default:
                                         return this.i18n._("unknown action");
                                 }
