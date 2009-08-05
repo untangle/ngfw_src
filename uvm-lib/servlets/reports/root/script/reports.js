@@ -742,29 +742,57 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                      if (c.type == "Date") {
                                        col.renderer = function(value) {
-                                         return i18n.timestampFormat(value);
+                                         if (!value) {
+                                           return i18n._('None');
+                                         } else {
+                                           return i18n.timestampFormat(value);
+                                         }
                                        };
                                        col.width = 140;
                                      } else if (c.type == "URL") {
                                        col.renderer = function(value) {
-                                         return '<a href="' + value + '" target="_new">' + value + '</a>';
+                                         if (!value) {
+                                           return i18n._('None');
+                                         } else {
+                                           return '<a href="' + value + '" target="_new">' + value + '</a>';
+                                         }
                                        };
                                        col.width = 160;
                                      } else if (c.type == "UserLink") {
                                        col.renderer = function(value) {
-                                         return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                         if (!value) {
+                                           return i18n._('None');
+                                         } else {
+                                           return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                         }
                                        };
                                        col.width = 100;
                                      } else if (c.type == "HostLink") {
                                        col.renderer = function(value) {
-                                         return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                         if (!value) {
+                                           return i18n._('None');
+                                         } else {
+                                           return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                         }
                                        };
                                        col.width = 100;
                                      } else if (c.type == "EmailLink") {
                                        col.renderer = function(value) {
-                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                         if (!value) {
+                                           return i18n._('None');
+                                         } else {
+                                           return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                         }
                                        };
                                        col.width = 180;
+                                     } else {
+                                       col.renderer = function(value) {
+                                         if (!value) {
+                                           return i18n._('None');
+                                         } else {
+                                           return value;
+                                         }
+                                       };
                                      }
                                      columns.push(col);
                                      fields.push({ name: c.name });
