@@ -46,7 +46,8 @@ class VirusBaseNode(reports.engine.Node):
     @sql_helper.print_timing
     def setup(self, start_date, end_date):
         self.__update_n_http_events(start_date, end_date)
-        self.__update_n_mail_msgs(start_date, end_date)
+        self.__update_n_mail_table('n_mail_msgs', start_date, end_date)
+        self.__update_n_mail_table('n_mail_addrs', start_date, end_date)
 
         ft = reports.engine.get_fact_table('reports.n_http_totals')
 
@@ -99,6 +100,7 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
         sections.append(s)
 
         sections.append(VirusWebDetail(self.__vendor_name))
+        #sections.append(VirusMailDetail(self.__vendor_name))
 
         return reports.Report(self.name, sections)
 
@@ -155,33 +157,39 @@ WHERE reports.n_http_events.time_stamp >= %s
             raise e
 
     @sql_helper.print_timing
-    def __update_n_mail_msgs(self, start_date, end_date):
+    def __update_n_mail_table(self, tablename, start_date, end_date):
         try:
             sql_helper.run_sql("""\
-ALTER TABLE reports.n_mail_msgs ADD COLUMN virus_%s_clean boolean""" % self.__vendor_name)
+ALTER TABLE reports.%s ADD COLUMN virus_%s_clean boolean""" % (tablename, self.__vendor_name))
         except: pass
         try:
             sql_helper.run_sql("""\
-ALTER TABLE reports.n_mail_msgs ADD COLUMN virus_%s_name text""" % self.__vendor_name)
+ALTER TABLE reports.%s ADD COLUMN virus_%s_name text""" % (tablename, self.__vendor_name))
         except: pass
 
 
-        sd = DateFromMx(sql_helper.get_update_info('n_mail_msgs[%s]' % self.name, start_date))
+        update_name = 'report.%s-mail[%s]' % (tablename, self.name)
+        sd = DateFromMx(sql_helper.get_update_info(update_name, start_date))
         ed = DateFromMx(end_date)
 
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
-UPDATE reports.n_mail_msgs
-SET virus_"""+self.__vendor_name+"""_clean = clean,
-  virus_"""+self.__vendor_name+"""_name = virus_name
+UPDATE reports.%s
+SET virus_%s_clean = clean,
+  virus_%s_name = virus_name
 FROM events.n_virus_evt_mail
-WHERE reports.n_mail_msgs.time_stamp >= %s
-  AND reports.n_mail_msgs.time_stamp < %s
-  AND reports.n_mail_msgs.msg_id = events.n_virus_evt_mail.msg_id and events.n_virus_evt_mail.vendor_name = %s""", (sd, ed, string.capwords(self.__vendor_name)), connection=conn, auto_commit=False)
+WHERE reports.%s.time_stamp >= %%s
+  AND reports.%s.time_stamp < %%s
+  AND reports.%s.msg_id = events.n_virus_evt_mail.msg_id
+  AND events.n_virus_evt_mail.vendor_name = %%s
+""" % (tablename, self.__vendor_name, self.__vendor_name, tablename, tablename,
+       tablename),
+                               (sd, ed, string.capwords(self.__vendor_name)),
+                               connection=conn, auto_commit=False)
 
-            sql_helper.set_update_info('reports.n_mail_msgs[%s]' % self.name, ed,
-                                       connection=conn, auto_commit=False)
+            sql_helper.set_update_info(update_name, ed, connection=conn,
+                                       auto_commit=False)
 
             conn.commit()
         except Exception, e:
@@ -189,17 +197,25 @@ WHERE reports.n_mail_msgs.time_stamp >= %s
             raise e
 
         try:
-            sql_helper.run_sql("""\
-UPDATE reports.n_mail_msgs
-SET virus_"""+self.__vendor_name+"""_clean = clean,
-  virus_"""+self.__vendor_name+"""_name = virus_name
-FROM events.n_virus_evt_smtp
-WHERE reports.n_mail_msgs.time_stamp >= %s
-  AND reports.n_mail_msgs.time_stamp < %s
-  AND reports.n_mail_msgs.msg_id = events.n_virus_evt_smtp.msg_id and events.n_virus_evt_smtp.vendor_name = %s""", (sd, ed, string.capwords(self.__vendor_name)), connection=conn, auto_commit=False)
+            update_name = 'report.%s-smtp[%s]' % (tablename, self.name)
+            sd = DateFromMx(sql_helper.get_update_info(update_name, start_date))
 
-            sql_helper.set_update_info('reports.n_mail_msgs[%s]' % self.name, ed,
-                                       connection=conn, auto_commit=False)
+            sql_helper.run_sql("""\
+UPDATE reports.%s
+SET virus_%s_clean = clean,
+  virus_%s_name = virus_name
+FROM events.n_virus_evt_smtp
+WHERE reports.%s.time_stamp >= %%s
+  AND reports.%s.time_stamp < %%s
+  AND reports.%s.msg_id = events.n_virus_evt_smtp.msg_id
+  AND events.n_virus_evt_smtp.vendor_name = %%s
+""" % (tablename, self.__vendor_name, self.__vendor_name, tablename, tablename,
+       tablename),
+                               (sd, ed, string.capwords(self.__vendor_name)),
+                               connection=conn, auto_commit=False)
+
+            sql_helper.set_update_info(update_name, ed, connection=conn,
+                                       auto_commit=False)
 
             conn.commit()
         except Exception, e:
@@ -743,6 +759,51 @@ SELECT time_stamp, hname, uid, virus_%s_name, 'http://' || host || uri,
        s_server_addr, s_server_port
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s AND NOT virus_%s_clean
+""" % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
+       self.__vendor_name)
+
+        if host:
+            sql = sql + (" AND host = %s" % QuotedString(host))
+        if user:
+            sql = sql + (" AND host = %s" % QuotedString(user))
+
+        return sql
+
+
+class VirusMailDetail(reports.DetailSection):
+    def __init__(self, vendor_name):
+        reports.DetailSection.__init__(self, 'mail-incidents',
+                                       _('Mail Incidents'))
+        self.__vendor_name = vendor_name
+
+    def get_columns(self, host=None, user=None, email=None):
+        rv = [reports.ColumnDesc('time_stamp', _('Time'), 'Date')]
+
+        if host:
+            rv.append(ColumnDesc('hname', _('Client')))
+        else:
+            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+
+        if user:
+            rv.append(ColumnDesc('uid', _('User')))
+        else:
+            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+
+        rv += [ColumnDesc('virus_ident', _('Virus Name')),
+               ColumnDesc('subject', _('Subject')),
+               ColumnDesc('recipient', _('Recipient')),
+               ColumnDesc('c_client_addr', _('Client IP')),
+               ColumnDesc('c_client_port', _('Client Port'))]
+
+        return rv
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        sql = """\
+SELECT time_stamp, hname, uid, virus_%s_name, subject, addr,
+       c_client_addr, c_client_addr
+FROM reports.n_mail_addrs
+WHERE time_stamp >= %s AND time_stamp < %s AND addr_kind = 'T'
+      AND NOT virus_%s_clean
 """ % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name)
 
