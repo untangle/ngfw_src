@@ -315,7 +315,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                },
                                isDirty: function() {
                                  if(this.panelGeneration.rendered) {
-                                   var cmpIds = ['reporting_emailDetail', 'reporting_daysToKeep'];
+                                   var cmpIds = [ 'reporting_daysToKeep'];
                                    for (var i = 0; i < cmpIds.length; i++) {
                                      if (Ext.getCmp(cmpIds[i]).isDirty()){
                                        return true;
