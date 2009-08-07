@@ -567,7 +567,7 @@ class SpamDetail(DetailSection):
             return None
 
         sql = """\
-SELECT trunc_time, hname, uid, %s_score, subject, s_server_addr, %s_action, addr
+SELECT time_stamp, hname, uid, %s_score, subject, s_server_addr, %s_action, addr
 FROM reports.n_mail_addrs
 WHERE trunc_time >= %s AND trunc_time < %s
       AND %s_is_spam AND addr_kind = 'T'
