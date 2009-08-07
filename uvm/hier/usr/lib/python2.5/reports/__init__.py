@@ -23,7 +23,7 @@ import mx
 import os
 import popen2
 import re
-import reportlab.lib.colors as colors
+import reportlab.lib.colors
 import reports.sql_helper as sql_helper
 import reports.i18n_helper
 import string
@@ -32,6 +32,7 @@ from lxml.etree import CDATA
 from lxml.etree import Element
 from lxml.etree import ElementTree
 from mx.DateTime import DateTimeDeltaFromSeconds
+
 from reportlab.lib.colors import HexColor
 from reportlab.lib.colors import Color
 from reportlab.lib.styles import getSampleStyleSheet
@@ -360,10 +361,12 @@ class Graph:
 
         ks_table = Table(data,
                          style=[('ROWBACKGROUNDS', (0, 0), (-1, -1),
-                                 (colors.lightgrey, None)),
+                                 (reportlab.lib.colors.lightgrey, None)),
                                 ('SPAN', (0, 0), (1, 0)),
-                                ('BACKGROUND', (0, 0), (1, 0), colors.grey),
-                                ('BOX', (0, 0), (-1, -1), 1, colors.grey)])
+                                ('BACKGROUND', (0, 0), (1, 0),
+                                 reportlab.lib.colors.grey),
+                                ('BOX', (0, 0), (-1, -1), 1,
+                                 reportlab.lib.colors.grey)])
 
         return [image, Spacer(1, 0.125 * inch), ks_table]
 
