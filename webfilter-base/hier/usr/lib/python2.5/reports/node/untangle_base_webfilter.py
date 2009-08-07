@@ -260,8 +260,8 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             q = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       sum(hits)::int / 10 AS hits,
-       sum(wf_%s_blocks)::int / 10 AS wf_%s_blocks
+       coalesce(sum(hits), 0)::int / 10 AS hits,
+       coalesce(sum(wf_%s_blocks), 0)::int / 10 AS wf_%s_blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
@@ -376,8 +376,8 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
         try:
             q = """\
 SELECT date_trunc('day', trunc_time) AS day,
-       sum(hits)::int AS hits,
-       sum(wf_%s_blocks)::int AS wf_%s_blocks
+       coalesce(sum(hits), 0)::int AS hits,
+       coalesce(sum(wf_%s_blocks), 0)::int AS wf_%s_blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
@@ -1002,7 +1002,7 @@ class TopTenBlockerPolicyViolations(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT host, sum(wf_%s_blocks)::int as hits_sum
+SELECT host, coalesce(sum(wf_%s_blocks), 0)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__vendor_name
         if host:

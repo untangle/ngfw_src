@@ -448,20 +448,25 @@ class Chart:
         rows = [[k] + v for (k, v) in data.iteritems()]
         rows.sort()
 
-        if self.__major_formatter:
-            fn = self.__major_formatter.function
-            rows = map(lambda a: [fn(a[0], None)] + a[1:], rows)
-
         w = csv.writer(open(filename, 'w'))
         w.writerow(self.__header)
-        w.writerows(rows)
+        for r in rows:
+            if self.__major_formatter:
+                r[0] = self.__major_formatter.function(r[0], None)
+            for i, e in enumerate(r):
+                if e is None:
+                    r[i] = 0
+            w.writerow(r)
 
     def __generate_pie_csv(self, filename, host=None, user=None, email=None):
-        rows = [self.__datasets.keys(), self.__datasets.values()]
-
         w = csv.writer(open(filename, 'w'))
         w.writerow([_('slice'), _('value')])
-        w.writerows(self.__datasets.items())
+        for k, v in self.__datasets.iteritems():
+            if k is None:
+                k = 'None'
+            if v is None:
+                v = 0
+            w.writerow([k, v])
 
 class KeyStatistic:
     def __init__(self, name, value, unit, link_type=None):
