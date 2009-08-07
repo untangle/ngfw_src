@@ -3932,7 +3932,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     },{
                         name: "UID",
                         type : 'string',
-                        sortType : Ung.SortTypes.asUID,                        
+                        sortType : Ung.SortTypes.asUID
                     }, {
                         name: "name",
                         type : 'string',                        
@@ -3962,7 +3962,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 width : 250,
                 fixed :true,
                 sortable : true,
-                dataIndex : 'name',
+                dataIndex : 'name'
             },{
                 header : i18n._("Name"),
                 width: 250, 
