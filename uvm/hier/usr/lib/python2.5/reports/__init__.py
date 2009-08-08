@@ -357,12 +357,29 @@ class Graph:
 
         data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']), '']]
 
-        for ks in self.__key_statistics:
-            data.append([ks.name, "%s %s" % ks.scaled_value])
+        if self.__plot.type == PIE_CHART:
+            colors = self.__plot.colors
+        else:
+            colors = {}
+
+        zebra_colors = [reportlab.lib.colors.lightgrey, None]
+        background_colors = []
+
+        for i, ks in enumerate(self.__key_statistics):
+            n = ks.name
+            data.append([n, "%s %s" % ks.scaled_value])
+            c = colors.get(n, None)
+            if c:
+                background_colors.append(c)
+            else:
+                background_colors.append(zebra_colors[i % 2])
+
+        if len(background_colors) == 0:
+            background_colors = zebra_colors
 
         ks_table = Table(data,
                          style=[('ROWBACKGROUNDS', (0, 0), (-1, -1),
-                                 (reportlab.lib.colors.lightgrey, None)),
+                                 background_colors),
                                 ('SPAN', (0, 0), (1, 0)),
                                 ('BACKGROUND', (0, 0), (1, 0),
                                  reportlab.lib.colors.grey),
@@ -386,6 +403,14 @@ class Chart:
 
         self.__colors = {}
         self.__color_num = 0
+
+    @property
+    def type(self):
+        return self.__type
+
+    @property
+    def colors(self):
+        return self.__colors
 
     def add_dataset(self, xdata, ydata, label=None, color=None, linestyle='-'):
         if self.__type == PIE_CHART:
