@@ -89,6 +89,8 @@ if (!reportsAvailable || !reportingEnabled) {
     </script>
  </head>
 <body>
+<div id="base">
+</div>
 </body>
 </html>
 <%

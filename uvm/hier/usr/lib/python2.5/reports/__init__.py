@@ -357,15 +357,14 @@ class Graph:
 
         data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']), '']]
 
+        zebra_colors = [reportlab.lib.colors.lightgrey, None]
+
         if self.__plot.type == PIE_CHART:
             colors = self.__plot.colors
+            background_colors = [None]
         else:
             colors = None
-
-        print colors
-
-        zebra_colors = [reportlab.lib.colors.lightgrey, None]
-        background_colors = []
+            background_colors = zebra_colors
 
         for i, ks in enumerate(self.__key_statistics):
             n = ks.name
@@ -376,9 +375,6 @@ class Graph:
                     background_colors.append(c)
                 else:
                     background_colors.append(zebra_colors[i % 2])
-
-        if len(background_colors) == 0:
-            background_colors = zebra_colors
 
         ks_table = Table(data,
                          style=[('ROWBACKGROUNDS', (0, 0), (-1, -1),
@@ -423,6 +419,8 @@ class Chart:
             color = reports.colors.color_palette[self.__color_num]
             self.__color_num += 1
 
+        label = str(label)
+
         m = {'xdata': xdata, 'ydata': ydata, 'label': label,
              'linestyle': linestyle, 'color': color}
         self.__datasets.append(m)
@@ -435,12 +433,16 @@ class Chart:
         if self.__type != PIE_CHART:
             raise ValueError('using pie dataset for non-pie chart')
 
-        for k in set(data.keys()) - set(colors.keys()):
-            colors[k] = reports.colors.color_palette[self.__color_num]
-            self.__color_num += 1
+        for k, v in colors.iteritems():
+            self.__colors[str(k)] = v
 
-        self.__datasets = data
-        self.__colors = colors
+        self.__datasets = {}
+        for k, v in data.iteritems():
+            k = str(k)
+            self.__datasets[k] = v
+            if not self.__colors.has_key(k):
+                self.__colors[k] = reports.colors.color_palette[self.__color_num]
+                self.__color_num += 1
 
     def generate_csv(self, filename, host=None, user=None, email=None):
         if self.__type == PIE_CHART:

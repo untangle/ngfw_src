@@ -640,10 +640,8 @@ ORDER BY time asc"""
         finally:
             conn.commit()
 
-        plot = Chart(type=TIME_SERIES_CHART,
-                     title=_('Bandwidth Usage'),
-                     xlabel=_('Hour of Day'),
-                     ylabel=_('Throughput (Kb/s)'),
+        plot = Chart(type=TIME_SERIES_CHART, title=self.title,
+                     xlabel=_('Hour of Day'), ylabel=_('Throughput (Kb/s)'),
                      major_formatter=TIME_OF_DAY_FORMATTER)
 
         plot.add_dataset(dates, throughput, _('Usage'))
@@ -763,10 +761,8 @@ ORDER BY time asc"""
         finally:
             conn.commit()
 
-        plot = Chart(type=TIME_SERIES_CHART,
-                     title=_('Bandwidth Usage'),
-                     xlabel=_('Hour of Day'),
-                     ylabel=_('Number of Sessions'),
+        plot = Chart(type=TIME_SERIES_CHART, title=self.title,
+                     xlabel=_('Hour of Day'), ylabel=_('Number of Sessions'),
                      major_formatter=TIME_OF_DAY_FORMATTER)
 
         plot.add_dataset(dates, num_sessions, _('Sessions'))
@@ -825,9 +821,7 @@ LIMIT 10"""
         finally:
             conn.commit()
 
-        plot = Chart(type=PIE_CHART,
-                     title=_('Top Destination Ports'),
-                     xlabel=_('Port'),
+        plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Port'),
                      ylabel=_('Sessions'))
 
         plot.add_pie_dataset(pds)

@@ -120,7 +120,7 @@ Ung.Reports = Ext.extend(Object,
                              }
 
                              var panel = new Ext.Panel({
-                                                         renderTo : Ext.getBody(),
+                                                         renderTo : 'base',
                                                          cls : "base-container",
                                                          layout : 'border',
                                                          height : getWinHeight()-80,
