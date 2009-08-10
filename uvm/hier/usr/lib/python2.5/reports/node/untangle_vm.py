@@ -523,7 +523,7 @@ ON min_idx = position""")
 
 class BandwidthUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'bandwidth-usage', _('Bandwidth Usage'))
+        Graph.__init__(self, 'number-of-sessions', _('Number of Sessions'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
