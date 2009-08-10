@@ -280,8 +280,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 else:
                     curs.execute(url_query, (sd, ed))
                 r = curs.fetchone()
-                ks = KeyStatistic(_('avg subnets blocked (%s-day)' % n), r[0],
-                                  _('blocks/hour'))
+                ks = KeyStatistic(_('avg suspicious detected (%s-day)' % n), r[0],
+                                  _('detected/hour'))
                 lks.append(ks)
         finally:
             conn.commit()
@@ -714,8 +714,8 @@ ORDER BY day
 
 class TopTenSuspiciousTrafficSubnetsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-suspicious-traffic-subnets-by-hits',
-                       _('Top Ten Suspicious Traffic Subnets'))
+        Graph.__init__(self, 'top-ten-suspicious-traffic-networks-by-hits',
+                       _('Top Ten Suspicious Traffic Networks'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -764,7 +764,7 @@ ORDER BY hits_sum DESC LIMIT 10"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Suspicious Traffic Subnets'),
+                     title=_('Top Ten Suspicious Traffic Networks'),
                      xlabel=_('Subnet'),
                      ylabel=_('Blocks per Day'))
 
@@ -832,7 +832,7 @@ AND sw_accesses > 0"""
 
 class SpywareSubnetsDetected(Graph):
     def __init__(self):
-        Graph.__init__(self, 'spyware-subnets-detected', _('Spyware Subnets Detected'))
+        Graph.__init__(self, 'suspicious-traffic-detected', _('Suspicious Traffic Detected'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -888,10 +888,10 @@ GROUP BY day ORDER BY day ASC"""
 
         lks = []
 
-        ks = KeyStatistic(_('avg subnets detected'), total / report_days,
+        ks = KeyStatistic(_('avg suspicious detected'), total / report_days,
                           _('/day'))
         lks.append(ks)
-        ks = KeyStatistic(_('max subnets detected'), max, _('/day'))
+        ks = KeyStatistic(_('max suspicious detected'), max, _('/day'))
         lks.append(ks)
 
         plot = Chart(type=STACKED_BAR_CHART,

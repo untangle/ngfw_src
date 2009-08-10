@@ -501,7 +501,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
 class TopTenWebPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-policy-violations-by-hits',
-                       _('Top Ten Categories of Blocked Violations (by hits)'))
+                       _('Top Ten Categories of Violations (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -619,7 +619,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10""" \
 class TopTenWebUsageByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-usage-by-hits',
-                       _('Top Ten Web Users By Hits'))
+                       _('Top Ten Web Users (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -817,7 +817,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 class TopTenWebsitesByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-websites-by-hits',
-                       _('Top Ten Websites By Hits'))
+                       _('Top Ten Websites (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -873,7 +873,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 class TopTenWebsitesBySize(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-websites-by-size',
-                       _('Top Ten Websites By Size'))
+                       _('Top Ten Websites (by size)'))
 
         self.__vendor_name = vendor_name
 
@@ -987,8 +987,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 
 class TopTenBlockerPolicyViolations(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-blocker-policy-violations',
-                       _('Top Ten Blocker Violations'))
+        Graph.__init__(self, 'top-ten-blocked-policy-violations',
+                       _('Top Ten Blocked Violations'))
 
         self.__vendor_name = vendor_name
 

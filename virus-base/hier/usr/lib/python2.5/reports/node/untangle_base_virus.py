@@ -604,7 +604,7 @@ class TopEmailVirusesDetected(reports.Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
-SELECT virus_%s_name, virus_%s_detected
+SELECT virus_%s_name, round(virus_%s_detected)
 FROM reports.n_virus_mail_totals
 WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
       AND trunc_time >= %%s AND trunc_time < %%s""" \

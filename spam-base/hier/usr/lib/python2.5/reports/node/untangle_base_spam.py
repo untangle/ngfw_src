@@ -216,15 +216,15 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
                 curs.execute(query, (one_week, ed))
             r = curs.fetchone()
 
-            total = r[0]
-            spam = r[1]
+            total = round(r[0])
+            spam = round(r[1])
             ham = total - spam
 
             ks = KeyStatistic(_('total'), total, _('total'))
             lks.append(ks)
             ks = KeyStatistic(_('spam'), spam, self.__spam_label)
             lks.append(ks)
-            ks = KeyStatistic(_('ham'), ham, self.__ham_label)
+            ks = KeyStatistic(_('clean'), ham, self.__ham_label)
             lks.append(ks)
 
             plot = Chart(type=PIE_CHART, title=self.title)
