@@ -360,7 +360,9 @@ class Graph:
         if self.__plot.type == PIE_CHART:
             colors = self.__plot.colors
         else:
-            colors = {}
+            colors = None
+
+        print colors
 
         zebra_colors = [reportlab.lib.colors.lightgrey, None]
         background_colors = []
@@ -368,11 +370,12 @@ class Graph:
         for i, ks in enumerate(self.__key_statistics):
             n = ks.name
             data.append([n, "%s %s" % ks.scaled_value])
-            c = colors.get(n, None)
-            if c:
-                background_colors.append(c)
-            else:
-                background_colors.append(zebra_colors[i % 2])
+            if colors:
+                c = colors.get(n, None)
+                if c:
+                    background_colors.append(c)
+                else:
+                    background_colors.append(zebra_colors[i % 2])
 
         if len(background_colors) == 0:
             background_colors = zebra_colors

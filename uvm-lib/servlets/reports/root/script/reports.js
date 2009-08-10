@@ -2,6 +2,12 @@ Ext.namespace('Ung');
 
 var rpc = null;
 var reports = null;
+function getWinHeight(){
+    if(!window.innerHeight){
+        return window.screen.height - 190;
+    }
+    return window.innerHeight;
+}
 
 Ext.onReady(function()
             {
@@ -117,7 +123,7 @@ Ung.Reports = Ext.extend(Object,
                                                          renderTo : Ext.getBody(),
                                                          cls : "base-container",
                                                          layout : 'border',
-                                                         height : window.innerHeight-80,
+                                                         height : getWinHeight()-80,
                                                          defaults : { border : false,
                                                                       bodyStyle : 'background-color: transparent;'
                                                                     },
@@ -149,7 +155,7 @@ Ung.Reports = Ext.extend(Object,
                                                                   }, { region : "center",
                                                                        layout : 'border',
                                                                        width : 960,
-                                                                       height : window.innerHeight-30,
+                                                                       height : getWinHeight() - 30,//'auto',//window.innerHeight-30,
                                                                        items : [{ xtype : 'treepanel',
                                                                                   id : 'tree-panel',
                                                                                   region : 'center',
@@ -174,14 +180,14 @@ Ung.Reports = Ext.extend(Object,
                                                                                                   tp.getSelectionModel().on('selectionchange',
                                                                                                                             function(tree, node)
                                                                                                                             {
-                                                                                                                              if (node.attributes.name == 'applications') {
-                                                                                                                                return;
-                                                                                                                              }
-
-                                                                                                                              reports.selectedNode=node;
-                                                                                                                              reports.breadcrumbs=[];
                                                                                                                               if(node!=null) {
-                                                                                                                                reports.getApplicationData(node.attributes.name);
+                                                                                                                                  if (node.attributes.name == 'applications') {
+                                                                                                                                    return;
+                                                                                                                                  }
+    
+                                                                                                                                  reports.selectedNode=node;
+                                                                                                                                  reports.breadcrumbs=[];                                                                                                                              
+                                                                                                                                  reports.getApplicationData(node.attributes.name);
                                                                                                                               }
                                                                                                                             });
 
