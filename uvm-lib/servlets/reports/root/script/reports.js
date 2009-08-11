@@ -184,9 +184,9 @@ Ung.Reports = Ext.extend(Object,
                                                                                                                                   if (node.attributes.name == 'applications') {
                                                                                                                                     return;
                                                                                                                                   }
-    
+
                                                                                                                                   reports.selectedNode=node;
-                                                                                                                                  reports.breadcrumbs=[];                                                                                                                              
+                                                                                                                                  reports.breadcrumbs=[];
                                                                                                                                   reports.getApplicationData(node.attributes.name);
                                                                                                                               }
                                                                                                                             });
@@ -636,6 +636,7 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                    for (var i = 0; i < section.summaryItems.list.length; i++) {
                                      var summaryItem = section.summaryItems.list[i];
+                                     var plotType = summaryItem.plotType;
                                      // graph
                                      items.push({html:'<img src="'+summaryItem.imageUrl+'"/>', bodyStyle:'padding:20px'});
                                      // key statistics

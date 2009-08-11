@@ -36,7 +36,9 @@ package com.untangle.uvm.reports;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -89,6 +91,15 @@ public class Chart extends SummaryItem implements Serializable
     public List<KeyStatistic> getKeyStatistics()
     {
         return keyStatistics;
+    }
+
+    public Map<String, String> getColors()
+    {
+        if (null == plot) {
+            return new HashMap<String, String>();
+        } else {
+            return plot.getColors();
+        }
     }
 
     public void addKeyStatistic(KeyStatistic ks)

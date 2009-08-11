@@ -467,7 +467,7 @@ class Chart:
         for t, c in self.__colors.iteritems():
             ce = Element('color')
             ce.set('title', str(t))
-            ce.set('value', c.hexval())
+            ce.set('value', "%02x%02x%02x" % c.bitmap_rgb())
             element.append(ce)
 
         return element

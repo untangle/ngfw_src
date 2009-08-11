@@ -33,6 +33,7 @@
 
 package com.untangle.uvm.reports;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -107,7 +108,15 @@ public class PieChart extends Plot
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         PiePlot plot = (PiePlot)jfChart.getPlot();
         for (String key : colors.keySet()) {
-            plot.setSectionPaint(key, colors.get(key));
+            String colorStr = colors.get(key);
+            if (null != colorStr) {
+                try {
+                    Color c = Color.decode("0x" + colorStr);
+                    plot.setSectionPaint(key, c);
+                } catch (NumberFormatException exn) {
+                    logger.warn("could not decode color: " + colorStr, exn);
+                }
+            }
         }
         plot.setLabelGenerator(null);
 

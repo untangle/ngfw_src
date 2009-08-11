@@ -111,9 +111,14 @@ public class StackedBarChart extends Plot
         StackedBarRenderer renderer = (StackedBarRenderer)p.getRenderer();
         for (String key : colors.keySet()) {
             int i = rotated.getRowIndex(key);
-            Color c = colors.get(key);
-            if (null != c) {
-                renderer.setSeriesPaint(i, c);
+            String colorStr = colors.get(key);
+            if (null != colorStr) {
+                try {
+                    Color c = Color.decode("0x" + colorStr);
+                    renderer.setSeriesPaint(i, c);
+                } catch (NumberFormatException exn) {
+                    logger.warn("could not decode color: " + colorStr, exn);
+                }
             }
         }
         CategoryAxis domainAxis = p.getDomainAxis();

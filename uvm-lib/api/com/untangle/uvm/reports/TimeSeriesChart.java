@@ -93,8 +93,15 @@ public class TimeSeriesChart extends Plot
         List<Color> seriesColors = new ArrayList<Color>();
         for (int i = 0; i < cd.getColumnCount(); i++) {
             String columnKey = (String)cd.getColumnKey(i);
-            Color c = colors.get(columnKey);
-            seriesColors.add(c);
+            String colorStr = colors.get(columnKey);
+            if (null != colorStr) {
+                try {
+                    Color c = Color.decode("0x" + colorStr);
+                    seriesColors.add(c);
+                } catch (NumberFormatException exn) {
+                    logger.warn("could not decode color: " + colorStr, exn);
+                }
+            }
 
             TimeSeries ds = new TimeSeries(columnKey);
             for (int j = 0; j < cd.getRowCount(); j++) {
