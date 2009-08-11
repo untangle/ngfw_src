@@ -93,6 +93,7 @@ public class ReportXmlHandler extends DefaultHandler
             } else {
                 currentChart = new Chart(attrs.getValue("name"),
                                          attrs.getValue("title"),
+                                         attrs.getValue("type"),
                                          attrs.getValue("image"),
                                          attrs.getValue("csv"));
                 currentSummary.addSummaryItem(currentChart);

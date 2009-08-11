@@ -330,6 +330,7 @@ class Graph:
         element = Element('graph')
         element.set('name', self.__name)
         element.set('title', self.__title)
+        element.set('type', self.__plot.type)
         element.set('image', filename_base + '.png')
         element.set('csv', filename_base + '.csv')
 

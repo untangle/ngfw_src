@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 
 public class Chart extends SummaryItem implements Serializable
 {
+    private final String plotType;
     private final String imageUrl;
     private final String csvUrl;
 
@@ -50,10 +51,12 @@ public class Chart extends SummaryItem implements Serializable
 
     private Plot plot;
 
-    public Chart(String name, String title, String imageUrl, String csvUrl)
+    public Chart(String name, String title, String plotType, String imageUrl,
+                 String csvUrl)
     {
         super(name, title);
 
+        this.plotType = plotType;
         this.imageUrl = imageUrl;
         this.csvUrl = csvUrl;
     }
@@ -61,6 +64,11 @@ public class Chart extends SummaryItem implements Serializable
     public void setPlot(Plot plot)
     {
         this.plot = plot;
+    }
+
+    public String getPlotType()
+    {
+        return plotType;
     }
 
     public String getImageUrl()
