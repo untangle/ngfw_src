@@ -50,6 +50,8 @@ from reports.engine import get_node_base
 from reports.pdf import STYLESHEET
 from reports.pdf import SectionHeader
 
+from reportlab.graphics.shapes import Rect
+
 HNAME_LINK = 'HostLink'
 USER_LINK = 'UserLink'
 EMAIL_LINK = 'EmailLink'
@@ -356,35 +358,45 @@ class Graph:
             return []
         image = Image(img_file)
 
-        data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']), '']]
-
         zebra_colors = [reportlab.lib.colors.lightgrey, None]
 
         if self.__plot.type == PIE_CHART:
             colors = self.__plot.colors
             background_colors = [None]
+            data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']),
+                     '', '']]
         else:
             colors = None
             background_colors = zebra_colors
+            data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']),
+                     '']]
 
         for i, ks in enumerate(self.__key_statistics):
             n = ks.name
-            data.append([n, "%s %s" % ks.scaled_value])
             if colors:
+                data.append(['', n, "%s %s" % ks.scaled_value])
                 c = colors.get(n, None)
                 if c:
                     background_colors.append(c)
                 else:
                     background_colors.append(zebra_colors[i % 2])
+            else:
+                data.append([n, "%s %s" % ks.scaled_value])
 
-        ks_table = Table(data,
-                         style=[('ROWBACKGROUNDS', (0, 0), (-1, -1),
-                                 background_colors),
-                                ('SPAN', (0, 0), (1, 0)),
-                                ('BACKGROUND', (0, 0), (1, 0),
-                                 reportlab.lib.colors.grey),
-                                ('BOX', (0, 0), (-1, -1), 1,
-                                 reportlab.lib.colors.grey)])
+        style = []
+
+        if colors:
+            style.append(['ROWBACKGROUNDS', (0, 0), (0, -1), background_colors])
+            style.append(['ROWBACKGROUNDS', (1, 0), (1, -1), zebra_colors])
+            style.append(['SPAN', (0, 0), (2, 0)])
+        else:
+            style.append(['SPAN', (0, 0), (1, 0)])
+            style.append(['ROWBACKGROUNDS', (0, 1), (-1, -1), zebra_colors])
+
+        style += [['BACKGROUND', (0, 0), (-1, 0), reportlab.lib.colors.grey],
+                  ['BOX', (0, 0), (-1, -1), 1, reportlab.lib.colors.grey]]
+
+        ks_table = Table(data, style=style)
 
         return [image, Spacer(1, 0.125 * inch), ks_table]
 
