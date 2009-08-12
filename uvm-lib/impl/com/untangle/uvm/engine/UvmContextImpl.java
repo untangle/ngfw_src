@@ -473,6 +473,13 @@ public class UvmContextImpl extends UvmContextBase
 
     public Process exec(String[] cmd, String[] envp, File dir) throws IOException
     {
+        if (logger.isInfoEnabled()) {
+            String cmdStr = new String();
+            for (int i = 0 ; i < cmd.length; i++) {
+                cmdStr = cmdStr.concat(cmd[i] + " ");
+            }
+            logger.info("System.exec(" + cmdStr + ")");
+        }
         try {
             return Runtime.getRuntime().exec(cmd, envp, dir);
         } catch (IOException x) {
