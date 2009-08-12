@@ -507,20 +507,6 @@ LIMIT 10""" % (self.__short_name,)
 
                 lks.append(KeyStatistic(addr, num, _('spam')))
                 pds[addr] = num
-
-            query = """\
-SELECT sum(%s_spam_msgs)::int AS spam_msgs
-FROM reports.n_mail_addr_totals
-WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
-""" % (self.__short_name,)
-
-            curs = conn.cursor()
-            curs.execute(query, (one_week, ed))
-            r = curs.fetchone()
-            if r[0]:
-                other = r[0] - counted_spam
-                lks.append(KeyStatistic(_('other'), other, _('spam')))
-                pds[_('other')] = other
         finally:
             conn.commit()
 
