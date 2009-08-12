@@ -104,7 +104,7 @@ public class PieChart extends Plot
 
         String title = getTitle();
         JFreeChart jfChart
-            = ChartFactory.createPieChart(title, dpd, true, false, false);
+            = ChartFactory.createPieChart(title, dpd, false, false, false);
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         PiePlot plot = (PiePlot)jfChart.getPlot();
         for (String key : colors.keySet()) {
