@@ -328,8 +328,8 @@ SELECT max(hits), avg(hits), max(wf_%s_blocks), avg(wf_%s_blocks)
 FROM (select date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
              sum(wf_%s_blocks)::int as wf_%s_blocks
       FROM reports.n_http_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s""" \
-            % (4 * (self.__vendor_name,))
+      WHERE trunc_time >= %%s AND trunc_time < %%s
+""" % (4 * (self.__vendor_name,))
         if host:
             query = query + " AND hname = %s"
         elif user:
@@ -1078,7 +1078,7 @@ SELECT time_stamp, hname, uid, wf_%s_category, 'http://' || host || uri,
        s_server_addr
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
-      AND NOT wf_%s_action ISNULL""" % (self.__vendor_name,
+      AND wf_%s_action = 'B'""" % (self.__vendor_name,
                                         DateFromMx(start_date),
                                         DateFromMx(end_date),
                                         self.__vendor_name)
