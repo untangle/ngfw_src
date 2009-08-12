@@ -636,89 +636,110 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                    for (var i = 0; i < section.summaryItems.list.length; i++) {
                                      var summaryItem = section.summaryItems.list[i];
-                                     var plotType = summaryItem.plotType;
                                      // graph
                                      items.push({html:'<img src="'+summaryItem.imageUrl+'"/>', bodyStyle:'padding:20px'});
                                      // key statistics
+
+                                     colors = summaryItem.colors.map;
+
+                                     columns = [];
                                      var data = [];
                                      for (var j=0; j<summaryItem.keyStatistics.list.length; j++) {
                                        var keyStatistic = summaryItem.keyStatistics.list[j];
-                                       data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType]);
+                                       data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType, colors[keyStatistic.label]]);
                                      }
-                                     items.push(new Ext.grid.GridPanel({ store: new Ext.data.SimpleStore({ fields: [
-                                                                                                             {name: 'label'},
-                                                                                                             {name: 'value'},
-                                                                                                             {name: 'unit'},
-                                                                                                             {name: 'linkType'}
-                                                                                                           ],
+
+                                     columns = [];
+
+                                     if (summaryItem.plotType == 'pie-chart') {
+                                       columns.push({ id:'color',
+                                                      header: "Color",
+                                                      width: 25,
+                                                      sortable: false,
+                                                      dataIndex: 'color',
+                                                      renderer: function(value, medata, record) {
+                                                        return value;
+                                                      }.createDelegate(this)
+                                                    });
+                                     }
+
+                                     columns.push({ id:'label',
+                                                    header: "Label",
+                                                    width: 150,
+                                                    sortable: false,
+                                                    dataIndex: 'label',
+                                                    renderer: function(value, medata, record) {
+                                                      var linkType = record.data.linkType;
+                                                      if (linkType == "UserLink") {
+                                                        return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                                      } else if (linkType == "HostLink") {
+                                                        return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                                      } else if (linkType == "EmailLink") {
+                                                        return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                                      } else {
+                                                        return this.i18n._(value);
+                                                      }
+                                                    }.createDelegate(this)
+                                                  });
+
+                                     columns.push({ header: "Value",
+                                                    width: 150,
+                                                    sortable: false,
+                                                    dataIndex: 'value',
+                                                    renderer: function (value, medata, record) {
+                                                      var unit = record.data.unit;
+                                                      if (unit && unit.indexOf('bytes') == 0) {
+                                                        if (value < 1000000) {
+                                                          value = Math.round(value/1000);
+                                                          var s = unit.split("/");
+                                                          s[0] = "KB";
+                                                          unit = s.join("/");
+                                                        } else if (value < 1000000000) {
+                                                          value = Math.round(value/1000000);
+                                                          var s = unit.split("/");
+                                                          s[0] = "MB";
+                                                          unit = s.join("/");
+                                                        } else {
+                                                          value = Math.round(value/1000000000);
+                                                          var s = unit.split("/");
+                                                          s[0] = "GB";
+                                                          unit = s.join("/");
+                                                        }
+                                                      }
+
+                                                      var v = this.i18n.numberFormat(value);
+
+                                                      return unit == null ? v : (v + " " + this.i18n._(unit));
+                                                    }.createDelegate(this)
+                                                  });
+
+                                     items.push(new Ext.grid.GridPanel({ store: new Ext.data.SimpleStore({ fields: [ {name: 'label'},
+                                                                                                                     {name: 'value'},
+                                                                                                                     {name: 'unit'},
+                                                                                                                     {name: 'linkType'},
+                                                                                                                     {name: 'color'}
+                                                                                                                   ],
                                                                                                            data: data
                                                                                                          }),
-                                                                                                         columns: [{ id:'label',
-                                                                                                                     header: "Label",
-                                                                                                                     width: 150,
-                                                                                                                     sortable: false,
-                                                                                                                     dataIndex: 'label',
-                                                                                                                     renderer: function(value, medata, record) {
-                                                                                                                       var linkType = record.data.linkType;
-                                                                                                                       if (linkType == "UserLink") {
-                                                                                                                         return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                                                                                                       } else if (linkType == "HostLink") {
-                                                                                                                         return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                                                                                                       } else if (linkType == "EmailLink") {
-                                                                                                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
-                                                                                                                       } else {
-                                                                                                                         return this.i18n._(value);
-                                                                                                                       }
-                                                                                                                     }.createDelegate(this)
-                                                                                                                   },{
-                                                                                                                     header: "Value",
-                                                                                                                     width: 150,
-                                                                                                                     sortable: false,
-                                                                                                                     dataIndex: 'value',
-                                                                                                                     renderer: function (value, medata, record) {
-                                                                                                                       var unit = record.data.unit;
-                                                                                                                       if (unit && unit.indexOf('bytes') == 0) {
-                                                                                                                         if (value < 1000000) {
-                                                                                                                           value = Math.round(value/1000);
-                                                                                                                           var s = unit.split("/");
-                                                                                                                           s[0] = "KB";
-                                                                                                                           unit = s.join("/");
-                                                                                                                         } else if (value < 1000000000) {
-                                                                                                                           value = Math.round(value/1000000);
-                                                                                                                           var s = unit.split("/");
-                                                                                                                           s[0] = "MB";
-                                                                                                                           unit = s.join("/");
-                                                                                                                         } else {
-                                                                                                                           value = Math.round(value/1000000000);
-                                                                                                                           var s = unit.split("/");
-                                                                                                                           s[0] = "GB";
-                                                                                                                           unit = s.join("/");
-                                                                                                                         }
-                                                                                                                       }
-
-                                                                                                                       var v = this.i18n.numberFormat(value);
-
-                                                                                                                       return unit == null ? v : (v + " " + this.i18n._(unit));
-                                                                                                                     }.createDelegate(this)
-                                                                                                                   }],
-                                                                                                                   // inline toolbars
-                                                                                                                   tbar:[{ tooltip:this.i18n._('Export Excel'),
-                                                                                                                           iconCls:'export-excel',
-                                                                                                                           handler : function () {
-                                                                                                                             window.open(summaryItem.csvUrl);
-                                                                                                                           }
-                                                                                                                         }, '-', {
-                                                                                                                           tooltip:this.i18n._('Export Printer'),
-                                                                                                                           iconCls:'export-printer',
-                                                                                                                           handler : function () {
-                                                                                                                             window.open(summaryItem.printerUrl);
-                                                                                                                           }
-                                                                                                                         }],
-                                                                                                                         title:this.i18n._('Key Statistics'),
-                                                                                                                         stripeRows: true,
-                                                                                                                         hideHeaders: true,
-                                                                                                                         enableHdMenu : false,
-                                                                                                                         enableColumnMove: false
+                                                                                                         columns: columns,
+                                                                                                         // inline toolbars
+                                                                                                         tbar:[{ tooltip:this.i18n._('Export Excel'),
+                                                                                                         iconCls:'export-excel',
+                                                                                                         handler : function () {
+                                                                                                           window.open(summaryItem.csvUrl);
+                                                                                                         }
+                                                                                                               }, '-', {
+                                                                                                                 tooltip:this.i18n._('Export Printer'),
+                                                                                                                 iconCls:'export-printer',
+                                                                                                                 handler : function () {
+                                                                                                                   window.open(summaryItem.printerUrl);
+                                                                                                                 }
+                                                                                                               }],
+                                                                                                               title:this.i18n._('Key Statistics'),
+                                                                                                               stripeRows: true,
+                                                                                                               hideHeaders: true,
+                                                                                                               enableHdMenu : false,
+                                                                                                               enableColumnMove: false
                                                                        })
                                                );
                                    }
