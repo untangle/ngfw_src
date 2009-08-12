@@ -39,6 +39,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
@@ -143,7 +145,9 @@ public class TimeSeriesChart extends Plot
             renderer.setSeriesPaint(i, seriesColors.get(i));
         }
         p.getRangeAxis().setLabelFont(AXIS_FONT);
-        p.getDomainAxis().setLabelFont(AXIS_FONT);
+        DateAxis da = (DateAxis)p.getDomainAxis();
+        da.setLabelFont(AXIS_FONT);
+        da.setDateFormatOverride(new SimpleDateFormat("kk:mm"));
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
                                       jfChart, CHART_WIDTH, CHART_HEIGHT,
                                       null, false, CHART_COMPRESSION_PNG);

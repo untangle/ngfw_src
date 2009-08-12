@@ -215,7 +215,7 @@ WHERE reports.n_http_events.time_stamp >= %s
 
 class HourlyRates(Graph):
     def __init__(self):
-        Graph.__init__(self, 'hourly-rates', _('Hourly Rates'))
+        Graph.__init__(self, 'hourly-rates', _('Hourly Web Usage'))
 
     @print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
@@ -294,7 +294,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             return None
 
         plot = Chart(type=TIME_SERIES_CHART,
-                     title=_('Hourly Web Usage'),
+                     title=self.title,
                      xlabel=_('Hour of Day'),
                      ylabel=_('Hits per Minute'),
                      major_formatter=TIME_OF_DAY_FORMATTER)
@@ -459,7 +459,7 @@ ORDER BY day asc"""
             conn.commit()
 
         plot = Chart(type=STACKED_BAR_CHART,
-                     title=_('Spyware URLs Blocked'),
+                     title=self.title,
                      xlabel=_('Date'),
                      ylabel=_('Blocks per Day'),
                      major_formatter=DATE_FORMATTER)
@@ -516,7 +516,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Blocked Spyware Sites (by hits)'),
+                     title=self.title,
                      xlabel=_('Site'),
                      ylabel=_('Blocks per Day'))
 
@@ -573,7 +573,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Blocked Hosts (by hits)'),
+                     title=self.title,
                      xlabel=_('Host'),
                      ylabel=_('Blocks per Day'))
 
@@ -630,7 +630,7 @@ AND sw_cookies > 0"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Blocked Cookies'),
+                     title=self.title,
                      xlabel=_('Cookie'),
                      ylabel=_('Blocks per Day'))
 
@@ -703,7 +703,7 @@ ORDER BY day
         lks.append(ks)
 
         plot = Chart(type=STACKED_BAR_CHART,
-                     title=_('Spyware Cookies Blocked'),
+                     title=self.title,
                      xlabel=_('Date'),
                      ylabel=_('Blocks per Day'),
                      major_formatter=DATE_FORMATTER)
@@ -764,7 +764,7 @@ ORDER BY hits_sum DESC LIMIT 10"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Suspicious Traffic Networks'),
+                     title=self.title,
                      xlabel=_('Subnet'),
                      ylabel=_('Blocks per Day'))
 
@@ -822,7 +822,7 @@ AND sw_accesses > 0"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Suspicious Traffic Hosts (by hits)'),
+                     title=self.title,
                      xlabel=_('Host'),
                      ylabel=_('Blocks per Day'))
 
@@ -895,7 +895,7 @@ GROUP BY day ORDER BY day ASC"""
         lks.append(ks)
 
         plot = Chart(type=STACKED_BAR_CHART,
-                     title=_('Spyware Subnets Detected'),
+                     title=self.title,
                      xlabel=_('Date'),
                      ylabel=_('Detections per Day'),
                      major_formatter=DATE_FORMATTER)
