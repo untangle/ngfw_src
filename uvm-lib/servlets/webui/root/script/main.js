@@ -36,12 +36,12 @@ Ung.Main=Ext.extend(Object, {
                     return false;
                 }
                 return true;
-            }
+            };
         }
         this.firstTimeRun=Ung.Util.getQueryStringParam("firstTimeRun");
         this.appsLastState={};
         this.nodePreviews={};
-    	JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
+        JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
         this.initSemaphore=11;
         rpc = {};
         // get JSONRpcClient
@@ -63,7 +63,7 @@ Ung.Main=Ext.extend(Object, {
                 rpc.languageSettings=result;
                 this.postinit();// 2
             }.createDelegate(this));
-            
+
         }.createDelegate(this));
         // get skin manager
         rpc.jsonrpc.RemoteUvmContext.skinManager(function (result, exception) {
@@ -75,7 +75,7 @@ Ung.Main=Ext.extend(Object, {
                 var skinSettings=result;
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
                 Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
-                if (skinSettings.outOfDate) { 
+                if (skinSettings.outOfDate) {
                     var win;
                     win = new Ext.Window({
                         layout      : 'fit',
@@ -84,7 +84,7 @@ Ung.Main=Ext.extend(Object, {
                         closeAction :'hide',
                         plain       : true,
                         html        :  i18n._('The current custom skin is no longer compatible and has been disabled. The Default skin is temporarily being used. To disable this message change the skin settings under Config Administration. To get more information on how to fix the custom skin: <a href="http://wiki.untangle.com/index.php/Skins" target="_blank">Where can I find updated skins and new skins?</a>'),
-                        title: i18n._('Skin Out of Date'), 
+                        title: i18n._('Skin Out of Date'),
                         buttons: [ {
                             text     : i18n._('Ok'),
                             handler  : function(){
@@ -161,28 +161,28 @@ Ung.Main=Ext.extend(Object, {
         if(this.initSemaphore!=0) {
             return;
         }
-       	this.startApplication()
+      this.startApplication();
     },
     warnOnUpgrades : function(handler) {
-    	if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
+        if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
             main.warnOnUpgradesCallback(main.upgradeStatus,handler);
-    	} else {
+        } else {
             if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
                 main.warnOnUpgradesCallback(main.upgradeStatus,handler);
             } else {
                 Ext.MessageBox.wait(i18n._("Checking for available upgrades..."), i18n._("Please wait"));
                 rpc.toolboxManager.getUpgradeStatus(function(result, exception,opt,handler) {
-                	main.upgradeLastCheckTime=(new Date()).getTime();
+                    main.upgradeLastCheckTime=(new Date()).getTime();
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception, function() {
                         main.warnOnUpgradesCallback(main.upgradeStatus,handler);
                     }.createDelegate(this))) return;
-                    
+
                     main.upgradeStatus=result;
                     main.warnOnUpgradesCallback(main.upgradeStatus,handler);
                 }.createDelegate(this,[handler],true),true);
-    		}
-    	}
+            }
+        }
     },
     warnOnUpgradesCallback : function (upgradeStatus,handler) {
         if(upgradeStatus!=null) {
@@ -190,8 +190,8 @@ Ung.Main=Ext.extend(Object, {
                 Ext.MessageBox.alert(i18n._("Failed"), "Upgrade in progress.");
                 return;
             } else if(upgradeStatus.upgradesAvailable){
-            	Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
-            	Ext.Msg.show({
+                Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
+                Ext.Msg.show({
                     title:i18n._("Upgrades warning"),
                     msg: i18n._("Upgrades are available. You must perform all possible upgrades before downloading from the library. Please click OK to open Upgrade panel."),
                     buttons: Ext.Msg.OKCANCEL,
@@ -205,21 +205,21 @@ Ung.Main=Ext.extend(Object, {
                 });
                 return;
             }
-		}
+        }
         handler.call(this);
     },
     resetAppLastState: function(displayName) {
-    	main.appsLastState[displayName]=null
+        main.appsLastState[displayName]=null
     },
     setAppLastState: function(displayName,state,options,download) {
-    	if(state==null) {
-    		main.appsLastState[displayName]=null;
-    	} else {
-    		main.appsLastState[displayName]={state:state, options:options, download:download};
-    	}
+        if(state==null) {
+            main.appsLastState[displayName]=null;
+        } else {
+            main.appsLastState[displayName]={state:state, options:options, download:download};
+        }
     },
     startApplication: function() {
-    	Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Starting..."), i18n._("Please wait"));
         this.initExtI18n();
         this.initExtGlobal();
         this.initExtVTypes();
@@ -253,17 +253,17 @@ Ung.Main=Ext.extend(Object, {
                     width: this.contentLeftWidth,
                     bodyStyle: 'background-color: transparent;',
                     footer : false,
-					buttonAlign:'left',
+                    buttonAlign:'left',
                     items:[{
-                    	cls: "logo",
+                        cls: "logo",
                         html: '<img src="/images/BrandingLogo.gif?'+(new Date()).getTime()+'" border="0"/>',
                         border: false,
                         bodyStyle: 'background-color: transparent;'
                     }, {
-                    	layout:"anchor",
-                    	border: false,
-                    	cls: "left-tabs",
-                    	items: this.leftTabs = new Ext.TabPanel({
+                        layout:"anchor",
+                        border: false,
+                        cls: "left-tabs",
+                        items: this.leftTabs = new Ext.TabPanel({
                             activeTab: 0,
                             height: 400,
                             anchor:"100% 100%",
@@ -304,14 +304,14 @@ Ung.Main=Ext.extend(Object, {
                             var helpSource=main.leftTabs.getActiveTab().helpSource;
                             main.openHelp(helpSource);
                         }
-					},{
+                    },{
                         name: 'Logout',
                         iconCls: 'icon-logout',
                         text: i18n._('Logout'),
                         handler: function() {
                             window.location.href = '/auth/logout?url=/webui&realm=Administrator';
                         }
-					}]
+                    }]
                  },{
                     region:'center',
                     id: 'center',
@@ -330,7 +330,7 @@ Ung.Main=Ext.extend(Object, {
             var newHeight=Math.max(this.getEl().getHeight()-175,100);
             main.leftTabs.setHeight(newHeight);
         });
-        
+
         Ext.getCmp("west").fireEvent("resize");
         buttonCmp=new Ext.Button({
             name: 'What Apps should I use?',
@@ -339,11 +339,11 @@ Ung.Main=Ext.extend(Object, {
             iconCls: 'icon-help',
             text: i18n._('What Apps should I use?'),
             show : function() {
-            	Ext.Button.prototype.show.call(this);
+                Ext.Button.prototype.show.call(this);
                 this.getEl().alignTo("content-right","c-c");
-            }, 
+            },
             handler: function() {
-    	        main.warnOnUpgrades(function() {
+                main.warnOnUpgrades(function() {
                      main.openStore("wizard",i18n._('What Apps should I use?'));
                 }.createDelegate(this));
             }.createDelegate(this)
@@ -358,9 +358,9 @@ Ung.Main=Ext.extend(Object, {
             show : function() {
                 Ext.Button.prototype.show.call(this);
                 this.getEl().alignTo("appsItems","c-c",[0,10]);
-            }, 
+            },
             handler: function() {
-            	main.warnOnUpgrades(function() {
+                main.warnOnUpgrades(function() {
                      main.openStore("my_account",i18n._("My Account"));
                 }.createDelegate(this));
             }
@@ -369,7 +369,7 @@ Ung.Main=Ext.extend(Object, {
         this.loadConfig();
         this.loadPolicies();
     },
-    
+
     openStore : function (action,title) {
         var currentLocation = window.location;
         var query = "host=" + currentLocation.hostname;
@@ -379,7 +379,7 @@ Ung.Main=Ext.extend(Object, {
 
         this.openWindow( query, storeWindowName, title );
     },
-    openStoreToLibItem : function (libItemName, title,action) {        
+    openStoreToLibItem : function (libItemName, title,action) {
         var currentLocation = window.location,
         query = "host=" + currentLocation.hostname;
         if(!action){
@@ -387,7 +387,7 @@ Ung.Main=Ext.extend(Object, {
         }else{
             if(action != 'buy'){
                 action = "browse";
-            }        
+            }
         }
         query += "&port=" + currentLocation.port;
         query += "&protocol=" + currentLocation.protocol.replace(/:$/, "");
@@ -406,14 +406,14 @@ Ung.Main=Ext.extend(Object, {
             this.openIFrame( url, title );
             return;
         }
-       
+
         /** This code is not used for now we just open in an iframe as above */
-        /* If we decide to go back to a new window for whatever then use this */ 
+        /* If we decide to go back to a new window for whatever then use this */
         var w = window.open( url, windowName, "location=0, resizable=1, scrollbars=1" );
-        
+
         var m = String.format( i18n._( "Click {1}here{2} or disable your pop-up blocker and try again." ),
                                '<br/>', "<a href='" + url + "' target='" + windowName + "'>", '</a>' );
-        
+
         if ( w == null ) {
             Ext.MessageBox.show({
                 title : i18n._( "Unable to open a new window" ),
@@ -425,7 +425,7 @@ Ung.Main=Ext.extend(Object, {
             if ( w ) w.focus();
         }
     },
-    
+
     openIFrame : function( url, title )
     {
         var iframeWin = main.getIframeWin();
@@ -433,32 +433,32 @@ Ung.Main=Ext.extend(Object, {
         iframeWin.setTitle(title);
         window.frames["iframeWin_iframe"].location.href = url;
     },
-    
+
     initExtI18n: function(){
-    	var locale = rpc.languageSettings.language;
-    	if(locale) {
-    	   Ung.Util.loadScript('/ext/source/locale/ext-lang-' + locale + '.js')
-    	}
+        var locale = rpc.languageSettings.language;
+        if(locale) {
+          Ung.Util.loadScript('/ext/source/locale/ext-lang-' + locale + '.js');
+        }
     },
     initExtGlobal: function(){
-    	
-    	// init quick tips
-    	Ext.QuickTips.init();
 
-    	//hide/unhide Field and label
+        // init quick tips
+        Ext.QuickTips.init();
+
+        //hide/unhide Field and label
         Ext.override(Ext.form.Field, {
             showContainer: function() {
                 this.enable();
                 this.show();
                 this.getEl().up('.x-form-item').setDisplayed(true); // show entire container and children (including label if applicable)
             },
-            
+
             hideContainer: function() {
                 this.disable(); // for validation
                 this.hide();
                 this.getEl().up('.x-form-item').setDisplayed(false); // hide container and children (including label if applicable)
             },
-            
+
             setContainerVisible: function(visible) {
                 if (visible) {
                     this.showContainer();
@@ -522,55 +522,55 @@ Ung.Main=Ext.extend(Object, {
     },
     getLoggingManager : function(forceReload) {
         if (forceReload || rpc.loggingManager === undefined) {
-        	try {
+            try {
                 rpc.loggingManager = rpc.jsonrpc.RemoteUvmContext.loggingManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-                
+
         }
         return rpc.loggingManager;
     },
 
     getAppServerManager : function(forceReload) {
         if (forceReload || rpc.appServerManager === undefined) {
-        	try {
+            try {
                 rpc.appServerManager = rpc.jsonrpc.RemoteUvmContext.appServerManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-            
+
         }
         return rpc.appServerManager;
     },
 
     getBrandingManager : function(forceReload) {
         if (forceReload || rpc.brandingManager === undefined) {
-        	try {
+            try {
                 rpc.brandingManager = rpc.jsonrpc.RemoteUvmContext.brandingManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
-            
+
         }
         return rpc.brandingManager;
     },
-    
+
     // get branding settings
     getBrandingBaseSettings : function(forceReload) {
         if (forceReload || rpc.brandingBaseSettings === undefined) {
             rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
         }
         return rpc.brandingBaseSettings;
-    },        
+    },
 
     getLicenseManager : function(forceReload) {
-    	// default functionality is to reload license manager as it might change in uvm
-    	if (typeof forceReload === 'undefined') {
-    		forceReload = true;
-    	}
+        // default functionality is to reload license manager as it might change in uvm
+        if (typeof forceReload === 'undefined') {
+            forceReload = true;
+        }
         if (forceReload || rpc.licenseManager === undefined) {
-        	try {
+            try {
                 rpc.licenseManager = rpc.jsonrpc.RemoteUvmContext.licenseManager()
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
@@ -595,7 +595,7 @@ Ung.Main=Ext.extend(Object, {
             try {
                 rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
             } catch (e) {
-        	Ung.Util.rpcExHandler(e);
+            Ung.Util.rpcExHandler(e);
             }
         }
         return rpc.mailSender;
@@ -615,12 +615,12 @@ Ung.Main=Ext.extend(Object, {
     },
 
     unactivateNode: function(mackageDesc) {
-    	Ung.AppItem.updateState(mackageDesc.displayName,"unactivating");
+        Ung.AppItem.updateState(mackageDesc.displayName,"unactivating");
         rpc.nodeManager.nodeInstances(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 var tids=result;
                 if(tids.length>0) {
-                	Ung.AppItem.updateState(this.displayName);
+                    Ung.AppItem.updateState(this.displayName);
                     Ext.MessageBox.alert(this.name+" "+i18n._("Warning"),
                     String.format(i18n._("{0} cannot be removed because it is being used by the following rack:{1}You must remove the product from all racks first."), this.displayName,"<br><b>"+tids[0].policy.name+"</b><br><br>"));
                     return;
@@ -639,10 +639,10 @@ Ung.Main=Ext.extend(Object, {
                 }
         }.createDelegate(mackageDesc), mackageDesc.name);
     },
-    // open context sensitive help 
+    // open context sensitive help
     openHelp: function(source) {
-		var url = "../library/launcher?";
-		url += "action=help";
+        var url = "../library/launcher?";
+        url += "action=help";
         if(source) {
             url += "&source=" + source;
         }
@@ -651,7 +651,7 @@ Ung.Main=Ext.extend(Object, {
 
     // load policies list
     loadPolicies: function() {
-    	Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
         rpc.policyManager.getPolicies( function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.policies=result;
@@ -701,25 +701,25 @@ Ung.Main=Ext.extend(Object, {
             }
         }
         if(this.apps.length>0) {
-        	Ext.getCmp("my_account_button").hide();
+            Ext.getCmp("my_account_button").hide();
         } else {
-        	Ext.getCmp("my_account_button").show();
+            Ext.getCmp("my_account_button").show();
         }
     },
     findLibItemDisplayName: function(libItemName) {
         if(main.apps!=null) {
             for(var i=0; i<main.apps.length; i++) {
                 if(main.apps[i].libItem!=null && main.apps[i].libItem.name==libItemName) {
-                	return main.apps[i].libItem.displayName
+                    return main.apps[i].libItem.displayName
                 }
             }
         }
-    	return null;
+        return null;
     },
     buildNodes: function() {
         //build nodes
         Ung.MessageManager.stop();
-        
+
         this.destoyNodes();
         this.nodes=[];
         for(var i=0;i<rpc.rackView.instances.list.length;i++) {
@@ -750,20 +750,20 @@ Ung.Main=Ext.extend(Object, {
             main.buildApps();
             main.buildNodes();
         }.createDelegate(this);
-        
+
         Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager,
                                      [ rpc.currentPolicy ], callback, 1500, 10 );
     },
     loadApps: function() {
-    	if(Ung.MessageManager.installInProgress>0) {
-    	    return;
-    	}
+        if(Ung.MessageManager.installInProgress>0) {
+            return;
+        }
         var callback = function(result,exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             main.buildApps();
         }.createDelegate(this);
-        
+
         Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager,
                                      [ rpc.currentPolicy ], callback, 1500, 10 );
     },
@@ -786,9 +786,9 @@ Ung.Main=Ext.extend(Object, {
 
     installNode: function(mackageDesc, appItem) {
         if(mackageDesc!==null) {
-	    if(main.getNode(mackageDesc.name)!=null) {
-        	appItem.hide();
-        	return;
+        if(main.getNode(mackageDesc.name)!=null) {
+            appItem.hide();
+            return;
             }
             Ung.AppItem.updateState(mackageDesc.displayName, "installing");
             main.addNodePreview(mackageDesc);
@@ -832,9 +832,9 @@ Ung.Main=Ext.extend(Object, {
         } else { // the title represents breadcrumbs
             iframeWin.setTitle('<span id="title_' + iframeWin.getId() + '"></span>');
             iframeWin.breadcrumbs = new Ung.Breadcrumbs({
-		renderTo : 'title_' + iframeWin.getId(),
-		elements : title
-	    })            
+        renderTo : 'title_' + iframeWin.getId(),
+        elements : title
+        })
         }
         window.frames["iframeWin_iframe"].location.href=url;
     },
@@ -856,7 +856,7 @@ Ung.Main=Ext.extend(Object, {
         for(var i=0;i<this.config.length;i++) {
             var item=this.config[i];
             var appItemCmp=new Ung.ConfigItem({
-            	item:item
+                item:item
             });
         }
     },
@@ -884,12 +884,12 @@ Ung.Main=Ext.extend(Object, {
         }, {
             title : i18n._('Networking')
         }];
-        
+
         main.openInRightFrame(breadcrumbs, alpacaUrl);
-    
+
     },
     openConfig: function(configItem) {
-    	Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
         Ung.Util.loadResourceAndExecute.defer(1, this, [configItem.className,Ung.Util.getScriptSrc("script/config/"+configItem.scriptFile), function() {
             eval('main.configWin = new ' + this.className + '(this);');
             main.configWin.show();
@@ -951,45 +951,45 @@ Ung.Main=Ext.extend(Object, {
             Ext.destroy(nodePreview);
         }
     },
-    
+
     getNode : function(nodeName) {
-    	if(main.nodes) {
+        if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
                 if (nodeName == main.nodes[i].name) {
                     return main.nodes[i];
                     break;
                 }
             }
-    	}
+        }
         return null;
     },
     isNodeRunning : function(nodeName) {
-    	var node = main.getNode(nodeName);
-    	if (node != null) {
-    		 var nodeCmp = Ung.Node.getCmp(node.tid);
-    		 if (nodeCmp != null && nodeCmp.isRunning()){
-    		 	return true;
-    		 }
-    	}
-    	return false;
+        var node = main.getNode(nodeName);
+        if (node != null) {
+             var nodeCmp = Ung.Node.getCmp(node.tid);
+             if (nodeCmp != null && nodeCmp.isRunning()){
+                return true;
+             }
+        }
+        return false;
     },
     // Show - hide Services header in the rack
     updateSeparator: function() {
-    	if(this.nodes.length==0) {
-    	    document.getElementById("racks").style.display="none";
-    	    Ext.getCmp("help_empty_rack").show();
-    	} else {
-    		Ext.getCmp("help_empty_rack").hide();
-    		document.getElementById("racks").style.display="";
+        if(this.nodes.length==0) {
+            document.getElementById("racks").style.display="none";
+            Ext.getCmp("help_empty_rack").show();
+        } else {
+            Ext.getCmp("help_empty_rack").hide();
+            document.getElementById("racks").style.display="";
             var hasUtil=false;
             var hasService=false;
             for(var i=0;i<this.nodes.length;i++) {
                 if(this.nodes[i].md.type!="NODE") {
-            	   hasService=true;
-            	   if(this.nodes[i].md.type!="SERVICE") {
-            	       hasUtil=true
-            	   }
-            	}
+                   hasService=true;
+                   if(this.nodes[i].md.type!="SERVICE") {
+                       hasUtil=true
+                   }
+                }
             }
             document.getElementById("nodes-separator-text").innerHTML=(hasService && hasUtil)?i18n._("Services & Utilities"):hasService?i18n._("Services"):"";
             document.getElementById("nodes-separator").style.display= hasService?"":"none";
@@ -998,57 +998,57 @@ Ung.Main=Ext.extend(Object, {
             } else {
                 document.getElementById("racks").style.backgroundPosition="0px 50px";
             }
-    	}
+        }
     },
     // build policies select box
     buildPolicies: function () {
-		if(main.rackSelect!=null) {
-			Ext.destroy(main.rackSelect);
-			Ext.get('rack-select-container').dom.innerHTML = '';
-		}
+        if(main.rackSelect!=null) {
+            Ext.destroy(main.rackSelect);
+            Ext.get('rack-select-container').dom.innerHTML = '';
+        }
         var items=[];
-		var selVirtualRackIndex = 0;
-		for(var i=0;i<rpc.policies.length;i++) {
+        var selVirtualRackIndex = 0;
+        for(var i=0;i<rpc.policies.length;i++) {
             selVirtualRackIndex = rpc.policies[i]["default"]===true ? i :selVirtualRackIndex;
-			items.push({text:rpc.policies[i]["default"]===true ? i18n._("Default Rack"): i18n._(rpc.policies[i].name),
+            items.push({text:rpc.policies[i]["default"]===true ? i18n._("Default Rack"): i18n._(rpc.policies[i].name),
                     value:rpc.policies[i].id,index:i,handler:main.changePolicy, hideDelay :0});
 
             if(rpc.policies[i]["default"]===true) {
                 rpc.currentPolicy=rpc.policies[i];
             }
         }
-		items.push('-');
-		items.push({text:i18n._('Show Policy Manager'),value:'SHOW_POLICY_MANAGER',handler:main.changePolicy, hideDelay :0});
-		main.rackSelect = new Ext.SplitButton({
-			renderTo: 'rack-select-container', // the container id
-		   	text: items[selVirtualRackIndex].text,
-			id:'rack-select',
-		   	menu: new Ext.menu.Menu({
-		   		hideDelay: 0,
-		        items: items
-		   	})
-		});
+        items.push('-');
+        items.push({text:i18n._('Show Policy Manager'),value:'SHOW_POLICY_MANAGER',handler:main.changePolicy, hideDelay :0});
+        main.rackSelect = new Ext.SplitButton({
+            renderTo: 'rack-select-container', // the container id
+            text: items[selVirtualRackIndex].text,
+            id:'rack-select',
+            menu: new Ext.menu.Menu({
+                hideDelay: 0,
+                items: items
+            })
+        });
         if(this.firstTimeRun) {
             this.checkForUpgrades(main.loadRackView);
         } else {
             main.loadRackView();
             this.checkForUpgrades.defer(900,this,[null]);
         }
-        
+
     },
     // change current policy
     changePolicy: function () {
         if(this.value=='SHOW_POLICY_MANAGER'){
-        	Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
             Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.PolicyManager",Ung.Util.getScriptSrc("script/config/policyManager.js"), function() {
                 main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
                 main.policyManagerWin.show();
                 Ext.MessageBox.hide();
-            }]);		
+            }]);
         }else{
-            Ext.getCmp('rack-select').setText(this.text);		
+            Ext.getCmp('rack-select').setText(this.text);
             rpc.currentPolicy=rpc.policies[this.index];
-            main.loadRackView();		
+            main.loadRackView();
         }
     }
 });

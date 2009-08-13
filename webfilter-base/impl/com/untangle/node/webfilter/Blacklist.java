@@ -128,7 +128,7 @@ public abstract class Blacklist
     {
         URI uri = requestLine.getRequestUri().normalize();
         String description;
-        
+
         String path = uri.getPath();
         path = null == path ? "" : uri.getPath().toLowerCase();
 
@@ -149,7 +149,7 @@ public abstract class Blacklist
                  description, node.getVendor());
             logger.info(hbe);
             return null;
-        } 
+        }
 
         // check passlisted rules
         description = isSitePassListed(host,uri);
@@ -159,7 +159,7 @@ public abstract class Blacklist
                  Reason.PASS_URL, description, node.getVendor());
             logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
             node.log(hbe, host, port);
-                    
+
             return null;
         }
 
@@ -175,7 +175,7 @@ public abstract class Blacklist
         }
 
         logger.debug("CHECK: " + host + uri);
-        
+
         // only check block all IP hosts on http traffic
         if (80 == port && settings.getBaseSettings().getBlockAllIpHosts()) {
             if (null == host || IP_PATTERN.matcher(host).matches()) {
@@ -229,14 +229,14 @@ public abstract class Blacklist
 
         return null;
     }
-    
+
     public String checkResponse(InetAddress clientIp,
                                 RequestLineToken requestLine, Header header)
     {
         if (null == requestLine) {
             return null;
-        } 
-          
+        }
+
         String contentType = header.getValue("content-type");
         URL url = requestLine.getRequestLine().getUrl();
         URI uri = requestLine.getRequestUri().normalize();
@@ -248,7 +248,7 @@ public abstract class Blacklist
             return null;
         if (isSiteBypassed(host,uri,clientIp))
             return null;
-        
+
         logger.debug("CHECK: " + host + uri + " content: " + contentType);
 
         // check mime-type list
@@ -372,7 +372,7 @@ public abstract class Blacklist
     }
 
     /**
-     * normalize the hostname 
+     * normalize the hostname
      *
      * @param host host of the URL
      * @return the normalized string for that hostname, or null if param is null
@@ -381,7 +381,7 @@ public abstract class Blacklist
     {
         if (null == oldhost)
             return null;
-        
+
         // lowercase name
         String host = oldhost.toLowerCase();
 
@@ -396,7 +396,15 @@ public abstract class Blacklist
     private String checkBlacklist(InetAddress clientIp, String host, int port,
                                   RequestLineToken requestLine)
     {
-        String uri = requestLine.getRequestUri().normalize().toString();
+        URI reqUri = requestLine.getRequestUri();
+
+        String uri;
+        if (reqUri.isAbsolute()) {
+            host = reqUri.getHost();
+            uri = reqUri.normalize().getRawPath();
+        } else {
+            uri = reqUri.normalize().toString();
+        }
 
         BlacklistCategory category = findBestCategory(host, port, uri);
 

@@ -68,7 +68,7 @@ Ung.form.TextField = Ext.extend( Ext.form.TextField, {
     {
         Ung.form.TextField.superclass.onRender.call(this, ct, position);
 
-        var parent = this.el.parent()
+      var parent = this.el.parent();
 
         if( this.boxLabel ) {
             this.labelEl = parent.createChild({
@@ -81,7 +81,7 @@ Ung.form.TextField = Ext.extend( Ext.form.TextField, {
     },
     updateBoxLabel : function(html){
         if(this.labelEl){
-            this.labelEl.dom.innerHTML = html;   
+            this.labelEl.dom.innerHTML = html;
         }
     }
 });
@@ -91,7 +91,7 @@ Ung.form.NumberField = Ext.extend( Ext.form.NumberField, {
     {
         Ung.form.NumberField.superclass.onRender.call(this, ct, position);
 
-        var parent = this.el.parent()
+      var parent = this.el.parent();
 
         if( this.boxLabel ) {
             this.labelEl = parent.createChild({
@@ -104,9 +104,9 @@ Ung.form.NumberField = Ext.extend( Ext.form.NumberField, {
     },
     updateBoxLabel : function(html){
         if(this.labelEl){
-            this.labelEl.dom.innerHTML = html;   
+            this.labelEl.dom.innerHTML = html;
         }
-    }    
+    }
 });
 
 Ext.ComponentMgr.registerType('unumberfield', Ung.form.NumberField);
@@ -541,7 +541,7 @@ Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
     valueField : 'key',
     editable: false,
     mode : 'local',
-    triggerAction : 'all',    
+    triggerAction : 'all',
     listClass : 'x-combo-list-small'
 });
 
@@ -591,7 +591,7 @@ Ung.SortTypes = {
     /**
      * @param value of the UID for users / groups
      * @reutrn the comparison value
-     */              
+     */
     asUID : function (value){
         return value == "[any]" ? "" : value;
     },
@@ -601,7 +601,7 @@ Ung.SortTypes = {
     asLastName : function (value){
         if(value == null || value == ""){
             return null;
-        }  
+        }
         return value;
     }};
 
@@ -3913,10 +3913,10 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 proxy : new Ung.MemoryProxy({
                     root : 'list'
                 }),
-                
-                sortInfo : this.sortField ? {                
+
+                sortInfo : this.sortField ? {
                     field: this.sortField,
-                    direction : 'ASC'                
+                    direction : 'ASC'
                 }: null,
                 remoteSort : false,
                 reader : new Ext.data.JsonReader({
@@ -3925,17 +3925,17 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     fields : [{
                         name : 'lastName',
                         type : 'string',
-                        sortType : Ung.SortTypes.asLastName                    
+                        sortType : Ung.SortTypes.asLastName
                     },{
                         name : 'firstName',
-                        type : 'string'                    
+                        type : 'string'
                     },{
                         name: "UID",
                         type : 'string',
                         sortType : Ung.SortTypes.asUID
                     }, {
                         name: "name",
-                        type : 'string',                        
+                        type : 'string',
                         mapping: "UID",
                         convert : function(val, rec) {
                             var name=val;
@@ -3965,13 +3965,13 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 dataIndex : 'name'
             },{
                 header : i18n._("Name"),
-                width: 250, 
+                width: 250,
                 fixed: true,
                 sortable : false,
                 dataIndex:'lastName',
                 renderer : function(value,metadata,record){
                     return record.data.firstName +" "+ value;
-                }     
+                }
             }],
             selModel : selModel
         });
