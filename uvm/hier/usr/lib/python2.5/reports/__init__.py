@@ -402,7 +402,8 @@ class Graph:
 
 class Chart:
     def __init__(self, type=TIME_SERIES_CHART, title=None, xlabel=None,
-                 ylabel=None, major_formatter=IDENTITY_FORMATTER):
+                 ylabel=None, major_formatter=IDENTITY_FORMATTER,
+                 required_points=[]):
         self.__type = type
         self.__title = title
         self.__xlabel = xlabel
@@ -415,6 +416,8 @@ class Chart:
 
         self.__colors = {}
         self.__color_num = 0
+
+        self.__required_points = required_points
 
     @property
     def type(self):
@@ -498,6 +501,12 @@ class Chart:
                     a[z] = y
                     data[x] = a
             z = z + 1
+
+        for x in self.__required_points:
+            a = data.get(x, None)
+            if not a:
+                a = [0 for i in range(len(self.__datasets))]
+                data[x] = a
 
         rows = [[k] + v for (k, v) in data.iteritems()]
         rows.sort()

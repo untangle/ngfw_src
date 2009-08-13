@@ -185,8 +185,7 @@ AND ips_name != ''"""
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Attacks (by hits)'),
-                     xlabel=_('Attacks'),
+                     title=self.title, xlabel=_('Attacks'),
                      ylabel=_('Hits per Day'))
 
         plot.add_pie_dataset(dataset)
@@ -200,7 +199,8 @@ class DailyUsage(Graph):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None, email=None):
+    def get_key_statistics(self, end_date, report_days, host=None, user=None,
+                           email=None):
         if email:
             return None
 
@@ -252,7 +252,8 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS attacks
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
+        one_day = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
         try:
@@ -288,14 +289,18 @@ AND ips_name != ''"""
                     break
                 dates.append(r[0])
                 attacks.append(r[1])
+
         finally:
             conn.commit()
 
+        rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDelta(1))
+
         plot = Chart(type=STACKED_BAR_CHART,
-                     title=_('Daily Web Usage'),
-                     xlabel=_('Date'),
+                     title=self.title, xlabel=_('Date'),
                      ylabel=_('Attacks per Day'),
-                     major_formatter=DATE_FORMATTER)
+                     major_formatter=DATE_FORMATTER,
+                     required_points=rp)
 
         plot.add_dataset(dates, attacks, label=_('attacks'))
 

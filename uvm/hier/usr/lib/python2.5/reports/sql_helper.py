@@ -266,6 +266,15 @@ def get_date_range(start_date, end_date):
     l = (end_date - start_date).days
     return [end_date - mx.DateTime.DateTimeDelta(i + 1) for i in range(l)]
 
+def get_required_points(start, end, interval):
+    a = []
+    v = start
+    while v < end:
+        a.append(v)
+        v = v + interval
+
+    return a
+
 def __make_trigger(schema, tablename, timestamp_column, all_dates):
     full_tablename = '%s.%s' % (schema, tablename)
 
