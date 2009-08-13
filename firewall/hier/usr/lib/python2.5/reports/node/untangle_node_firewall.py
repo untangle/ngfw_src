@@ -190,7 +190,8 @@ FROM (select date_trunc('day', time_stamp) AS day,
             return None
 
         ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
+        one_week = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
         try:
@@ -231,11 +232,15 @@ ORDER BY time asc"""
         finally:
             conn.commit()
 
+        rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDelta(1))
+
         plot = reports.Chart(type=reports.STACKED_BAR_CHART,
-                     title=_('Daily Rules'),
-                     xlabel=_('Day'),
-                     ylabel=_('sessions/day'),
-                     major_formatter=reports.DATE_FORMATTER)
+                             title=_('Daily Rules'),
+                             xlabel=_('Day'),
+                             ylabel=_('sessions/day'),
+                             major_formatter=reports.DATE_FORMATTER,
+                             required_points=rp)
 
         plot.add_dataset(dates, logs, label=_('logged'))
         plot.add_dataset(dates, blocks, label=_('blocked'))

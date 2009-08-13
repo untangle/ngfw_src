@@ -367,7 +367,8 @@ class DailySpamRate(Graph):
 
         ed = DateFromMx(end_date)
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
+        one_week = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
         try:
@@ -452,11 +453,15 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
         finally:
             conn.commit()
 
+        rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDelta(1))
+
         plot = Chart(type=STACKED_BAR_CHART,
                      title=self.title,
                      xlabel=_('Date'),
                      ylabel=_('Emails per Day'),
-                     major_formatter=DATE_FORMATTER)
+                     major_formatter=DATE_FORMATTER,
+                     required_points=rp)
 
         plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label))
         plot.add_dataset(dates, ham, gettext.gettext(self.__ham_label))

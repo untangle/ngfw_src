@@ -370,7 +370,8 @@ FROM (select date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
             return None
 
         ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
+        one_week = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
         try:
@@ -412,11 +413,15 @@ ORDER BY day asc"""
         finally:
             conn.commit()
 
+        rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDelta(1))
+
         plot = Chart(type=STACKED_BAR_CHART,
                      title=self.title,
                      xlabel=_('Date'),
                      ylabel=_('Hits per Day'),
-                     major_formatter=DATE_FORMATTER)
+                     major_formatter=DATE_FORMATTER,
+                     required_points=rp)
 
         plot.add_dataset(dates, hits, label=_('hits'), color=colors.green)
         plot.add_dataset(dates, blocks, label=_('violations'), color=colors.red)

@@ -24,10 +24,21 @@ import string
 import sys
 
 from psycopg import DateFromMx
+from reports import Chart
 from reports import ColumnDesc
+from reports import DATE_FORMATTER
+from reports import DetailSection
+from reports import Graph
+from reports import KeyStatistic
+from reports import PIE_CHART
+from reports import Report
+from reports import STACKED_BAR_CHART
+from reports import SummarySection
+from reports import TIME_OF_DAY_FORMATTER
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import HOST_DRILLDOWN
+from reports.engine import Node
 from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
@@ -35,9 +46,9 @@ from sql_helper import print_timing
 
 _ = reports.i18n_helper.get_translation('untangle-base-virus').lgettext
 
-class VirusBaseNode(reports.engine.Node):
+class VirusBaseNode(Node):
     def __init__(self, node_name, vendor_name):
-        reports.engine.Node.__init__(self, node_name)
+        Node.__init__(self, node_name)
         self.__vendor_name = vendor_name
 
     def parents(self):
@@ -91,7 +102,7 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
     def get_report(self):
         sections = []
 
-        s = reports.SummarySection('summary', _('Summary Report'),
+        s = SummarySection('summary', _('Summary Report'),
                                    [DailyVirusesBlocked(self.__vendor_name),
                                     HourlyVirusesBlocked(self.__vendor_name),
                                     TopVirusesDetected(self.__vendor_name),
@@ -102,7 +113,7 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
         sections.append(VirusWebDetail(self.__vendor_name))
         #sections.append(VirusMailDetail(self.__vendor_name))
 
-        return reports.Report(self.name, sections)
+        return Report(self.name, sections)
 
     def events_cleanup(self, cutoff):
         sql_helper.run_sql("""\
@@ -222,9 +233,9 @@ WHERE reports.%s.time_stamp >= %%s
             conn.rollback()
             raise e
 
-class DailyVirusesBlocked(reports.Graph):
+class DailyVirusesBlocked(Graph):
     def __init__(self, vendor_name):
-        reports.Graph.__init__(self, 'daily-viruses-blocked', _('Daily Viruses Blocked'))
+        Graph.__init__(self, 'daily-viruses-blocked', _('Daily Viruses Blocked'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
@@ -275,9 +286,9 @@ select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+
             else:
                 curs.execute(avg_max_query, (one_week, ed, one_week, ed))
             r = curs.fetchone()
-            ks = reports.KeyStatistic(_('max (1-week)'), r[1], _('viruses/day'))
+            ks = KeyStatistic(_('max (1-week)'), r[1], _('viruses/day'))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('avg (1-week)'), r[0], _('viruses/day'))
+            ks = KeyStatistic(_('avg (1-week)'), r[0], _('viruses/day'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -287,7 +298,8 @@ select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+
     @sql_helper.print_timing
     def get_plot(self, end_date, report_days, host=None, user=None, email=None):
         ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
+        one_week = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
         try:
@@ -364,19 +376,23 @@ ORDER BY time asc"""
             dates.append(k)
             blocks.append(blocks_by_date[k])
 
-        plot = reports.Chart(type=reports.STACKED_BAR_CHART,
+        rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDelta(1))
+
+        plot = Chart(type=STACKED_BAR_CHART,
                      title=_('Daily Virus Blocked'),
                      xlabel=_('Day'),
                      ylabel=_('viruses/day'),
-                     major_formatter=reports.DATE_FORMATTER)
+                     major_formatter=DATE_FORMATTER,
+                     required_points=rp)
 
         plot.add_dataset(dates, blocks, label=_('viruses blocked'))
 
         return plot
 
-class HourlyVirusesBlocked(reports.Graph):
+class HourlyVirusesBlocked(Graph):
     def __init__(self, vendor_name):
-        reports.Graph.__init__(self, 'hourly-viruses-blocked', _('Hourly Viruses Blocked'))
+        Graph.__init__(self, 'hourly-viruses-blocked', _('Hourly Viruses Blocked'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
@@ -427,9 +443,9 @@ select date_trunc('hour', trunc_time) AS day, sum(viruses_"""+self.__vendor_name
             else:
                 curs.execute(avg_max_query, (one_week, ed, one_week, ed))
             r = curs.fetchone()
-            ks = reports.KeyStatistic(_('max (1-week)'), r[1], _('viruses/hour'))
+            ks = KeyStatistic(_('max (1-week)'), r[1], _('viruses/hour'))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('avg (1-week)'), r[0], _('viruses/hour'))
+            ks = KeyStatistic(_('avg (1-week)'), r[0], _('viruses/hour'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -439,7 +455,8 @@ select date_trunc('hour', trunc_time) AS day, sum(viruses_"""+self.__vendor_name
     @sql_helper.print_timing
     def get_plot(self, end_date, report_days, host=None, user=None, email=None):
         ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
+        one_week = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
         try:
@@ -516,20 +533,24 @@ ORDER BY time asc"""
             dates.append(k)
             blocks.append(blocks_by_date[k])
 
-        plot = reports.Chart(type=reports.STACKED_BAR_CHART,
+        rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDelta(1))
+
+        plot = Chart(type=STACKED_BAR_CHART,
                      title=_('Hourly Virus Blocked'),
                      xlabel=_('hour'),
                      ylabel=_('viruses/hour'),
-                     major_formatter=reports.TIME_OF_DAY_FORMATTER)
+                     major_formatter=TIME_OF_DAY_FORMATTER,
+                     required_points=rp)
 
         plot.add_dataset(dates, blocks, label=_('viruses blocked'))
 
         return plot
 
 
-class TopWebVirusesDetected(reports.Graph):
+class TopWebVirusesDetected(Graph):
     def __init__(self, vendor_name):
-        reports.Graph.__init__(self, 'top-web-viruses-detected', _('Top Web Viruses Detected'))
+        Graph.__init__(self, 'top-web-viruses-detected', _('Top Web Viruses Detected'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
@@ -578,7 +599,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         finally:
             conn.commit()
 
-        plot = reports.Chart(type=reports.PIE_CHART,
+        plot = Chart(type=PIE_CHART,
                      title=_('Top Web Viruses Detected'),
                      xlabel=_('name'),
                      ylabel=_('count'))
@@ -588,9 +609,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         return plot
 
 
-class TopEmailVirusesDetected(reports.Graph):
+class TopEmailVirusesDetected(Graph):
     def __init__(self, vendor_name):
-        reports.Graph.__init__(self, 'top-email-viruses-detected', _('Top Email Viruses Detected'))
+        Graph.__init__(self, 'top-email-viruses-detected', _('Top Email Viruses Detected'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
@@ -634,24 +655,24 @@ LIMIT 10""" % self.__vendor_name
                 r = curs.fetchone()
                 if not r:
                     break
-                ks = reports.KeyStatistic(r[0], r[1], _('viruses'))
+                ks = KeyStatistic(r[0], r[1], _('viruses'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
-        plot = reports.Chart(type=reports.PIE_CHART,
-                             title=_('Top Email Viruses Detected'),
-                             xlabel=_('Viruses'),
-                             ylabel=_('Count'))
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Email Viruses Detected'),
+                     xlabel=_('Viruses'),
+                     ylabel=_('Count'))
 
         plot.add_pie_dataset(dataset)
 
         return (lks, plot)
 
-class TopVirusesDetected(reports.Graph):
+class TopVirusesDetected(Graph):
     def __init__(self, vendor_name):
-        reports.Graph.__init__(self, 'top-viruses-detected', _('Top Viruses Detected'))
+        Graph.__init__(self, 'top-viruses-detected', _('Top Viruses Detected'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
@@ -712,29 +733,29 @@ ORDER BY sum DESC""" % self.__vendor_name
                 r = curs.fetchone()
                 if not r:
                     break
-                ks = reports.KeyStatistic(r[0], r[1], _('viruses'))
+                ks = KeyStatistic(r[0], r[1], _('viruses'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
-        plot = reports.Chart(type=reports.PIE_CHART,
-                             title=_('Top Email Viruses Detected'),
-                             xlabel=_('Viruses'),
-                             ylabel=_('Count'))
+        plot = Chart(type=PIE_CHART,
+                     title=_('Top Email Viruses Detected'),
+                     xlabel=_('Viruses'),
+                     ylabel=_('Count'))
 
         plot.add_pie_dataset(dataset)
 
         return (lks, plot)
 
-class VirusWebDetail(reports.DetailSection):
+class VirusWebDetail(DetailSection):
     def __init__(self, vendor_name):
-        reports.DetailSection.__init__(self, 'web-incidents',
+        DetailSection.__init__(self, 'web-incidents',
                                        _('Web Incidents'))
         self.__vendor_name = vendor_name
 
     def get_columns(self, host=None, user=None, email=None):
-        rv = [reports.ColumnDesc('time_stamp', _('Time'), 'Date')]
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if host:
             rv.append(ColumnDesc('hname', _('Client')))
@@ -746,7 +767,7 @@ class VirusWebDetail(reports.DetailSection):
         else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv += [reports.ColumnDesc('virus_ident', _('Virus Name')),
+        rv += [ColumnDesc('virus_ident', _('Virus Name')),
                ColumnDesc('url', _('URL'), 'URL'),
                ColumnDesc('s_server_addr', _('Server IP')),
                ColumnDesc('s_server_port', _('Server Port'))]
@@ -770,14 +791,14 @@ WHERE time_stamp >= %s AND time_stamp < %s AND NOT virus_%s_clean
         return sql
 
 
-class VirusMailDetail(reports.DetailSection):
+class VirusMailDetail(DetailSection):
     def __init__(self, vendor_name):
-        reports.DetailSection.__init__(self, 'mail-incidents',
+        DetailSection.__init__(self, 'mail-incidents',
                                        _('Mail Incidents'))
         self.__vendor_name = vendor_name
 
     def get_columns(self, host=None, user=None, email=None):
-        rv = [reports.ColumnDesc('time_stamp', _('Time'), 'Date')]
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if host:
             rv.append(ColumnDesc('hname', _('Client')))

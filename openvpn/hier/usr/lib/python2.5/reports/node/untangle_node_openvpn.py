@@ -31,7 +31,6 @@ from reports import Graph
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
-from reports import STACKED_BAR_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
