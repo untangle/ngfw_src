@@ -33,6 +33,8 @@ UVM_PID="uvm.pid"
 UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER "
 UVM_TIMEOUT=300
 
+MONIT="monit -c /etc/untangle/monit.conf"
+
 # if in the build
 if [ "x" != "x@PREFIX@" ] ; then
     UVM_CHUSER=""
@@ -142,6 +144,7 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
+		$MONIT monitor all
                 updateStatusExit "]\n" "Running"
             fi
         done
@@ -168,6 +171,7 @@ case "$1" in
         code=$?
 
         if [ $code != "0" ] ; then
+	    $MONIT unmonitor all
             updateStatusExit "x]\n" "Stopped"
         fi
 
@@ -179,7 +183,8 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
-                sleep 1  
+                sleep 1
+		$MONIT unmonitor all
                 updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`uvmJavaPid`" ] ; then
@@ -201,6 +206,7 @@ case "$1" in
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
                 sleep 1 
+		$MONIT unmonitor all
                 updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`uvmJavaPid`" ] ; then
@@ -217,11 +223,13 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ -z "`uvmJavaPid`" ] ; then
+    	        $MONIT unmonitor all
                 updateStatusExit "]\n" "Stopped"
             fi
         done
 
         echo "x]"
+	$MONIT unmonitor all
 	log_end_msg 0
         ;;
 
