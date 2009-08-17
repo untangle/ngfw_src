@@ -259,7 +259,8 @@ def generate_sub_report(report_base, node_name, end_date, host=None, user=None,
 
 @print_timing
 def generate_plots(report_base, end_date):
-    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
+    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
+                                       end_date.day)
     __generate_plots(report_base, date_base)
 
 @print_timing
