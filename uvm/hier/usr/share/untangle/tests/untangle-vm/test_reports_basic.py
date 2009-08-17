@@ -34,7 +34,6 @@ class TestReportsBasic(ReportsSetup):
         cls.create_session_event(pl_endp = { "time_stamp" : QueryString("TIMESTAMP '%s'" % timestamp )},
                                  pl_stats = { "time_stamp" : QueryString("TIMESTAMP '%s'" % end_timestamp )})
 
-
         ## This one should not be in todays report
         timestamp = timestamp.replace( hour = 3, minute = 14 ) - datetime.timedelta( days = 2 )
         end_timestamp = timestamp + datetime.timedelta( minutes = 2 )
@@ -53,12 +52,10 @@ class TestReportsBasic(ReportsSetup):
         cls.create_session_event(pl_endp = { "time_stamp" : QueryString("TIMESTAMP '%s'" % timestamp )},
                                  pl_stats = { "time_stamp" : QueryString("TIMESTAMP '%s'" % end_timestamp )})
 
-
         
         cls.run_reports()
 
-    def test_session_totals_totals( self ):
-        ## 10 sessions created, one 
+    def test_session_totals_time( self ):
         yield self.check_session_totals, "", 11
         ## Truncate the time
         timestamp = ReportsSetup.DEFAULT_TIMESTAMP.replace( second = 0, microsecond = 0 )
@@ -69,6 +66,16 @@ class TestReportsBasic(ReportsSetup):
         yield self.check_session_totals, "trunc_time=timestamp '%s'" % timestamp, 2
         timestamp = timestamp.replace( hour = 3, minute = 14 )
         yield self.check_session_totals, "trunc_time=timestamp '%s'" % timestamp, 1
+
+    def test_session_totals_address( self ):
+        yield self.check_session_totals, "hname='%s'" % ReportsSetup.DEFAULT_CLIENT_ADDRESS, 8
+        yield self.check_session_totals, "hname='%s'" % "10.0.0.1", 1
+        yield self.check_session_totals, "hname='%s'" % "10.0.0.2", 2
+
+    def test_session_totals_address( self ):
+        yield self.check_session_totals, "c_server_port=%d" % ReportsSetup.DEFAULT_SERVER_PORT, 9
+        yield self.check_session_totals, "c_server_port=%d" % (ReportsSetup.DEFAULT_SERVER_PORT + 1), 1
+        yield self.check_session_totals, "c_server_port=%d" % (ReportsSetup.DEFAULT_SERVER_PORT + 2), 1
         
     def check_session_totals( self, params, count ):
         curs = self.get_conn().cursor()
