@@ -440,7 +440,12 @@ class FirewallDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('c_server_addr', _('Server'), 'Server')]
+        rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied'), 'Rule Applied'),
+                   ColumnDesc('firewall_was_blocked', _('Action'), 'Action'),                   
+                   ColumnDesc('c_server_addr', _('Source IP'), 'Source IP'),
+                   ColumnDesc('c_server_port', _('Source Port'), 'Source Port'),
+                   ColumnDesc('c_client_addr', _('Destination IP'), 'Destination IP'), ]
+#                   ColumnDesc('s_server_port', _('Destination Port'), 'Destination Port')]
 
         return rv
 
@@ -448,18 +453,18 @@ class FirewallDetail(DetailSection):
         if email:
             return None
 
-        sql = "SELECT time_stamp, "
+        sql = "SELECT time_stamp,"
 
         if not host:
             sql = sql + "hname, "
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""c_server_addr
+        sql = sql + ("""firewall_rule_index, firewall_was_blocked, c_server_addr, c_server_port, c_client_addr
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
-      AND NOT firewall_was_blocked ISNULL""" % (DateFromMx(start_date),
-                                                DateFromMx(end_date)))
+AND NOT firewall_rule_index ISNULL""" % (DateFromMx(start_date),
+                                         DateFromMx(end_date)))
 
         if host:
             sql = sql + (" AND host = %s" % QuotedString(host))

@@ -246,10 +246,10 @@ class OpenVpnDetail(DetailSection):
         if host or user or email:
             return None
 
-        sql = "SELECT time_stamp, "
+        sql = "SELECT time_stamp, client_name, remote_address, remote_port"
 
-        sql = sql + ("""client_name, remote_address, remote_port
-FROM reports.sessions
+        sql = sql + ("""
+FROM reports.n_openvpn_connect_totals
 WHERE time_stamp >= %s AND time_stamp < %s""" % (DateFromMx(start_date),
                                                  DateFromMx(end_date)))
 

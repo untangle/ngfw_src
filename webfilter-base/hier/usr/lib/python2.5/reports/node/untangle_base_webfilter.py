@@ -1070,7 +1070,8 @@ class WebFilterDetail(DetailSection):
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
                ColumnDesc('url', _('URL'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server IP'))]
+               ColumnDesc('s_server_addr', _('Server IP')),
+               ColumnDesc('c_client_addr', _('Client IP'))]
 
         return rv
 
@@ -1080,7 +1081,7 @@ class WebFilterDetail(DetailSection):
 
         sql = """\
 SELECT time_stamp, hname, uid, wf_%s_category, 'http://' || host || uri,
-       s_server_addr
+       s_server_addr, c_client_addr
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
       AND wf_%s_action = 'B'""" % (self.__vendor_name,

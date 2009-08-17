@@ -533,7 +533,7 @@ class SpamDetail(DetailSection):
         if email:
             return None
 
-        rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         if host:
             rv.append(ColumnDesc('hname', _('Client'), 'String'))
@@ -558,9 +558,9 @@ class SpamDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, %s_score, subject, s_server_addr, %s_action, addr
+SELECT time_stamp, hname, uid, %s_score, subject, s_server_addr, %s_action as action, addr
 FROM reports.n_mail_addrs
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE time_stamp >= %s AND time_stamp < %s
       AND %s_is_spam AND addr_kind = 'T'
 """ % (self.__short_name, self.__short_name, DateFromMx(start_date),
        DateFromMx(end_date), self.__short_name)

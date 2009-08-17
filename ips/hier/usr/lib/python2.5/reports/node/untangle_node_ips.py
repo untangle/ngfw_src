@@ -321,7 +321,10 @@ class IpsDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('c_server_addr', _('Server'), 'Server')]
+        rv = rv + [ColumnDesc('ips_name', _('SID:description'), 'SID:description'),
+                   ColumnDesc('ips_blocked', _('Blocked'), 'Blocked'),
+                   ColumnDesc('c_server_addr', _('Server'), 'Server'),
+                   ColumnDesc('c_server_port', _('Port'), 'Port')]
 
         return rv
 
@@ -336,11 +339,12 @@ class IpsDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""c_server_addr
+        sql = sql + ("""ips_name, ips_blocked, ips_name, c_server_addr, c_server_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
-      AND NOT ips_blocked ISNULL""" % (DateFromMx(start_date),
-                                     DateFromMx(end_date)))
+AND NOT ips_name ISNULL
+AND ips_name != '' """ % (DateFromMx(start_date),
+                          DateFromMx(end_date)))
 
         if host:
             sql = sql + (" AND host = %s" % QuotedString(host))

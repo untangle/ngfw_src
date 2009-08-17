@@ -609,7 +609,10 @@ class ProtofilterDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('c_server_addr', _('Server'), 'Server')]
+        rv = rv + [ColumnDesc('pf_protocol', _('Protocol'), 'Protocol'),
+                   ColumnDesc('pf_blocked', _('Action'), 'Action'),                   
+                   ColumnDesc('c_server_addr', _('Server'), 'Server'),
+                   ColumnDesc('c_server_port', _('Port'), 'Port')]
 
         return rv
 
@@ -617,18 +620,19 @@ class ProtofilterDetail(DetailSection):
         if email:
             return None
 
-        sql = "SELECT time_stamp, "
+        sql = "SELECT time_stamp,"
 
         if not host:
             sql = sql + "hname, "
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""c_server_addr
+        sql = sql + ("""pf_protocol, pf_blocked, c_server_addr, c_server_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
-      AND NOT pf_blocked ISNULL""" % (DateFromMx(start_date),
-                                     DateFromMx(end_date)))
+AND NOT pf_protocol ISNULL
+AND pf_protocol != ''""" % (DateFromMx(start_date),
+                            DateFromMx(end_date)))
 
         if host:
             sql = sql + (" AND host = %s" % QuotedString(host))

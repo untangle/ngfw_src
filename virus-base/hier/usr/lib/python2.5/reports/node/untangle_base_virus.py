@@ -111,7 +111,7 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
         sections.append(s)
 
         sections.append(VirusWebDetail(self.__vendor_name))
-        #sections.append(VirusMailDetail(self.__vendor_name))
+        sections.append(VirusMailDetail(self.__vendor_name))
 
         return Report(self.name, sections)
 
@@ -776,7 +776,7 @@ class VirusWebDetail(DetailSection):
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         sql = """\
-SELECT time_stamp, hname, uid, virus_%s_name, 'http://' || host || uri,
+SELECT time_stamp, hname, uid, virus_%s_name as virus_ident, 'http://' || host || uri as url,
        s_server_addr, s_server_port
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s AND NOT virus_%s_clean
@@ -812,7 +812,7 @@ class VirusMailDetail(DetailSection):
 
         rv += [ColumnDesc('virus_ident', _('Virus Name')),
                ColumnDesc('subject', _('Subject')),
-               ColumnDesc('recipient', _('Recipient')),
+               ColumnDesc('addr', _('Recipient')), # FIXME: or is it sender ?
                ColumnDesc('c_client_addr', _('Client IP')),
                ColumnDesc('c_client_port', _('Client Port'))]
 

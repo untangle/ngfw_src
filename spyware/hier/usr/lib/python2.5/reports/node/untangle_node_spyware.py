@@ -983,7 +983,8 @@ class UrlBlockDetail(DetailSection):
         else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('sw_access_ident', _('Spyware')),
+        rv += [ColumnDesc('s_server', _('Server')),
+               ColumnDesc('uri', _('URI')),               
                ColumnDesc('s_server_addr', _('Server IP')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
@@ -994,7 +995,7 @@ class UrlBlockDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, 'http://' || host || uri, s_server_addr,
+SELECT time_stamp, hname, uid, 'http://' || host as s_server, uri, s_server_addr,
        s_server_port
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s AND sw_blacklisted
@@ -1027,7 +1028,7 @@ class SubnetDetail(DetailSection):
         else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('url', _('URL')),
+        rv += [ColumnDesc('sw_blacklisted', _('Action')),
                ColumnDesc('c_server_addr', _('Server IP')),
                ColumnDesc('c_server_port', _('Server Port'))]
 
