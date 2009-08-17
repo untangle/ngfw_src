@@ -658,7 +658,8 @@ Ung.ReportDetails = Ext.extend(Object,
                                                       sortable: false,
                                                       dataIndex: 'color',
                                                       renderer: function(value, medata, record) {
-                                                        return value;
+                                                        return '<div style="position:absolute;height:8px;width:8px;margin-top:2px;background-color:#'+value+'">&nbsp;</div>'
+                                                        //return value;
                                                       }.createDelegate(this)
                                                     });
                                      }
