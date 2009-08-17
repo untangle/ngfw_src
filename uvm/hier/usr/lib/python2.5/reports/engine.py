@@ -198,25 +198,29 @@ def generate_reports(report_base, end_date):
     email_drilldown = []
 
     for node_name in __get_node_partial_order():
-        logging.info('doing process_graphs for: %s' % node_name)
-        node = __nodes.get(node_name, None)
-        if not node:
-            logger.warn("could not get node %s" % node_name)
-        else:
-            tocs = node.get_toc_membership()
-            if TOP_LEVEL in tocs:
-                top_level.append(node_name)
-            if USER_DRILLDOWN in tocs:
-                user_drilldown.append(node_name)
-            if HOST_DRILLDOWN in tocs:
-                host_drilldown.append(node_name)
-            if EMAIL_DRILLDOWN in tocs:
-                email_drilldown.append(node_name)
+        try:
+            logging.info('doing process_graphs for: %s' % node_name)
+            node = __nodes.get(node_name, None)
+            if not node:
+                logger.warn('could not get node %s' % node_name)
+            else:
+                tocs = node.get_toc_membership()
+                if TOP_LEVEL in tocs:
+                    top_level.append(node_name)
+                if USER_DRILLDOWN in tocs:
+                    user_drilldown.append(node_name)
+                if HOST_DRILLDOWN in tocs:
+                    host_drilldown.append(node_name)
+                if EMAIL_DRILLDOWN in tocs:
+                    email_drilldown.append(node_name)
 
-            report = node.get_report()
-            if report:
-                report.generate(report_base, date_base, end_date)
-                mail_reports.append(report)
+                report = node.get_report()
+                if report:
+                    report.generate(report_base, date_base, end_date)
+                    mail_reports.append(report)
+        except:
+            logging.warn('could not generate reports for: %s' % name,
+                         exc_info=True)
 
     __write_toc(report_base, date_base, 'top-level', top_level)
     __write_toc(report_base, date_base, 'user-drilldown', user_drilldown)
@@ -263,16 +267,24 @@ def events_cleanup(cutoff):
     co = DateFromMx(cutoff)
 
     for name in __get_node_partial_order():
-        node = __nodes.get(name, None)
-        node.events_cleanup(co)
+        try:
+            node = __nodes.get(name, None)
+            node.events_cleanup(co)
+        except:
+            logging.warn('count not cleanup events for: %s' % name,
+                         exc_info=True)
 
 @print_timing
 def reports_cleanup(cutoff):
     co = DateFromMx(cutoff)
 
     for name in __get_node_partial_order():
-        node = __nodes.get(name, None)
-        node.reports_cleanup(co)
+        try:
+            node = __nodes.get(name, None)
+            node.reports_cleanup(co)
+        except:
+            logging.warn('count not cleanup reports for: %s' % name,
+                         exc_info=True)
 
 @print_timing
 def delete_old_reports(dir, cutoff):
@@ -291,25 +303,32 @@ def setup(start_date, end_date):
     global __nodes
 
     for name in __get_node_partial_order():
-        logging.info('doing setup for: %s' % name)
-        node = __nodes.get(name, None)
+        try:
+            logging.info('doing setup for: %s' % name)
+            node = __nodes.get(name, None)
 
-        if not node:
-            logger.warn("could not get node %s" % name)
-        else:
-            node.setup(start_date, end_date)
+            if not node:
+                logger.warn('could not get node %s' % name)
+            else:
+                node.setup(start_date, end_date)
+        except:
+            logging.warn('could not setup for: %s' % name, exc_info=True)
 
 @print_timing
 def post_facttable_setup(start_date, end_date):
     global __nodes
 
     for name in __get_node_partial_order():
-        logging.info('doing post_facttable_setup for: %s' % name)
-        node = __nodes.get(name, None)
-        if not node:
-            logger.warn("could not get node %s" % name)
-        else:
-            node.post_facttable_setup(start_date, end_date)
+        try:
+            logging.info('doing post_facttable_setup for: %s' % name)
+            node = __nodes.get(name, None)
+            if not node:
+                logger.warn('could not get node %s' % name)
+            else:
+                node.post_facttable_setup(start_date, end_date)
+        except:
+            logging.warn('coud not do post factable setup for: %s' % name,
+                         exc_info=True)
 
 def get_node_base(name, date_base, host=None, user=None, email=None):
     if host:
@@ -418,7 +437,7 @@ def __add_node(name, list, available):
 
     node = __nodes.get(name, None)
     if not node:
-        logging.warn("node not found %s" % name)
+        logging.warn('node not found %s' % name)
     else:
         for p in node.parents():
             if p in available:
