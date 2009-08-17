@@ -728,8 +728,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             plot_query = """\
 SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       sum(num_sessions) AS sessions
+        || (date_part('minute', trunc_time)))::time AS time,
+       sum(num_sessions) / (10 * %s) AS sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -748,11 +748,11 @@ ORDER BY time asc"""
             curs = conn.cursor()
 
             if user:
-                curs.execute(plot_query, (one_week, ed, user))
+                curs.execute(plot_query, (report_days, one_week, ed, user))
             elif host:
-                curs.execute(plot_query, (one_week, ed, host))
+                curs.execute(plot_query, (report_days, one_week, ed, host))
             else:
-                curs.execute(plot_query, (one_week, ed))
+                 curs.execute(plot_query, (report_days, one_week, ed))
 
             for r in curs.fetchall():
                 dates.append(r[0])
