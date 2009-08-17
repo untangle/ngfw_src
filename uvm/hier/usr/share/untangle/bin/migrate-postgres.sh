@@ -31,5 +31,8 @@ if grep -q 5432 /etc/postgresql/7.4/main/postgresql.conf 2> /dev/null || [ -f $B
   echo "  * Restoring data"
   psql -U postgres -f $BACKUP uvm && rm -f $BACKUP
 
+  echo "  * Clearing events_version"
+  psql -U postgres -c "UPDATE settings.split_schema_ver SET events_version = NULL;" uvm
+
   echo "done"
 fi
