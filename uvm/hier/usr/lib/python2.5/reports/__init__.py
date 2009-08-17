@@ -342,7 +342,8 @@ class Graph:
             if type(ks.value) == float:
                 ks.value = '%.2f' % ks.value
             ks_element.set('value', str(ks.value))
-            ks_element.set('unit', ks.unit)
+            if ks.unit:
+                ks_element.set('unit', ks.unit)
             if ks.link_type:
                 ks_element.set('link-type', ks.link_type)
             element.append(ks_element)
