@@ -14,6 +14,26 @@ Ext.onReady(function()
               reports = new Ung.Reports({});
             });
 
+JSONRpcClient.toplevel_ex_handler = function (ex) {
+    if (ex instanceof JSONRpcClient.Exception) {
+        // assuming this is because of a session timeout.  navigate to current location,
+        // and the auth filter should let them log in and get back to whatever page we're on.
+        if (ex.code == 550) {
+          setTimeout(function ()
+                     {
+                       navigate(document.location);
+                     }, 300);
+          return;
+        }
+    }
+
+    if (ex) {
+        throw ex.message.substring(ex.name.length + 2); //ideally this would throw a complex exception object
+    } else {
+        throw "Error making rpc request to server";
+    }
+};
+
 // Main object class
 Ung.Reports = Ext.extend(Object,
                          {
