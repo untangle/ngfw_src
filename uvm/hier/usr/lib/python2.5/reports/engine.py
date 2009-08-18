@@ -219,7 +219,7 @@ def generate_reports(report_base, end_date):
                     report.generate(report_base, date_base, end_date)
                     mail_reports.append(report)
         except:
-            logging.warn('could not generate reports for: %s' % name,
+            logging.warn('could not generate reports for: %s' % node_name,
                          exc_info=True)
 
     __write_toc(report_base, date_base, 'top-level', top_level)
