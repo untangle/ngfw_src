@@ -63,7 +63,7 @@ def __time_of_day_formatter(x, pos):
     return "%02d:%02d" % (t.hour, t.minute)
 
 def __date_formatter(x, pos):
-    return "%d-%02d-%02d" % (x.year, x.month, x.day)
+    return x.strftime("%b-%d")
 
 def __identity_formatter(x, pos):
     return x
