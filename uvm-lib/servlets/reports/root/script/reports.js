@@ -847,12 +847,12 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                    var store = new Ext.data.SimpleStore({fields: fields, data: [] });
 
-                                   var detailSection=new Ext.grid.GridPanel({
-                                                                              title : section.title,
+                                   var detailSection=new Ext.grid.GridPanel({ title : section.title,
                                                                               enableHdMenu : false,
                                                                               enableColumnMove: false,
                                                                               store: store,
-                                                                              columns: columns
+                                                                              columns: columns,
+                                                                              pageSize: 25
                                                                             });
 
                                    rpc.reportingManager.getDetailData(function(result, exception) {
