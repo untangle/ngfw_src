@@ -114,7 +114,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     public TableOfContents getTableOfContents(Date d)
     {
-        Application platform = new Application("untangle-vm", "Platform");
+        Application platform = new Application("untangle-vm", "System");
 
         List<Application> apps = getApplications(getDateDir(d),
                                                  "top-level");
@@ -129,7 +129,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     public TableOfContents getTableOfContentsForHost(Date d, String hostname)
     {
-        Application platform = new Application("untangle-vm", "Platform");
+        Application platform = new Application("untangle-vm", "System");
 
         List<Application> apps = getApplications(getDateDir(d),
                                                  "user-drilldown");
@@ -144,7 +144,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     public TableOfContents getTableOfContentsForUser(Date d, String username)
     {
-        Application platform = new Application("untangle-vm", "Platform");
+        Application platform = new Application("untangle-vm", "System");
 
         List<Application> apps = getApplications(getDateDir(d),
                                                  "user-drilldown");
@@ -159,7 +159,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     public TableOfContents getTableOfContentsForEmail(Date d, String email)
     {
-        Application platform = new Application("untangle-vm", "Platform");
+        Application platform = new Application("untangle-vm", "System");
 
         List<Application> apps = getApplications(getDateDir(d),
                                                  "email-drilldown");
