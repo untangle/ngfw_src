@@ -851,7 +851,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                               enableHdMenu : false,
                                                                               enableColumnMove: false,
                                                                               store: store,
-                                                                              columns: columns,
+                                                                             columns: columns,
                                                                               pageSize: 25
                                                                             });
 
