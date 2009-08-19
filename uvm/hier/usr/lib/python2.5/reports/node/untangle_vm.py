@@ -743,7 +743,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             lks.append(ks)
 
             ks_query = """\
-SELECT sum(num_sessions)::int AS total_sessions
+SELECT sum(num_sessions)::int AS total_sessions,
        coalesce(sum(num_sessions), 0) / (24 * 60 * %s) AS avg_sessions,
        coalesce(max(num_sessions), 0) AS max_sessions
 FROM reports.session_counts
