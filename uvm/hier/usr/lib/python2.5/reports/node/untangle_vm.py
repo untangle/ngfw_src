@@ -744,6 +744,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             ks_query = """\
 SELECT sum(num_sessions)::int AS total_sessions
+       coalesce(sum(num_sessions), 0) / (24 * 60 * %s) AS avg_sessions,
+       coalesce(max(num_sessions), 0) AS max_sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -755,11 +757,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             curs = conn.cursor()
 
             if user:
-                curs.execute(ks_query, (one_week, ed, user))
+                curs.execute(ks_query, (report_days, one_week, ed, user))
             elif host:
-                curs.execute(ks_query, (one_week, ed, host))
+                curs.execute(ks_query, (report_days, one_week, ed, host))
             else:
-                curs.execute(ks_query, (one_week, ed))
+                curs.execute(ks_query, (report_days, one_week, ed))
 
             r = curs.fetchone()
 
