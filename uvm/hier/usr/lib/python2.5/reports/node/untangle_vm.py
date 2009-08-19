@@ -584,7 +584,7 @@ class BandwidthUsage(Graph):
 
             ks_query = """\
 SELECT coalesce(sum(s2c_bytes + c2s_bytes), 0) / (24 * 60 * 60) AS avg_rate,
-       coalesce(max(s2c_bytes + c2s_bytes), 0) AS peak_rate
+       coalesce(max(s2c_bytes + c2s_bytes), 0) / 60 AS peak_rate
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
