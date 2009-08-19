@@ -472,24 +472,6 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
             lks.append(ks)
             ks = KeyStatistic(_('total violations (7-days)'), r[1],
                               _('violations'))
-            lks.append(ks)
-
-            if host:
-                curs.execute(query, (one_day, ed, host))
-            elif user:
-                curs.execute(query, (one_day, ed, user))
-            else:
-                curs.execute(query, (one_day, ed))
-            r = curs.fetchone()
-
-            hits = r[0]
-            violations = r[1]
-
-            ks = KeyStatistic(_('total hits'), hits, _('hits'))
-            lks.append(ks)
-            ks = KeyStatistic(_('total violations'), violations,
-                              _('violations'))
-            lks.append(ks)
         finally:
             conn.commit()
 
@@ -499,8 +481,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
                      ylabel=_('Hits per Day'))
 
         plot.add_pie_dataset({_('hits'): hits, _('violations'): violations},
-                             colors={'total hits': colors.green,
-                                     'total violations': colors.red})
+                             colors={'total hits (7-days)': colors.green,
+                                     'total violations (7-days)': colors.red})
 
         return (lks, plot)
 
