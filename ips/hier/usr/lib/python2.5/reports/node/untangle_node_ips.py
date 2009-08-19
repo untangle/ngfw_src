@@ -35,7 +35,6 @@ from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
-from reports import TIME_SERIES_CHART
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import HOST_DRILLDOWN
@@ -194,7 +193,7 @@ AND ips_name != ''"""
 
 class DailyUsage(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'daily-usage', _('Daily Usage'))
+        Graph.__init__(self, 'daily-attacks', _('Daily Attacks'))
 
         self.__vendor_name = vendor_name
 

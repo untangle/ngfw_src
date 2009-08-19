@@ -194,13 +194,13 @@ class TotalEmail(Graph):
 
         if email:
             query = """\
-SELECT coalesce(sum(msgs), 0), coalesce(sum(%s_spam_msgs), 0)::int
+SELECT coalesce(sum(msgs), 0)::int, coalesce(sum(%s_spam_msgs), 0)::int
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 """ % self.__short_name
         else:
             query = """\
-SELECT coalesce(sum(msgs), 0), coalesce(sum(%s_spam_msgs), 0)::int
+SELECT coalesce(sum(msgs), 0)::int, coalesce(sum(%s_spam_msgs), 0)::int
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
@@ -343,7 +343,8 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
                      title=self.title,
                      xlabel=_('Hour of Day'),
                      ylabel=_('Emails per Hour'),
-                     major_formatter=TIME_OF_DAY_FORMATTER)
+                     major_formatter=TIME_OF_DAY_FORMATTER,
+                     required_points=sql_helper.REQUIRED_TIME_POINTS)
 
         plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label))
         plot.add_dataset(dates, ham, gettext.gettext(self.__ham_label))

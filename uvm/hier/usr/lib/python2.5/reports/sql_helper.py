@@ -28,6 +28,8 @@ import time
 from sets import Set
 from psycopg import DateFromMx
 
+REQUIRED_TIME_POINTS = range(0, 24 * 60 * 60, 30 * 60)
+
 def print_timing(func):
     def wrapper(*arg):
         t1 = time.time()
@@ -272,7 +274,6 @@ def get_required_points(start, end, interval):
     while v < end:
         a.append(v)
         v = v + interval
-
     return a
 
 def __make_trigger(schema, tablename, timestamp_column, all_dates):

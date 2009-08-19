@@ -215,7 +215,7 @@ WHERE reports.n_http_events.time_stamp >= %s
 
 class HourlyRates(Graph):
     def __init__(self):
-        Graph.__init__(self, 'hourly-rates', _('Hourly Web Usage'))
+        Graph.__init__(self, 'hourly-spyware-events', _('Hourly Spyware Events'))
 
     @print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
@@ -297,7 +297,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                      title=self.title,
                      xlabel=_('Hour of Day'),
                      ylabel=_('Hits per Minute'),
-                     major_formatter=TIME_OF_DAY_FORMATTER)
+                     major_formatter=TIME_OF_DAY_FORMATTER,
+                     required_points=sql_helper.REQUIRED_TIME_POINTS)
 
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
@@ -384,7 +385,7 @@ ORDER BY time asc"""
 
 class SpywareUrlsBlocked(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-blocked-urls', _('Daily Usage'))
+        Graph.__init__(self, 'daily-blocked-urls', _('Daily Blocked URLs'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -645,7 +646,7 @@ AND sw_cookies > 0"""
 
 class SpywareCookiesBlocked(Graph):
     def __init__(self):
-        Graph.__init__(self, 'blocked-cookies', _('Spyware Cookies Blocked'))
+        Graph.__init__(self, 'blocked-cookies', _('Spyware Blocked Cookies'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -915,7 +916,7 @@ GROUP BY day ORDER BY day ASC"""
                      major_formatter=DATE_FORMATTER,
                      required_points=rp)
 
-        plot.add_dataset(dates, blocks, label=_('subnets'))
+        plot.add_dataset(dates, blocks, label=_('detections'))
 
         return (lks, plot)
 
@@ -984,7 +985,7 @@ class UrlBlockDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('s_server', _('Server')),
-               ColumnDesc('uri', _('URI')),               
+               ColumnDesc('uri', _('URI')),
                ColumnDesc('s_server_addr', _('Server IP')),
                ColumnDesc('s_server_port', _('Server Port'))]
 

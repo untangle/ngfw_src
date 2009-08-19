@@ -35,7 +35,6 @@ from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
-from reports import TIME_SERIES_CHART
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import HOST_DRILLDOWN
@@ -441,7 +440,7 @@ class FirewallDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied'), 'Rule Applied'),
-                   ColumnDesc('firewall_was_blocked', _('Action'), 'Action'),                   
+                   ColumnDesc('firewall_was_blocked', _('Action'), 'Action'),
                    ColumnDesc('c_server_addr', _('Source IP'), 'Source IP'),
                    ColumnDesc('c_server_port', _('Source Port'), 'Source Port'),
                    ColumnDesc('c_client_addr', _('Destination IP'), 'Destination IP'), ]

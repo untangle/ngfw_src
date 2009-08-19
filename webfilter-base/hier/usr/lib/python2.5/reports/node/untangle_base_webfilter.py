@@ -260,8 +260,8 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             q = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       coalesce(sum(hits), 0)::int / 10 AS hits,
-       coalesce(sum(wf_%s_blocks), 0)::int / 10 AS wf_%s_blocks
+       coalesce(sum(hits), 0)::int / (10 * %%s) AS hits,
+       coalesce(sum(wf_%s_blocks), 0)::int / (10 * %%s) AS wf_%s_blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
@@ -275,11 +275,11 @@ ORDER BY time asc"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(q, (one_week, ed, host))
+                curs.execute(q, (report_days, report_days, one_week, ed, host))
             elif user:
-                curs.execute(q, (one_week, ed, user))
+                curs.execute(q, (report_days, report_days, one_week, ed, user))
             else:
-                curs.execute(q, (one_week, ed))
+                curs.execute(q, (report_days, report_days, one_week, ed))
 
             dates = []
             hits = []
@@ -300,7 +300,8 @@ ORDER BY time asc"""
                      title=self.title,
                      xlabel=_('Hour of Day'),
                      ylabel=_('Hits per Minute'),
-                     major_formatter=TIME_OF_DAY_FORMATTER)
+                     major_formatter=TIME_OF_DAY_FORMATTER,
+                     required_points=sql_helper.REQUIRED_TIME_POINTS)
 
         plot.add_dataset(dates, hits, label=_('hits'), color=colors.green)
         plot.add_dataset(dates, blocks, label=_('violations'), color=colors.red)
@@ -484,9 +485,9 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
             hits = r[0]
             violations = r[1]
 
-            ks = KeyStatistic(_('total hits (1-day)'), hits, _('hits'))
+            ks = KeyStatistic(_('total hits'), hits, _('hits'))
             lks.append(ks)
-            ks = KeyStatistic(_('total violations (1-day)'), violations,
+            ks = KeyStatistic(_('total violations'), violations,
                               _('violations'))
             lks.append(ks)
         finally:
@@ -498,8 +499,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
                      ylabel=_('Hits per Day'))
 
         plot.add_pie_dataset({_('hits'): hits, _('violations'): violations},
-                             colors={'hits': colors.green,
-                                     'violations': colors.red})
+                             colors={'total hits': colors.green,
+                                     'total violations': colors.red})
 
         return (lks, plot)
 
@@ -564,7 +565,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10\
 
 class TopTenWebBlockedPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-blocked-policy-violations-by-hits',
+        Graph.__init__(self, 'top-ten-web-categories-violations-by-hits',
                        _('Top Ten Categories of Blocked Violations (by hits)'))
 
         self.__vendor_name = vendor_name
@@ -623,7 +624,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10""" \
 
 class TopTenWebUsageByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-usage-by-hits',
+        Graph.__init__(self, 'top-ten-web-users-by-hits',
                        _('Top Ten Web Users (by hits)'))
 
         self.__vendor_name = vendor_name
@@ -671,8 +672,8 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
 
 class TopTenWebPolicyViolatorsByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-policy-violators-by-hits',
-                       _('Top Ten Host Policy Violators (by hits)'))
+        Graph.__init__(self, 'top-ten-host-violators-by-hits',
+                       _('Top Ten Host Violators (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -722,7 +723,7 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
 
 class TopTenWebPolicyViolatorsADByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-policy-violator-ad-by-hits',
+        Graph.__init__(self, 'top-ten-user-violators-by-hits',
                        _('Top Ten User Violators (by hits)'))
 
         self.__vendor_name = vendor_name
@@ -773,7 +774,7 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
 
 class TopTenWebUsageBySize(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-usage-by-size',
+        Graph.__init__(self, 'top-ten-web-users-by-size',
                        _('Top Ten Web Users (by size)'))
 
         self.__vendor_name = vendor_name
@@ -935,8 +936,8 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
 
 class TopTenPolicyViolations(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-policy-violations',
-                       _('Top Ten Policy Violations'))
+        Graph.__init__(self, 'top-ten-violations',
+                       _('Top Ten Violations'))
 
         self.__vendor_name = vendor_name
 
@@ -992,7 +993,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 
 class TopTenBlockerPolicyViolations(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-blocked-policy-violations',
+        Graph.__init__(self, 'top-ten-blocked-violations',
                        _('Top Ten Blocked Violations'))
 
         self.__vendor_name = vendor_name

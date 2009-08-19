@@ -35,7 +35,6 @@ from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
-from reports import TIME_SERIES_CHART
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import HOST_DRILLDOWN
@@ -610,7 +609,7 @@ class ProtofilterDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv = rv + [ColumnDesc('pf_protocol', _('Protocol'), 'Protocol'),
-                   ColumnDesc('pf_blocked', _('Action'), 'Action'),                   
+                   ColumnDesc('pf_blocked', _('Action'), 'Action'),
                    ColumnDesc('c_server_addr', _('Server'), 'Server'),
                    ColumnDesc('c_server_port', _('Port'), 'Port')]
 

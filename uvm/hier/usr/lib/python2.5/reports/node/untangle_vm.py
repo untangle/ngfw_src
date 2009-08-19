@@ -59,7 +59,7 @@ class UvmNode(Node):
         self.__generate_address_map(start_date, end_date)
 
         self.__create_n_admin_logins(start_date, end_date)
-        
+
         self.__make_sessions_table(start_date, end_date)
         self.__make_session_counts_table(start_date, end_date)
 
@@ -160,7 +160,7 @@ DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
 
         sections.append(s)
         sections.append(AdministrativeLoginsDetail())
-        
+
         return Report(self.name, sections)
 
     @print_timing
@@ -566,7 +566,7 @@ ON min_idx = position""")
 
 class BandwidthUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'number-of-sessions', _('Number of Sessions'))
+        Graph.__init__(self, 'number-of-sessions', _('Bandwidth Usage'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -615,7 +615,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             lks.append(ks)
 
             ks_query = """\
-SELECT coalesce(sum(s2c_bytes + c2s_bytes), 0) / %s AS avg_rate,
+SELECT coalesce(sum(s2c_bytes + c2s_bytes), 0) / (60 * %s) AS avg_rate,
        coalesce(sum(s2c_bytes + c2s_bytes), 0) AS total
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
@@ -684,8 +684,9 @@ ORDER BY time asc"""
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
-                     xlabel=_('Hour of Day'), ylabel=_('Throughput (Kb/s)'),
-                     major_formatter=TIME_OF_DAY_FORMATTER)
+                     xlabel=_('Hour of Day'), ylabel=_('Throughput (KB/s)'),
+                     major_formatter=TIME_OF_DAY_FORMATTER,
+                     required_points=sql_helper.REQUIRED_TIME_POINTS)
 
         plot.add_dataset(dates, throughput, _('Usage'))
 
@@ -772,8 +773,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             plot_query = """\
 SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)))::time AS time,
-       sum(num_sessions) / (10 * %s) AS sessions
+        || date_part('minute', trunc_time))::time AS time,
+       sum(num_sessions) / %s AS sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -796,7 +797,7 @@ ORDER BY time asc"""
             elif host:
                 curs.execute(plot_query, (report_days, one_week, ed, host))
             else:
-                 curs.execute(plot_query, (report_days, one_week, ed))
+                curs.execute(plot_query, (report_days, one_week, ed))
 
             for r in curs.fetchall():
                 dates.append(r[0])
@@ -806,7 +807,8 @@ ORDER BY time asc"""
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
                      xlabel=_('Hour of Day'), ylabel=_('Number of Sessions'),
-                     major_formatter=TIME_OF_DAY_FORMATTER)
+                     major_formatter=TIME_OF_DAY_FORMATTER,
+                     required_points=sql_helper.REQUIRED_TIME_POINTS)
 
         plot.add_dataset(dates, num_sessions, _('Sessions'))
 
@@ -919,7 +921,7 @@ class AdministrativeLoginsDetail(DetailSection):
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         rv += [ColumnDesc('client', _('Server')),
-               ColumnDesc('succeeded', _('URI')),               
+               ColumnDesc('succeeded', _('URI')),
                ColumnDesc('client_addr', _('Client IP'))]
 
         return rv

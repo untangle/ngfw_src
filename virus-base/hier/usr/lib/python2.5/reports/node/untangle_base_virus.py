@@ -662,7 +662,7 @@ LIMIT 10""" % self.__vendor_name
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Email Viruses Detected'),
+                     title=self.title,
                      xlabel=_('Viruses'),
                      ylabel=_('Count'))
 
@@ -740,7 +740,7 @@ ORDER BY sum DESC""" % self.__vendor_name
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Viruses Detected'),
+                     title=self.title,
                      xlabel=_('Viruses'),
                      ylabel=_('Count'))
 

@@ -747,10 +747,13 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                                          tbar:[{ tooltip:this.i18n._('Export Excel'),
                                                                                                                  iconCls:'export-excel',
                                                                                                                  handler : new Function("window.open('" + summaryItem.csvUrl + "');")
-                                                                                                               }, '-', { tooltip:this.i18n._('Export Printer'),
-                                                                                                                         iconCls:'export-printer',
-                                                                                                                         handler : new Function("window.open('" + summaryItem.printerUrl + "');")
-                                                                                                                       }],
+                                                                                                               },
+//                                                                                                                '-',
+//                                                                                                                { tooltip:this.i18n._('Export Printer'),
+//                                                                                                                  iconCls:'export-printer',
+//                                                                                                                  handler : new Function("window.open('" + summaryItem.printerUrl + "');")
+//                                                                                                                }
+                                                                                                              ],
                                                                                                                title:this.i18n._('Key Statistics'),
                                                                                                                stripeRows: true,
                                                                                                                hideHeaders: true,

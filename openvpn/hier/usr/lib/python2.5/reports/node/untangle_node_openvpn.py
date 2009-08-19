@@ -153,7 +153,8 @@ WHERE time_stamp >= %s AND time_stamp < %s"""
                          title=_('Bandwidth Usage'),
                          xlabel=_('Hour of Day'),
                          ylabel=_('Throughput (Kb/sec)'),
-                         major_formatter=TIME_OF_DAY_FORMATTER)
+                         major_formatter=TIME_OF_DAY_FORMATTER,
+                         required_points=sql_helper.REQUIRED_TIME_POINTS)
 
             plot_query = """\
 SELECT (date_part('hour', time_stamp) || ':'
@@ -182,7 +183,7 @@ ORDER BY time"""
 
 class TopUsers(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-users', _('OpenVPN Top Users'))
+        Graph.__init__(self, 'top-users', _('Top Users'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
