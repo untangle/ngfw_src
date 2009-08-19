@@ -58,6 +58,8 @@ class UvmNode(Node):
     def setup(self, start_date, end_date):
         self.__generate_address_map(start_date, end_date)
 
+        self.__create_n_admin_logins(start_date, end_date)
+        
         self.__make_sessions_table(start_date, end_date)
         self.__make_session_counts_table(start_date, end_date)
 
@@ -72,6 +74,46 @@ class UvmNode(Node):
                         Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
+
+#         ft = FactTable('reports.n_admin_logins_totals',
+#                        'reports.n_admin_logins',
+#                        'time_stamp',
+#                        [Column('login', 'text'),],
+#                        [Column('logins', 'bigint', 'count(*)'),])
+#         reports.engine.register_fact_table(ft)
+
+    @print_timing
+    def __create_n_admin_logins(self, start_date, end_date):
+        sql_helper.create_partitioned_table("""\
+CREATE TABLE reports.n_admin_logins (
+    time_stamp timestamp without time zone,
+    login text,
+    client_addr inet,
+    succeeded boolean
+)""",
+                                            'time_stamp', start_date, end_date)
+
+        sd = DateFromMx(sql_helper.get_update_info('reports.n_admin_logins',
+                                                   start_date))
+        ed = DateFromMx(end_date)
+
+        conn = sql_helper.get_connection()
+        try:
+            sql_helper.run_sql("""\
+INSERT INTO reports.n_admin_logins
+      (time_stamp, login, client_addr, succeeded)
+    SELECT time_stamp, login, client_addr, succeeded
+    FROM events.u_login_evt evt
+    WHERE evt.time_stamp >= %s AND evt.time_stamp < %s""",
+                               (sd, ed), connection=conn, auto_commit=False)
+
+            sql_helper.set_update_info('reports.n_admin_logins', ed,
+                                       connection=conn, auto_commit=False)
+
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
 
     def post_facttable_setup(self, start_date, end_date):
         self.__make_hnames_table(start_date, end_date)
@@ -115,8 +157,10 @@ DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
         s = SummarySection('summary', _('Summary Report'),
                            [BandwidthUsage(), ActiveSessions(),
                             DestinationPorts()])
-        sections.append(s)
 
+        sections.append(s)
+        sections.append(AdministrativeLoginsDetail())
+        
         return Report(self.name, sections)
 
     @print_timing
@@ -863,5 +907,39 @@ class Lease:
     def values(self):
         return (self.ip, self.hostname, TimestampFromMx(self.start),
                 TimestampFromMx(self.end_of_lease))
+
+class AdministrativeLoginsDetail(DetailSection):
+    def __init__(self):
+        DetailSection.__init__(self, 'admin-logins-incidents', _('Administrative Logins Incidents'))
+
+    def get_columns(self, host=None, user=None, email=None):
+        if email:
+            return None
+
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
+
+        rv += [ColumnDesc('client', _('Server')),
+               ColumnDesc('succeeded', _('URI')),               
+               ColumnDesc('client_addr', _('Client IP'))]
+
+        return rv
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        if email:
+            return None
+
+        sql = """\
+SELECT time_stamp, client, succeeded, client_addr
+FROM reports.n_admin_logins
+WHERE time_stamp >= %s AND time_stamp < %s AND sw_blacklisted
+""" % (DateFromMx(start_date), DateFromMx(end_date))
+
+        if host:
+            sql += " AND host = %s" % QuotedString(host)
+        if user:
+            sql += " AND host = %s" % QuotedString(user)
+
+        return sql
+
 
 reports.engine.register_node(UvmNode())
