@@ -137,7 +137,7 @@ public class TimeSeriesChart extends Plot
         String title = getTitle();
         JFreeChart jfChart =
             ChartFactory.createTimeSeriesChart(title, this.xLabel, this.yLabel,
-                                               tsc, false, true, false);
+                                               tsc, true, true, false);
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         XYPlot p = (XYPlot)jfChart.getPlot();
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer)p.getRenderer();
