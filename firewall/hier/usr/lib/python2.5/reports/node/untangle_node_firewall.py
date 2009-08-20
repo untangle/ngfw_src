@@ -443,8 +443,8 @@ class FirewallDetail(DetailSection):
                    ColumnDesc('firewall_was_blocked', _('Action'), 'Action'),
                    ColumnDesc('c_server_addr', _('Source IP'), 'Source IP'),
                    ColumnDesc('c_server_port', _('Source Port'), 'Source Port'),
-                   ColumnDesc('c_client_addr', _('Destination IP'), 'Destination IP'), ]
-#                   ColumnDesc('s_server_port', _('Destination Port'), 'Destination Port')]
+                   ColumnDesc('c_client_addr', _('Destination IP'), 'Destination IP'),
+                   ColumnDesc('c_client_port', _('Destination Port'), 'Destination Port')]
 
         return rv
 
@@ -459,7 +459,7 @@ class FirewallDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""firewall_rule_index, firewall_was_blocked, c_server_addr, c_server_port, c_client_addr
+        sql = sql + ("""firewall_rule_index, firewall_was_blocked, c_server_addr, c_server_port, c_client_addr, c_client_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
 AND NOT firewall_rule_index ISNULL""" % (DateFromMx(start_date),

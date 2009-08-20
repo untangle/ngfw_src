@@ -70,6 +70,7 @@ class UvmNode(Node):
                         Column('uid', 'text'),
                         Column('client_intf', 'smallint'),
                         Column('c_server_port', 'int4')],
+                        Column('c_client_port', 'int4')],                       
                        [Column('new_sessions', 'bigint', 'count(*)'),
                         Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
