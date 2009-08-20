@@ -17,7 +17,7 @@
 import gettext
 import logging
 import mx
-import reportlab.lib.colors as colors
+import reports.colors as colors
 import reports.i18n_helper
 import reports.sql_helper as sql_helper
 
@@ -303,8 +303,9 @@ ORDER BY time asc"""
                      major_formatter=TIME_OF_DAY_FORMATTER,
                      required_points=sql_helper.REQUIRED_TIME_POINTS)
 
-        plot.add_dataset(dates, hits, label=_('hits'), color=colors.green)
-        plot.add_dataset(dates, blocks, label=_('violations'), color=colors.red)
+        plot.add_dataset(dates, hits, label=_('hits'), color=colors.goodness)
+        plot.add_dataset(dates, blocks, label=_('violations'),
+                         color=colors.badness)
 
         return plot
 
@@ -424,8 +425,9 @@ ORDER BY day asc"""
                      major_formatter=DATE_FORMATTER,
                      required_points=rp)
 
-        plot.add_dataset(dates, hits, label=_('hits'), color=colors.green)
-        plot.add_dataset(dates, blocks, label=_('violations'), color=colors.red)
+        plot.add_dataset(dates, hits, label=_('hits'), color=colors.goodness)
+        plot.add_dataset(dates, blocks, label=_('violations'),
+                         color=colors.badness)
 
         return plot
 
@@ -482,8 +484,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
                      ylabel=_('Hits per Day'))
 
         plot.add_pie_dataset({_('hits'): hits, _('violations'): violations},
-                             colors={'total hits (7-days)': colors.green,
-                                     'total violations (7-days)': colors.red})
+                             colors={'total hits (7-days)': colors.goodness,
+                                     'total violations (7-days)': colors.badness})
 
         return (lks, plot)
 

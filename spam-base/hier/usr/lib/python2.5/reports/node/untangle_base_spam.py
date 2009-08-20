@@ -229,7 +229,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
             plot = Chart(type=PIE_CHART, title=self.title)
 
-            plot.add_pie_dataset({self.__spam_label: spam, self.ham_label: ham})
+            plot.add_pie_dataset({ self.__spam_label: spam,
+                                   self.__ham_label: ham })
         finally:
             conn.commit()
 

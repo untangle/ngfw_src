@@ -18,6 +18,7 @@ import gettext
 import logging
 import mx
 import reports.i18n_helper
+import reports.colors as colors
 import reports.engine
 import reports.sql_helper as sql_helper
 import sys
@@ -232,7 +233,8 @@ AND pf_protocol != ''"""
                      major_formatter=DATE_FORMATTER,
                      required_points=rp)
 
-        plot.add_dataset(dates, detections, label=_('detections'))
+        plot.add_dataset(dates, detections, label=_('detections'),
+                         color=colors.detected)
 
         return plot
 
