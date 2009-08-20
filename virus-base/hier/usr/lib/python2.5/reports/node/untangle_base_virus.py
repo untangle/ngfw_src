@@ -17,6 +17,7 @@
 import gettext
 import logging
 import mx
+import reports.colors as colors
 import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
@@ -33,6 +34,7 @@ from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
 from reports import STACKED_BAR_CHART
+from reports import TIME_SERIES_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
 from reports.engine import Column
@@ -387,7 +389,8 @@ ORDER BY time asc"""
                      major_formatter=DATE_FORMATTER,
                      required_points=rp)
 
-        plot.add_dataset(dates, blocks, label=_('viruses blocked'))
+        plot.add_dataset(dates, blocks, label=_('viruses blocked'),
+                         color=colors.badness)
 
         return plot
 
@@ -463,7 +466,7 @@ select date_trunc('hour', trunc_time) AS day, sum(viruses_"""+self.__vendor_name
         try:
             q = """\
 SELECT date_trunc('hour', trunc_time) AS time,
-       sum(viruses_"""+self.__vendor_name+"""_blocked) as viruses_"""+self.__vendor_name+"""_blocked
+       sum(viruses_"""+self.__vendor_name+"""_blocked) / %s as viruses_"""+self.__vendor_name+"""_blocked
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
             if host:
@@ -477,11 +480,11 @@ ORDER BY time asc"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(q, (one_week, ed, host))
+                curs.execute(q, (report_days, one_week, ed, host))
             elif user:
-                curs.execute(q, (one_week, ed, user))
+                curs.execute(q, (report_days, one_week, ed, user))
             else:
-                curs.execute(q, (one_week, ed))
+                curs.execute(q, (report_days, one_week, ed))
 
             blocks_by_date = {}
 
@@ -494,7 +497,7 @@ ORDER BY time asc"""
 
             q = """\
 SELECT date_trunc('hour', trunc_time) AS time,
-       sum(viruses_"""+self.__vendor_name+"""_blocked) as viruses_"""+self.__vendor_name+"""_blocked
+       sum(viruses_"""+self.__vendor_name+"""_blocked) / %s as viruses_"""+self.__vendor_name+"""_blocked
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
             if host:
@@ -508,11 +511,11 @@ ORDER BY time asc"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(q, (one_week, ed, host))
+                curs.execute(q, (report_days, one_week, ed, host))
             elif user:
-                curs.execute(q, (one_week, ed, user))
+                curs.execute(q, (report_days, one_week, ed, user))
             else:
-                curs.execute(q, (one_week, ed))
+                curs.execute(q, (report_days, one_week, ed))
 
             while 1:
                 r = curs.fetchone()
@@ -534,17 +537,15 @@ ORDER BY time asc"""
             dates.append(k)
             blocks.append(blocks_by_date[k])
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-
-        plot = Chart(type=STACKED_BAR_CHART,
+        plot = Chart(type=TIME_SERIES_CHART,
                      title=_('Hourly Virus Blocked'),
                      xlabel=_('hour'),
                      ylabel=_('viruses/hour'),
                      major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=rp)
+                     required_points=sql_helper.REQUIRED_TIME_POINTS)
 
-        plot.add_dataset(dates, blocks, label=_('viruses blocked'))
+        plot.add_dataset(dates, blocks, label=_('viruses blocked'),
+                         color=colors.badness)
 
         return plot
 

@@ -20,9 +20,9 @@ import reportlab.lib.colors as colors
 
 from reportlab.lib.colors import HexColor
 
-badness = HexColor(0x3333FF)
+badness = HexColor(0xDD0000)
 detected=HexColor(0xFF8000)
-goodness = HexColor(0x00DD00)
+goodness = HexColor(0x00AA00)
 blue = HexColor(0x3333FF)
 
 color_palette = [HexColor(0x00AA00), HexColor(0x0066B3), HexColor(0xFFCC00),
