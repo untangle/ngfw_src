@@ -182,7 +182,7 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
             return None
 
         ed = DateFromMx(end_date)
-        start_date = end_date - mx.DateTime.DateTimeDelta(7)
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
         one_day = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
