@@ -556,27 +556,25 @@ class TopWebVirusesDetected(Graph):
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
-        lks = []
-        return lks
-
-    @sql_helper.print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
         try:
             q = """\
-SELECT virus_"""+self.__vendor_name+"""_name, virus_"""+self.__vendor_name+"""_detected
+SELECT COALESCE(NULLIF(virus_%s_name, ''), 'unknown') as vn,
+       COALESCE(sum(virus_%s_detected), 0)::int as virus_%s_detected
 FROM reports.n_virus_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (3 * (self.__vendor_name,))
             if host:
-                q = q + " AND hname = %s"
+                q += " AND hname = %s"
             elif user:
-                q = q + " AND uid = %s"
-            q = q + "ORDER BY virus_"+self.__vendor_name+"_detected DESC"
+                q += " AND uid = %s"
+            q += """
+GROUP BY vn
+ORDER BY virus_%s_detected DESC
+""" % self.__vendor_name
 
             curs = conn.cursor()
 
@@ -587,6 +585,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             else:
                 curs.execute(q, (one_week, ed))
 
+            lks = []
             dataset = {}
 
             while 1:
@@ -595,8 +594,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                     break
 
                 key_name = r[0]
-                if key_name is None or len(key_name) == 0 or key_name == 'unknown':
-                    key_name = _('unknown')
+                ks = KeyStatistic(str(key_name), r[1])
+                lks.append(ks)
                 dataset[str(key_name)] = r[1]
         finally:
             conn.commit()
@@ -608,7 +607,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         plot.add_pie_dataset(dataset)
 
-        return plot
+        return (lks, plot)
 
 
 class TopEmailVirusesDetected(Graph):
@@ -628,7 +627,7 @@ class TopEmailVirusesDetected(Graph):
 
         avg_max_query = """\
 SELECT virus_%s_name,
-       coalesce(sum(virus_%s_detected), 0)::int as virus_%s_detected
+       COALESCE(sum(virus_%s_detected), 0)::int as virus_%s_detected
 FROM reports.n_virus_mail_totals
 WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
       AND trunc_time >= %%s AND trunc_time < %%s""" \
@@ -659,7 +658,7 @@ LIMIT 10""" % (2 * (self.__vendor_name,))
                 r = curs.fetchone()
                 if not r:
                     break
-                ks = KeyStatistic(r[0], r[1], _('viruses'))
+                ks = KeyStatistic(r[0], r[1])
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:

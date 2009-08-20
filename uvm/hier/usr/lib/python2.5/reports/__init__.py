@@ -545,7 +545,7 @@ class Chart:
         return cmp(a[1], b[1])
 
 class KeyStatistic:
-    def __init__(self, name, value, unit, link_type=None):
+    def __init__(self, name, value, unit=None, link_type=None):
         if name is None:
             logging.warn('KeyStatistic name is None')
             name = _("Unknown")
@@ -560,6 +560,8 @@ class KeyStatistic:
 
     @property
     def scaled_value(self):
+        if self.__unit is None:
+            return (self.__value, self.__unit)
         if self.__unit.startswith('bytes'):
             if self.__value < 1000000:
                 s = string.split(self.__unit, '/')
