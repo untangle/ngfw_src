@@ -27,9 +27,9 @@ blue = HexColor(0x3333FF)
 
 color_palette = [HexColor(0x00AA00), HexColor(0x0066B3), HexColor(0xFFCC00),
                  HexColor(0x330099), HexColor(0x990099), HexColor(0xCCFF00),
-                 HexColor(0x808080), HexColor(0x008F00), HexColor(0x00487D),
-                 HexColor(0xAA0000), HexColor(0x8FB300), HexColor(0x80FF80),
-                 HexColor(0x80C9FF), HexColor(0xFFC080), HexColor(0xFFE680),
-                 HexColor(0xAA80FF), HexColor(0xEE00CC), HexColor(0xFF8080),
-                 HexColor(0x666600), HexColor(0xFFBFFF), HexColor(0x00FFCC),
-                 HexColor(0xCC6699), HexColor(0x999900)]
+                 HexColor(0x008F00), HexColor(0x00487D), HexColor(0xAA0000),
+                 HexColor(0x8FB300), HexColor(0x80FF80), HexColor(0x80C9FF),
+                 HexColor(0xFFC080), HexColor(0xFFE680), HexColor(0xAA80FF),
+                 HexColor(0xEE00CC), HexColor(0xFF8080), HexColor(0x666600),
+                 HexColor(0xFFBFFF), HexColor(0x00FFCC), HexColor(0xCC6699),
+                 HexColor(0x999900)]
