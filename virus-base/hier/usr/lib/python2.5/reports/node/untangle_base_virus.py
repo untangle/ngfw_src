@@ -613,7 +613,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class TopEmailVirusesDetected(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-email-viruses-detected', _('Top Viruses Detected'))
+        Graph.__init__(self, 'top-email-viruses-detected', _('Top Email Viruses Detected'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
