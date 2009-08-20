@@ -523,14 +523,26 @@ class Chart:
             w.writerow(r)
 
     def __generate_pie_csv(self, filename, host=None, user=None, email=None):
+        items = []
+
+        for k, v in self.__datasets.iteritems():
+            items.append([k, v])
+
+        items.sort(cmp=self.__pie_sort, reverse=True)
+
         w = csv.writer(open(filename, 'w'))
         w.writerow([_('slice'), _('value')])
-        for k, v in self.__datasets.iteritems():
+        for e in items:
+            k = e[0]
+            v = e[1]
             if k is None:
                 k = 'None'
             if v is None:
                 v = 0
             w.writerow([k, v])
+
+    def __pie_sort(self, a, b):
+        return cmp(a[1], b[1])
 
 class KeyStatistic:
     def __init__(self, name, value, unit, link_type=None):

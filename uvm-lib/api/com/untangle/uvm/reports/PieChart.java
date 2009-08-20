@@ -91,14 +91,7 @@ public class PieChart extends Plot
             for (int j = 0; j < cd.getRowCount(); j++) {
                 String rowKey = cd.getRowKey(j).toString();
 
-                String rowLabel;
-                if (10 < rowKey.length()) {
-                    rowLabel = rowKey.substring(0, 10);
-                } else {
-                    rowLabel = rowKey;
-                }
-
-                dpd.setValue(rowLabel, cd.getValue(rowKey, columnKey));
+                dpd.setValue(rowKey, cd.getValue(rowKey, columnKey));
             }
         }
 

@@ -478,9 +478,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
         finally:
             conn.commit()
 
-        plot = Chart(type=PIE_CHART,
-                     title=self.title,
-                     xlabel=_('Date'),
+        plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Date'),
                      ylabel=_('Hits per Day'))
 
         plot.add_pie_dataset({_('hits'): hits, _('violations'): violations},

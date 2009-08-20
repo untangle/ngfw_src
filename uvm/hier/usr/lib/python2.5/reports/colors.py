@@ -25,7 +25,7 @@ detected=HexColor(0xFF8000)
 goodness = HexColor(0x00DD00)
 blue = HexColor(0x3333FF)
 
-color_palette = [HexColor(0x00CC00), HexColor(0x0066B3), HexColor(0xFFCC00),
+color_palette = [HexColor(0x00AA00), HexColor(0x0066B3), HexColor(0xFFCC00),
                  HexColor(0x330099), HexColor(0x990099), HexColor(0xCCFF00),
                  HexColor(0x808080), HexColor(0x008F00), HexColor(0x00487D),
                  HexColor(0xAA0000), HexColor(0x8FB300), HexColor(0x80FF80),
