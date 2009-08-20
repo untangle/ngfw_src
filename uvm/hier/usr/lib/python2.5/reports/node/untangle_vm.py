@@ -70,8 +70,8 @@ class UvmNode(Node):
                         Column('uid', 'text'),
                         Column('client_intf', 'smallint'),
                         Column('c_server_port', 'int4'),
-                        Column('c_client_port', 'int4'),                       
-                        Column('new_sessions', 'bigint', 'count(*)'),
+                        Column('c_client_port', 'int4')],      
+                        [Column('new_sessions', 'bigint', 'count(*)'),
                         Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
@@ -238,6 +238,7 @@ CREATE TABLE reports.sessions (
         c_client_addr inet,
         c_server_addr inet,
         c_server_port int4,
+        c_client_port int4,
         client_intf int2,
         c2p_bytes int8,
         p2c_bytes int8,
@@ -253,7 +254,7 @@ CREATE TABLE reports.sessions (
             sql_helper.run_sql("""\
 CREATE TEMPORARY TABLE newsessions AS
     SELECT endp.event_id, endp.time_stamp, mam.name,
-           endp.c_client_addr, endp.c_server_addr, endp.c_server_port,
+           endp.c_client_addr, endp.c_server_addr, endp.c_server_port, endp.c_client_port,
            endp.client_intf
     FROM events.pl_endp endp
     LEFT OUTER JOIN reports.merged_address_map mam
@@ -265,11 +266,11 @@ CREATE TEMPORARY TABLE newsessions AS
             sql_helper.run_sql("""\
 INSERT INTO reports.sessions
     (pl_endp_id, time_stamp, end_time, hname, uid, c_client_addr,
-     c_server_addr, c_server_port, client_intf, c2p_bytes, p2c_bytes,
+     c_server_addr, c_server_port, c_client_port, client_intf, c2p_bytes, p2c_bytes,
      s2p_bytes, p2s_bytes)
     SELECT ses.event_id, ses.time_stamp, stats.time_stamp,
          COALESCE(NULLIF(ses.name, ''), HOST(ses.c_client_addr)) AS hname,
-         stats.uid, c_client_addr, c_server_addr, c_server_port, client_intf,
+         stats.uid, c_client_addr, c_server_addr, c_server_port, c_client_port, client_intf,
          stats.c2p_bytes, stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
     FROM newsessions ses
     JOIN events.pl_stats stats ON (ses.event_id = stats.pl_endp_id)""",
