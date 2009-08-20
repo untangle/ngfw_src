@@ -627,18 +627,20 @@ class TopEmailVirusesDetected(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
-SELECT virus_%s_name, round(virus_%s_detected)
+SELECT virus_%s_name,
+       coalesce(sum(virus_%s_detected), 0)::int as virus_%s_detected
 FROM reports.n_virus_mail_totals
 WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
       AND trunc_time >= %%s AND trunc_time < %%s""" \
-            % (4 * (self.__vendor_name,))
+            % (5 * (self.__vendor_name,))
         if host:
             avg_max_query += " AND hname = %s"
         elif user:
             avg_max_query += " AND uid = %s"
         avg_max_query += """
+GROUP BY virus_%s_name
 ORDER BY virus_%s_detected DESC
-LIMIT 10""" % self.__vendor_name
+LIMIT 10""" % (2 * (self.__vendor_name,))
 
         conn = sql_helper.get_connection()
         try:
