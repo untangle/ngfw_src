@@ -237,7 +237,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
 class HourlySpamRate(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
-        Graph.__init__(self, 'summary-hourly-%s-rate' % (self.__short_name,), title)
+        Graph.__init__(self, 'summary-hourly-%s-rate' % (short_name,), title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -353,7 +353,7 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
 
 class DailySpamRate(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
-        Graph.__init__(self, 'summary-daily-%s-rate' % (self.__short_name,), title)
+        Graph.__init__(self, 'summary-daily-%s-rate' % (__short_name,), title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -471,7 +471,7 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
 
 class TopSpammedUsers(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
-        Graph.__init__(self, 'summary-top-ten-%s-victims' % (self.__short_name,), title)
+        Graph.__init__(self, 'summary-top-ten-%s-victims' % (short_name,), title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
