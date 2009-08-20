@@ -220,16 +220,16 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
             spam = round(r[1])
             ham = total - spam
 
-            ks = KeyStatistic(_('total'), total, _('total'))
+            ks = KeyStatistic(_('total (7-day)'), total, _('total (7 day)'))
             lks.append(ks)
-            ks = KeyStatistic(_('spam'), spam, self.__spam_label)
+            ks = KeyStatistic(self.__spam_label, spam, self.__spam_label)
             lks.append(ks)
-            ks = KeyStatistic(_('clean'), ham, self.__ham_label)
+            ks = KeyStatistic(self.__spam_label, ham, self.__ham_label)
             lks.append(ks)
 
             plot = Chart(type=PIE_CHART, title=self.title)
 
-            plot.add_pie_dataset({_('spam'): spam, _('ham'): ham})
+            plot.add_pie_dataset({self.__spam_label: spam, self.ham_label: ham})
         finally:
             conn.commit()
 
@@ -237,7 +237,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
 class HourlySpamRate(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
-        Graph.__init__(self, 'hourly-email', title)
+        Graph.__init__(self, 'summary-hourly-%s-rate' % (self.__short_name,), title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -353,7 +353,7 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
 
 class DailySpamRate(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
-        Graph.__init__(self, 'daily-spam', title)
+        Graph.__init__(self, 'summary-daily-%s-rate' % (self.__short_name,), title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -471,7 +471,7 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
 
 class TopSpammedUsers(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
-        Graph.__init__(self, 'spammed-users', title)
+        Graph.__init__(self, 'summary-top-ten-%s-victims' % (self.__short_name,), title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -511,7 +511,7 @@ LIMIT 10""" % (self.__short_name,)
                 num = r[1]
                 counted_spam += num
 
-                lks.append(KeyStatistic(addr, num, _('spam')))
+                lks.append(KeyStatistic(addr, num, self.__spam_label))
                 pds[addr] = num
         finally:
             conn.commit()

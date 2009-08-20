@@ -214,9 +214,9 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(hits_query, (one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('max hits (1-week)'), r[0], _('hits/minute'))
+            ks = KeyStatistic(_('max hits (7-day)'), r[0], _('hits/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg hits (1-week)'), r[1], _('hits/minute'))
+            ks = KeyStatistic(_('avg hits (7-day)'), r[1], _('hits/minute'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -239,7 +239,7 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(violations_query, (one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('avg violations (1-week)'), r[0],
+            ks = KeyStatistic(_('avg violations (7-day)'), r[0],
                               _('violations/hour'))
             lks.append(ks)
         finally:
@@ -488,7 +488,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
 
 class TopTenWebPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-policy-violations-by-hits',
+        Graph.__init__(self, 'top-ten-categories-of-violations-by-hits',
                        _('Top Ten Categories of Violations (by hits)'))
 
         self.__vendor_name = vendor_name
@@ -547,7 +547,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10\
 
 class TopTenWebBlockedPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-categories-violations-by-hits',
+        Graph.__init__(self, 'top-ten-web-categories-of-blocked-violations-by-hits',
                        _('Top Ten Categories of Blocked Violations (by hits)'))
 
         self.__vendor_name = vendor_name
@@ -705,7 +705,7 @@ GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
 
 class TopTenWebPolicyViolatorsADByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-user-violators-by-hits',
+        Graph.__init__(self, 'top-ten-violators-by-hits',
                        _('Top Ten User Violators (by hits)'))
 
         self.__vendor_name = vendor_name

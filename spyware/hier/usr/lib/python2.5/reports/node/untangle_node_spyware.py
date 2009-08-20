@@ -215,7 +215,7 @@ WHERE reports.n_http_events.time_stamp >= %s
 
 class HourlyRates(Graph):
     def __init__(self):
-        Graph.__init__(self, 'hourly-spyware-events', _('Hourly Spyware Events'))
+        Graph.__init__(self, 'hourly-spyware-events', _('Hourly Spyware Incidents'))
 
     @print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
@@ -379,13 +379,13 @@ ORDER BY time asc"""
         finally:
             conn.commit()
 
-        plot.add_dataset(dates, sw_accesses, label=_('Subnets'))
+        plot.add_dataset(dates, sw_accesses, label=_('Detections'))
 
         return plot
 
 class SpywareUrlsBlocked(Graph):
     def __init__(self):
-        Graph.__init__(self, 'daily-blocked-urls', _('Daily Blocked URLs'))
+        Graph.__init__(self, 'summary-daily-blocked-urls', _('Daily Blocked URLs'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -646,7 +646,7 @@ AND sw_cookies > 0"""
 
 class SpywareCookiesBlocked(Graph):
     def __init__(self):
-        Graph.__init__(self, 'blocked-cookies', _('Spyware Blocked Cookies'))
+        Graph.__init__(self, 'blocked-cookies', _('Blocked Cookies'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -903,7 +903,7 @@ GROUP BY day ORDER BY day ASC"""
         ks = KeyStatistic(_('avg suspicious detected'), total / report_days,
                           _('/day'))
         lks.append(ks)
-        ks = KeyStatistic(_('max suspicious detected'), max, _('/day'))
+        ks = KeyStatistic(_('max suspicious detected'), round(max), _('/day'))
         lks.append(ks)
 
         rp = sql_helper.get_required_points(start_date, end_date,
