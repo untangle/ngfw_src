@@ -468,9 +468,12 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
                 curs.execute(query, (one_week, ed))
             r = curs.fetchone()
 
-            ks = KeyStatistic(_('total hits (7-days)'), r[0], _('hits'))
+            hits = r[0]
+            violations = r[1]
+
+            ks = KeyStatistic(_('total hits (7-days)'), hits, _('hits'))
             lks.append(ks)
-            ks = KeyStatistic(_('total violations (7-days)'), r[1],
+            ks = KeyStatistic(_('total violations (7-days)'), violations,
                               _('violations'))
         finally:
             conn.commit()
