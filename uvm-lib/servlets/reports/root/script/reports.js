@@ -15,24 +15,21 @@ Ext.onReady(function()
             });
 
 JSONRpcClient.toplevel_ex_handler = function (ex) {
-    if (ex instanceof JSONRpcClient.Exception) {
-        // assuming this is because of a session timeout.  navigate to current location,
-        // and the auth filter should let them log in and get back to whatever page we're on.
-        if (ex.code == 550) {
-          setTimeout(function ()
-                     {
-                       navigate(document.location);
-                     }, 300);
-          return;
-        }
-    }
-
-    if (ex) {
-        throw ex.message.substring(ex.name.length + 2); //ideally this would throw a complex exception object
-    } else {
-        throw "Error making rpc request to server";
-    }
+  handleTimeout(ex);
 };
+
+function handleTimeout(ex)
+{
+  if (ex instanceof JSONRpcClient.Exception) {
+    if (ex.code == 550) {
+      setTimeout(function ()
+                 {
+                   location.reload(true);
+                 }, 300);
+      return;
+    }
+  }
+}
 
 // Main object class
 Ung.Reports = Ext.extend(Object,
@@ -66,6 +63,7 @@ Ung.Reports = Ext.extend(Object,
                              rpc.jsonrpc.RemoteUvmContext.languageManager(function(result, exception)
                                                                           {
                                                                             if (exception) {
+                                                                              handleTimeout(exception);
                                                                               Ext.MessageBox.alert("Failed", exception.message);
                                                                             };
                                                                             rpc.languageManager = result;
@@ -73,6 +71,7 @@ Ung.Reports = Ext.extend(Object,
                                                                             rpc.languageManager.getTranslations(function(result, exception)
                                                                                                                 {
                                                                                                                   if (exception) {
+                                                                                                                    handleTimeout(exception);
                                                                                                                     Ext.MessageBox.alert("Failed", exception.message);
                                                                                                                     return;
                                                                                                                   }
@@ -84,6 +83,7 @@ Ung.Reports = Ext.extend(Object,
                              rpc.jsonrpc.RemoteUvmContext.skinManager(function(result, exception)
                                                                       {
                                                                         if (exception) {
+                                                                          handleTimeout(exception);
                                                                           Ext.MessageBox.alert("Failed", exception.message);
                                                                         };
                                                                         rpc.skinManager = result;
@@ -91,6 +91,7 @@ Ung.Reports = Ext.extend(Object,
                                                                         rpc.skinManager.getSkinSettings(function(result, exception)
                                                                                                         {
                                                                                                           if (exception) {
+                                                                                                            handleTimeout(exception);
                                                                                                             Ext.MessageBox.alert("Failed", exception.message);
                                                                                                             return;
                                                                                                           }
@@ -103,12 +104,14 @@ Ung.Reports = Ext.extend(Object,
 
                              rpc.jsonrpc.RemoteUvmContext.reportingManager(function(result, exception) {
                                                                              if (exception) {
+                                                                               handleTimeout(exception);
                                                                                Ext.MessageBox.alert("Failed", exception.message);
                                                                              }
                                                                              rpc.reportingManager = result;
                                                                              rpc.reportingManager.getDates(function(result, exception)
                                                                                                            {
                                                                                                              if (exception) {
+                                                                                                               handleTimeout(exception);
                                                                                                                Ext.MessageBox.alert("Failed", exception.message);
                                                                                                                return;
                                                                                                              };
@@ -342,6 +345,7 @@ Ung.Reports = Ext.extend(Object,
                              rpc.reportingManager.getTableOfContents(function(result, exception)
                                                                      {
                                                                        if (exception) {
+                                                                         handleTimeout(exception);
                                                                          Ext.MessageBox.alert("Failed", exception.message);
                                                                          return;
                                                                        };
@@ -361,6 +365,7 @@ Ung.Reports = Ext.extend(Object,
                              rpc.reportingManager.getApplicationData(function (result, exception)
                                                                      {
                                                                        if (exception) {
+                                                                         handleTimeout(exception);
                                                                          Ext.MessageBox.alert("Failed",exception.message);
                                                                          return;
                                                                        }
@@ -385,6 +390,7 @@ Ung.Reports = Ext.extend(Object,
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
                                                             if (exception) {
+                                                              handleTimeout(exception);
                                                               Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
                                                             }
                                                             rpc.applicationData=result;
@@ -418,6 +424,7 @@ Ung.Reports = Ext.extend(Object,
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
                                                             if (exception) {
+                                                              handleTimeout(exception);
                                                               Ext.MessageBox.alert(i18n._("Failed"),exception.message);
                                                               return;
                                                             }
@@ -857,6 +864,7 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                    rpc.reportingManager.getDetailData(function(result, exception) {
                                                                         if (exception) {
+                                                                          handleTimeout(exception);
                                                                           Ext.MessageBox.alert("Failed", exception.message);
                                                                           return;
                                                                         };
