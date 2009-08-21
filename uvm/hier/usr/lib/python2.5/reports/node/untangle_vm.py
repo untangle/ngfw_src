@@ -70,7 +70,7 @@ class UvmNode(Node):
                         Column('uid', 'text'),
                         Column('client_intf', 'smallint'),
                         Column('c_server_port', 'int4'),
-                        Column('c_client_port', 'int4')],      
+                        Column('c_client_port', 'int4')],
                         [Column('new_sessions', 'bigint', 'count(*)'),
                         Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
@@ -617,7 +617,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             lks.append(ks)
 
             ks_query = """\
-SELECT coalesce(sum(s2c_bytes + c2s_bytes), 0) / (60 * %s) AS avg_rate,
+SELECT coalesce(sum(s2c_bytes + c2s_bytes), 0) / %s AS avg_rate,
        coalesce(sum(s2c_bytes + c2s_bytes), 0) AS total
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
