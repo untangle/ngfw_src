@@ -1,4 +1,4 @@
-from untangle.ats.reports_setup import ReportsSetup
+from untangle.ats.reports_setup import ReportsSetup, PipelineEndpoint, PipelineStats
 from untangle.ats.reports_setup import QueryString
 
 import datetime
@@ -8,49 +8,49 @@ class TestReportsBasic(ReportsSetup):
     def setup_class( cls ):
         ReportsSetup.setup_class.im_func(cls)
         cls.create_session_event()
-        cls.create_session_event(pl_endp = { "c_server_port" : ReportsSetup.DEFAULT_SERVER_PORT + 1 })
-        cls.create_session_event(pl_endp = { "c_server_port" : ReportsSetup.DEFAULT_SERVER_PORT + 2 })
-        cls.create_session_event(pl_endp = { "c_client_addr" : "10.0.0.1" })
-        cls.create_session_event(pl_endp = { "c_client_addr" : "10.0.0.2" })
-        cls.create_session_event(pl_endp = { "s_client_addr" : "10.0.0.2" })
+        cls.create_session_event(PipelineEndpoint( c_server_port = ReportsSetup.DEFAULT_SERVER_PORT + 1 ))
+        cls.create_session_event(PipelineEndpoint( c_server_port = ReportsSetup.DEFAULT_SERVER_PORT + 2 ))
+        cls.create_session_event(PipelineEndpoint( c_client_addr = "10.0.0.1" ))
+        cls.create_session_event(PipelineEndpoint( c_client_addr = "10.0.0.2" ))
+        cls.create_session_event(PipelineEndpoint( s_client_addr = "10.0.0.2" ))
 
         timestamp = datetime.datetime.now().replace( hour = 3, minute = 10 ) - datetime.timedelta( days = 1 )
         end_timestamp = timestamp + datetime.timedelta( minutes = 2 )
-        cls.create_session_event(pl_endp = { "time_stamp" : QueryString("TIMESTAMP '%s'" % timestamp )},
-                                 pl_stats = { "time_stamp" : QueryString("TIMESTAMP '%s'" % end_timestamp )})
+        cls.create_session_event(PipelineEndpoint( time_stamp = timestamp ),
+                                 PipelineStats( time_stamp = end_timestamp ))
         
         timestamp = timestamp.replace( hour = 3, minute = 11 )
         end_timestamp = timestamp + datetime.timedelta( minutes = 2 )
-        cls.create_session_event(pl_endp = { "time_stamp" : QueryString("TIMESTAMP '%s'" % timestamp )},
-                                 pl_stats = { "time_stamp" : QueryString("TIMESTAMP '%s'" % end_timestamp )})
+        cls.create_session_event(PipelineEndpoint( time_stamp = timestamp ),
+                                 PipelineStats( time_stamp = end_timestamp ))
 
         timestamp = timestamp.replace( hour = 3, minute = 11, second = ((timestamp.second + 1 ) % 60))
         end_timestamp = timestamp + datetime.timedelta( minutes = 2 )
-        cls.create_session_event(pl_endp = { "time_stamp" : QueryString("TIMESTAMP '%s'" % timestamp )},
-                                 pl_stats = { "time_stamp" : QueryString("TIMESTAMP '%s'" % end_timestamp )})
+        cls.create_session_event(PipelineEndpoint( time_stamp = timestamp ),
+                                 PipelineStats( time_stamp = end_timestamp ))
 
         timestamp = timestamp.replace( hour = 3, minute = 14 )
         end_timestamp = timestamp + datetime.timedelta( minutes = 2 )
-        cls.create_session_event(pl_endp = { "time_stamp" : QueryString("TIMESTAMP '%s'" % timestamp )},
-                                 pl_stats = { "time_stamp" : QueryString("TIMESTAMP '%s'" % end_timestamp )})
+        cls.create_session_event(PipelineEndpoint( time_stamp = timestamp ),
+                                 PipelineStats( time_stamp = end_timestamp ))
 
         ## This one should not be in todays report
         timestamp = timestamp.replace( hour = 3, minute = 14 ) - datetime.timedelta( days = 2 )
         end_timestamp = timestamp + datetime.timedelta( minutes = 2 )
-        cls.create_session_event(pl_endp = { "time_stamp" : QueryString("TIMESTAMP '%s'" % timestamp )},
-                                 pl_stats = { "time_stamp" : QueryString("TIMESTAMP '%s'" % end_timestamp )})
+        cls.create_session_event(PipelineEndpoint( time_stamp = timestamp ),
+                                 PipelineStats( time_stamp = end_timestamp ))
 
         ## This one should be pruned
         timestamp = timestamp - datetime.timedelta( days = 40 )
         end_timestamp = timestamp + datetime.timedelta( minutes = 2 )
-        cls.create_session_event(pl_endp = { "time_stamp" : QueryString("TIMESTAMP '%s'" % timestamp )},
-                                 pl_stats = { "time_stamp" : QueryString("TIMESTAMP '%s'" % end_timestamp )})
+        cls.create_session_event(PipelineEndpoint( time_stamp = timestamp ),
+                                 PipelineStats( time_stamp = end_timestamp ))
 
         ## This one should not be in this report (it occurs today.)
         timestamp = datetime.datetime.now()
         end_timestamp = timestamp + datetime.timedelta( minutes = 2 )
-        cls.create_session_event(pl_endp = { "time_stamp" : QueryString("TIMESTAMP '%s'" % timestamp )},
-                                 pl_stats = { "time_stamp" : QueryString("TIMESTAMP '%s'" % end_timestamp )})
+        cls.create_session_event(PipelineEndpoint( time_stamp = timestamp ),
+                                 PipelineStats( time_stamp = end_timestamp ))
 
         
         cls.run_reports()
