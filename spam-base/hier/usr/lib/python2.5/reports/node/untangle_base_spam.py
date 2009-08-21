@@ -303,18 +303,18 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 
             if email:
                 plot_query = """\
-SELECT (date_part('hour', trunc_time) || date_part('minute'))::time AS time,
-       sum(msgs)::int / %%d AS msgs,
-       sum(%s_spam_msgs)::int / %%d AS %s_spam_msgs
+SELECT (date_part('hour', trunc_time) || ':' || date_part('minute', trunc_time))::time AS time,
+       sum(msgs)::int / (%%d * 60) AS msgs,
+       sum(%s_spam_msgs)::int / (%%d * 60) AS %s_spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
 ORDER BY time asc""" % (2 * (self.__short_name,))
             else:
                 plot_query = """\
-SELECT (date_part('hour', trunc_time) ||  || date_part('minute'))::time AS time,
-       sum(msgs)::int / %%d AS msgs,
-       sum(%s_spam_msgs)::int / %%d AS %s_spam_msgs
+SELECT (date_part('hour', trunc_time) || ':' || date_part('minute', trunc_time))::time AS time,
+       sum(msgs)::int / (%%d * 60) AS msgs,
+       sum(%s_spam_msgs)::int / (%%d * 60) AS %s_spam_msgs
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
@@ -350,8 +350,10 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
                      major_formatter=TIME_OF_DAY_FORMATTER,
                      required_points=sql_helper.REQUIRED_TIME_POINTS)
 
-        plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label))
-        plot.add_dataset(dates, ham, gettext.gettext(self.__ham_label))
+        plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label),
+                         color=colors.badness)
+        plot.add_dataset(dates, ham, gettext.gettext(self.__ham_label),
+                         color=colors.goodness)
 
         return (lks, plot)
 
