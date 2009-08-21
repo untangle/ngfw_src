@@ -17,6 +17,7 @@
 import gettext
 import logging
 import mx
+import reports.colors as colors
 import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
@@ -222,15 +223,17 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
             ks = KeyStatistic(_('total (7-day)'), total, _('total (7 day)'))
             lks.append(ks)
-            ks = KeyStatistic(self.__spam_label, spam, self.__spam_label)
+            ks = KeyStatistic(self.__spam_label, spam, _('messages'))
             lks.append(ks)
-            ks = KeyStatistic(self.__spam_label, ham, self.__ham_label)
+            ks = KeyStatistic(self.__ham_label, ham, _('messages'))
             lks.append(ks)
 
             plot = Chart(type=PIE_CHART, title=self.title)
 
             plot.add_pie_dataset({ self.__spam_label: spam,
-                                   self.__ham_label: ham })
+                                   self.__ham_label: ham },
+                                 colors={ self.__ham_label: colors.goodness,
+                                          self.__spam_label: colors.badness})
         finally:
             conn.commit()
 
@@ -300,7 +303,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 
             if email:
                 plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
+SELECT (date_part('hour', trunc_time) || date_part('minute'))::time AS time,
        sum(msgs)::int / %%d AS msgs,
        sum(%s_spam_msgs)::int / %%d AS %s_spam_msgs
 FROM reports.n_mail_addr_totals
@@ -309,7 +312,7 @@ GROUP BY time
 ORDER BY time asc""" % (2 * (self.__short_name,))
             else:
                 plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
+SELECT (date_part('hour', trunc_time) ||  || date_part('minute'))::time AS time,
        sum(msgs)::int / %%d AS msgs,
        sum(%s_spam_msgs)::int / %%d AS %s_spam_msgs
 FROM reports.n_mail_msg_totals
