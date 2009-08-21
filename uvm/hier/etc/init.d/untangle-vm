@@ -155,6 +155,7 @@ case "$1" in
 
     stop)
         log_daemon_msg "Stopping $DESC"
+	$MONIT unmonitor all
 
         if [ ! -f ${UVM_RUNDIR}/${UVM_PID} ] ; then
             echo "Not Running."
