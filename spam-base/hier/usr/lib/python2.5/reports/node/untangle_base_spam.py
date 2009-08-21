@@ -470,8 +470,10 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
                      major_formatter=DATE_FORMATTER,
                      required_points=rp)
 
-        plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label))
-        plot.add_dataset(dates, ham, gettext.gettext(self.__ham_label))
+        plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label),
+                         color=colors.badness)
+        plot.add_dataset(dates, ham, gettext.gettext(self.__ham_label),
+                         color=colors.goodness)
 
         return (lks, plot)
 
