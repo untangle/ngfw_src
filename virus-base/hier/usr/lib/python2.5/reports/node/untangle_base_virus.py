@@ -383,7 +383,7 @@ ORDER BY time asc"""
                                             mx.DateTime.DateTimeDelta(1))
 
         plot = Chart(type=STACKED_BAR_CHART,
-                     title=_('Daily Virus Blocked'),
+                     title=self.title,
                      xlabel=_('Day'),
                      ylabel=_('viruses/day'),
                      major_formatter=DATE_FORMATTER,
@@ -538,7 +538,7 @@ ORDER BY time asc"""
             blocks.append(blocks_by_date[k])
 
         plot = Chart(type=TIME_SERIES_CHART,
-                     title=_('Hourly Virus Blocked'),
+                     title=self.title,
                      xlabel=_('hour'),
                      ylabel=_('viruses/hour'),
                      major_formatter=TIME_OF_DAY_FORMATTER,
@@ -601,7 +601,7 @@ ORDER BY virus_%s_detected DESC
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Web Viruses Detected'),
+                     title=self.title,
                      xlabel=_('name'),
                      ylabel=_('count'))
 
