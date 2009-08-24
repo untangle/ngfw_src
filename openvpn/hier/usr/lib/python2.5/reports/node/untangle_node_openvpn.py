@@ -229,17 +229,17 @@ LIMIT 10"""
 
 class OpenVpnDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', _('Incident Report'))
+        DetailSection.__init__(self, 'login-events', _('Login Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if host or user or email:
             return None
 
-        rv = [ColumnDesc('trunc_time', _('Time'), 'Time')]
+        rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
 
-        rv = rv + [ColumnDesc('client_name', _('Client'), 'Client')]
-        rv = rv + [ColumnDesc('remote_address', _('Address'), 'Address')]
-        rv = rv + [ColumnDesc('remote_port', _('Port'), 'Port')]
+        rv = rv + [ColumnDesc('client_name', _('Client'))]
+        rv = rv + [ColumnDesc('remote_address', _('Address'))]
+        rv = rv + [ColumnDesc('remote_port', _('Port'))]
 
         return rv
 
@@ -251,7 +251,7 @@ class OpenVpnDetail(DetailSection):
 
         sql = sql + ("""
 FROM reports.n_openvpn_connect_totals
-WHERE time_stamp >= %s AND time_stamp < %s""" % (DateFromMx(start_date),
+WHERE trunc_time >= %s AND trunc_time < %s""" % (DateFromMx(start_date),
                                                  DateFromMx(end_date)))
 
 reports.engine.register_node(OpenVpn())

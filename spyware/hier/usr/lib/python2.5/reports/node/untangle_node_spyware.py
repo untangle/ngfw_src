@@ -922,7 +922,7 @@ GROUP BY day ORDER BY day ASC"""
 
 class CookieDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'cookie-incidents', _('Cookie Incidents'))
+        DetailSection.__init__(self, 'cookie-events', _('Cookie Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -966,7 +966,7 @@ WHERE time_stamp >= %s AND time_stamp < %s
 
 class UrlBlockDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'url-incidents', _('URL Blocklist Incidents'))
+        DetailSection.__init__(self, 'url-events', _('URL Blocklist Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -1011,7 +1011,7 @@ WHERE time_stamp >= %s AND time_stamp < %s AND sw_blacklisted
 
 class SubnetDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'subnet-incidents', _('Subnet Incidents'))
+        DetailSection.__init__(self, 'subnet-events', _('Subnet Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -1029,7 +1029,7 @@ class SubnetDetail(DetailSection):
         else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('sw_blacklisted', _('Action')),
+        rv += [ColumnDesc('sw_blacklisted', _('Subnet')),
                ColumnDesc('c_server_addr', _('Server IP')),
                ColumnDesc('c_server_port', _('Server Port'))]
 

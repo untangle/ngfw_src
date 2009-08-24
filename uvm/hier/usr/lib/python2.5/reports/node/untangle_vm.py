@@ -916,7 +916,7 @@ class Lease:
 
 class AdministrativeLoginsDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'admin-logins-incidents', _('Administrative Logins Incidents'))
+        DetailSection.__init__(self, 'admin-logins-events', _('Administrative Logins Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:

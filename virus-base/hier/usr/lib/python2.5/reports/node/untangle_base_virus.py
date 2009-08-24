@@ -753,8 +753,8 @@ ORDER BY sum DESC""" % self.__vendor_name
 
 class VirusWebDetail(DetailSection):
     def __init__(self, vendor_name):
-        DetailSection.__init__(self, 'web-incidents',
-                                       _('Web Incidents'))
+        DetailSection.__init__(self, 'web-events',
+                                       _('Web events'))
         self.__vendor_name = vendor_name
 
     def get_columns(self, host=None, user=None, email=None):
@@ -796,8 +796,8 @@ WHERE time_stamp >= %s AND time_stamp < %s AND NOT virus_%s_clean
 
 class VirusMailDetail(DetailSection):
     def __init__(self, vendor_name):
-        DetailSection.__init__(self, 'mail-incidents',
-                                       _('Mail Incidents'))
+        DetailSection.__init__(self, 'mail-events',
+                                       _('Mail Events'))
         self.__vendor_name = vendor_name
 
     def get_columns(self, host=None, user=None, email=None):

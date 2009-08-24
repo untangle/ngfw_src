@@ -307,7 +307,7 @@ AND ips_name != ''"""
 
 class IpsDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', _('Incident Report'))
+        DetailSection.__init__(self, 'attack-events', _('Attack Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -320,10 +320,10 @@ class IpsDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('ips_name', _('SID:description'), 'SID:description'),
-                   ColumnDesc('ips_blocked', _('Blocked'), 'Blocked'),
-                   ColumnDesc('c_server_addr', _('Server'), 'Server'),
-                   ColumnDesc('c_server_port', _('Port'), 'Port')]
+        rv = rv + [ColumnDesc('ips_name', _('SID:description')),
+                   ColumnDesc('ips_blocked', _('Blocked')),
+                   ColumnDesc('c_server_addr', _('Server')),
+                   ColumnDesc('c_server_port', _('Port'))]
 
         return rv
 

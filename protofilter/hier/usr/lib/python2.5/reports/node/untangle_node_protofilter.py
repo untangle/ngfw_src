@@ -597,7 +597,7 @@ AND pf_protocol != ''"""
 
 class ProtofilterDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', _('Incident Report'))
+        DetailSection.__init__(self, 'detection-events', _('Detection Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -610,10 +610,10 @@ class ProtofilterDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('pf_protocol', _('Protocol'), 'Protocol'),
-                   ColumnDesc('pf_blocked', _('Action'), 'Action'),
-                   ColumnDesc('c_server_addr', _('Server'), 'Server'),
-                   ColumnDesc('c_server_port', _('Port'), 'Port')]
+        rv = rv + [ColumnDesc('pf_protocol', _('Protocol')),
+                   ColumnDesc('pf_blocked', _('Action')),
+                   ColumnDesc('c_server_addr', _('Server')),
+                   ColumnDesc('c_server_port', _('Port'))]
 
         return rv
 

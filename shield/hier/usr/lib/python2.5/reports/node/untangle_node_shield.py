@@ -273,7 +273,7 @@ LIMIT 10"""
 class ShieldDetail(DetailSection):
 
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', _('Incident Report'))
+        DetailSection.__init__(self, 'attack-events', _('Attack Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if host or user or email:
@@ -281,7 +281,10 @@ class ShieldDetail(DetailSection):
 
         rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
 
-        rv = rv + [ColumnDesc('client_addr', _('Client'), 'Client')]
+        rv = rv + [ColumnDesc('client_addr', _('Client')),
+                   ColumnDesc('limited', _('Limited')),
+                   ColumnDesc('dropped', _('Dropped')),
+                   ColumnDesc('rejected', _('Rejected'))]
 
         return rv
 
@@ -291,7 +294,7 @@ class ShieldDetail(DetailSection):
 
         sql = "SELECT trunc_time, "
 
-        sql = sql + ("""client_addr
+        sql = sql + ("""client_addr, limited, dropped, rejected
 FROM reports.n_shield_rejection_totals
 WHERE trunc_time >= %s AND trunc_time < %s
       AND (limited + dropped + rejected) > 0""" % (DateFromMx(start_date),

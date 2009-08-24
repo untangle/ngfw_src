@@ -426,7 +426,7 @@ AND firewall_rule_index IS NOT NULL"""
 
 class FirewallDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'incidents', _('Incident Report'))
+        DetailSection.__init__(self, 'firewall-events', _('Firewall Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -439,12 +439,12 @@ class FirewallDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied'), 'Rule Applied'),
-                   ColumnDesc('firewall_was_blocked', _('Action'), 'Action'),
-                   ColumnDesc('c_server_addr', _('Source IP'), 'Source IP'),
-                   ColumnDesc('c_server_port', _('Source Port'), 'Source Port'),
-                   ColumnDesc('c_client_addr', _('Destination IP'), 'Destination IP'),
-                   ColumnDesc('c_client_port', _('Destination Port'), 'Destination Port')]
+        rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied')),
+                   ColumnDesc('firewall_was_blocked', _('Action')),
+                   ColumnDesc('c_server_addr', _('Source IP')),
+                   ColumnDesc('c_server_port', _('Source Port')),
+                   ColumnDesc('c_client_addr', _('Destination IP')),
+                   ColumnDesc('c_client_port', _('Destination Port'))]
 
         return rv
 

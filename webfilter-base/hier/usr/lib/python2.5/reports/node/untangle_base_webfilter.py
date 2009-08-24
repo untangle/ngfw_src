@@ -1,4 +1,4 @@
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
+## $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
 # Copyright (c) 2003-2009 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -93,6 +93,7 @@ class WebFilterBaseNode(Node):
         sections.append(s)
 
         sections.append(WebFilterDetail(self.__vendor_name))
+        sections.append(WebFilterDetailAll(self.__vendor_name))
 
         return Report(self.name, sections)
 
@@ -1034,7 +1035,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__vendor_name
 
 class WebFilterDetail(DetailSection):
     def __init__(self, vendor_name):
-        DetailSection.__init__(self, 'incidents', _('Incident Report'))
+        DetailSection.__init__(self, 'violations', _('Violation events'))
 
         self.__vendor_name = vendor_name
 
@@ -1074,6 +1075,54 @@ WHERE time_stamp >= %s AND time_stamp < %s
                                         DateFromMx(start_date),
                                         DateFromMx(end_date),
                                         self.__vendor_name)
+
+        if host:
+            sql += " AND host = %s" % QuotedString(host)
+        if user:
+            sql += " AND host = %s" % QuotedString(user)
+
+        return sql
+
+class WebFilterDetailAll(DetailSection):
+    def __init__(self, vendor_name):
+        DetailSection.__init__(self, 'events', _('All events'))
+
+        self.__vendor_name = vendor_name
+
+    def get_columns(self, host=None, user=None, email=None):
+        if email:
+            return None
+
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
+
+        if host:
+            rv.append(ColumnDesc('hname', _('Client')))
+        else:
+            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+
+        if user:
+            rv.append(ColumnDesc('uid', _('User')))
+        else:
+            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+
+        rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
+               ColumnDesc('url', _('URL'), 'URL'),
+               ColumnDesc('s_server_addr', _('Server IP')),
+               ColumnDesc('c_client_addr', _('Client IP'))]
+
+        return rv
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        if email:
+            return None
+
+        sql = """\
+SELECT time_stamp, hname, uid, wf_%s_category, 'http://' || host || uri,
+       s_server_addr, c_client_addr
+FROM reports.n_http_events
+WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
+                                                 DateFromMx(start_date),
+                                                 DateFromMx(end_date))
 
         if host:
             sql += " AND host = %s" % QuotedString(host)
