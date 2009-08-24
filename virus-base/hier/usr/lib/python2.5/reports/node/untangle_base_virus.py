@@ -690,7 +690,8 @@ class TopVirusesDetected(Graph):
 
         avg_max_query = """\
 SELECT name, sum(sum)
-FROM (SELECT virus_%s_name AS name, sum(virus_%s_detected)
+FROM (SELECT virus_%s_name AS name,
+             COALESCE(sum(virus_%s_detected), 0)::int
       FROM reports.n_virus_mail_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s AND virus_%s_detected > 0
 """ % (3 * (self.__vendor_name,))
@@ -704,7 +705,8 @@ FROM (SELECT virus_%s_name AS name, sum(virus_%s_detected)
 
       UNION
 
-      SELECT virus_%s_name AS name, sum(virus_%s_detected)
+      SELECT virus_%s_name AS name,
+             COALESCE(sum(virus_%s_detected), 0)::int
       FROM reports.n_virus_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s AND virus_%s_detected > 0
 """ % (4 * (self.__vendor_name,))
