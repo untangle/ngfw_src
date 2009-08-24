@@ -28,7 +28,7 @@ import time
 from sets import Set
 from psycopg import DateFromMx
 
-REQUIRED_TIME_POINTS = [mx.DateTime.Time(seconds = s) for s in range(0, 24 * 60 * 60, 30 * 60)]
+REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 30 * 60)]
 
 def print_timing(func):
     def wrapper(*arg):

@@ -172,7 +172,7 @@ ORDER BY time"""
             curs.execute(plot_query, (one_week, ed))
 
             for r in curs.fetchall():
-                dates.append(r[0])
+                dates.append(r[0].seconds)
                 throughput.append(r[1])
 
             plot.add_dataset(dates, throughput, _('Usage (KB/sec)'))

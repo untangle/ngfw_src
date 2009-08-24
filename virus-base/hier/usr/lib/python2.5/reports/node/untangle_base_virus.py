@@ -534,7 +534,7 @@ ORDER BY time asc"""
         date_list = blocks_by_date.keys()
         date_list.sort()
         for k in date_list:
-            dates.append(k)
+            dates.append(k.seconds)
             blocks.append(blocks_by_date[k])
 
         plot = Chart(type=TIME_SERIES_CHART,

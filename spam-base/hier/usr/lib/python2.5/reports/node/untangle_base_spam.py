@@ -334,7 +334,7 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
                                           ed))
 
             for r in curs.fetchall():
-                dates.append(r[0])
+                dates.append(r[0].seconds)
                 m = r[1]
                 s = r[2]
                 h = m - s

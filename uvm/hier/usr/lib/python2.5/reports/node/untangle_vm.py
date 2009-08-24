@@ -680,7 +680,7 @@ ORDER BY time asc"""
                 curs.execute(plot_query, (one_week, ed))
 
             for r in curs.fetchall():
-                dates.append(r[0])
+                dates.append(r[0].seconds)
                 throughput.append(r[1])
         finally:
             conn.commit()
@@ -804,7 +804,7 @@ ORDER BY time asc"""
                 curs.execute(plot_query, (report_days, one_week, ed))
 
             for r in curs.fetchall():
-                dates.append(r[0])
+                dates.append(r[0].seconds)
                 num_sessions.append(r[1])
         finally:
             conn.commit()

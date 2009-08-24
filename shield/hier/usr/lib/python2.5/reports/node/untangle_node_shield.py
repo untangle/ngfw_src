@@ -155,7 +155,7 @@ ORDER BY time asc"""
             blocked = []
 
             for r in curs.fetchall():
-                times.append(r[0])
+                times.append(r[0].seconds)
                 accepted.append(r[1])
                 limited.append(r[2])
                 blocked.append(r[3])
