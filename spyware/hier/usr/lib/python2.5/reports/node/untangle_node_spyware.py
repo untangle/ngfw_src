@@ -228,7 +228,8 @@ class HourlyRates(Graph):
         ed = DateFromMx(end_date)
 
         url_query = """\
-SELECT avg(sw_blacklisted) AS sw_blacklisted, avg(sw_cookies) AS sw_cookies
+SELECT COALESCE(sum(sw_blacklisted), 0)::int / %s AS sw_blacklisted,
+       COALESCE(sum(sw_cookies), 0)::int / %s AS sw_cookies
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -244,11 +245,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
 
                 if host:
-                    curs.execute(url_query, (sd, ed, host))
+                    curs.execute(url_query, (report_days, report_days, sd, ed, host))
                 elif user:
-                    curs.execute(url_query, (sd, ed, user))
+                    curs.execute(url_query, (report_days, report_days, sd, ed, user))
                 else:
-                    curs.execute(url_query, (sd, ed))
+                    curs.execute(url_query, (report_days, report_days, sd, ed))
 
                 r = curs.fetchone()
                 ks = KeyStatistic(_('avg URLs blocked (%s-day)' % n), r[0],
@@ -259,7 +260,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 lks.append(ks)
 
             sessions_query = """\
-SELECT avg(sw_accesses) AS sw_accesses
+SELECT COALESCE(avg(sw_accesses), 0)::int / %s AS sw_accesses
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -274,11 +275,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
 
                 if host:
-                    curs.execute(url_query, (sd, ed, host))
+                    curs.execute(sessions_query, (report_days, sd, ed, host))
                 elif user:
-                    curs.execute(url_query, (sd, ed, user))
+                    curs.execute(sessions_query, (report_days, sd, ed, user))
                 else:
-                    curs.execute(url_query, (sd, ed))
+                    curs.execute(sessions_query, (report_days, sd, ed))
                 r = curs.fetchone()
                 ks = KeyStatistic(_('avg suspicious detected (%s-day)' % n), r[0],
                                   _('detected/hour'))
