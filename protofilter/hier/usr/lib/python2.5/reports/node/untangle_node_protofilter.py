@@ -136,10 +136,11 @@ class DailyUsage(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT max(detections), avg(detections)
+SELECT COALESCE(max(detections), 0)::int,
+       COALESCE(sum(detections), 0)::int / report_days
 FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
       FROM reports.session_totals
       WHERE trunc_time >= %s AND trunc_time < %s
@@ -159,17 +160,17 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             r = curs.fetchone()
-            ks = KeyStatistic(_('max detections (7-days)'), r[0],
+            ks = KeyStatistic(_('max detections (%s-days)') % report_days, r[0],
                               _('detections/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg detections (7-days)'), r[1],
+            ks = KeyStatistic(_('avg detections (%s-days)') % report_days, r[1],
                               _('detections/day'))
             lks.append(ks)
         finally:
