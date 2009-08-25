@@ -415,7 +415,8 @@ class HourlyVirusesBlocked(Graph):
 SELECT avg(viruses_%s_blocked), max(viruses_%s_blocked)
 FROM ((""" % (2 * (self.__vendor_name,))
 
-        # if you add a reports table you should also update the tuple in execute below
+        # if you add a reports table you should also update the tuple
+        # in execute below
         avg_max_query += """\
 SELECT date_trunc('hour', trunc_time) AS day,
        sum(viruses_%s_blocked) AS viruses_%s_blocked
@@ -475,14 +476,14 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
         try:
             q = """\
 SELECT date_trunc('hour', trunc_time)::time AS time,
-       sum(viruses_"""+self.__vendor_name+"""_blocked) / %s as viruses_"""+self.__vendor_name+"""_blocked
+       sum(viruses_%s_blocked) / %%s as viruses_%s_blocked
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
-                q = q + " AND hname = %s"
+                q += " AND hname = %s"
             elif user:
-                q = q + " AND uid = %s"
-            q = q + """
+                q += " AND uid = %s"
+            q += """
 GROUP BY time
 ORDER BY time asc"""
 
@@ -506,14 +507,14 @@ ORDER BY time asc"""
 
             q = """\
 SELECT date_trunc('hour', trunc_time)::time AS time,
-       sum(viruses_"""+self.__vendor_name+"""_blocked) / %s as viruses_"""+self.__vendor_name+"""_blocked
+       sum(viruses_%s_blocked) / %%s as viruses_%s_blocked
 FROM reports.n_mail_msg_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
-                q = q + " AND hname = %s"
+                q += " AND hname = %s"
             elif user:
-                q = q + " AND uid = %s"
-            q = q + """
+                q += " AND uid = %s"
+            q += """
 GROUP BY time
 ORDER BY time asc"""
 
@@ -532,7 +533,7 @@ ORDER BY time asc"""
                     break
 
                 if blocks_by_date.has_key(r[0]):
-                    blocks_by_date[r[0]] =  blocks_by_date[r[0]]+r[1]
+                    blocks_by_date[r[0]] += r[1]
                 else:
                     blocks_by_date[r[0]] = r[1]
         finally:
@@ -558,14 +559,14 @@ ORDER BY time asc"""
 
         return plot
 
-
 class TopWebVirusesDetected(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-web-viruses-detected', _('Top Web Viruses Detected'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
-    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
@@ -617,7 +618,6 @@ ORDER BY virus_%s_detected DESC
         plot.add_pie_dataset(dataset)
 
         return (lks, plot)
-
 
 class TopEmailVirusesDetected(Graph):
     def __init__(self, vendor_name):
@@ -673,9 +673,7 @@ LIMIT 10""" % (2 * (self.__vendor_name,))
         finally:
             conn.commit()
 
-        plot = Chart(type=PIE_CHART,
-                     title=self.title,
-                     xlabel=_('Viruses'),
+        plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Viruses'),
                      ylabel=_('Count'))
 
         plot.add_pie_dataset(dataset)

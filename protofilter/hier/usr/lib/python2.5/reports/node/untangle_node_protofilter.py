@@ -259,7 +259,7 @@ class TopTenBlockedProtocolsByHits(Graph):
 SELECT pf_protocol, count(*) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
-AND pf_blocks > 0
+AND NOT pf_protocol IS NULL
 AND pf_protocol != ''"""
 
         if host:
@@ -378,7 +378,7 @@ class TopTenBlockedHostsByHits(Graph):
 SELECT hname, count(*) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
-AND pf_blocks > 0
+AND NOT pf_protocol IS NULL
 AND pf_protocol != ''"""
 
         if host:
@@ -497,7 +497,7 @@ SELECT uid, count(*) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND uid != ''
-AND pf_blocks > 0
+AND NOT pf_protocol IS NULL
 AND pf_protocol != ''"""
 
         if host:
