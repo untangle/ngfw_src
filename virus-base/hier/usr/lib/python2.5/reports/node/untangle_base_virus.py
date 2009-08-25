@@ -248,34 +248,39 @@ class DailyVirusesBlocked(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
-        avg_max_query = """SELECT avg(viruses_"""+self.__vendor_name+"""_blocked), max(viruses_"""+self.__vendor_name+"""_blocked) FROM (("""
+        avg_max_query = """\
+SELECT avg(viruses_%s_blocked), max(viruses_%s_blocked)
+FROM ((""" % (2 * (self.__vendor_name,))
 
-        #if you add a reports table you should also update the tuple in execute below
-        avg_max_query = avg_max_query + """\
-select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+"""_blocked) AS viruses_"""+self.__vendor_name+"""_blocked
-      FROM reports.n_http_totals
-      WHERE trunc_time >= %s AND trunc_time < %s"""
-
-        if host:
-            avg_max_query = avg_max_query + " AND hname = %s"
-        elif user:
-            avg_max_query = avg_max_query + " AND uid = %s"
-
-        avg_max_query = avg_max_query + " GROUP BY day)"
-        avg_max_query = avg_max_query + " UNION ("
-
-        avg_max_query = avg_max_query + """\
-select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+"""_blocked) AS viruses_"""+self.__vendor_name+"""_blocked
-      FROM reports.n_mail_msg_totals
-      WHERE trunc_time >= %s AND trunc_time < %s"""
+        # if you add a reports table you should also update the tuple
+        # in execute below
+        avg_max_query += """\
+SELECT date_trunc('day', trunc_time) AS day,
+       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses_%s_blocked
+FROM reports.n_http_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
 
         if host:
-            avg_max_query = avg_max_query + " AND hname = %s"
+            avg_max_query += " AND hname = %s"
         elif user:
-            avg_max_query = avg_max_query + " AND uid = %s"
+            avg_max_query += " AND uid = %s"
 
-        avg_max_query = avg_max_query + " GROUP BY day)) AS foo"
+        avg_max_query += """
+GROUP BY day)
 
+UNION (
+
+SELECT date_trunc('day', trunc_time) AS day,
+       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses_%s_blocked
+FROM reports.n_mail_msg_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
+
+        if host:
+            avg_max_query += " AND hname = %s"
+        elif user:
+            avg_max_query += " AND uid = %s"
+
+        avg_max_query += " GROUP BY day)) AS foo"
 
         conn = sql_helper.get_connection()
         try:
@@ -308,14 +313,14 @@ select date_trunc('day', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+
         try:
             q = """\
 SELECT date_trunc('day', trunc_time) AS time,
-       sum(viruses_"""+self.__vendor_name+"""_blocked) as viruses_"""+self.__vendor_name+"""_blocked
+       sum(viruses_%s_blocked) as viruses_%s_blocked
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
-                q = q + " AND hname = %s"
+                q += " AND hname = %s"
             elif user:
-                q = q + " AND uid = %s"
-            q = q + """
+                q += " AND uid = %s"
+            q += """
 GROUP BY time
 ORDER BY time asc"""
 
@@ -339,14 +344,14 @@ ORDER BY time asc"""
 
             q = """\
 SELECT date_trunc('day', trunc_time) AS time,
-       sum(viruses_"""+self.__vendor_name+"""_blocked) as viruses_"""+self.__vendor_name+"""_blocked
+       sum(viruses_%s_blocked) as viruses_%s_blocked
 FROM reports.n_mail_msg_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
-                q = q + " AND hname = %s"
+                q += " AND hname = %s"
             elif user:
-                q = q + " AND uid = %s"
-            q = q + """
+                q += " AND uid = %s"
+            q += """
 GROUP BY time
 ORDER BY time asc"""
 
@@ -365,7 +370,7 @@ ORDER BY time asc"""
                     break
 
                 if blocks_by_date.has_key(r[0]):
-                    blocks_by_date[r[0]] =  blocks_by_date[r[0]]+r[1]
+                    blocks_by_date[r[0]] += r[1]
                 else:
                     blocks_by_date[r[0]] = r[1]
         finally:
