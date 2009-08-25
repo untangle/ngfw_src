@@ -411,34 +411,38 @@ class HourlyVirusesBlocked(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
-        avg_max_query = """SELECT avg(viruses_"""+self.__vendor_name+"""_blocked), max(viruses_"""+self.__vendor_name+"""_blocked) FROM (("""
+        avg_max_query = """
+SELECT avg(viruses_%s_blocked), max(viruses_%s_blocked)
+FROM ((""" % (2 * (self.__vendor_name,))
 
-        #if you add a reports table you should also update the tuple in execute below
-        avg_max_query = avg_max_query + """\
-select date_trunc('hour', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+"""_blocked) AS viruses_"""+self.__vendor_name+"""_blocked
-      FROM reports.n_http_totals
-      WHERE trunc_time >= %s AND trunc_time < %s"""
-
-        if host:
-            avg_max_query = avg_max_query + " AND hname = %s"
-        elif user:
-            avg_max_query = avg_max_query + " AND uid = %s"
-
-        avg_max_query = avg_max_query + " GROUP BY day)"
-        avg_max_query = avg_max_query + " UNION ("
-
-        avg_max_query = avg_max_query + """\
-select date_trunc('hour', trunc_time) AS day, sum(viruses_"""+self.__vendor_name+"""_blocked) AS viruses_"""+self.__vendor_name+"""_blocked
-      FROM reports.n_mail_msg_totals
-      WHERE trunc_time >= %s AND trunc_time < %s"""
+        # if you add a reports table you should also update the tuple in execute below
+        avg_max_query += """\
+SELECT date_trunc('hour', trunc_time) AS day,
+       sum(viruses_%s_blocked) AS viruses_%s_blocked
+FROM reports.n_http_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
 
         if host:
-            avg_max_query = avg_max_query + " AND hname = %s"
+            avg_max_query += " AND hname = %s"
         elif user:
-            avg_max_query = avg_max_query + " AND uid = %s"
+            avg_max_query += " AND uid = %s"
 
-        avg_max_query = avg_max_query + " GROUP BY day)) AS foo"
+        avg_max_query += """
+GROUP BY day)
 
+UNION (
+
+SELECT date_trunc('hour', trunc_time) AS day,
+       sum(viruses_%s_blocked) AS viruses_%s_blocked
+FROM reports.n_mail_msg_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
+
+        if host:
+            avg_max_query += " AND hname = %s"
+        elif user:
+            avg_max_query += " AND uid = %s"
+
+        avg_max_query += " GROUP BY day)) AS foo"
 
         conn = sql_helper.get_connection()
         try:
@@ -547,7 +551,7 @@ ORDER BY time asc"""
                      xlabel=_('hour'),
                      ylabel=_('viruses/hour'),
                      major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=sql_helper.REQUIRED_TIME_POINTS)
+                     required_points=sql_helper.HOURLY_REQUIRED_TIME_POINTS)
 
         plot.add_dataset(dates, blocks, label=_('viruses blocked'),
                          color=colors.badness)
