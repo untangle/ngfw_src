@@ -29,6 +29,7 @@ from sets import Set
 from psycopg import DateFromMx
 
 REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 30 * 60)]
+HOURLY_REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 60 * 60)]
 
 def print_timing(func):
     def wrapper(*arg):

@@ -241,7 +241,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
 class HourlySpamRate(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
-        Graph.__init__(self, 'summary-hourly-%s-rate' % (short_name,), title)
+        Graph.__init__(self, 'hourly-%s-rate' % (short_name,), title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -303,18 +303,18 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 
             if email:
                 plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':' || date_part('minute', trunc_time))::time AS time,
-       sum(msgs)::int / (%%d * 60) AS msgs,
-       sum(%s_spam_msgs)::int / (%%d * 60) AS %s_spam_msgs
+SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
+       COALESCE(sum(msgs), 0) / %%d AS msgs,
+       COALESCE(sum(%s_spam_msgs), 0) / (%%d * 60) AS %s_spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
 ORDER BY time asc""" % (2 * (self.__short_name,))
             else:
                 plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':' || date_part('minute', trunc_time))::time AS time,
-       sum(msgs)::int / (%%d * 60) AS msgs,
-       sum(%s_spam_msgs)::int / (%%d * 60) AS %s_spam_msgs
+SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
+       COALESCE(sum(msgs), 0) / %%d AS msgs,
+       COALESCE(sum(%s_spam_msgs), 0) / %%d AS %s_spam_msgs
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY time
@@ -348,7 +348,7 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
                      xlabel=_('Hour of Day'),
                      ylabel=_('Emails per Hour'),
                      major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=sql_helper.REQUIRED_TIME_POINTS)
+                     required_points=sql_helper.HOURLY_REQUIRED_TIME_POINTS)
 
         plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label),
                          color=colors.badness)
@@ -359,7 +359,7 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
 
 class DailySpamRate(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
-        Graph.__init__(self, 'summary-daily-%s-rate' % (short_name,), title)
+        Graph.__init__(self, 'daily-%s-rate' % (short_name,), title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name
@@ -479,7 +479,7 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
 
 class TopSpammedUsers(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label, title):
-        Graph.__init__(self, 'summary-top-ten-%s-victims' % (short_name,), title)
+        Graph.__init__(self, 'top-ten-%s-victims' % (short_name,), title)
 
         self.__short_name = short_name
         self.__vendor_name = vendor_name

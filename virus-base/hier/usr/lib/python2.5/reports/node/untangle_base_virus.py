@@ -465,7 +465,7 @@ select date_trunc('hour', trunc_time) AS day, sum(viruses_"""+self.__vendor_name
         conn = sql_helper.get_connection()
         try:
             q = """\
-SELECT date_trunc('hour', trunc_time) AS time,
+SELECT date_trunc('hour', trunc_time)::time AS time,
        sum(viruses_"""+self.__vendor_name+"""_blocked) / %s as viruses_"""+self.__vendor_name+"""_blocked
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
@@ -496,7 +496,7 @@ ORDER BY time asc"""
                 blocks_by_date[r[0]] = r[1]
 
             q = """\
-SELECT date_trunc('hour', trunc_time) AS time,
+SELECT date_trunc('hour', trunc_time)::time AS time,
        sum(viruses_"""+self.__vendor_name+"""_blocked) / %s as viruses_"""+self.__vendor_name+"""_blocked
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
@@ -691,7 +691,7 @@ class TopVirusesDetected(Graph):
         avg_max_query = """\
 SELECT name, sum(sum)
 FROM (SELECT virus_%s_name AS name,
-             COALESCE(sum(virus_%s_detected), 0)::int
+             COALESCE(sum(virus_%s_detected), 0)::int AS sum
       FROM reports.n_virus_mail_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s AND virus_%s_detected > 0
 """ % (3 * (self.__vendor_name,))
@@ -706,7 +706,7 @@ FROM (SELECT virus_%s_name AS name,
       UNION
 
       SELECT virus_%s_name AS name,
-             COALESCE(sum(virus_%s_detected), 0)::int
+             COALESCE(sum(virus_%s_detected), 0)::int AS sum
       FROM reports.n_virus_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s AND virus_%s_detected > 0
 """ % (4 * (self.__vendor_name,))

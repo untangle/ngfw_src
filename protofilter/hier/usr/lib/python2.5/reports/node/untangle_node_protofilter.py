@@ -140,7 +140,7 @@ class DailyUsage(Graph):
 
         query = """\
 SELECT COALESCE(max(detections), 0)::int,
-       COALESCE(sum(detections), 0)::int / report_days
+       COALESCE(sum(detections), 0)::int / %s
 FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
       FROM reports.session_totals
       WHERE trunc_time >= %s AND trunc_time < %s
@@ -160,11 +160,11 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_week, ed, host))
+                curs.execute(query, (report_days, one_week, ed, host))
             elif user:
-                curs.execute(query, (one_week, ed, user))
+                curs.execute(query, (report_days, one_week, ed, user))
             else:
-                curs.execute(query, (one_week, ed))
+                curs.execute(query, (report_days, one_week, ed))
 
             r = curs.fetchone()
             ks = KeyStatistic(_('max detections (%s-days)') % report_days, r[0],
