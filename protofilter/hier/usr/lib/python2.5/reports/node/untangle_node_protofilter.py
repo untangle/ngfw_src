@@ -643,5 +643,4 @@ AND pf_protocol != ''""" % (DateFromMx(start_date),
 
         return sql
 
-
 reports.engine.register_node(Protofilter())
