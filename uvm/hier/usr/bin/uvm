@@ -209,6 +209,12 @@ while true; do
     cp -fa $UVM_GC_LOG.crash.1 $UVM_GC_LOG.crash.2
     cp -fa $UVM_GC_LOG.crash $UVM_GC_LOG.crash.1
     cp -fa $UVM_GC_LOG $UVM_GC_LOG.crash
+    cp -fa $MONIT_LOG.crash.1 $MONIT_LOG.crash.2
+    cp -fa $MONIT_LOG.crash $MONIT_LOG.crash.1
+    cp -fa $MONIT_LOG $MONIT_LOG.crash
+    cp -fa $PACKAGES_LOG.crash.1 $PACKAGES_LOG.crash.2
+    cp -fa $PACKAGES_LOG.crash $PACKAGES_LOG.crash.1
+    dpkg -l "untangle*" >| $PACKAGES_LOG.crash
 
     sleep 2
     echo "*** restarting on `date` ***" >> $UVM_WRAPPER_LOG
