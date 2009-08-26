@@ -926,7 +926,7 @@ class AdministrativeLoginsDetail(DetailSection):
 
         rv += [ColumnDesc('client', _('Server')),
                ColumnDesc('succeeded', _('URI')),
-               ColumnDesc('client_addr', _('Client IP'))]
+               ColumnDesc('client_addr', _('Client IP'), 'HostLink'))]
 
         return rv
 

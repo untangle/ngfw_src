@@ -556,7 +556,7 @@ class SpamDetail(DetailSection):
 
         rv += [ColumnDesc('score', _('Score')),
                ColumnDesc('subject', _('Subject')),
-               ColumnDesc('s_server_addr', _('Source IP')),
+               ColumnDesc('s_server_addr', _('Source IP'), 'HostLink')),
                ColumnDesc('action', _('Action')),
                ColumnDesc('receiver', _('Msg receiver'))]
 

@@ -942,7 +942,7 @@ class CookieDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('sw_cookie_ident', _('Cookie')),
-               ColumnDesc('s_server_addr', _('Server IP')),
+               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
@@ -987,7 +987,7 @@ class UrlBlockDetail(DetailSection):
 
         rv += [ColumnDesc('s_server', _('Server')),
                ColumnDesc('uri', _('URI')),
-               ColumnDesc('s_server_addr', _('Server IP')),
+               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
@@ -1031,7 +1031,7 @@ class SubnetDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('sw_blacklisted', _('Subnet')),
-               ColumnDesc('c_server_addr', _('Server IP')),
+               ColumnDesc('c_server_addr', _('Server IP'), 'HostLink')),
                ColumnDesc('c_server_port', _('Server Port'))]
 
         return rv

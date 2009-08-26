@@ -613,7 +613,7 @@ class ProtofilterDetail(DetailSection):
 
         rv = rv + [ColumnDesc('pf_protocol', _('Protocol')),
                    ColumnDesc('pf_blocked', _('Action')),
-                   ColumnDesc('c_server_addr', _('Server')),
+                   ColumnDesc('c_server_addr', _('Server'), 'HostLink')),
                    ColumnDesc('c_server_port', _('Port'))]
 
         return rv

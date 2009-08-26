@@ -281,7 +281,7 @@ class ShieldDetail(DetailSection):
 
         rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
 
-        rv = rv + [ColumnDesc('client_addr', _('Client')),
+        rv = rv + [ColumnDesc('client_addr', _('Client'), 'HostLink')),
                    ColumnDesc('limited', _('Limited')),
                    ColumnDesc('dropped', _('Dropped')),
                    ColumnDesc('rejected', _('Rejected'))]

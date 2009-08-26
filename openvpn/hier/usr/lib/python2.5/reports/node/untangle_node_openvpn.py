@@ -238,7 +238,7 @@ class OpenVpnDetail(DetailSection):
         rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
 
         rv = rv + [ColumnDesc('client_name', _('Client'))]
-        rv = rv + [ColumnDesc('remote_address', _('Address'))]
+        rv = rv + [ColumnDesc('remote_address', _('Address'), 'HostLink'))]
         rv = rv + [ColumnDesc('remote_port', _('Port'))]
 
         return rv
