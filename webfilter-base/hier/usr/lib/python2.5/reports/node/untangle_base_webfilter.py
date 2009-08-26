@@ -1057,8 +1057,8 @@ class WebFilterDetail(DetailSection):
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
                ColumnDesc('url', _('URL'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink')),
-               ColumnDesc('c_client_addr', _('Client IP'), 'HostLink'))]
+               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink'),
+               ColumnDesc('c_client_addr', _('Client IP'), 'HostLink')]
 
         return rv
 
@@ -1107,8 +1107,8 @@ class WebFilterDetailAll(DetailSection):
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
                ColumnDesc('url', _('URL'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink')),
-               ColumnDesc('c_client_addr', _('Client IP'), 'HostLink'))]
+               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink'),
+               ColumnDesc('c_client_addr', _('Client IP'), 'HostLink')]
 
         return rv
 

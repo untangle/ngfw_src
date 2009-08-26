@@ -781,7 +781,7 @@ class VirusWebDetail(DetailSection):
 
         rv += [ColumnDesc('virus_ident', _('Virus Name')),
                ColumnDesc('url', _('URL'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink')),
+               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink'),
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
@@ -825,7 +825,7 @@ class VirusMailDetail(DetailSection):
         rv += [ColumnDesc('virus_ident', _('Virus Name')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('addr', _('Recipient')), # FIXME: or is it sender ?
-               ColumnDesc('c_client_addr', _('Client IP'), 'HostLink')),
+               ColumnDesc('c_client_addr', _('Client IP'), 'HostLink'),
                ColumnDesc('c_client_port', _('Client Port'))]
 
         return rv

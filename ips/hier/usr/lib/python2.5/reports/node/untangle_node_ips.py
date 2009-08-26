@@ -322,7 +322,7 @@ class IpsDetail(DetailSection):
 
         rv = rv + [ColumnDesc('ips_name', _('SID:description')),
                    ColumnDesc('ips_blocked', _('Blocked')),
-                   ColumnDesc('c_server_addr', _('Server'), 'HostLink')),
+                   ColumnDesc('c_server_addr', _('Server'), 'HostLink'),
                    ColumnDesc('c_server_port', _('Port'))]
 
         return rv
