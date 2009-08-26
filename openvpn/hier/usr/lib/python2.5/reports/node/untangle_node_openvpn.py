@@ -254,4 +254,6 @@ FROM reports.n_openvpn_connect_totals
 WHERE trunc_time >= %s AND trunc_time < %s""" % (DateFromMx(start_date),
                                                  DateFromMx(end_date)))
 
+        return sql
+    
 reports.engine.register_node(OpenVpn())
