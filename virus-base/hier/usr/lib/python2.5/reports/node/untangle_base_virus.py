@@ -573,18 +573,19 @@ class TopWebVirusesDetected(Graph):
         conn = sql_helper.get_connection()
         try:
             q = """\
-SELECT COALESCE(NULLIF(virus_%s_name, ''), 'unknown') as vn,
+SELECT virus_%s_name,
        COALESCE(sum(virus_%s_detected), 0)::int as virus_%s_detected
-FROM reports.n_virus_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (3 * (self.__vendor_name,))
+FROM reports.n_virus_mail_totals
+WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
+      AND trunc_time >= %%s AND trunc_time < %%s""" % (5 * (self.__vendor_name,))
             if host:
                 q += " AND hname = %s"
             elif user:
                 q += " AND uid = %s"
             q += """
-GROUP BY vn
+GROUP BY virus_%s_name
 ORDER BY virus_%s_detected DESC
-""" % self.__vendor_name
+""" % (self.__vendor_name, self.__vendor_name)
 
             curs = conn.cursor()
 
@@ -791,9 +792,10 @@ class VirusWebDetail(DetailSection):
 SELECT time_stamp, hname, uid, virus_%s_name as virus_ident, 'http://' || host || uri as url,
        s_server_addr, s_server_port
 FROM reports.n_http_events
-WHERE time_stamp >= %s AND time_stamp < %s AND NOT virus_%s_clean
+WHERE time_stamp >= %s AND time_stamp < %s
+AND NOT virus_%s_name IS NULL AND virus_%s_name != ''
 """ % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
-       self.__vendor_name)
+       self.__vendor_name, self.__vendor_name)
 
         if host:
             sql = sql + (" AND host = %s" % QuotedString(host))
@@ -836,9 +838,9 @@ SELECT time_stamp, hname, uid, virus_%s_name, subject, addr,
        c_client_addr, c_client_addr
 FROM reports.n_mail_addrs
 WHERE time_stamp >= %s AND time_stamp < %s AND addr_kind = 'T'
-      AND NOT virus_%s_clean
+AND NOT virus_%s_name IS NULL AND virus_%s_name != ''
 """ % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
-       self.__vendor_name)
+       self.__vendor_name, self.__vendor_name)
 
         if host:
             sql = sql + (" AND host = %s" % QuotedString(host))
