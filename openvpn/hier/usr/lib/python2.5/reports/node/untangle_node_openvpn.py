@@ -247,7 +247,7 @@ class OpenVpnDetail(DetailSection):
         if host or user or email:
             return None
 
-        sql = "SELECT time_stamp, client_name, remote_address, remote_port"
+        sql = "SELECT trunc_time, client_name, remote_address, remote_port"
 
         sql = sql + ("""
 FROM reports.n_openvpn_connect_totals
