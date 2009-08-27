@@ -1083,7 +1083,7 @@ WHERE time_stamp >= %s AND time_stamp < %s
         if user:
             sql += " AND host = %s" % QuotedString(user)
 
-        return sql
+        return sql + "ORDER BY time_stamp"
 
 class WebFilterDetailAll(DetailSection):
     def __init__(self, vendor_name):
@@ -1131,7 +1131,7 @@ WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
         if user:
             sql += " AND host = %s" % QuotedString(user)
 
-        return sql
+        return sql + "ORDER BY time_stamp"
 
 # Unused reports --------------------------------------------------------------
 

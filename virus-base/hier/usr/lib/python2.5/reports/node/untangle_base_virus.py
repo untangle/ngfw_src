@@ -802,7 +802,7 @@ AND NOT virus_%s_name IS NULL AND virus_%s_name != ''
         if user:
             sql = sql + (" AND host = %s" % QuotedString(user))
 
-        return sql
+        return sql + "ORDER BY time_stamp"
 
 
 class VirusMailDetail(DetailSection):
@@ -847,4 +847,4 @@ AND NOT virus_%s_name IS NULL AND virus_%s_name != ''
         if user:
             sql = sql + (" AND host = %s" % QuotedString(user))
 
-        return sql
+        return sql + "ORDER BY time_stamp"

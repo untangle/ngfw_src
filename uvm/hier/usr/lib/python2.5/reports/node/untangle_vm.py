@@ -944,7 +944,7 @@ WHERE time_stamp >= %s AND time_stamp < %s
         if user:
             sql += " AND host = %s" % QuotedString(user)
 
-        return sql
+        return sql + "ORDER BY time_stamp"
 
 
 reports.engine.register_node(UvmNode())

@@ -573,4 +573,4 @@ WHERE time_stamp >= %s AND time_stamp < %s
         if host:
             sql += " AND host = %s" % QuotedString(host)
 
-        return sql
+        return sql + "ORDER BY time_stamp"

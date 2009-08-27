@@ -300,7 +300,7 @@ WHERE trunc_time >= %s AND trunc_time < %s
       AND (limited + dropped + rejected) > 0""" % (DateFromMx(start_date),
                                                    DateFromMx(end_date)))
 
-        return sql
+        return sql + "ORDER BY trunc_time"
 
 
 reports.engine.register_node(Shield())

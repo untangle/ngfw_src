@@ -470,7 +470,7 @@ AND NOT firewall_rule_index ISNULL""" % (DateFromMx(start_date),
         if user:
             sql = sql + (" AND host = %s" % QuotedString(user))
 
-        return sql
+        return sql + "ORDER BY time_stamp"
 
 
 reports.engine.register_node(Firewall())
