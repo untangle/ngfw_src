@@ -521,7 +521,7 @@ LIMIT 10""" % (self.__short_name,)
                 num = r[1]
                 counted_spam += num
 
-                lks.append(KeyStatistic(addr, num, self.__spam_label))
+                lks.append(KeyStatistic(addr, num, self.__spam_label, 'HostLink'))
                 pds[addr] = num
         finally:
             conn.commit()
