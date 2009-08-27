@@ -924,10 +924,9 @@ class AdministrativeLoginsDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        rv += [ColumnDesc('client', _('Server')),
-               ColumnDesc('succeeded', _('URI')),
-               ColumnDesc('client_addr', _('Client IP'), 'HostLink')]
-
+        rv += [ColumnDesc('client_addr', _('Client IP'), 'HostLink'),
+               ColumnDesc('succeeded', _('URI'))]
+        
         return rv
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
@@ -935,9 +934,9 @@ class AdministrativeLoginsDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, client, succeeded, client_addr
+SELECT time_stamp, succeeded, client_addr
 FROM reports.n_admin_logins
-WHERE time_stamp >= %s AND time_stamp < %s AND sw_blacklisted
+WHERE time_stamp >= %s AND time_stamp < %s
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
