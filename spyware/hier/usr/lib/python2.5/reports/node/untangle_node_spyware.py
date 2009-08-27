@@ -695,6 +695,8 @@ ORDER BY day
                 s = r[1]
                 dates.append(r[0])
                 blocks.append(s)
+                if not s:
+                    s = 0
                 total += s
                 if max < s:
                     max = s
