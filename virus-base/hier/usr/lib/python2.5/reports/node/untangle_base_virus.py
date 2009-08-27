@@ -75,7 +75,8 @@ class VirusBaseNode(Node):
 
         if not ft:
             ft = FactTable('reports.n_virus_http_totals', 'reports.n_http_events',
-                           'time_stamp', [Column('uid', 'text')], [])
+                           'time_stamp', [Column('hname', 'text'),
+                                          Column('uid', 'text')], [])
             reports.engine.register_fact_table(ft)
 
         ft.dimensions.append(Column('virus_%s_name' % self.__vendor_name,
