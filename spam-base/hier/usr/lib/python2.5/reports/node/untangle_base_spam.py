@@ -550,11 +550,6 @@ class SpamDetail(DetailSection):
         else:
             rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
 
-        if user:
-            rv.append(ColumnDesc('uid', _('User'), 'String'))
-        else:
-            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
-
         rv += [ColumnDesc('score', _('Score')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('s_server_addr', _('Source IP'), 'HostLink'),
@@ -577,7 +572,5 @@ WHERE time_stamp >= %s AND time_stamp < %s
 
         if host:
             sql += " AND host = %s" % QuotedString(host)
-        if user:
-            sql += " AND user = %s" % QuotedString(user)
 
         return sql
