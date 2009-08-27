@@ -714,7 +714,7 @@ class ActiveSessions(Graph):
 
             ks_query = """\
 SELECT coalesce(sum(num_sessions), 0) / (24 * 60) AS avg_sessions,
-       coalesce(max(num_sessions), 0) AS max_sessions
+       coalesce(max(num_sessions), 0)::int AS max_sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -745,9 +745,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             lks.append(ks)
 
             ks_query = """\
-SELECT sum(num_sessions)::int AS total_sessions,
-       coalesce(sum(num_sessions), 0) / (24 * 60 * %s) AS avg_sessions,
-       coalesce(max(num_sessions), 0) AS max_sessions
+SELECT sum(num_sessions)::int AS total_sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -759,18 +757,18 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             curs = conn.cursor()
 
             if user:
-                curs.execute(ks_query, (report_days, one_week, ed, user))
+                curs.execute(ks_query, (one_week, ed, user))
             elif host:
-                curs.execute(ks_query, (report_days, one_week, ed, host))
+                curs.execute(ks_query, (one_week, ed, host))
             else:
-                curs.execute(ks_query, (report_days, one_week, ed))
+                curs.execute(ks_query, (one_week, ed))
 
             r = curs.fetchone()
 
             total_sessions = r[0]
 
-            ks = KeyStatistic(_('Total Sessions (%s-day)') % report_days,
-                              total_sessions, _('sessions'))
+            ks = KeyStatistic(_('Total Sessions'), total_sessions,
+                              _('sessions'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -926,7 +924,7 @@ class AdministrativeLoginsDetail(DetailSection):
 
         rv += [ColumnDesc('client_addr', _('Client IP'), 'HostLink'),
                ColumnDesc('succeeded', _('URI'))]
-        
+
         return rv
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):

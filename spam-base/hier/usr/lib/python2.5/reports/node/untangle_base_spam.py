@@ -195,13 +195,15 @@ class TotalEmail(Graph):
 
         if email:
             query = """\
-SELECT coalesce(sum(msgs), 0)::int, coalesce(sum(%s_spam_msgs), 0)::int
+SELECT coalesce(sum(msgs), 0)::int,
+       coalesce(sum(%s_spam_msgs), 0)::int
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 """ % self.__short_name
         else:
             query = """\
-SELECT coalesce(sum(msgs), 0)::int, coalesce(sum(%s_spam_msgs), 0)::int
+SELECT coalesce(sum(msgs), 0)::int,
+       coalesce(sum(%s_spam_msgs), 0)::int
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
@@ -217,11 +219,11 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
                 curs.execute(query, (one_week, ed))
             r = curs.fetchone()
 
-            total = round(r[0])
-            spam = round(r[1])
+            total = r[0]
+            spam = r[1]
             ham = total - spam
 
-            ks = KeyStatistic(_('total (7-day)'), total, _('total (7 day)'))
+            ks = KeyStatistic(_('total'), total, _('messages'))
             lks.append(ks)
             ks = KeyStatistic(self.__spam_label, spam, _('messages'))
             lks.append(ks)
