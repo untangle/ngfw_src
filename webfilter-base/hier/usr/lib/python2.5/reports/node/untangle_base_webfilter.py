@@ -994,9 +994,11 @@ class TopTenBlockerPolicyViolations(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT host, coalesce(sum(wf_%s_blocks), 0)::int as hits_sum
+SELECT host, sum(hits) as hits_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__vendor_name
+WHERE trunc_time >= %%s AND trunc_time < %%s
+AND NOT wf_%s_category IS NULL
+AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name)
         if host:
             query += " AND hname = %s"
         elif user:
