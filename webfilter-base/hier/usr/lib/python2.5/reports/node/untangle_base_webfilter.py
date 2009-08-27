@@ -1035,7 +1035,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__vendor_name
 
 class WebFilterDetail(DetailSection):
     def __init__(self, vendor_name):
-        DetailSection.__init__(self, 'violations', _('Violation events'))
+        DetailSection.__init__(self, 'violations', _('Violation Events'))
 
         self.__vendor_name = vendor_name
 
@@ -1085,7 +1085,7 @@ WHERE time_stamp >= %s AND time_stamp < %s
 
 class WebFilterDetailAll(DetailSection):
     def __init__(self, vendor_name):
-        DetailSection.__init__(self, 'events', _('All events'))
+        DetailSection.__init__(self, 'events', _('All Events'))
 
         self.__vendor_name = vendor_name
 

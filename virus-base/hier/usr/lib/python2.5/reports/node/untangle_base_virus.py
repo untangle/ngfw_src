@@ -763,7 +763,7 @@ ORDER BY sum DESC""" % self.__vendor_name
 class VirusWebDetail(DetailSection):
     def __init__(self, vendor_name):
         DetailSection.__init__(self, 'web-events',
-                                       _('Web events'))
+                                       _('Web Events'))
         self.__vendor_name = vendor_name
 
     def get_columns(self, host=None, user=None, email=None):

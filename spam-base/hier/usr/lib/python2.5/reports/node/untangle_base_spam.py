@@ -112,7 +112,7 @@ class SpamBaseNode(Node):
 
         sections.append(s)
 
-        sections.append(SpamDetail(self.__short_name))
+        sections.append(SpamDetail(self.__title, self.__short_name))
 
         return Report(self.name, sections)
 
@@ -533,10 +533,11 @@ LIMIT 10""" % (self.__short_name,)
 
 class SpamDetail(DetailSection):
 
-    def __init__(self, short_name):
-        DetailSection.__init__(self, 'incidents', _('Incident Report'))
-
+    def __init__(self, title, short_name):
+        self.__title = title.split()[0].lower() # keep 1st word only
         self.__short_name = short_name
+        DetailSection.__init__(self, '%s-events' % (self.__title,),
+                               _('%s Events' % (self.__title.capitalize(),)))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
