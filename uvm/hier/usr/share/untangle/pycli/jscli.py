@@ -138,7 +138,6 @@ def printUsage():
     ucli prepareReports [ args ]
     ucli startReports
     ucli stopReports
-    ucli isReportingRunning
   logging manager:
     ucli userLogs tid
     ucli resetLogs
