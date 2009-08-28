@@ -14,10 +14,6 @@ Ext.onReady(function()
               reports = new Ung.Reports({});
             });
 
-JSONRpcClient.toplevel_ex_handler = function (ex) {
-  handleTimeout(ex);
-};
-
 function handleTimeout(ex)
 {
   if (ex instanceof JSONRpcClient.Exception) {
@@ -31,6 +27,10 @@ function handleTimeout(ex)
   }
   return false;
 }
+
+JSONRpcClient.toplevel_ex_handler = function (ex) {
+    handleTimeout(ex);
+};
 
 // Main object class
 Ung.Reports = Ext.extend(Object,
@@ -67,7 +67,7 @@ Ung.Reports = Ext.extend(Object,
                                                                               if (!handleTimeout(exception)) {
                                                                                 Ext.MessageBox.alert("Failed", exception.message);
                                                                               }
-                                                                            };
+                                                                            }
                                                                             rpc.languageManager = result;
                                                                             // get translations for main module
                                                                             rpc.languageManager.getTranslations(function(result, exception)
@@ -89,7 +89,7 @@ Ung.Reports = Ext.extend(Object,
                                                                           if (!handleTimeout(exception)) {
                                                                             Ext.MessageBox.alert("Failed", exception.message);
                                                                           }
-                                                                        };
+                                                                        }
                                                                         rpc.skinManager = result;
                                                                         // Load Current Skin
                                                                         rpc.skinManager.getSkinSettings(function(result, exception)
@@ -121,7 +121,7 @@ Ung.Reports = Ext.extend(Object,
                                                                                                                  Ext.MessageBox.alert("Failed", exception.message);
                                                                                                                }
                                                                                                                return;
-                                                                                                             };
+                                                                                                             }
                                                                                                              rpc.dates = result;
                                                                                                              this.postinit();
                                                                                                            }.createDelegate(this));
@@ -344,7 +344,7 @@ Ung.Reports = Ext.extend(Object,
 
                                if (item.dt.time == date.time) {
                                  Ext.getCmp('report-day-menu').setText(item.text);
-                                 var found = true;
+                                 found = true;
                                  break;
                                }
                              }
@@ -356,7 +356,7 @@ Ung.Reports = Ext.extend(Object,
                                                                            Ext.MessageBox.alert("Failed", exception.message);
                                                                          }
                                                                          return;
-                                                                       };
+                                                                       }
 
                                                                        this.tableOfContents = result;
                                                                        var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
@@ -561,8 +561,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                sortable: false,
                                                                                dataIndex: 'name',
                                                                                renderer: function(value, medata, record) {
-                                                                                 return '<a href="javascript:reports.getTableOfContentsFor'
-                                                                                   + upperName + '(\''+ value + '\')">' + value + '</a>';
+                                                                                 return '<a href="javascript:reports.getTableOfContentsFor' + upperName + '(\''+ value + '\')">' + value + '</a>';
                                                                                }.createDelegate(this)
                                                                              }], title:listTitle,
                                                                    stripeRows: true,
@@ -597,11 +596,11 @@ Ung.ReportDetails = Ext.extend(Object,
                                      reportDetails.remove(reportDetails.items.get(0));
                                    }
 
-                                   var itemsArray=[];
+                                     var itemsArray=[],i;
                                    //TODO rpc.applicationData should never be null
                                    if (rpc.applicationData != null) {
                                      if(rpc.applicationData.sections != null){
-                                       for(var i=0;i<rpc.applicationData.sections.list.length ;i++) {
+                                       for(i=0;i<rpc.applicationData.sections.list.length ;i++) {
                                          var section=rpc.applicationData.sections.list[i];
                                          var sectionPanel=this.buildSection(this.appName, section);
                                          itemsArray.push(sectionPanel);
@@ -611,7 +610,7 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                    //create breadcrums item
                                    var breadcrumbArr=[];
-                                   for(var i=0;i<reports.breadcrumbs.length;i++) {
+                                   for(i=0;i<reports.breadcrumbs.length;i++) {
                                      if(i+1==reports.breadcrumbs.length) {
                                        breadcrumbArr.push(reports.breadcrumbs[i].text);
                                      } else {
@@ -696,7 +695,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                       sortable: false,
                                                       dataIndex: 'color',
                                                       renderer: function(value, medata, record) {
-                                                        return '<div style="position:absolute;height:8px;width:8px;margin-top:2px;background-color:#'+value+'">&nbsp;</div>'
+                                                          return '<div style="position:absolute;height:8px;width:8px;margin-top:2px;background-color:#'+value+'">&nbsp;</div>';
                                                         //return value;
                                                       }.createDelegate(this)
                                                     });
@@ -726,21 +725,21 @@ Ung.ReportDetails = Ext.extend(Object,
                                                     sortable: false,
                                                     dataIndex: 'value',
                                                     renderer: function (value, medata, record) {
-                                                      var unit = record.data.unit;
+                                                        var unit = record.data.unit,s;
                                                       if (unit && unit.indexOf('bytes') == 0) {
                                                         if (value < 1000000) {
                                                           value = Math.round(value/1000);
-                                                          var s = unit.split("/");
+                                                          s = unit.split("/");
                                                           s[0] = "KB";
                                                           unit = s.join("/");
                                                         } else if (value < 1000000000) {
                                                           value = Math.round(value/1000000);
-                                                          var s = unit.split("/");
-                                                          s[0] = "MB";
+                                                          s = unit.split("/");
+                                                            s[0] = "MB";
                                                           unit = s.join("/");
                                                         } else {
                                                           value = Math.round(value/1000000000);
-                                                          var s = unit.split("/");
+                                                          s = unit.split("/");
                                                           s[0] = "GB";
                                                           unit = s.join("/");
                                                         }
@@ -765,7 +764,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                                          tbar:[{ tooltip:this.i18n._('Export Excel'),
                                                                                                                  iconCls:'export-excel',
                                                                                                                  handler : new Function("window.open('" + summaryItem.csvUrl + "');")
-                                                                                                               },
+                                                                                                               }
 //                                                                                                                '-',
 //                                                                                                                { tooltip:this.i18n._('Export Printer'),
 //                                                                                                                  iconCls:'export-printer',
@@ -795,100 +794,101 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                  buildDetailSection: function (appName, section)
                                  {
-                                   var columns = [];
-                                   var fields = [];
-                                   var c = null;
+                                     var columns = [];
+                                     var fields = [];
+                                     var c = null;
+                                     
+                                     for (var i = 0; i < section.columns.list.length; i++) {
+                                         c = section.columns.list[i];
+                                         //TODO this case should not occur
+                                         if (c == null || c == undefined) { break; }
+                                         var col = { header:this.i18n._(c.title), dataIndex:c.name };
 
-                                   for (var i = 0; i < section.columns.list.length; i++) {
-                                     c = section.columns.list[i];
-                                     //TODO this case should not occur
-                                     if (c == null || c == undefined) { break; }
-                                     var col = { header:this.i18n._(c.title), dataIndex:c.name };
-
-                                     if (c.type == "Date") {
-                                       col.renderer = function(value) {
-                                         if (!value) {
-                                           return i18n._('None');
+                                         if (c.type == "Date") {
+                                             col.renderer = function(value) {
+                                                 if (!value) {
+                                                     return i18n._('None');
+                                                 } else {
+                                                     return i18n.timestampFormat(value);
+                                                 }
+                                             };
+                                             col.width = 140;
+                                         } else if (c.type == "URL") {
+                                             col.renderer = function(value) {
+                                                 if (!value) {
+                                                     return i18n._('None');
+                                                 } else {
+                                                     return '<a href="' + value + '" target="_new">' + value + '</a>';
+                                                 }
+                                             };
+                                             col.width = 160;
+                                         } else if (c.type == "UserLink") {
+                                             col.renderer = function(value) {
+                                                 if (!value) {
+                                                     return i18n._('None');
+                                                 } else {
+                                                     return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                                 }
+                                             };
+                                             col.width = 100;
+                                         } else if (c.type == "HostLink") {
+                                             col.renderer = function(value) {
+                                                 if (!value) {
+                                                     return i18n._('None');
+                                                 } else {
+                                                     return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                                 }
+                                             };
+                                             col.width = 100;
+                                         } else if (c.type == "EmailLink") {
+                                             col.renderer = function(value) {
+                                                 if (!value) {
+                                                     return i18n._('None');
+                                                 } else {
+                                                     return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                                 }
+                                             };
+                                             col.width = 180;
                                          } else {
-                                           return i18n.timestampFormat(value);
+                                             col.renderer = function(value) {
+                                                 if (!value) {
+                                                     return i18n._('None');
+                                                 } else {
+                                                     return value;
+                                                 }
+                                             };
                                          }
-                                       };
-                                       col.width = 140;
-                                     } else if (c.type == "URL") {
-                                       col.renderer = function(value) {
-                                         if (!value) {
-                                           return i18n._('None');
-                                         } else {
-                                           return '<a href="' + value + '" target="_new">' + value + '</a>';
-                                         }
-                                       };
-                                       col.width = 160;
-                                     } else if (c.type == "UserLink") {
-                                       col.renderer = function(value) {
-                                         if (!value) {
-                                           return i18n._('None');
-                                         } else {
-                                           return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
-                                         }
-                                       };
-                                       col.width = 100;
-                                     } else if (c.type == "HostLink") {
-                                       col.renderer = function(value) {
-                                         if (!value) {
-                                           return i18n._('None');
-                                         } else {
-                                           return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
-                                         }
-                                       };
-                                       col.width = 100;
-                                     } else if (c.type == "EmailLink") {
-                                       col.renderer = function(value) {
-                                         if (!value) {
-                                           return i18n._('None');
-                                         } else {
-                                           return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
-                                         }
-                                       };
-                                       col.width = 180;
-                                     } else {
-                                       col.renderer = function(value) {
-                                         if (!value) {
-                                           return i18n._('None');
-                                         } else {
-                                           return value;
-                                         }
-                                       };
+                                         columns.push(col);
+                                         fields.push({ name: c.name });
                                      }
-                                     columns.push(col);
-                                     fields.push({ name: c.name });
-                                   }
 
-                                   var store = new Ext.data.SimpleStore({fields: fields, data: [] });
+                                     var store = new Ext.data.SimpleStore({fields: fields, data: [] });
 
-                                   var detailSection=new Ext.grid.GridPanel({ title : section.title,
-                                                                              enableHdMenu : false,
-                                                                              enableColumnMove: false,
-                                                                              store: store,
-                                                                             columns: columns,
-                                                                              pageSize: 25
-                                                                            });
+                                     var detailSection=new Ext.grid.GridPanel({ title : section.title,
+                                                                                enableHdMenu : false,
+                                                                                enableColumnMove: false,
+                                                                                store: store,
+                                                                                columns: columns,
+                                                                                pageSize: 25
+                                                                              });
 
-                                   rpc.reportingManager.getDetailData(function(result, exception) {
-                                                                        if (exception) {
-                                                                          if (!handleTimeout(exception)) {
-                                                                            Ext.MessageBox.alert("Failed", exception.message);
-                                                                          }
-                                                                          return;
-                                                                        };
+                                     rpc.reportingManager.getDetailData(function(result, exception) {
+                                         if (exception) {
+                                             if (!handleTimeout(exception)) {
+                                                 Ext.MessageBox.alert("Failed", exception.message);
+                                             }
+                                             return;
+                                         }
 
-                                                                        var data = [];
-
-                                                                        for (var i = 0; i < result.list.length; i++) {
-                                                                          data.push(result.list[i].list);
-                                                                        }
-
-                                                                        store.loadData(data);
-                                                                      }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name);
-
-                                   return detailSection;
-                                 }});
+                                         var data = [];
+                                         
+                                         for (var i = 0; i < result.list.length; i++) {
+                                             data.push(result.list[i].list);
+                                         }
+                                         
+                                         store.loadData(data);
+                                     }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name);
+                                     
+                                     return detailSection;
+                                 }
+                               });
