@@ -1,7 +1,5 @@
 #! /bin/bash
 
-/etc/init.d/apache2 reload
-
 touch /etc/untangle/reports-to-restart
 
 exit 0

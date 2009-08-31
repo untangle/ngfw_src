@@ -65,6 +65,7 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
     update-rc.d untangle-vm defaults 95 5 > /dev/null
     update-rc.d -f untangle-reports remove
     update-rc.d untangle-reports defaults 96 5 > /dev/null
+    ourInit untangle-reports restart
 fi
 
 # It's almost never right to just start the untangle-vm after installation, so let
@@ -83,6 +84,6 @@ fi
 
 /etc/init.d/apache2 reload
 
-touch /etc/untanglemonit-to-restart
+touch /etc/untangle/monit-to-restart
 
 exit 0
