@@ -380,21 +380,21 @@ Ung.Util= {
         var deleted = [];
         var modified = [];
         for (id in changedData) {
-            var cd = changedData[id]
-            if ("deleted" == cd.op) {
-                if (id > 0) {
-                    deleted.push(parseInt(id));
-                }
-            } else {
-                if (recordJavaClass != null){
-                    cd.recData["javaClass"] = recordJavaClass;
-                }
-                if (id < 0) {
-                    added.push(cd.recData);
-                } else {
-                    modified.push(cd.recData);
-                }
+          var cd = changedData[id];
+          if ("deleted" == cd.op) {
+            if (id > 0) {
+              deleted.push(parseInt(id));
+              }
+          } else {
+            if (recordJavaClass != null){
+              cd.recData["javaClass"] = recordJavaClass;
             }
+            if (id < 0) {
+              added.push(cd.recData);
+            } else {
+              modified.push(cd.recData);
+            }
+          }
         }
         return [{
             list : added,
@@ -532,7 +532,7 @@ Ung.Util.RetryHandler = {
 Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
     initComponent : function() {
         if (( this.width == null ) && ( this.listWidth == null )) {
-            this.listWidth = 200
+          this.listWidth = 200;
         }
         this.store = Ung.Util.getInterfaceStore();
         Ung.Util.InterfaceCombo.superclass.initComponent.call(this);
@@ -749,7 +749,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             return;
             // error
         }
-        var appsLastState=main.appsLastState[this.item.displayName]
+        var appsLastState=main.appsLastState[this.item.displayName];
         if(appsLastState!=null) {
             this.download=appsLastState.download;
             this.setState(appsLastState.state,appsLastState.options);
@@ -786,7 +786,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                     summary:options,
                     completeSize:0,
                     completePackages:0
-                }
+                };
                 var progressString = String.format(i18n._("{0} Packages"), this.download.summary.count);
                 this.progressBar.reset();
                 this.progressBar.updateProgress(0, progressString);
@@ -983,7 +983,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         });
         if(this.fadeIn) {
             this.getEl().scrollIntoView(Ext.getCmp("center").body);
-            this.getEl().syncFx()
+            this.getEl().syncFx();
             this.getEl().fadeIn({duration: 3});
             this.getEl().frame(null, 1, { duration: 1 });
         }
@@ -1061,7 +1061,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     // is runState "RUNNING"
     isRunning : function() {
-        return (this.runState == "RUNNING")
+      return (this.runState == "RUNNING");
     },
     setState : function(state) {
         this.state = state;
@@ -1109,7 +1109,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     start : function () {
         if(this.state=="attention") {
-            return
+          return;
         }
         this.loadNodeContext(function() {
             this.setPowerOn(true);
@@ -1301,7 +1301,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             if(this.blingers.metricDescs!=null) {
                 for(var i=0;i<this.blingers.metricDescs.list.length;i++) {
                     if(this.blingers.metricDescs.list[i].displayable) {
-                        dispMetricDescs.push(this.blingers.metricDescs.list[i])
+                      dispMetricDescs.push(this.blingers.metricDescs.list[i]);
                     }
                 }
             }
@@ -1326,7 +1326,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                 if(timeRemaining=="expires today") {
                     trialInfo = i18n._("Free Trial Expires Today");
                 } else {
-                   var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""))
+                   var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""));
                    if (!isNaN(daysRemain)) {
                      if (daysRemain > 32) {
                        trialInfo = i18n._("Free Limited Trial");
@@ -1348,7 +1348,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             if(this.licenseStatus && this.licenseStatus.trial) {
                 nodeBuyButton.show();
             } else {
-                nodeBuyButton.hide()
+              nodeBuyButton.hide();
             }
         }
     }
@@ -1514,9 +1514,9 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
                                 refreshApps=true;
-                                var node=main.getNode(msg.nodeDesc.mackageDesc.name)
+                                var node=main.getNode(msg.nodeDesc.mackageDesc.name);
                                 if(!node) {
-                                    var node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
+                                    node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
                                 } else {
@@ -1633,16 +1633,16 @@ Ung.MessageManager = {
                     }
                 }
                 if(!Ung.MessageManager.upgradeMode) {
-                    // update system stats
-                    main.systemStats.update(messageQueue.systemStats)
-                    // upgrade nodes blingers
-                    for (var i = 0; i < main.nodes.length; i++) {
-                        var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
-                        if (nodeCmp && nodeCmp.isRunning()) {
-                            nodeCmp.stats = messageQueue.stats.map[main.nodes[i].tid];
-                            nodeCmp.updateBlingers();
-                        }
+                  // update system stats
+                  main.systemStats.update(messageQueue.systemStats);
+                  // upgrade nodes blingers
+                  for (var i = 0; i < main.nodes.length; i++) {
+                    var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
+                    if (nodeCmp && nodeCmp.isRunning()) {
+                      nodeCmp.stats = messageQueue.stats.map[main.nodes[i].tid];
+                      nodeCmp.updateBlingers();
                     }
+                  }
                 }
             } catch (err) {
                 Ext.MessageBox.alert("Exception in MessageManager", err.message);
@@ -1782,7 +1782,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         var rxSpeed=Math.round(stats.map.rxBps/10)/100;
         this.getEl().child("div[class=tx-value]").dom.innerHTML=txSpeed+"KB/s";
         this.getEl().child("div[class=rx-value]").dom.innerHTML=rxSpeed+"KB/s";
-        var memoryFree=Ung.Util.bytesToMBs(stats.map.MemFree)
+        var memoryFree=Ung.Util.bytesToMBs(stats.map.MemFree);
         var memoryUsed=Ung.Util.bytesToMBs(stats.map.MemTotal-stats.map.MemFree);
         this.getEl().child("div[class=free-value]").dom.innerHTML=memoryFree+" MBs";
         this.getEl().child("div[class=used-value]").dom.innerHTML=memoryUsed+" MBs";
@@ -1863,7 +1863,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
     },
     onRender : function(container, position) {
         Ung.ActivityBlinger.superclass.onRender.call(this, container, position);
-        this.getEl().addClass("activity-blinger")
+        this.getEl().addClass("activity-blinger");
         var templateHTML = Ung.ActivityBlinger.template.applyTemplate({
             'id' : this.getId(),
             'blingerName' : i18n._("activity")
@@ -2087,7 +2087,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         }
         for(var j=0;j<activeMetrics.length;j++) {
             for(var i=0;i<this.configWin.items.length;i++) {
-                var metricItem=this.configWin.items.get(i)
+                var metricItem=this.configWin.items.get(i);
                 if(activeMetrics[j].name==metricItem.dataIndex) {
                     metricItem.setValue(true);
                     break;
@@ -2125,7 +2125,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         var activeMetrics=nodeCmp.blingers.activeMetrics.list;
         for (var i = 0; i < activeMetrics.length; i++) {
             var activeMetric=activeMetrics[i];
-            var newValue="&nbsp;"
+            var newValue="&nbsp;";
             if(stats.metrics.map[activeMetric.name]!=null) {
                 newValue=stats.metrics.map[activeMetric.name].count;
                 if(activeMetric.metricDesc!=null && activeMetric.metricDesc.unit!=null) {
@@ -2699,7 +2699,7 @@ Ung.NodeWin._nodeScripts = {};
 
 // Dynamically loads javascript file for a node
 Ung.NodeWin.loadNodeScript = function(settingsCmp, handler) {
-    var scriptFile = Ung.Util.getScriptSrc('settings.js')
+    var scriptFile = Ung.Util.getScriptSrc('settings.js');
     Ung.Util.loadScript('script/' + settingsCmp.name + '/' + scriptFile, function() {
         this.settingsClassName = Ung.NodeWin.getClassName(this.name);
         if(!Ung.NodeWin.dependency[this.name]) {
@@ -3000,7 +3000,7 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
             if (type == 'string') {
                 sortField = "UPPER("+params.sort+")";
             }
-            sortColumns.push((params.dir == "ASC" ? "+" : "-") + sortField)
+            sortColumns.push((params.dir == "ASC" ? "+" : "-") + sortField);
         }
         if (this.paginated) {
             if (this.rpcFnArgs == null) {
@@ -4395,7 +4395,7 @@ Ung.GroupsWindow = Ext.extend(Ung.UpdateWindow, {
                 }
                 this.record.set(this.groupDataIndex,groups.join(";"));
                 if(this.fnCallback) {
-                    this.fnCallback.call()
+                  this.fnCallback.call();
                 }
             }
             this.hide();

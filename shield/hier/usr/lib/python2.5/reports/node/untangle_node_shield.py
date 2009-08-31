@@ -302,5 +302,4 @@ WHERE trunc_time >= %s AND trunc_time < %s
 
         return sql + "ORDER BY trunc_time"
 
-
 reports.engine.register_node(Shield())

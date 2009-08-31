@@ -209,7 +209,7 @@ Ung.Main=Ext.extend(Object, {
         handler.call(this);
     },
     resetAppLastState: function(displayName) {
-        main.appsLastState[displayName]=null
+      main.appsLastState[displayName]=null;
     },
     setAppLastState: function(displayName,state,options,download) {
         if(state==null) {
@@ -571,7 +571,7 @@ Ung.Main=Ext.extend(Object, {
         }
         if (forceReload || rpc.licenseManager === undefined) {
             try {
-                rpc.licenseManager = rpc.jsonrpc.RemoteUvmContext.licenseManager()
+              rpc.licenseManager = rpc.jsonrpc.RemoteUvmContext.licenseManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -674,7 +674,7 @@ Ung.Main=Ext.extend(Object, {
         node.tid=nodeDesc.tid.id;
         node.Tid=nodeDesc.tid;
         node.md=nodeDesc.mackageDesc;
-        node.hasPowerButton=nodeDesc.hasPowerButton
+        node.hasPowerButton=nodeDesc.hasPowerButton;
         node.name=nodeDesc.mackageDesc.name;
         node.displayName=nodeDesc.mackageDesc.displayName;
         node.licenseStatus=licenseStatus;
@@ -710,7 +710,7 @@ Ung.Main=Ext.extend(Object, {
         if(main.apps!=null) {
             for(var i=0; i<main.apps.length; i++) {
                 if(main.apps[i].libItem!=null && main.apps[i].libItem.name==libItemName) {
-                    return main.apps[i].libItem.displayName
+                  return main.apps[i].libItem.displayName;
                 }
             }
         }
@@ -830,11 +830,11 @@ Ung.Main=Ext.extend(Object, {
         if (typeof title == 'string') {
             iframeWin.setTitle(title);
         } else { // the title represents breadcrumbs
-            iframeWin.setTitle('<span id="title_' + iframeWin.getId() + '"></span>');
-            iframeWin.breadcrumbs = new Ung.Breadcrumbs({
-        renderTo : 'title_' + iframeWin.getId(),
-        elements : title
-        })
+          iframeWin.setTitle('<span id="title_' + iframeWin.getId() + '"></span>');
+          iframeWin.breadcrumbs = new Ung.Breadcrumbs({
+            renderTo : 'title_' + iframeWin.getId(),
+            elements : title
+          });
         }
         window.frames["iframeWin_iframe"].location.href=url;
     },
@@ -987,7 +987,7 @@ Ung.Main=Ext.extend(Object, {
                 if(this.nodes[i].md.type!="NODE") {
                    hasService=true;
                    if(this.nodes[i].md.type!="SERVICE") {
-                       hasUtil=true
+                     hasUtil=true;
                    }
                 }
             }

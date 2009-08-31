@@ -68,7 +68,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                                                                                                                 main.iframeWin.closeActionFn();
                                                                                                                               }.createDelegate(this)
                                                                                                                             }, { title: this.i18n._('View Reports') }];
-                                                                                                      main.openInRightFrame(breadcrumbs, viewReportsUrl);
+                                                                                                      window.open(viewReportsUrl);
                                                                                                     }.createDelegate(this)
                                                                                                   }]
                                                                                       }]

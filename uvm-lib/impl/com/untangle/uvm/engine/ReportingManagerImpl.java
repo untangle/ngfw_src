@@ -214,7 +214,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                     try {
                         conn = DataSourceFactory.factory().getConnection();
                         Statement stmt = conn.createStatement();
-                        stmt.setMaxRows(5000);
+                        stmt.setMaxRows(1000);
                         ResultSet rs = stmt.executeQuery(sql);
                         int columnCount = rs.getMetaData().getColumnCount();
                         while (rs.next()) {
