@@ -478,6 +478,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
             lks.append(ks)
             ks = KeyStatistic(_('total violations (7-days)'), violations,
                               _('violations'))
+            lks.append(ks)
         finally:
             conn.commit()
 
