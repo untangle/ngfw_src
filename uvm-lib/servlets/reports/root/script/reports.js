@@ -797,7 +797,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                      var columns = [];
                                      var fields = [];
                                      var c = null;
-                                     
+
                                      for (var i = 0; i < section.columns.list.length; i++) {
                                          c = section.columns.list[i];
                                          //TODO this case should not occur
@@ -869,7 +869,16 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                 enableColumnMove: false,
                                                                                 store: store,
                                                                                 columns: columns,
-                                                                                pageSize: 25
+                                                                                pageSize: 25,
+                                                                                tbar: [{ tooltip:this.i18n._('Export Excel'),
+                                                                                         iconCls:'export-excel',
+                                                                                         handler: function() {
+                                                                                           var rd = new Date(reports.reportsDate.time);
+                                                                                           var d = rd.getFullYear() + "-" + (rd.getMonth() + 1) + "-" + rd.getDate();
+                                                                                           window.open('csv?date=' + d + '&app=' + appName + '&detail=' + section.name);
+                                                                                         }
+                                                                                       }
+                                                                                      ]
                                                                               });
 
                                      rpc.reportingManager.getDetailData(function(result, exception) {
@@ -881,14 +890,14 @@ Ung.ReportDetails = Ext.extend(Object,
                                          }
 
                                          var data = [];
-                                         
+
                                          for (var i = 0; i < result.list.length; i++) {
                                              data.push(result.list[i].list);
                                          }
-                                         
+
                                          store.loadData(data);
                                      }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name);
-                                     
+
                                      return detailSection;
                                  }
                                });

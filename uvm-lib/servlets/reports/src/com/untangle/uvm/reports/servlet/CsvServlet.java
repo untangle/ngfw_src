@@ -73,25 +73,32 @@ public class CsvServlet extends HttpServlet
             for (List l : ll) {
                 for (int i = 0; i < l.size(); i++) {
                     Object o = l.get(i);
+                    if (null == o) {
+                        o = "";
+                    }
                     String s = o.toString();
                     boolean enclose = false;
-                    if (0 > s.indexOf(',')) {
+                    if (0 <= s.indexOf(',')) {
                         enclose = true;
                     }
-                    if (0 > s.indexOf('"')) {
+                    if (0 <= s.indexOf('"')) {
                         enclose = true;
                         s = s.replaceAll("\"", "\"\"");
                     }
-                    if (0 > s.indexOf("\n") || 0 > s.indexOf("\r")) {
+                    if (0 <= s.indexOf("\n") || 0 <= s.indexOf("\r")) {
                         enclose = true;
                     }
-                    switch(s.charAt(0)) {
-                    case ' ': case '\t': case '\n': case '\r':
-                        enclose = true;
-                    }
-                    switch(s.charAt(s.length() - 1)) {
-                    case ' ': case '\t': case '\n': case '\r':
-                        enclose = true;
+                    if (s.length() > 0) {
+                        switch(s.charAt(0)) {
+                        case ' ': case '\t': case '\n': case '\r':
+                            enclose = true;
+                        }
+                        switch(s.charAt(s.length() - 1)) {
+                        case ' ': case '\t': case '\n': case '\r':
+                            enclose = true;
+                        }
+                    } else {
+                        enclose=true;
                     }
 
                     if (enclose) {
@@ -112,6 +119,8 @@ public class CsvServlet extends HttpServlet
         } catch (IOException exn) {
             logger.warn("could not write csv: ", exn);
             return;
+        } catch (Exception exn) {
+            logger.warn(exn, exn);
         } finally {
             try {
                 if (null != bw) {
