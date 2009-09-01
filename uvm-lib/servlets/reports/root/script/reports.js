@@ -867,7 +867,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                      var detailSection=new Ext.grid.GridPanel({ title : section.title,
                                                                                 enableHdMenu : false,
                                                                                 enableColumnMove: false,
-                                                                                //store: store,
+                                                                                store: store,
                                                                                 columns: columns,
                                                                                 pageSize: 25,
                                                                                 tbar: [{ tooltip:this.i18n._('Export Excel'),
@@ -878,14 +878,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                            window.open('csv?date=' + d + '&app=' + appName + '&detail=' + section.name);
                                                                                          }
                                                                                        }
-                                                                                      ],
-                                                                                pagingToolbar: new Ext.PagingToolbar({
-                                                                                  y: -2,
-                                                                                  height: 21,
-                                                                                  pageSize : this.recordsPerPage,
-                                                                                  store : this.store,
-                                                                                  style: "border-top:0px solid white;padding-top:1px;padding-bottom:0px;"
-                                                                                })
+                                                                                      ]
                                                                               });
 
                                      rpc.reportingManager.getDetailData(function(result, exception) {
