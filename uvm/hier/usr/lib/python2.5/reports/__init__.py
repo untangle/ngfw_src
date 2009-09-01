@@ -566,15 +566,15 @@ class KeyStatistic:
             if self.__value < 1000000:
                 s = string.split(self.__unit, '/')
                 s[0] = _('KB')
-                return ('%.2f' % (self.__value / 1000), string.join(s, '/'))
+                return ('%.2f' % (self.__value / 1000.0), string.join(s, '/'))
             elif self.__value < 1000000000:
                 s = string.split(self.__unit, '/')
                 s[0] = _('MB')
-                return ('%.2f' % (self.__value / 1000000), string.join(s, '/'))
+                return ('%.2f' % (self.__value / 1000000.0), string.join(s, '/'))
             else:
                 s = string.split(self.__unit, '/')
                 s[0] = _('GB')
-                return ('%.2f' % (self.__value / 1000000000), string.join(s, '/'))
+                return ('%.2f' % (self.__value / 1000000000.0), string.join(s, '/'))
         elif type(self.__value) is float:
             return ('%.2f' % self.__value, self.__unit)
         else:
