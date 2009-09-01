@@ -994,7 +994,7 @@ class TopTenBlockerPolicyViolations(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT host, sum(hits) as hits_sum
+SELECT host, COALESCE(sum(hits), 0)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND NOT wf_%s_category IS NULL
