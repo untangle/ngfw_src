@@ -359,7 +359,7 @@ class Graph:
             return []
         image = Image(img_file)
 
-        zebra_colors = [reportlab.lib.colors.lightgrey, None]
+        zebra_colors = [HexColor(0xE0E0E0), None]
 
         if self.__plot.type == PIE_CHART:
             colors = self.__plot.colors
@@ -384,7 +384,7 @@ class Graph:
                 if c:
                     background_colors.append(c)
                 else:
-                    background_colors.append(zebra_colors[i % 2])
+                    background_colors.append(zebra_colors[(i + 1) % 2])
             else:
                 data.append([n, "%s %s" % ks.scaled_value])
 
@@ -392,7 +392,7 @@ class Graph:
 
         if colors:
             style.append(['ROWBACKGROUNDS', (0, 0), (0, -1), background_colors])
-            style.append(['ROWBACKGROUNDS', (1, 0), (1, -1), zebra_colors])
+            style.append(['ROWBACKGROUNDS', (1, 0), (-1, -1), zebra_colors])
             style.append(['SPAN', (0, 0), (2, 0)])
         else:
             style.append(['SPAN', (0, 0), (1, 0)])
