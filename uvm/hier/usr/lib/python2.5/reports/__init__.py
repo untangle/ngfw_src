@@ -375,7 +375,11 @@ class Graph:
         for i, ks in enumerate(self.__key_statistics):
             n = ks.name
             if colors:
-                data.append(['', n, "%s %s" % ks.scaled_value])
+                val, unit = ks.scaled_value
+                if unit:
+                    data.append(['', n, "%s %s" % (val, unit)])
+                else:
+                    data.append(['', n, "%s" % val])
                 c = colors.get(n, None)
                 if c:
                     background_colors.append(c)

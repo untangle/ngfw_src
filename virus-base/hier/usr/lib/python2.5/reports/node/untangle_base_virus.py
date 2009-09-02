@@ -161,7 +161,7 @@ SET virus_"""+self.__vendor_name+"""_clean = clean,
 FROM events.n_virus_evt_http
 WHERE reports.n_http_events.time_stamp >= %s
   AND reports.n_http_events.time_stamp < %s
-  AND reports.n_http_events.request_id = events.n_virus_evt_http.request_line and  events.n_virus_evt_http.vendor_name = %s""", (sd, ed, string.capwords(self.__vendor_name)), connection=conn, auto_commit=False)
+  AND reports.n_http_events.request_id = events.n_virus_evt_http.request_line and events.n_virus_evt_http.vendor_name = %s""", (sd, ed, string.capwords(self.__vendor_name)), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.n_http_events[%s]' % self.name, ed,
                                        connection=conn, auto_commit=False)
@@ -181,7 +181,6 @@ ALTER TABLE reports.%s ADD COLUMN virus_%s_clean boolean""" % (tablename, self._
             sql_helper.run_sql("""\
 ALTER TABLE reports.%s ADD COLUMN virus_%s_name text""" % (tablename, self.__vendor_name))
         except: pass
-
 
         update_name = 'report.%s-mail[%s]' % (tablename, self.name)
         sd = DateFromMx(sql_helper.get_update_info(update_name, start_date))
@@ -606,7 +605,7 @@ ORDER BY virus_%s_detected DESC
                     break
 
                 key_name = r[0]
-                ks = KeyStatistic(str(key_name), r[1])
+                ks = KeyStatistic(str(key_name), r[1], _('viruses'))
                 lks.append(ks)
                 dataset[str(key_name)] = r[1]
         finally:
@@ -669,7 +668,7 @@ LIMIT 10""" % (2 * (self.__vendor_name,))
                 r = curs.fetchone()
                 if not r:
                     break
-                ks = KeyStatistic(r[0], r[1])
+                ks = KeyStatistic(r[0], r[1], _('viruses'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
