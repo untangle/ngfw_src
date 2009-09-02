@@ -67,6 +67,13 @@ def __getStyleSheet():
                                   alignment=TA_CENTER,
                                   spaceAfter=12))
 
+    stylesheet.add(ParagraphStyle(name='MainTitle',
+                                  parent=stylesheet['Normal'],
+                                  fontName = 'Helvetica-Bold',
+                                  fontSize=24,
+                                  alignment=TA_CENTER,
+                                  spaceAfter=12))
+
     stylesheet.add(ParagraphStyle(name='SubTitle',
                                   parent=stylesheet['Normal'],
                                   fontName = 'Helvetica-Bold',
@@ -246,7 +253,7 @@ def generate_pdf(report_base, end_date, mail_reports):
 
     story.append(Image('/var/www/images/BrandingLogo.gif'))
     story.append(Spacer(1, 0.5 * inch))
-    story.append(Paragraph('Daily Report', STYLESHEET['Title']))
+    story.append(Paragraph('Daily Report', STYLESHEET['MainTitle']))
     story.append(Paragraph(date_str, STYLESHEET['SubTitle']))
     story.append(Paragraph(platform.node(), STYLESHEET['SubTitle']))
 

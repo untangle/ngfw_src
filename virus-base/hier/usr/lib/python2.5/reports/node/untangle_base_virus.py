@@ -805,7 +805,6 @@ AND NOT virus_%s_name IS NULL AND virus_%s_name != ''
 
         return sql + "ORDER BY time_stamp"
 
-
 class VirusMailDetail(DetailSection):
     def __init__(self, vendor_name):
         DetailSection.__init__(self, 'mail-events',
