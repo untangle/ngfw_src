@@ -93,6 +93,12 @@ def __getStyleSheet():
                                   fontSize=18,
                                   textColor='0x009933'))
 
+    stylesheet.add(ParagraphStyle(name='Heading3',
+                                  parent=stylesheet['Normal'],
+                                  fontName = 'Helvetica-Bold',
+                                  fontSize=14,
+                                  textColor='0x009933'))
+
     stylesheet.add(ParagraphStyle(name='TableTitle',
                                   parent=stylesheet['Normal'],
                                   fontName = 'Helvetica-Bold'))
@@ -262,7 +268,8 @@ def generate_pdf(report_base, end_date, mail_reports):
 
     t = Table([[Paragraph('<a name="TOP"/>' + _('Report'),
                           STYLESHEET['Heading1'])],
-               [Paragraph(date_str, STYLESHEET['Heading2'])]])
+               [Paragraph(date_str, STYLESHEET['Heading3'])]],
+              style=[('BOTTOMPADDING', (0,0), (-1,-1), 25)])
 
     story.append(Table([[Image('/var/www/images/BrandingLogo.gif'), t]],
                        style=[('VALIGN', (1,0), (1,0), 'TOP')]))
