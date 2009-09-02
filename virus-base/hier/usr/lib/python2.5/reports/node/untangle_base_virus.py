@@ -476,7 +476,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
         try:
             q = """\
 SELECT date_trunc('hour', trunc_time)::time AS time,
-       sum(viruses_%s_blocked) / %%s as viruses_%s_blocked
+       COALESCE(sum(viruses_%s_blocked), 0)::float / %%s as viruses_%s_blocked
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
