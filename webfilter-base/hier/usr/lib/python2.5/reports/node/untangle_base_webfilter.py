@@ -449,7 +449,7 @@ class TotalWebUsage(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT coalesce(sum(hits)::int, 0), coalesce(sum(wf_%s_blocks)::int, 0)
+SELECT COALESCE(sum(hits)::int, 0), coalesce(sum(wf_%s_blocks)::int, 0)
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
         if host:
@@ -674,13 +674,11 @@ class TopTenWebPolicyViolatorsByHits(Graph):
         one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
 
         query = """\
-SELECT hname, sum(wf_%s_blocks)::int as blocks_sum
+SELECT hname, COALESCE(sum(wf_%s_blocks), 0)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND wf_%s_category != ''
-AND wf_%s_blocks > 0
-GROUP BY hname ORDER BY blocks_sum DESC LIMIT 10""" \
-            % (3 * (self.__vendor_name,))
+GROUP BY hname
+ORDER BY blocks_sum DESC LIMIT 10""" % self.__vendor_name
 
         conn = sql_helper.get_connection()
         try:
@@ -909,7 +907,7 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
                                   link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
-                
+
         finally:
             conn.commit()
 
