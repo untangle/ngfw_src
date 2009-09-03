@@ -195,11 +195,12 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return readXml(d, appName, "email", emailAddr);
     }
 
-    public List<List> getDetailData(Date d, String appName, String detailName)
+    public List<List> getDetailData(Date d, String appName, String detailName,
+                                    String type, String value)
     {
         List<List> rv = new ArrayList<List>();
 
-        ApplicationData ad = readXml(d, appName, null, null);
+        ApplicationData ad = readXml(d, appName, type, value);
         if (null == ad) {
             return rv;
         }

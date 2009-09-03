@@ -54,6 +54,9 @@ public class CsvServlet extends HttpServlet
         String app = req.getParameter("app");
         String detail = req.getParameter("detail");
 
+        String type = req.getParameter("type");
+        String value = req.getParameter("value");
+
         if (null == dateStr || null == app || null == detail) {
             return;
         }
@@ -68,7 +71,7 @@ public class CsvServlet extends HttpServlet
 
             DateFormat df = new SimpleDateFormat(DATE_FORMAT);
             Date date = df.parse(dateStr);
-            List<List> ll = rm.getDetailData(date, app, detail);
+            List<List> ll = rm.getDetailData(date, app, detail, type, value);
 
             for (List l : ll) {
                 for (int i = 0; i < l.size(); i++) {
