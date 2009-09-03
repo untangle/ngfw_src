@@ -1,5 +1,4 @@
 from untangle.ats.reports_setup import ReportsSetup, PipelineEndpoint, PipelineStats
-from untangle.ats.reports_setup import QueryString
 
 import datetime
 
@@ -8,8 +7,8 @@ class TestReportsBasic(ReportsSetup):
     def setup_class( cls ):
         ReportsSetup.setup_class.im_func(cls)
         cls.create_session_event()
-        cls.create_session_event(PipelineEndpoint( c_server_port = ReportsSetup.DEFAULT_SERVER_PORT + 1 ))
-        cls.create_session_event(PipelineEndpoint( c_server_port = ReportsSetup.DEFAULT_SERVER_PORT + 2 ))
+        cls.create_session_event(PipelineEndpoint( c_server_port = PipelineEndpoint.DEFAULT_SERVER_PORT + 1 ))
+        cls.create_session_event(PipelineEndpoint( c_server_port = PipelineEndpoint.DEFAULT_SERVER_PORT + 2 ))
         cls.create_session_event(PipelineEndpoint( c_client_addr = "10.0.0.1" ))
         cls.create_session_event(PipelineEndpoint( c_client_addr = "10.0.0.2" ))
         cls.create_session_event(PipelineEndpoint( s_client_addr = "10.0.0.2" ))
@@ -58,7 +57,7 @@ class TestReportsBasic(ReportsSetup):
     def test_session_totals_time( self ):
         yield self.check_session_totals, "", 11
         ## Truncate the time
-        timestamp = ReportsSetup.DEFAULT_TIMESTAMP.replace( second = 0, microsecond = 0 )
+        timestamp = PipelineEndpoint.DEFAULT_TIMESTAMP.replace( second = 0, microsecond = 0 )
         yield self.check_session_totals, "trunc_time=timestamp '%s'" % timestamp, 6
         timestamp = datetime.datetime.now().replace( hour = 3, minute = 10, second = 0, microsecond = 0 ) - datetime.timedelta( days = 1 )
         yield self.check_session_totals, "trunc_time=timestamp '%s'" % timestamp, 1
@@ -68,14 +67,14 @@ class TestReportsBasic(ReportsSetup):
         yield self.check_session_totals, "trunc_time=timestamp '%s'" % timestamp, 1
 
     def test_session_totals_address( self ):
-        yield self.check_session_totals, "hname='%s'" % ReportsSetup.DEFAULT_CLIENT_ADDRESS, 8
+        yield self.check_session_totals, "hname='%s'" % PipelineEndpoint.DEFAULT_CLIENT_ADDRESS, 8
         yield self.check_session_totals, "hname='%s'" % "10.0.0.1", 1
         yield self.check_session_totals, "hname='%s'" % "10.0.0.2", 2
 
     def test_session_totals_address( self ):
-        yield self.check_session_totals, "c_server_port=%d" % ReportsSetup.DEFAULT_SERVER_PORT, 9
-        yield self.check_session_totals, "c_server_port=%d" % (ReportsSetup.DEFAULT_SERVER_PORT + 1), 1
-        yield self.check_session_totals, "c_server_port=%d" % (ReportsSetup.DEFAULT_SERVER_PORT + 2), 1
+        yield self.check_session_totals, "c_server_port=%d" % PipelineEndpoint.DEFAULT_SERVER_PORT, 9
+        yield self.check_session_totals, "c_server_port=%d" % (PipelineEndpoint.DEFAULT_SERVER_PORT + 1), 1
+        yield self.check_session_totals, "c_server_port=%d" % (PipelineEndpoint.DEFAULT_SERVER_PORT + 2), 1
         
     def check_session_totals( self, params, count ):
         curs = self.get_conn().cursor()
