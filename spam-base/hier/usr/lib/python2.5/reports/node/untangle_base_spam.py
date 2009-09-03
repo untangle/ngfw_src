@@ -435,7 +435,7 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
                 plot_query = """\
 SELECT date_trunc('day', trunc_time) AS day,
        COALESCE(sum(msgs), 0)::float AS msgs,
-       COALESCE(sum(%s_spam_msgs), )::float AS %s_spam_msgs
+       COALESCE(sum(%s_spam_msgs), 0)::float AS %s_spam_msgs
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY day
