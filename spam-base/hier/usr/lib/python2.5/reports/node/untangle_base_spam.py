@@ -521,7 +521,7 @@ LIMIT 10""" % (self.__short_name,)
                 num = r[1]
                 counted_spam += num
 
-                lks.append(KeyStatistic(addr, num, self.__spam_label, 'HostLink'))
+                lks.append(KeyStatistic(addr, num, self.__spam_label, 'EmailLink'))
                 pds[addr] = num
         finally:
             conn.commit()
@@ -550,7 +550,7 @@ class SpamDetail(DetailSection):
         if host:
             rv.append(ColumnDesc('hname', _('Client'), 'String'))
         else:
-            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+            rv.append(ColumnDesc('hname', _('Client'), 'EmailLink'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
                ColumnDesc('subject', _('Subject')),
