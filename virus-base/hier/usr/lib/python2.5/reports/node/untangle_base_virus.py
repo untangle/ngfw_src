@@ -782,7 +782,7 @@ class VirusWebDetail(DetailSection):
 
         rv += [ColumnDesc('virus_ident', _('Virus Name')),
                ColumnDesc('url', _('URL'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink'),
+               ColumnDesc('s_server_addr', _('Server IP')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
@@ -790,7 +790,7 @@ class VirusWebDetail(DetailSection):
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         sql = """\
 SELECT time_stamp, hname, uid, virus_%s_name as virus_ident, 'http://' || host || uri as url,
-       s_server_addr, s_server_port
+       s_server_addr::text, s_server_port
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
 AND NOT virus_%s_name IS NULL AND virus_%s_name != ''
@@ -826,7 +826,7 @@ class VirusMailDetail(DetailSection):
         rv += [ColumnDesc('virus_ident', _('Virus Name')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('addr', _('Recipient')), # FIXME: or is it sender ?
-               ColumnDesc('c_client_addr', _('Client IP'), 'HostLink'),
+               ColumnDesc('c_client_addr', _('Client IP')),
                ColumnDesc('c_client_port', _('Client Port'))]
 
         return rv
@@ -834,7 +834,7 @@ class VirusMailDetail(DetailSection):
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         sql = """\
 SELECT time_stamp, hname, uid, virus_%s_name, subject, addr,
-       c_client_addr, c_client_addr
+       c_client_addr::text
 FROM reports.n_mail_addrs
 WHERE time_stamp >= %s AND time_stamp < %s AND addr_kind = 'T'
 AND NOT virus_%s_name IS NULL AND virus_%s_name != ''

@@ -944,7 +944,7 @@ class CookieDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('sw_cookie_ident', _('Cookie')),
-               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink'),
+               ColumnDesc('s_server_addr', _('Server IP')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
@@ -954,7 +954,7 @@ class CookieDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, sw_cookie_ident, s_server_addr, s_server_port
+SELECT time_stamp, hname, uid, sw_cookie_ident, s_server_addr::text, s_server_port
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
       AND NOT sw_cookie_ident IS NULL AND sw_cookie_ident != ''
@@ -989,7 +989,7 @@ class UrlBlockDetail(DetailSection):
 
         rv += [ColumnDesc('s_server', _('Server')),
                ColumnDesc('uri', _('URI')),
-               ColumnDesc('s_server_addr', _('Server IP'), 'HostLink'),
+               ColumnDesc('s_server_addr', _('Server IP')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
@@ -999,7 +999,7 @@ class UrlBlockDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, 'http://' || host as s_server, uri, s_server_addr,
+SELECT time_stamp, hname, uid, 'http://' || host as s_server, uri, s_server_addr::text,
        s_server_port
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s AND sw_blacklisted
@@ -1033,7 +1033,7 @@ class SubnetDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('sw_blacklisted', _('Subnet')),
-               ColumnDesc('c_server_addr', _('Server IP'), 'HostLink'),
+               ColumnDesc('c_server_addr', _('Server IP')),
                ColumnDesc('c_server_port', _('Server Port'))]
 
         return rv
@@ -1043,7 +1043,7 @@ class SubnetDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, sw_access_ident, c_server_addr, c_server_port
+SELECT time_stamp, hname, uid, sw_access_ident, c_server_addr::text, c_server_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s AND NOT sw_access_ident IS NULL
       AND sw_access_ident != ''

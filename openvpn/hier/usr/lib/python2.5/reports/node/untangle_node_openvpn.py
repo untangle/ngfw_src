@@ -238,7 +238,7 @@ class OpenVpnDetail(DetailSection):
         rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
 
         rv = rv + [ColumnDesc('client_name', _('Client'))]
-        rv = rv + [ColumnDesc('remote_address', _('Address'), 'HostLink')]
+        rv = rv + [ColumnDesc('remote_address', _('Address'))]
         rv = rv + [ColumnDesc('remote_port', _('Port'))]
 
         return rv
@@ -247,7 +247,7 @@ class OpenVpnDetail(DetailSection):
         if host or user or email:
             return None
 
-        sql = "SELECT trunc_time, client_name, remote_address, remote_port"
+        sql = "SELECT trunc_time, client_name, remote_address::text, remote_port"
 
         sql = sql + ("""
 FROM reports.n_openvpn_connect_totals
@@ -255,5 +255,5 @@ WHERE trunc_time >= %s AND trunc_time < %s""" % (DateFromMx(start_date),
                                                  DateFromMx(end_date)))
 
         return sql + "ORDER BY time_stamp"
-
+    
 reports.engine.register_node(OpenVpn())

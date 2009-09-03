@@ -613,7 +613,7 @@ class ProtofilterDetail(DetailSection):
 
         rv = rv + [ColumnDesc('pf_protocol', _('Protocol')),
                    ColumnDesc('pf_blocked', _('Action')),
-                   ColumnDesc('c_server_addr', _('Server'), 'HostLink'),
+                   ColumnDesc('c_server_addr', _('Server')),
                    ColumnDesc('c_server_port', _('Port'))]
 
         return rv
@@ -629,7 +629,7 @@ class ProtofilterDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""pf_protocol, pf_blocked, c_server_addr, c_server_port
+        sql = sql + ("""pf_protocol, pf_blocked, c_server_addr::text, c_server_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
 AND NOT pf_protocol ISNULL

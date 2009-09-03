@@ -922,7 +922,7 @@ class AdministrativeLoginsDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        rv += [ColumnDesc('client_addr', _('Client IP'), 'HostLink'),
+        rv += [ColumnDesc('client_addr', _('Client IP')),
                ColumnDesc('succeeded', _('URI'))]
 
         return rv
@@ -932,7 +932,7 @@ class AdministrativeLoginsDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, succeeded, client_addr
+SELECT time_stamp, succeeded, client_addr::text
 FROM reports.n_admin_logins
 WHERE time_stamp >= %s AND time_stamp < %s
 """ % (DateFromMx(start_date), DateFromMx(end_date))

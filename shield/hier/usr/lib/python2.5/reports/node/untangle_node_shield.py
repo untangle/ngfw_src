@@ -281,7 +281,7 @@ class ShieldDetail(DetailSection):
 
         rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
 
-        rv = rv + [ColumnDesc('client_addr', _('Client'), 'HostLink'),
+        rv = rv + [ColumnDesc('client_addr', _('Client')),
                    ColumnDesc('limited', _('Limited')),
                    ColumnDesc('dropped', _('Dropped')),
                    ColumnDesc('rejected', _('Rejected'))]
@@ -294,7 +294,7 @@ class ShieldDetail(DetailSection):
 
         sql = "SELECT trunc_time, "
 
-        sql = sql + ("""client_addr, limited, dropped, rejected
+        sql = sql + ("""client_addr::text, limited, dropped, rejected
 FROM reports.n_shield_rejection_totals
 WHERE trunc_time >= %s AND trunc_time < %s
       AND (limited + dropped + rejected) > 0""" % (DateFromMx(start_date),

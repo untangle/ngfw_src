@@ -552,9 +552,9 @@ class SpamDetail(DetailSection):
         else:
             rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
 
-        rv += [ColumnDesc('score', _('Score')),
+        rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
                ColumnDesc('subject', _('Subject')),
-               ColumnDesc('s_server_addr', _('Source IP'), 'HostLink'),
+               ColumnDesc('s_server_addr', _('Source IP')),
                ColumnDesc('action', _('Action')),
                ColumnDesc('receiver', _('Msg receiver'))]
 
@@ -565,7 +565,7 @@ class SpamDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, %s_score, subject, s_server_addr, %s_action as action, addr
+SELECT time_stamp, hname, uid, %s_score, subject, s_server_addr::text, %s_action as action, addr
 FROM reports.n_mail_addrs
 WHERE time_stamp >= %s AND time_stamp < %s
       AND %s_is_spam AND addr_kind = 'T'
