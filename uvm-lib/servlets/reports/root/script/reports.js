@@ -170,15 +170,21 @@ Ung.Reports = Ext.extend(Object,
                                                                              }, { html : '<h1>'+i18n._('Reports')+'</h1>',
                                                                                   region : 'center'
                                                                              }, { region : 'east',
-                                                                                  width : 200,
                                                                                   layout : 'fit',
+                                                                                  width : 500,
+                                                                                  cls   : 'dateRange',
                                                                                   items : [{ xtype : "fieldset",
-                                                                                             align : 'right',
                                                                                              border : false,
+                                                                                             cls : 'dateContainer',
+                                                                                             id : 'rangeFieldSet',                                                                                  
                                                                                              items : [{ xtype : 'splitbutton',
                                                                                                         id : 'report-day-menu',
                                                                                                         text : this.reportDatesItems[0].text,
                                                                                                         menu : new Ext.menu.Menu({ items : this.reportDatesItems })
+                                                                                                      },{ xtype : 'label',
+                                                                                                        id : 'report-date-range',
+                                                                                                        html : reports.getDateRangeText(this.reportDatesItems[0]),
+                                                                                                        height:20
                                                                                                       }]
                                                                                            }]
                                                                                 }]
@@ -344,6 +350,7 @@ Ung.Reports = Ext.extend(Object,
 
                                if (item.dt.time == date.time) {
                                  Ext.getCmp('report-day-menu').setText(item.text);
+                                 Ext.getCmp('report-date-range').setText(reports.getDateRangeText(item));
                                  found = true;
                                  break;
                                }
@@ -367,7 +374,13 @@ Ung.Reports = Ext.extend(Object,
                                                                        Ext.getCmp('tree-panel').getLoader().load(root);
                                                                      }.createDelegate(this), this.reportsDate);
                            },
-
+                           getDateRangeText : function(selectedDate){
+                                var oneDay = 24*3600*1000,
+                                    toDate =new Date(selectedDate.dt.time - oneDay),
+                                    fromDate = new Date(selectedDate.dt.time - (8*oneDay)),
+                                    formatString = 'l, F j Y';
+                                return fromDate.format(formatString) + " - "+ toDate.format(formatString);
+                           },
                            getApplicationData: function(nodeName) {
                              reports.progressBar.wait(i18n._("Please Wait"));
                              rpc.reportingManager.getApplicationData(function (result, exception)
