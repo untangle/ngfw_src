@@ -542,12 +542,12 @@ class SpamDetail(DetailSection):
                                _('%s Events' % (self.__title.capitalize(),)))
 
     def get_columns(self, host=None, user=None, email=None):
-        if email:
+        if host or user:
             return None
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        if host:
+        if email:
             rv.append(ColumnDesc('hname', _('Client'), 'String'))
         else:
             rv.append(ColumnDesc('hname', _('Client'), 'EmailLink'))
@@ -561,7 +561,7 @@ class SpamDetail(DetailSection):
         return rv
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
-        if email:
+        if host or user:
             return None
 
         sql = """\

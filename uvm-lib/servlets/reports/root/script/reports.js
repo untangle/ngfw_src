@@ -223,6 +223,8 @@ Ung.Reports = Ext.extend(Object,
 
                                                                                                                                   reports.selectedNode=node;
                                                                                                                                   reports.breadcrumbs=[];
+                                                                                                                                  rpc.drilldownType = null;
+                                                                                                                                  rpc.drilldownValue = null;
                                                                                                                                   reports.getApplicationData(node.attributes.name);
                                                                                                                               }
                                                                                                                             });
@@ -405,8 +407,9 @@ Ung.Reports = Ext.extend(Object,
                                                                      }.createDelegate(this), reports.reportsDate,nodeName);
                            },
 
-                           getDrilldownTableOfContents: function(fnName, value)
+                           getDrilldownTableOfContents: function(fnName, type, value)
                            {
+                             rpc.drilldownType = type;
                              rpc.drilldownValue = value;
                              reports.progressBar.wait(i18n._("Please Wait"));
                              rpc.reportingManager[fnName](function (result, exception)
@@ -427,21 +430,22 @@ Ung.Reports = Ext.extend(Object,
 
                            getTableOfContentsForUser: function(user)
                            {
-                             return this.getDrilldownTableOfContents('getTableOfContentsForUser', user);
+                             return this.getDrilldownTableOfContents('getTableOfContentsForUser', 'user', user);
                            },
 
                            getTableOfContentsForHost: function(host)
                            {
-                             return this.getDrilldownTableOfContents('getTableOfContentsForHost', host);
+                             return this.getDrilldownTableOfContents('getTableOfContentsForHost', 'host', host);
                            },
 
                            getTableOfContentsForEmail: function(email)
                            {
-                             return this.getDrilldownTableOfContents('getTableOfContentsForEmail', email);
+                             return this.getDrilldownTableOfContents('getTableOfContentsForEmail', 'email', email);
                            },
 
-                           getDrilldownApplicationData: function(fnName, app, value)
+                           getDrilldownApplicationData: function(fnName, app, type, value)
                            {
+                             rpc.drilldownType = type;
                              rpc.drilldownValue = value;
                              reports.progressBar.wait(i18n._("Please Wait"));
                              rpc.reportingManager[fnName](function (result, exception)
@@ -463,17 +467,17 @@ Ung.Reports = Ext.extend(Object,
 
                            getApplicationDataForUser: function(app, user)
                            {
-                             this.getDrilldownApplicationData('getApplicationDataForUser', app, user);
+                             this.getDrilldownApplicationData('getApplicationDataForUser', app, 'user', user);
                            },
 
                            getApplicationDataForHost: function(app, host)
                            {
-                             this.getDrilldownApplicationData('getApplicationDataForHost', app, host);
+                             this.getDrilldownApplicationData('getApplicationDataForHost', app, 'host', host);
                            },
 
                            getApplicationDataForEmail: function(app, email)
                            {
-                             this.getDrilldownApplicationData('getApplicationDataForEmail', app, email);
+                             this.getDrilldownApplicationData('getApplicationDataForEmail', app, 'email', email);
                            },
 
                            openBreadcrumb: function(breadcrumbIndex) {
@@ -630,7 +634,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                        breadcrumbArr.push('<a href="javascript:reports.openBreadcrumb('+i+')">'+reports.breadcrumbs[i].text+'</a>');
                                      }
                                    }
-                                   document.getElementById("breadcrumbs").innerHTML='<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>'+breadcrumbArr.join('<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+                                  document.getElementById("breadcrumbs").innerHTML='<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>'+breadcrumbArr.join('<span class="icon-breadcrumbs-separator">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
                                    if (itemsArray && itemsArray.length > 0) {
                                      this.tabPanel=new Ext.TabPanel({
                                        anchor: '100% 100%',
@@ -909,7 +913,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                          }
 
                                          store.loadData(data);
-                                         }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name, null, null);
+                                         }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name, rpc.drilldownType, rpc.drilldownValue);
 
                                      return detailSection;
                                  }
