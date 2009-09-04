@@ -176,7 +176,7 @@ Ung.Reports = Ext.extend(Object,
                                                                                   items : [{ xtype : "fieldset",
                                                                                              border : false,
                                                                                              cls : 'dateContainer',
-                                                                                             id : 'rangeFieldSet',                                                                                  
+                                                                                             id : 'rangeFieldSet',
                                                                                              items : [{ xtype : 'splitbutton',
                                                                                                         id : 'report-day-menu',
                                                                                                         text : this.reportDatesItems[0].text,
@@ -909,7 +909,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                          }
 
                                          store.loadData(data);
-                                     }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name);
+                                         }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name, null, null);
 
                                      return detailSection;
                                  }
