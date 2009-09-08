@@ -12,7 +12,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         initComponent : function() {
             // keep initial base settings
             this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
-            
+
             this.buildBlockLists();
             this.buildPassList();
             this.buildEventLog();
@@ -163,9 +163,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }.createDelegate(this)
                     }]
                 }, {
-                	cls: 'description',
+                    cls: 'description',
                     html : this.i18n._("Spyware Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
+                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) :
                             this.i18n._("Unknown"))
                 }],
 
@@ -488,7 +488,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }
                 return true;
             }.createDelegate(this);
-            
+
             var passColumn = new Ext.grid.CheckColumn({
                 header : "<b>" + this.i18n._("pass") + "</b>",
                 dataIndex : 'live',
@@ -694,7 +694,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 value = value.substring(0, value.length - 1);
             }
             return value.trim();
-        },        
+        },
         // validation
         validateServer : function() {
             // ipMaddr list must be validated server side
@@ -711,8 +711,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }
                 if (ipMaddrList.length > 0) {
                     try {
-                    	var result=null;
-                        try {                    	
+                        var result=null;
+                        try {
                             result = this.getValidator().validate({
                                 list : ipMaddrList,
                                 "javaClass" : "java.util.ArrayList"
@@ -721,23 +721,27 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             Ung.Util.rpcExHandler(e);
                         }
                         if (!result.valid) {
-                        	var errorMsg = "";
+                            var errorMsg = "";
                             switch (result.errorCode) {
-                                case 'INVALID_IPMADDR' : 
+                                case 'INVALID_IPMADDR' :
                                     errorMsg = this.i18n._("Invalid subnet specified") + ": " + result.cause;
                                 break;
                                 default :
                                     errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
                             }
-                        	
+
                             this.panelBlockLists.onManageSubnetList();
                             this.gridSubnetList.focusFirstChangedDataByFieldValue("ipMaddr", result.cause);
                             Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
                             return false;
                         }
                     } catch (e) {
-                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
-                        return false;
+                      message = e.message;
+                      if (message == "Unknown") {
+                        message = i18n._("Please Try Again");
+                      }
+                      Ext.MessageBox.alert("Failed", message);
+                      return false;
                     }
                 }
             }

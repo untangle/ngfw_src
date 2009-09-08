@@ -19,9 +19,9 @@ Ung.SetupWizard.TextField = Ext.extend( Ext.form.TextField, {
     onRender : function(ct, position)
     {
         Ung.SetupWizard.TextField.superclass.onRender.call(this, ct, position);
-        
+
         var parent = this.el.parent()
-        
+
         if( this.boxLabel ) {
             this.labelEl = parent.createChild({
                 tag: 'label',
@@ -37,9 +37,9 @@ Ung.SetupWizard.NumberField = Ext.extend( Ext.form.NumberField, {
     onRender : function(ct, position)
     {
         Ung.SetupWizard.NumberField.superclass.onRender.call(this, ct, position);
-        
+
         var parent = this.el.parent()
-        
+
         if( this.boxLabel ) {
             this.labelEl = parent.createChild({
                 tag: 'label',
@@ -66,8 +66,12 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object,
     testMessageHandler : function( result, exception )
     {
         if ( exception ) {
-            Ext.MessageBox.alert( i18n._( "Failed" ), exception.message );
-            return;
+          message = exception.message;
+          if (message == "Unknown") {
+            message = i18n._("Please Try Again");
+          }
+          Ext.MessageBox.alert( i18n._( "Failed" ), message );
+          return;
         }
 
         var message = i18n._( 'Test email sent.  Check your mailbox to for successful delivery.' );
@@ -126,15 +130,15 @@ Ext.apply( Ext.form.VTypes, {
 
     emailAddressMatchCheck : function( val, field )
     {
-	var email_original = Ext.getCmp(field.compareEmailField);
-	return val == email_original.getValue();
+    var email_original = Ext.getCmp(field.compareEmailField);
+    return val == email_original.getValue();
     },
 
     emailAddressMatchCheckText : 'Email addresses do not match',
 
     passwordConfirmCheck : function(val,field){
-	var pass_original = Ext.getCmp(field.comparePasswordField);
-	return val == pass_original.getValue();
+    var pass_original = Ext.getCmp(field.comparePasswordField);
+    return val == pass_original.getValue();
     },
 
     passwordConfirmCheckText : 'Passwords do not match',
@@ -160,11 +164,11 @@ Ung.SetupWizard.Welcome = Ext.extend(Object,
     {
         var panel = new Ext.FormPanel({
             items : [{
-		xtype : 'label',
-		html : '<h2 class="wizard-title">'+i18n._( "Thanks for using Untangle" )+'</h2>'
-	    },{
+        xtype : 'label',
+        html : '<h2 class="wizard-title">'+i18n._( "Thanks for using Untangle" )+'</h2>'
+        },{
                 xtype : 'label',
-		cls : 'noborder',
+        cls : 'noborder',
                 html : i18n._( 'This wizard will guide you through the initial setup and configuration of your Untangle Server.') +
                     '<br/><br/>'+
                     String.format(i18n._('Click {0}Next{1} to get started.'),'<b>','</b>')
@@ -453,7 +457,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
     saveRegistrationInfo : function( handler )
     {
         Ext.MessageBox.wait( i18n._( "Saving Registration Info" ), i18n._( "Please wait" ));
-        
+
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
     afterReauthenticate : function( handler )
@@ -476,8 +480,12 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
     errorHandler : function( result, exception, foo, handler )
     {
         if(exception) {
-            Ext.MessageBox.alert("Failed",exception.message);
-            return;
+          message = exception.message;
+          if (message == "Unknown") {
+            message = i18n._("Please Try Again");
+          }
+          Ext.MessageBox.alert("Failed", message);
+          return;
         }
 
         Ext.MessageBox.hide();
@@ -1012,7 +1020,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
     saveSettings : function( handler )
     {
         Ext.MessageBox.wait( i18n._( "Saving Internet Connection Settings" ), i18n._( "Please wait" ));
-        
+
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
     afterReauthenticate : function( handler )
@@ -1308,7 +1316,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             complete();
             return;
         }
-            
+
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.loadInternalSuggestion.createDelegate( this, [ complete ] ));
     },
     loadInternalSuggestion : function( complete )
@@ -1326,7 +1334,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
         this.panel.find( "name", "network" )[0].setValue( result["network"] );
         this.panel.find( "name", "netmask" )[0].setValue( result["netmask"] );
         handler();
-        
+
     },
     onSetRouter : function(isSet){
         var ar = [this.panel.find('name','network')[0],this.panel.find('name','netmask')[0],this.panel.find('name','enableDhcpServer')[0]];
@@ -1654,7 +1662,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
     saveSettings : function( handler )
     {
         Ext.MessageBox.wait( i18n._( "Saving Email Settings" ), i18n._( "Please wait" ));
-        
+
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
     afterReauthenticate : function( handler )

@@ -16,40 +16,40 @@ Ung.QuarantineRequest.prototype = {
         var items = [];
 
         if ( requestMessageCode == 'INVALID_PORTAL_EMAIL' ) {
-	    items.push({
+        items.push({
                 xtype:'label',
                 text : i18n._( 'Your Remote Access Portal login is not configured with a valid email address.' ),
-                region : "north", 
+                region : "north",
                 cls : 'message-2',
                 ctCls : 'message-container',
                 margins:'4 4 4 4'
             });
         }
-        
+
         items = items.concat([{
             xtype : 'fieldset',
             title : this.singleSelectUser ? i18n._('Select User') : i18n._('Enter the email address for which you would like the Quarantine Digest'),
             autoHeight : true,
-	    buttonAlign : 'left',				
-	    buttons : [{
-		text : i18n._( "Request" ),
-		cls:'quarantine-left-indented-2',
-		handler : function() {
-		    var field = this.requestForm.find( "name", "email_address" )[0];
-		    var email = field.getValue();
-		    field.disable();
-		    this.rpc.requestDigest( this.requestEmail.createDelegate( this ), email );
-		},
-		scope : this
-	    }],				
-	    
-	    items : [{
-		xtype:'textfield',
-	        fieldLabel : i18n._( "Email Address" ),
-	        name : "email_address",
-	        width: '350'
-	    }]
-	}]);
+        buttonAlign : 'left',
+        buttons : [{
+        text : i18n._( "Request" ),
+        cls:'quarantine-left-indented-2',
+        handler : function() {
+            var field = this.requestForm.find( "name", "email_address" )[0];
+            var email = field.getValue();
+            field.disable();
+            this.rpc.requestDigest( this.requestEmail.createDelegate( this ), email );
+        },
+        scope : this
+        }],
+
+        items : [{
+        xtype:'textfield',
+            fieldLabel : i18n._( "Email Address" ),
+            name : "email_address",
+            width: '350'
+        }]
+    }]);
 
         this.requestForm  = new Ext.FormPanel({
             border : false,
@@ -58,9 +58,9 @@ Ung.QuarantineRequest.prototype = {
                 selectOnFocus : true,
                 msgTarget : 'side'
             },
-	    //title:'Request Quarantine Digest Email',
+        //title:'Request Quarantine Digest Email',
             //border: true,
-	    //frame:true,
+        //frame:true,
             items : items
         });
     },
@@ -71,11 +71,15 @@ Ung.QuarantineRequest.prototype = {
         this.requestForm.render( "quarantine-request-digest" );
     },
 
-    requestEmail : function( result, exception ) 
+    requestEmail : function( result, exception )
     {
         if ( exception ) {
-            Ext.MessageBox.alert("Failed",exception); 
-            return;
+          message = exception.message;
+          if (message == "Unknown") {
+            message = i18n._("Please Try Again");
+          }
+          Ext.MessageBox.alert("Failed",message);
+          return;
         }
 
         var field = this.requestForm.find( "name", "email_address" )[0];
@@ -93,7 +97,7 @@ Ung.QuarantineRequest.prototype = {
             icon : Ext.MessageBox.INFO
         });
 
-        
+
         field.enable();
     }
 };

@@ -146,6 +146,9 @@ Ung.Util= {
                 if(exception.name=="com.untangle.uvm.toolbox.MackageException" && exception.message=="mkg timed out") {
                     message=i18n._("Service busy or timed out.");
                 }
+                if (message == "Unknown") {
+                    message=i18n._("Please Try Again");
+                }
                 if(handler==null) {
                     Ext.MessageBox.alert(i18n._("Failed"), message);
                 } else if(type==null || type== "alertCallback"){
@@ -510,7 +513,11 @@ Ung.Util.RetryHandler = {
             return;
         }
 
-        Ext.MessageBox.alert(i18n._("Failed"), exception.message );
+        message = exception.message;
+        if (message == "Unknown") {
+          message = i18n._("Please Try Again");
+        }
+        Ext.MessageBox.alert(i18n._("Failed"), message);
     },
 
     callFunction : function( input )
@@ -1474,7 +1481,12 @@ Ung.MessageManager = {
                     }.createDelegate(this));
                     return;
                 }
-                Ext.MessageBox.alert(i18n._("Failed"), exception.message, function() {
+                message = exception.message;
+                if (message == "Unknown") {
+                  message = i18n._("Please Try Again");
+                }
+
+                Ext.MessageBox.alert(i18n._("Failed"), message, function() {
                     this.cycleCompleted = true;
                 }.createDelegate(this));
             }.createDelegate(this),"noAlert")) return;

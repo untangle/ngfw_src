@@ -1074,9 +1074,9 @@ SELECT time_stamp, hname, uid, wf_%s_category, 'http://' || host || uri,
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
       AND wf_%s_action = 'B'""" % (self.__vendor_name,
-                                        DateFromMx(start_date),
-                                        DateFromMx(end_date),
-                                        self.__vendor_name)
+                                   DateFromMx(start_date),
+                                   DateFromMx(end_date),
+                                   self.__vendor_name)
 
         if host:
             sql += " AND host = %s" % QuotedString(host)

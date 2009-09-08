@@ -4,7 +4,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
     Ext.namespace("Ung");
     Ext.namespace("Ung.Config");
     Ext.namespace("Ung.Config.Administration");
-    
+
     Ung.Config.Administration.SkinManager = Ext.extend( Object, {
         constructor : function( config )
         {
@@ -17,7 +17,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         {
             this.refreshList.push( store );
         },
-        
+
         uploadSkin : function( cmp, form )
         {
             form.submit({
@@ -34,13 +34,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             var handler = function() {
                 this.storeSemaphore--;
-                if (this.storeSemaphore == 0) {                    
+                if (this.storeSemaphore == 0) {
                     Ext.MessageBox.alert( this.i18n._("Succeeded"), this.i18n._("Upload Skin Succeeded"));
                     var field = form.findField( "upload_skin_textfield" );
                     if ( field != null ) field.reset();
                 }
             }.createDelegate(this);
-            
+
             for ( var c = 0 ; c < this.storeSemaphore ; c++ ) this.refreshList[c].load({callback:handler});
         },
 
@@ -50,13 +50,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
             var errorMsg = cmp.i18n._("Upload Skin Failed");
             if (action.result && action.result.msg) {
                 switch (action.result.msg) {
-                case 'Invalid Skin' : 
+                case 'Invalid Skin' :
                     errorMsg = cmp.i18n._("Invalid Skin");
                     break;
-                case 'The default skin can not be overwritten' : 
+                case 'The default skin can not be overwritten' :
                     errorMsg = cmp.i18n._("The default skin can not be overwritten");
                     break;
-                case 'Error creating skin folder' : 
+                case 'Error creating skin folder' :
                     errorMsg = cmp.i18n._("Error creating skin folder");
                     break;
                 default :
@@ -92,7 +92,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if (!this.isBrandingExpired()) {
                 this.buildBranding();
             }
-            
+
             // builds the tab panel with the tabs
             var adminTabs = [this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring, this.panelSkins];
             if (!this.isBrandingExpired()) {
@@ -105,7 +105,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // get base settings object
         getSkinSettings : function(forceReload) {
             if (forceReload || this.rpc.skinSettings === undefined) {
-            	try {
+                try {
                     this.rpc.skinSettings = rpc.skinManager.getSkinSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -116,19 +116,19 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // get admin settings
         getAdminSettings : function(forceReload) {
             if (forceReload || this.rpc.adminSettings === undefined) {
-            	try {
+                try {
                     this.rpc.adminSettings = rpc.adminManager.getAdminSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.adminSettings;
         },
         // get access settings
         getAccessSettings : function(forceReload) {
             if (forceReload || this.rpc.accessSettings === undefined) {
-            	try {
+                try {
                     this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -139,7 +139,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // get address settings
         getAddressSettings : function(forceReload) {
             if (forceReload || this.rpc.addressSettings === undefined) {
-            	try {
+                try {
                     this.rpc.addressSettings = rpc.networkManager.getAddressSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -150,7 +150,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // get snmp settings
         getSnmpSettings : function(forceReload) {
             if (forceReload || this.rpc.snmpSettings === undefined) {
-            	try {
+                try {
                     this.rpc.snmpSettings = rpc.adminManager.getSnmpManager().getSnmpSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -162,69 +162,69 @@ if (!Ung.hasResource["Ung.Administration"]) {
         // get logging settings
         getLoggingSettings : function(forceReload) {
             if (forceReload || this.rpc.loggingSettings === undefined) {
-            	try {
+                try {
                     this.rpc.loggingSettings = main.getLoggingManager().getLoggingSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.loggingSettings;
         },
         // get Current Server CertInfo
         getCurrentServerCertInfo : function(forceReload) {
             if (forceReload || this.rpc.currentServerCertInfo === undefined) {
-            	try {
+                try {
                     this.rpc.currentServerCertInfo = main.getAppServerManager().getCurrentServerCertInfo();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.currentServerCertInfo;
         },
         // get hostname
         getHostname : function(forceReload) {
             if (forceReload || this.rpc.hostname === undefined) {
-            	try {
+                try {
                     this.rpc.hostname = rpc.networkManager.getHostname();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.hostname;
         },
         // is Branding Expired
         isBrandingExpired : function(forceReload) {
             if (forceReload || this.rpc.isBrandingExpired === undefined) {
-            	try {
+                try {
                     this.rpc.isBrandingExpired = main.getLicenseManager().getLicenseStatus('untangle-branding-manager').expired;
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
+
             }
             return this.rpc.isBrandingExpired;
         },
         // get branding settings
         getBrandingBaseSettings : function(forceReload) {
             if (forceReload || this.rpc.brandingBaseSettings === undefined) {
-            	try { 
+                try {
                     this.rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                    
+
             }
             return this.rpc.brandingBaseSettings;
         },
-        
+
         buildAdministration : function() {
             // keep initial access and address settings
             this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings());
             this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings());
-        	
+
             // read-only is a check column
             var readOnlyColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("read-only"),
@@ -242,11 +242,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.grid.rowEditorChangePass.show();
                 }
             });
-            
+
             var storeData=[];
             var storeDataSet=this.getAdminSettings().users.set;
             for(var id in storeDataSet) {
-            	storeData.push(storeDataSet[id]);
+                storeData.push(storeDataSet[id]);
             }
             this.panelAdministration = new Ext.Panel({
                 name : 'panelAdministration',
@@ -257,7 +257,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 title : this.i18n._('Administration'),
                 layout : "anchor",
                 defaults: {
-                	anchor: '98%'
+                    anchor: '98%'
                 },
                 cls: 'ung-panel',
                 autoScroll : true,
@@ -280,10 +280,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },
                     // the column is autoexpanded if the grid width permits
                     autoExpandColumn : 'name',
-                    
+
                     data : storeData,
                     dataRoot: null,
-                    // the list of fields; we need all as we get/set all records once 
+                    // the list of fields; we need all as we get/set all records once
                     fields : [{
                         name : 'id'
                     }, {
@@ -357,7 +357,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._("Email"),
                         width : 200
                     }), new Ext.form.TextField({
-                    	inputType: 'password',
+                        inputType: 'password',
                         name : "Password",
                         dataIndex : "clearPassword",
                         id : 'administration_rowEditor_password_'+this.getId(),
@@ -383,7 +383,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._("Password"),
                         width : 200,
                         minLength : 3,
-                        minLengthText : String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)                        
+                        minLengthText : String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
                     }), new Ext.form.TextField({
                         inputType: 'password',
                         name : "Confirm Password",
@@ -394,12 +394,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         width : 200
                     })]
                 }), {
-                	xtype : 'fieldset',
+                    xtype : 'fieldset',
                     id:'external_administration_fieldset',
-                	title : this.i18n._('External Administration'),
+                    title : this.i18n._('External Administration'),
                     autoHeight : true,
-                    labelWidth: 150,                    
-                	items : [{
+                    labelWidth: 150,
+                    items : [{
                         xtype : 'checkbox',
                         name : 'isOutsideAdministrationEnabled',
                         boxLabel : this.i18n._('Enable External Administration.'),
@@ -412,7 +412,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 }.createDelegate(this)
                             }
                         }
-                	},{
+                    },{
                         xtype : 'checkbox',
                         name : 'isOutsideReportingEnabled',
                         boxLabel : this.i18n._('Enable External Report Viewing.'),
@@ -459,7 +459,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : this.i18n._('Allow external access from any IP address.'), 
+                        boxLabel : this.i18n._('Allow external access from any IP address.'),
                         hideLabel : true,
                         name : 'isOutsideAccessRestricted',
                         checked : !this.getAccessSettings().isOutsideAccessRestricted,
@@ -476,7 +476,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : this.i18n._('Restrict external access to these external IP address(es).'), 
+                        boxLabel : this.i18n._('Restrict external access to these external IP address(es).'),
                         hideLabel : true,
                         name : 'isOutsideAccessRestricted',
                         checked : this.getAccessSettings().isOutsideAccessRestricted,
@@ -493,9 +493,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         border: false,
-                    	layout:'column',
+                        layout:'column',
                         cls : 'administration_network',
-                    	items: [{
+                        items: [{
                             border: false,
                             columnWidth:.35,
                             layout: 'form',
@@ -510,7 +510,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 vtype : 'ipAddress',
                                 disabled : !this.getAccessSettings().isOutsideAccessRestricted
                             }]
-                    	},{
+                        },{
                             border: false,
                             columnWidth:.35,
                             layout: 'form',
@@ -524,17 +524,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 allowBlank : false,
                                 blankText : this.i18n._("A \"Netmask\" must be specified."),
                                 vtype : 'ipAddress',
-                                disabled : !this.getAccessSettings().isOutsideAccessRestricted                                
+                                disabled : !this.getAccessSettings().isOutsideAccessRestricted
                             }]
-                    	}]
-                	}] 
+                        }]
+                    }]
                 },{
                     xtype : 'fieldset',
                     title : this.i18n._('Internal Administration'),
                     autoHeight : true,
                     items : [{
                         xtype : 'radio',
-                        boxLabel : this.i18n._('Enable HTTP administration inside the local network (default)'), 
+                        boxLabel : this.i18n._('Enable HTTP administration inside the local network (default)'),
                         hideLabel : true,
                         name : 'isInsideInsecureEnabled',
                         checked : this.getAccessSettings().isInsideInsecureEnabled,
@@ -547,7 +547,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : this.i18n._('Disable HTTP administration inside the local network'), 
+                        boxLabel : this.i18n._('Disable HTTP administration inside the local network'),
                         hideLabel : true,
                         name : 'isInsideInsecureEnabled',
                         checked : !this.getAccessSettings().isInsideInsecureEnabled,
@@ -559,10 +559,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }
                         }
                     },{
-                    	border: false,
-                    	cls: 'description',
+                        border: false,
+                        cls: 'description',
                         html : this.i18n._('Note: HTTPS administration is always enabled internally')
-                    }] 
+                    }]
                 }]
             });
 
@@ -573,28 +573,28 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 });
                  this.gridAdminAccounts.rowEditorChangePass.render('container');
             }
-                                
-            
-            
+
+
+
         },
         buildPublicAddress : function() {
             var hostname = this.getAddressSettings().hostName;
-            
+
             var message = String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + hostname + '</i>' );
             if ( hostname.indexOf( "." ) < 0 ) {
-                message += String.format( this.i18n._( '{0}The current hostname is not a qualified hostname, click {1}here{2} to fix it{3}' ), 
-                                          '<br/><span class="warning">', 
-                                          '<a href="/alpaca/hostname/index" target="_blank">', 
+                message += String.format( this.i18n._( '{0}The current hostname is not a qualified hostname, click {1}here{2} to fix it{3}' ),
+                                          '<br/><span class="warning">',
+                                          '<a href="/alpaca/hostname/index" target="_blank">',
                                           '</a>', '</span>');
             }
-            
-            var currentHostname = { 
+
+            var currentHostname = {
                 cls: 'description',
                 html : message,
                 bodyStyle : 'padding:0px 5px 10px 25px;',
                 border : false
             };
-            
+
             this.panelPublicAddress = new Ext.Panel({
                 name : 'panelPublicAddress',
                 helpSource : 'public_address',
@@ -610,13 +610,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     autoHeight : true,
                     items : [{
                         cls: 'description',
-                    	html : String.format(this.i18n._('The Public Address is the address or hostname that provides a public routable address for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'),
-                    	           main.getBrandingBaseSettings().companyName),
+                        html : String.format(this.i18n._('The Public Address is the address or hostname that provides a public routable address for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'),
+                                   main.getBrandingBaseSettings().companyName),
                         bodyStyle : 'padding-bottom:10px;',
                         border : false
                     },{
                         xtype : 'radio',
-                        boxLabel : this.i18n._('Use External IP address (default)'), 
+                        boxLabel : this.i18n._('Use External IP address (default)'),
                         hideLabel : true,
                         name : 'publicAddress',
                         checked : !this.getAddressSettings().isPublicAddressEnabled && !this.getAddressSettings().isHostNamePublic,
@@ -631,14 +631,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }
                         }
                     },{
-                    	cls: 'description',
-                    	html : String.format(this.i18n._('This works if your {0} Server has a public static IP address.'),
-                    	           main.getBrandingBaseSettings().companyName),
+                        cls: 'description',
+                        html : String.format(this.i18n._('This works if your {0} Server has a public static IP address.'),
+                                   main.getBrandingBaseSettings().companyName),
                         bodyStyle : 'padding:0px 5px 10px 25px;',
                         border : false
                     },{
                         xtype : 'radio',
-                        boxLabel : this.i18n._('Use Hostname'), 
+                        boxLabel : this.i18n._('Use Hostname'),
                         hideLabel : true,
                         name : 'publicAddress',
                         checked : this.getAddressSettings().isHostNamePublic,
@@ -654,14 +654,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }
                         }
                     },{
-                    	cls: 'description',
+                        cls: 'description',
                         html : String.format(this.i18n._('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'),
                                              main.getBrandingBaseSettings().companyName),
                         bodyStyle : 'padding:0px 5px 5px 25px;',
                         border : false
                     }, currentHostname, {
                         xtype : 'radio',
-                        boxLabel : this.i18n._('Use Manually Specified IP'), 
+                        boxLabel : this.i18n._('Use Manually Specified IP'),
                         hideLabel : true,
                         name : 'publicAddress',
                         checked : this.getAddressSettings().isPublicAddressEnabled,
@@ -677,13 +677,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }
                         }
                     },{
-                    	cls: 'description',
+                        cls: 'description',
                         html : String.format(this.i18n._('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified IP that redirects traffic to the {0} Server.'),
                                     main.getBrandingBaseSettings().companyName),
                         bodyStyle : 'padding:0px 5px 5px 25px;',
                         border : false
                     },{
-                    	xtype : 'panel',
+                        xtype : 'panel',
                         bodyStyle : 'padding-left:25px;',
                         border : false,
                         layout : 'form',
@@ -724,13 +724,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 winGenerateSelfSignedCertificate : null,
                 winGenerateCertGenTrusted : null,
                 winCertImportTrusted : null,
-                
+
                 title : this.i18n._('Certificates'),
                 layout : "anchor",
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
-                	anchor: '98%',
+                    anchor: '98%',
                     xtype : 'fieldset',
                     autoHeight : true
                 },
@@ -752,7 +752,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         id : 'administration_status_notAfter',
                         value : this.getCurrentServerCertInfo() == null ? "" : i18n.timestampFormat(this.getCurrentServerCertInfo().notAfter),
                         disabled : true,
-                        anchor:'100%'                        
+                        anchor:'100%'
                     },{
                         xtype : 'textarea',
                         fieldLabel : this.i18n._('Subject DN'),
@@ -799,9 +799,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             columnWidth:1,
                             layout: 'form',
                             items: [{
-                            	cls: 'description',
-                            	html : this.i18n._("Click this button if you have been using a signed certificate, and you want to go back to using a self-signed certificate."),
-                            	border : false
+                                cls: 'description',
+                                html : this.i18n._("Click this button if you have been using a signed certificate, and you want to go back to using a self-signed certificate."),
+                                border : false
                             }]
                         }]
                     },{
@@ -824,7 +824,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             columnWidth:1,
                             layout: 'form',
                             items: [{
-                            	cls: 'description',
+                                cls: 'description',
                                 html : this.i18n._("Click this button to generate a Certificate Signature Request (CSR), which you can then copy and paste for use by certificate authorities such as Thawte, Verisign, etc."),
                                 border : false
                             }]
@@ -849,7 +849,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             columnWidth:1,
                             layout: 'form',
                             items: [{
-                            	cls: 'description',
+                                cls: 'description',
                                 html : String.format(this.i18n._("Click this button to import a signed certificate which has been generated by a certificate authority, and was based on a previous signature request from {0}."),
                                             main.getBrandingBaseSettings().companyName),
                                 border : false
@@ -857,7 +857,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }]
                     }]
                 }],
-                
+
                 onGenerateSelfSignedCertificate : function() {
                     if (!this.winGenerateSelfSignedCertificate) {
                         var settingsCmp = Ext.getCmp(this.parentId);
@@ -883,10 +883,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 title : settingsCmp.i18n._("Generate a Self-Signed Certificate")
                             }],
                             items : settingsCmp.panelGenerateSelfSignedCertificate,
-                            
+
                             proceedAction : function() {
                                 Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
-                                
+
                                 //validation
                                 var organizationCmp = Ext.getCmp('administration_organization');
                                 var organizationUnitCmp = Ext.getCmp('administration_organizationUnit');
@@ -898,9 +898,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                     this.isBlankField(cityCmp, this.i18n._("You must specify a city.")) ||
                                     this.isBlankField(stateCmp, this.i18n._("You must specify a state.")) ||
                                     this.isBlankField(countryCmp, this.i18n._("You must specify a country."))) {
-                                    	return;
+                                        return;
                                 }
-                                
+
                                 //get user values
                                 var organization = organizationCmp.getValue();
                                 var organizationUnit = organizationUnitCmp.getValue();
@@ -909,20 +909,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 var country = countryCmp.getValue();
                                 var distinguishedName = String.format("C={4},ST={3},L={2},OU={1},O={0}",
                                         organization, organizationUnit, city, state, country);
-                                
+
                                 // generate certificate
                                 main.getAppServerManager().regenCert(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                     if (result) { //true or false
                                         //success
-                                        
-                                    	//update status
-                                    	this.updateCertificatesStatus();
-                                    	
+
+                                        //update status
+                                        this.updateCertificatesStatus();
+
                                         Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Generated"),
                                             function () {
                                                 this.panelCertificates.winGenerateSelfSignedCertificate.cancelAction();
-                                            }.createDelegate(this) 
+                                            }.createDelegate(this)
                                         );
                                     } else {
                                         //failed
@@ -930,13 +930,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         return;
                                     }
                                 }.createDelegate(this), distinguishedName, 5*365);
-                            	
+
                             }.createDelegate(settingsCmp)
                         });
                     }
                     this.winGenerateSelfSignedCertificate.show();
                 },
-                
+
                 onGenerateCertGenTrusted : function() {
                     if (!this.winGenerateCertGenTrusted) {
                         var settingsCmp = Ext.getCmp(this.parentId);
@@ -962,21 +962,21 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 title : settingsCmp.i18n._("Generate a Certificate Signature Request")
                             }],
                             items : settingsCmp.panelGenerateCertGenTrusted,
-                            
+
                             proceedAction : function() {
                                 Ext.MessageBox.wait(this.i18n._("Generating Certificate..."), i18n._("Please wait"));
-                                
+
                                 // generate certificate request
                                 main.getAppServerManager().generateCSR(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
-                                    if (result != null) { 
+                                    if (result != null) {
                                         //success
                                         Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Signature Request Successfully Generated"),
                                             function () {
                                                 var crsCmp = Ext.getCmp('administration_crs');
                                                 crsCmp.setValue(result);
                                                 crsCmp.focus(true);
-                                            }.createDelegate(this) 
+                                            }.createDelegate(this)
                                         );
                                     } else {
                                         //failed
@@ -984,13 +984,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         return;
                                     }
                                 }.createDelegate(this));
-                                
+
                             }.createDelegate(settingsCmp)
                         });
                     }
                     this.winGenerateCertGenTrusted.show();
                 },
-                
+
                 onCertImportTrusted : function() {
                     if (!this.winCertImportTrusted) {
                         var settingsCmp = Ext.getCmp(this.parentId);
@@ -1016,27 +1016,27 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 title : settingsCmp.i18n._("Import Signed Certificate")
                             }],
                             items : settingsCmp.panelCertImportTrusted,
-                            
+
                             proceedAction : function() {
                                 Ext.MessageBox.wait(this.i18n._("Importing Certificate..."), i18n._("Please wait"));
-                                
+
                                 //get user values
                                 var cert = Ext.getCmp('administration_import_cert').getValue();
                                 var caCert = Ext.getCmp('administration_import_caCert').getValue();
-                                
+
                                 // import certificate
                                 main.getAppServerManager().importServerCert(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                     if (result) { //true or false
                                         //success
-                                        
+
                                         //update status
                                         this.updateCertificatesStatus();
-                                        
+
                                         Ext.MessageBox.alert(this.i18n._("Succeeded"), this.i18n._("Certificate Successfully Imported"),
                                             function () {
                                                 this.panelCertificates.winCertImportTrusted.cancelAction();
-                                            }.createDelegate(this) 
+                                            }.createDelegate(this)
                                         );
                                     } else {
                                         //failed
@@ -1044,23 +1044,23 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         return;
                                     }
                                 }.createDelegate(this), cert, caCert.length==0?null:caCert );
-                                
+
                             }.createDelegate(settingsCmp)
                         });
                     }
                     this.winCertImportTrusted.show();
                 },
-                
+
                 beforeDestroy : function() {
                     Ext.destroy(this.winGenerateSelfSignedCertificate);
                     Ext.destroy(this.winGenerateCertGenTrusted);
                     Ext.destroy(this.winCertImportTrusted);
                     Ext.Panel.prototype.beforeDestroy.call(this);
                 }
-                
+
             })
         },
-        
+
         // Generate Self-Signed certificate
         buildGenerateSelfSignedCertificate : function() {
             this.panelGenerateSelfSignedCertificate = new Ext.Panel({
@@ -1075,9 +1075,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 items: {
                     xtype: 'fieldset',
                     autoHeight : true,
-                    labelWidth: 150,                    
+                    labelWidth: 150,
                     items : [{
-                    	cls: 'description',
+                        cls: 'description',
                         html : this.i18n._('Please fill out the following fields, which will be used to generate your self-signed certificate.'),
                         bodyStyle : 'padding-bottom:10px;',
                         border : false
@@ -1132,7 +1132,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             });
         },
-        
+
         // Generate Signature Request
         buildGenerateCertGenTrusted : function() {
             this.panelGenerateCertGenTrusted = new Ext.Panel({
@@ -1145,7 +1145,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 cls: 'ung-panel',
                 autoScroll : true,
                 items: [{
-                	cls: 'description',
+                    cls: 'description',
                     html : this.i18n._('Click the Proceed button to generate a signature below. Copy the signature (Control-C), and paste it into the necessary form from your Certificate Authority (Verisign, Thawte, etc.).'),
                     bodyStyle : 'padding-bottom:10px;',
                     border : false
@@ -1159,7 +1159,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }]
             });
         },
-        
+
         // Import Signed Certificate
         buildCertImportTrusted : function() {
             this.panelCertImportTrusted = new Ext.Panel({
@@ -1172,7 +1172,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 cls: 'ung-panel',
                 autoScroll : true,
                     items : [{
-                    	cls: 'description',
+                        cls: 'description',
                         html : this.i18n._('When your Certificate Authority (Verisign, Thawte, etc.) has sent your Signed Certificate, copy and paste it below (Control-V) then press the Proceed button.'),
                         bodyStyle : 'padding-bottom:10px;',
                         border : false
@@ -1184,7 +1184,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         height : 200,
                         hideLabel : true
                     },{
-                    	cls: 'description',
+                        cls: 'description',
                         html : this.i18n._('If your Certificate Authority (Verisign, Thawte, etc.) also send you an Intermediate Certificate, paste it below. Otherwise, do not paste anything below.'),
                         bodyStyle : 'padding:20px 0px 10px 0px;',
                         border : false
@@ -1198,22 +1198,22 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }]
             });
         },
-        
+
         updateCertificatesStatus : function() {
-        	var certInfo = this.getCurrentServerCertInfo(true);
-        	if (certInfo != null) {
+            var certInfo = this.getCurrentServerCertInfo(true);
+            if (certInfo != null) {
                 Ext.getCmp('administration_status_notBefore').setValue(i18n.timestampFormat(certInfo.notBefore));
                 Ext.getCmp('administration_status_notAfter').setValue(i18n.timestampFormat(certInfo.notAfter));
                 Ext.getCmp('administration_status_subjectDN').setValue(certInfo.subjectDN);
                 Ext.getCmp('administration_status_issuerDN').setValue(certInfo.issuerDN);
-        	}
+            }
         },
-        
+
         buildMonitoring : function() {
             // keep initial settings
             this.initialSnmpSettings = Ung.Util.clone(this.getSnmpSettings());
             this.initialLoggingSettings = Ung.Util.clone(this.getLoggingSettings());
-        	
+
             this.panelMonitoring = new Ext.Panel({
                 name : 'panelMonitoring',
                 helpSource : 'monitoring',
@@ -1233,7 +1233,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     labelWidth: 150,
                     items : [{
                         xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Disable{1} SNMP Monitoring. (This is the default setting.)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable{1} SNMP Monitoring. (This is the default setting.)'), '<b>', '</b>'),
                         hideLabel : true,
                         name : 'snmpEnabled',
                         checked : !this.getSnmpSettings().enabled,
@@ -1256,7 +1256,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Enable{1} SNMP Monitoring.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable{1} SNMP Monitoring.'), '<b>', '</b>'),
                         hideLabel : true,
                         name : 'snmpEnabled',
                         checked : this.getSnmpSettings().enabled,
@@ -1297,7 +1297,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'sysContact',
                         id: 'administration_snmp_sysContact',
                         value : this.getSnmpSettings().sysContact == 'MY_CONTACT_INFO' ? this.i18n._('MY_CONTACT_INFO') : this.getSnmpSettings().sysContact,
-                        disabled : !this.getSnmpSettings().enabled                        
+                        disabled : !this.getSnmpSettings().enabled
                         //vtype : 'email'
                     },{
                         xtype : 'textfield',
@@ -1306,16 +1306,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : 'sysLocation',
                         id: 'administration_snmp_sysLocation',
                         value : this.getSnmpSettings().sysLocation == 'MY_LOCATION' ? this.i18n._('MY_LOCATION') : this.getSnmpSettings().sysLocation,
-                        disabled : !this.getSnmpSettings().enabled                        
+                        disabled : !this.getSnmpSettings().enabled
                     },{
                         xtype : 'radio',
                         itemCls : 'left-indent-1',
-                        boxLabel : String.format(this.i18n._('{0}Disable Traps{1} so no trap events are generated.  (This is the default setting.)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable Traps{1} so no trap events are generated.  (This is the default setting.)'), '<b>', '</b>'),
                         hideLabel : true,
                         name : 'sendTraps',
-                        id: 'administration_snmp_sendTraps_disable',                        
+                        id: 'administration_snmp_sendTraps_disable',
                         checked : !this.getSnmpSettings().sendTraps,
-                        disabled : !this.getSnmpSettings().enabled,                        
+                        disabled : !this.getSnmpSettings().enabled,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
@@ -1330,12 +1330,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         xtype : 'radio',
                         itemCls : 'left-indent-1',
-                        boxLabel : String.format(this.i18n._('{0}Enable Traps{1} so trap events are sent when they are generated.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable Traps{1} so trap events are sent when they are generated.'), '<b>', '</b>'),
                         hideLabel : true,
                         name : 'sendTraps',
                         id: 'administration_snmp_sendTraps_enable',
                         checked : this.getSnmpSettings().sendTraps,
-                        disabled : !this.getSnmpSettings().enabled,                        
+                        disabled : !this.getSnmpSettings().enabled,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
@@ -1356,7 +1356,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         value : this.getSnmpSettings().trapCommunity == 'MY_TRAP_COMMUNITY' ? this.i18n._('MY_TRAP_COMMUNITY') : this.getSnmpSettings().trapCommunity,
                         allowBlank : false,
                         blankText : this.i18n._("An Trap \"Community\" must be specified."),
-                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
+                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Host'),
@@ -1365,8 +1365,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         id: 'administration_snmp_trapHost',
                         value : this.getSnmpSettings().trapHost == 'MY_TRAP_HOST' ? this.i18n._('MY_TRAP_HOST') : this.getSnmpSettings().trapHost,
                         allowBlank : false,
-                        blankText : this.i18n._("An Trap \"Host\" must be specified."),                        
-                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
+                        blankText : this.i18n._("An Trap \"Host\" must be specified."),
+                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps
                     },{
                         xtype : 'numberfield',
                         itemCls : 'left-indent-2',
@@ -1380,13 +1380,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         allowBlank : false,
                         blankText : this.i18n._("You must provide a valid port."),
                         vtype : 'port',
-                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps                     
+                        disabled : !this.getSnmpSettings().enabled || !this.getSnmpSettings().sendTraps
                     }]
                 }, {
                     title: this.i18n._('Syslog'),
                     items: [{
                         xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Disable{1} Syslog Monitoring. (This is the default setting.)'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Disable{1} Syslog Monitoring. (This is the default setting.)'), '<b>', '</b>'),
                         hideLabel : true,
                         name : 'syslogEnabled',
                         checked : !this.getLoggingSettings().syslogEnabled,
@@ -1405,7 +1405,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }
                     },{
                         xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Enable{1} Syslog Monitoring.'), '<b>', '</b>'), 
+                        boxLabel : String.format(this.i18n._('{0}Enable{1} Syslog Monitoring.'), '<b>', '</b>'),
                         hideLabel : true,
                         name : 'syslogEnabled',
                         checked : this.getLoggingSettings().syslogEnabled,
@@ -1445,7 +1445,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         allowBlank : false,
                         blankText : this.i18n._("You must provide a valid port."),
                         vtype : 'port',
-                        disabled : !this.getLoggingSettings().syslogEnabled                        
+                        disabled : !this.getLoggingSettings().syslogEnabled
                     },{
                         xtype : 'combo',
                         name : 'syslogFacility',
@@ -1483,12 +1483,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 ["LOCAL_5", this.i18n._("local 5")],
                                 ["LOCAL_6", this.i18n._("local 6")],
                                 ["LOCAL_7", this.i18n._("local 7")]
-                            ]        
+                            ]
                         }),
                         displayField : 'name',
                         valueField : 'key',
                         value : this.getLoggingSettings().syslogFacility,
-                        disabled : !this.getLoggingSettings().syslogEnabled                        
+                        disabled : !this.getLoggingSettings().syslogEnabled
                     },{
                         xtype : 'combo',
                         name : 'syslogThreshold',
@@ -1510,12 +1510,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 ["NOTICE", this.i18n._("notice")],
                                 ["INFORMATIONAL", this.i18n._("informational")],
                                 ["DEBUG", this.i18n._("debug")]
-                            ]        
+                            ]
                         }),
                         displayField : 'name',
                         valueField : 'key',
                         value : this.getLoggingSettings().syslogThreshold,
-                        disabled : !this.getLoggingSettings().syslogEnabled                        
+                        disabled : !this.getLoggingSettings().syslogEnabled
                     }]
                 }]
             });
@@ -1523,7 +1523,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         buildSkins : function() {
             // keep initial skin settings
             this.initialSkinSettings = Ung.Util.clone(this.getSkinSettings());
-        	
+
             var adminSkinsStore = new Ext.data.Store({
                 proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [true, false], false),
                 reader : new Ext.data.JsonReader({
@@ -1536,12 +1536,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             if ( v == "Default" ) return this.i18n._("Default");
                             return v;
                         }.createDelegate(this)
-                    }]                    
+                    }]
                 })
             });
-            
+
             this.skinManager.addRefreshableStore( adminSkinsStore );
-            
+
             this.panelSkins = new Ext.Panel({
                 name : "panelSkins",
                 helpSource : 'skins',
@@ -1621,12 +1621,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             });
             adminSkinsStore.load({
-            	callback : function() {
+                callback : function() {
                     var skinCombo=Ext.getCmp('administration_admin_client_skin_combo');
                     if(skinCombo!=null) {
                         skinCombo.setValue(this.getSkinSettings().administrationClientSkin);
                     }
-            	}.createDelegate(this)
+                }.createDelegate(this)
             });
         },
 
@@ -1647,12 +1647,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             if ( v == "Default" ) return this.i18n._("Default");
                             return v;
                         }.createDelegate(this)
-                    }]                    
+                    }]
                 })
             });
 
             this.skinManager.addRefreshableStore( userFacingSkinsStore );
-            
+
             this.panelBranding = new Ext.Panel({
                 // private fields
                 name : 'Branding',
@@ -1676,7 +1676,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         } else {
                             formItem.items.get(0).disable();
                             formItem.items.get(1).disable();
-                            
+
                         }
                     } catch (e) {
                     }
@@ -1820,7 +1820,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     xtype : 'fieldset',
                     title : this.i18n._('Block Page Skin'),
                     items : [{
-                    	cls: 'description',
+                        cls: 'description',
                         border : false,
                         html : this.i18n._("This skin will used in the user pages like quarantine and block pages")
                     },{
@@ -1874,7 +1874,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }]
                     }
                 }],
-                         
+
                 onUpload : function() {
                     var prova = Ext.getCmp('upload_logo_form');
                     var cmp = Ext.getCmp(this.parentId);
@@ -1889,10 +1889,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         waitMsg : cmp.i18n._('Please wait while your logo image is uploaded...'),
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Logo Succeeded."), 
+                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Logo Succeeded."),
                                 function() {
                                     Ext.getCmp('upload_logo_file_textfield').reset();
-                                } 
+                                }
                             );
                             cmp.uploadedCustomLogo = true;
                         },
@@ -1907,7 +1907,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     var prova = Ext.getCmp('upload_branding_skin_form');
                     var cmp = Ext.getCmp(this.parentId);
                     var form = prova.getForm();
-                    
+
                     cmp.skinManager.uploadSkin( cmp, form, 'upload_branding_skin_file_textfield' );
                 }
             });
@@ -1921,73 +1921,73 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }.createDelegate(this)
             });
         },
-        
+
         isBlankField : function (cmp, errMsg) {
             if (cmp.getValue().length == 0) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), errMsg ,
                     function () {
                         cmp.focus(true);
-                    } 
+                    }
                 );
                 return true;
             } else {
                 return false;
             }
         },
-        
+
         // validation function
         validateClient : function() {
-            return  this.validateAdminAccounts() && this.validateExternalAdministration() && 
-                this.validatePublicAddress() && this.validateSnmp() && this.validateSyslog(); 
+            return  this.validateAdminAccounts() && this.validateExternalAdministration() &&
+                this.validatePublicAddress() && this.validateSnmp() && this.validateSyslog();
         },
-        
+
         //validate Admin Accounts
         validateAdminAccounts : function() {
             var listAdminAccounts = this.gridAdminAccounts.getFullSaveList();
             var oneWritableAccount = false;
-            
+
             // verify that the login name is not duplicated
             for(var i=0; i<listAdminAccounts.length;i++) {
                 for(var j=i+1; j<listAdminAccounts.length;j++) {
-                	if (listAdminAccounts[i].login == listAdminAccounts[j].login) {
+                    if (listAdminAccounts[i].login == listAdminAccounts[j].login) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._("The login name: \"{0}\" in row: {1}  already exists."), listAdminAccounts[j].login, j+1),
                             function () {
                                 this.tabs.activate(this.panelAdministration);
-                            }.createDelegate(this) 
+                            }.createDelegate(this)
                         );
-                		return false;
-                	}
+                        return false;
+                    }
                 }
-                
+
                 if (!listAdminAccounts[i].readOnly) {
                     oneWritableAccount = true;
                 }
-            	
+
             }
-            
+
             // verify that there is at least one valid entry after all operations
             if(listAdminAccounts.length <= 0 ){
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("There must always be at least one valid account."),
                     function () {
                         this.tabs.activate(this.panelAdministration);
-                    }.createDelegate(this) 
+                    }.createDelegate(this)
                 );
                 return false;
             }
-        
+
             // verify that there was at least one non-read-only account
             if(!oneWritableAccount){
                 Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("There must always be at least one non-read-only (writable) account."),
                     function () {
                         this.tabs.activate(this.panelAdministration);
-                    }.createDelegate(this) 
+                    }.createDelegate(this)
                 );
                 return false;
             }
-            
-        	return true;
+
+            return true;
         },
-        
+
         //validate External Administration
         validateExternalAdministration : function() {
             var httpsPortCmp = Ext.getCmp('administration_httpsPort');
@@ -1996,11 +1996,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     function () {
                         this.tabs.activate(this.panelAdministration);
                         httpsPortCmp.focus(true);
-                    }.createDelegate(this) 
+                    }.createDelegate(this)
                 );
                 return false;
             }
-            
+
             var isOutsideAccessRestricted = this.getAccessSettings().isOutsideAccessRestricted;
             if (isOutsideAccessRestricted) {
                 var outsideNetworkCmp = Ext.getCmp('administration_outsideNetwork');
@@ -2009,7 +2009,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         function () {
                             this.tabs.activate(this.panelAdministration);
                             outsideNetworkCmp.focus(true);
-                        }.createDelegate(this) 
+                        }.createDelegate(this)
                     );
                     return false;
                 }
@@ -2019,7 +2019,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         function () {
                             this.tabs.activate(this.panelAdministration);
                             outsideNetmaskCmp.focus(true);
-                        }.createDelegate(this) 
+                        }.createDelegate(this)
                     );
                     return false;
                 }
@@ -2027,7 +2027,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 this.getAccessSettings().outsideNetwork = outsideNetworkCmp.getValue();
                 this.getAccessSettings().outsideNetmask = outsideNetmaskCmp.getValue();
             }
-            
+
             return true;
         },
 
@@ -2037,11 +2037,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if (isPublicAddressEnabled) {
                 var publicIPaddrCmp = Ext.getCmp('administration_publicIPaddr');
                 if (!publicIPaddrCmp.isValid()) {
-                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("You must provide a valid IP Address."), 
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("You must provide a valid IP Address."),
                         function () {
                             this.tabs.activate(this.panelPublicAddress);
                             publicIPaddrCmp.focus(true);
-                        }.createDelegate(this) 
+                        }.createDelegate(this)
                     );
                     return false;
                 }
@@ -2051,7 +2051,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         function () {
                             this.tabs.activate(this.panelPublicAddress);
                             publicPortCmp.focus(true);
-                        }.createDelegate(this) 
+                        }.createDelegate(this)
                     );
                     return false;
                 }
@@ -2059,10 +2059,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 this.getAddressSettings().publicIPaddr = publicIPaddrCmp.getValue();
                 this.getAddressSettings().publicPort = publicPortCmp.getValue();
             }
-            
+
             return true;
         },
-        
+
         //validate SNMP
         validateSnmp : function() {
             var isSnmpEnabled = this.getSnmpSettings().enabled;
@@ -2073,53 +2073,53 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         function () {
                             this.tabs.activate(this.panelMonitoring);
                             snmpCommunityCmp.focus(true);
-                        }.createDelegate(this) 
+                        }.createDelegate(this)
                     );
                     return false;
                 }
-                
+
                 var sendTrapsEnableCmp = Ext.getCmp('administration_snmp_sendTraps_enable');
                 var isTrapEnabled = sendTrapsEnableCmp.getValue();
-                var snmpTrapCommunityCmp, snmpTrapHostCmp, snmpTrapPortCmp;                
+                var snmpTrapCommunityCmp, snmpTrapHostCmp, snmpTrapPortCmp;
                 if (isTrapEnabled) {
                     snmpTrapCommunityCmp = Ext.getCmp('administration_snmp_trapCommunity');
                     if (!snmpTrapCommunityCmp.isValid()) {
-                        Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap \"Community\" must be specified."), 
+                        Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap \"Community\" must be specified."),
                             function () {
                                 this.tabs.activate(this.panelMonitoring);
                                 snmpTrapCommunityCmp.focus(true);
-                            }.createDelegate(this) 
+                            }.createDelegate(this)
                         );
                         return false;
                     }
-                    
+
                     snmpTrapHostCmp = Ext.getCmp('administration_snmp_trapHost');
                     if (!snmpTrapHostCmp.isValid()) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("An Trap \"Host\" must be specified."),
                             function () {
                                 this.tabs.activate(this.panelMonitoring);
                                 snmpTrapHostCmp.focus(true);
-                            }.createDelegate(this) 
+                            }.createDelegate(this)
                         );
                         return false;
                     }
-                    
+
                     snmpTrapPortCmp = Ext.getCmp('administration_snmp_trapPort');
                     if (!snmpTrapPortCmp.isValid()) {
                         Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
                             function () {
                                 this.tabs.activate(this.panelMonitoring);
                                 snmpTrapPortCmp.focus(true);
-                            }.createDelegate(this) 
+                            }.createDelegate(this)
                         );
                         return false;
                     }
                 }
-                
+
                 //prepare for save
                 var snmpSysContactCmp = Ext.getCmp('administration_snmp_sysContact');
                 var snmpSysLocationCmp = Ext.getCmp('administration_snmp_sysLocation');
-                
+
                 this.getSnmpSettings().communityString = snmpCommunityCmp.getValue();
                 this.getSnmpSettings().sysContact = snmpSysContactCmp.getValue();
                 this.getSnmpSettings().sysLocation = snmpSysLocationCmp.getValue();
@@ -2132,18 +2132,18 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             return true;
         },
-        
+
         //validate Syslog
         validateSyslog : function() {
-        	var isSyslogEnabled = this.getLoggingSettings().syslogEnabled;
-        	if (isSyslogEnabled) {
+            var isSyslogEnabled = this.getLoggingSettings().syslogEnabled;
+            if (isSyslogEnabled) {
                 var syslogHostCmp = Ext.getCmp('administration_syslog_host');
                 if (!syslogHostCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("A \"Host\" must be specified."),
                         function () {
                             this.tabs.activate(this.panelMonitoring);
                             syslogHostCmp.focus(true);
-                        }.createDelegate(this) 
+                        }.createDelegate(this)
                     );
                     return false;
                 }
@@ -2153,41 +2153,41 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         function () {
                             this.tabs.activate(this.panelMonitoring);
                             syslogPortCmp.focus(true);
-                        }.createDelegate(this) 
+                        }.createDelegate(this)
                     );
                     return false;
                 }
                 //prepare for save
                 var syslogFacilityCmp = Ext.getCmp('administration_syslog_facility');
                 var syslogThresholdCmp = Ext.getCmp('administration_syslog_threshold');
-                
+
                 this.getLoggingSettings().syslogHost = syslogHostCmp.getValue();
                 this.getLoggingSettings().syslogPort = syslogPortCmp.getValue();
                 this.getLoggingSettings().syslogFacility = syslogFacilityCmp.getValue();
                 this.getLoggingSettings().syslogThreshold = syslogThresholdCmp.getValue();
-        	}
-        	return true;
+            }
+            return true;
         },
         // save function
         saveAction : function() {
             /* A hook for doing something in a node before attempting to save */
-            
+
             //check to see if the remote administrative settings were changed in order to inform the user
-            var remoteChanges = 
-                    this.initialAccessSettings.isOutsideAdministrationEnabled && !this.getAccessSettings().isOutsideAdministrationEnabled //external administration 
-                    || this.initialAccessSettings.isInsideInsecureEnabled && !this.getAccessSettings().isInsideInsecureEnabled //internal administration 
-                    || this.initialAccessSettings.isOutsideAccessRestricted && this.getAccessSettings().isOutsideAccessRestricted 
-                        && (this.initialAccessSettings.outsideNetwork != Ext.getCmp('administration_outsideNetwork').getValue() 
+            var remoteChanges =
+                    this.initialAccessSettings.isOutsideAdministrationEnabled && !this.getAccessSettings().isOutsideAdministrationEnabled //external administration
+                    || this.initialAccessSettings.isInsideInsecureEnabled && !this.getAccessSettings().isInsideInsecureEnabled //internal administration
+                    || this.initialAccessSettings.isOutsideAccessRestricted && this.getAccessSettings().isOutsideAccessRestricted
+                        && (this.initialAccessSettings.outsideNetwork != Ext.getCmp('administration_outsideNetwork').getValue()
                             || this.initialAccessSettings.outsideNetmask != Ext.getCmp('administration_outsideNetmask').getValue()) //external access
                     || this.initialAddressSettings.httpsPort != this.getAddressSettings().httpsPort //external https port
                     || !this.initialAccessSettings.isOutsideAccessRestricted && this.getAccessSettings().isOutsideAccessRestricted; //external access
             if (remoteChanges) {
                 Ext.Msg.show({
                     title : this.i18n._("Warning"),
-                    msg : String.format(this.i18n._("Changing the administration settings may disconnect you from the {0} box. Do you want to proceed?"), 
+                    msg : String.format(this.i18n._("Changing the administration settings may disconnect you from the {0} box. Do you want to proceed?"),
                         main.getBrandingBaseSettings().companyName),
                     buttons : Ext.Msg.YESNO,
-                    icon : Ext.MessageBox.WARNING, 
+                    icon : Ext.MessageBox.WARNING,
                     fn : function (btn, text) {
                         if (btn == 'yes'){
                             this.completeSaveAction();
@@ -2195,14 +2195,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }.createDelegate(this)
                 });
             } else {
-            	this.completeSaveAction();
+                this.completeSaveAction();
             }
         },
         completeSaveAction : function() {
             if (this.validate()) {
-            	this.saveSemaphore = 6;
+                this.saveSemaphore = 6;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                
+
                 var listAdministration=this.gridAdminAccounts.getFullSaveList();
                 var setAdministration={};
                 for(var i=0; i<listAdministration.length;i++) {
@@ -2219,43 +2219,48 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getAddressSettings());
-                
+
                rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getSnmpSettings());
-                
+
                 main.getLoggingManager().setLoggingSettings(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getLoggingSettings());
-                
+
                 rpc.skinManager.setSkinSettings(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.afterSave();
                 }.createDelegate(this), this.getSkinSettings());
-                
+
                 if (!this.isBrandingExpired()) {
                     main.getBrandingManager().setBaseSettings(function(result, exception) {
                         Ext.MessageBox.hide();
                         if(Ung.Util.handleException(exception)) return;
                         // update global branding settings
                         rpc.brandingManager.getBaseSettings(function (result, exception) {
-                            if(exception) { Ext.MessageBox.alert("Failed",exception.message); return;}
-                            rpc.brandingBaseSettings=result;
-                            document.title=rpc.brandingBaseSettings.companyName;
-                            this.afterSave();
+                          message = exception.message;
+                          if (message == "Unknown") {
+                            message = i18n._("Please Try Again");
+                          }
+
+                          if(exception) { Ext.MessageBox.alert("Failed",message); return;}
+                          rpc.brandingBaseSettings=result;
+                          document.title=rpc.brandingBaseSettings.companyName;
+                          this.afterSave();
                         }.createDelegate(this));
                     }.createDelegate(this), this.getBrandingBaseSettings());
                 } else {
                     this.afterSave();
-                }                
+                }
             }
         },
         afterSave : function() {
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
-                // access settings should be saved last as saving these changes may disconnect the user from the Untangle box 
+                // access settings should be saved last as saving these changes may disconnect the user from the Untangle box
                 rpc.networkManager.setAccessSettings(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.finalizeSave();
@@ -2265,7 +2270,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         finalizeSave : function() {
             this.needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
             if (!this.isBrandingExpired()) {
-                this.needRefresh = this.needRefresh 
+                this.needRefresh = this.needRefresh
                        || this.initialBrandingBaseSettings.defaultLogo != this.getBrandingBaseSettings().defaultLogo
                        || this.initialBrandingBaseSettings.companyName != this.getBrandingBaseSettings().companyName
                        || this.initialBrandingBaseSettings.companyUrl != this.getBrandingBaseSettings().companyUrl
@@ -2275,33 +2280,33 @@ if (!Ung.hasResource["Ung.Administration"]) {
             Ext.MessageBox.hide();
             this.closeWindow();
         },
-        
+
         closeWindow : function() {
-        	Ung.Administration.superclass.closeWindow.call(this);
+            Ung.Administration.superclass.closeWindow.call(this);
             if (!this.isBrandingExpired()) {
-                this.needRefresh = this.needRefresh 
+                this.needRefresh = this.needRefresh
                        || !this.initialBrandingBaseSettings.defaultLogo && !this.getBrandingBaseSettings().defaultLogo && this.uploadedCustomLogo;
             }
             if (this.needRefresh) {
                 Ung.Util.goToStartPage();
             }
         },
-        
+
         isDirty : function() {
-        	return Ext.getCmp('administration_outsideNetwork').getValue() !=  this.initialAccessSettings.outsideNetwork
+            return Ext.getCmp('administration_outsideNetwork').getValue() !=  this.initialAccessSettings.outsideNetwork
                 || Ext.getCmp('administration_outsideNetmask').getValue() !=  this.initialAccessSettings.outsideNetmask
                 || this.getAddressSettings().isPublicAddressEnabled &&
                     (Ext.getCmp('administration_publicIPaddr').getValue() !=  this.initialAddressSettings.publicIPaddr
                     || Ext.getCmp('administration_publicPort').getValue() !=  this.initialAddressSettings.publicPort)
-                || this.getSnmpSettings().enabled &&  
+                || this.getSnmpSettings().enabled &&
                     (Ext.getCmp('administration_snmp_communityString').getValue() !=  this.initialSnmpSettings.communityString
                     || Ext.getCmp('administration_snmp_sysContact').getValue() !=  this.initialSnmpSettings.sysContact
                     || Ext.getCmp('administration_snmp_sysLocation').getValue() !=  this.initialSnmpSettings.sysLocation
-                    || this.getSnmpSettings().sendTraps && 
+                    || this.getSnmpSettings().sendTraps &&
                         (Ext.getCmp('administration_snmp_trapCommunity').getValue() !=  this.initialSnmpSettings.trapCommunity
                         || Ext.getCmp('administration_snmp_trapHost').getValue() !=  this.initialSnmpSettings.trapHost
                         || Ext.getCmp('administration_snmp_trapPort').getValue() !=  this.initialSnmpSettings.trapPort))
-                || this.getLoggingSettings().syslogEnabled && 
+                || this.getLoggingSettings().syslogEnabled &&
                     (Ext.getCmp('administration_syslog_host').getValue() !=  this.initialLoggingSettings.syslogHost
                     || Ext.getCmp('administration_syslog_port').getValue() !=  this.initialLoggingSettings.syslogPort
                     || Ext.getCmp('administration_syslog_facility').getValue() !=  this.initialLoggingSettings.syslogFacility
@@ -2315,13 +2320,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 || !this.isBrandingExpired() && !Ung.Util.equals(this.getBrandingBaseSettings(), this.initialBrandingBaseSettings)
                 ;
         }
-        
+
     });
-    
+
     // certificate generation window
     Ung.CertGenerateWindow = Ext.extend(Ung.Window, {
         initComponent : function() {
-        	var settingsCmp = Ext.getCmp(this.items.parentId);
+            var settingsCmp = Ext.getCmp(this.items.parentId);
             this.bbar= ['->',{
                 name : 'Cancel',
                 iconCls : 'cancel-icon',
@@ -2345,5 +2350,5 @@ if (!Ung.hasResource["Ung.Administration"]) {
             main.todo();
         }
     });
-    
+
 }

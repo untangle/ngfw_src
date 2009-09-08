@@ -19,8 +19,8 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
         this.languageStore = [];
         var c = 0;
         var languageList = Ung.SetupWizard.CurrentValues.languageList.list;
-        var length = languageList.length;        
-        
+        var length = languageList.length;
+
         for ( c = 0 ; c < length ; c++ ) {
             var language = languageList[c];
             this.languageStore[c] = [ language.code, language.name ];
@@ -28,7 +28,7 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
 
         this.panel = new Ext.FormPanel({
             defaultType : 'fieldset',
-            defaults : { 
+            defaults : {
                 autoHeight : true,
                 cls : 'noborder'
             },
@@ -56,11 +56,11 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
                 }]
             }]
         });
-        
+
         this.card = {
             title : i18n._( "Language" ),
             panel : this.panel,
-            
+
             onValidate : this.validateSettings.createDelegate(this)
         };
     },
@@ -79,14 +79,19 @@ Ung.SetupWizard.Language = Ext.extend(Object, {
     complete : function( result, exception, foo, handler )
     {
         if ( exception ) {
-            Ext.MessageBox.alert("Failed.",exception.message); 
-            return;
+          message = exception.message;
+          if (message == "Unknown") {
+            message = i18n._("Please Try Again");
+          }
+
+          Ext.MessageBox.alert("Failed.",exception.message);
+          return;
         }
 
         /* Send the user to the setup wizard. */
         parent.location = "index.do";
     },
-    
+
     enableHandler : function()
     {
         this.card.onNext = this.saveSettings.createDelegate( this );
@@ -99,7 +104,7 @@ Ung.Language = {
     {
         if ( this.isInitialized == true ) return;
         this.isInitialized = true;
-        
+
         rpc = {};
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;

@@ -34,8 +34,13 @@ Ung.Util= {
         if(!Ung.i18nModuleInstances[appName]) {
             rpc.languageManager.getTranslations(function(result, exception, opt, appName, i18n, handler) {
                 if (exception) {
-                    Ext.MessageBox.alert("Failed", exception.message);
-                    return
+                  message = exception.message;
+                  if (message == "Unknown") {
+                    message = i18n._("Please Try Again");
+                  }
+
+                  Ext.MessageBox.alert("Failed", message);
+                  return;
                 };
                 var moduleMap=result.map;
                 Ung.i18nModuleInstances[appName] = new Ung.ModuleI18N({
@@ -48,5 +53,5 @@ Ung.Util= {
             handler.call(this);
         }
     }
-    
+
 };

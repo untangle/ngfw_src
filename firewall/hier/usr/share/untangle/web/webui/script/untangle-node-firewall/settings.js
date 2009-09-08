@@ -3,7 +3,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
     Ung.NodeWin.registerClassName('untangle-node-firewall', 'Ung.Firewall');
 
     Ung.Firewall = Ext.extend(Ung.NodeWin, {
-    	panelRules: null,
+        panelRules: null,
         gridRules : null,
         gridEventLog : null,
         initComponent : function() {
@@ -37,50 +37,50 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 title : this.i18n._('Rules'),
                 layout : 'anchor',
                 defaults: {
-                	anchor: '98%',
-                	autoWidth: true,
-                	autoScroll: true
+                    anchor: '98%',
+                    autoWidth: true,
+                    autoScroll: true
                 },
                 autoScroll : true,
                 listeners: {
                     'activate': {
                         fn : function (){
                             (new Ext.ToolTip({
-                        	html : 'Examples:<br/>80<br/>80,443,8080<br/>80-90',
-                        			target :Ext.getCmp('srcPort').container.id,
-                        			autoWidth : true,
-                        			autoHeight : true,
-                        			showDelay : 200,
-                        			dismissDelay : 0,
-                        			hideDelay : 0
-                        		}));
+                            html : 'Examples:<br/>80<br/>80,443,8080<br/>80-90',
+                                    target :Ext.getCmp('srcPort').container.id,
+                                    autoWidth : true,
+                                    autoHeight : true,
+                                    showDelay : 200,
+                                    dismissDelay : 0,
+                                    hideDelay : 0
+                                }));
                             (new Ext.ToolTip({
-                        	html : 'Examples:<br/>80<br/>80,443,8080<br/>80-90',
-                        			target :Ext.getCmp('dstPort').container.id,
-                        			autoWidth : true,
-                        			autoHeight : true,
-                        			showDelay : 200,
-                        			dismissDelay : 0,
-                        			hideDelay : 0
-                        		}));
+                            html : 'Examples:<br/>80<br/>80,443,8080<br/>80-90',
+                                    target :Ext.getCmp('dstPort').container.id,
+                                    autoWidth : true,
+                                    autoHeight : true,
+                                    showDelay : 200,
+                                    dismissDelay : 0,
+                                    hideDelay : 0
+                                }));
                             (new Ext.ToolTip({
-                        	html : 'Examples:<br/>1.2.3.4<br/>1.2.3.4,1.2.3.5<br/>1.2.3.4-1.2.3.100<br/>1.2.3.0/24',
-                        			target :Ext.getCmp('srcAddress').container.id,
-                        			autoWidth : true,
-                        			autoHeight : true,
-                        			showDelay : 200,
-                        			dismissDelay : 0,
-                        			hideDelay : 0
-                        		}));
+                            html : 'Examples:<br/>1.2.3.4<br/>1.2.3.4,1.2.3.5<br/>1.2.3.4-1.2.3.100<br/>1.2.3.0/24',
+                                    target :Ext.getCmp('srcAddress').container.id,
+                                    autoWidth : true,
+                                    autoHeight : true,
+                                    showDelay : 200,
+                                    dismissDelay : 0,
+                                    hideDelay : 0
+                                }));
                             (new Ext.ToolTip({
-                        	html : 'Examples:<br/>1.2.3.4<br/>1.2.3.4,1.2.3.5<br/>1.2.3.4-1.2.3.100<br/>1.2.3.0/24',
-                        			target :Ext.getCmp('dstAddress').container.id,
-                        			autoWidth : true,
-                        			autoHeight : true,
-                        			showDelay : 200,
-                        			dismissDelay : 0,
-                        			hideDelay : 0
-                        		}));
+                            html : 'Examples:<br/>1.2.3.4<br/>1.2.3.4,1.2.3.5<br/>1.2.3.4-1.2.3.100<br/>1.2.3.0/24',
+                                    target :Ext.getCmp('dstAddress').container.id,
+                                    autoWidth : true,
+                                    autoHeight : true,
+                                    showDelay : 200,
+                                    dismissDelay : 0,
+                                    hideDelay : 0
+                                }));
                         }
                     }
                 },
@@ -161,12 +161,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         // load first page initialy
                         initialLoad : function() {
                             this.setTotalRecords(this.totalRecords);
-                            this.loadPage(0, 
+                            this.loadPage(0,
                                 function() {
                                     this.settingsCmp.initialRules = Ung.Util.clone(this.getFullSaveList());
                                 }.createDelegate(this));
                         },
-                        
+
                         initComponent : function() {
                             this.rowEditor = new Ung.RowEditorWindow({
                                 grid : this,
@@ -180,7 +180,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                     for (var i = 0; i < this.inputLines.length; i++) {
                                         var inputLine = this.inputLines[i];
                                         if (inputLine instanceof Ext.form.Field) {
-                                        	this.populateField(inputLine, record);
+                                            this.populateField(inputLine, record);
                                         } else if (inputLine instanceof Ext.Panel) {
                                             for (var j = 0; j < inputLine.items.length; j++) {
                                                 var field = inputLine.items.get(j);
@@ -230,7 +230,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                                     }
                                                 }
                                             }
-        
+
                                             if (this.addMode) {
                                                 this.grid.getStore().insert(0, [this.record]);
                                                 this.grid.updateChangedData(this.record, "added");
@@ -266,10 +266,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                     return false;
                                 }
                             });
-                            
+
                             Ung.EditorGrid.prototype.initComponent.call(this);
                         },
-                        
+
                         customInputLines : [new Ext.form.Checkbox({
                             name : "Enable Rule",
                             dataIndex: "live",
@@ -280,7 +280,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             name : "Description",
                             dataIndex: "description",
                             fieldLabel : this.i18n._("Description"),
-                            itemCls:'firewall-spacing-1',                            
+                            itemCls:'firewall-spacing-1',
                             width : 400
                         }), new Ext.form.ComboBox({
                             name : "Action",
@@ -297,23 +297,23 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             mode : 'local',
                             triggerAction : 'all',
                             listClass : 'x-combo-list-small',
-                            itemCls:'firewall-spacing-1',                                                        
+                            itemCls:'firewall-spacing-1',
                             selectOnFocus : true
                         }), new Ext.form.Checkbox({
                             name : "Log",
                             dataIndex: "log",
-                            itemCls:'firewall-spacing-1',                                                        
+                            itemCls:'firewall-spacing-1',
                             fieldLabel : this.i18n._("Log")
-                        }), 
+                        }),
                         new Ext.form.FieldSet({
                             title : i18n._('Rule') ,
                             cls:'firewall-spacing-2',
-                            autoHeight : true,  
-                            items:[                                
+                            autoHeight : true,
+                            items:[
                                 new Ung.Util.ProtocolCombo({
                                     name : "Traffic Type",
                                     dataIndex: "protocol",
-                                    itemCls:'firewall-spacing-3',                                                        
+                                    itemCls:'firewall-spacing-3',
                                     fieldLabel : this.i18n._("Traffic Type"),
                                     width : 100
                                 }), new Ung.Util.InterfaceCombo({
@@ -324,7 +324,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                 }), new Ung.Util.InterfaceCombo({
                                     name : "Destination Interface",
                                     dataIndex: "dstIntf",
-                                    itemCls:'firewall-spacing-3',                                                        
+                                    itemCls:'firewall-spacing-3',
                                     fieldLabel : this.i18n._("Destination Interface"),
                                     width : 150
                                 }), new Ext.form.TextField({
@@ -338,25 +338,25 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                     name : "Destination Address",
                                     id : "dstAddress",
                                     dataIndex: "dstAddress",
-                                    itemCls:'firewall-spacing-3',                                                                                            
+                                    itemCls:'firewall-spacing-3',
                                     fieldLabel : this.i18n._("Destination Address"),
                                     allowBlank : false,
                                     width : 150
                                 }), new Ext.form.TextField({
                                     name : "Source Port",
-				    id : "srcPort",
+                    id : "srcPort",
                                     dataIndex: "srcPort",
                                     fieldLabel : this.i18n._("Source Port"),
                                     width : 150,
                                     allowBlank : false
                                 }), new Ext.form.TextField({
                                     name : "Destination Port",
-				    id : "dstPort",
+                    id : "dstPort",
                                     dataIndex: "dstPort",
                                     fieldLabel : this.i18n._("Destination Port"),
                                     allowBlank : false,
                                     width : 150
-                                })                           
+                                })
                             ]
                         })]
                     }),{
@@ -365,31 +365,31 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         cls:'firewall-top-margin-1',
                         title : this.i18n._('Default Action'),
                         items : [{
-	                        xtype : 'radio',
-                            boxLabel : this.i18n._('Block'), 
+                            xtype : 'radio',
+                            boxLabel : this.i18n._('Block'),
                             hideLabel : true,
-	                        name : 'isDefaultAccept',
-	                        checked : !this.getBaseSettings().defaultAccept,
-	                        listeners : {
-	                            "check" : {
-	                                fn : function(elem, checked) {
-	                                    this.getBaseSettings().defaultAccept = !checked;
-	                                }.createDelegate(this)
-	                            }
-	                        }
-	                    },{
-	                        xtype : 'radio',
-	                        boxLabel : this.i18n._('Pass'), 
-	                        hideLabel : true,
-	                        name : 'isDefaultAccept',
-	                        checked : this.getBaseSettings().defaultAccept,
-	                        listeners : {
-	                            "check" : {
-	                                fn : function(elem, checked) {
-	                                    this.getBaseSettings().defaultAccept = checked;
-	                                }.createDelegate(this)
-	                            }
-	                        }
+                            name : 'isDefaultAccept',
+                            checked : !this.getBaseSettings().defaultAccept,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getBaseSettings().defaultAccept = !checked;
+                                    }.createDelegate(this)
+                                }
+                            }
+                        },{
+                            xtype : 'radio',
+                            boxLabel : this.i18n._('Pass'),
+                            hideLabel : true,
+                            name : 'isDefaultAccept',
+                            checked : this.getBaseSettings().defaultAccept,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                        this.getBaseSettings().defaultAccept = checked;
+                                    }.createDelegate(this)
+                                }
+                            }
                         }]
                     }
                 ]
@@ -442,14 +442,14 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     dataIndex : 'client',
                     renderer : Ung.SortTypes.asClient
                 }, {
-                	id: 'ruleIndex',
+                    id: 'ruleIndex',
                     header : this.i18n._('reason for action'),
                     width : 150,
                     sortable : true,
                     dataIndex : 'ruleIndex',
                     renderer : function(value, metadata, record) {
                            return String.format(this.i18n._("rule #{0}"), value);
-					}.createDelegate(this)
+                    }.createDelegate(this)
                 }, {
                     header : this.i18n._("server"),
                     width : 165,
@@ -458,7 +458,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     renderer : Ung.SortTypes.asServer
                 }],
                 autoExpandColumn: 'ruleIndex'
-                
+
             });
         },
         validateServer : function() {
@@ -478,7 +478,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 var validateData = {
                     map : {},
                     javaClass : "java.util.HashMap"
-                }; 
+                };
                 if (srcAddrList.length > 0) {
                     validateData.map["SRC_ADDR"] = {"javaClass" : "java.util.ArrayList", list : srcAddrList};
                 }
@@ -493,8 +493,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 }
                 if (Ung.Util.hasData(validateData.map)) {
                     try {
-                    	var result=null;
-                    	try {
+                        var result=null;
+                        try {
                             result = this.getValidator().validate(validateData);
                         } catch (e) {
                             Ung.Util.rpcExHandler(e);
@@ -502,16 +502,16 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         if (!result.valid) {
                             var errorMsg = "";
                             switch (result.errorCode) {
-                                case 'INVALID_SRC_ADDR' : 
+                                case 'INVALID_SRC_ADDR' :
                                     errorMsg = this.i18n._("Invalid address specified for Source Address") + ": " + result.cause;
                                 break;
-                                case 'INVALID_DST_ADDR' : 
+                                case 'INVALID_DST_ADDR' :
                                     errorMsg = this.i18n._("Invalid address specified for Destination Address") + ": " + result.cause;
                                 break;
-                                case 'INVALID_SRC_PORT' : 
+                                case 'INVALID_SRC_PORT' :
                                     errorMsg = this.i18n._("Invalid port specified for Source Port") + ": " + result.cause;
                                 break;
-                                case 'INVALID_DST_PORT' : 
+                                case 'INVALID_DST_PORT' :
                                     errorMsg = this.i18n._("Invalid port specified for Destination Port") + ": " + result.cause;
                                 break;
                                 default :
@@ -521,8 +521,13 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             return false;
                         }
                     } catch (e) {
-                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
-                        return false;
+                      message = exception.message;
+                      if (message == "Unknown") {
+                        message = i18n._("Please Try Again");
+                      }
+
+                      Ext.MessageBox.alert(i18n._("Failed"), message);
+                      return false;
                     }
                 }
             }
@@ -541,8 +546,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             }
         },
         isDirty : function() {
-        	return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
-        	   || !Ung.Util.equals(this.gridRules.getFullSaveList(), this.initialRules);
+            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
+               || !Ung.Util.equals(this.gridRules.getFullSaveList(), this.initialRules);
         }
     });
 }

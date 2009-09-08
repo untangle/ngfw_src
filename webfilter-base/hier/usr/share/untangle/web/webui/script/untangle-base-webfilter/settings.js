@@ -1096,8 +1096,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             return false;
                         }
                     } catch (e) {
-                        Ext.MessageBox.alert(i18n._("Failed"), e.message);
-                        return false;
+                      message = e.message;
+                      if (message == "Unknown") {
+                        message = i18n._("Please Try Again");
+                      }
+
+                      Ext.MessageBox.alert(i18n._("Failed"), message);
+                      return false;
                     }
                 }
             }
