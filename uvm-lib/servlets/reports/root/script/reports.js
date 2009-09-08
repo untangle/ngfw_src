@@ -457,7 +457,7 @@ Ung.Reports = Ext.extend(Object,
                                                               return;
                                                             }
                                                             rpc.applicationData=result;
-                                                            reports.breadcrumbs.push({ text: i18n.sprintf("%s reports ", this.appNames[app]),
+                                                            reports.breadcrumbs.push({ text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
                                                                                        handler: this[fnName].createDelegate(this,[app, value])
                                                                                      });
                                                             this.reportDetails.buildReportDetails(); // XXX take to correct page
