@@ -21,6 +21,10 @@ usage() if $hflag;
 print "version $VERSION\n" if $version;
 # directory is given, compile list of files.
 print "Dir is <$dir> savedir is <$savedir>\n";
+if (!(-e $savedir)) {
+    # create the directory if it doesn't exist
+    mkdir ($savedir, 0777);
+}
 if (!($files)) {
     $files = "";
     opendir(DIR, "$dir");
@@ -89,9 +93,31 @@ sub processDataFile {
             $wordcount += $#words;
             foreach $word (@words) {
                 if ($word =~/\{|\%|\"/) {
+                    # don't reverse words with special characters
+                    $newline .= $word;
+                } elsif ($word =~/\\\\n/) {
+                    # treat words with double \\ \n in a special way
+                    @specialword = split /\\\\n/, $word;
+                    $i=0;
+                    while ($specialword[$i]) {
+                    	$specialword[$i] = reverse $specialword[$i];
+	                    $i++;
+                    }
+                    $newline .= join("\\\\n",@specialword);                    
+                    $newline .= $word;
+                } elsif ($word =~/\\n/) {
+                    # treat words with \n in a special way
+                    @specialword = split /\\n/, $word;
+                    $i=0;
+                    while ($specialword[$i]) {
+                    	$specialword[$i] = reverse $specialword[$i];
+	                    $i++;
+                    }
+                    $newline .= join("\\n",@specialword);                    
                     $newline .= $word;
                 } else {
                     $newline .= reverse $word;
+                    $newline =~ s/n\\\./\.\\n/g;
                 }
                 $newline .= " ";
             }
