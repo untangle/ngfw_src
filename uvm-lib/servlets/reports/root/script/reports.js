@@ -844,7 +844,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                  if (!value) {
                                                      return i18n._('None');
                                                  } else {
-                                                     return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                                     return '<a href="javascript:reports.getApplicationDataForUser(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
                                                  }
                                              };
                                              col.width = 100;
@@ -853,7 +853,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                  if (!value) {
                                                      return i18n._('None');
                                                  } else {
-                                                     return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                                     return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
                                                  }
                                              };
                                              col.width = 100;
@@ -862,7 +862,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                  if (!value) {
                                                      return i18n._('None');
                                                  } else {
-                                                     return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + rpc.drilldownValue + '\')">' + value + '</a>';
+                                                     return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
                                                  }
                                              };
                                              col.width = 180;
