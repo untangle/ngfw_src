@@ -55,6 +55,7 @@ from reportlab.graphics.shapes import Rect
 HNAME_LINK = 'HostLink'
 USER_LINK = 'UserLink'
 EMAIL_LINK = 'EmailLink'
+URL_LINK = 'URLLink'
 
 _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 

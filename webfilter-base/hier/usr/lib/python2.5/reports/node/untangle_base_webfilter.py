@@ -846,7 +846,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.URL_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -903,7 +903,7 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('bytes'))
+                ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.URL_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 

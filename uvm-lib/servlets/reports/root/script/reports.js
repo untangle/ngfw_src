@@ -731,6 +731,8 @@ Ung.ReportDetails = Ext.extend(Object,
                                                         return '<a href="javascript:reports.getApplicationDataForHost(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
                                                       } else if (linkType == "EmailLink") {
                                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
+                                                      } else if (linkType == "URLLink") {
+                                                        return '<a href="http://' + value + '">' + value + '</a>';
                                                       } else {
                                                         return this.i18n._(value);
                                                       }
