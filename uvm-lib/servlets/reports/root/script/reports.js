@@ -732,7 +732,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                       } else if (linkType == "EmailLink") {
                                                         return '<a href="javascript:reports.getApplicationDataForEmail(\'' + appName + '\', \'' + value + '\')">' + value + '</a>';
                                                       } else if (linkType == "URLLink") {
-                                                        return '<a href="http://' + value + '">' + value + '</a>';
+                                                        return '<a href="http://' + value + '" target="_new">' + value + '</a>';
                                                       } else {
                                                         return this.i18n._(value);
                                                       }
@@ -868,7 +868,15 @@ Ung.ReportDetails = Ext.extend(Object,
                                                  }
                                              };
                                              col.width = 180;
-                                         } else {
+                                         } else if (c.type == "URLLink") {
+                                             col.renderer = function(value) {
+                                                 if (!value) {
+                                                     return i18n._('None');
+                                                 } else {
+						     return '<a href="http://' + value + '" target="_new">' + value + '</a>';
+						 }
+
+					 } else {
                                              col.renderer = function(value) {
                                                  if (!value) {
                                                      return i18n._('None');
