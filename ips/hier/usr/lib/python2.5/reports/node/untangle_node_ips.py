@@ -338,7 +338,7 @@ class IpsDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""ips_name, ips_blocked, ips_name, c_server_addr::text, c_server_port
+        sql = sql + ("""ips_name, ips_blocked, c_server_addr::text, c_server_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
 AND NOT ips_name ISNULL
