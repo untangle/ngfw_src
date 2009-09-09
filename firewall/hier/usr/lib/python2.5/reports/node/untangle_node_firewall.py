@@ -459,7 +459,7 @@ class FirewallDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""firewall_rule_index, firewall_was_blocked, host(c_server_addr), c_server_port, c_client_addr::text, c_client_port
+        sql = sql + ("""firewall_rule_index, firewall_was_blocked::text, host(c_server_addr), c_server_port, c_client_addr::text, c_client_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
 AND NOT firewall_rule_index ISNULL""" % (DateFromMx(start_date),
