@@ -637,9 +637,9 @@ AND pf_protocol != ''""" % (DateFromMx(start_date),
                             DateFromMx(end_date)))
 
         if host:
-            sql = sql + (" AND host = %s" % QuotedString(host))
+            sql = sql + (" AND hname = %s" % QuotedString(host))
         if user:
-            sql = sql + (" AND host = %s" % QuotedString(user))
+            sql = sql + (" AND uid = %s" % QuotedString(user))
 
         return sql + "ORDER BY time_stamp"
 

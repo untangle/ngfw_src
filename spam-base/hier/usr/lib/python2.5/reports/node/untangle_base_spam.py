@@ -573,6 +573,6 @@ WHERE time_stamp >= %s AND time_stamp < %s
        DateFromMx(end_date), self.__short_name)
 
         if host:
-            sql += " AND host = %s" % QuotedString(host)
+            sql += " AND hname = %s" % QuotedString(host)
 
         return sql + "ORDER BY time_stamp"

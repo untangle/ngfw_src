@@ -798,9 +798,9 @@ AND NOT virus_%s_name IS NULL AND virus_%s_name != ''
        self.__vendor_name, self.__vendor_name)
 
         if host:
-            sql = sql + (" AND host = %s" % QuotedString(host))
+            sql = sql + (" AND hname = %s" % QuotedString(host))
         if user:
-            sql = sql + (" AND host = %s" % QuotedString(user))
+            sql = sql + (" AND uid = %s" % QuotedString(user))
 
         return sql + "ORDER BY time_stamp"
 
@@ -842,8 +842,8 @@ AND NOT virus_%s_name IS NULL AND virus_%s_name != ''
        self.__vendor_name, self.__vendor_name)
 
         if host:
-            sql = sql + (" AND host = %s" % QuotedString(host))
+            sql = sql + (" AND hname = %s" % QuotedString(host))
         if user:
-            sql = sql + (" AND host = %s" % QuotedString(user))
+            sql = sql + (" AND uid = %s" % QuotedString(user))
 
         return sql + "ORDER BY time_stamp"

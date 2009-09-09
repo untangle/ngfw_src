@@ -1078,9 +1078,9 @@ WHERE time_stamp >= %s AND time_stamp < %s
                                    self.__vendor_name)
 
         if host:
-            sql += " AND host = %s" % QuotedString(host)
+            sql += " AND hname = %s" % QuotedString(host)
         if user:
-            sql += " AND host = %s" % QuotedString(user)
+            sql += " AND uid = %s" % QuotedString(user)
 
         return sql + "ORDER BY time_stamp"
 
@@ -1126,9 +1126,9 @@ WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
                                                  DateFromMx(end_date))
 
         if host:
-            sql += " AND host = %s" % QuotedString(host)
+            sql += " AND hname = %s" % QuotedString(host)
         if user:
-            sql += " AND host = %s" % QuotedString(user)
+            sql += " AND uid = %s" % QuotedString(user)
 
         return sql + "ORDER BY time_stamp"
 

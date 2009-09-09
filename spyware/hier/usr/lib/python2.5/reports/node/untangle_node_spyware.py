@@ -961,9 +961,9 @@ WHERE time_stamp >= %s AND time_stamp < %s
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
-            sql += " AND host = %s" % QuotedString(host)
+            sql += " AND hname = %s" % QuotedString(host)
         if user:
-            sql += " AND host = %s" % QuotedString(user)
+            sql += " AND uid = %s" % QuotedString(user)
 
         return sql + "ORDER BY time_stamp"
 
@@ -1006,9 +1006,9 @@ WHERE time_stamp >= %s AND time_stamp < %s AND sw_blacklisted
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
-            sql += " AND host = %s" % QuotedString(host)
+            sql += " AND hname = %s" % QuotedString(host)
         if user:
-            sql += " AND host = %s" % QuotedString(user)
+            sql += " AND uid = %s" % QuotedString(user)
 
         return sql
 
@@ -1050,9 +1050,9 @@ WHERE time_stamp >= %s AND time_stamp < %s AND NOT sw_access_ident IS NULL
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
-            sql += " AND host = %s" % QuotedString(host)
+            sql += " AND hname = %s" % QuotedString(host)
         if user:
-            sql += " AND host = %s" % QuotedString(user)
+            sql += " AND uid = %s" % QuotedString(user)
 
         return sql + "ORDER BY time_stamp"
 
