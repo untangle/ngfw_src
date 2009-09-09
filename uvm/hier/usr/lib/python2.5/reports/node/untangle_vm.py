@@ -932,7 +932,7 @@ class AdministrativeLoginsDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, client_addr::text, succeeded
+SELECT time_stamp, host(client_addr), succeeded
 FROM reports.n_admin_logins
 WHERE time_stamp >= %s AND time_stamp < %s
 """ % (DateFromMx(start_date), DateFromMx(end_date))

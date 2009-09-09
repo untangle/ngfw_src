@@ -294,7 +294,7 @@ class ShieldDetail(DetailSection):
 
         sql = "SELECT trunc_time, "
 
-        sql = sql + ("""client_addr::text, limited, dropped, rejected
+        sql = sql + ("""host(client_addr), limited, dropped, rejected
 FROM reports.n_shield_rejection_totals
 WHERE trunc_time >= %s AND trunc_time < %s
       AND (limited + dropped + rejected) > 0""" % (DateFromMx(start_date),

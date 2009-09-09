@@ -629,7 +629,7 @@ class ProtofilterDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""pf_protocol, pf_blocked, c_server_addr::text, c_server_port
+        sql = sql + ("""pf_protocol, pf_blocked, host(c_server_addr), c_server_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
 AND NOT pf_protocol ISNULL
