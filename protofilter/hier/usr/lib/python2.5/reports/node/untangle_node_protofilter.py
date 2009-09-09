@@ -612,7 +612,7 @@ class ProtofilterDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv = rv + [ColumnDesc('pf_protocol', _('Protocol')),
-                   ColumnDesc('pf_blocked', _('Action')),
+                   ColumnDesc('pf_blocked', _('Blocked')),
                    ColumnDesc('c_server_addr', _('Server')),
                    ColumnDesc('c_server_port', _('Port'))]
 
