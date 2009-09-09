@@ -198,15 +198,9 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     public List<List> getDetailData(Date d, String appName, String detailName,
                                     String type, String value)
     {
-        System.out.println("VAL: " + value);
-        System.out.println("appName: " + appName);
-        System.out.println("detailName: " + detailName);
-        System.out.println("type: " + type);
-        System.out.println("value: " + value);
         List<List> rv = new ArrayList<List>();
 
         ApplicationData ad = readXml(d, appName, type, value);
-        System.out.println("ad: " + ad);
         if (null == ad) {
             return rv;
         }
@@ -216,7 +210,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                 DetailSection sds = (DetailSection)section;
                 if (sds.getName().equals(detailName)) {
                     String sql = sds.getSql();
-                    System.out.println("SQL: " + sql);
 
                     Connection conn = null;
                     try {
@@ -258,7 +251,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         ReportXmlHandler h = new ReportXmlHandler();
 
         File f = new File(getAppDir(d, appName, type, value) + "/report.xml");
-        System.out.println("F: " + f);
 
         if (!f.exists() && type != null) {
             generateReport(d, appName, type, value);
