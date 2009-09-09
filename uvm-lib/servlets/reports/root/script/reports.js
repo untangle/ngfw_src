@@ -875,7 +875,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                  } else {
 						     return '<a href="http://' + value + '" target="_new">' + value + '</a>';
 						 }
-
+					     };
 					 } else {
                                              col.renderer = function(value) {
                                                  if (!value) {
