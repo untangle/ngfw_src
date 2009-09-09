@@ -903,8 +903,7 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
                 curs.execute(query, (one_day, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('bytes'),
-                                  link_type=reports.HNAME_LINK)
+                ks = KeyStatistic(r[0], r[1], N_('bytes'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 
