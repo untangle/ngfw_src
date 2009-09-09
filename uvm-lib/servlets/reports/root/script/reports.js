@@ -41,6 +41,8 @@ Ung.Reports = Ext.extend(Object,
                            tableOfContents:null,
                            //the selected node from the left side tree
                            selectedNode: null,
+                           //the selected application/system node from the left side tree
+                           selectedApplication: null,
                            //report details object
                            reportDetails:null,
                            // breadcrumbs object for the report details
@@ -222,6 +224,10 @@ Ung.Reports = Ext.extend(Object,
                                                                                                                                   }
 
                                                                                                                                   reports.selectedNode=node;
+                                                                                                                                  if (node.attributes.name != 'users' && node.attributes.name != 'hosts'
+                                                                                                                                      && node.attributes.name != 'emails') {
+                                                                                                                                    reports.selectedApplication = node.attributes.name;
+                                                                                                                                  }
                                                                                                                                   reports.breadcrumbs=[];
                                                                                                                                   rpc.drilldownType = null;
                                                                                                                                   rpc.drilldownValue = null;
@@ -447,6 +453,7 @@ Ung.Reports = Ext.extend(Object,
                            {
                              rpc.drilldownType = type;
                              rpc.drilldownValue = value;
+                             this.selectedApplication = app;
                              reports.progressBar.wait(i18n._("Please Wait"));
                              rpc.reportingManager[fnName](function (result, exception)
                                                           {
@@ -496,6 +503,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                    Ext.apply(this, config);
                                    // this.i18n should be used in ReportDetails to have i18n context based
                                    this.appName = reports.selectedNode.attributes.name;
+                                   this.application = reports.selectedApplication;
                                    this.i18n = Ung.i18nModuleInstances[reports.selectedNode.attributes.name];
                                    this.reportType = config.reportType;
                                    this.buildReportDetails();
@@ -873,10 +881,10 @@ Ung.ReportDetails = Ext.extend(Object,
                                                  if (!value) {
                                                      return i18n._('None');
                                                  } else {
-						     return '<a href="http://' + value + '" target="_new">' + value + '</a>';
-						 }
-					     };
-					 } else {
+                             return '<a href="http://' + value + '" target="_new">' + value + '</a>';
+                         }
+                         };
+                     } else {
                                              col.renderer = function(value) {
                                                  if (!value) {
                                                      return i18n._('None');
@@ -923,7 +931,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                          }
 
                                          store.loadData(data);
-                                         }.createDelegate(this), reports.reportsDate, reports.selectedNode.attributes.name, section.name, rpc.drilldownType, rpc.drilldownValue);
+                                         }.createDelegate(this), reports.reportsDate, reports.selectedApplication, section.name, rpc.drilldownType, rpc.drilldownValue);
 
                                      return detailSection;
                                  }

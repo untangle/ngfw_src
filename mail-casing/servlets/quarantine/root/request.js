@@ -97,7 +97,6 @@ Ung.QuarantineRequest.prototype = {
             icon : Ext.MessageBox.INFO
         });
 
-
         field.enable();
     }
 };
