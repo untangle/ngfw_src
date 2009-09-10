@@ -37,15 +37,16 @@ Options:
   -m | --no-mail              skip mailing
   -e | --events-days          number of days in events schema to keep
   -r | --reports-days         number of days in reports schema to keep
+  -l | --locale               locale
   -d y-m-d | --date=y-m-d\
 """ % sys.argv[0]
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmve:r:d:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmve:r:d:l:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'no-plot-gen',
                                  'verbose', 'events-days', 'reports-days',
-                                 'date='])
+                                 'date=', 'locale='])
 except getopt.GetoptError, err:
      print str(err)
      usage()
@@ -60,7 +61,7 @@ no_mail = False
 events_days = 3
 reports_days = None
 end_date = mx.DateTime.today()
-locale = 'en'
+locale = None
 
 no_cleanup = False
 for opt in opts:
@@ -86,6 +87,8 @@ for opt in opts:
           logging.basicConfig(level=logging.DEBUG)
      elif k == '-d' or k == '--date':
           end_date = mx.DateTime.DateFrom(v)
+     elif k == '-l' or k == '--locale':
+          locale = v
 
 PREFIX = '@PREFIX@'
 REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
@@ -97,8 +100,26 @@ if (PREFIX != ''):
 
 import reports.i18n_helper
 import reports.engine
-import reports.sql_helper as sql_helper
 import reports.mailer
+import reports.sql_helper as sql_helper
+
+if not locale:
+     conn = sql_helper.get_connection()
+
+     try:
+          curs = conn.cursor()
+          curs.execute("SELECT language FROM settings.u_language_settings")
+          r = curs.fetchone()
+          if r:
+               locale = r[0]
+     except Exception, e:
+          logging.warn("could not get locale");
+
+if locale:
+     logging.info('using locale: %s' % locale);
+     os.environ['LANGUAGE'] = locale
+else:
+     logging.info('locale not set')
 
 start_date = end_date - mx.DateTime.DateTimeDelta(30)
 

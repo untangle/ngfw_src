@@ -18,5 +18,7 @@ import gettext
 #
 # Aaron Read <amread@untangle.com>
 
+import os
+
 def get_translation(domain):
-    return gettext.translation('untangle-node-reporting', fallback=True)
+    return gettext.translation(domain, fallback=True)
