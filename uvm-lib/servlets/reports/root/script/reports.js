@@ -914,9 +914,37 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                            window.open('csv?date=' + d + '&app=' + appName + '&detail=' + section.name);
                                                                                          }
                                                                                        }
-                                                                                      ]
+                                                                                      ],
+                                                                                listeners: {
+                                                                                    'activate': function (panel){
+                                                                                        if(panel.store.initialData.loaded ==false){
+                                                                                            reports.progressBar.wait(i18n._("Please Wait"));
+                                                                                            var store = panel.store;
+                                                                                             rpc.reportingManager.getDetailData(function(result, exception) {
+                                                                                                 if (exception) {
+                                                                                                     if (!handleTimeout(exception)) {
+                                                                                                         Ext.MessageBox.alert("Failed", exception.message);
+                                                                                                     }
+                                                                                                     return;
+                                                                                                 }
+                                                        
+                                                                                                 var data = [];
+                                                        
+                                                                                                 for (var i = 0; i < result.list.length; i++) {
+                                                                                                     data.push(result.list[i].list);
+                                                                                                 }
+                                                        
+                                                                                                 store.loadData(data);
+                                                                                                 store.initialData.loaded = true;
+                                                                                                 reports.progressBar.hide();                                                                                                                                                                                                                                                                                                                                                                                                     
+                                                                                                 }.createDelegate(this), store.initialData.reportsDate, store.initialData.selectedApplication, store.initialData.name, store.initialData.drilldownType, store.initialData.drilldownValue);
+                                                                                        }
+                                                                                    }.createDelegate(this)
+                                                                                }
                                                                               });
-
+                                    store.initialData = {};                                                                                                        
+                                    if(section.name=='Summary Report'){
+                                    store.initialData.loaded = true;
                                      rpc.reportingManager.getDetailData(function(result, exception) {
                                          if (exception) {
                                              if (!handleTimeout(exception)) {
@@ -933,7 +961,14 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                          store.loadData(data);
                                          }.createDelegate(this), reports.reportsDate, reports.selectedApplication, section.name, rpc.drilldownType, rpc.drilldownValue);
-
+                                     }else{
+                                        store.initialData.loaded = false;
+                                        store.initialData.reportsDate = reports.reportsDate;
+                                        store.initialData.selectedApplication = reports.selectedApplication;
+                                        store.initialData.name = section.name;
+                                        store.initialData.drilldownType = rpc.drilldownType;
+                                        store.initialData.drilldownValue = rpc.drilldownValue;
+                                    }
                                      return detailSection;
                                  }
                                });
