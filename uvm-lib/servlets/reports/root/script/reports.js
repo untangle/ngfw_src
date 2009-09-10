@@ -705,15 +705,16 @@ Ung.ReportDetails = Ext.extend(Object,
                                      colors = summaryItem.colors.map;
 
                                      columns = [];
-                                     var data = [];
+                                     var data = [],columnTwoWidth=175;
                                      for (var j=0; j<summaryItem.keyStatistics.list.length; j++) {
                                        var keyStatistic = summaryItem.keyStatistics.list[j];
                                        data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType, colors[keyStatistic.label]]);
                                      }
 
                                      columns = [];
-
+                                    
                                      if (summaryItem.plotType == 'pie-chart') {
+                                       columnTwoWidth = 150;
                                        columns.push({ id:'color',
                                                       header: "Color",
                                                       width: 25,
@@ -728,7 +729,7 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                      columns.push({ id:'label',
                                                     header: "Label",
-                                                    width: 150,
+                                                    width: columnTwoWidth,
                                                     sortable: false,
                                                     dataIndex: 'label',
                                                     renderer: function(value, medata, record) {
