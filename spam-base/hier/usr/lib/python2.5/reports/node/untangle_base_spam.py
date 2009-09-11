@@ -555,7 +555,7 @@ class SpamDetail(DetailSection):
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('s_server_addr', _('Source IP')),
-               ColumnDesc('%s_action' % (self.__short_name), _('Action')),
+               ColumnDesc('case', _('Action')),
                ColumnDesc('addr', _('Msg receiver'))]
 
         return rv
@@ -565,11 +565,26 @@ class SpamDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, %s_score, subject, host(s_server_addr), %s_action as action, addr
+SELECT time_stamp, hname, %s_score, subject, host(s_server_addr),
+       CASE %s_action WHEN 'P' THEN '%s'
+                      WHEN 'B' THEN '%s'
+                      WHEN 'M' THEN '%s'
+                      WHEN 'Q' THEN '%s'
+                      WHEN 'S' THEN '%s'
+                      WHEN 'Z' THEN '%s'
+                      END,
+       addr
 FROM reports.n_mail_addrs
 WHERE time_stamp >= %s AND time_stamp < %s
       AND %s_is_spam AND addr_kind = 'T'
-""" % (self.__short_name, self.__short_name, DateFromMx(start_date),
+""" % (self.__short_name, self.__short_name,
+       _('passed'),
+       _('blocked'),
+       _('marked'),
+       _('quarantined'),
+       _('safelisted'),
+       _('oversize'),
+       DateFromMx(start_date),
        DateFromMx(end_date), self.__short_name)
 
         if host:
