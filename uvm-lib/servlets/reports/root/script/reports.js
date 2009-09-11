@@ -31,6 +31,34 @@ function handleTimeout(ex)
 JSONRpcClient.toplevel_ex_handler = function (ex) {
     handleTimeout(ex);
 };
+/**
+ * Extended memory proxy to support local pagination
+ *
+ */    
+Ext.data.PagedMemoryProxy = function(data){
+    Ext.data.PagedMemoryProxy.superclass.constructor.call(this);
+    this.data = data;
+};
+
+Ext.extend(Ext.data.PagedMemoryProxy, Ext.data.MemoryProxy, {
+    
+    load : function(params, reader, callback, scope, arg){
+        params = params || {};
+        var result;
+        try {
+            result = reader.readRecords(this.data);
+        }catch(e){
+            this.fireEvent("loadexception", this, arg, null, e);
+            callback.call(scope, null, arg, false);
+            return;
+        }
+        
+        if (params.limit && params.start != null) {
+            result.records = result.records.slice(params.start, params.start + params.limit);
+        }
+        callback.call(scope, result, arg, true);
+    }
+}); 
 
 // Main object class
 Ung.Reports = Ext.extend(Object,
@@ -898,14 +926,22 @@ Ung.ReportDetails = Ext.extend(Object,
                                          fields.push({ name: c.name });
                                      }
 
-                                     var store = new Ext.data.SimpleStore({fields: fields, data: [] });
-
+                                    var store = new Ext.data.Store({reader : new Ext.data.ArrayReader({},fields),remoteSort:true,/*fields: fields, */data: [] ,autoLoad: {params: {start: 0, limit: 40}} , proxy:new Ext.data.PagedMemoryProxy()}),
+                                        pagingBar = new Ext.PagingToolbar({
+                                            pageSize: 40,
+                                            store: store,
+                                            displayInfo: true,
+                                            displayMsg: 'Displaying  items {0} - {1} of {2}',
+                                            emptyMsg: "No items to display",
+                                            
+                                            items:[
+                                                '-']
+                                        });
                                      var detailSection=new Ext.grid.GridPanel({ title : section.title,
                                                                                 enableHdMenu : false,
                                                                                 enableColumnMove: false,
                                                                                 store: store,
                                                                                 columns: columns,
-                                                                                pageSize: 25,
                                                                                 tbar: [{ tooltip:this.i18n._('Export Excel'),
                                                                                          iconCls:'export-excel',
                                                                                          handler: function() {
@@ -915,6 +951,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                          }
                                                                                        }
                                                                                       ],
+                                                                                bbar : pagingBar,
                                                                                 listeners: {
                                                                                     'activate': function (panel){
                                                                                         if(panel.store.initialData.loaded ==false){
@@ -933,8 +970,11 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                                  for (var i = 0; i < result.list.length; i++) {
                                                                                                      data.push(result.list[i].list);
                                                                                                  }
-                                                        
-                                                                                                 store.loadData(data);
+                                                                                                 //store.reader.readRecords(data);
+                                                                                                 //store.reader.read({rows:data.length,list:data});
+                                                                                                 store.proxy.data = data;
+                                                                                                 store.load({params:{start:0, limit:40}});
+                                                                                                 //store.loadData(data);
                                                                                                  store.initialData.loaded = true;
                                                                                                  reports.progressBar.hide();                                                                                                                                                                                                                                                                                                                                                                                                     
                                                                                                  }.createDelegate(this), store.initialData.reportsDate, store.initialData.selectedApplication, store.initialData.name, store.initialData.drilldownType, store.initialData.drilldownValue);
