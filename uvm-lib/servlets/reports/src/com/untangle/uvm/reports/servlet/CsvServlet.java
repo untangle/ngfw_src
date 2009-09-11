@@ -66,6 +66,10 @@ public class CsvServlet extends HttpServlet
 
         BufferedWriter bw = null;
         try {
+            resp.setHeader("Content-Type", "text/csv");
+            resp.setHeader("Content-Disposition", "attachment; filename=\""
+                           + dateStr + "-" + app + "-" + detail + ".csv\"");
+
             ServletOutputStream out = resp.getOutputStream();
             bw = new BufferedWriter(new OutputStreamWriter(out));
 
