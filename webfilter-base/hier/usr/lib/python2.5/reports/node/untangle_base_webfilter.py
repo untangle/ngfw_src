@@ -474,10 +474,10 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
             hits = r[0]
             violations = r[1]
 
-            ks = KeyStatistic(_('total hits (7-days)'), hits, _('hits'))
+            ks = KeyStatistic(_('total hits (7-days)'), hits, 'hits')
             lks.append(ks)
             ks = KeyStatistic(_('total violations (7-days)'), violations,
-                              _('violations'))
+                              'violations')
             lks.append(ks)
         finally:
             conn.commit()
@@ -485,9 +485,9 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
         plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Date'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset({_('hits'): hits, _('violations'): violations},
-                             colors={'total hits (7-days)': colors.goodness,
-                                     'total violations (7-days)': colors.badness})
+        plot.add_pie_dataset({_('total hits (7-days)'): hits, _('total violations (7-days)'): violations},
+                             colors={_('total hits (7-days)'): colors.goodness,
+                                     _('total violations (7-days)'): colors.badness})
 
         return (lks, plot)
 
