@@ -240,7 +240,7 @@ class DetailSection(Section):
         element.set('name', self.name)
         element.set('title', self.title)
 
-        start_date = end_date - mx.DateTime.DateTimeDelta(1)
+        start_date = end_date - mx.DateTime.DateTimeDelta(7) # XXX report_days
         sql = self.get_sql(start_date, end_date, host, user, email)
 
         if not sql:
