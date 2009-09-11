@@ -85,7 +85,8 @@ def __getStyleSheet():
     stylesheet.add(ParagraphStyle(name='Heading1',
                                   parent=stylesheet['Normal'],
                                   fontName = 'Helvetica-Bold',
-                                  fontSize=24))
+                                  fontSize=24,
+                                  leading = 20))
 
     stylesheet.add(ParagraphStyle(name='Heading2',
                                   parent=stylesheet['Normal'],
