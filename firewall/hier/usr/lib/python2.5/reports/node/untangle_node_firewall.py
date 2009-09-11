@@ -462,7 +462,7 @@ class FirewallDetail(DetailSection):
         sql = sql + ("""firewall_rule_index, firewall_was_blocked::text, host(c_server_addr), c_server_port, c_client_addr::text, c_client_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
-AND NOT firewall_rule_index ISNULL""" % (DateFromMx(start_date),
+AND NOT firewall_rule_index IS NULL""" % (DateFromMx(start_date),
                                          DateFromMx(end_date)))
 
         if host:
