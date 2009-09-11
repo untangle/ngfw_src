@@ -71,7 +71,7 @@ public class CsvServlet extends HttpServlet
 
             DateFormat df = new SimpleDateFormat(DATE_FORMAT);
             Date date = df.parse(dateStr);
-            List<List> ll = rm.getDetailData(date, app, detail, type, value);
+            List<List> ll = rm.getAllDetailData(date, app, detail, type, value);
 
             for (List l : ll) {
                 for (int i = 0; i < l.size(); i++) {

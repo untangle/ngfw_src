@@ -34,14 +34,14 @@ JSONRpcClient.toplevel_ex_handler = function (ex) {
 /**
  * Extended memory proxy to support local pagination
  *
- */    
+ */
 Ext.data.PagedMemoryProxy = function(data){
     Ext.data.PagedMemoryProxy.superclass.constructor.call(this);
     this.data = data;
 };
 
 Ext.extend(Ext.data.PagedMemoryProxy, Ext.data.MemoryProxy, {
-    
+
     load : function(params, reader, callback, scope, arg){
         params = params || {};
         var result;
@@ -52,13 +52,13 @@ Ext.extend(Ext.data.PagedMemoryProxy, Ext.data.MemoryProxy, {
             callback.call(scope, null, arg, false);
             return;
         }
-        
+
         if (params.limit && params.start != null) {
             result.records = result.records.slice(params.start, params.start + params.limit);
         }
         callback.call(scope, result, arg, true);
     }
-}); 
+});
 
 // Main object class
 Ung.Reports = Ext.extend(Object,
@@ -170,7 +170,7 @@ Ung.Reports = Ext.extend(Object,
                            {
                              this.reportDatesItems = [];
                              for (var i = 0; i < rpc.dates.list.length; i++) {
-                               this.reportDatesItems.push({ text : i18n.dateFormat(rpc.dates.list[i]),
+                                  this.reportDatesItems.push({ text : i18n.dateFormat(rpc.dates.list[i]),
                                                             dt : rpc.dates.list[i],
                                                             handler : function()
                                                             {
@@ -740,7 +740,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                      }
 
                                      columns = [];
-                                    
+
                                      if (summaryItem.plotType == 'pie-chart') {
                                        columnTwoWidth = 150;
                                        columns.push({ id:'color',
@@ -933,7 +933,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                             displayInfo: true,
                                             displayMsg: 'Displaying  items {0} - {1} of {2}',
                                             emptyMsg: "No items to display",
-                                            
+
                                             items:[
                                                 '-']
                                         });
@@ -964,9 +964,9 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                                      }
                                                                                                      return;
                                                                                                  }
-                                                        
+
                                                                                                  var data = [];
-                                                        
+
                                                                                                  for (var i = 0; i < result.list.length; i++) {
                                                                                                      data.push(result.list[i].list);
                                                                                                  }
@@ -976,13 +976,13 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                                  store.load({params:{start:0, limit:40}});
                                                                                                  //store.loadData(data);
                                                                                                  store.initialData.loaded = true;
-                                                                                                 reports.progressBar.hide();                                                                                                                                                                                                                                                                                                                                                                                                     
+                                                                                                 reports.progressBar.hide();
                                                                                                  }.createDelegate(this), store.initialData.reportsDate, store.initialData.selectedApplication, store.initialData.name, store.initialData.drilldownType, store.initialData.drilldownValue);
                                                                                         }
                                                                                     }.createDelegate(this)
                                                                                 }
                                                                               });
-                                    store.initialData = {};                                                                                                        
+                                    store.initialData = {};
                                     if(section.name=='Summary Report'){
                                     store.initialData.loaded = true;
                                      rpc.reportingManager.getDetailData(function(result, exception) {

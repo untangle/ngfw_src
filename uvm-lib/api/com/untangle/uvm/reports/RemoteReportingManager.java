@@ -67,6 +67,9 @@ public interface RemoteReportingManager  {
     List<List> getDetailData(Date d, String appName, String detailName,
                              String type, String value);
 
+    List<List> getAllDetailData(Date d, String appName, String detailName,
+                                String type, String value);
+
     // old stuff ---------------------------------------------------------------
 
 

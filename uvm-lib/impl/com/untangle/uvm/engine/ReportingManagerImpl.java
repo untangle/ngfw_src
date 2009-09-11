@@ -198,6 +198,21 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     public List<List> getDetailData(Date d, String appName, String detailName,
                                     String type, String value)
     {
+        return doGetDetailData(d, appName, detailName, type, value, true);
+    }
+
+    public List<List> getAllDetailData(Date d, String appName, String detailName,
+                                       String type, String value)
+    {
+        return doGetDetailData(d, appName, detailName, type, value, false);
+    }
+
+    // private methods ---------------------------------------------------------
+
+    private List<List> doGetDetailData(Date d, String appName, String detailName,
+                                      String type, String value,
+                                      boolean limitResultSet)
+    {
         List<List> rv = new ArrayList<List>();
 
         ApplicationData ad = readXml(d, appName, type, value);
@@ -215,7 +230,9 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                     try {
                         conn = DataSourceFactory.factory().getConnection();
                         Statement stmt = conn.createStatement();
-                        stmt.setMaxRows(1000);
+                        if (limitResultSet) {
+                            stmt.setMaxRows(1000);
+                        }
                         ResultSet rs = stmt.executeQuery(sql);
                         int columnCount = rs.getMetaData().getColumnCount();
                         while (rs.next()) {
@@ -242,8 +259,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
         return rv;
     }
-
-    // private methods ---------------------------------------------------------
 
     private ApplicationData readXml(Date d, String appName, String type,
                                     String value)
