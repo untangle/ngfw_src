@@ -166,8 +166,7 @@ ORDER BY time asc"""
                      title=_('Daily Request'),
                      xlabel=_('Hour of Day'),
                      ylabel=_('Requests per Minute'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=sql_helper.REQUIRED_TIME_POINTS)
+                     major_formatter=TIME_OF_DAY_FORMATTER)
 
         plot.add_dataset(times, accepted, label=_('accepted'))
         plot.add_dataset(times, limited, label=_('limited'))
