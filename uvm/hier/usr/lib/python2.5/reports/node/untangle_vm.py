@@ -76,21 +76,16 @@ class UvmNode(Node):
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
 
-#         ft = FactTable('reports.n_admin_logins_totals',
-#                        'reports.n_admin_logins',
-#                        'time_stamp',
-#                        [Column('login', 'text'),],
-#                        [Column('logins', 'bigint', 'count(*)'),])
-#         reports.engine.register_fact_table(ft)
-
     @print_timing
     def __create_n_admin_logins(self, start_date, end_date):
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.n_admin_logins (
     time_stamp timestamp without time zone,
     login text,
+    local boolean,
     client_addr inet,
-    succeeded boolean
+    succeeded boolean,
+    reason char(1)
 )""",
                                             'time_stamp', start_date, end_date)
 
@@ -102,8 +97,8 @@ CREATE TABLE reports.n_admin_logins (
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_admin_logins
-      (time_stamp, login, client_addr, succeeded)
-    SELECT time_stamp, login, client_addr, succeeded
+      (time_stamp, login, local, client_addr, succeeded, reason)
+    SELECT time_stamp, login, local, client_addr, succeeded, reason
     FROM events.u_login_evt evt
     WHERE evt.time_stamp >= %s AND evt.time_stamp < %s""",
                                (sd, ed), connection=conn, auto_commit=False)
@@ -934,7 +929,7 @@ class AdministrativeLoginsDetail(DetailSection):
         sql = """\
 SELECT time_stamp, host(client_addr), succeeded::text
 FROM reports.n_admin_logins
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s AND time_stamp < %s AND not local
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
