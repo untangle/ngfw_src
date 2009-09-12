@@ -147,7 +147,7 @@ class TopTenAttacksByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT ips_name, count(*) as hits_sum
@@ -170,11 +170,11 @@ AND ips_name != ''"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'))

@@ -486,7 +486,7 @@ class TopTenBlockedSpywareSitesByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT host, sum(sw_blacklisted + sw_cookies) as hits_sum
@@ -509,11 +509,11 @@ AND (sw_blacklisted + sw_cookies) > 0"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'))
@@ -542,7 +542,7 @@ class TopTenBlockedHostsByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT hname, sum(sw_blacklisted + sw_cookies) as hits_sum
@@ -565,11 +565,11 @@ AND (sw_blacklisted + sw_cookies) > 0"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'),
@@ -599,7 +599,7 @@ class TopTenBlockedCookies(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT sw_cookie_ident, count(*) as hits_sum
@@ -623,11 +623,11 @@ AND sw_cookies > 0"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'))
@@ -738,7 +738,7 @@ class TopTenSuspiciousTrafficSubnetsByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT sw_access_ident, sum(sw_accesses) as hits_sum
@@ -764,11 +764,11 @@ ORDER BY hits_sum DESC LIMIT 10"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'))
@@ -797,7 +797,7 @@ class TopTenSuspiciousTrafficHostsByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT hname, sum(sw_accesses) as hits_sum
@@ -821,11 +821,11 @@ AND sw_accesses > 0"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'),

@@ -445,7 +445,6 @@ class TotalWebUsage(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
@@ -505,7 +504,7 @@ class TopTenWebPolicyViolationsByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT wf_%s_category, sum(wf_%s_blocks)::int AS blocks_sum
@@ -528,11 +527,11 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10\
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'))
@@ -564,7 +563,7 @@ class TopTenWebBlockedPolicyViolationsByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT wf_%s_category, sum(wf_%s_blocks)::int AS blocks_sum
@@ -588,11 +587,11 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10""" \
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'))
@@ -623,7 +622,7 @@ class TopTenWebUsageByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT hname, sum(hits)::int as hits_sum
@@ -638,7 +637,7 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
 
             curs = conn.cursor()
 
-            curs.execute(query, (one_day, ed))
+            curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'),
                                   link_type=reports.HNAME_LINK)
@@ -671,7 +670,7 @@ class TopTenWebPolicyViolatorsByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT hname, COALESCE(sum(wf_%s_blocks), 0)::int as blocks_sum
@@ -687,7 +686,7 @@ ORDER BY blocks_sum DESC LIMIT 10""" % self.__vendor_name
 
             curs = conn.cursor()
 
-            curs.execute(query, (one_day, ed))
+            curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'),
                                   link_type=reports.HNAME_LINK)
@@ -720,7 +719,7 @@ class TopTenWebPolicyViolatorsADByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT uid, sum(wf_%s_blocks)::int as blocks_sum
@@ -739,7 +738,7 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
 
             curs = conn.cursor()
 
-            curs.execute(query, (one_day, ed))
+            curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'),
                                   link_type=reports.USER_LINK)
@@ -771,7 +770,7 @@ class TopTenWebUsageBySize(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT hname, COALESCE(sum(s2c_bytes) + sum(c2s_bytes), 0)::bigint as size_sum
@@ -786,7 +785,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             curs = conn.cursor()
 
-            curs.execute(query, (one_day, ed))
+            curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], N_('bytes'),
                                   link_type=reports.HNAME_LINK)
@@ -819,7 +818,7 @@ class TopTenWebsitesByHits(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT host, sum(hits)::int as hits_sum
@@ -839,11 +838,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.URL_LINK)
@@ -875,7 +874,7 @@ class TopTenWebsitesBySize(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT host, coalesce(sum(s2c_bytes) + sum(c2s_bytes), 0)::bigint as size_sum
@@ -896,11 +895,11 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.URL_LINK)
@@ -933,7 +932,7 @@ class TopTenPolicyViolations(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT host, sum(hits)::int as hits_sum
@@ -954,11 +953,11 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'))
@@ -990,7 +989,7 @@ class TopTenBlockerPolicyViolations(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT host, COALESCE(sum(hits), 0)::int as hits_sum
@@ -1012,11 +1011,11 @@ AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name)
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'))
@@ -1148,7 +1147,7 @@ class WebUsageByCategory(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT wf_%s_category, count(*) AS count_events
@@ -1170,11 +1169,11 @@ ORDER BY count_events DESC""" % self.__vendor_name
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 stat_key = r[0]
@@ -1208,7 +1207,7 @@ class ViolationsByCategory(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT wf_%s_category, count(*) as blocks_sum
@@ -1231,11 +1230,11 @@ ORDER BY blocks_sum DESC""" % self.__vendor_name
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
                 stat_key = r[0]
