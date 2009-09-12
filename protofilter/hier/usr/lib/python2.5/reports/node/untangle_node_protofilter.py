@@ -256,7 +256,7 @@ class TopTenBlockedProtocolsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT pf_protocol, count(*) as hits_sum
+SELECT pf_protocol, sum(pf_blocks) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND NOT pf_protocol IS NULL
@@ -375,7 +375,7 @@ class TopTenBlockedHostsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT hname, count(*) as hits_sum
+SELECT hname, sum(pf_blocks) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND NOT pf_protocol IS NULL
