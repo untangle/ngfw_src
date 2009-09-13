@@ -192,7 +192,6 @@ class TopUsers(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
@@ -255,5 +254,5 @@ WHERE trunc_time >= %s AND trunc_time < %s""" % (DateFromMx(start_date),
                                                  DateFromMx(end_date)))
 
         return sql + "ORDER BY trunc_time"
-    
+
 reports.engine.register_node(OpenVpn())

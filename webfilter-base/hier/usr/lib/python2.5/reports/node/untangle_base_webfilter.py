@@ -509,8 +509,7 @@ class TopTenWebPolicyViolationsByHits(Graph):
         query = """\
 SELECT wf_%s_category, sum(wf_%s_blocks)::int AS blocks_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
-AND wf_%s_category != ''""" % (3 * (self.__vendor_name,))
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
         if host:
             query = query + " AND hname = %s"
         elif user:
@@ -534,7 +533,10 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10\
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                cat = r[0]
+                if not cat or cat == '':
+                    cat = _('Uncategorized')
+                ks = KeyStatistic(cat, r[1], _('hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -1071,7 +1073,7 @@ SELECT time_stamp, hname, uid, wf_%s_category, 'http://' || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
-      AND wf_%s_action = 'B'""" % (self.__vendor_name,
+      AND NOT wf_%s_action ISNULL""" % (self.__vendor_name,
                                    DateFromMx(start_date),
                                    DateFromMx(end_date),
                                    self.__vendor_name)

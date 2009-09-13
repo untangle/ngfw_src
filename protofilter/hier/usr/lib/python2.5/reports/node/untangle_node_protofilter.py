@@ -493,7 +493,7 @@ class TopTenBlockedUsersByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT uid, count(*) as hits_sum
+SELECT uid, sum(pf_blocks) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND uid != ''
