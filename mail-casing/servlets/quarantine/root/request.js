@@ -74,12 +74,12 @@ Ung.QuarantineRequest.prototype = {
     requestEmail : function( result, exception )
     {
         if ( exception ) {
-          message = exception.message;
-          if (message == "Unknown") {
-            message = i18n._("Please Try Again");
-          }
-          Ext.MessageBox.alert("Failed",message);
-          return;
+            var message = exception.message;
+            if (message == null || message == "Unknown") {
+                message = i18n._("Please Try Again");
+            }
+            Ext.MessageBox.alert("Failed",message);
+            return;
         }
 
         var field = this.requestForm.find( "name", "email_address" )[0];

@@ -242,20 +242,20 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             });
         },
         showProfessionalMessage : function(){
-                Ext.MessageBox.show({
-                   title: this.i18n._('Professional Package Feature'),
-                   msg: this.i18n._('Need to create network-access policies by username or time of the week? Click on "More Info" to learn more.'),
-                    buttons: {ok:this.i18n._('More Info'), cancel:true},
-                    fn: function(btn){
-                        if(btn=='ok'){
-                            var app = Ung.AppItem.getAppByLibItem("untangle-libitem-policy");
-                            if (app != null && app.libItem != null) {
-                                app.linkToStoreFn();
-                            }
+            Ext.MessageBox.show({
+                title: this.i18n._('Professional Package Feature'),
+                msg: this.i18n._('Need to create network-access policies by username or time of the week? Click on "More Info" to learn more.'),
+                buttons: {ok:this.i18n._('More Info'), cancel:true},
+                fn: function(btn){
+                    if(btn=='ok'){
+                        var app = Ung.AppItem.getAppByLibItem("untangle-libitem-policy");
+                        if (app != null && app.libItem != null) {
+                            app.linkToStoreFn();
                         }
-                    },
-                   icon: Ext.MessageBox.INFO
-               })
+                    }
+                },
+                icon: Ext.MessageBox.INFO
+            });
         },
         buildPolicies : function() {
             this.policyStoreData = [];
@@ -413,10 +413,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     sortable : true,
                     dataIndex : 'clientIntf',
                     renderer : function(value) {
-                        var result = ""
+                        var result = "";
                         var store = Ung.Util.getInterfaceStore();
                         if (store) {
-                            var index = store.find("key", value)
+                            var index = store.find("key", value);
                             if (index >= 0) {
                                 result = store.getAt(index).get("name");
                             }
@@ -432,10 +432,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     sortable : true,
                     dataIndex : 'serverIntf',
                     renderer : function(value) {
-                        var result = ""
+                        var result = "";
                         var store = Ung.Util.getInterfaceStore();
                         if (store) {
-                            var index = store.find("key", value)
+                            var index = store.find("key", value);
                             if (index >= 0) {
                                 result = store.getAt(index).get("name");
                             }
@@ -451,10 +451,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     sortable : true,
                     dataIndex : 'protocol',
                     renderer : function(value) {
-                        var result = ""
+                        var result = "";
                         var store = Ung.Util.getProtocolStore();
                         if (store) {
-                            var index = store.find("key", new RegExp("^"+value+"$"))
+                            var index = store.find("key", new RegExp("^"+value+"$"));
                             if (index >= 0) {
                                 result = store.getAt(index).get("name");
                             }
@@ -617,8 +617,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                                             && Ext.getCmp("gridRules_rowEditor_thursday").getValue()
                                             && Ext.getCmp("gridRules_rowEditor_friday").getValue()
                                             && Ext.getCmp("gridRules_rowEditor_saturday").getValue()) {
-                                       dayOfWeek="any"
-
+                                        dayOfWeek="any";
                                     } else {
                                         var out = [];
                                         if (Ext.getCmp("gridRules_rowEditor_sunday").getValue()) {
@@ -961,59 +960,62 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         },
         validateClient : function() {
             var rackList=this.gridRacks.getFullSaveList();
+            var i,j;
             if(rackList.length==0) {
                 Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("There must always be at least one available rack."));
                 return false;
             }
-            for(var i=0;i<rackList.length;i++) {
-                for(var j=i+1;j<rackList.length;j++) {
-                   if(rackList[i].name==rackList[j].name) {
-                           Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("The rack named {0} already exists."),rackList[i].name));
-                       return false;
-                   }
+            for(i=0;i<rackList.length;i++) {
+                for(j=i+1;j<rackList.length;j++) {
+                    if(rackList[i].name==rackList[j].name) {
+                        Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("The rack named {0} already exists."),rackList[i].name));
+                        return false;
+                    }
                 }
             }
             var rulesList=this.gridRules.getFullSaveList();
             var rackDeletedList=this.gridRacks.getDeletedList();
-            for(var i=0;i<rulesList.length;i++) {
+            for(i=0;i<rulesList.length;i++) {
                 if(rulesList[i].policy!=null) {
-                        for(var j=0;j<rackDeletedList.length;j++) {
-                                if(rulesList[i].policy.id==rackDeletedList[j].id) {
-                                        Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._('The rack named {0} cannot be removed because it is currently being used in "Custom Policies".'),rackDeletedList[j].name));
+                    for(j=0;j<rackDeletedList.length;j++) {
+                        if(rulesList[i].policy.id==rackDeletedList[j].id) {
+                            Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._('The rack named {0} cannot be removed because it is currently being used in "Custom Policies".'),rackDeletedList[j].name));
                             return false;
-                                }
                         }
+                    }
                 }
             }
             return true;
         },
         validateServer : function() {
-                var rackDeletedList=this.gridRacks.getDeletedList();
-                for(var i=0;i<rackDeletedList.length;i++)
+            var rackDeletedList=this.gridRacks.getDeletedList();
+            for(var i=0;i<rackDeletedList.length;i++)
+            {
                 try {
-                        try {
-                    var result = rpc.nodeManager.nodeInstances(rackDeletedList[i]);
+                    try {
+                        var result = rpc.nodeManager.nodeInstances(rackDeletedList[i]);
+                    } catch (e) {
+                        Ung.Util.rpcExHandler(e);
+                    }
+                    
+                    if (result.list.length>0) {
+                        
+                        //                var isEmptyPolicy = rpc.nodeManager.isEmptyPolicy(rackDeletedList[i]);
+                        //                if (!isEmptyPolicy) {
+                        Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("The rack named {0} cannot be removed because it is not empty.  Please remove all products first."),rackDeletedList[i].name));
+                        return false;
+                    }
                 } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-
-                if (result.list.length>0) {
-
-//                var isEmptyPolicy = rpc.nodeManager.isEmptyPolicy(rackDeletedList[i]);
-//                if (!isEmptyPolicy) {
-                    Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("The rack named {0} cannot be removed because it is not empty.  Please remove all products first."),rackDeletedList[i].name));
+                    var message = e.message;
+                    if (message == null || message == "Unknown") {
+                        message = i18n._("Please Try Again");
+                    }
+                    
+                    Ext.MessageBox.alert(i18n._("Failed"), message);
                     return false;
                 }
-            } catch (e) {
-              message = e.message;
-              if (message == "Unknown") {
-                message = i18n._("Please Try Again");
-              }
-
-              Ext.MessageBox.alert(i18n._("Failed"), message);
-              return false;
             }
-
+            
             var passedAddresses = this.gridRules.getFullSaveList();
             var clientAddrList = [];
             var serverAddrList = [];
@@ -1064,13 +1066,13 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         return false;
                     }
                 } catch (e) {
-                  message = e.message;
-                  if (message == "Unknown") {
-                    message = i18n._("Please Try Again");
-                  }
-
-                  Ext.MessageBox.alert(i18n._("Failed"), message);
-                  return false;
+                    var message = e.message;
+                    if (message == null || message == "Unknown") {
+                        message = i18n._("Please Try Again");
+                    }
+                    
+                    Ext.MessageBox.alert(i18n._("Failed"), message);
+                    return false;
                 }
             }
             return true;

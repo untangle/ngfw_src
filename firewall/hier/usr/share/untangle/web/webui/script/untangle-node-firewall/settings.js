@@ -521,13 +521,13 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             return false;
                         }
                     } catch (e) {
-                      message = exception.message;
-                      if (message == "Unknown") {
-                        message = i18n._("Please Try Again");
-                      }
-
-                      Ext.MessageBox.alert(i18n._("Failed"), message);
-                      return false;
+                        var message = exception.message;
+                        if (message == null || message == "Unknown") {
+                            message = i18n._("Please Try Again");
+                        }
+                        
+                        Ext.MessageBox.alert(i18n._("Failed"), message);
+                        return false;
                     }
                 }
             }

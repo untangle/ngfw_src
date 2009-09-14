@@ -736,12 +736,12 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             return false;
                         }
                     } catch (e) {
-                      message = e.message;
-                      if (message == "Unknown") {
-                        message = i18n._("Please Try Again");
-                      }
-                      Ext.MessageBox.alert("Failed", message);
-                      return false;
+                        var message = e.message;
+                        if (message == null || message == "Unknown") {
+                            message = i18n._("Please Try Again");
+                        }
+                        Ext.MessageBox.alert("Failed", message);
+                        return false;
                     }
                 }
             }

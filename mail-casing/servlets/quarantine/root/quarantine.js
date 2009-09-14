@@ -190,14 +190,13 @@ Ext.extend(Ung.QuarantineProxy, Ext.data.DataProxy, {
         if(exception) {
             var message = exception.message;
             if ( exception.name == "com.untangle.node.mail.papi.quarantine.NoSuchInboxException" ) {
-
-                message = String.format( i18n._( "The account {0} doesn't have any quarantined messages." ), inboxDetails.address );
+                message = String.format( i18n._( "The account {0} doesn't have any quarantined messages." ),
+                                         inboxDetails.address );
             }
-
-            if (message == "Unknown") {
-              message = i18n._("Please Try Again");
+            
+            if (message == null || message == "Unknown") {
+                message = i18n._("Please Try Again");
             }
-
 
             Ext.MessageBox.alert("Failed",message);
             this.callback.call(this.scope, null, this.arg, true);
@@ -321,14 +320,13 @@ Ung.Quarantine.prototype = {
     refreshTable : function( result, exception )
     {
         if ( exception ) {
-          message = exception.message;
-          if (message == "Unknown") {
-            message = i18n._("Please Try Again");
-          }
-
-
-          Ext.MessageBox.alert("Failed",exception.message);
-          return;
+            var message = exception.message;
+            if (message == null || message == "Unknown") {
+                message = i18n._("Please Try Again");
+            }
+            
+            Ext.MessageBox.alert("Failed",message);
+            return;
         }
 
         try {

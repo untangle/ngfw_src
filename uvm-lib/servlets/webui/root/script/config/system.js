@@ -226,7 +226,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                         } else {
                                             Ext.MessageBox.wait(String.format(this.i18n._("The {0} Server is rebooting."),this.companyName), i18n._("Please wait"));
                                         }
-                                    }.createDelegate(this))    
+                                    }.createDelegate(this));
                                 }
                              }.createDelegate(this));
                         }.createDelegate(this)
@@ -981,7 +981,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                                 }
                                             }
                                         }.createDelegate(this)
-                                    })
+                                    });
                                 }.createDelegate(this)
                             }
                         }
@@ -1162,7 +1162,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     }.createDelegate(this), this.getHttpSettings());
                 } else {
                 	this.saveSemaphore--;
-                };
+                }
                 
                 // save ftp settings
                 if (this.isFtpLoaded()) {
@@ -1172,7 +1172,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     }.createDelegate(this), this.getFtpSettings());
                 } else {
                     this.saveSemaphore--;
-                };
+                }
                 
                 // save mail settings
                 if (this.isMailLoaded()) {
@@ -1185,7 +1185,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     }.createDelegate(this), this.getMailNodeSettings());
                 } else {
                     this.saveSemaphore--;
-                };
+                }
                 
                 //save timezone
                 rpc.adminManager.setTimeZone(function(result, exception) {
@@ -1214,7 +1214,6 @@ if (!Ung.hasResource["Ung.System"]) {
                 || this.isFtpLoaded() && !Ung.Util.equals(this.getFtpSettings(), this.initialFtpSettings)
                 || this.isMailLoaded() && !Ung.Util.equals(this.getMailNodeSettings(), this.initialMailSettings);
         }
-
     });
 
 }

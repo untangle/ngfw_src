@@ -150,13 +150,13 @@ Ung.Safelist.prototype = {
     deleteAddresses : function( result, exception, foo )
     {
         if ( exception ) {
-          message = exception.message;
-          if (message == "Unknown") {
-            message = i18n._("Please Try Again");
-          }
-
-          Ext.MessageBox.alert("Failed",exception.message);
-          return;
+            var message = exception.message;
+            if (message == null || message == "Unknown") {
+                message = i18n._("Please Try Again");
+            }
+            
+            Ext.MessageBox.alert("Failed",message);
+            return;
         }
 
         this.grid.setDisabled( false );

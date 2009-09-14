@@ -1058,7 +1058,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     Ext.Panel.prototype.beforeDestroy.call(this);
                 }
 
-            })
+            });
         },
 
         // Generate Self-Signed certificate
@@ -2241,12 +2241,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         if(Ung.Util.handleException(exception)) return;
                         // update global branding settings
                         rpc.brandingManager.getBaseSettings(function (result, exception) {
-                          message = exception.message;
-                          if (message == "Unknown") {
-                            message = i18n._("Please Try Again");
-                          }
 
-                          if(exception) { Ext.MessageBox.alert("Failed",message); return;}
+                          if(exception) { 
+                              var message = exception.message;
+                              if (message == "Unknown") {
+                                  message = i18n._("Please Try Again");
+                              }
+                              Ext.MessageBox.alert("Failed",message); 
+                              return;
+                          }
                           rpc.brandingBaseSettings=result;
                           document.title=rpc.brandingBaseSettings.companyName;
                           this.afterSave();
@@ -2317,8 +2320,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 || !Ung.Util.equals(this.getSnmpSettings(), this.initialSnmpSettings)
                 || !Ung.Util.equals(this.getLoggingSettings(), this.initialLoggingSettings)
                 || !Ung.Util.equals(this.getSkinSettings(), this.initialSkinSettings)
-                || !this.isBrandingExpired() && !Ung.Util.equals(this.getBrandingBaseSettings(), this.initialBrandingBaseSettings)
-                ;
+                || !this.isBrandingExpired() && !Ung.Util.equals(this.getBrandingBaseSettings(), this.initialBrandingBaseSettings);
         }
 
     });
@@ -2350,5 +2352,4 @@ if (!Ung.hasResource["Ung.Administration"]) {
             main.todo();
         }
     });
-
 }

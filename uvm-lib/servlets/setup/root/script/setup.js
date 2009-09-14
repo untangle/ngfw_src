@@ -65,16 +65,16 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object,
 
     testMessageHandler : function( result, exception )
     {
+        var message = i18n._( 'Test email sent.  Check your mailbox to for successful delivery.' );
         if ( exception ) {
-          message = exception.message;
-          if (message == "Unknown") {
-            message = i18n._("Please Try Again");
-          }
-          Ext.MessageBox.alert( i18n._( "Failed" ), message );
-          return;
+            message  = exception.message;
+            if (message == null || message == "Unknown") {
+                message = i18n._("Please Try Again");
+            }
+            Ext.MessageBox.alert( i18n._( "Failed" ), message );
+            return;
         }
 
-        var message = i18n._( 'Test email sent.  Check your mailbox to for successful delivery.' );
         if ( result != true ) message = i18n._( 'Warning!  Test failed.  Check your settings.' );
 
         this.showTester( { progressText : message } );
@@ -480,14 +480,14 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
     errorHandler : function( result, exception, foo, handler )
     {
         if(exception) {
-          message = exception.message;
-          if (message == "Unknown") {
-            message = i18n._("Please Try Again");
-          }
-          Ext.MessageBox.alert("Failed", message);
-          return;
+            var message = exception.message;
+            if (message == null || message == "Unknown") {
+                message = i18n._("Please Try Again");
+            }
+            Ext.MessageBox.alert("Failed", message);
+            return;
         }
-
+        
         Ext.MessageBox.hide();
         handler();
     },

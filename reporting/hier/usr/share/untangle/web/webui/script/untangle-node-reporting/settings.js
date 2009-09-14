@@ -266,16 +266,12 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                        return false;
                                      }
                                    } catch (e) {
-                                     message = e.message;
-                                     if (message == "Unknown") {
-                                       message = i18n._("Please Try Again");
-                                     }
-
-                                     if (message == "Unknown") {
-                                       message = i18n._("Please Try Again");
-                                     }
-                                     Ext.MessageBox.alert(i18n._("Failed"), message);
-                                     return false;
+                                       var message = ( e == null ) ? "Unknown" : e.message;
+                                       if (message == "Unknown") {
+                                           message = i18n._("Please Try Again");
+                                       }
+                                       Ext.MessageBox.alert(i18n._("Failed"), message);
+                                       return false;
                                    }
                                  }
 
