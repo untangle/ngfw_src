@@ -912,7 +912,7 @@ class AdministrativeLoginsDetail(DetailSection):
         DetailSection.__init__(self, 'admin-logins-events', _('Administrative Logins Events'))
 
     def get_columns(self, host=None, user=None, email=None):
-        if email:
+        if host or user or email:
             return None
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
@@ -931,11 +931,6 @@ SELECT time_stamp, host(client_addr), succeeded::text
 FROM reports.n_admin_logins
 WHERE time_stamp >= %s AND time_stamp < %s AND not local
 """ % (DateFromMx(start_date), DateFromMx(end_date))
-
-        if host:
-            sql += " AND hname = %s" % QuotedString(host)
-        if user:
-            sql += " AND uid = %s" % QuotedString(user)
 
         return sql + "ORDER BY time_stamp"
 

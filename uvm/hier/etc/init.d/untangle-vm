@@ -148,7 +148,7 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
-		$MONIT monitor all
+		[ $0 = "/etc/init.d/untangle-vm" ] && $MONIT monitor all
                 updateStatusExit "]\n" "Running"
             fi
         done
