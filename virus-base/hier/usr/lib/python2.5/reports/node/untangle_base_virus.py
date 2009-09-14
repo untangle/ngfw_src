@@ -313,7 +313,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
         try:
             q = """\
 SELECT date_trunc('day', trunc_time) AS time,
-       sum(viruses_%s_blocked) as viruses_%s_blocked
+       COALESCE(sum(viruses_%s_blocked), 0)::int as viruses_%s_blocked
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
@@ -344,7 +344,7 @@ ORDER BY time asc"""
 
             q = """\
 SELECT date_trunc('day', trunc_time) AS time,
-       sum(viruses_%s_blocked) as viruses_%s_blocked
+       COALESCE(sum(viruses_%s_blocked), 0)::int as viruses_%s_blocked
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
@@ -419,7 +419,7 @@ FROM ((""" % (2 * (self.__vendor_name,))
         # in execute below
         avg_max_query += """\
 SELECT date_trunc('hour', trunc_time) AS day,
-       sum(viruses_%s_blocked) AS viruses_%s_blocked
+       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses_%s_blocked
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
 
@@ -434,7 +434,7 @@ GROUP BY day)
 UNION (
 
 SELECT date_trunc('hour', trunc_time) AS day,
-       sum(viruses_%s_blocked) AS viruses_%s_blocked
+       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses_%s_blocked
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
 
@@ -507,7 +507,7 @@ ORDER BY time asc"""
 
             q = """\
 SELECT date_trunc('hour', trunc_time)::time AS time,
-       sum(viruses_%s_blocked) / %%s as viruses_%s_blocked
+       COALESCE(sum(viruses_%s_blocked), 0)::int / %%s as viruses_%s_blocked
 FROM reports.n_mail_msg_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
