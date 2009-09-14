@@ -46,7 +46,7 @@ if [ "x" != "x@PREFIX@" ] ; then
 fi
 
 unmonitorAll() {
-  [ $(ps -p $PPID -o fname=) != 'monit' ] && $MONITOR unmonitor all
+  [ $(ps -p $PPID -o fname=) != 'monit' ] && $MONIT unmonitor all
 }
 
 updateStatus() {
