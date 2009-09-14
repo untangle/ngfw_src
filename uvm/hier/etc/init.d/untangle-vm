@@ -45,6 +45,10 @@ if [ "x" != "x@PREFIX@" ] ; then
     fi
 fi
 
+unmonitorAll() {
+  [ $(ps -p $PPID -o fname=) != 'monit' ] && $MONITOR unmonitor all
+}
+
 updateStatus() {
     echo -ne $1
     
@@ -155,7 +159,7 @@ case "$1" in
 
     stop)
         log_daemon_msg "Stopping $DESC"
-	$MONIT unmonitor all
+	unmonitorAll
 
         if [ ! -f ${UVM_RUNDIR}/${UVM_PID} ] ; then
             echo "Not Running."
@@ -172,7 +176,7 @@ case "$1" in
         code=$?
 
         if [ $code != "0" ] ; then
-	    $MONIT unmonitor all
+	    unmonitorAll
             updateStatusExit "x]\n" "Stopped"
         fi
 
@@ -185,7 +189,7 @@ case "$1" in
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
                 sleep 1
-		$MONIT unmonitor all
+		unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`uvmJavaPid`" ] ; then
@@ -207,7 +211,7 @@ case "$1" in
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
                 sleep 1 
-		$MONIT unmonitor all
+		unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`uvmJavaPid`" ] ; then
@@ -224,13 +228,13 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ -z "`uvmJavaPid`" ] ; then
-    	        $MONIT unmonitor all
+    	        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
         done
 
         echo "x]"
-	$MONIT unmonitor all
+	unmonitorAll
 	log_end_msg 0
         ;;
 
