@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-04 16:58-0700\n"
+"POT-Creation-Date: 2009-09-14 14:39-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgid "Daily Phish Rate"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
-msgid "Top Ten Phished"
+msgid "Top Ten Phishing Victims"
 msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50

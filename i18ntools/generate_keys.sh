@@ -13,7 +13,6 @@ function update_keys()
 case "$1" in
 "untangle-vm")
     cd ../uvm/po/
-    find ../hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot
     rm tmp_keys.pot
     update_po $1
@@ -48,6 +47,8 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java
+
+    find ../../uvm/hier -name '*.py' | xargs xgettext --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
 
     msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot
     msgmerge -U $1.pot tmp_keys.pot

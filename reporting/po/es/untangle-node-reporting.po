@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-27 17:42-0700\n"
+"POT-Creation-Date: 2009-09-14 14:39-0700\n"
 "PO-Revision-Date: 2008-11-20 05:46-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -93,15 +93,21 @@ msgstr "Ha especificado una \"dirección IP\" no válida."
 msgid "Validation failed"
 msgstr "Error de validación"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:269
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:271
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:275
+#, fuzzy
+msgid "Please Try Again"
+msgstr "Espere"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:277
 msgid "Failed"
 msgstr "Falló"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:280
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:288
 msgid "Saving..."
 msgstr "Guardando..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:280
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:288
 msgid "Please wait"
 msgstr "Espere"
 

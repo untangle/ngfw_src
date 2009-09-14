@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-04 16:58-0700\n"
+"POT-Creation-Date: 2009-09-14 14:39-0700\n"
 "PO-Revision-Date: 2008-11-24 17:58-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -36,7 +36,7 @@ msgid "Daily Phish Rate"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
-msgid "Top Ten Phished"
+msgid "Top Ten Phishing Victims"
 msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50

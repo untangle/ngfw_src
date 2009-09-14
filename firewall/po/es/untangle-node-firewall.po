@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-04 17:00-0700\n"
+"POT-Creation-Date: 2009-09-14 14:39-0700\n"
 "PO-Revision-Date: 2008-11-24 15:47-0700\n"
 "Last-Translator: David Russi <dprussi@qwest.net>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -17,124 +17,149 @@ msgstr ""
 "X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Spanish\n"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:72
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:71
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:131
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:235
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:130
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:238
 #, fuzzy
 msgid "Daily Rules"
 msgstr "Habilitar regla"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:170
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:176
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:169
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:175
 msgid "avg (1-week)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:171
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:174
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:170
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:173
 msgid "logged/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:173
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:179
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:172
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:178
 msgid "max (1-week)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:177
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:180
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:176
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:179
 #, fuzzy
 msgid "blocked/day"
 msgstr "bloqueado"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:236
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:239
 msgid "Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:237
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:240
 msgid "sessions/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:240
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:244
 #, fuzzy
 msgid "logged"
 msgstr "bloqueado"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:241
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:245
 msgid "blocked"
 msgstr "bloqueado"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:249
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:253
 msgid "Top Ten Firewall Blocked Hosts By Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:289
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:348
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:408
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:293
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:352
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:412
 msgid "hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:296
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:300
 msgid "Top Ten Firewall Blocked Hosts (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:297
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:301
 msgid "Host"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:298
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:357
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:417
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:302
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:361
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:421
 msgid "Blocks per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:308
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:312
 #, fuzzy
 msgid "Top Ten Firewall Blocking Rules By Hits"
 msgstr "Eventos de bloqueo de cortafuegos"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:355
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:359
 msgid "Top Ten Firewall Blocking Rules (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:356
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:360
 #, fuzzy
 msgid "Rule #"
 msgstr "Regla"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:367
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:371
 #, fuzzy
 msgid "Top Ten Firewall Blocked Users By Hits"
 msgstr "Eventos de bloqueo de cortafuegos"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:415
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:419
 msgid "Top Ten Firewall Blocked Users (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:416
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:436
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:420
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:440
 #, fuzzy
 msgid "User"
 msgstr "servidor"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:425
-msgid "Incident Report"
-msgstr ""
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:429
+msgid "Firewall Events"
+msgstr "Eventos de cortafuegos"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:431
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:435
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:434
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:438
 #, fuzzy
 msgid "Client"
 msgstr "cliente"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:438
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:442
+msgid "Rule Applied"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:443
+msgid "Action"
+msgstr "Medida"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:444
 #, fuzzy
-msgid "Server"
-msgstr "servidor"
+msgid "Source IP"
+msgstr "Puerto de origen"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:445
+msgid "Source Port"
+msgstr "Puerto de origen"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:446
+#, fuzzy
+msgid "Destination IP"
+msgstr "Puerto de destino"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:447
+msgid "Destination Port"
+msgstr "Puerto de destino"
+
+#, fuzzy
+#~ msgid "Server"
+#~ msgstr "servidor"
 
 #~ msgid "Enable"
 #~ msgstr "Habilitar"
@@ -166,9 +191,6 @@ msgstr "servidor"
 #~ msgid "The form is not valid!"
 #~ msgstr "¡El formulario no es válido!"
 
-#~ msgid "Action"
-#~ msgstr "Medida"
-
 #~ msgid "Log"
 #~ msgstr "Log"
 
@@ -186,12 +208,6 @@ msgstr "servidor"
 
 #~ msgid "Destination Address"
 #~ msgstr "Dirección de destino"
-
-#~ msgid "Source Port"
-#~ msgstr "Puerto de origen"
-
-#~ msgid "Destination Port"
-#~ msgstr "Puerto de destino"
 
 #~ msgid "Default Action"
 #~ msgstr "Medida predeterminada"
@@ -236,9 +252,6 @@ msgstr "servidor"
 
 #~ msgid "Please wait"
 #~ msgstr "Espere"
-
-#~ msgid "Firewall Events"
-#~ msgstr "Eventos de cortafuegos"
 
 #~ msgid "Sessions blocked"
 #~ msgstr "Sesiones bloqueadas"

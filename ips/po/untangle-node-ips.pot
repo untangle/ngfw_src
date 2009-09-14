@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-04 16:58-0700\n"
+"POT-Creation-Date: 2009-09-14 14:39-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,79 +17,83 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=0; null;\n"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:73
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:72
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:140
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:139
 msgid "Top Ten Attacks By Hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:181
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:180
 msgid "hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:188
-msgid "Top Ten Attacks (by hits)"
-msgstr ""
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:189
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:187
 msgid "Attacks"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:190
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:188
 msgid "Hits per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:198
-msgid "Daily Usage"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:196
+msgid "Daily Attacks"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:238
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:237
 msgid "max attacks (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:239
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:242
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:238
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:241
 msgid "attacks/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:241
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:240
 msgid "avg attacks (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:295
-msgid "Daily Web Usage"
-msgstr ""
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:296
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:299
 msgid "Date"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:297
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:300
 msgid "Attacks per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:300
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:304
 msgid "attacks"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:306
-msgid "Incident Report"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:310
+msgid "Attack Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:312
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:316
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:315
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:319
 msgid "Client"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:317
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:321
 msgid "User"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:319
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:323
+msgid "SID:description"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:324
+msgid "Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:325
 msgid "Server"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:326
+msgid "Port"
 msgstr ""
