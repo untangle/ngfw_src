@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-14 14:39-0700\n"
+"POT-Creation-Date: 2009-09-15 14:27-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,18 +92,17 @@ msgid "Validation failed"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:271
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:275
 msgid "Please Try Again"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:277
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:273
 msgid "Failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:288
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:284
 msgid "Saving..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:288
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:284
 msgid "Please wait"
 msgstr ""
