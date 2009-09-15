@@ -1,5 +1,26 @@
 Ext.namespace('Ung');
 
+// i18n strings
+i18n._('Monday');
+i18n._('Tuesday');
+i18n._('Wednesday');
+i18n._('Thursday');
+i18n._('Friday');
+i18n._('Saturday');
+i18n._('Sunday');
+i18n._('January');
+i18n._('February');
+i18n._('March');
+i18n._('April');
+i18n._('May');
+i18n._('June');
+i18n._('July');
+i18n._('August');
+i18n._('September');
+i18n._('October');
+i18n._('November');
+i18n._('December');
+
 var rpc = null;
 var reports = null;
 function getWinHeight(){
@@ -414,8 +435,8 @@ Ung.Reports = Ext.extend(Object,
                                 var oneDay = 24*3600*1000,
                                     toDate =new Date(selectedDate.dt.time - oneDay),
                                     fromDate = new Date(selectedDate.dt.time - (8*oneDay)),
-                                    formatString = 'l, F j Y'; 
-                                return i18n.dateLongFormat(fromDate,formatString) + " - "  +   i18n.dateLongFormat(toDate,formatString);                                                                                                     
+                                    formatString = 'l, F j Y';
+                                return i18n.dateLongFormat(fromDate,formatString) + " - "  +   i18n.dateLongFormat(toDate,formatString);
                            },
                            getApplicationData: function(nodeName) {
                              reports.progressBar.wait(i18n._("Please Wait"));
