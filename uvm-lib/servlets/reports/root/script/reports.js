@@ -434,8 +434,12 @@ Ung.Reports = Ext.extend(Object,
 
                                                                        Ung.Util.loadModuleTranslations( nodeName, i18n,
                                                                                                         function(){
+                                                                                                          try{
                                                                                                           reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
                                                                                                           reports.progressBar.hide();
+                                                                                                          }catch(e){
+                                                                                                            alert(e.message);
+                                                                                                          }
                                                                                                         }
                                                                                                       );
                                                                      }.createDelegate(this), reports.reportsDate,nodeName);
@@ -592,7 +596,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                  buildDrilldownList : function(type, title, listTitle)
                                  {
                                    var pluralName = type + 's';
-                                   var upperName = type[0].toUpperCase() + type.substr(1);
+                                   var upperName = type.substring(0,1).toUpperCase() + type.substr(1);
 
                                    var data = [];
                                    var i = 0;
