@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-14 14:39-0700\n"
+"POT-Creation-Date: 2009-09-15 14:27-0700\n"
 "PO-Revision-Date: 2008-11-24 19:35-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -94,20 +94,19 @@ msgid "Validation failed"
 msgstr "Falha de validação"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:271
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:275
 #, fuzzy
 msgid "Please Try Again"
 msgstr "Aguarde"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:277
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:273
 msgid "Failed"
 msgstr "Falha"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:288
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:284
 msgid "Saving..."
 msgstr "Salvando..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:288
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:284
 msgid "Please wait"
 msgstr "Aguarde"
 
