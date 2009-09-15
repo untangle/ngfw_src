@@ -415,7 +415,7 @@ Ung.Reports = Ext.extend(Object,
                                     toDate =new Date(selectedDate.dt.time - oneDay),
                                     fromDate = new Date(selectedDate.dt.time - (8*oneDay)),
                                     formatString = 'l, F j Y';
-                                return fromDate.format(formatString) + " - "+ toDate.format(formatString);
+                                return i18n.dateLongFormat(fromDate,formatString) + " - "  +   i18n.dateLongFormat(toDate,formatString);
                            },
                            getApplicationData: function(nodeName) {
                              reports.progressBar.wait(i18n._("Please Wait"));
