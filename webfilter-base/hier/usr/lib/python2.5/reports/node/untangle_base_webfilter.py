@@ -176,12 +176,12 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             hits_query = hits_query + " AND uid = %s"
 
         violations_query = """\
-SELECT avg(wf_%s_blocks)
+SELECT sum(wf_%s_blocks) / %s
 FROM (SELECT date_trunc('hour', trunc_time) AS hour,
              sum(wf_%s_blocks)::int AS wf_%s_blocks
       FROM reports.n_http_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s""" \
-            % (3 * (self.__vendor_name,))
+      WHERE trunc_time >= %%s AND trunc_time < %%s
+""" % (self.__vendor_name, report_days, self.__vendor_name, self.__vendor_name)
 
         if host:
             violations_query = violations_query + " AND hname = %s"
@@ -327,12 +327,14 @@ class DailyWebUsage(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT max(hits), avg(hits), max(wf_%s_blocks), avg(wf_%s_blocks)
+SELECT max(hits), COALESCE(sum(hits), 0) / %s, max(wf_%s_blocks),
+       COALESCE(sum(wf_%s_blocks), 0) / %s
 FROM (select date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
              sum(wf_%s_blocks)::int as wf_%s_blocks
       FROM reports.n_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (4 * (self.__vendor_name,))
+""" % (report_days, self.__vendor_name, self.__vendor_name, report_days,
+       self.__vendor_name, self.__vendor_name)
         if host:
             query = query + " AND hname = %s"
         elif user:
@@ -1073,17 +1075,16 @@ SELECT time_stamp, hname, uid, wf_%s_category, 'http://' || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
-      AND NOT wf_%s_action ISNULL""" % (self.__vendor_name,
-                                   DateFromMx(start_date),
-                                   DateFromMx(end_date),
-                                   self.__vendor_name)
+      AND NOT wf_%s_action ISNULL
+""" % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
+       self.__vendor_name)
 
         if host:
             sql += " AND hname = %s" % QuotedString(host)
         if user:
             sql += " AND uid = %s" % QuotedString(user)
 
-        return sql + "ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp"
 
 class WebFilterDetailAll(DetailSection):
     def __init__(self, vendor_name):
