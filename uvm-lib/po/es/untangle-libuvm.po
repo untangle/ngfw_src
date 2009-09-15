@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 14:43-0700\n"
+"POT-Creation-Date: 2009-09-15 15:41-0700\n"
 "PO-Revision-Date: 2009-02-10 08:56-0800\n"
 "Last-Translator: Juan Machado <juan@itos.uga.edu>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -132,6 +132,8 @@ msgstr "Buscando actualizaciones disponibles..."
 #: ../servlets/webui/root/script/config/system.js:407
 #: ../servlets/webui/root/script/config/system.js:1051
 #: ../servlets/webui/root/script/config/upgrade.js:49
+#: ../servlets/reports/root/script/reports.js:478
+#: ../servlets/reports/root/script/reports.js:515
 msgid "Failed"
 msgstr "Falló"
 
@@ -301,6 +303,7 @@ msgstr "Administración"
 #: ../servlets/webui/root/script/config/administration.js:357
 #: ../servlets/webui/root/script/config/email.js:24
 #: ../servlets/webui/root/script/config/systemInfo.js:134
+#: ../servlets/reports/root/script/reports.js:666
 msgid "Email"
 msgstr "Email"
 
@@ -396,6 +399,7 @@ msgstr "Servicio ocupado o no contesta. "
 #: ../servlets/webui/root/script/config/administration.js:2248
 #: ../servlets/webui/root/script/config/policyManager.js:1011
 #: ../servlets/webui/root/script/config/policyManager.js:1071
+#: ../servlets/reports/root/script/components.js:39
 #, fuzzy
 msgid "Please Try Again"
 msgstr "Espere"
@@ -974,6 +978,7 @@ msgstr "Pregunta del portal"
 #: ../servlets/webui/root/script/components.js:3919
 #: ../servlets/webui/root/script/config/policyManager.js:785
 #: ../servlets/webui/root/script/config/policyManager.js:796
+#: ../servlets/reports/root/script/reports.js:355
 msgid "Users"
 msgstr "Usuarios"
 
@@ -2260,6 +2265,7 @@ msgstr "Debe especificar una \"Comunidad\" para trampas."
 
 #: ../servlets/webui/root/script/config/administration.js:1362
 #: ../servlets/webui/root/script/config/administration.js:1427
+#: ../servlets/reports/root/script/reports.js:660
 msgid "Host"
 msgstr "Host"
 
@@ -3221,36 +3227,43 @@ msgstr "Los días de la semana en que desea que esta directiva esté activa."
 
 #: ../servlets/webui/root/script/config/policyManager.js:871
 #: ../servlets/webui/root/script/config/upgrade.js:290
+#: ../servlets/reports/root/script/reports.js:10
 msgid "Sunday"
 msgstr "Domingo"
 
 #: ../servlets/webui/root/script/config/policyManager.js:878
 #: ../servlets/webui/root/script/config/upgrade.js:303
+#: ../servlets/reports/root/script/reports.js:4
 msgid "Monday"
 msgstr "Lunes"
 
 #: ../servlets/webui/root/script/config/policyManager.js:885
 #: ../servlets/webui/root/script/config/upgrade.js:316
+#: ../servlets/reports/root/script/reports.js:5
 msgid "Tuesday"
 msgstr "Martes"
 
 #: ../servlets/webui/root/script/config/policyManager.js:892
 #: ../servlets/webui/root/script/config/upgrade.js:329
+#: ../servlets/reports/root/script/reports.js:6
 msgid "Wednesday"
 msgstr "Miércoles"
 
 #: ../servlets/webui/root/script/config/policyManager.js:899
 #: ../servlets/webui/root/script/config/upgrade.js:342
+#: ../servlets/reports/root/script/reports.js:7
 msgid "Thursday"
 msgstr "Jueves"
 
 #: ../servlets/webui/root/script/config/policyManager.js:906
 #: ../servlets/webui/root/script/config/upgrade.js:355
+#: ../servlets/reports/root/script/reports.js:8
 msgid "Friday"
 msgstr "Viernes"
 
 #: ../servlets/webui/root/script/config/policyManager.js:913
 #: ../servlets/webui/root/script/config/upgrade.js:368
+#: ../servlets/reports/root/script/reports.js:9
 msgid "Saturday"
 msgstr "Sábado"
 
@@ -3943,6 +3956,137 @@ msgstr ""
 msgid "Upgrade Time"
 msgstr "Hora de actualización"
 
+#: ../servlets/reports/root/script/reports.js:11
+#, fuzzy
+msgid "January"
+msgstr "Cualquiera"
+
+#: ../servlets/reports/root/script/reports.js:12
+msgid "February"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:13
+msgid "March"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:14
+msgid "April"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:15
+#, fuzzy
+msgid "May"
+msgstr "Cualquiera"
+
+#: ../servlets/reports/root/script/reports.js:16
+msgid "June"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:17
+msgid "July"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:18
+msgid "August"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:19
+msgid "September"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:20
+msgid "October"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:21
+msgid "November"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:22
+msgid "December"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:221
+#: ../servlets/reports/root/script/reports.js:252
+#: ../servlets/reports/root/script/reports.js:482
+#, fuzzy
+msgid "Reports"
+msgstr "Rearrancar"
+
+#: ../servlets/reports/root/script/reports.js:330
+msgid "Applications"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:366
+#, fuzzy
+msgid "Hosts"
+msgstr "Host"
+
+#: ../servlets/reports/root/script/reports.js:377
+#, fuzzy
+msgid "Emails"
+msgstr "Email"
+
+#: ../servlets/reports/root/script/reports.js:442
+#: ../servlets/reports/root/script/reports.js:473
+#: ../servlets/reports/root/script/reports.js:510
+#: ../servlets/reports/root/script/reports.js:984
+#, fuzzy
+msgid "Please Wait"
+msgstr "Espere"
+
+#: ../servlets/reports/root/script/reports.js:594
+msgid "Application List"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:654
+#, fuzzy
+msgid "User"
+msgstr "Usuarios"
+
+#: ../servlets/reports/root/script/reports.js:655
+#, fuzzy
+msgid "User List"
+msgstr "Usuarios"
+
+#: ../servlets/reports/root/script/reports.js:661
+#, fuzzy
+msgid "Host List"
+msgstr "Host"
+
+#: ../servlets/reports/root/script/reports.js:667
+#, fuzzy
+msgid "Email List"
+msgstr "Prueba de email"
+
+#: ../servlets/reports/root/script/reports.js:845
+#: ../servlets/reports/root/script/reports.js:970
+msgid "Export Excel"
+msgstr ""
+
+#: ../servlets/reports/root/script/reports.js:850
+#, fuzzy
+msgid "Export Printer"
+msgstr "impresora"
+
+#: ../servlets/reports/root/script/reports.js:855
+#: ../../uvm/hier/usr/lib/python2.5/reports/__init__.py:368
+#: ../../uvm/hier/usr/lib/python2.5/reports/__init__.py:373
+#, fuzzy
+msgid "Key Statistics"
+msgstr "Estadísticas de MV"
+
+#: ../servlets/reports/root/script/reports.js:891
+#: ../servlets/reports/root/script/reports.js:900
+#: ../servlets/reports/root/script/reports.js:909
+#: ../servlets/reports/root/script/reports.js:918
+#: ../servlets/reports/root/script/reports.js:927
+#: ../servlets/reports/root/script/reports.js:936
+#: ../servlets/reports/root/script/reports.js:944
+#, fuzzy
+msgid "None"
+msgstr "Desaparecido"
+
 #: ../servlets/alpaca/src/com/untangle/uvm/servlet/alpaca/ProxyServlet.java:151
 msgid "could not resolve host"
 msgstr "no se pudo resolver el host"
@@ -4282,12 +4426,6 @@ msgid ""
 "%(company)s Reports are attached for %(date)s is attached. The pdf file "
 "requires Adobe Acrobat Reader to view."
 msgstr ""
-
-#: ../../uvm/hier/usr/lib/python2.5/reports/__init__.py:368
-#: ../../uvm/hier/usr/lib/python2.5/reports/__init__.py:373
-#, fuzzy
-msgid "Key Statistics"
-msgstr "Estadísticas de MV"
 
 #: ../../uvm/hier/usr/lib/python2.5/reports/__init__.py:539
 #, fuzzy
