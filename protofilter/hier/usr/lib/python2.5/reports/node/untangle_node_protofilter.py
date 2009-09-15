@@ -56,7 +56,7 @@ class Protofilter(Node):
         ft = reports.engine.get_fact_table('reports.session_totals')
 
         ft.measures.append(Column('pf_blocks', 'integer',
-                                  "count(CASE WHEN NOT pf_blocked ISNULL THEN 1 ELSE null END)"))
+                                  "count(CASE WHEN pf_blocked THEN 1 ELSE null END)"))
 
         ft.dimensions.append(Column('pf_protocol', 'text'))
 
@@ -256,11 +256,10 @@ class TopTenBlockedProtocolsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT pf_protocol, sum(pf_blocks) as hits_sum
+SELECT pf_protocol, COALESCE(sum(pf_blocks), 0)::int as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
-AND NOT pf_protocol IS NULL
-AND pf_protocol != ''"""
+"""
 
         if host:
             query += " AND hname = %s"
