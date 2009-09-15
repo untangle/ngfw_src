@@ -82,9 +82,8 @@ class VirusBaseNode(Node):
         ft.dimensions.append(Column('virus_%s_name' % self.__vendor_name,
                                     'text'))
         ft.measures.append(Column('virus_%s_detected' % self.__vendor_name,
-                                  'integer', """\
-count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE null END)\
-""" % (self.__vendor_name, self.__vendor_name)))
+                                  'integer',
+                                  'count(virus_%s_clean)' % self.__vendor_name))
 
         ft = reports.engine.get_fact_table('reports.n_virus_mail_totals')
 
@@ -96,9 +95,8 @@ count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE nu
         ft.dimensions.append(Column('virus_%s_name' % self.__vendor_name,
                                     'text'))
         ft.measures.append(Column('virus_%s_detected' % self.__vendor_name,
-                                  'integer', """\
-count(CASE WHEN NOT virus_%s_name is null AND virus_%s_name != '' THEN 1 ELSE null END)\
-""" % (self.__vendor_name, self.__vendor_name)))
+                                  'integer',
+                                  'count(virus_%s_clean)' % self.__vendor_name))
 
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN, EMAIL_DRILLDOWN]
@@ -249,7 +247,7 @@ class DailyVirusesBlocked(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
-SELECT avg(viruses_%s_blocked), max(viruses_%s_blocked)
+SELECT COALESCE(sum(viruses_%s_blocked), 0)::int, max(viruses_%s_blocked)::int
 FROM ((""" % (2 * (self.__vendor_name,))
 
         # if you add a reports table you should also update the tuple
@@ -574,10 +572,9 @@ class TopWebVirusesDetected(Graph):
         try:
             q = """\
 SELECT virus_%s_name,
-       COALESCE(sum(virus_%s_detected), 0)::int as virus_%s_detected
-FROM reports.n_virus_mail_totals
-WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
-      AND trunc_time >= %%s AND trunc_time < %%s""" % (5 * (self.__vendor_name,))
+       COALESCE(count(virus_%s_detected), 0)::int as virus_%s_detected
+FROM reports.n_virus_http_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (3 * (self.__vendor_name,))
             if host:
                 q += " AND hname = %s"
             elif user:
@@ -605,6 +602,8 @@ ORDER BY virus_%s_detected DESC
                     break
 
                 key_name = r[0]
+                if not key_name or key_name == '':
+                    key_name = _('Unknown')
                 ks = KeyStatistic(str(key_name), r[1], _('viruses'))
                 lks.append(ks)
                 dataset[str(key_name)] = r[1]
@@ -701,7 +700,7 @@ SELECT name, sum(sum)
 FROM (SELECT virus_%s_name AS name,
              COALESCE(sum(virus_%s_detected), 0)::int AS sum
       FROM reports.n_virus_mail_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s AND virus_%s_detected > 0
+      WHERE  trunc_time >= %%s AND trunc_time < %%s AND virus_%s_detected > 0
 """ % (3 * (self.__vendor_name,))
         if host:
             avg_max_query = avg_max_query + " AND hname = %s"
@@ -746,9 +745,13 @@ ORDER BY sum DESC""" % self.__vendor_name
                 r = curs.fetchone()
                 if not r:
                     break
-                ks = KeyStatistic(r[0], r[1], _('viruses'))
+                key_name = r[0]
+                if not key_name or key_name == '':
+                    key_name = _('Unknown')
+
+                ks = KeyStatistic(key_name, r[1], _('viruses'))
                 lks.append(ks)
-                dataset[r[0]] = r[1]
+                dataset[key_name] = r[1]
         finally:
             conn.commit()
 
