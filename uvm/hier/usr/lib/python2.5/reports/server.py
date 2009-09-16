@@ -122,9 +122,8 @@ class Worker(Thread):
                                                      node_name, end_date, host,
                                                      user, email)
              except:
-                  logging.error("""\
-could not process request line: %s exception: %s %s %s\
-""" % ((line,) + sys.exc_info()))
+                  logging.error("could not process request line: %s" % line,
+                                exc_info=True);
                   return 'ERROR: see server log'
              return 'DONE'
         else:

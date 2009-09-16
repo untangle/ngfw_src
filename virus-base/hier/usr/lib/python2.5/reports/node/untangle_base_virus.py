@@ -25,6 +25,7 @@ import string
 import sys
 
 from psycopg import DateFromMx
+from psycopg import QuotedString
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
@@ -34,9 +35,9 @@ from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
 from reports import STACKED_BAR_CHART
-from reports import TIME_SERIES_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
+from reports import TIME_SERIES_CHART
 from reports.engine import Column
 from reports.engine import EMAIL_DRILLDOWN
 from reports.engine import FactTable
@@ -641,10 +642,7 @@ FROM reports.n_virus_mail_totals
 WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
       AND trunc_time >= %%s AND trunc_time < %%s""" \
             % (5 * (self.__vendor_name,))
-        if host:
-            avg_max_query += " AND hname = %s"
-        elif user:
-            avg_max_query += " AND uid = %s"
+
         avg_max_query += """
 GROUP BY virus_%s_name
 ORDER BY virus_%s_detected DESC
@@ -688,11 +686,11 @@ class TopVirusesDetected(Graph):
     @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
                   email=None):
+
         if email:
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
@@ -702,10 +700,6 @@ FROM (SELECT virus_%s_name AS name,
       FROM reports.n_virus_mail_totals
       WHERE  trunc_time >= %%s AND trunc_time < %%s AND virus_%s_detected > 0
 """ % (3 * (self.__vendor_name,))
-        if host:
-            avg_max_query = avg_max_query + " AND hname = %s"
-        elif user:
-            avg_max_query = avg_max_query + " AND uid = %s"
 
         avg_max_query += """
       GROUP BY virus_%s_name
@@ -732,9 +726,9 @@ ORDER BY sum DESC""" % self.__vendor_name
         try:
             curs = conn.cursor()
             if host:
-                curs.execute(avg_max_query, (one_week, ed, host, one_week, ed, host))
+                curs.execute(avg_max_query, (one_week, ed, one_week, ed, host))
             elif user:
-                curs.execute(avg_max_query, (one_week, ed, user, one_week, ed, user))
+                curs.execute(avg_max_query, (one_week, ed, one_week, ed, user))
             else:
                 curs.execute(avg_max_query, (one_week, ed, one_week, ed))
 
