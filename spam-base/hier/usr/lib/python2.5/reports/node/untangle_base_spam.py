@@ -86,7 +86,7 @@ class SpamBaseNode(Node):
         ft.measures.append(column)
 
     def get_toc_membership(self):
-        return [TOP_LEVEL]
+        return [TOP_LEVEL, EMAIL_DRILLDOWN]
 
     def get_report(self):
         sections = []
