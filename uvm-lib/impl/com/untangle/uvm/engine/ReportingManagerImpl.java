@@ -210,8 +210,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     // private methods ---------------------------------------------------------
 
     private List<List> doGetDetailData(Date d, String appName, String detailName,
-                                      String type, String value,
-                                      boolean limitResultSet)
+                                       String type, String value,
+                                       boolean limitResultSet)
     {
         List<List> rv = new ArrayList<List>();
 
@@ -479,7 +479,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     }
 
     private boolean generateReport(Date d, String appName, String type,
-                                String value)
+                                   String value)
     {
         String user = "";
         String host = "";
