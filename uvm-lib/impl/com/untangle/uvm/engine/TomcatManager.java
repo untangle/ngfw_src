@@ -369,22 +369,9 @@ class TomcatManager
 
         String bh = System.getProperty("bunnicula.home");
         String p = bh + "/apache2/conf.d/homepage.conf";
-
-        FileWriter w = null;
-        try {
-            w = new FileWriter(p);
-            w.write("RedirectMatch 302 ^/index.html " + welcomeFile + "\n");
-        } catch (IOException exn) {
-            logger.warn("could not write homepage redirect", exn);
-        } finally {
-            if (null != w) {
-                try {
-                    w.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close FileWriter", exn);
-                }
-            }
-        }
+        writeWelcomeFile(p);
+        p = bh + "/apache2/unrestricted-conf.d/homepage.conf";
+        writeWelcomeFile(p);
 
         apacheReload();
     }
@@ -614,5 +601,24 @@ class TomcatManager
         }
 
         return p.getProperty("worker.uvmWorker.secret");
+    }
+
+    private void writeWelcomeFile(String f)
+    {
+        FileWriter w = null;
+        try {
+            w = new FileWriter(f);
+            w.write("RedirectMatch 302 ^/index.html " + welcomeFile + "\n");
+        } catch (IOException exn) {
+            logger.warn("could not write homepage redirect", exn);
+        } finally {
+            if (null != w) {
+                try {
+                    w.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close FileWriter", exn);
+                }
+            }
+        }
     }
 }
