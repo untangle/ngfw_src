@@ -339,7 +339,10 @@ class Graph:
 
         for ks in self.__key_statistics:
             ks_element = Element('key-statistic')
-            ks_element.set('name', ks.name)
+            name = ks.name
+            if not ks.name:
+                name = ''
+            ks_element.set('name', name)
             if type(ks.value) == float:
                 ks.value = '%.2f' % ks.value
             ks_element.set('value', str(ks.value))
