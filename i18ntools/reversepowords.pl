@@ -76,6 +76,10 @@ sub processDataFile {
             # print "Write out newline <$newline>\n";
             push @newdatafile, $newline;
             $newline = "msgstr \"";
+        } elsif ($line  =~ /^\"Plural-Forms/) {
+            push @newdatafile, "\"Plural-Forms: nplurals=0; plural=0;\\n\""; 
+        } elsif ($line  =~ /^\"Content-Type/) {
+            push @newdatafile, "\"Content-Type: text/plain; charset=UTF-8\\n\""; 
         } elsif (($line  =~ /^msgid/) || ($wording_loaded)) {
             # ignore lines until #: appears
             # print "Processing line <$line>\n";
