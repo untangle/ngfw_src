@@ -565,7 +565,7 @@ Ung.ReportDetails = Ext.extend(Object,
 
                                  buildDrilldownTableOfContents : function(type)
                                  {
-                                   var upperName = type[0].toUpperCase() + type.substr(1);
+                                   var upperName = type.substring(0,1).toUpperCase() + type.substr(1);
 
                                    var data = [];
                                    var i = 0;
