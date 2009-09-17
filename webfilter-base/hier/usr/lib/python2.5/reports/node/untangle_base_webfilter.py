@@ -167,7 +167,7 @@ class HourlyWebUsage(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         hits_query = """\
-SELECT max(hits) AS max_hits, avg(hits) AS avg_hits
+SELECT max(hits) AS max_hits, COALESCE(sum(hits), 0)::float / %s AS avg_hits
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
@@ -176,7 +176,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             hits_query = hits_query + " AND uid = %s"
 
         violations_query = """\
-SELECT sum(wf_%s_blocks) / %s
+SELECT COALESCE(sum(wf_%s_blocks), 0)::float / %s
 FROM (SELECT date_trunc('hour', trunc_time) AS hour,
              sum(wf_%s_blocks)::int AS wf_%s_blocks
       FROM reports.n_http_totals
@@ -196,11 +196,11 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
 
             curs = conn.cursor()
             if host:
-                curs.execute(hits_query, (one_day, ed, host))
+                curs.execute(hits_query, (1, one_day, ed, host))
             elif user:
-                curs.execute(hits_query, (one_day, ed, user))
+                curs.execute(hits_query, (1, one_day, ed, user))
             else:
-                curs.execute(hits_query, (one_day, ed))
+                curs.execute(hits_query, (1, one_day, ed))
             r = curs.fetchone()
             ks = KeyStatistic(_('max hits (1-day)'), r[0], _('hits/minute'))
             lks.append(ks)
@@ -209,11 +209,11 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
 
             curs = conn.cursor()
             if host:
-                curs.execute(hits_query, (one_week, ed, host))
+                curs.execute(hits_query, (report_days, one_week, ed, host))
             elif user:
-                curs.execute(hits_query, (one_week, ed, user))
+                curs.execute(hits_query, (report_days, one_week, ed, user))
             else:
-                curs.execute(hits_query, (one_week, ed))
+                curs.execute(hits_query, (report_days, one_week, ed))
             r = curs.fetchone()
             ks = KeyStatistic(_('max hits (7-day)'), r[0], _('hits/minute'))
             lks.append(ks)
