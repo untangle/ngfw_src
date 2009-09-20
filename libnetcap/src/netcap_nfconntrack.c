@@ -249,9 +249,9 @@ struct nf_conntrack *netcap_nfconntrack_get_entry_tuple( netcap_nfconntrack_ipv4
  */
 struct nfct_conntrack *netcap_nfconntrack_get_entry_id( u_int32_t id )
 {
-    struct nfct_tuple tuple;
+/*     struct nfct_tuple tuple;
 
-    bzero( &tuple, sizeof( tuple ));
+       bzero( &tuple, sizeof( tuple )); */
     
     return errlog_null ( ERR_CRITICAL, "implement me\n" );
 }
