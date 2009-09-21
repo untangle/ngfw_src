@@ -973,8 +973,16 @@ Ung.ReportDetails = Ext.extend(Object,
                                                                                          handler: function() {
                                                                                            var rd = new Date(reports.reportsDate.time);
                                                                                            var d = rd.getFullYear() + "-" + (rd.getMonth() + 1) + "-" + rd.getDate();
-                                                                                           window.open('csv?date=' + d + '&app=' + appName + '&detail=' + section.name
-                                                                                                       + '&type=' + store.initialData.drilldownType + "&value=" + store.initialData.drilldownValue);
+                                                                                           var u = 'csv?date=' + d + '&app=' + appName + '&detail=' + section.name;
+                                                                                           var t = store.initialData.drilldownType;
+                                                                                           if (t) {
+                                                                                             u += '&type=' + t;
+                                                                                           }
+                                                                                           var v = store.initialData.drilldownValue;
+                                                                                           if (v) {
+                                                                                             u += "&value=" + v;
+                                                                                           }
+                                                                                           window.open(u);
                                                                                          }
                                                                                        }
                                                                                       ],
