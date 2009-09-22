@@ -70,8 +70,8 @@ class Ips(Node):
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [TopTenAttacksByHits(self.__vendor_name),
-                            DailyUsage(self.__vendor_name)])
+                           [DailyUsage(self.__vendor_name),
+                            TopTenAttacksByHits(self.__vendor_name)])
         sections.append(s)
 
         sections.append(IpsDetail())
