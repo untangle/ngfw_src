@@ -66,11 +66,18 @@ class VirusBaseNode(Node):
 
         ft = reports.engine.get_fact_table('reports.n_http_totals')
 
-        ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name, 'integer', "count(CASE WHEN virus_%s_clean = false THEN 1 ELSE null END)" % self.__vendor_name))
+        ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name,
+                                  'integer',
+                                  """\
+count(CASE WHEN virus_%s_clean = false THEN 1 ELSE null END)
+""" % self.__vendor_name))
 
         ft = reports.engine.get_fact_table('reports.n_mail_msg_totals')
 
-        ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name, 'integer', "count(CASE WHEN virus_%s_clean = false THEN 1 ELSE null END)" % self.__vendor_name))
+        ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name,
+                                  'integer', """\
+count(CASE WHEN virus_%s_clean = false THEN 1 ELSE null END)
+""" % self.__vendor_name))
 
         ft = reports.engine.get_fact_table('reports.n_virus_http_totals')
 
@@ -248,7 +255,8 @@ class DailyVirusesBlocked(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
-SELECT COALESCE(sum(viruses_%s_blocked), 0)::int, max(viruses_%s_blocked)::int
+SELECT COALESCE(sum(viruses_%s_blocked), 0)::int / %%s,
+       max(viruses_%s_blocked)::int
 FROM ((""" % (2 * (self.__vendor_name,))
 
         # if you add a reports table you should also update the tuple
@@ -287,11 +295,14 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
 
             curs = conn.cursor()
             if host:
-                curs.execute(avg_max_query, (one_week, ed, host, one_week, ed, host))
+                curs.execute(avg_max_query, (report_days, one_week, ed, host,
+                                             one_week, ed, host))
             elif user:
-                curs.execute(avg_max_query, (one_week, ed, user, one_week, ed, user))
+                curs.execute(avg_max_query, (report_days, one_week, ed, user,
+                                             one_week, ed, user))
             else:
-                curs.execute(avg_max_query, (one_week, ed, one_week, ed))
+                curs.execute(avg_max_query, (report_days, one_week, ed,
+                                             one_week, ed))
             r = curs.fetchone()
             ks = KeyStatistic(_('max (7-day)'), r[1], _('viruses/day'))
             lks.append(ks)
@@ -411,7 +422,8 @@ class HourlyVirusesBlocked(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """
-SELECT avg(viruses_%s_blocked), max(viruses_%s_blocked)
+SELECT COALESCE(sum(viruses_%s_blocked), 0) / %%s,
+       max(viruses_%s_blocked)
 FROM ((""" % (2 * (self.__vendor_name,))
 
         # if you add a reports table you should also update the tuple
@@ -450,11 +462,14 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
 
             curs = conn.cursor()
             if host:
-                curs.execute(avg_max_query, (one_week, ed, host, one_week, ed, host))
+                curs.execute(avg_max_query, (report_days, one_week, ed, host,
+                                             one_week, ed, host))
             elif user:
-                curs.execute(avg_max_query, (one_week, ed, user, one_week, ed, user))
+                curs.execute(avg_max_query, (report_days, one_week, ed, user,
+                                             one_week, ed, user))
             else:
-                curs.execute(avg_max_query, (one_week, ed, one_week, ed))
+                curs.execute(avg_max_query, (report_days, one_week, ed,
+                                             one_week, ed))
             r = curs.fetchone()
             ks = KeyStatistic(_('max (7-day)'), r[1], _('viruses/hour'))
             lks.append(ks)

@@ -92,6 +92,7 @@ class TomcatManager
 
         ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
         ClassLoader tomcatParent = uvmCl;
+
         try {
             // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(tomcatParent);

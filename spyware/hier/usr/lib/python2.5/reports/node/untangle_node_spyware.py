@@ -229,7 +229,7 @@ class HourlyRates(Graph):
 
         url_query = """\
 SELECT COALESCE(sum(sw_blacklisted), 0)::int / %s AS sw_blacklisted,
-       COALESCE(sum(sw_cookies), 0)::int / %s AS sw_cookies
+       max(sw_cookies)::int AS sw_cookies
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -245,11 +245,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
 
                 if host:
-                    curs.execute(url_query, (report_days, report_days, sd, ed, host))
+                    curs.execute(url_query, (report_days, sd, ed, host))
                 elif user:
-                    curs.execute(url_query, (report_days, report_days, sd, ed, user))
+                    curs.execute(url_query, (report_days, sd, ed, user))
                 else:
-                    curs.execute(url_query, (report_days, report_days, sd, ed))
+                    curs.execute(url_query, (report_days, sd, ed))
 
                 r = curs.fetchone()
                 ks = KeyStatistic(_('avg URLs blocked (%s-day)' % n), r[0],
@@ -260,7 +260,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 lks.append(ks)
 
             sessions_query = """\
-SELECT COALESCE(avg(sw_accesses), 0)::int / %s AS sw_accesses
+SELECT COALESCE(sum(sw_accesses), 0) / %s AS sw_accesses
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -399,8 +399,8 @@ class SpywareUrlsBlocked(Graph):
         one_week = DateFromMx(start_date)
 
         query = """\
-SELECT coalesce(sum(sw_blacklisted), 0) / %s AS avg_blocked,
-       coalesce(max(sw_blacklisted), 0) AS max_blocked
+SELECT COALESCE(sum(sw_blacklisted), 0) / %s AS avg_blocked,
+       max(sw_blacklisted)::int AS max_blocked
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
