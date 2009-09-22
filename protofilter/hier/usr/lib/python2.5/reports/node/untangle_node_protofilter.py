@@ -258,16 +258,14 @@ class TopTenBlockedProtocolsByHits(Graph):
         query = """\
 SELECT pf_protocol, COALESCE(sum(pf_blocks), 0)::int as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND hits_sum > 0
-"""
+WHERE trunc_time >= %s AND trunc_time < %s"""
 
         if host:
             query += " AND hname = %s"
         elif user:
             query += " AND uid = %s"
 
-        query += " GROUP BY pf_protocol ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query += " GROUP BY pf_protocol ORDER BY hits_sum DESC LIMIT 10"
 
         conn = sql_helper.get_connection()
         try:
@@ -284,9 +282,10 @@ AND hits_sum > 0
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
-                lks.append(ks)
-                dataset[r[0]] = r[1]
+                if r[1] > 0:
+                    ks = KeyStatistic(r[0], r[1], _('hits'))
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
@@ -319,8 +318,8 @@ class TopTenDetectedProtocolsByHits(Graph):
 SELECT pf_protocol, count(*) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
-AND pf_protocol != ''
-AND hits_sum > 0"""
+      AND pf_protocol != ''
+"""
 
         if host:
             query += " AND hname = %s"
@@ -344,9 +343,10 @@ AND hits_sum > 0"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
-                lks.append(ks)
-                dataset[r[0]] = r[1]
+                if r[1] > 0:
+                    ks = KeyStatistic(r[0], r[1], _('hits'))
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
@@ -376,12 +376,12 @@ class TopTenBlockedHostsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT hname, sum(pf_blocks) as hits_sum
+SELECT hname, COALESCE(sum(pf_blocks), 0)::int as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND NOT pf_protocol IS NULL
 AND pf_protocol != ''
-AND hits_sum > 0"""
+"""
 
         if host:
             query += " AND hname = %s"
@@ -405,9 +405,11 @@ AND hits_sum > 0"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.HNAME_LINK)
-                lks.append(ks)
-                dataset[r[0]] = r[1]
+                if r[1] > 0:
+                    ks = KeyStatistic(r[0], r[1], _('hits'),
+                                      link_type=reports.HNAME_LINK)
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
@@ -441,7 +443,7 @@ SELECT hname, count(*) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND pf_protocol != ''
-AND hits_sum > 0"""
+"""
 
         if host:
             query += " AND hname = %s"
@@ -465,9 +467,10 @@ AND hits_sum > 0"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.HNAME_LINK)
-                lks.append(ks)
-                dataset[r[0]] = r[1]
+                if r[1] > 0:
+                    ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.HNAME_LINK)
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
@@ -502,7 +505,7 @@ WHERE trunc_time >= %s AND trunc_time < %s
 AND uid != ''
 AND NOT pf_protocol IS NULL
 AND pf_protocol != ''
-AND hits_sum > 0"""
+"""
 
         if host:
             query += " AND hname = %s"
@@ -526,9 +529,10 @@ AND hits_sum > 0"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.USER_LINK)
-                lks.append(ks)
-                dataset[r[0]] = r[1]
+                if r[1] > 0:
+                    ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.USER_LINK)
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
@@ -562,7 +566,7 @@ FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND uid != ''
 AND pf_protocol != ''
-AND hits_sum > 0"""
+"""
 
         if host:
             query += " AND hname = %s"
@@ -586,9 +590,10 @@ AND hits_sum > 0"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.USER_LINK)
-                lks.append(ks)
-                dataset[r[0]] = r[1]
+                if r[1] > 0:
+                    ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.USER_LINK)
+                    lks.append(ks)
+                    dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
