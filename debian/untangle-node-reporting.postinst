@@ -6,6 +6,6 @@
 rm -fr /usr/share/untangle/web/reports/current
 rm -fr /usr/share/untangle/web/reports/200[6-9]*
 
-touch /etc/untanglemonit-to-restart
+touch /etc/untangle/monit-to-restart
 
 exit 0
