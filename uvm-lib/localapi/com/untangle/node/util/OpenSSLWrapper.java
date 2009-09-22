@@ -352,7 +352,7 @@ public class OpenSSLWrapper {
                                                              "openssl",
                                                              new String[] {
                                                                  "genrsa",
-                                                                 "1024"
+                                                                 "2048"
                                                              },
                                                              null,
                                                              null,
