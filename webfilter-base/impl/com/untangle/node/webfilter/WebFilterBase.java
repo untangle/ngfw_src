@@ -95,6 +95,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     private final BlingBlinger blockBlinger;
     private final BlingBlinger passLogBlinger;
 
+    private final BypassMonitor bypassMonitor;
+
     // constructors -----------------------------------------------------------
 
     public WebFilterBase()
@@ -119,6 +121,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
         passLogBlinger = c.addMetric("log", I18nUtil.marktr("Passed by policy"), null);
         lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, passLogBlinger);
+
+	bypassMonitor = new BypassMonitor(this);
     }
 
     // WebFilter methods ------------------------------------------------------
@@ -233,8 +237,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 logger.warn("temporarily unblocking site: " + site);
                 InetAddress addr = bd.getClientAddress();
 
+                bypassMonitor.addBypassedSite(addr, site);
                 getBlacklist().addWhitelistHost(addr, site);
-
                 return true;
             }
         }
@@ -634,6 +638,20 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     {
         unDeployWebAppIfRequired(logger);
         getBlacklist().close();
+    }
+
+    @Override
+    protected void preStart()
+    {
+	getBlacklist().removeAllUnblockedSites();
+	bypassMonitor.start();
+    }
+
+    @Override
+    protected void postStop()
+    {
+	bypassMonitor.stop();
+	getBlacklist().removeAllUnblockedSites();
     }
 
     // package protected methods ----------------------------------------------

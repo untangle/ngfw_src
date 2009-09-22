@@ -56,6 +56,9 @@ UVM_NICENESS=0
 ## Lifetime for positive phonebook lookups (millis)
 #UVM_ARGS="${UVM_ARGS} -Dcom.untangle.uvm.user.phonebook.lifetime=300000"
 
+## Expiration time for host-bypassed sites (millis)
+#UVM_ARGS="${UVM_ARGS} -Dcom.untangle.node.webfilter.bypass-timeout=3600000 -Dcom.untangle.node.webfilter.bypass-sleep-delay=1200000"
+
 ## Limit Berkeley DB caching to 5% of java heap
 UVM_ARGS="${UVM_ARGS} -Dje.maxMemory=${MAX_BERKDB_MEG}"
 

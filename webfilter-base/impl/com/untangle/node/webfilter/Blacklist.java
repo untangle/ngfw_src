@@ -116,6 +116,50 @@ public abstract class Blacklist
     }
 
     /**
+     * For each InetAddress in the map, remove the associated
+     * host-bypassed sites.
+     *
+     * @param map a Map<InetAddress, List<String>>
+     */
+    void removeUnblockedSites(Map<InetAddress, List<String>> map)
+    {
+	logger.warn("about to remove host-bypassed sites for "  + map.size() + " host(s)");
+
+	InetAddress addr;
+	List<String> bypassedSites;
+	Set<String> hostSites;
+
+	synchronized(hostWhitelists) {
+	    for (Map.Entry<InetAddress, List<String>> entry : map.entrySet()) {
+		addr = entry.getKey();
+		logger.warn(".. for address '" + addr + "'");
+		bypassedSites = entry.getValue();
+
+		hostSites = hostWhitelists.get(addr);
+
+		for (String site : bypassedSites) {
+		    if (hostSites.contains(site)) {
+			logger.warn(".... removing unblocked site " + site);
+			hostSites.remove(site);
+			if (hostSites.isEmpty()) {
+			    logger.warn(".... '" + addr + "' has no more unblocked sites");
+			    hostWhitelists.remove(addr);
+			    break;
+			}
+		    }
+		}
+	    }
+	}
+    }
+
+    /**
+     * Remove all the unblocked sites for all the clients.
+     */
+    void removeAllUnblockedSites() {
+	hostWhitelists.clear();
+    }
+
+    /**
      * Checks if the request should be blocked, giving an appropriate
      * response if it should.
      *
