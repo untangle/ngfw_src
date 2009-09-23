@@ -859,8 +859,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }],
 
                 onGenerateSelfSignedCertificate : function() {
+                    var settingsCmp = Ext.getCmp(this.parentId);
+
                     if (!this.winGenerateSelfSignedCertificate) {
-                        var settingsCmp = Ext.getCmp(this.parentId);
                         settingsCmp.buildGenerateSelfSignedCertificate();
                         this.winGenerateSelfSignedCertificate = new Ung.CertGenerateWindow({
                             breadcrumbs : [{
@@ -933,7 +934,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
                             }.createDelegate(settingsCmp)
                         });
+                    } else {
+                        /* Refresh the hostname */
+                        var hostnameField = null;
+                        hostnameField = settingsCmp.panelGenerateSelfSignedCertificate.find( "name", "hostname" )[0];
+                        if ( hostnameField != null ) {
+                            hostnameField.setValue( settingsCmp.getHostname( true ));
+                        }
                     }
+                    
                     this.winGenerateSelfSignedCertificate.show();
                 },
 
