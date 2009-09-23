@@ -69,15 +69,15 @@ class VirusBaseNode(Node):
         ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name,
                                   'integer',
                                   """\
-count(CASE WHEN virus_%s_clean = false THEN 1 ELSE null END)
-""" % self.__vendor_name))
+count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
+""" % (2 * (self.__vendor_name,))))
 
         ft = reports.engine.get_fact_table('reports.n_mail_msg_totals')
 
         ft.measures.append(Column('viruses_%s_blocked' % self.__vendor_name,
                                   'integer', """\
-count(CASE WHEN virus_%s_clean = false THEN 1 ELSE null END)
-""" % self.__vendor_name))
+count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
+""" % (2 * (self.__vendor_name,))))
 
         ft = reports.engine.get_fact_table('reports.n_virus_http_totals')
 
@@ -91,7 +91,9 @@ count(CASE WHEN virus_%s_clean = false THEN 1 ELSE null END)
                                     'text'))
         ft.measures.append(Column('virus_%s_detected' % self.__vendor_name,
                                   'integer',
-                                  'count(virus_%s_clean)' % self.__vendor_name))
+                                  """\
+count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
+""" % (2 * (self.__vendor_name,))))
 
         ft = reports.engine.get_fact_table('reports.n_virus_mail_totals')
 
@@ -104,7 +106,9 @@ count(CASE WHEN virus_%s_clean = false THEN 1 ELSE null END)
                                     'text'))
         ft.measures.append(Column('virus_%s_detected' % self.__vendor_name,
                                   'integer',
-                                  'count(virus_%s_clean)' % self.__vendor_name))
+                                  """\
+count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
+""" % (2 * (self.__vendor_name,))))
 
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN, EMAIL_DRILLDOWN]
@@ -588,7 +592,7 @@ class TopWebVirusesDetected(Graph):
         try:
             q = """\
 SELECT virus_%s_name,
-       COALESCE(count(virus_%s_detected), 0)::int as virus_%s_detected
+       COALESCE(sum(virus_%s_detected), 0)::int as virus_%s_detected
 FROM reports.n_virus_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (3 * (self.__vendor_name,))
             if host:
@@ -620,9 +624,10 @@ ORDER BY virus_%s_detected DESC
                 key_name = r[0]
                 if not key_name or key_name == '':
                     key_name = _('Unknown')
-                ks = KeyStatistic(str(key_name), r[1], _('viruses'))
-                lks.append(ks)
-                dataset[str(key_name)] = r[1]
+                if r[1] > 0:
+                    ks = KeyStatistic(str(key_name), r[1], _('viruses'))
+                    lks.append(ks)
+                    dataset[str(key_name)] = r[1]
         finally:
             conn.commit()
 
