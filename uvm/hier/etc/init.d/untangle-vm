@@ -45,6 +45,10 @@ if [ "x" != "x@PREFIX@" ] ; then
     fi
 fi
 
+monitorAll() {
+  [ "x" = "x@PREFIX@" ] && $MONIT monitor all
+}
+
 unmonitorAll() {
   [ $(ps -p $PPID -o fname=) != 'monit' ] && $MONIT unmonitor all
 }
@@ -87,6 +91,7 @@ case "$1" in
                 rm -f ${UVM_RUNDIR}/${UVM_PID}
             else
                 echo "Already started."
+		monitorAll
 		log_end_msg 0
                 exit
             fi
@@ -132,6 +137,7 @@ case "$1" in
 			log_end_msg 0
                         exit
                     fi
+		    monitorAll
 		    log_end_msg 0
                     exit
                 fi
@@ -148,7 +154,7 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
-		[ $0 = "/etc/init.d/untangle-vm" ] && $MONIT monitor all
+	        monitorAll
                 updateStatusExit "]\n" "Running"
             fi
         done
