@@ -1126,7 +1126,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         fieldLabel : this.i18n._('Hostname') + " (CN)",
                         name : 'hostname',
                         id: 'administration_hostname',
-                        value : this.getHostname(),
+                        value : this.getHostname( true ),
                         disabled : true
                     }]
                 }
