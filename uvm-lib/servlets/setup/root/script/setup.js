@@ -348,12 +348,6 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
 Ung.SetupWizard.Registration = Ext.extend( Object, {
     constructor : function( config )
     {
-        this.environmentStore = [
-            i18n._( "My Business" ),
-            i18n._( "A Client's Business" ),
-            i18n._( "School" ),
-            i18n._( "Home" )];
-
         this.form = new Ext.FormPanel({
             defaultType : 'fieldset',
             defaults : {
@@ -374,23 +368,18 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     html : '<b>'+i18n._( 'Please provide administrator contact info.' )+'</b>',
                     border : false
                 },{
+                    fieldLabel : i18n._("First Name"),
+                    name : "firstName",
+                    itemCls : 'small-top-margin'
+                },{
+                    fieldLabel : i18n._("Last Name/Surname"),
+                    name : "lastName"
+                },{
                     fieldLabel : '<span class="required-star">*</span>'+i18n._('Email'),
                     name : 'email',
                     id : 'registration_email',
                     width : 200,
                     allowBlank : false,
-                    itemCls : 'small-top-margin',
-                    vtype : 'emailAddressCheck'
-                },{
-                    fieldLabel : '<span class="required-star">*</span>'+i18n._('Confirm Email'),
-                    name : 'confirmEmail',
-                    allowBlank : false,
-                    compareEmailField : 'registration_email',
-                    vtype : 'emailAddressMatchCheck',
-                    width : 200
-                },{
-                    fieldLabel : i18n._('Name'),
-                    name : 'name'
                 }, new Ung.SetupWizard.TextField({
                     fieldLabel : i18n._('Organization Name'),
                     boxLabel: i18n._( "(if applicable)" ),
@@ -402,38 +391,52 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     fieldLabel : '<span class="required-star">*</span>'+i18n._('Number of PCs on your network'),
                     name : 'numSeats',
                     allowBlank : false,
-                    boxLabel : i18n._('(Approximate)')
-                })]
-            },{
-                defaultType : 'textfield',
-                items : [{
-                    xtype : 'label',
-                    html : '<b>'+i18n._( 'Answering these questions will help us build a better product - for you!' )+'</b>',
-                    border : false
-                },{
-                    fieldLabel : i18n._('Where will you be using Untangle'),
+                    boxLabel : i18n._("(approximate; include Windows, Linux and Mac)")
+                }),{
+                    fieldLabel : i18n._("Where will you be using Untangle"),
                     name : "environment",
-                    xtype : 'combo',
-                    width : 200,
-                    listWidth : 205,
-                    store : this.environmentStore,
-                    mode : 'local',
-                    triggerAction : 'all',
-                    listClass : 'x-combo-list-small',
-                    itemCls : 'small-top-margin'
+                    xtype : 'radio',
+                    inputValue : "my-business",
+                    boxLabel : i18n._( "My Business" )
                 },{
-                    fieldLabel : i18n._('Country'),
-                    name : "country",
-                    xtype : 'combo',
-                    width : 200,
-                    listWidth : 205,
-                    store : Ung.Country.getCountryStore(i18n),
-                    mode : 'local',
-                    triggerAction : 'all',
-                    listClass : 'x-combo-list-small',
-                    editable : false,
-                    itemCls : 'small-top-margin'
-                }]
+                    fieldLabel : "",
+                    labelSeparator : "",
+                    name : "environment",
+                    xtype : "radio",
+                    inputValue : "clients-business",
+                    boxLabel : i18n._( "A Client's Business" )
+                },{
+                    fieldLabel : "",
+                    labelSeparator : "",
+                    name : "environment",
+                    xtype : "radio",
+                    inputValue : "school",
+                    boxLabel : i18n._( "School" )
+                },{
+                    fieldLabel : "",
+                    labelSeparator : "",
+                    name : "environment",
+                    xtype : "radio",
+                    inputValue : "home",
+                    boxLabel : i18n._( "Home" )
+                },{
+                    fieldLabel : "",
+                    labelSeparator : "",
+                    name : "environment",
+                    xtype : "radio",
+                    listeners : {
+                        check : {
+                            fn : this.onSelectOther,
+                            scope : this
+                        }
+                    },
+                    inputValue : "other",
+                    boxLabel : i18n._( "Other" )
+                },this.environmentOther = new Ung.SetupWizard.TextField({
+                    fieldLabel : i18n._("Please Describe"),
+                    name : "environment-other",
+                    itemCls : 'wizard-label-margin-6'
+                })]
             },{
                 xtype : 'label',
                 html : i18n._( '<span class="required-star">*</span> Required' ),
@@ -447,12 +450,31 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
             cardTitle : i18n._( "Registration" ),
             panel : this.form,
             onNext : this.saveRegistrationInfo.createDelegate( this ),
-            onValidate : this.validateRegistration.createDelegate(this)
+            onValidate : this.validateRegistration.createDelegate(this),
+            onLoad : function( complete )
+            {
+                var field = this.form.find( "name", "environment" )[0];
+                this.onSelectOther( null, field.getGroupValue() == "other" );
+                complete();
+            }.createDelegate( this )
+            
         };
     },
     validateRegistration : function()
     {
         return _validate(this.card.panel.items.items);
+    },
+    onSelectOther: function( checkbox, isChecked )
+    {
+        if ( isChecked ) {
+            this.environmentOther.show();
+            this.environmentOther.enable();
+            this.environmentOther.getEl().up('.x-form-item').setDisplayed( true );
+        } else {
+            this.environmentOther.hide();
+            this.environmentOther.disable();
+            this.environmentOther.getEl().up('.x-form-item').setDisplayed( false );
+        }
     },
     saveRegistrationInfo : function( handler )
     {
@@ -464,13 +486,16 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
     {
         var info = Ung.SetupWizard.CurrentValues.registrationInfo;
         var misc = {};
-        this.setRegistrationValue( "name", misc, false );
+        this.setRegistrationValue( "firstName", info, false );
+        this.setRegistrationValue( "lastName", info, false );
         this.setRegistrationValue( "companyName", info, false );
         this.setRegistrationValue( "email", info, true, "emailAddr" );
         this.setRegistrationValue( "numSeats", info, true );
 
         this.setRegistrationValue( "environment", misc, false );
-        this.setRegistrationValue( "country", misc, false );
+        if ( misc["environment"] == "other" ) {
+            this.setRegistrationValue( "environment-other", misc, false, "environment" );
+        }
 
         info.misc.map = misc;
 
@@ -502,8 +527,13 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
         var value = null;
 
         /* Combo has to use the raw value, otherwise editable does not come through, (country is not editable)*/
-        if (( field.xtype == "combo" ) && ( fieldName != "country" )) value = field.getRawValue();
-        else value = field.getValue();
+        if (( field.xtype == "combo" ) && ( fieldName != "country" )) {
+            value = field.getRawValue();
+        } else if ( field.xtype == "radio" ) {
+            value = field.getGroupValue();
+        } else {
+            value = field.getValue();
+        }
 
         if ( value.length == 0 ) return;
         map[param] = "" + value;
@@ -1805,7 +1835,7 @@ Ung.Setup = {
         if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 4 );
+                this.wizard.goToPage( 2 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
 
