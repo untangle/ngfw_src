@@ -481,7 +481,7 @@ Ung.Reports = Ext.extend(Object,
                                                             }
                                                             rpc.applicationData=result;
                                                             reports.breadcrumbs.push({ text: value +" "+i18n._("Reports"),
-                                                                                       handler: this.getDrilldownTableOfContents.createDelegate(this, [fnName, value])
+                                                                                       handler: this.getDrilldownTableOfContents.createDelegate(this, [fnName, type, value])
                                                                                      });
                                                             this.reportDetails.buildReportDetails(); // XXX take to correct page
                                                             reports.progressBar.hide();
@@ -519,7 +519,7 @@ Ung.Reports = Ext.extend(Object,
                                                             }
                                                             rpc.applicationData=result;
                                                             reports.breadcrumbs.push({ text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
-                                                                                       handler: this[fnName].createDelegate(this,[app, value])
+                                                                                       handler: this[fnName].createDelegate(this,[app, type, value])
                                                                                      });
                                                             this.reportDetails.buildReportDetails(); // XXX take to correct page
                                                             reports.progressBar.hide();
