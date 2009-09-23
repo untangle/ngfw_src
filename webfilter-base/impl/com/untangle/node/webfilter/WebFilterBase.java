@@ -77,7 +77,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     protected final WebFilterFactory factory = new WebFilterFactory(this);
 
     private final PipeSpec httpPipeSpec = new SoloPipeSpec
-        ("http-blocker", this, new TokenAdaptor(this, factory), Fitting.HTTP_TOKENS,
+        ("http-blocker", this, new TokenAdaptor(this, factory),
+         Fitting.HTTP_TOKENS,
          Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipeSpec };
 
@@ -88,7 +89,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     private volatile WebFilterSettings settings;
 
     private final PartialListUtil listUtil = new PartialListUtil();
-    private final BlacklistCategoryHandler categoryHandler = new BlacklistCategoryHandler();
+    private final BlacklistCategoryHandler categoryHandler
+        = new BlacklistCategoryHandler();
 
     private final BlingBlinger scanBlinger;
     private final BlingBlinger passBlinger;
@@ -116,13 +118,18 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
-        passLogBlinger = c.addMetric("log", I18nUtil.marktr("Passed by policy"), null);
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, passLogBlinger);
+        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"),
+                                    null, I18nUtil.marktr("SCAN"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"),
+                                     null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"),
+                                    null, I18nUtil.marktr("PASS"));
+        passLogBlinger = c.addMetric("log", I18nUtil.marktr("Passed by policy"),
+                                     null);
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger,
+                                     passBlinger, passLogBlinger);
 
-	bypassMonitor = new BypassMonitor(this);
+    bypassMonitor = new BypassMonitor(this);
     }
 
     // WebFilter methods ------------------------------------------------------
@@ -145,7 +152,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     public WebFilterSettings getWebFilterSettings()
     {
         if (settings == null)
-            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState());
+            logger.error("Settings not yet initialized. State: "
+                         + getNodeContext().getRunState());
         return settings;
     }
 
@@ -206,7 +214,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
             // its all good
             break;
         default:
-            logger.error("missing case: " + settings.getBaseSettings().getUserWhitelistMode());
+            logger.error("missing case: "
+                         + settings.getBaseSettings().getUserWhitelistMode());
             break;
         }
 
@@ -281,45 +290,39 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     public List<BlacklistCategory> getBlacklistCategories(int start, int limit,
                                                           String... sortColumns) {
-        return listUtil.getItems(
-                                 "select blacklistCategory from WebFilterSettings hbs " +
+        return listUtil.getItems("select blacklistCategory from WebFilterSettings hbs " +
                                  "join hbs.blacklistCategories as blacklistCategory where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), "blacklistCategory", start, limit, sortColumns);
     }
 
     public List<StringRule> getBlockedExtensions(int start, int limit,
                                                  String... sortColumns) {
-        return listUtil.getItems(
-                                 "select hbs.blockedExtensions from WebFilterSettings hbs where hbs.tid = :tid ",
+        return listUtil.getItems("select hbs.blockedExtensions from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
     public List<MimeTypeRule> getBlockedMimeTypes(int start, int limit,
                                                   String... sortColumns) {
-        return listUtil.getItems(
-                                 "select blockedMimeType from WebFilterSettings hbs " +
+        return listUtil.getItems("select blockedMimeType from WebFilterSettings hbs " +
                                  "join hbs.blockedMimeTypes as blockedMimeType where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), "blockedMimeType", start, limit, sortColumns);
     }
 
     public List<StringRule> getBlockedUrls(int start, int limit,
                                            String... sortColumns) {
-        return listUtil.getItems(
-                                 "select hbs.blockedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
+        return listUtil.getItems("select hbs.blockedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
     public List<IPMaddrRule> getPassedClients(int start, int limit,
                                               String... sortColumns) {
-        return listUtil.getItems(
-                                 "select hbs.passedClients from WebFilterSettings hbs where hbs.tid = :tid ",
+        return listUtil.getItems("select hbs.passedClients from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
     public List<StringRule> getPassedUrls(int start, int limit,
                                           String... sortColumns) {
-        return listUtil.getItems(
-                                 "select hbs.passedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
+        return listUtil.getItems("select hbs.passedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
@@ -643,15 +646,15 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     @Override
     protected void preStart()
     {
-	getBlacklist().removeAllUnblockedSites();
-	bypassMonitor.start();
+    getBlacklist().removeAllUnblockedSites();
+    bypassMonitor.start();
     }
 
     @Override
     protected void postStop()
     {
-	bypassMonitor.stop();
-	getBlacklist().removeAllUnblockedSites();
+    bypassMonitor.stop();
+    getBlacklist().removeAllUnblockedSites();
     }
 
     // package protected methods ----------------------------------------------

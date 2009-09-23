@@ -230,7 +230,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
-    // What was this supposed to be?
+        // What was this supposed to be?
         // spyPagesDetectedBlinger = c.addMetric("spydetected", I18nUtil.marktr("Spyware Pages Detected"), null);
         lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger);
     }

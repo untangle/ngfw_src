@@ -29,17 +29,25 @@ import com.untangle.uvm.node.Validator;
 
 public interface Spyware extends Node
 {
-    List<StringRule> getActiveXRules(int start, int limit, String... sortColumns);
-    void updateActiveXRules(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    List<StringRule> getActiveXRules(int start, int limit,
+                                     String... sortColumns);
+    void updateActiveXRules(List<StringRule> added, List<Long> deleted,
+                            List<StringRule> modified);
 
-    List<StringRule> getCookieRules(int start, int limit, String... sortColumns);
-    void updateCookieRules(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    List<StringRule> getCookieRules(int start, int limit,
+                                    String... sortColumns);
+    void updateCookieRules(List<StringRule> added, List<Long> deleted,
+                           List<StringRule> modified);
 
-    List<IPMaddrRule> getSubnetRules(int start, int limit, String... sortColumns);
-    void updateSubnetRules(List<IPMaddrRule> added, List<Long> deleted, List<IPMaddrRule> modified);
+    List<IPMaddrRule> getSubnetRules(int start, int limit,
+                                     String... sortColumns);
+    void updateSubnetRules(List<IPMaddrRule> added, List<Long> deleted,
+                           List<IPMaddrRule> modified);
 
-    List<StringRule> getDomainWhitelist(int start, int limit, String... sortColumns);
-    void updateDomainWhitelist(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    List<StringRule> getDomainWhitelist(int start, int limit,
+                                        String... sortColumns);
+    void updateDomainWhitelist(List<StringRule> added, List<Long> deleted,
+                               List<StringRule> modified);
 
     SpywareBaseSettings getBaseSettings();
     void setBaseSettings(SpywareBaseSettings baseSettings);
@@ -56,8 +64,9 @@ public interface Spyware extends Node
             List[] subnetRules, List[] domainWhitelist);
 
     /**
-     * Reconfigure node. This method should be called after some settings are updated
-     * in order to reconfigure the node accordingly.
+     * Reconfigure node. This method should be called after some
+     * settings are updated in order to reconfigure the node
+     * accordingly.
      */
     void reconfigure();
 

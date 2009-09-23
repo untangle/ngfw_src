@@ -51,27 +51,31 @@ public interface VirusNode extends Node
     void setBaseSettings(VirusBaseSettings virusBaseSettings);
     VirusBaseSettings getBaseSettings();
     VirusBaseSettings getBaseSettings(boolean updateScannerInfo);
-    
-    List<MimeTypeRule> getHttpMimeTypes(int start, int limit, String... sortColumns);
-    void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified);
-    
+
+    List<MimeTypeRule> getHttpMimeTypes(int start, int limit,
+                                        String... sortColumns);
+    void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted,
+                             List<MimeTypeRule> modified);
+
     List<StringRule> getExtensions(int start, int limit, String... sortColumns);
-    void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
-    
+    void updateExtensions(List<StringRule> added, List<Long> deleted,
+                          List<StringRule> modified);
+
     /**
      * Update all settings once, in a single transaction
      */
-    void updateAll(VirusBaseSettings baseSettings, 
-    		List[] httpMimeTypes, List[] extensions);
+    void updateAll(VirusBaseSettings baseSettings, List[] httpMimeTypes,
+                   List[] extensions);
 
     /* Get the current version of the virus signatures. */
     String getSigVersion();
-    
+
     /**
-     * Reconfigure node. This method should be called after some settings are updated
-     * in order to reconfigure the node accordingly.
+     * Reconfigure node. This method should be called after some
+     * settings are updated in order to reconfigure the node
+     * accordingly.
      */
     void reconfigure();
-    
+
     EventManager<VirusEvent> getEventManager();
 }

@@ -143,18 +143,22 @@ public abstract class VirusNodeImpl extends AbstractNode
                                    com.untangle.uvm.node.IPSessionDesc server)
             {
                 /* Don't kill any UDP Sessions */
-                if (client.protocol() == com.untangle.uvm.node.IPSessionDesc.PROTO_UDP) {
+                if (client.protocol()
+                    == com.untangle.uvm.node.IPSessionDesc.PROTO_UDP) {
                     return false;
                 }
 
                 /* handle sessions with a null policy */
                 Policy policy = getPolicy();
-                if (null != sessionPolicy && null != policy && !sessionPolicy.equals( policy )) {
+                if (null != sessionPolicy && null != policy
+                    && !sessionPolicy.equals( policy )) {
                     return false;
                 }
 
-                if (testClientPort(client.clientPort()) || testServerPort(client.serverPort()) ||
-                    testClientPort(server.clientPort()) || testServerPort(server.serverPort())) {
+                if (testClientPort(client.clientPort())
+                    || testServerPort(client.serverPort())
+                    || testClientPort(server.clientPort())
+                    || testServerPort(server.serverPort())) {
                     return true;
                 }
 
@@ -179,7 +183,8 @@ public abstract class VirusNodeImpl extends AbstractNode
                 }
 
                 /* email SMTP (25) / POP3 (110) / IMAP (143) */
-                if (serverPort == 25 || serverPort == 110 || serverPort == 143) {
+                if (serverPort == 25 || serverPort == 110
+                    || serverPort == 143) {
                     return true;
                 }
 
@@ -197,7 +202,8 @@ public abstract class VirusNodeImpl extends AbstractNode
         this.replacementGenerator = new VirusReplacementGenerator(getTid());
 
         NodeContext tctx = getNodeContext();
-        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
+        eventLogger = EventLoggerFactory.factory()
+            .getEventLogger(getNodeContext());
 
         String vendor = scanner.getVendorName();
 
@@ -219,14 +225,26 @@ public abstract class VirusNodeImpl extends AbstractNode
         ef = new VirusSmtpFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        LocalMessageManager lmm = LocalUvmContextFactory.context()
+            .localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Documents scanned"), null, I18nUtil.marktr("SCAN"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Documents blocked"), null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Documents passed"), null, I18nUtil.marktr("PASS"));
-        removeBlinger = c.addActivity("remove", I18nUtil.marktr("Infections removed"), null, I18nUtil.marktr("REMOVE"));
-        passedInfectedMessageBlinger = c.addMetric("infected", I18nUtil.marktr("Passed by policy"), null);
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
+        scanBlinger = c.addActivity("scan",
+                                    I18nUtil.marktr("Documents scanned"), null,
+                                    I18nUtil.marktr("SCAN"));
+        blockBlinger = c.addActivity("block",
+                                     I18nUtil.marktr("Documents blocked"),
+                                     null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass",
+                                    I18nUtil.marktr("Documents passed"),
+                                    null, I18nUtil.marktr("PASS"));
+        removeBlinger = c.addActivity("remove",
+                                      I18nUtil.marktr("Infections removed"),
+                                      null, I18nUtil.marktr("REMOVE"));
+        passedInfectedMessageBlinger = c.addMetric("infected",
+                                                   I18nUtil.marktr("Passed by policy"),
+                                                   null);
+        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger,
+                                     passBlinger, removeBlinger);
     }
 
     // VirusNode methods -------------------------------------------------
@@ -241,11 +259,15 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         if (updateScannerInfo) {
             Date lastSignatureUpdate = scanner.getLastSignatureUpdate();
-            if (lastSignatureUpdate != null) this.lastSignatureUpdate = lastSignatureUpdate;
+            if (lastSignatureUpdate != null) {
+                this.lastSignatureUpdate = lastSignatureUpdate;
+            }
             String signatureVersion = getSigVersion();
-            if (signatureVersion != null) this.signatureVersion = signatureVersion;
+            if (signatureVersion != null) {
+                this.signatureVersion = signatureVersion;
+            }
         }
-        
+
         baseSettings.setLastUpdate(this.lastSignatureUpdate);
         baseSettings.setSignatureVersion(this.signatureVersion);
 
@@ -299,9 +321,9 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     public List<MimeTypeRule> getHttpMimeTypes(final int start, final int limit, final String... sortColumns) {
-        return listUtil.getItems( "select vs.httpMimeTypes from VirusSettings vs " +
-                                  "join vs.httpMimeTypes as httpMimeTypes where vs.tid = :tid ",
-                                  getNodeContext(), getTid(),"httpMimeTypes", start, limit, sortColumns);
+        return listUtil.getItems("select vs.httpMimeTypes from VirusSettings vs " +
+                                 "join vs.httpMimeTypes as httpMimeTypes where vs.tid = :tid ",
+                                 getNodeContext(), getTid(),"httpMimeTypes", start, limit, sortColumns);
     }
 
     public void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified) {
@@ -310,8 +332,8 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     public List<StringRule> getExtensions(final int start, final int limit, final String... sortColumns) {
-        return listUtil.getItems( "select vs.extensions from VirusSettings vs where vs.tid = :tid ",
-                                  getNodeContext(), getTid(), start, limit, sortColumns);
+        return listUtil.getItems("select vs.extensions from VirusSettings vs where vs.tid = :tid ",
+                                 getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
     public void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified) {

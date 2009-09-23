@@ -39,23 +39,35 @@ public interface WebFilter extends Node
     WebFilterBaseSettings getBaseSettings();
     void setBaseSettings(WebFilterBaseSettings baseSettings);
 
-    List<IPMaddrRule> getPassedClients(int start, int limit, String... sortColumns);
-    void updatePassedClients(List<IPMaddrRule> added, List<Long> deleted, List<IPMaddrRule> modified);
+    List<IPMaddrRule> getPassedClients(int start, int limit,
+                                       String... sortColumns);
+    void updatePassedClients(List<IPMaddrRule> added, List<Long> deleted,
+                             List<IPMaddrRule> modified);
 
     List<StringRule> getPassedUrls(int start, int limit, String... sortColumns);
-    void updatePassedUrls(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    void updatePassedUrls(List<StringRule> added, List<Long> deleted,
+                          List<StringRule> modified);
 
-    List<StringRule> getBlockedUrls(int start, int limit, String... sortColumns);
-    void updateBlockedUrls(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    List<StringRule> getBlockedUrls(int start, int limit,
+                                    String... sortColumns);
+    void updateBlockedUrls(List<StringRule> added, List<Long> deleted,
+                           List<StringRule> modified);
 
-    List<MimeTypeRule> getBlockedMimeTypes(int start, int limit, String... sortColumns);
-    void updateBlockedMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified);
+    List<MimeTypeRule> getBlockedMimeTypes(int start, int limit,
+                                           String... sortColumns);
+    void updateBlockedMimeTypes(List<MimeTypeRule> added, List<Long> deleted,
+                                List<MimeTypeRule> modified);
 
-    List<StringRule> getBlockedExtensions(int start, int limit, String... sortColumns);
-    void updateBlockedExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
+    List<StringRule> getBlockedExtensions(int start, int limit,
+                                          String... sortColumns);
+    void updateBlockedExtensions(List<StringRule> added, List<Long> deleted,
+                                 List<StringRule> modified);
 
-    List<BlacklistCategory> getBlacklistCategories(int start, int limit, String... sortColumns);
-    void updateBlacklistCategories(List<BlacklistCategory> added, List<Long> deleted, List<BlacklistCategory> modified);
+    List<BlacklistCategory> getBlacklistCategories(int start, int limit,
+                                                   String... sortColumns);
+    void updateBlacklistCategories(List<BlacklistCategory> added,
+                                   List<Long> deleted,
+                                   List<BlacklistCategory> modified);
 
     /**
      * Update all settings once, in a single transaction
@@ -66,7 +78,7 @@ public interface WebFilter extends Node
             List[] blockedExtensions, List[] blacklistCategories);
 
     Validator getValidator();
-    
+
     /**
      * Reconfigure node. This method should be called after some settings are updated
      * in order to reconfigure the node accordingly.
@@ -79,5 +91,5 @@ public interface WebFilter extends Node
     UserWhitelistMode getUserWhitelistMode();
 
     EventManager<WebFilterEvent> getEventManager();
-    
+
 }
