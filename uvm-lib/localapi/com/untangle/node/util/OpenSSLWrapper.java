@@ -275,7 +275,6 @@ public class OpenSSLWrapper {
     public static String getCertKeyFromPEM(String filename) {
         return extractMatchFromFile(filename, "-----BEGIN .*? KEY-----.+-----END .*? KEY-----");
     }
-
     public static void generateSelfSignedCert(String alias, String filename)
         throws IOException {
         SimpleExec.SimpleExecResult resultKeyCopy = SimpleExec.exec( "openssl",
@@ -341,13 +340,13 @@ public class OpenSSLWrapper {
     }
 
     /**
-     * Generates an RSA key of length 1024.
+     * Generates an RSA key of length 2048.
      *
      * @return the bytes of the private key (encoded)
      */
     public static byte[] genKey()
         throws IOException {
-        //openssl genrsa 1024
+        //openssl genrsa 2048
         SimpleExec.SimpleExecResult result = SimpleExec.exec(
                                                              "openssl",
                                                              new String[] {
