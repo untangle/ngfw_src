@@ -187,6 +187,11 @@ public class RemoteNetworkManagerAdaptor implements RemoteNetworkManager
         return lnm.isSingleNicModeEnabled();
     }
 
+    public List<String> getPhysicalInterfaceNames() throws NetworkException
+    {
+        return lnm.getPhysicalInterfaceNames();
+    }
+
     /* Forces the link status to be re-examined, since it is likely to have changed */
     public void updateLinkStatus()
     {

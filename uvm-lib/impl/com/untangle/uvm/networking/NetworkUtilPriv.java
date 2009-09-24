@@ -79,7 +79,7 @@ class NetworkUtilPriv extends NetworkUtil
     {
     }
 
-    BasicNetworkSettings toBasic( NetworkSpacesInternalSettings settings )
+    BasicNetworkSettings toBasic( NetworkSpacesInternalSettings settings, boolean isSingleNicEnabled )
     {
         BasicNetworkSettings basic = new BasicNetworkSettings();
 
@@ -107,8 +107,10 @@ class NetworkUtilPriv extends NetworkUtil
         basic.setDns1( settings.getDns1());
         basic.setDns2( settings.getDns2());
         basic.setGateway( settings.getDefaultRoute());
+        basic.setSingleNicEnabled( isSingleNicEnabled );
 
         logger.debug( "created: " + basic );
+        
 
         return basic;
     }

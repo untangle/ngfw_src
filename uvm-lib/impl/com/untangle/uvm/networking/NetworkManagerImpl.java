@@ -22,6 +22,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Set;
 
@@ -75,6 +76,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
+
+    /* Script to run to get a list of physical interfaces */
+    private static final String GET_PHYSICAL_INTF_SCRIPT = BUNNICULA_BASE + "/networking/get-physical-interfaces";
+
 
     private static final long ALPACA_RETRY_COUNT = 3;
     private static final long ALPACA_RETRY_DELAY_MS = 6000;
@@ -182,7 +187,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     public BasicNetworkSettings getBasicSettings()
     {
-        BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings );
+        boolean snic = this.singleNicManager.getIsEnabled();
+        BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings, snic );
         return basic;
     }
 
@@ -406,6 +412,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         JSONObject jsonObject = new JSONObject();
         String method = null;
+        boolean isSingleNicEnabled = false;
 
         try {
             if ( pppoe.isLive()) {
@@ -416,6 +423,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             } else if ( basic.getDhcpEnabled()) {
                 /* Dynamic address */
                 method = "wizard_external_interface_dynamic";
+                isSingleNicEnabled = basic.isSingleNicEnabled();
             } else {
                 /* Must be a static address */
                 jsonObject.put( "ip", basic.getHost().toString());
@@ -426,7 +434,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 IPaddr dns2 = basic.getDns2();
                 if ( !dns2.isEmpty()) jsonObject.put( "dns_2", dns2 );
                 method = "wizard_external_interface_static";
+                isSingleNicEnabled = basic.isSingleNicEnabled();
             }
+
+            jsonObject.put( "single_nic_mode", isSingleNicEnabled );
         } catch ( JSONException e ) {
             throw new NetworkException( "Unable to build JSON Object", e );
         }
@@ -448,7 +459,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         try {
             if ( externalAddress == null ) { 
-                BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings );
+                boolean snic = this.singleNicManager.getIsEnabled();
+
+                BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().
+                    toBasic( this.networkSettings, snic );
                 externalAddress = basic.getHost();
             }
 
@@ -517,6 +531,24 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public boolean isSingleNicModeEnabled()
     {
         return this.singleNicManager.getIsEnabled();
+    }
+    
+    /* Return a list of the physical interfaces on the box */
+    public List<String> getPhysicalInterfaceNames() throws NetworkException
+    {
+        List<String> names = new LinkedList<String>();
+
+        try {
+            String values = ScriptRunner.getInstance().exec( GET_PHYSICAL_INTF_SCRIPT );
+            for ( String value : values.split( "[\\s\\n]" )) {
+                names.add( value );
+            }
+        } catch ( Exception e ) {
+            logger.error( "Unable to get list of interfaces.", e );
+            throw new NetworkException( "Unable to get list of interfaces." );
+        }
+
+        return names;
     }
 
     public void singleNicRegisterAddress( InetAddress address )

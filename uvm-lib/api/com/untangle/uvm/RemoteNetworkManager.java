@@ -144,6 +144,9 @@ public interface RemoteNetworkManager
     /* Returns true if single nic mode is enabled */
     boolean isSingleNicModeEnabled();
 
+    /* Returns a list of the physical interfaces on the box. (eth0, eth1, etc). */
+    public List<String> getPhysicalInterfaceNames() throws NetworkException;
+
     /* Forces the link status to be re-examined, since it is likely to
      * have changed */
     void updateLinkStatus();

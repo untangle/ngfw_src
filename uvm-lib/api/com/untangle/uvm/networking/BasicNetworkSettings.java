@@ -70,6 +70,9 @@ public class BasicNetworkSettings implements Serializable
     /* List of secondary addresses for the primary interface */
     List<InterfaceAlias> aliasList;
 
+    /* True if single nic mode is enabled. */
+    boolean isSingleNicEnabled = false;
+
     /* The configuration for PPPoE */
     PPPoEConnectionRule pppoe;
     
@@ -266,18 +269,30 @@ public class BasicNetworkSettings implements Serializable
         this.pppoe = newValue;
     }
 
+    public boolean isSingleNicEnabled()
+    {
+        return this.isSingleNicEnabled;
+    }
+
+    public void setSingleNicEnabled( boolean newValue )
+    {
+        this.isSingleNicEnabled = newValue;
+    }
+
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
         
-        sb.append( "dhcp:        "   + getDhcpEnabled());
-        sb.append( "\nhost:        " + getHost());
-        sb.append( "\nnetmask:     " + getNetmask());
-        sb.append( "\ngateway:     " + getGateway());
-        sb.append( "\ndns 1:       " + getDns1());
-        sb.append( "\ndns 2:       " + getDns2());
-        for ( InterfaceAlias alias : getAliasList()) sb.append( "\n alias:    " + alias );
-        sb.append( "\n pppoe:      " + getPPPoESettings());
+        sb.append( "dhcp:          "   + getDhcpEnabled());
+        sb.append( "\nhost:          " + getHost());
+        sb.append( "\nnetmask:       " + getNetmask());
+        sb.append( "\ngateway:       " + getGateway());
+        sb.append( "\ndns 1:         " + getDns1());
+        sb.append( "\ndns 2:         " + getDns2());
+        for ( InterfaceAlias alias : getAliasList()) sb.append( "\n alias:      " + alias );
+        sb.append( "\n pppoe:        " + getPPPoESettings());
+        sb.append( "\nsingle-nic-en: " + isSingleNicEnabled());
+
         return sb.toString();
     }
         
