@@ -346,7 +346,8 @@ public class LicenseManagerImpl implements LicenseManager
      */
     private synchronized void notifyProducts()
     {
-        long nextExpirationDate = System.currentTimeMillis() + this.validationPeriod;
+        
+        long nextExpirationDate = ( System.nanoTime() / 1000000l ) + this.validationPeriod;
         
         this.notifiedProducts.clear();
         this.notifiedProducts.addAll( this.products );

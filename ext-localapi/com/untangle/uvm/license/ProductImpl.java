@@ -59,7 +59,7 @@ public class ProductImpl implements LicenseManager.Product
             return true;
         }
 
-        return System.currentTimeMillis() > getExpirationTimeMillis();
+        return ( System.nanoTime() / 1000000l ) > getExpirationTimeMillis();
     }
 
     public final long getExpirationTimeMillis()
@@ -102,7 +102,7 @@ public class ProductImpl implements LicenseManager.Product
         /* call this after so all subsequent calls to isExpired
          * failed, this way the expire event has a chance to do its
          * thing first */
-        this.expirationTimeMillis = System.currentTimeMillis() - 1000;
+        this.expirationTimeMillis =( System.nanoTime() / 1000000l )  - 1000;
     }
 
     /** This is the event that is sent to the product, this should be
