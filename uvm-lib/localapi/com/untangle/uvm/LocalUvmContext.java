@@ -48,7 +48,6 @@ import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
-import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
@@ -140,8 +139,6 @@ public interface LocalUvmContext
 
     // XXX has stuff for local use, should probably be renamed w/o 'Impl'
     LocalNetworkManager networkManager();
-
-    RemotePingManager pingManager();
 
     RemoteReportingManager reportingManager();
 

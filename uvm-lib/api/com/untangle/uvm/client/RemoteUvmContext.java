@@ -46,7 +46,6 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.RemoteMessageManager;
-import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
@@ -115,13 +114,6 @@ public interface RemoteUvmContext
      * @return the RemoteIntfManager.
      */
     RemoteIntfManager intfManager();
-
-    /**
-     * Get the <code>RemotePingManager</code> singleton.
-     *
-     * @return the RemotePingManager.
-     */
-    RemotePingManager pingManager();
 
     /**
      * Get the <code>NetworkManager</code> singleton.

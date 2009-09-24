@@ -33,7 +33,6 @@ import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.RemoteMessageManager;
-import com.untangle.uvm.networking.ping.RemotePingManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
@@ -105,11 +104,6 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
     public RemoteNetworkManager networkManager()
     {
         return context.remoteNetworkManager();
-    }
-
-    public RemotePingManager pingManager()
-    {
-        return context.pingManager();
     }
 
     public RemoteReportingManager reportingManager()

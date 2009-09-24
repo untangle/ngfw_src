@@ -58,7 +58,6 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.RemoteNetworkManagerAdaptor;
-import com.untangle.uvm.networking.ping.PingManagerImpl;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
@@ -125,7 +124,6 @@ public class UvmContextImpl extends UvmContextBase
     private MailSenderImpl mailSender;
     private LogMailerImpl logMailer;
     private NetworkManagerImpl networkManager;
-    private PingManagerImpl pingManager;
     private RemoteNetworkManagerAdaptor remoteNetworkManager;
     private RemoteReportingManagerImpl reportingManager;
     private RemoteConnectivityTesterImpl connectivityTester;
@@ -298,11 +296,6 @@ public class UvmContextImpl extends UvmContextBase
     public NetworkManagerImpl networkManager()
     {
         return networkManager;
-    }
-
-    public PingManagerImpl pingManager()
-    {
-        return pingManager;
     }
 
     public RemoteReportingManagerImpl reportingManager()
@@ -788,8 +781,6 @@ public class UvmContextImpl extends UvmContextBase
         // manager should exist.
         networkManager = NetworkManagerImpl.getInstance();
         remoteNetworkManager = new RemoteNetworkManagerAdaptor(networkManager);
-
-        pingManager = PingManagerImpl.getInstance();
 
         //Start AddressBookImpl
         addressBookFactory = AddressBookFactory.makeInstance();
