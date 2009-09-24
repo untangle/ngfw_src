@@ -262,7 +262,7 @@ public class Pulse
         private long count = 0;
 
         /* This is the next time that you should wake up */
-        private long nextTrigger = -1;
+        private long nextTrigger = Long.MIN_VALUE;
 
         private Ticker( Runnable beat )
         {
@@ -313,7 +313,7 @@ public class Pulse
         private void waitForNextBlip()
         {
             /* used to gauge if there is funny stuff going on with the clock */
-            long waitStart = System.currentTimeMillis();
+            long waitStart = ( System.nanoTime() / 1000000l );
 
             /* amount of time to wait */
             long delay = getDelay();
@@ -321,7 +321,7 @@ public class Pulse
             /* the next time you should wake up assuming everything is normal */
             if ( delay < DELAY_MINIMUM ) {
                 /* never wake up */
-                setNextTrigger( -1 );
+                setNextTrigger( Long.MIN_VALUE );
                 /* doesn't matter, just some time that will not happen soon */
                 delay = 60 * 60 * 1000;
             } else {
@@ -352,13 +352,13 @@ public class Pulse
                 if ( nextTrigger == 0 ) {
                     logger.debug( "instructed to execute immediately." );
                     break;
-                } else if ( nextTrigger < 0 ) {
+                } else if ( nextTrigger == Long.MIN_VALUE ) {
                     logger.debug( "instructed to never execute, continuing." );
                     continue;
                 }
-                long now = System.currentTimeMillis();
+                long now = ( System.nanoTime() / 1000000l );
 
-                if (( now < waitStart ) && ( nextTrigger > 0 )) {
+                if ( now < waitStart ) {
                     /* time has gone backwards, just run just in case */
                     logger.debug( "time has gone backwards, executing immediately(" + now + "," + waitStart + ")" );
                     break;
