@@ -681,7 +681,7 @@ Ung.ReportDetails = Ext.extend(Object,
                                      if(rpc.applicationData.sections != null){
                                        for(i=0;i<rpc.applicationData.sections.list.length ;i++) {
                                          var section=rpc.applicationData.sections.list[i];
-                                         var sectionPanel=this.buildSection(this.appName, section);
+                                         var sectionPanel=this.buildSection(rpc.applicationData.name, section);
                                          itemsArray.push(sectionPanel);
                                        }
                                      }
