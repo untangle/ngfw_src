@@ -102,6 +102,7 @@ CREATE TABLE settings.u_policy (
     is_default bool NOT NULL,
     name text NOT NULL,
     notes text,
+    parent_id int8,
     PRIMARY KEY (id));
 
 -- com.untangle.uvm.policy.UserPolicyRuleSet
