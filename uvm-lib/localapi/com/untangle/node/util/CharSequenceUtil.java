@@ -57,6 +57,23 @@ public class CharSequenceUtil
         return true;
     }
 
+    public static boolean contains(CharSequence cs1, CharSequence cs2)
+    {
+        if (cs1.length() < cs2.length()) { return false; }
+
+	int j = 0;
+
+        for (int i = 0; i < cs1.length(); i++) {
+            if (cs1.charAt(i) != cs2.charAt(j))
+		j = 0;
+            else
+		if (j++ == cs2.length() -1)
+		    return true;
+	}
+
+        return false;
+    }
+
     /**
      * Counts the number of new lines in the sequence.  New lines
      * are CR, LF or CRLF.

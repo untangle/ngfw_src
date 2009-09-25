@@ -123,7 +123,7 @@ public abstract class Blacklist
      */
     void removeUnblockedSites(Map<InetAddress, List<String>> map)
     {
-	logger.warn("about to remove host-bypassed sites for "  + map.size() + " host(s)");
+	logger.info("about to remove host-bypassed sites for "  + map.size() + " host(s)");
 
 	InetAddress addr;
 	List<String> bypassedSites;
@@ -132,17 +132,17 @@ public abstract class Blacklist
 	synchronized(hostWhitelists) {
 	    for (Map.Entry<InetAddress, List<String>> entry : map.entrySet()) {
 		addr = entry.getKey();
-		logger.warn(".. for address '" + addr + "'");
+		logger.info(".. for address '" + addr + "'");
 		bypassedSites = entry.getValue();
 
 		hostSites = hostWhitelists.get(addr);
 
 		for (String site : bypassedSites) {
 		    if (hostSites.contains(site)) {
-			logger.warn(".... removing unblocked site " + site);
+			logger.info(".... removing unblocked site " + site);
 			hostSites.remove(site);
 			if (hostSites.isEmpty()) {
-			    logger.warn(".... '" + addr + "' has no more unblocked sites");
+			    logger.info(".... '" + addr + "' has no more unblocked sites");
 			    hostWhitelists.remove(addr);
 			    break;
 			}
@@ -571,23 +571,6 @@ public abstract class Blacklist
         return 0 > i ? null : lookupCategory(strs[i], rules);
     }
 
-    private String[] findCategories(Map<String, CharSequence[]> cats, String val)
-    {
-        List<String> result = new ArrayList<String>();
-        for (String cat : cats.keySet()) {
-            CharSequence[] strs = cats.get(cat);
-            int i = findMatch(strs, val);
-            if (0 <= i) {
-                result.add(cat);
-            }
-        }
-        if (result.size() == 0) {
-            return null;
-        } else {
-            return (String[]) result.toArray(new String[result.size()]);
-        }
-    }
-
     private int findMatch(CharSequence[] strs, String val)
     {
         if (null == val || null == strs) {
@@ -595,15 +578,21 @@ public abstract class Blacklist
         }
 
         int i = Arrays.binarySearch(strs, val, CharSequenceUtil.COMPARATOR);
+
         if (0 <= i) {
             return i;
         } else {
-            int j = -i - 2;
+            int j = -i - 2; // insertion point - 1
             if (0 <= j && j < strs.length
                 && CharSequenceUtil.startsWith(val, strs[j])) {
                 return j;
             }
         }
+
+	for (int k = 0 ; k < strs.length ; k++) {
+	    if (CharSequenceUtil.contains(val, strs[k]))
+		return k;
+	}
 
         return -1;
     }
@@ -657,7 +646,7 @@ public abstract class Blacklist
                 strings.add(uri);
             }
         }
-        Collections.sort(strings);
+	//        Collections.sort(strings);
 
         return strings.toArray(new String[strings.size()]);
     }
