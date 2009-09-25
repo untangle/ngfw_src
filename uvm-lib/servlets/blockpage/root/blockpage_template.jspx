@@ -66,6 +66,10 @@
           </button>
         </c:if>
 
+        <c:if test="${!empty additional_fields}">
+          ${additional_fields}
+        </c:if>
+
         <p class="contact">
           <span>${contact}</span>
         </p>

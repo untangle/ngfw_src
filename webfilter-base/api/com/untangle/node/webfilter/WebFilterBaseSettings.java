@@ -46,6 +46,10 @@ public class WebFilterBaseSettings implements Serializable {
     private boolean blockAllIpHosts = false;
 
     private boolean enableHttps = true;
+    
+    private boolean unblockPasswordEnabled = false;
+    private boolean unblockPasswordAdmin = false;
+    private String unblockPassword = "";
 
     private int passedClientsLength;
     private int passedUrlsLength;
@@ -116,6 +120,54 @@ public class WebFilterBaseSettings implements Serializable {
     public void setUserWhitelistMode(UserWhitelistMode userWhitelistMode)
     {
         this.userWhitelistMode = userWhitelistMode;
+    }
+
+    /**
+     * If true, ask for a password to unblock a site.
+     *
+     * @return true to block.
+     */
+    @Column(name="unblock_password_enabled", nullable=false)
+    public boolean getUnblockPasswordEnabled()
+    {
+        return this.unblockPasswordEnabled;
+    }
+
+    public void setUnblockPasswordEnabled(boolean newValue)
+    {
+        this.unblockPasswordEnabled = newValue;
+    }
+
+    /**
+     * If true, use the administrative password to unblock a site.
+     *
+     * @return true to use the administrative password.
+     */
+    @Column(name="unblock_password_admin", nullable=false)
+    public boolean getUnblockPasswordAdmin()
+    {
+        return this.unblockPasswordAdmin;
+    }
+
+    public void setUnblockPasswordAdmin(boolean newValue)
+    {
+        this.unblockPasswordAdmin = newValue;
+    }
+
+    /**
+     * String to use for the unblock password
+     *
+     * @return Unblock password for this node..
+     */
+    @Column(name="unblock_password", nullable=false)
+    public String getUnblockPassword()
+    {
+        return this.unblockPassword;
+    }
+
+    public void setUnblockPassword(String newValue)
+    {
+        this.unblockPassword = newValue;
     }
 
     @Transient

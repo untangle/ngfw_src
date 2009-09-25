@@ -57,6 +57,8 @@ public class BlockPageUtil
         request.setAttribute( "footer", handler.getFooter( bs, i18n_map ));
         String value = handler.getScriptFile();
         if ( value != null ) request.setAttribute( "javascript_file", value );
+        value = handler.getAdditionalFields();
+        if ( value != null ) request.setAttribute( "additional_fields", value );
         request.setAttribute( "description", handler.getDescription( bs, i18n_map ));
 
         /* Register the block detail with the page */
@@ -99,6 +101,9 @@ public class BlockPageUtil
 
         /* Return the name of the script file to load, or null if there is not a script. */
         public String getScriptFile();
+
+        /* Return any additional fields that should go on the page. */
+        public String getAdditionalFields();
 
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map );

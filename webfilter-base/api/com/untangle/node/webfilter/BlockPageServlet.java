@@ -80,12 +80,18 @@ public class BlockPageServlet extends HttpServlet
         whitelistMode = node.getUserWhitelistMode();
 
         request.setAttribute( "reason", blockDetails.getReason());
-        WebFilterHandler handler = new WebFilterHandler(blockDetails, whitelistMode);
+        BlockPageUtil.Handler handler = this.buildHandler(blockDetails, whitelistMode);
 
         BlockPageUtil.getInstance().handle(request, response, this, handler);
     }
 
-    private static class WebFilterHandler implements BlockPageUtil.Handler
+    protected BlockPageUtil.Handler buildHandler( WebFilterBlockDetails blockDetails, 
+                                                  UserWhitelistMode userWhitelistMode )
+    {
+        return new WebFilterHandler(blockDetails,userWhitelistMode);
+    }
+
+    protected static class WebFilterHandler implements BlockPageUtil.Handler
     {
         private final WebFilterBlockDetails blockDetails;
         private final UserWhitelistMode userWhitelistMode;
@@ -123,6 +129,11 @@ public class BlockPageServlet extends HttpServlet
         public String getScriptFile()
         {
             return "webfilter.js";
+        }
+
+        public String getAdditionalFields()
+        {
+            return null;
         }
 
         /* Retrieve the description of why this page was blocked. */

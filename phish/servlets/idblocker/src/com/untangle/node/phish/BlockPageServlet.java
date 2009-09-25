@@ -121,6 +121,11 @@ public class BlockPageServlet extends HttpServlet
         {
             return "blockpage.js";
         }
+
+        public String getAdditionalFields()
+        {
+            return null;
+        }
         
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map )
