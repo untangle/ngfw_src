@@ -548,11 +548,11 @@ class SpamDetail(DetailSection):
         if email:
             rv.append(ColumnDesc('hname', _('Client'), 'String'))
         else:
-            rv.append(ColumnDesc('hname', _('Client'), 'EmailLink'))
+            rv.append(ColumnDesc('hname', _('Source IP'), 'EmailLink'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
                ColumnDesc('subject', _('Subject')),
-               ColumnDesc('s_server_addr', _('Source IP')),
+               ColumnDesc('s_server_addr', _('Destination IP')),
                ColumnDesc('case', _('Action')),
                ColumnDesc('addr', _('Msg receiver'))]
 
