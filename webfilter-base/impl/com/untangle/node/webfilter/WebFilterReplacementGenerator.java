@@ -30,7 +30,7 @@ import com.untangle.uvm.security.Tid;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class WebFilterReplacementGenerator
+public class WebFilterReplacementGenerator
     extends ReplacementGenerator<WebFilterBlockDetails>
 {
     private static final String BLOCK_TEMPLATE
@@ -47,7 +47,7 @@ class WebFilterReplacementGenerator
 
     // constructors -----------------------------------------------------------
 
-    WebFilterReplacementGenerator(Tid tid)
+    public WebFilterReplacementGenerator(Tid tid)
     {
         super(tid);
     }

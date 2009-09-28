@@ -125,7 +125,7 @@ public class BlockPageServlet extends HttpServlet
             return "spyware.js";
         }
 
-        public String getAdditionalFields()
+        public String getAdditionalFields(Map<String,String> i18n_map)
         {
             return null;
         }

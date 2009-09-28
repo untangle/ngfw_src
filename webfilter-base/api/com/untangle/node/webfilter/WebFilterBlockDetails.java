@@ -70,4 +70,9 @@ public class WebFilterBlockDetails extends BlockDetails
     {
         return clientAddr;
     }
+
+    public WebFilterSettings getSettings()
+    {
+        return settings;
+    }
 }

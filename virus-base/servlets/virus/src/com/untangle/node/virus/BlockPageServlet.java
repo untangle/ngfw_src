@@ -130,7 +130,7 @@ public class BlockPageServlet extends HttpServlet
             return null;
         }
 
-        public String getAdditionalFields()
+        public String getAdditionalFields(Map<String,String> i18n_map)
         {
             return null;
         }

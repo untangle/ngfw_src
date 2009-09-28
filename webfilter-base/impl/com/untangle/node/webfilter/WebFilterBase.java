@@ -103,7 +103,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     public WebFilterBase()
     {
-        replacementGenerator = new WebFilterReplacementGenerator(getTid());
+        this.replacementGenerator = buildReplacementGenerator();
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         SimpleEventFilter sef = new WebFilterBlockedFilter(this);
@@ -129,7 +129,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger,
                                      passBlinger, passLogBlinger);
 
-    bypassMonitor = new BypassMonitor(this);
+	bypassMonitor = new BypassMonitor(this);        
     }
 
     // WebFilter methods ------------------------------------------------------
@@ -400,6 +400,11 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     protected abstract String getVendor();
 
     public abstract String getNodeTitle();
+
+    protected WebFilterReplacementGenerator buildReplacementGenerator()
+    {
+        return new WebFilterReplacementGenerator(getTid());
+    }
 
     // Node methods ------------------------------------------------------
 

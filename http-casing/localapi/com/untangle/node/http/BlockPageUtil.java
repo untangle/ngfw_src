@@ -57,7 +57,7 @@ public class BlockPageUtil
         request.setAttribute( "footer", handler.getFooter( bs, i18n_map ));
         String value = handler.getScriptFile();
         if ( value != null ) request.setAttribute( "javascript_file", value );
-        value = handler.getAdditionalFields();
+        value = handler.getAdditionalFields( i18n_map );
         if ( value != null ) request.setAttribute( "additional_fields", value );
         request.setAttribute( "description", handler.getDescription( bs, i18n_map ));
 
@@ -88,7 +88,8 @@ public class BlockPageUtil
 
     public interface Handler
     {
-        /* This is the name of the node to use when retrieving the I18N bundle */
+        /* An array of modules to load into the i18n array.  For example, it may be
+         * webfilter + sitefilter. */
         public String getI18n();
 
         /* Retrieve the page title (in the window bar) of the page */
@@ -103,7 +104,7 @@ public class BlockPageUtil
         public String getScriptFile();
 
         /* Return any additional fields that should go on the page. */
-        public String getAdditionalFields();
+        public String getAdditionalFields( Map<String,String> i18n_map );
 
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map );

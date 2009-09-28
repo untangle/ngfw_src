@@ -131,7 +131,7 @@ public class BlockPageServlet extends HttpServlet
             return "webfilter.js";
         }
 
-        public String getAdditionalFields()
+        public String getAdditionalFields( Map<String,String> i18n_map )
         {
             return null;
         }
