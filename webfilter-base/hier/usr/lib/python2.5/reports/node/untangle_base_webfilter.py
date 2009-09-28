@@ -167,7 +167,7 @@ class HourlyWebUsage(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         hits_query = """\
-SELECT max(hits) AS max_hits, COALESCE(sum(hits), 0)::float / %s AS avg_hits
+SELECT max(hits) AS max_hits, COALESCE(sum(hits), 0)::float / (%s * 24 * 60) AS avg_hits
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
