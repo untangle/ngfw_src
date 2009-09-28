@@ -159,15 +159,12 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     {
         List<Tid> l = new ArrayList<Tid>(tids.size());
 
-        for (Tid tid : tids.keySet()) {
+        for (Tid tid : getNodesForPolicy(policy)) {
             NodeContext tc = tids.get(tid);
             if (null != tc) {
                 String n = tc.getNodeDesc().getName();
 
-                Policy p = tid.getPolicy();
-
-                if (n.equals(name) &&
-                    ((policy == null && p == null) || (policy != null && policy.equals(p)))) {
+                if (n.equals(name)) {
                     l.add(tid);
                 }
             }
@@ -178,21 +175,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     public List<Tid> nodeInstances(Policy policy)
     {
-        List<Tid> l = new ArrayList<Tid>(tids.size());
-
-        for (Tid tid : tids.keySet()) {
-            NodeContext tc = tids.get(tid);
-
-            if (null != tc) {
-                Policy p = tid.getPolicy();
-
-                if ((policy == null && p == null) || (policy != null && policy.equals(p))) {
-                    l.add(tid);
-                }
-            }
-        }
-
-        return l;
+        return getNodesForPolicy(policy);
     }
 
     public List<NodeDesc> visibleNodes(Policy policy)
@@ -200,19 +183,25 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         List<Tid> tids = nodeInstances();
         List<NodeDesc> l = new ArrayList<NodeDesc>(tids.size());
 
+        for (Tid tid : getNodesForPolicy(policy)) {
+            NodeContext nc = nodeContext(tid);
+            MackageDesc md = nc.getMackageDesc();
+
+            MackageDesc.Type type = md.getType();
+            if (!md.isInvisible()) {
+                NodeDesc nd = nc.getNodeDesc();
+                l.add(nd);
+            }
+        }
+
         for (Tid tid : tids) {
             NodeContext nc = nodeContext(tid);
             MackageDesc md = nc.getMackageDesc();
-            Policy p = tid.getPolicy();
 
             MackageDesc.Type type = md.getType();
-            if (!md.isInvisible() && (MackageDesc.Type.NODE == type
-                                      || MackageDesc.Type.SERVICE == type)) {
-                if ((null == p ? p == policy : p.equals(policy))
-                    || MackageDesc.Type.SERVICE == type) {
-                    NodeDesc nd = nc.getNodeDesc();
-                    l.add(nd);
-                }
+            if (!md.isInvisible() && MackageDesc.Type.SERVICE == type) {
+                NodeDesc nd = nc.getNodeDesc();
+                l.add(nd);
             }
         }
 
@@ -842,6 +831,57 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             throw new DeployException("Unable to allocate new tid");
 
         return tid;
+    }
+
+    private List<Policy> getAllPolicies(Policy p)
+    {
+        List<Policy> l = new ArrayList<Policy>();
+        while (null != p) {
+            l.add(p);
+            p = p.getParent();
+        }
+
+        return l;
+    }
+
+    private List<Tid> getNodesForPolicy(Policy policy)
+    {
+        List<Policy> policies = getAllPolicies(policy);
+        List<List<Tid>> ll = new ArrayList<List<Tid>>(policies.size());
+        for (int i = 0; i < policies.size(); i++) {
+            ll.add(new ArrayList<Tid>());
+        }
+
+        for (Tid tid : tids.keySet()) {
+            NodeContext tc = tids.get(tid);
+
+            if (null != tc) {
+                Policy p = tid.getPolicy();
+
+                int i = policies.indexOf(p);
+                if (0 <= i) {
+                    List<Tid> tl = ll.get(i);
+                    tl.add(tid);
+                }
+            }
+        }
+
+        List<Tid> l = new ArrayList<Tid>(tids.size());
+        Set<String> names = new HashSet<String>();
+
+        for (List<Tid> tl : ll) {
+            if (null != tl) {
+                for (Tid t : tl) {
+                    String n = t.getNodeName();
+                    if (!names.contains(n)) {
+                        names.add(n);
+                        l.add(t);
+                    }
+                }
+            }
+        }
+
+        return l;
     }
 
     // private static classes -------------------------------------------------
