@@ -78,10 +78,10 @@ class Worker(Thread):
                 continue
             else:
                 self.__incomplete_line += buf
-                s = self.__incomplete_line.split()
+                s = self.__incomplete_line.split('\n')
 
                 if self.__incomplete_line.endswith("\n"):
-                    lines = s
+                    lines = s[:-1]
                     self.__incomplete_line = ''
                 else:
                     lines +=  s[0:len(s) - 1]
