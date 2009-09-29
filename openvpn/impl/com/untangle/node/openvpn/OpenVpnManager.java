@@ -225,7 +225,9 @@ class OpenVpnManager
     void configure( VpnSettings settings ) throws NodeException
     {
         /* Nothing to start */
-        if ( settings.isUntanglePlatformClient()) return;
+        if ( settings.isUntanglePlatformClient()) {
+            return;
+        }
 
         writeSettings( settings );
         writeClientFiles( settings );
