@@ -198,9 +198,7 @@ public class Policy implements Serializable
             + ": " + name + ")";
     }
 
-    // private methods ---------------------------------------------------------
-
-    private boolean isParentOf(Policy parent)
+    public boolean isParentOf(Policy parent)
     {
         Policy p = parent;
 
