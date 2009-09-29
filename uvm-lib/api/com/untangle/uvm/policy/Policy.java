@@ -45,8 +45,7 @@ import javax.persistence.Table;
 /**
  * Policy.
  *
- * @author
- * @version
+ * @author Aaron Read <amread@untangle.com>
  */
 @Entity
 @Table(name="u_policy", schema="settings")
@@ -160,13 +159,14 @@ public class Policy implements Serializable
     }
 
     public void setParent(Policy parent)
+        throws PolicyException
     {
         if (null != parent && isDefault) {
-            throw new IllegalStateException("default policy cannot have parent");
+            throw new PolicyException("default policy cannot have parent");
         }
 
         if (isParentOf(parent)) {
-            throw new IllegalStateException("adding parent would create cycle");
+            throw new PolicyException("adding parent would create cycle");
         }
 
         // XXX check for cycles
