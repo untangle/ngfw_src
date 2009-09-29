@@ -3,7 +3,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
     Ung.NodeWin.registerClassName('untangle-base-webfilter', 'Ung.BaseWebFilter');
 
     Ung.BaseWebFilter = Ext.extend(Ung.NodeWin, {
-        hasScanHTTPS: null,
         gridExceptions : null,
         gridEventLog : null,
         // called when the component is rendered
@@ -40,58 +39,72 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     buttonAlign : 'left'
                 },
                 items : [{
-                    title : this.i18n._('Categories'),
-                    buttons : [{
-                        name : 'Categories manage list',
-                        text : this.i18n._("manage list"),
+                    name : "fieldset_manage_categories",
+                    items : [{
+                        xtype : "button",
+                        name : "manage_categories",
+                        text : this.i18n._("Edit Categories"),
                         handler : function() {
                             this.panelBlockLists.onManageBlacklistCategories();
                         }.createDelegate(this)
                     }]
-                }, {
-                    title : this.i18n._('Sites'),
-                    buttons : [{
-                        name : 'Sites manage list',
-                        text : this.i18n._("manage list"),
+                },{
+                    items : [{
+                        xtype : "button",
+                        name : 'manage_sites',
+                        text : this.i18n._("Edit Sites"),
                         handler : function() {
                             this.panelBlockLists.onManageBlockedUrls();
                         }.createDelegate(this)
                     }]
-                }, {
-                    title : this.i18n._('File Types'),
-                    buttons : [{
-                        name : 'File Types manage list',
-                        text : this.i18n._("manage list"),
+                },{
+                    items : [{
+                        xtype : "button",
+                        name : "manage_file_types",
+                        text : this.i18n._("Edit File Types"),
                         handler : function() {
                             this.panelBlockLists.onManageBlockedExtensions();
                         }.createDelegate(this)
                     }]
-                }, {
-                    title : this.i18n._('MIME Types'),
-                    buttons : [{
-                        name : 'MIME Types manage list',
-                        text : this.i18n._("manage list"),
+                },{
+                    items : [{
+                        xtype : "button",
+                        name : "manage_mime_types",
+                        text : this.i18n._("Edit MIME Types"),
                         handler : function() {
                             this.panelBlockLists.onManageBlockedMimeTypes();
                         }.createDelegate(this)
                     }]
-                }, {
-                    labelWidth: 150,
+                },{
+                    name : "fieldset_miscellaneous",
                     items : [{
-                        xtype : 'combo',
+                        xtype : "checkbox",
+                        boxLabel : this.i18n._("Block pages from IP only hosts"),
+                        hideLabel : true,
+                        name : 'Block IPHost',
+                        checked : this.getBaseSettings().blockAllIpHosts,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getBaseSettings().blockAllIpHosts = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : "combo",
                         editable : false,
-                        mode : 'local',
-                        fieldLabel : this.i18n._('User Bypass'),
-                        name : "User Bypass",
+                        mode : "local",
+                        fieldLabel : this.i18n._("User Bypass"),
+                        name : "user_bypass",
                         store : new Ext.data.SimpleStore({
                             fields : ['userWhitelistValue', 'userWhitelistName'],
                             data : [["NONE", this.i18n._("None")], ["USER_ONLY", this.i18n._("Temporary")],
                                     ["USER_AND_GLOBAL", this.i18n._("Permanent and Global")]]
                         }),
-                        displayField : 'userWhitelistName',
-                        valueField : 'userWhitelistValue',
+                        displayField : "userWhitelistName",
+                        valueField : "userWhitelistValue",
                         value : this.getBaseSettings().userWhitelistMode,
-                        triggerAction : 'all',
+                        triggerAction : "all",
                         listClass : 'x-combo-list-small',
                         listeners : {
                             "change" : {
@@ -102,44 +115,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         }
                     }]
                 }],
-                initComponent : function () {
-            var settingsCmp=Ext.getCmp(this.parentId);
-                    this.items.push({
-              items: {
-            xtype : 'checkbox',
-            boxLabel : settingsCmp.i18n._('Block pages from IP only hosts'),
-            hideLabel : true,
-            name : 'Block IPHost',
-            checked : settingsCmp.getBaseSettings().blockAllIpHosts,
-            listeners : {
-              "check" : {
-                fn : function(elem, checked) {
-                  this.getBaseSettings().blockAllIpHosts = checked;
-                }.createDelegate(settingsCmp)
-              }
-            }
-              }
-            });
-                    if(settingsCmp.hasScanHTTPS) {
-                        this.items.push({
-                            items: {
-                                xtype : 'checkbox',
-                                boxLabel : settingsCmp.i18n._('Scan HTTPS'),
-                                hideLabel : true,
-                                name : 'Scan HTTPS',
-                                checked : settingsCmp.getBaseSettings().enableHttps,
-                                listeners : {
-                                    "check" : {
-                                        fn : function(elem, checked) {
-                                            this.getBaseSettings().enableHttps = checked;
-                                        }.createDelegate(settingsCmp)
-                                    }
-                                }
-                            }
-                        });
-                    }
-                    Ext.Panel.prototype.initComponent.call(this);
-                },
 
                 onManageBlacklistCategories : function() {
                     if (!this.winBlacklistCategories) {
