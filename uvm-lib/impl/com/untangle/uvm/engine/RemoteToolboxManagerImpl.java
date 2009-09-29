@@ -169,10 +169,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return getRackView(p,null);
     }
 
-    public RackView getRackView(Policy p,String installationType)
+    public RackView getRackView(Policy p, String installationType)
     {
         if (installationType == null) {
-            installationType = LocalUvmContextFactory.context().installationType();
+            installationType = LocalUvmContextFactory.context()
+                .installationType();
         }
 
         if (installationType == null || installationType.length()==0) {
@@ -197,7 +198,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     hiddenApps.add(dn);
                 }
             } else if (type == MackageDesc.Type.TRIAL) {
-                //Workaround for Trial display names. better solution is welcome.
+                // Workaround for Trial display names. better solution
+                // is welcome.
                 String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
                 realDn=realDn.replaceFirst(" Limited Trial","");
                 displayNames.add(realDn);
@@ -213,7 +215,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 trials.remove(dn);
                 hiddenApps.remove(dn);
             } else if (type == MackageDesc.Type.TRIAL) {
-                //Workaround for Trial display names. better solution is welcome.
+                // Workaround for Trial display names. better solution
+                // is welcome.
                 String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
                 realDn=realDn.replaceFirst(" Limited Trial","");
                 trials.remove(realDn);
@@ -231,7 +234,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             .context().nodeManager();
         List<NodeDesc> instances = tm.visibleNodes(p);
 
-        Map<Tid, StatDescs> statDescs = new HashMap<Tid, StatDescs>(instances.size());
+        Map<Tid, StatDescs> statDescs
+            = new HashMap<Tid, StatDescs>(instances.size());
         for (NodeDesc nd : instances) {
             Tid t = nd.getTid();
             LocalMessageManager lmm = LocalUvmContextFactory.context()
@@ -239,18 +243,24 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             Counters c = lmm.getCounters(t);
             StatDescs sd = c.getStatDescs();
             statDescs.put(t, sd);
-            nodes.remove(nd.getDisplayName());
+
+            Policy tp = t.getPolicy();
+            if (tp == null || tp.equals(p)) {
+                nodes.remove(nd.getDisplayName());
+            }
         }
 
         displayNames.remove(null);
 
-        List<Application> apps = new ArrayList<Application>(displayNames.size());
+        List<Application> apps
+            = new ArrayList<Application>(displayNames.size());
         for (String dn : displayNames) {
             MackageDesc l = libitems.get(dn);
             MackageDesc t = trials.get(dn);
             MackageDesc n = nodes.get(dn);
 
-            if (!hiddenApps.contains(dn) && ( l != null || t != null || n != null)) {
+            if (!hiddenApps.contains(dn)
+                && ( l != null || t != null || n != null)) {
                 Application a = new Application(l, t, n);
                 apps.add(a);
             }
@@ -258,7 +268,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         Collections.sort(apps);
 
-        Map<String, LicenseStatus> licenseStatus = new HashMap<String, LicenseStatus>();
+        Map<String, LicenseStatus> licenseStatus
+            = new HashMap<String, LicenseStatus>();
         RemoteLicenseManager lm = LocalUvmContextFactory.context()
             .remoteLicenseManager();
         for (NodeDesc nd : instances) {
@@ -266,10 +277,12 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             licenseStatus.put(n, lm.getMackageStatus(n));
         }
         Map<Tid, NodeState> runStates=tm.allNodeStates();
-        return new RackView(apps, instances, statDescs, licenseStatus, runStates);
+        return new RackView(apps, instances, statDescs, licenseStatus,
+                            runStates);
     }
 
-    public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException
+    public UpgradeStatus getUpgradeStatus(boolean doUpdate)
+        throws MackageException, InterruptedException
     {
         if(doUpdate && !upgrading && !installing) {
             if(!updating) {
@@ -400,7 +413,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                             beingInstalled.add(name);
                             willInstall.add(name);
                             nodes = predictNodeInstall(name);
-                            for (Iterator<String> iter = nodes.iterator(); iter.hasNext();) {
+                            for (Iterator<String> iter = nodes.iterator();
+                                 iter.hasNext();) {
                                 String newNode = iter.next();
                                 if (beingInstalled.contains(newNode)) {
                                     logger.warn("mackage " + newNode
@@ -420,7 +434,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                                 register(nn);
                                 NodeDesc nd = tm.instantiate(nn, p);
                                 if (nd != null && !nd.getNoStart()) {
-                                    NodeContext nc = tm.nodeContext(nd.getTid());
+                                    NodeContext nc = tm
+                                        .nodeContext(nd.getTid());
                                     nc.node().start();
                                 }
                             } catch (NodeStartException exn) {
@@ -590,16 +605,19 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             return;
         }
 
-        MackageInstallRequest mir = new MackageInstallRequest(md,isInstalled(mackageName));
+        MackageInstallRequest mir
+            = new MackageInstallRequest(md,isInstalled(mackageName));
         LocalMessageManager mm = LocalUvmContextFactory.context()
             .localMessageManager();
 
-        // Make sure there isn't an existing outstanding install request for this mackage.
+        // Make sure there isn't an existing outstanding install
+        // request for this mackage.
         for (Message msg : mm.getMessages()) {
             if (msg instanceof MackageInstallRequest) {
-                MackageInstallRequest existingMir = (MackageInstallRequest) msg;
+                MackageInstallRequest existingMir = (MackageInstallRequest)msg;
                 if (existingMir.getMackageDesc() == md) {
-                    logger.warn("requestInstall(" + mackageName  + "): ignoring request; install request already pending");
+                    logger.warn("requestInstall(" + mackageName
+                                + "): ignoring request; install request already pending");
                     return;
                 }
             }
@@ -661,7 +679,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     public UpgradeSettings getUpgradeSettings()
     {
-        TransactionWork<UpgradeSettings> tw = new TransactionWork<UpgradeSettings>()
+        TransactionWork<UpgradeSettings> tw
+            = new TransactionWork<UpgradeSettings>()
             {
                 private UpgradeSettings us;
 
@@ -678,9 +697,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         us = new UpgradeSettings(period);
                         // only turn on auto-upgrade for full ISO install
                         UpstreamService upgradeSvc =
-                            LocalUvmContextFactory.context().upstreamManager().getService(RemoteUpstreamManager.AUTO_UPGRADE_SERVICE_NAME);
-                        if (upgradeSvc != null)
+                            LocalUvmContextFactory.context().upstreamManager()
+                            .getService(RemoteUpstreamManager.AUTO_UPGRADE_SERVICE_NAME);
+                        if (upgradeSvc != null) {
                             us.setAutoUpgrade(upgradeSvc.enabled());
+                        }
                         s.save(us);
                     }
                     return true;
@@ -1002,7 +1023,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return instList;
     }
 
-    private Map<String, String> readInstalledList(InputStream is) throws IOException
+    private Map<String, String> readInstalledList(InputStream is)
+        throws IOException
     {
         Map<String, String> m = new HashMap();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -1081,7 +1103,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     continue;
                 }
                 MackageDesc.Type mdType = md.getType();
-                if (mdType != MackageDesc.Type.NODE && mdType != MackageDesc.Type.SERVICE) {
+                if (mdType != MackageDesc.Type.NODE
+                    && mdType != MackageDesc.Type.SERVICE) {
                     logger.debug("Ignoring non-node/service mackage: " + line);
                     continue;
                 }
