@@ -165,7 +165,19 @@ public abstract class PipeSpec
     {
         Policy tp = node.getTid().getPolicy();
 
-        return null == tp || tp.equals(p);
+        if (null == tp) {
+            return true;
+        }
+
+        while (null != tp) {
+            if (tp.equals(p)) {
+                return true;
+            }
+
+            tp = tp.getParent();
+        }
+
+        return false;
     }
 
     public void setSubscriptions(Set<Subscription> subscriptions)
