@@ -86,7 +86,18 @@ public interface RemotePolicyManager extends LicensedProduct
      */
     void removePolicy(Policy policy) throws PolicyException;
 
-    void setPolicy(Policy rule, String name, String notes)
+    /**
+     * Modify existing policy.
+     *
+     * @param rule the <code>Policy</code> to modify.
+     * @param name new name of the policy.
+     * @param notes notes for the policy.
+     * @param parent parent of the policy.
+     * @exception PolicyException if policy cannot have the specified
+     * parent because it causes a cycle or if an attempt to give the
+     * default policy a parent is made.
+     */
+    void setPolicy(Policy rule, String name, String notes, Policy parent)
         throws PolicyException;
 
     /**
@@ -129,7 +140,7 @@ public interface RemotePolicyManager extends LicensedProduct
      * @param rules an <code>List</code> of <code>UserPolicyRule</code> values
      */
     void shutdownSessions(Policy policy);
-    
+
     /** Gets the validator for IP and ports. used to validate UserPolicyRules
      * @return Validator
      */

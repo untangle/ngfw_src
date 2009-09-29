@@ -65,7 +65,10 @@ public interface LocalPolicyManager extends LicensedProduct
      */
     void removePolicy(Policy policy) throws PolicyException;
 
-    void setPolicy(Policy rule, String name, String notes)
+    /**
+     * @see PolicyManager#setPolicy()
+     */
+    void setPolicy(Policy rule, String name, String notes, Policy parent)
         throws PolicyException;
 
     /**

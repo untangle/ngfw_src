@@ -62,10 +62,10 @@ class RemotePolicyManagerAdaptor implements RemotePolicyManager
         pm.removePolicy(policy);
     }
 
-    public void setPolicy(Policy rule, String name, String notes)
+    public void setPolicy(Policy rule, String name, String notes, Policy parent)
         throws PolicyException
     {
-        pm.setPolicy(rule, name, notes);
+        pm.setPolicy(rule, name, notes, parent);
     }
 
     public UserPolicyRule[] getUserPolicyRules()
@@ -99,7 +99,7 @@ class RemotePolicyManagerAdaptor implements RemotePolicyManager
         pm.shutdownSessions(policy);
     }
 
-    public Validator getValidator() 
+    public Validator getValidator()
     {
         return pm.getValidator();
     }

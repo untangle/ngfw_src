@@ -24,10 +24,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.ProductIdentifier;
@@ -46,6 +42,9 @@ import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
 import com.untangle.uvm.node.firewall.user.UserMatcher;
 import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 import com.untangle.uvm.util.TransactionWork;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 class DefaultPolicyManager implements LocalPolicyManager
 {
@@ -163,7 +162,8 @@ class DefaultPolicyManager implements LocalPolicyManager
         throw new PolicyException("Professional edition only");
     }
 
-    public void setPolicy(final Policy p, String name, String notes)
+    public void setPolicy(final Policy p, String name, String notes,
+                          Policy parent)
         throws PolicyException
     {
         throw new PolicyException("Professional edition only");
@@ -229,18 +229,18 @@ class DefaultPolicyManager implements LocalPolicyManager
 
     /**
      * shut down all sessions associated with the given policy - shut down
-     * all sessions if policy is null.  
+     * all sessions if policy is null.
      *
      * ***TODO: add logic to shutdown sessions for just a given policy.
      *
-     * ***TODO: this should potentially be refactored into a RemoteArgonManager 
-     *          class with this being its only method - this way the existing 
+     * ***TODO: this should potentially be refactored into a RemoteArgonManager
+     *          class with this being its only method - this way the existing
      *          shutdownMatches() method can be used.
      */
     public void shutdownSessions(Policy policy)
     {
         ArgonManager argonManager = LocalUvmContextFactory.context().argonManager();
-	argonManager.shutdownMatches(SessionMatcherFactory.makePolicyInstance(policy));
+    argonManager.shutdownMatches(SessionMatcherFactory.makePolicyInstance(policy));
     }
 
     // LocalPolicyManager methods ---------------------------------------------
