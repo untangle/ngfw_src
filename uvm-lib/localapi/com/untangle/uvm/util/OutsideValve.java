@@ -146,6 +146,8 @@ public abstract class OutsideValve extends ValveBase
         /* This is secure access on the external port */
         if (port == getAddressSettings().getHttpsPort()) return isOutsideAccessAllowed;
 
+        if (request.getScheme().equals("https")) return isOutsideAccessAllowed;
+
         return false;
     }
 }
