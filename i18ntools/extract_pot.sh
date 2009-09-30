@@ -7,28 +7,20 @@ fi
 
 
 cp ../uvm-lib/po/untangle-libuvm.pot ./pot/
-cp ../gui/po/untangle-install-wizard.pot ./pot/
 cp ../../pkgs/untangle-apache2-config/po/untangle-apache2-config.pot ./pot/
 cp ../../pkgs/untangle-net-alpaca/po/untangle-net-alpaca.pot ./pot/
-cp ../mail-casing/po/untangle-casing-mail.pot ./pot/
-cp ../virus-base/po/untangle-base-virus.pot ./pot/
-cp ../webfilter-base/po/untangle-base-webfilter.pot ./pot/
 cp ../../../internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/po/templates.pot ./pot/untangle-system-stats.pot
 cp ../../../internal/isotools/wintangle-systray/untangle-systray.pot ./pot/
 cp ../../../internal/isotools/wintangle-installer/LanguageStrings.nsh ./pot/
 
-for module in untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn untangle-node-adblocker
-do 
-    module_dir=`echo "${module}"|cut -d"-" -f3`
-    cp ../${module_dir}/po/${module}.pot ./pot/
+for module in ../* ../../../hades/rup/* ; do
+    module_suffix=`basename ${module} | sed -e 's|-base||' -e 's|-casing||'`
+    module_pot="${module}/po/untangle-*-${module_suffix}.pot"
+    [ -f  ${module_pot} ] && {
+        echo "cp ${module_pot} pot"
+        cp ${module_pot} pot
+    }
 done
-
-for module in untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote untangle-node-splitd untangle-node-faild
-do 
-    module_dir=`echo "${module}"|cut -d"-" -f3`
-    cp ../../../hades/rup/${module_dir}/po/${module}.pot ./pot/
-done
-
 
 rm -f pot.zip
 zip -r pot.zip ./pot/
