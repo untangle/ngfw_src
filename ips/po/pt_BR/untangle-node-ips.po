@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-14 14:39-0700\n"
+"POT-Creation-Date: 2009-09-29 17:57-0700\n"
 "PO-Revision-Date: 2008-11-23 23:48-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -16,6 +16,206 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Translate Toolkit 1.1.1\n"
 "X-Poedit-Language: Portuguese\n"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:27
+msgid "Status"
+msgstr "Status"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:37
+msgid "Statistics"
+msgstr "Estatísticas"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:45
+msgid "Total Signatures Available"
+msgstr "Total de assinaturas disponíveis"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:49
+msgid "Total Signatures Logging"
+msgstr "Total de assinaturas se registrando"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:53
+msgid "Total Signatures Blocking"
+msgstr "Total de assinaturas bloqueando"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:58
+msgid "Note"
+msgstr "Nota"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:60
+msgid ""
+"{0} continues to maintain the default signature settings through automatic "
+"updates. You are free to modify and add signatures, however it is not "
+"required."
+msgstr ""
+"{0} continua a manter as configurações de assinatura padrão através de "
+"atualizações automáticas. Fique à vontade para modificar e adicionar "
+"assinaturas, porém não é obrigatório."
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:70
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:313
+msgid "block"
+msgstr "bloquear"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:77
+msgid "log"
+msgstr "registrar"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:87
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:112
+msgid "Rules"
+msgstr "Regras"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:103
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:106
+msgid "[no category]"
+msgstr "[nenhuma categoria]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:104
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:231
+msgid "[no name]"
+msgstr "[nenhum nome]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:105
+msgid "[no signature]"
+msgstr "[nenhuma assinatura]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:110
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:233
+msgid "[no description]"
+msgstr "[nenhuma descrição]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:140
+msgid "category"
+msgstr "categoria"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:148
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:269
+#, fuzzy
+msgid "description"
+msgstr "Descrição"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:165
+msgid "id"
+msgstr "id"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:171
+msgid "info"
+msgstr "info"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:187
+msgid "Category"
+msgstr "Categoria"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:193
+msgid "Signature"
+msgstr "Assinatura"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:199
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:281
+msgid "Name"
+msgstr "Nome"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:205
+msgid "SID"
+msgstr "SID"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:211
+#, fuzzy
+msgid "Block"
+msgstr "Bloquear"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:215
+msgid "Log"
+msgstr "Registrar"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:219
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:293
+msgid "Description"
+msgstr "Descrição"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:232
+msgid "[no definition]"
+msgstr "[nenhuma definição]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:235
+msgid "Variables"
+msgstr "Variáveis"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:253
+msgid "name"
+msgstr "nome"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:261
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:315
+msgid "pass"
+msgstr "permitir"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:287
+msgid "Pass"
+msgstr "Permitir"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:337
+msgid "timestamp"
+msgstr "marcação de tempo"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:345
+msgid "action"
+msgstr "ação"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:350
+#, fuzzy
+msgid "client"
+msgstr "cliente"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:357
+msgid "reason for action"
+msgstr "motivo para ação"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:362
+#, fuzzy
+msgid "server"
+msgstr "servidor"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+msgid "Saving..."
+msgstr "Salvando..."
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+msgid "Please wait"
+msgstr "Aguarde"
+
+#: ../impl/com/untangle/node/ips/IpsBlockedFilter.java:27
+msgid "Blocked Events"
+msgstr "Eventos bloqueados"
+
+#: ../impl/com/untangle/node/ips/IpsLogFilter.java:27
+#, fuzzy
+msgid "All Events"
+msgstr "Todos os eventos"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+msgid "Sessions scanned"
+msgstr "Sessões varridas"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+msgid "SCAN"
+msgstr "VARRER"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
+msgid "Sessions logged"
+msgstr "Sessões registradas"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
+msgid "DETECT"
+msgstr "DETECTAR"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+msgid "Sessions blocked"
+msgstr "Sessões bloqueadas"
+
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+msgid "BLOCK"
+msgstr "BLOQUEAR"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:72
 msgid "Summary Report"
@@ -103,129 +303,3 @@ msgstr "servidor"
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:326
 msgid "Port"
 msgstr ""
-
-#~ msgid "Status"
-#~ msgstr "Status"
-
-#~ msgid "Statistics"
-#~ msgstr "Estatísticas"
-
-#~ msgid "Total Signatures Available"
-#~ msgstr "Total de assinaturas disponíveis"
-
-#~ msgid "Total Signatures Logging"
-#~ msgstr "Total de assinaturas se registrando"
-
-#~ msgid "Total Signatures Blocking"
-#~ msgstr "Total de assinaturas bloqueando"
-
-#~ msgid "Note"
-#~ msgstr "Nota"
-
-#~ msgid ""
-#~ "{0} continues to maintain the default signature settings through "
-#~ "automatic updates. You are free to modify and add signatures, however it "
-#~ "is not required."
-#~ msgstr ""
-#~ "{0} continua a manter as configurações de assinatura padrão através de "
-#~ "atualizações automáticas. Fique à vontade para modificar e adicionar "
-#~ "assinaturas, porém não é obrigatório."
-
-#~ msgid "block"
-#~ msgstr "bloquear"
-
-#~ msgid "log"
-#~ msgstr "registrar"
-
-#~ msgid "Rules"
-#~ msgstr "Regras"
-
-#~ msgid "[no category]"
-#~ msgstr "[nenhuma categoria]"
-
-#~ msgid "[no name]"
-#~ msgstr "[nenhum nome]"
-
-#~ msgid "[no signature]"
-#~ msgstr "[nenhuma assinatura]"
-
-#~ msgid "[no description]"
-#~ msgstr "[nenhuma descrição]"
-
-#~ msgid "category"
-#~ msgstr "categoria"
-
-#~ msgid "id"
-#~ msgstr "id"
-
-#~ msgid "info"
-#~ msgstr "info"
-
-#~ msgid "Category"
-#~ msgstr "Categoria"
-
-#~ msgid "Signature"
-#~ msgstr "Assinatura"
-
-#~ msgid "Name"
-#~ msgstr "Nome"
-
-#~ msgid "SID"
-#~ msgstr "SID"
-
-#~ msgid "Log"
-#~ msgstr "Registrar"
-
-#~ msgid "Description"
-#~ msgstr "Descrição"
-
-#~ msgid "[no definition]"
-#~ msgstr "[nenhuma definição]"
-
-#~ msgid "Variables"
-#~ msgstr "Variáveis"
-
-#~ msgid "name"
-#~ msgstr "nome"
-
-#~ msgid "pass"
-#~ msgstr "permitir"
-
-#~ msgid "Pass"
-#~ msgstr "Permitir"
-
-#~ msgid "timestamp"
-#~ msgstr "marcação de tempo"
-
-#~ msgid "action"
-#~ msgstr "ação"
-
-#~ msgid "reason for action"
-#~ msgstr "motivo para ação"
-
-#~ msgid "Saving..."
-#~ msgstr "Salvando..."
-
-#~ msgid "Please wait"
-#~ msgstr "Aguarde"
-
-#~ msgid "Blocked Events"
-#~ msgstr "Eventos bloqueados"
-
-#~ msgid "Sessions scanned"
-#~ msgstr "Sessões varridas"
-
-#~ msgid "SCAN"
-#~ msgstr "VARRER"
-
-#~ msgid "Sessions logged"
-#~ msgstr "Sessões registradas"
-
-#~ msgid "DETECT"
-#~ msgstr "DETECTAR"
-
-#~ msgid "Sessions blocked"
-#~ msgstr "Sessões bloqueadas"
-
-#~ msgid "BLOCK"
-#~ msgstr "BLOQUEAR"

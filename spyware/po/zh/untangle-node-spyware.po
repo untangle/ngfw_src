@@ -1,306 +1,276 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-msgid ""
-msgstr ""
-"Project-Id-Version: Untangle\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-29 17:50-0700\n"
-"PO-Revision-Date: 2008-11-24 15:50-0700\n"
-"Last-Translator: David Russi <dprussi@qwest.net>\n"
-"Language-Team: Spanish <dprussi@qwest.net>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Translate Toolkit 1.1.1\n"
-"X-Poedit-Language: Spanish\n"
-
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:32
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:194
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:228
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:262
 msgid "Block Lists"
-msgstr "Listas de bloqueo"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:44
 msgid "Web"
-msgstr "Web"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:48
 msgid "Block Spyware & Ad URLs"
-msgstr "Bloquear toda URL de SW espía y publicidad"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:63
 msgid "User Bypass"
-msgstr "Ignorado por usuario"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:67
 msgid "None"
-msgstr "Ninguno"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:67
 msgid "Temporary"
-msgstr "Temporal"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:68
 msgid "Permanent and Global"
-msgstr "Permanente y global"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:84
-#, fuzzy
 msgid "Cookies"
-msgstr "Cookies"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:87
 msgid "Block Tracking & Ad Cookies"
-msgstr "Bloquear cookies de seguimiento y publicidad"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:101
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:137
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:160
 msgid "manage list"
-msgstr "Administrar lista"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:107
 msgid "ActiveX"
-msgstr "ActiveX"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:110
 msgid "Block Malware ActiveX Installs"
-msgstr "Bloquear instalaciones ActiveX de malware"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:123
 msgid "Block All ActiveX"
-msgstr "Bloquear ActiveX completamente"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:143
 msgid "Traffic"
-msgstr "Tráfico"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:146
-#, fuzzy
 msgid "Monitor Suspicious Traffic"
-msgstr "Observar tráfico sospechoso"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:167
 msgid "Spyware Blocker signatures were last updated"
-msgstr "Última actualización de las firmas de Spyware Blocker"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:169
 msgid "Unknown"
-msgstr "Desconocido"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:199
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:300
 msgid "Cookies List"
-msgstr "Lista de cookies"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:233
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:357
 msgid "ActiveX List"
-msgstr "Lista de ActiveX"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:267
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:415
 msgid "Subnet List"
-msgstr "Lista de subredes"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:286
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:343
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:583
-#, fuzzy
 msgid "block"
-msgstr "Bloquear"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:296
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:353
 msgid "[no identification]"
-msgstr "[sin identificación]"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:298
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:355
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:413
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:508
 msgid "[no description]"
-msgstr "[sin descripción]"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:316
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:373
-#, fuzzy
 msgid "identification"
-msgstr "Identificación"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:330
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:387
 msgid "Identification"
-msgstr "Identificación"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:336
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:393
 msgid "Block"
-msgstr "Bloquear"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:400
 msgid "log"
-msgstr "log"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:411
 msgid "[no name]"
-msgstr "[sin nombre]"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:433
 msgid "name"
-msgstr "nombre"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:441
-#, fuzzy
 msgid "subnet"
-msgstr "subred"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:455
 msgid "Name"
-msgstr "Nombre"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:461
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:782
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1035
 msgid "Subnet"
-msgstr "Subred"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:467
 msgid "Log"
-msgstr "Log"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:475
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
 msgstr ""
-"Imposible bloquear la \"URL\" especificada porque usa un servidor seguro "
-"(https)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:487
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:535
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:557
 msgid "Invalid \"URL\" specified"
-msgstr "Se ha especificado una \"URL\" no válida."
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:493
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:583
 msgid "pass"
-msgstr "permitir"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:507
 msgid "[no category]"
-msgstr "[sin categoría]"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:510
 msgid "Pass List"
-msgstr "Lista permitida"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:529
 msgid "site"
-msgstr "sitio"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:539
 msgid "description"
-msgstr "descripción"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:553
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:527
 msgid "Site"
-msgstr "Sitio"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:561
 msgid "Pass"
-msgstr "Permitir"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:565
-#, fuzzy
 msgid "Description"
-msgstr "descripción"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:608
 msgid "in Subnet List"
-msgstr "en lista de subredes"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:611
 msgid "in ActiveX List"
-msgstr "en la lista ActiveX"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:614
 msgid "in URL List"
-msgstr "en la lista de URL"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:617
 msgid "in Cookie List"
-msgstr "en la lista de cookies"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:624
 msgid "timestamp"
-msgstr "fecha y hora"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:632
 msgid "action"
-msgstr "medida"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:637
-#, fuzzy
 msgid "client"
-msgstr "cliente"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:644
 msgid "request"
-msgstr "solicitud"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:649
 msgid "reason for action"
-msgstr "motivo de la medida tomada"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:654
-#, fuzzy
 msgid "server"
-msgstr "servidor"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:727
 msgid "Invalid subnet specified"
-msgstr "Ha especificado una subred no válida"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:735
 msgid "Validation failed"
-msgstr "Error de validación"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:741
-#, fuzzy
 msgid "Please Try Again"
-msgstr "Espere"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:758
 msgid "Saving..."
-msgstr "Guardando..."
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:758
 msgid "Please wait"
-msgstr "Espere"
+msgstr ""
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:58
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:69
 msgid "Feature is not installed."
-msgstr "La función no está instalada."
+msgstr ""
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:78
 msgid "This request has expired."
-msgstr "Esta solicitud ha vencido."
+msgstr ""
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:108
 #, java-format
 msgid "{0} | Spyware Blocker Warning"
-msgstr "{0} | Aviso de Spyware Blocker"
+msgstr ""
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:119
-#, fuzzy, java-format
+#, java-format
 msgid "{0} Spyware Blocker"
-msgstr "{0} | Aviso de Spyware Blocker"
+msgstr ""
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:136
 #, java-format
@@ -308,66 +278,60 @@ msgid ""
 "{0}This web page was blocked{1} because it may be designed to steal personal "
 "information."
 msgstr ""
-"{0}Esta página web fue bloqueada{1} porque es posible que haya sido diseñada "
-"para robar datos personales."
 
 #: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:69
 #, java-format
 msgid "If you have any questions, Please contact {0}."
-msgstr "Si tiene preguntas comuníquese con {0}."
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareAccessFilter.java:27
-#, fuzzy
 msgid "Traffic Events"
-msgstr "Tráfico"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareActiveXFilter.java:27
 msgid "ActiveX Events"
-msgstr "Eventos ActiveX"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareAllFilter.java:27
 msgid "All Events"
-msgstr "Todos los eventos"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareBlacklistFilter.java:27
-#, fuzzy
 msgid "Web Events"
-msgstr "Todos los eventos"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareBlockedFilter.java:27
-#, fuzzy
 msgid "Blocked Events"
-msgstr "Eventos de cookies"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareCookieFilter.java:27
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:928
 msgid "Cookie Events"
-msgstr "Eventos de cookies"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "Pages scanned"
-msgstr "Páginas analizadas"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "SCAN"
-msgstr "ANALIZAR"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
-#, fuzzy
 msgid "Pages blocked"
-msgstr "Páginas bloqueadas"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
 msgid "BLOCK"
-msgstr "BLOQUEAR"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
 msgid "Pages passed"
-msgstr "Páginas permitidas"
+msgstr ""
 
 #: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
 msgid "PASS"
-msgstr "PERMITIR"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:93
 msgid "Summary Report"
@@ -384,9 +348,8 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:256
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:259
-#, fuzzy
 msgid "blocks/hour"
-msgstr "bloquear"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:258
 #, python-format
@@ -412,20 +375,17 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:345
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:474
-#, fuzzy
 msgid "URLs"
-msgstr "URL:"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:346
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:725
-#, fuzzy
 msgid "cookies"
-msgstr "Cookies"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:383
-#, fuzzy
 msgid "Detections"
-msgstr "Descripción"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:389
 msgid "Daily Blocked URLs"
@@ -478,9 +438,8 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:584
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:840
-#, fuzzy
 msgid "Host"
-msgstr "Host:"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:593
 msgid "Top Ten Blocked Cookies"
@@ -488,45 +447,37 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:641
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:946
-#, fuzzy
 msgid "Cookie"
-msgstr "Cookies"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:650
-#, fuzzy
 msgid "Blocked Cookies"
-msgstr "Eventos bloqueados"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:709
-#, fuzzy
 msgid "avg cookies blocked"
-msgstr "Páginas bloqueadas"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:710
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:712
-#, fuzzy
 msgid "blocks/day"
-msgstr "bloquear"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:712
-#, fuzzy
 msgid "max cookies blocked"
-msgstr "Páginas bloqueadas"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:732
-#, fuzzy
 msgid "Top Ten Suspicious Traffic Networks"
-msgstr "Observar tráfico sospechoso"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:791
-#, fuzzy
 msgid "Top Ten Suspicious Traffic Hosts By Hits"
-msgstr "Observar tráfico sospechoso"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:849
-#, fuzzy
 msgid "Suspicious Traffic Detected"
-msgstr "Observar tráfico sospechoso"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:906
 msgid "avg suspicious detected"
@@ -546,9 +497,8 @@ msgid "Detections per Day"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:922
-#, fuzzy
 msgid "detections"
-msgstr "identificación"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:934
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:978
@@ -562,9 +512,8 @@ msgstr ""
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:983
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1026
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1028
-#, fuzzy
 msgid "Client"
-msgstr "cliente"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:942
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:944
@@ -572,77 +521,53 @@ msgstr "cliente"
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:988
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1031
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1033
-#, fuzzy
 msgid "User"
-msgstr "servidor"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:947
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:992
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1036
-#, fuzzy
 msgid "Server IP"
-msgstr "servidor"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:948
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:993
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1037
-#, fuzzy
 msgid "Server Port"
-msgstr "servidor"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:972
-#, fuzzy
 msgid "URL Blocklist Events"
-msgstr "Eventos de lista negra"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:990
-#, fuzzy
 msgid "Server"
-msgstr "servidor"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:991
 msgid "URI"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1017
-#, fuzzy
 msgid "Subnet Events"
-msgstr "Subred"
+msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
 msgid "Host:"
-msgstr "Host:"
+msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
 msgid "URL:"
-msgstr "URL:"
+msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:53
 msgid "Reason:"
-msgstr "Razón:"
+msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:59
 msgid "Unblock For Now"
-msgstr "Desbloquear por ahora"
+msgstr ""
 
 #: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:65
 msgid "Unblock Permanently"
-msgstr "Desbloquear permanentemente"
-
-#, fuzzy
-#~ msgid "Spyware URLs Blocked"
-#~ msgstr "{0} Spyware Blocker"
-
-#, fuzzy
-#~ msgid "Spyware Cookies Blocked"
-#~ msgstr "{0} Spyware Blocker"
-
-#, fuzzy
-#~ msgid "Top Ten Suspicious Traffic Hosts (by hits)"
-#~ msgstr "Observar tráfico sospechoso"
-
-#~ msgid "Failed"
-#~ msgstr "Falló"
-
-#~ msgid "Access Events"
-#~ msgstr "Eventos de acceso"
+msgstr ""

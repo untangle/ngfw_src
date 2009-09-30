@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 14:43-0700\n"
+"POT-Creation-Date: 2009-09-29 16:25-0700\n"
 "PO-Revision-Date: 2008-11-24 18:34-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -61,8 +61,8 @@ msgstr "As assinaturas do Bloqueador de Vírus foram atualizadas por último em"
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:127
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:421
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-virus/settings.js:571
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:606
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:750
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:626
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:764
 #, fuzzy
 msgid "Unknown"
 msgstr "Desconhecido"
@@ -250,12 +250,12 @@ msgstr "{0} | {1} Aviso"
 msgid "{0} Virus Blocker"
 msgstr "{0} Bloqueador de Vírus"
 
-#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:136
+#: ../servlets/virus/src/com/untangle/node/virus/BlockPageServlet.java:141
 #, java-format
 msgid "{0}This file was blocked{1} because it contained a virus."
 msgstr "{0}Este arquivo foi bloqueado{1} porque continha um vírus."
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:69
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "Caso tenha perguntas, entre em contato {0}."
@@ -281,40 +281,40 @@ msgstr "Eventos FTP"
 msgid "POP/IMAP Events"
 msgstr "Eventos POP/IMAP"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:232
 msgid "Documents scanned"
 msgstr "Documentos varridos"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:224
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:233
 msgid "SCAN"
 msgstr "VARRER"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:235
 #, fuzzy
 msgid "Documents blocked"
 msgstr "Documentos varridos"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:225
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:236
 msgid "BLOCK"
 msgstr "BLOQUEAR"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:238
 msgid "Documents passed"
 msgstr "Documentos passados"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:226
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:239
 msgid "PASS"
 msgstr "PASSAR"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:227
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:241
 msgid "Infections removed"
 msgstr "Infecções removidas"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:227
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:242
 msgid "REMOVE"
 msgstr "REMOVER"
 
-#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:228
+#: ../impl/com/untangle/node/virus/VirusNodeImpl.java:244
 msgid "Passed by policy"
 msgstr "Passado por política"
 
@@ -322,157 +322,157 @@ msgstr "Passado por política"
 msgid "SMTP Events"
 msgstr "Eventos SMTP"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:107
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:119
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:239
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:251
 #, fuzzy
 msgid "Daily Viruses Blocked"
 msgstr "{0} Bloqueador de Vírus"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:295
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:458
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:311
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:478
 msgid "max (7-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:295
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:297
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:391
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:311
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:313
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:407
 msgid "viruses/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:297
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:460
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:313
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:480
 msgid "avg (7-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:390
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:406
 msgid "Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:395
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:555
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:411
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:575
 #, fuzzy
 msgid "viruses blocked"
 msgstr "Documentos bloqueados"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:402
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:418
 #, fuzzy
 msgid "Hourly Viruses Blocked"
 msgstr "{0} Bloqueador de Vírus"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:458
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:460
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:551
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:478
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:480
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:571
 #, fuzzy
 msgid "viruses/hour"
 msgstr "vírus encontrado"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:550
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:570
 msgid "hour"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:562
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:582
 msgid "Top Web Viruses Detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:607
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:670
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:752
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:628
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:688
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:766
 msgid "viruses"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:615
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:636
 msgid "name"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:616
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:637
 msgid "count"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:624
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:645
 msgid "Top Email Viruses Detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:676
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:760
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:694
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:774
 msgid "Viruses"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:677
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:761
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:695
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:775
 msgid "Count"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:685
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:703
 msgid "Top Viruses Detected"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:770
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:784
 #, fuzzy
 msgid "Web Events"
 msgstr "Todos os eventos"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:774
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:817
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:788
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:831
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:777
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:779
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:820
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:822
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:791
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:793
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:834
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:836
 #, fuzzy
 msgid "Client"
 msgstr "cliente"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:782
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:784
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:825
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:827
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:796
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:798
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:839
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:841
 #, fuzzy
 msgid "User"
 msgstr "servidor"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:786
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:829
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:800
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:843
 msgid "Virus Name"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:787
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:801
 #, fuzzy
 msgid "URL"
 msgstr "URL:"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:788
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:802
 msgid "Server IP"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:789
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:803
 msgid "Server Port"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:813
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:827
 #, fuzzy
 msgid "Mail Events"
 msgstr "Todos os eventos"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:830
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:844
 msgid "Subject"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:831
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:845
 #, fuzzy
 msgid "Recipient"
 msgstr "descrição"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:832
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:846
 #, fuzzy
 msgid "Client IP"
 msgstr "cliente"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:833
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_virus.py:847
 #, fuzzy
 msgid "Client Port"
 msgstr "cliente"

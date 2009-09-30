@@ -1,42 +1,23 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Untangle, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-msgid ""
-msgstr ""
-"Project-Id-Version: Untangle\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-29 17:57-0700\n"
-"PO-Revision-Date: 2008-11-23 07:37-0700\n"
-"Last-Translator: David Russi <dprussi@qwest.net>\n"
-"Language-Team: Spanish <dprussi@qwest.net>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Translate Toolkit 1.1.1\n"
-"X-Poedit-Language: Spanish\n"
-
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:20
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:32
 msgid "Status"
-msgstr "Estado"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:28
 msgid "Statistics"
-msgstr "Estadísticas"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
 msgid "active"
-msgstr "activo"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
 msgid "inactive"
-msgstr "inactivo"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:43
 msgid "Note"
-msgstr "Nota"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:47
 msgid ""
@@ -44,102 +25,97 @@ msgid ""
 "configuration. Users can modify the treatment of certain IP and/or networks "
 "on the exception tab."
 msgstr ""
-"Attack Blocker es un programa de prevención de intrusos basado en heurística "
-"y no requiere configuración. El usuario puede modificar el tratamiento de "
-"ciertas direcciones IP o redes en la ficha Excepciones."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:55
 msgid "enable"
-msgstr "habilitar"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:60
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:61
 msgid "users"
-msgstr "usuarios"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:61
 msgid "unlimited"
-msgstr "Sin límite"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:74
 msgid "[no description]"
-msgstr "[sin descripción]"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:76
 msgid "Exceptions"
-msgstr "Excepciones"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:101
 msgid "address"
-msgstr "dirección"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:111
 msgid "user count"
-msgstr "recuento de usuarios"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:137
 msgid "description"
-msgstr "descripción"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:151
 msgid "Enable"
-msgstr "Habilitar"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:155
 msgid "Address"
-msgstr "Dirección"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:162
 msgid "User Count"
-msgstr "Recuento de usuarios"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:177
 msgid "Description"
-msgstr "Descripción"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:213
 msgid "timestamp"
-msgstr "fecha y hora"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:221
 msgid "source"
-msgstr "origen"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:227
 msgid "source interface"
-msgstr "interfaz de origen"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:232
 msgid "reputation"
-msgstr "reputación"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:240
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:182
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:268
 msgid "limited"
-msgstr "limitado"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:248
-#, fuzzy
 msgid "dropped"
-msgstr "interrumpido"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:256
-#, fuzzy
 msgid "reject"
-msgstr "rechazar"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
 msgid "Saving..."
-msgstr "Guardando..."
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
 msgid "Please wait"
-msgstr "Espere"
+msgstr ""
 
 #: ../impl/com/untangle/node/shield/LogIteration.java:194
 msgid "type"
-msgstr "tipo"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:82
 msgid "Summary Report"
@@ -226,16 +202,13 @@ msgid "Client"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:292
-#, fuzzy
 msgid "Limited"
-msgstr "limitado"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:293
-#, fuzzy
 msgid "Dropped"
-msgstr "interrumpido"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:294
-#, fuzzy
 msgid "Rejected"
-msgstr "rechazar"
+msgstr ""
