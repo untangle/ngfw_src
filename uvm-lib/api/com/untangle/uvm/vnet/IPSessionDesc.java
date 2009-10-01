@@ -33,8 +33,6 @@
 
 package com.untangle.uvm.vnet;
 
-import java.net.InetAddress;
-
 import com.untangle.uvm.node.SessionEndpoints;
 
 /**
@@ -43,19 +41,20 @@ import com.untangle.uvm.node.SessionEndpoints;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface IPSessionDesc extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
+public interface IPSessionDesc
+    extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
 {
     /**
-     * IP clients and servers have a state of <code>CLOSED</code> when both the input and
-     * output sides are dead.
+     * IP clients and servers have a state of <code>CLOSED</code> when
+     * both the input and output sides are dead.
      *
      */
     static final byte CLOSED = 0;
     static final byte EXPIRED = 0;
 
     /**
-     * IP client and servers have a state of <code>OPEN</code> when both the input and output
-     * sides are alive.
+     * IP client and servers have a state of <code>OPEN</code> when
+     * both the input and output sides are alive.
      */
     static final byte OPEN = 4;
 
@@ -64,5 +63,4 @@ public interface IPSessionDesc extends com.untangle.uvm.node.IPSessionDesc, Sess
 
     // boolean isClientClosed();
     // boolean isServerClosed();
-
 }

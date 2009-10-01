@@ -35,14 +35,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.RemoteLicenseManager;
+import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.DeployException;
+import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -53,9 +56,11 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
+import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
@@ -84,6 +89,10 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     private final ThreadLocal<NodeContext> threadContexts
         = new InheritableThreadLocal<NodeContext>();
     private final UvmRepositorySelector repositorySelector;
+
+    private final Pulse cleanerPulse = new Pulse("session-cleaner",
+                                                 true,
+                                                 new SessionExpirationWorker());
 
     private boolean live = true;
 
@@ -351,11 +360,15 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     void init()
     {
         restartUnloaded();
+
+        cleanerPulse.start(60000);
     }
 
     // destroy the node manager
     void destroy()
     {
+        cleanerPulse.stop();
+
         synchronized (this) {
             live = false;
 
@@ -939,6 +952,41 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         public int hashCode()
         {
             return tctx.hashCode();
+        }
+    }
+
+    private static class SessionExpirationWorker
+        implements Runnable
+    {
+        ArgonManager am = LocalUvmContextFactory.context().argonManager();
+        ExpiredPolicyMatcher matcher = new ExpiredPolicyMatcher();
+
+        public void run()
+        {
+            am.shutdownMatches(matcher);
+        }
+    }
+
+    private static class ExpiredPolicyMatcher implements SessionMatcher
+    {
+        private final PipelineFoundryImpl foundry
+            = PipelineFoundryImpl.foundry();
+
+        public boolean isMatch(Policy policy, IPSessionDesc clientSide,
+                               IPSessionDesc serverSide)
+        {
+            PolicyRule pr = foundry.selectPolicy(clientSide); // XXX?
+            Policy sp = pr.getPolicy();
+
+            if (policy == null) {
+                return false;
+            } else if (policy == sp) {
+                return false;
+            } else if (policy.equals(sp)) {
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 }

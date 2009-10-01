@@ -275,6 +275,27 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return (Pipeline)pipelines.get(sessionId);
     }
 
+    // package protected methods ----------------------------------------------
+
+    PolicyRule selectPolicy(IPSessionDesc sd)
+    {
+        UvmContextImpl upi = UvmContextImpl.getInstance();
+        LocalPolicyManager pmi = upi.policyManager();
+        LocalIntfManager im = upi.localIntfManager();
+
+        UserPolicyRule[] userRules = pmi.getUserRules();
+
+        InterfaceComparator c = im.getInterfaceComparator();
+
+        for (UserPolicyRule upr : userRules) {
+            if (upr.matches(sd, c)) {
+                return upr;
+            }
+        }
+
+        return pmi.getDefaultPolicyRule();
+    }
+
     // private methods --------------------------------------------------------
 
     private List<MPipeFitting> makeChain(IPSessionDesc sd, Policy p,
@@ -412,25 +433,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
         } while (tryAgain);
 
         return welded;
-    }
-
-    private PolicyRule selectPolicy(IPSessionDesc sd)
-    {
-        UvmContextImpl upi = UvmContextImpl.getInstance();
-        LocalPolicyManager pmi = upi.policyManager();
-        LocalIntfManager im = upi.localIntfManager();
-
-        UserPolicyRule[] userRules = pmi.getUserRules();
-
-        InterfaceComparator c = im.getInterfaceComparator();
-
-        for (UserPolicyRule upr : userRules) {
-            if (upr.matches(sd, c)) {
-                return upr;
-            }
-        }
-
-        return pmi.getDefaultPolicyRule();
     }
 
     private void clearCache()

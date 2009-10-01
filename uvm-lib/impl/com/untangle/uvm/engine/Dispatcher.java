@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.argon.NewSessionEventListener;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LoadCounter;
@@ -1172,7 +1173,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    private void elog(Level level, String eventName, int sessionId, long dataSize)
+    private void elog(Level level, String eventName, int sessionId,
+                      long dataSize)
     {
         if (sessionEventLogger.isEnabledFor(level)) {
             StringBuilder message = new StringBuilder("EV[");
