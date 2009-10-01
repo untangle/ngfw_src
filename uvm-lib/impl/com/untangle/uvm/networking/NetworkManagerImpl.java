@@ -665,6 +665,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         if ( ai == null ) return null;
         if ( ai.isWanInterface()) return null;
+
+        /* In single nicmode, use the external interface. */
+        if ( this.singleNicManager.getIsEnabled()) argonIntf = IntfConstants.EXTERNAL_INTF;
         
         /* Retrieve the network settings */
         NetworkSpacesInternalSettings settings = this.networkSettings;
