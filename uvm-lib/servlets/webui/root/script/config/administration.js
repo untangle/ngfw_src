@@ -786,7 +786,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             layout: 'form',
                             items: [{
                                 xtype : 'button',
-                                text : String.format(this.i18n._('Generate a {0}Self-Signed Certificate{1}'), '<b>', '</b>'),
+                                text : String.format(this.i18n._('Generate a {0}Certificate{1}'), '<b>', '</b>'),
                                 minWidth : 250,
                                 name : 'Generate a Self-Signed Certificate',
                                 iconCls : 'action-icon',
@@ -800,7 +800,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             layout: 'form',
                             items: [{
                                 cls: 'description',
-                                html : this.i18n._("Click this button if you have been using a signed certificate, and you want to go back to using a self-signed certificate."),
+                                html : this.i18n._("Click here to create a new Certificate.  You should create a new Certificate to change any of the fields in the 'Subject DN'."),
                                 border : false
                             }]
                         }]
@@ -821,7 +821,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             }]
                         },{
                             border: false,
-                            columnWidth:1,
+                            columnWidth : 1,
                             layout: 'form',
                             items: [{
                                 cls: 'description',
@@ -1128,6 +1128,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         store : Ung.Country.getCountryStore(i18n),
                         mode : 'local',
                         triggerAction : 'all',
+                        editable : false,
                         allowBlank : false,
                         blankText : this.i18n._("You must specify a country.")
                     },{
