@@ -35,13 +35,13 @@ import org.apache.log4j.Logger;
  */
 public class WebFilterHandler extends HttpStateMachine
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = Logger.getLogger(getClass());
 
-    private final WebFilterBase node;
+    protected final WebFilterBase node;
 
     // constructors -----------------------------------------------------------
 
-    WebFilterHandler(TCPSession session, WebFilterBase node)
+    protected WebFilterHandler(TCPSession session, WebFilterBase node)
     {
         super(session);
 

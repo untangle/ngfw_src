@@ -1,7 +1,3 @@
--- settings conversion for release-7.1
--- $HeadURL: svn://chef/branch/prod/web-ui/work/src/webfilter/hier/usr/share/untangle/schema/untangle-base-webfilter/settings-convert-8.sql $
--- Copyright (c) 2003-2007 Untangle, Inc.
---
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License, version 2,
 -- as published by the Free Software Foundation.
@@ -25,8 +21,9 @@ UPDATE settings.n_webfilter_settings SET unblock_password_admin = false;
 ALTER TABLE settings.n_webfilter_settings ALTER COLUMN unblock_password_admin SET NOT NULL;
 
 ALTER TABLE settings.n_webfilter_settings ADD COLUMN unblock_password text;
-UPDATE settings.n_webfilter_settings SET unblock_password = "";
+UPDATE settings.n_webfilter_settings SET unblock_password = '';
 ALTER TABLE settings.n_webfilter_settings ALTER COLUMN unblock_password SET NOT NULL;
 
-
-
+ALTER TABLE settings.n_webfilter_settings ADD COLUMN enforce_safe_search bool;
+UPDATE settings.n_webfilter_settings SET enforce_safe_search = true;
+ALTER TABLE settings.n_webfilter_settings ALTER COLUMN enforce_safe_search SET NOT NULL;

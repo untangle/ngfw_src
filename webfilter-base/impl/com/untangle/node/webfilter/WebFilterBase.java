@@ -70,34 +70,34 @@ import org.hibernate.Session;
  */
 public abstract class WebFilterBase extends AbstractNode implements WebFilter
 {
-    private static int deployCount = 0;
+    protected static int deployCount = 0;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = Logger.getLogger(getClass());
 
     protected final WebFilterFactory factory = new WebFilterFactory(this);
 
-    private final PipeSpec httpPipeSpec = new SoloPipeSpec
+    protected final PipeSpec httpPipeSpec = new SoloPipeSpec
         ("http-blocker", this, new TokenAdaptor(this, factory),
          Fitting.HTTP_TOKENS,
          Affinity.CLIENT, 0);
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipeSpec };
+    protected final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipeSpec };
 
-    private final WebFilterReplacementGenerator replacementGenerator;
+    protected final WebFilterReplacementGenerator replacementGenerator;
 
-    private final EventLogger<WebFilterEvent> eventLogger;
+    protected final EventLogger<WebFilterEvent> eventLogger;
 
-    private volatile WebFilterSettings settings;
+    protected volatile WebFilterSettings settings;
 
-    private final PartialListUtil listUtil = new PartialListUtil();
-    private final BlacklistCategoryHandler categoryHandler
-        = new BlacklistCategoryHandler();
+    protected final PartialListUtil listUtil = new PartialListUtil();
+    protected final BlacklistCategoryHandler categoryHandler
+	= new BlacklistCategoryHandler();
 
-    private final BlingBlinger scanBlinger;
-    private final BlingBlinger passBlinger;
-    private final BlingBlinger blockBlinger;
-    private final BlingBlinger passLogBlinger;
+    protected final BlingBlinger scanBlinger;
+    protected final BlingBlinger passBlinger;
+    protected final BlingBlinger blockBlinger;
+    protected final BlingBlinger passLogBlinger;
 
-    private final BypassMonitor bypassMonitor;
+    protected final BypassMonitor bypassMonitor;
 
     // constructors -----------------------------------------------------------
 
@@ -395,7 +395,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return new IPMaddrValidator();
     }
 
-    protected abstract Blacklist getBlacklist();
+    public abstract Blacklist getBlacklist();
 
     protected abstract String getVendor();
 
@@ -692,7 +692,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return replacementGenerator.generateNonce(details);
     }
 
-    Token[] generateResponse(String nonce, TCPSession session, String uri,
+    public Token[] generateResponse(String nonce, TCPSession session, String uri,
                              Header header, boolean persistent)
     {
         return replacementGenerator.generateResponse(nonce, session, uri,
@@ -706,12 +706,12 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                                                      persistent);
     }
 
-    void incrementScanCount()
+    public void incrementScanCount()
     {
         scanBlinger.increment();
     }
 
-    void incrementBlockCount()
+    public void incrementBlockCount()
     {
         blockBlinger.increment();
     }
@@ -728,7 +728,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     // private methods --------------------------------------------------------
 
-    private static synchronized void deployWebAppIfRequired(Logger logger)
+    protected static synchronized void deployWebAppIfRequired(Logger logger)
     {
         if (0 != deployCount++) {
             return;
@@ -758,7 +758,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
-    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
+    protected static synchronized void unDeployWebAppIfRequired(Logger logger) {
         if (0 != --deployCount) {
             return;
         }
@@ -773,7 +773,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
-    private void updateRules(final Set rules, final List added,
+    protected void updateRules(final Set rules, final List added,
                              final List<Long> deleted, final List modified) {
         TransactionWork tw = new TransactionWork() {
                 public boolean doWork(Session s) {
@@ -793,7 +793,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         getBlacklist().configure(settings);
     }
 
-    private void updateCategories(final Set categories, final List added,
+    protected void updateCategories(final Set categories, final List added,
                                   final List<Long> deleted, final List modified) {
         TransactionWork tw = new TransactionWork() {
                 public boolean doWork(Session s) {
@@ -813,7 +813,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         getBlacklist().configure(settings);
     }
 
-    private static class BlacklistCategoryHandler implements PartialListUtil.Handler<BlacklistCategory>
+    protected static class BlacklistCategoryHandler implements PartialListUtil.Handler<BlacklistCategory>
     {
         public Long getId(BlacklistCategory rule)
         {

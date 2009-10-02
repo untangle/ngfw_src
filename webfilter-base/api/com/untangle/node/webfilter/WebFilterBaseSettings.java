@@ -51,6 +51,8 @@ public class WebFilterBaseSettings implements Serializable {
     private boolean unblockPasswordAdmin = false;
     private String unblockPassword = "";
 
+    private boolean enforceSafeSearch = true;
+
     private int passedClientsLength;
     private int passedUrlsLength;
     private int blockedUrlsLength;
@@ -108,6 +110,22 @@ public class WebFilterBaseSettings implements Serializable {
     public void setEnableHttps(boolean enableHttps)
     {
         this.enableHttps = enableHttps;
+    }
+
+    /**
+     * If true, enforces safe search on popular search engines.
+     *
+     * @return true to block.
+     */
+    @Column(name="enforce_safe_search", nullable=false)
+    public boolean getEnforceSafeSearch()
+    {
+        return enforceSafeSearch;
+    }
+
+    public void setEnforceSafeSearch(boolean enforceSafeSearch)
+    {
+        this.enforceSafeSearch = enforceSafeSearch;
     }
 
     @Enumerated(EnumType.STRING)

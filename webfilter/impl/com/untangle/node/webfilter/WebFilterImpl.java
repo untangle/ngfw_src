@@ -22,7 +22,7 @@ public class WebFilterImpl extends WebFilterBase
 {
     private final UrlBlacklist blacklist = new UrlBlacklist(this);
 
-    protected Blacklist getBlacklist()
+    public Blacklist getBlacklist()
     {
         return blacklist;
     }

@@ -192,6 +192,7 @@ public class RequestLine implements Serializable
     public void setRequestUri(URI requestUri)
     {
         this.requestUri = requestUri;
+	this.requestUriBytes = requestUri.toString().getBytes();
     }
 
     /**

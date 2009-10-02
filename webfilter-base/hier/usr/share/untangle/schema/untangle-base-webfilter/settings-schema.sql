@@ -36,6 +36,7 @@ CREATE TABLE settings.n_webfilter_settings (
     template int8 NOT NULL,
     block_all_ip_hosts bool NOT NULL,
     enable_https bool NOT NULL,
+    enforce_safe_search bool NOT NULL,
     unblock_password_enabled bool NOT NULL,
     unblock_password_admin bool NOT NULL,
     unblock_password text NOT NULL,

@@ -34,11 +34,11 @@ public class WebFilterFactory implements TokenHandlerFactory
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final WebFilterBase node;
+    protected final WebFilterBase node;
 
     // constructors -----------------------------------------------------------
 
-    WebFilterFactory(WebFilterBase node)
+    protected WebFilterFactory(WebFilterBase node)
     {
         this.node = node;
     }
