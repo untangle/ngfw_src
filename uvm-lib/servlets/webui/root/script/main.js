@@ -240,7 +240,6 @@ Ung.Main=Ext.extend(Object, {
 
         var cssRule = Ext.util.CSS.getRule(".content-left",true);
         this.contentLeftWidth = ( cssRule ) ? parseInt( cssRule.style.width ) : 214;
-
         this.viewport = new Ext.Viewport({
             layout:'border',
             items:[{
@@ -296,7 +295,8 @@ Ung.Main=Ext.extend(Object, {
                             }
                         })
                     }],
-                    buttons:[{
+                    bbar:new Ext.Toolbar({columns:3,style:'text-align:left',items:[{
+                        xtype : 'tbbutton',
                         name: 'Help',
                         iconCls: 'icon-help',
                         text: i18n._('Help'),
@@ -305,13 +305,22 @@ Ung.Main=Ext.extend(Object, {
                             main.openHelp(helpSource);
                         }
                     },{
+                        name: 'MyAccount',                       
+                        iconCls: 'icon-myaccount',
+                        text: i18n._('My Account'),
+                        tooltip: i18n._('You can access your online account and reinstall apps you already purchased, redeem vouchers, or buy new ones.'),
+                        handler: function() {
+                           main.openStore("my_account",i18n._("My Account"));
+                        }
+                    },'',{
+                        xtype : 'button',
                         name: 'Logout',
                         iconCls: 'icon-logout',
                         text: i18n._('Logout'),
                         handler: function() {
                             window.location.href = '/auth/logout?url=/webui&realm=Administrator';
                         }
-                    }]
+                    }]})
                  },{
                     region:'center',
                     id: 'center',

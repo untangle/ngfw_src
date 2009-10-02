@@ -33,6 +33,23 @@ Ext.override(Ext.Panel, {
         }
     }
 });
+Ext.override(Ext.Toolbar,{
+    nextBlock : function(){
+        var td = document.createElement("td");
+        if (this.columns && (this.tr.cells.length == this.columns)) {
+            this.tr = document.createElement("tr");
+            var tbody = this.el.child("tbody", true);
+            tbody.appendChild(this.tr);
+        }
+        this.tr.appendChild(td);
+        return td;
+    },
+    insertButton: (function(){
+        if (this.columns) {
+            throw "This method won't work with multiple rows";
+        }
+    }).createSequence(Ext.Toolbar.prototype.insertButton)
+});
 Ext.override(Ext.PagingToolbar, {
     listeners : {
         "render" : {
