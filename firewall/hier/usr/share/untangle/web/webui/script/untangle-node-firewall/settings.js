@@ -15,6 +15,42 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelRules, this.gridEventLog]);
+
+            this.bbar=['-',{
+                name : "Remove",
+                id : this.getId() + "_removeBtn",
+                iconCls : 'node-remove-icon',
+                text : i18n._('Remove'),
+                handler : function() {
+                    this.removeAction();
+                }.createDelegate(this)
+            },'-',{
+                name : 'Help',
+                id : this.getId() + "_helpBtn",
+                iconCls : 'icon-help',
+                text : i18n._('Help'),
+                handler : function() {
+                    this.helpAction();
+                }.createDelegate(this)
+            },'->',{
+                name : "Cancel",
+                id : this.getId() + "_cancelBtn",
+                iconCls : 'cancel-icon',
+                text : i18n._('Cancel'),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            },'-',this.saveButton = new Ext.Toolbar.Button({
+                name : "Save",
+                disabled : true,
+                id : this.getId() + "_saveBtn",
+                iconCls : 'save-icon',
+                text : i18n._('Save'),
+                handler : function() {
+                    this.saveAction.defer(1, this);
+                }.createDelegate(this)
+            })];
+
             Ung.Firewall.superclass.initComponent.call(this);
         },
         // Rules Panel
@@ -164,6 +200,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             this.loadPage(0,
                                 function() {
                                     this.settingsCmp.initialRules = Ung.Util.clone(this.getFullSaveList());
+                                    this.settingsCmp.saveButton.enable();
                                 }.createDelegate(this));
                         },
 
