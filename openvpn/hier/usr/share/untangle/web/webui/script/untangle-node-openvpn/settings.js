@@ -144,6 +144,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     this.panel
                ]
             });
+
+            Ext.MessageBox.hide();
             this.window.show();
         },
 
@@ -715,7 +717,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 width : 110,
                 header : this.i18n._("distribute"),
                 dataIndex : null,
+                i18n : this.i18n,
                 handle : function(record) {
+                    Ext.MessageBox.wait(
+                        this.i18n._( "Updating OpenVPN Client..." ),
+                        this.i18n._( "Please Wait" )
+                    );
                     this.grid.distributeWindow.populate(record);
                     this.grid.distributeWindow.show();
                 },
