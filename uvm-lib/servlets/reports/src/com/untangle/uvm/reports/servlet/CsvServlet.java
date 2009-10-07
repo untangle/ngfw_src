@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -34,7 +35,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.reports.ApplicationData;
+import com.untangle.uvm.reports.ColumnDesc;
+import com.untangle.uvm.reports.DetailSection;
 import com.untangle.uvm.reports.RemoteReportingManager;
+import com.untangle.uvm.reports.Section;
 import org.apache.log4j.Logger;
 
 /**
@@ -75,49 +80,31 @@ public class CsvServlet extends HttpServlet
 
             DateFormat df = new SimpleDateFormat(DATE_FORMAT);
             Date date = df.parse(dateStr);
+
+            ApplicationData ad = null;
+            ad = rm.getApplicationData(date, app, type, value);
+            if (null != ad) {
+                for (Section s : ad.getSections()) {
+                    if (s.getName().equals(detail)) {
+                        try {
+                            DetailSection ds = (DetailSection)s;
+                            List header = new ArrayList();
+                            for (ColumnDesc cd : ds.getColumns()) {
+                                header.add(cd.getTitle());
+                            }
+                            writeCsvRow(bw, header);
+                            break;
+                        } catch (ClassCastException exn) {
+                            logger.warn("could not get header", exn);
+                        }
+                    }
+                }
+            }
+
             List<List> ll = rm.getAllDetailData(date, app, detail, type, value);
 
             for (List l : ll) {
-                for (int i = 0; i < l.size(); i++) {
-                    Object o = l.get(i);
-                    if (null == o) {
-                        o = "";
-                    }
-                    String s = o.toString();
-                    boolean enclose = false;
-                    if (0 <= s.indexOf(',')) {
-                        enclose = true;
-                    }
-                    if (0 <= s.indexOf('"')) {
-                        enclose = true;
-                        s = s.replaceAll("\"", "\"\"");
-                    }
-                    if (0 <= s.indexOf("\n") || 0 <= s.indexOf("\r")) {
-                        enclose = true;
-                    }
-                    if (s.length() > 0) {
-                        switch(s.charAt(0)) {
-                        case ' ': case '\t': case '\n': case '\r':
-                            enclose = true;
-                        }
-                        switch(s.charAt(s.length() - 1)) {
-                        case ' ': case '\t': case '\n': case '\r':
-                            enclose = true;
-                        }
-                    } else {
-                        enclose=true;
-                    }
-
-                    if (enclose) {
-                        s = "\"" + s + "\"";
-                    }
-
-                    bw.write(s);
-                    if (i < l.size() - 1) {
-                        bw.write(",");
-                    }
-                }
-                bw.write("\n");
+                writeCsvRow(bw, l);
             }
             bw.flush();
         } catch (ParseException exn) {
@@ -137,5 +124,50 @@ public class CsvServlet extends HttpServlet
                 logger.warn("could not close data stream", exn);
             }
         }
+    }
+
+    private void writeCsvRow(BufferedWriter bw, List l)
+        throws IOException
+    {
+        for (int i = 0; i < l.size(); i++) {
+            Object o = l.get(i);
+            if (null == o) {
+                o = "";
+            }
+            String s = o.toString();
+            boolean enclose = false;
+            if (0 <= s.indexOf(',')) {
+                enclose = true;
+            }
+            if (0 <= s.indexOf('"')) {
+                enclose = true;
+                s = s.replaceAll("\"", "\"\"");
+            }
+            if (0 <= s.indexOf("\n") || 0 <= s.indexOf("\r")) {
+                enclose = true;
+            }
+            if (s.length() > 0) {
+                switch(s.charAt(0)) {
+                case ' ': case '\t': case '\n': case '\r':
+                    enclose = true;
+                }
+                switch(s.charAt(s.length() - 1)) {
+                case ' ': case '\t': case '\n': case '\r':
+                    enclose = true;
+                }
+            } else {
+                enclose=true;
+            }
+
+            if (enclose) {
+                s = "\"" + s + "\"";
+            }
+
+            bw.write(s);
+            if (i < l.size() - 1) {
+                bw.write(",");
+            }
+        }
+        bw.write("\n");
     }
 }

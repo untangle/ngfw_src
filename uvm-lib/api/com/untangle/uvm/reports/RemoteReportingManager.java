@@ -42,10 +42,8 @@ import java.util.List;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface RemoteReportingManager  {
-
-    // NEW SHIZZLE -------------------------------------------------------------
-
+public interface RemoteReportingManager
+{
     List<Date> getDates();
 
     TableOfContents getTableOfContents(Date d);
@@ -53,6 +51,7 @@ public interface RemoteReportingManager  {
     TableOfContents getTableOfContentsForUser(Date d, String username);
     TableOfContents getTableOfContentsForEmail(Date d, String email);
 
+    ApplicationData getApplicationData(Date d, String appName, String type, String value);
     ApplicationData getApplicationData(Date d, String appName);
 
     ApplicationData getApplicationDataForUser(Date d, String appName,

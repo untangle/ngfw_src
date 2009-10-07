@@ -172,6 +172,11 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                                    hosts, emails);
     }
 
+    public ApplicationData getApplicationData(Date d, String appName, String type, String value)
+    {
+        return readXml(d, appName, type, value);
+    }
+
     public ApplicationData getApplicationData(Date d, String appName)
     {
         return readXml(d, appName, null, null);
