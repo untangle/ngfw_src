@@ -62,6 +62,19 @@ def get_connection():
     if not __conn:
         __conn = psycopg.connect("dbname=uvm user=postgres")
 
+    try:
+        curs = __conn.cursor()
+        curs.execute("SELECT 1")
+        __conn.commit()
+    except:
+        logging.warn("could not access database, getting new connection",
+                     exc_info=True)
+        try:
+            __conn.close()
+        except:
+            pass
+        __conn = psycopg.connect("dbname=uvm user=postgres")
+
     return __conn
 
 def create_table_from_query(tablename, query, args=None):
