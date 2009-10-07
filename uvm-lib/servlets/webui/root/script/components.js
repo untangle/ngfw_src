@@ -2606,6 +2606,17 @@ Ung.SettingsWin = Ext.extend(Ung.Window, {
     saveAction : function() {
         Ung.Util.todo();
     },
+    // save function
+    applyAction : function() {
+        if (this.validate()) {
+        Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+            this.getRpcNode().setBaseSettings(function(result, exception) {
+                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());            
+                Ext.MessageBox.hide();
+                if(Ung.Util.handleException(exception)) return;
+            }.createDelegate(this), this.getBaseSettings());
+        }
+    },    
     // validation functions
     validateClient : function() {
         return true;
@@ -2657,6 +2668,14 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
                     this.helpAction();
                 }.createDelegate(this)
             },'->',{
+                name : "Save",
+                id : this.getId() + "_saveBtn",
+                iconCls : 'save-icon',
+                text : i18n._('Save'),
+                handler : function() {
+                    this.saveAction.defer(1, this);
+                }.createDelegate(this)
+            },'-',{
                 name : "Cancel",
                 id : this.getId() + "_cancelBtn",
                 iconCls : 'cancel-icon',
@@ -2665,12 +2684,12 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
                     this.cancelAction();
                 }.createDelegate(this)
             },'-',{
-                name : "Save",
-                id : this.getId() + "_saveBtn",
-                iconCls : 'save-icon',
-                text : i18n._('Save'),
+                name : "Apply",
+                id : this.getId() + "_applyBtn",
+                iconCls : 'apply-icon',
+                text : i18n._('Apply'),
                 handler : function() {
-                    this.saveAction.defer(1, this);
+                    this.applyAction.defer(1, this);
                 }.createDelegate(this)
             },'-'];
         }
@@ -2808,20 +2827,31 @@ Ung.ConfigWin = Ext.extend(Ung.SettingsWin, {
 Ung.UpdateWindow = Ext.extend(Ung.Window, {
     initComponent : function() {
         if(this.bbar==null) {
-            this.bbar=['->',{
-                name : 'Cancel',
-                id: "cancel_"+this.getId(),
+            this.bbar=[
+            '->',
+            {
+                name : "Save",
+                id : this.getId() + "_saveBtn",
+                iconCls : 'save-icon',
+                text : i18n._('Save'),
+                handler : function() {
+                    this.saveAction.defer(1, this,[true]);
+                }.createDelegate(this)
+            },'-',{
+                name : "Cancel",
+                id : this.getId() + "_cancelBtn",
                 iconCls : 'cancel-icon',
                 text : i18n._('Cancel'),
                 handler : function() {
                     this.cancelAction();
                 }.createDelegate(this)
             },'-',{
-                name : 'Update',
-                iconCls : 'save-icon',
-                text : i18n._('Update'),
+                name : "Apply",
+                id : this.getId() + "_applyBtn",
+                iconCls : 'apply-icon',
+                text : i18n._('Apply'),
                 handler : function() {
-                    this.updateAction();
+                    this.applyAction.defer(1, this,[true]);
                 }.createDelegate(this)
             },'-'];
         }
@@ -2831,6 +2861,12 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
     // to override
     updateAction : function() {
         Ung.Util.todo();
+    },
+    saveAction : function(){
+        Ung.Util.todo();    
+    },
+    applyAction : function(){
+        Ung.Util.todo();            
     }
 });
 
@@ -2852,6 +2888,10 @@ Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
     },
     updateAction : function() {
         this.hide();
+    },
+    saveAction : function(){
+        this.applyAction(true);
+        this.closeWindow();        
     },
     listeners : {
         'show' : {
@@ -2877,7 +2917,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     sizeToRack : false,
     // size to grid on show
     sizeToGrid : false,
-    addMode: null,
+    addMode: null,       
     initComponent : function() {
         if (!this.height && !this.width) {
             this.sizeToGrid = true;
@@ -2888,6 +2928,27 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.rowEditorLabelWidth == null) {
             this.rowEditorLabelWidth = 100;
         }
+        if(this.bbar == null){
+            this.bbar  = [
+                        '->',
+                        {
+                            name : "Cancel",
+                            id : this.getId() + "_cancelBtn",
+                            iconCls : 'cancel-icon',
+                            text : i18n._('Cancel'),
+                            handler : function() {
+                                this.cancelAction();
+                            }.createDelegate(this)
+                        },'-',{
+                            name : "Done",
+                            id : this.getId() + "_doneBtn",
+                            iconCls : 'apply-icon',
+                            text : i18n._('Done'),
+                            handler : function() {
+                                this.updateAction.defer(1, this);
+                            }.createDelegate(this)
+            },'-'];         
+        }        
         this.items = new Ext.Panel({
             anchor: "100% 100%",
             layout:"form",
@@ -3530,7 +3591,10 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     clearChangedData : function () {
         this.changedData = {};
     },
-
+    reloadGrid : function(){
+        this.clearChangedData();                                                
+        this.store.reload();   
+    },
     beforeDestroy : function() {
         Ext.each(this.subCmps, Ext.destroy);
         Ung.EditorGrid.superclass.beforeDestroy.call(this);
