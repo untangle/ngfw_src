@@ -429,7 +429,7 @@ CREATE TABLE settings.u_network_settings (
     completed_setup BOOL,
     PRIMARY KEY (settings_id));
 
--- com.untangle.uvm.networking.AccessSettings -- 4.2
+-- com.untangle.uvm.networking.AccessSettings -- 7.0
 CREATE TABLE settings.u_access_settings (
     settings_id          INT8 NOT NULL,
     allow_ssh            BOOL,
@@ -441,6 +441,7 @@ CREATE TABLE settings.u_access_settings (
     allow_outside_admin  BOOL,
     allow_outside_quaran BOOL,
     allow_outside_report BOOL,
+    block_page_port      INT4 NOT NULL,
     PRIMARY KEY          (settings_id));
 
 -- com.untangle.uvm.networking.MiscSettings -- 4.2

@@ -69,6 +69,9 @@ public class AccessSettings implements Serializable, Validatable
     /* True iff internal HTTP access is enabled */
     private boolean isInsideInsecureEnabled;
 
+    /* This is the port that blockpages are rendered on. */
+    private int blockPagePort = 80;
+
     /* True iff Access to the external HTTPs port is allowed */
     private boolean isOutsideAccessEnabled;
 
@@ -154,6 +157,29 @@ public class AccessSettings implements Serializable, Validatable
     {
         if ( newValue != this.isInsideInsecureEnabled ) this.isClean = false;
         this.isInsideInsecureEnabled = newValue;
+    }
+
+
+    /**
+     * Get the port to render blockpage on.
+     *
+     * @return the port blockpages are rendered on
+     */
+    @Column(name="block_page_port")
+    public int getBlockPagePort()
+    {
+        return this.blockPagePort;
+    }
+
+    /**
+     * Set the blockPage port.
+     *
+     * @param newValue the new port to put the blockPage on.
+     */
+    public void setBlockPagePort( int newValue )
+    {
+        if ( newValue != this.blockPagePort ) this.isClean = false;
+        this.blockPagePort = newValue;
     }
 
     /**

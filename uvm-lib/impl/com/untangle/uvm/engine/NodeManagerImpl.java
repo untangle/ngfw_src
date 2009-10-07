@@ -958,11 +958,11 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     private static class SessionExpirationWorker
         implements Runnable
     {
-        ArgonManager am = LocalUvmContextFactory.context().argonManager();
         ExpiredPolicyMatcher matcher = new ExpiredPolicyMatcher();
 
         public void run()
         {
+            ArgonManager am = LocalUvmContextFactory.context().argonManager();
             am.shutdownMatches(matcher);
         }
     }

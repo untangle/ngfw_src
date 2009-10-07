@@ -25,6 +25,7 @@ class ShellFlags
     static final String FILE_PROPERTIES   = BUNNICULA_CONF + "/uvm.networking.properties";
     static final String FLAG_TCP_WIN      = "TCP_WINDOW_SCALING_EN";
     static final String FLAG_HTTP_IN      = "UVM_ALLOW_IN_HTTP";
+    static final String FLAG_BLOCK_PAGE_PORT =  "UVM_BLOCK_PAGE_PORT";
     static final String FLAG_HTTPS_OUT    = "UVM_ALLOW_OUT_HTTPS";
     static final String FLAG_HTTPS_RES    = "UVM_ALLOW_OUT_RES";
     static final String FLAG_OUT_NET      = "UVM_ALLOW_OUT_NET";

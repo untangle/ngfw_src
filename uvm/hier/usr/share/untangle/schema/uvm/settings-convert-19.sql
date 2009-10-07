@@ -15,3 +15,11 @@
 --
 
 ALTER TABLE settings.u_policy ADD COLUMN parent_id int8;
+
+ALTER TABLE settings.u_access_settings ADD COLUMN block_page_port INT4;
+
+UPDATE settings.u_access_settings SET block_page_port = 80;
+ALTER TABLE settings.u_access_settings ALTER COLUMN block_page_port SET NOT NULL;
+
+
+

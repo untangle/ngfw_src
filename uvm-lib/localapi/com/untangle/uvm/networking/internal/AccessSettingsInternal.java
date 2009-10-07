@@ -44,6 +44,7 @@ public class AccessSettingsInternal
     private final boolean isSupportEnabled;
 
     private final boolean isInsideInsecureEnabled;
+    private final int blockPagePort;
     private final boolean isOutsideAccessEnabled;
     private final boolean isOutsideAccessRestricted;
 
@@ -58,6 +59,7 @@ public class AccessSettingsInternal
     {
         this.isSupportEnabled = settings.getIsSupportEnabled();
         this.isInsideInsecureEnabled = settings.getIsInsideInsecureEnabled();
+        this.blockPagePort = settings.getBlockPagePort();
         this.isOutsideAccessEnabled = settings.getIsOutsideAccessEnabled();
         this.isOutsideAccessRestricted = settings.getIsOutsideAccessRestricted();
         this.outsideNetwork = settings.getOutsideNetwork();
@@ -78,6 +80,11 @@ public class AccessSettingsInternal
     public boolean getIsInsideInsecureEnabled()
     {
         return this.isInsideInsecureEnabled;
+    }
+
+    public int getBlockPagePort()
+    {
+        return this.blockPagePort;
     }
 
     /** True if outside (secure) access is enabled. */
@@ -131,6 +138,7 @@ public class AccessSettingsInternal
         AccessSettings settings = new AccessSettings();
         settings.setIsSupportEnabled( getIsSupportEnabled());
         settings.setIsInsideInsecureEnabled( getIsInsideInsecureEnabled());
+        settings.setBlockPagePort( getBlockPagePort());
         settings.setIsOutsideAccessEnabled( getIsOutsideAccessEnabled());
         settings.setIsOutsideAccessRestricted( getIsOutsideAccessRestricted());
         settings.setOutsideNetwork( getOutsideNetwork());

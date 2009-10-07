@@ -39,6 +39,7 @@ import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 
 import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 
+import static com.untangle.uvm.networking.ShellFlags.FLAG_BLOCK_PAGE_PORT;
 import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTP_IN;
 import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_OUT;
 import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RES;
@@ -173,6 +174,8 @@ class AccessManagerImpl implements LocalAccessManager
                 scriptWriter.appendVariable( FLAG_OUT_MASK, outsideNetmask.toString());
             }
         }
+
+        scriptWriter.appendVariable( FLAG_BLOCK_PAGE_PORT, access.getBlockPagePort());
     }
 
     private void setSupportAccess( AccessSettingsInternal access )

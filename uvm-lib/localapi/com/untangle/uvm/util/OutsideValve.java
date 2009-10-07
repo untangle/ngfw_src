@@ -124,8 +124,9 @@ public abstract class OutsideValve extends ValveBase
     private boolean isAccessAllowed(boolean isOutsideAccessAllowed, ServletRequest request)
     {
         String address = request.getRemoteAddr();
+        boolean isInsecureAccessAllowed = isInsecureAccessAllowed();
 
-        if (isOutsideAccessAllowed && isInsecureAccessAllowed()) return true;
+        if (isOutsideAccessAllowed && isInsecureAccessAllowed) return true;
 
         try {
             if (null != address && InetAddress.getByName( address ).isLoopbackAddress()) return true;
@@ -136,10 +137,20 @@ public abstract class OutsideValve extends ValveBase
         int port = request.getLocalPort();
 
         /* This is insecure access on port 80 */
-        if (port == DEFAULT_HTTP_PORT) return isInsecureAccessAllowed();
-        if (port == SECONDARY_HTTP_PORT) return isInsecureAccessAllowed();
+        if (port == DEFAULT_HTTP_PORT) {
+            return isInsecureAccessAllowed;
+        }
+        if (port == SECONDARY_HTTP_PORT) {
+            return isInsecureAccessAllowed;
+        }
 
-
+        int blockPagePort = LocalUvmContextFactory.context().networkManager().
+            getAccessSettingsInternal().getBlockPagePort();
+        
+        if ( port == blockPagePort ) {
+            return isInsecureAccessAllowed;
+        }
+        
         /* This is secure access on the internal port */
         if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT) return true;
 

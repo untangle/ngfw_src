@@ -43,6 +43,7 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.NonceFactory;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.vnet.TCPSession;
 
@@ -125,12 +126,19 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, persistent, true);
         } else {
-            InetAddress addr = LocalUvmContextFactory.context().networkManager()
-                .getInternalHttpAddress(session);
+            LocalNetworkManager nm = LocalUvmContextFactory.context().networkManager();
+            InetAddress addr = nm.getInternalHttpAddress(session);
+                
             if (null == addr) {
                 return generateSimplePage(nonce, persistent, false);
             } else {
                 String host = addr.getHostAddress();
+                int port = nm.getAccessSettingsInternal().getBlockPagePort();
+
+                if ( port != 80 ) {
+                    host = host + ":" + port;
+                }
+                
                 return generateRedirect(nonce, host, persistent);
             }
         }
