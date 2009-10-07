@@ -261,8 +261,8 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             q = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       coalesce(sum(hits), 0)::int / (10 * %%s) AS hits,
-       coalesce(sum(wf_%s_blocks), 0)::int / (10 * %%s) AS wf_%s_blocks
+       coalesce(sum(hits), 0) / (10 * %%s) AS hits,
+       coalesce(sum(wf_%s_blocks), 0) / (10 * %%s) AS wf_%s_blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
             if host:
