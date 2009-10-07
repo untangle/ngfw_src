@@ -140,7 +140,18 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }, {
                                 title : settingsCmp.i18n._("Categories")
                             }],
-                            grid : settingsCmp.gridBlacklistCategories
+                            grid : settingsCmp.gridBlacklistCategories,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridBlacklistCategories.getSaveList();
+                                            settingsCmp.getRpcNode().updateBlacklistCategories(function(result, exception) {
+                                                Ext.MessageBox.hide();
+                                                if(Ung.Util.handleException(exception)) return;
+                                                if(forceLoad===true){                                                
+                                                    this.gridBlacklistCategories.reloadGrid();
+                                                }
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }                                                        
                         });
                     }
                     this.winBlacklistCategories.show();
@@ -169,7 +180,27 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }, {
                                 title : settingsCmp.i18n._("Sites")
                             }],
-                            grid : settingsCmp.gridBlockedUrls
+                            grid : settingsCmp.gridBlockedUrls,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridBlockedUrls.getSaveList();
+                                            settingsCmp.getRpcNode().updateBlockedUrls(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridBlockedUrls.setTotalRecords(result2.blockedUrlsLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridBlockedUrls.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }                                                        
                         });
                     }
                     this.winBlockedUrls.show();
@@ -198,7 +229,27 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }, {
                                 title : settingsCmp.i18n._("File Types")
                             }],
-                            grid : settingsCmp.gridBlockedExtensions
+                            grid : settingsCmp.gridBlockedExtensions,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridBlockedExtensions.getSaveList();
+                                            settingsCmp.getRpcNode().updateBlockedExtensions(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridBlockedExtensions.setTotalRecords(result2.blockedExtensionsLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridBlockedExtensions.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }                                                        
                         });
                     }
                     this.winBlockedExtensions.show();
@@ -227,7 +278,27 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }, {
                                 title : settingsCmp.i18n._("MIME Types")
                             }],
-                            grid : settingsCmp.gridBlockedMimeTypes
+                            grid : settingsCmp.gridBlockedMimeTypes,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridBlockedMimeTypes.getSaveList();
+                                            settingsCmp.getRpcNode().updateBlockedMimeTypes(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridBlockedMimeTypes.setTotalRecords(result2.blockedMimeTypesLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridBlockedMimeTypes.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }
                         });
                     }
                     this.winBlockedMimeTypes.show();
@@ -676,7 +747,27 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }, {
                                 title : settingsCmp.i18n._("Sites")
                             }],
-                            grid : settingsCmp.gridPassedUrls
+                            grid : settingsCmp.gridPassedUrls,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridPassedUrls.getSaveList();
+                                            settingsCmp.getRpcNode().updatePassedUrls(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridPassedUrls.setTotalRecords(result2.passedUrlsLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridPassedUrls.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }                            
                         });
                     }
                     this.winPassedUrls.show();
@@ -705,7 +796,27 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }, {
                                 title : settingsCmp.i18n._("Client IP addresses")
                             }],
-                            grid : settingsCmp.gridPassedClients
+                            grid : settingsCmp.gridPassedClients,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridPassedClients.getSaveList();
+                                            settingsCmp.getRpcNode().updatePassedClients(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridPassedClients.setTotalRecords(result2.passedClientsLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridPassedClients.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }                                                        
                         });
                     }
                     this.winPassedClients.show();
@@ -806,6 +917,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
+
                     height : 60
                 })]
             });
