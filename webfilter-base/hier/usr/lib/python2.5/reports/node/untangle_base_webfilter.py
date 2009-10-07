@@ -329,7 +329,7 @@ class DailyWebUsage(Graph):
         query = """\
 SELECT max(hits), COALESCE(sum(hits), 0) / %s, max(wf_%s_blocks),
        COALESCE(sum(wf_%s_blocks), 0) / %s
-FROM (select date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
+FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
              sum(wf_%s_blocks)::int as wf_%s_blocks
       FROM reports.n_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s
@@ -486,7 +486,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
         plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Date'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset({_('total hits (7-days)'): hits, _('total violations (7-days)'): violations},
+        plot.add_pie_dataset({_('total hits (7-days)'): hits,
+                              _('total violations (7-days)'): violations},
                              colors={_('total hits (7-days)'): colors.goodness,
                                      _('total violations (7-days)'): colors.badness})
 

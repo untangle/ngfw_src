@@ -68,10 +68,11 @@ class UvmNode(Node):
                        'time_stamp',
                        [Column('hname', 'text'),
                         Column('uid', 'text'),
+                        Column('policy_id', 'bigint'),
                         Column('client_intf', 'smallint'),
                         Column('c_server_port', 'int4'),
                         Column('c_client_port', 'int4')],
-                        [Column('new_sessions', 'bigint', 'count(*)'),
+                       [Column('new_sessions', 'bigint', 'count(*)'),
                         Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
@@ -230,6 +231,7 @@ CREATE TABLE reports.sessions (
         end_time timestamp NOT NULL,
         hname text,
         uid text,
+        policy_id bigint,
         c_client_addr inet,
         c_server_addr inet,
         c_server_port int4,
@@ -240,6 +242,8 @@ CREATE TABLE reports.sessions (
         s2p_bytes int8,
         p2s_bytes int8)""", 'time_stamp', start_date, end_date)
 
+        sql_helper.add_column('reports.sessions', 'policy_id', 'bigint')
+
         sd = DateFromMx(sql_helper.get_update_info('reports.sessions',
                                                    start_date))
         ed = DateFromMx(end_date)
@@ -248,9 +252,9 @@ CREATE TABLE reports.sessions (
         try:
             sql_helper.run_sql("""\
 CREATE TEMPORARY TABLE newsessions AS
-    SELECT endp.event_id, endp.time_stamp, mam.name,
-           endp.c_client_addr, endp.c_server_addr, endp.c_server_port, endp.c_client_port,
-           endp.client_intf
+    SELECT endp.event_id, endp.time_stamp, endp.policy_id, mam.name,
+           endp.c_client_addr, endp.c_server_addr, endp.c_server_port,
+           endp.c_client_port, endp.client_intf
     FROM events.pl_endp endp
     LEFT OUTER JOIN reports.merged_address_map mam
       ON (endp.c_client_addr = mam.addr AND endp.time_stamp >= mam.start_time
@@ -260,12 +264,13 @@ CREATE TEMPORARY TABLE newsessions AS
 
             sql_helper.run_sql("""\
 INSERT INTO reports.sessions
-    (pl_endp_id, time_stamp, end_time, hname, uid, c_client_addr,
+    (pl_endp_id, time_stamp, end_time, hname, uid, policy_id, c_client_addr,
      c_server_addr, c_server_port, c_client_port, client_intf, c2p_bytes, p2c_bytes,
      s2p_bytes, p2s_bytes)
     SELECT ses.event_id, ses.time_stamp, stats.time_stamp,
          COALESCE(NULLIF(ses.name, ''), HOST(ses.c_client_addr)) AS hname,
-         stats.uid, c_client_addr, c_server_addr, c_server_port, c_client_port, client_intf,
+         stats.uid, policy_id, c_client_addr, c_server_addr, c_server_port,
+         c_client_port, client_intf,
          stats.c2p_bytes, stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
     FROM newsessions ses
     JOIN events.pl_stats stats ON (ses.event_id = stats.pl_endp_id)""",
@@ -933,6 +938,5 @@ WHERE time_stamp >= %s AND time_stamp < %s AND not local
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         return sql + "ORDER BY time_stamp"
-
 
 reports.engine.register_node(UvmNode())
