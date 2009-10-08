@@ -164,7 +164,16 @@ ORDER BY time asc"""
                 accepted.append(r[1])
                 limited.append(r[2])
                 blocked.append(r[3])
-            if times[len(times) - 1] < 60 * 60 * 24:
+            if len(times) == 0:
+                times.append(0)
+                accepted.append(0)
+                limited.append(0)
+                blocked.append(0)
+                times.append(60 * 60 * 24)
+                accepted.append(0)
+                limited.append(0)
+                blocked.append(0)
+            elif times[len(times) - 1] < 60 * 60 * 24:
                 times.append(60 * 60 * 24)
                 accepted.append(0)
                 limited.append(0)

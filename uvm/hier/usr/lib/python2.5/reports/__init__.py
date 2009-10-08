@@ -309,7 +309,13 @@ class Graph:
 
     def generate(self, report_base, section_base, end_date, host=None,
                  user=None, email=None):
-        graph_data = self.get_graph(end_date, 7, host, user, email)
+
+        try:
+            graph_data = self.get_graph(end_date, 7, host, user, email)
+        except:
+            logging.warn("could not generate graph: %s (%s)" \
+                             % (self.name, self.title), exc_info=True)
+            return None
 
         if not graph_data:
             return None
