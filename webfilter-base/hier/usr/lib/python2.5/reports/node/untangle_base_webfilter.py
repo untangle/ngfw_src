@@ -777,7 +777,7 @@ class TopTenWebUsageBySize(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT hname, COALESCE(sum(s2c_bytes) + sum(c2s_bytes), 0)::bigint as size_sum
+SELECT hname, COALESCE(sum(s2c_content_length), 0)::bigint as size_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         query += " GROUP BY hname ORDER BY size_sum DESC LIMIT 10"
@@ -881,7 +881,7 @@ class TopTenWebsitesBySize(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT host, coalesce(sum(s2c_bytes) + sum(c2s_bytes), 0)::bigint as size_sum
+SELECT host, coalesce(sum(s2c_content_length), 0)::bigint as size_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
