@@ -266,14 +266,33 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 }
             });
         },
+        //apply function 
+        applyAction : function(){
+            this.saveAction(true);
+        },            
         // save function
-        saveAction : function() {
+        saveAction : function(keepWindowOpen) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
             this.getRpcNode().updateAll(function(result, exception) {
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
                 // exit settings screen
-                this.closeWindow();
+                if(!keepWindowOpen){
+                    Ext.MessageBox.hide();                    
+                    this.closeWindow();
+                }else{
+                //refresh the settings
+                        Ext.MessageBox.hide();
+                        //refresh the settings
+                        this.getRpcNode().getBaseSettings(function(result2,exception2){
+                            Ext.MessageBox.hide();                            
+                            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());                                      
+                            this.gridExceptions.setTotalRecords(result2.shieldNodeRulesLength);
+                            this.gridExceptions.reloadGrid();
+                        }.createDelegate(this));                        
+                        //this.gridEventLog.reloadGrid();                            
+                }
+                
             }.createDelegate(this), this.gridExceptions.getSaveList());
         },
         isDirty : function() {
