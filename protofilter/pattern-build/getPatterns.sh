@@ -35,6 +35,8 @@ rm tsp.pat
 rm whois.pat
 rm bgp.pat
 rm rtp.pat
+rm xunlei.pat
+rm kugoo.pat
 
 # don't even work:
 rm skypeout.pat
