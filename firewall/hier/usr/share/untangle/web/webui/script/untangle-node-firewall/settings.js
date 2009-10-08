@@ -15,7 +15,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelRules, this.gridEventLog]);
-
+/*
             this.bbar=['-',{
                 name : "Remove",
                 id : this.getId() + "_removeBtn",
@@ -50,7 +50,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     this.saveAction.defer(1, this);
                 }.createDelegate(this)
             })];
-
+*/
             Ung.Firewall.superclass.initComponent.call(this);
         },
         // Rules Panel
@@ -200,7 +200,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             this.loadPage(0,
                                 function() {
                                     this.settingsCmp.initialRules = Ung.Util.clone(this.getFullSaveList());
-                                    this.settingsCmp.saveButton.enable();
+                                    //this.settingsCmp.saveButton.enable();
                                 }.createDelegate(this));
                         },
 
@@ -570,21 +570,40 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             }
             return true;
         },
+        //apply function 
+        applyAction : function(){
+            this.saveAction(true);
+        },         
         // save function
-        saveAction : function() {
+        saveAction : function(keepWindowOpen) {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.getRpcNode().updateAll(function(result, exception) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    this.closeWindow();
+                    if(!keepWindowOpen){
+                        Ext.MessageBox.hide();                    
+                        this.closeWindow();
+                    }else{
+                    //refresh the settings
+                            Ext.MessageBox.hide();
+                            //refresh the settings
+                            this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                Ext.MessageBox.hide();                            
+                                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());                                      
+                                this.gridRules.setTotalRecords(result2.firewallRulesLength);
+                                this.gridRules.reloadGrid();
+                                this.initialRules =this.gridRules.getFullSaveList();                                 
+                            }.createDelegate(this));                        
+                            //this.gridEventLog.reloadGrid();                            
+                    }
                 }.createDelegate(this), this.getBaseSettings(), this.gridRules ? {javaClass:"java.util.ArrayList",list:this.gridRules.getFullSaveList()} : null);
             }
         },
         isDirty : function() {
             return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
-               || !Ung.Util.equals(this.gridRules.getFullSaveList(), this.initialRules);
+               || this.gridRules.isDirty();//!Ung.Util.equals(this.gridRules.getFullSaveList(), this.initialRules
         }
     });
 }
