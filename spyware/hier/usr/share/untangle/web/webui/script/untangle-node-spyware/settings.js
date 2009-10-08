@@ -811,8 +811,12 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             // reverse the order because valdate client alters the data
             return this.validateServer() && this.validateClient();
         },
+        //apply function 
+        applyAction : function(){
+            this.saveAction(true);
+        },        
         // save function
-        saveAction : function() {
+        saveAction : function(keepWindowOpen) {
             // validate first
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
@@ -820,7 +824,19 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    this.closeWindow();
+                    if(keepWindowOpen!== true){
+                        Ext.MessageBox.hide();                    
+                        this.closeWindow();
+                    }else{
+                    //refresh the settings
+                            this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                Ext.MessageBox.hide();                            
+                                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());                                      
+                                this.gridPassList.setTotalRecords(result2.domainWhitelistLength);
+                                this.gridPassList.reloadGrid();
+                            }.createDelegate(this));
+                            //this.gridEventLog.reloadGrid();                                     
+                    }
                 }.createDelegate(this), this.getBaseSettings(), this.gridActiveXList ? this.gridActiveXList.getSaveList() : null,
                         this.gridCookiesList ? this.gridCookiesList.getSaveList() : null,
                         this.gridSubnetList ? this.gridSubnetList.getSaveList() : null, this.gridPassList.getSaveList());
