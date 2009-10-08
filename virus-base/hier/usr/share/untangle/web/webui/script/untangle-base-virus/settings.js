@@ -156,7 +156,27 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             }, {
                                 title : settingsCmp.i18n._("File Extensions")
                             }],
-                            grid : settingsCmp.gridExtensions
+                            grid : settingsCmp.gridExtensions,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridExtensions.getSaveList();
+                                            settingsCmp.getRpcNode().updateExtensions(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridExtensions.setTotalRecords(result2.extensionsLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridExtensions.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }    
                         });
                     }
                     this.winExtensions.show();
@@ -190,7 +210,27 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             }, {
                                 title : settingsCmp.i18n._("MIME Types")
                             }],
-                            grid : settingsCmp.gridMimeTypes
+                            grid : settingsCmp.gridMimeTypes,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridMimeTypes.getSaveList();
+                                            settingsCmp.getRpcNode().updateHttpMimeTypes(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridMimeTypes.setTotalRecords(result2.httpMimeTypesLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridMimeTypes.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            } 
                         });
                     }
                     this.winMimeTypes.show();

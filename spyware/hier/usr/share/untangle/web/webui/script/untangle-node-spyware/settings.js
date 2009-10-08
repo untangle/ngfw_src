@@ -198,7 +198,27 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             }, {
                                 title : settingsCmp.i18n._("Cookies List")
                             }],
-                            grid : settingsCmp.gridCookiesList
+                            grid : settingsCmp.gridCookiesList,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridCookiesList.getSaveList();
+                                            settingsCmp.getRpcNode().updateCookieRules(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridCookiesList.setTotalRecords(result2.cookieRulesLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridCookiesList.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }    
                         });
                     }
                     this.winCookiesList.show();
@@ -232,7 +252,27 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             }, {
                                 title : settingsCmp.i18n._("ActiveX List")
                             }],
-                            grid : settingsCmp.gridActiveXList
+                            grid : settingsCmp.gridActiveXList,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridActiveXList.getSaveList();
+                                            settingsCmp.getRpcNode().updateActiveXRules(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridActiveXList.setTotalRecords(result2.activeXRulesLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridActiveXList.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }
                         });
                     }
                     this.winActiveXList.show();
@@ -266,7 +306,27 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             }, {
                                 title : settingsCmp.i18n._("Subnet List")
                             }],
-                            grid : settingsCmp.gridSubnetList
+                            grid : settingsCmp.gridSubnetList,
+                            applyAction : function(forceLoad){
+                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                            var saveList = settingsCmp.gridSubnetList.getSaveList();
+                                            settingsCmp.getRpcNode().updateSubnetRules(function(result, exception) {
+                                                if(Ung.Util.handleException(exception)){
+                                                    Ext.MessageBox.hide();
+                                                    return;
+                                                }
+                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                    Ext.MessageBox.hide();                                                
+                                                    if(Ung.Util.handleException(exception2)){
+                                                        return;
+                                                    }
+                                                    this.gridSubnetList.setTotalRecords(result2.subnetRulesLength);
+                                                    if(forceLoad===true){                                                
+                                                        this.gridSubnetList.reloadGrid();
+                                                    }                                                    
+                                                }.createDelegate(this));
+                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }
                         });
                     }
                     this.winSubnetList.show();
