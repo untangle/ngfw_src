@@ -362,7 +362,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         hideLabel : true,
                         allowBlank : false,
                         width : 200,
-                        value : this.getMailSettings().fromAddress,
+                        value : this.getMailSettings().fromAddress
                      
                         
                     }]
