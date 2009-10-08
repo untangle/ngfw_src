@@ -27,8 +27,8 @@ def setup_module(module):
         shutil.rmtree("%s/usr/share/untangle/web/reports/data" % PREFIX)
     except:
         pass
-   os.system('dropdb -U postgres uvm')
-   os.system('createdb -U postgres uvm')
+#    os.system('dropdb -U postgres uvm')
+#    os.system('createdb -U postgres uvm')
 #   os.system('cat %s/usr/share/untangle/tests/untangle-node-reporting/emptydb.sql | psql -U postgres uvm' % PREFIX)
    os.system('%s/usr/lib/python2.5/reports/process.py -m' % PREFIX)
 
