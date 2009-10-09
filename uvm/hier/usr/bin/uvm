@@ -135,6 +135,15 @@ needToRestart() {
     return 1;
 }
 
+update_monit()
+{
+    monit -c /etc/untangle/monit.conf status | grep -q 'monitoring status\s*not monitored' && {
+        echo "`date` telling monit to monitor all services." >> $UVM_WRAPPER_LOG
+        monit -c /etc/untangle/monit.conf monitor all
+    }
+}
+
+
 UVM_PRE_UVM_SCRIPT=${UVM_PRE_UVM_SCRIPT:-@PREFIX@/var/lib/untangle-windows-installer/pre_uvm.rb}
 UVM_AUTO_CONFIG=${UVM_AUTO_CONFIG:-@PREFIX@/mnt/hgfs/untangle/config.js}
 
@@ -176,8 +185,11 @@ while true; do
     # Instead of waiting, we now monitor.
     while true; do
         sleep $SLEEP_TIME
-
+        
         if [ "x" = "x@PREFIX@" ] ; then
+             ## if necessary tell monit to keep monitoring everything.
+            update_monit
+
             if [ ! -d /proc/$pid ] ; then
                 echo "*** restarting missing bunnicula $? on `date` ***" >> $UVM_WRAPPER_LOG
                 break
