@@ -44,6 +44,10 @@ restore_packages()
     apt-get update >> /var/log/uvm/apt.log 2>&1
     apt-get dist-upgrade $UPGD_OPTS >> /var/log/uvm/apt.log 2>&1
     /etc/init.d/untangle-vm stop
+    if [ -x /etc/init.d/untangle-reports ]; then
+        /etc/init.d/untangle-reports stop
+    fi
+
     cat $instfile | cut -d' ' -f1 | \
       xargs apt-get install $INST_OPTS >> /var/log/uvm/apt.log 2>&1
 }
@@ -59,6 +63,9 @@ instfile=$3
 
 # stop the UVM, depending on circumstances may already be stopped
 /etc/init.d/untangle-vm stop
+if [ -x /etc/init.d/untangle-reports ]; then
+    /etc/init.d/untangle-reports stop
+fi
 
 # restore the database
 restore_db $dumpfile
@@ -125,6 +132,10 @@ restore_packages $instfile
 
 # start the UVM, depending on circumstances (menu driven restore) may need to be restopped
 /etc/init.d/untangle-vm start > /dev/null 2>&1
+
+if [ -x /etc/init.d/untangle-reports ]; then
+    /etc/init.d/untangle-reports start
+fi
 
 # Inform the UVM that the DB settings have changed, give it a chance to write out config files.
 /usr/bin/rush -e "Untangle::RemoteUvmContext.syncConfigFiles()"
