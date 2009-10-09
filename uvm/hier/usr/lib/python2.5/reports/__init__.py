@@ -277,7 +277,7 @@ class ColumnDesc():
     def get_dom(self):
         element = Element('column')
         element.set('name', self.__name)
-        element.set('title', self.__title)
+        element.set('title', self.__title or '')
         if self.__type:
             element.set('type', self.__type)
 

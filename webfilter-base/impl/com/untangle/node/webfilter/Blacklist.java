@@ -123,40 +123,40 @@ public abstract class Blacklist
      */
     void removeUnblockedSites(Map<InetAddress, List<String>> map)
     {
-	logger.info("about to remove host-bypassed sites for "  + map.size() + " host(s)");
+    logger.info("about to remove host-bypassed sites for "  + map.size() + " host(s)");
 
-	InetAddress addr;
-	List<String> bypassedSites;
-	Set<String> hostSites;
+    InetAddress addr;
+    List<String> bypassedSites;
+    Set<String> hostSites;
 
-	synchronized(hostWhitelists) {
-	    for (Map.Entry<InetAddress, List<String>> entry : map.entrySet()) {
-		addr = entry.getKey();
-		logger.info(".. for address '" + addr + "'");
-		bypassedSites = entry.getValue();
+    synchronized(hostWhitelists) {
+        for (Map.Entry<InetAddress, List<String>> entry : map.entrySet()) {
+        addr = entry.getKey();
+        logger.info(".. for address '" + addr + "'");
+        bypassedSites = entry.getValue();
 
-		hostSites = hostWhitelists.get(addr);
+        hostSites = hostWhitelists.get(addr);
 
-		for (String site : bypassedSites) {
-		    if (hostSites.contains(site)) {
-			logger.info(".... removing unblocked site " + site);
-			hostSites.remove(site);
-			if (hostSites.isEmpty()) {
-			    logger.info(".... '" + addr + "' has no more unblocked sites");
-			    hostWhitelists.remove(addr);
-			    break;
-			}
-		    }
-		}
-	    }
-	}
+        for (String site : bypassedSites) {
+            if (hostSites.contains(site)) {
+            logger.info(".... removing unblocked site " + site);
+            hostSites.remove(site);
+            if (hostSites.isEmpty()) {
+                logger.info(".... '" + addr + "' has no more unblocked sites");
+                hostWhitelists.remove(addr);
+                break;
+            }
+            }
+        }
+        }
+    }
     }
 
     /**
      * Remove all the unblocked sites for all the clients.
      */
     void removeAllUnblockedSites() {
-	hostWhitelists.clear();
+    hostWhitelists.clear();
     }
 
     /**
@@ -454,7 +454,7 @@ public abstract class Blacklist
 
         StringRule stringRule;
         if (null == category || !category.getBlock()) {
-            stringRule = findBestRule(host, uri);
+            stringRule = findBestRule(host, uri, port, requestLine);
         } else {
             stringRule = null;
         }
@@ -541,7 +541,8 @@ public abstract class Blacklist
         return category;
     }
 
-    private StringRule findBestRule(String host, String uri)
+    private StringRule findBestRule(String host, String uri, int port,
+                                    RequestLineToken requestLine)
     {
         StringRule stringRule = null;
         boolean blockFound = false;
@@ -556,6 +557,12 @@ public abstract class Blacklist
             if (null != sr) {
                 stringRule = sr;
                 blockFound = stringRule.isLive();
+                Action a = Action.PASS;
+                Reason reason = Reason.BLOCK_URL;
+                WebFilterEvent hbe = new WebFilterEvent
+                    (requestLine.getRequestLine(), a, reason,
+                     stringRule.getDescription(), node.getVendor());
+                node.log(hbe, host, port);
             }
 
             dom = nextHost(dom);
@@ -589,10 +596,10 @@ public abstract class Blacklist
             }
         }
 
-	for (int k = 0 ; k < strs.length ; k++) {
-	    if (CharSequenceUtil.contains(val, strs[k]))
-		return k;
-	}
+    for (int k = 0 ; k < strs.length ; k++) {
+        if (CharSequenceUtil.contains(val, strs[k]))
+        return k;
+    }
 
         return -1;
     }
@@ -646,7 +653,7 @@ public abstract class Blacklist
                 strings.add(uri);
             }
         }
-	//        Collections.sort(strings);
+    //        Collections.sort(strings);
 
         return strings.toArray(new String[strings.size()]);
     }
