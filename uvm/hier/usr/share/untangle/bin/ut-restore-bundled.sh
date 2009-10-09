@@ -39,7 +39,7 @@ function debug() {
 }
 
 function err() {
-  echo $* > /dev/stderr
+  echo $* >> /dev/stderr
 }
 
 function doHelp() {
