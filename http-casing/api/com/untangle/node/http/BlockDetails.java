@@ -45,6 +45,7 @@ import java.lang.StringBuffer;
 public class BlockDetails implements Serializable
 {
     private static final int SUB_LINE_LEN = 80;
+    private static final int MAX_LEN = 40;
 
     private final String host;
     private final String uri;
@@ -95,7 +96,7 @@ public class BlockDetails implements Serializable
         if (null == host) {
             return "";
         } else {
-            return breakLine("http://" + host + uri, SUB_LINE_LEN);
+            return shorten("http://" + host + uri, MAX_LEN);
         }
     }
 
@@ -121,5 +122,10 @@ public class BlockDetails implements Serializable
             }
         }
         return newLine.toString();
+    }
+
+    private String shorten(String s, int maxLen)
+    {
+        return s.length() > maxLen ? s.substring(0, maxLen) : s;
     }
 }
