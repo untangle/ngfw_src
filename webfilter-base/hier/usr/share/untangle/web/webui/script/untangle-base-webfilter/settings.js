@@ -1124,13 +1124,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 		    mapping : 'isPermanent',
                     type : 'string',
                     convert : function(value) {
-                        switch (value) {
-                            case 0 :
-                                return this.i18n._("permanent");
-                            default :
-                            case 1 :
-                                return this.i18n._("temporary");
-                        }
+                        return ( value ) ? this.i18n._("permanent") : this.i18n._("temporary");
                     }.createDelegate(this)
                 }, {
                     name : 'clientAddress',
@@ -1157,12 +1151,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'clientAddress',
+                    dataIndex : 'clientAddress'
                 }, {
+                    id : "request",
                     header : this.i18n._("request"),
                     width : 200,
                     sortable : true,
-                    dataIndex : 'request',
+                    dataIndex : 'request'
                 }]
             });
         },
