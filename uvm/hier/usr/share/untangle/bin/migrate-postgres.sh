@@ -20,7 +20,7 @@ is_postgres_8_enabled()
     ## If it is configured for 5432, then we assume the babysitter will take care of it.
 
     ## If it is configured for 5433, it is not enabled.
-    if grep -q "port\s*=\s*5433" /etc/postgresql/8.3/main/postgresql.conf ; then
+    if grep -qE "port\s*=\s*5433" /etc/postgresql/8.3/main/postgresql.conf ; then
         return 1
     fi
 
