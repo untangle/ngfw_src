@@ -34,7 +34,7 @@ is_postgres_7_running()
         return 1
     fi
 
-    if [ ! -f /var/run/postgresql/.s.PGSQL.5432 ]; then
+    if [ ! -e /var/run/postgresql/.s.PGSQL.5432 ]; then
         return 1
     fi
     
@@ -43,28 +43,32 @@ is_postgres_7_running()
 
 enable_postgres_8()
 {
-  echo "[`date`]  * Stopping postgresql-8.3"
-  /etc/init.d/postgresql-8.3 stop
-
-  echo "[`date`]  * Setting postgresql-8.3 to listen on 5432"
-  perl -i -pe 's/^port =.*/port = 5432/' /etc/postgresql/8.3/main/postgresql.conf
-
-  echo "[`date`]  * Starting postgresql-8.3"
-  /etc/init.d/postgresql-8.3 start
+    echo "[`date`]  * Stopping postgresql-8.3"
+    /etc/init.d/postgresql-8.3 stop
+    
+    echo "[`date`]  * Setting postgresql-8.3 to listen on 5432"
+    perl -i -pe 's/^port =.*/port = 5432/' /etc/postgresql/8.3/main/postgresql.conf
+    
+    echo "[`date`]  * Starting postgresql-8.3"
+    /etc/init.d/postgresql-8.3 start
 }
 
 remove_postgres_7()
 {
+    echo "[`date`]  * Removing postgres 7"
     ## Try to stop it if a file from the package still exists.
     if [ -x /etc/init.d/postgresql-7.4 -a -f /usr/lib/postgresql/7.4/bin/postgres ]; then
+        echo "[`date`]  * Stopping postgres 7"
         /etc/init.d/postgresql-7.4 stop || true
     fi
 
     ## First try to remove this config file (it can't start without it).
+    echo "[`date`]  * Removing postgres 7 config file"
     rm -f /etc/postgresql/7.4/main/postgresql.conf
     
     ## Try to remove the package.
     if [ -f /usr/lib/postgresql/7.4/bin/postgres ]; then
+        echo "[`date`]  * Removing postgres 7 package"
         apt-get remove --yes postgresql-7.4 || true
     fi
 }
@@ -72,10 +76,10 @@ remove_postgres_7()
 migrate_data()
 {
     ## First make sure that postgres 8 is running.
-    if [ ! -f /var/run/postgresql/.s.PGSQL.5433 ]; then
+    if [ ! -e /var/run/postgresql/.s.PGSQL.5433 ]; then
         echo "[`date`] Starting postgresql-8.3"
         /etc/init.d/postgresql-8.3 start
-        if [ ! -f /var/run/postgresql/.s.PGSQL.5433 ]; then
+        if [ ! -e /var/run/postgresql/.s.PGSQL.5433 ]; then
             echo "[`date`]  Unable to start postgres-8.3, exiting"
             exit 1
         fi
@@ -106,6 +110,7 @@ migrate_data()
 ### Start of the script
 ## it is already running on postgres 8, just try to remove postgres 7.
 if is_postgres_8_enabled; then
+    echo "[`date`]  * Postgres 8 is enabled, trying to remove postgres 7."
     remove_postgres_7
     exit 0
 fi
@@ -124,6 +129,8 @@ fi
 
 # disable error checking, everything past here should just run.
 set +e
+
+echo "[`date`]  * Migration is complete, disabling postgres 7 and enabling postgres 8."
 
 ## remove postgres 7.
 remove_postgres_7
