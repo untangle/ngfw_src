@@ -160,7 +160,9 @@ trap reapChildHardest 6
 trap reapChildHarder 15
 trap reapChild 2
 
+monit -c /etc/untangle/monit.conf unmonitor postgres
 @PREFIX@/usr/share/untangle/bin/migrate-postgres.sh >> $UVM_WRAPPER_LOG
+monit -c /etc/untangle/monit.conf monitor postgres
 
 while true; do
     echo > $UVM_CONSOLE_LOG
