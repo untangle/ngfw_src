@@ -92,4 +92,6 @@ public interface WebFilter extends Node
 
     EventManager<WebFilterEvent> getEventManager();
 
+    EventManager<UnblockEvent> getUnblockEventManager();
+
 }

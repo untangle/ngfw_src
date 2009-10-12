@@ -13,8 +13,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
+	    this.buildUnblockEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelBlockLists, this.panelPassLists, this.gridEventLog]);
+            this.buildTabPanel([this.panelBlockLists, this.panelPassLists, 
+				this.gridEventLog, this.gridUnblockEventLog]);
             Ung.BaseWebFilter.superclass.initComponent.call(this);
         },
         // Block Lists Panel
@@ -1104,6 +1106,64 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     renderer : asServer
                 }]
 
+            });
+        },
+        buildUnblockEventLog : function() {
+            this.gridUnblockEventLog = new Ung.GridEventLog({
+                settingsCmp : this,
+		eventManagerFn : this.getRpcNode().getUnblockEventManager(),
+		name : "Unblock Log",
+		title : i18n._('Unblock Log'),
+                fields : [{
+                    name : 'timeStamp',
+		    mapping : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
+                },
+                {
+                    name : 'isPermanent',
+		    mapping : 'isPermanent',
+                    type : 'string',
+                    convert : function(value) {
+                        switch (value) {
+                            case 0 :
+                                return this.i18n._("permanent");
+                            default :
+                            case 1 :
+                                return this.i18n._("temporary");
+                        }
+                    }.createDelegate(this)
+                }, {
+                    name : 'clientAddress',
+		    mapping : 'clientAddress'
+                }, {
+                    name : 'request',
+		    mapping : 'requestUri'
+		}],
+                autoExpandColumn: 'request',
+                columns : [{
+                    header : this.i18n._("timestamp"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : this.i18n._("permanent"),
+                    width : 100,
+                    sortable : true,
+                    dataIndex : 'isPermanent'
+                }, {
+                    header : this.i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'clientAddress',
+                }, {
+                    header : this.i18n._("request"),
+                    width : 200,
+                    sortable : true,
+                    dataIndex : 'request',
+                }]
             });
         },
         // validation functions

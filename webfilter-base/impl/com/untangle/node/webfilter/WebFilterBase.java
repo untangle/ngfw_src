@@ -48,6 +48,7 @@ import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -85,6 +86,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     protected final WebFilterReplacementGenerator replacementGenerator;
 
     protected final EventLogger<WebFilterEvent> eventLogger;
+    protected final EventLogger<UnblockEvent> unblockEventLogger;
 
     protected volatile WebFilterSettings settings;
 
@@ -114,6 +116,10 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         eventLogger.addSimpleEventFilter(sef);
         lef = new WebFilterPassedFilter(this);
         eventLogger.addListEventFilter(lef);
+
+        unblockEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
+        UnblockEventAllFilter ueaf = new UnblockEventAllFilter(this);
+	unblockEventLogger.addSimpleEventFilter(ueaf);
 
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
@@ -181,6 +187,11 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return eventLogger;
     }
 
+    public EventManager<UnblockEvent> getUnblockEventManager()
+    {
+        return unblockEventLogger;
+    }
+
     public UserWhitelistMode getUserWhitelistMode()
     {
         return settings.getBaseSettings().getUserWhitelistMode();
@@ -234,6 +245,9 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 settings.getPassedUrls().add(sr);
                 setWebFilterSettings(settings);
 
+		UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true, site,
+						   getVendor(), getTid().getPolicy());
+		unblockEventLogger.log(ue);
                 return true;
             }
         } else {
@@ -248,6 +262,10 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
                 bypassMonitor.addBypassedSite(addr, site);
                 getBlacklist().addWhitelistHost(addr, site);
+
+		UnblockEvent ue = new UnblockEvent(addr, false, site,
+						   getVendor(), getTid().getPolicy());
+		unblockEventLogger.log(ue);
                 return true;
             }
         }
