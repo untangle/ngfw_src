@@ -18,11 +18,15 @@ BACKUP=/var/lib/uvm-settings.sql
 is_postgres_8_enabled()
 {
     ## If it is configured for 5432, then we assume the babysitter will take care of it.
+    echo "[`date`] Searching for port 5433 in the postgres config"
 
     ## If it is configured for 5433, it is not enabled.
-    if grep -qE "port\s*=\s*5433" /etc/postgresql/8.3/main/postgresql.conf ; then
+    if grep -E "port[ ]*=[ ]*5433" /etc/postgresql/8.3/main/postgresql.conf ; then
+        echo "[`date`] postgres is set to port 5433"
         return 1
     fi
+
+    echo "[`date`] postgres 8 is not set to port 5433"
 
     return 0
 }
