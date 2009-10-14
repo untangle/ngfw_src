@@ -137,7 +137,7 @@ needToRestart() {
 
 update_monit()
 {
-    monit -c /etc/untangle/monit.conf status | grep -q 'monitoring status\s*not monitored' && {
+    monit -c /etc/untangle/monit.conf status | grep -q 'monitoring status[ ]*not monitored' && {
         echo "`date` telling monit to monitor all services." >> $UVM_WRAPPER_LOG
         monit -c /etc/untangle/monit.conf monitor all
     }
