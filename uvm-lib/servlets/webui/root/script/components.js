@@ -4216,7 +4216,8 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         return true;
     },
     // updateAction is called to update the record after the edit
-    updateAction : function() {
+    applyAction : function()
+    {
         if (this.isFormValid()) {
             if (this.record !== null) {
                 var sm=this.usersGrid.getSelectionModel();
@@ -4228,19 +4229,39 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         users=[uid];
                         break;
                     } else {
-                      users.push(selRecs[i].get("UID"));
+                      users.push(uid);
                     }
                 }
+                /* If no users are selected, pick the any user. */
+                if ( users.length == 0 ) {
+                    users = ["[any]"];
+                }
                 this.record.set(this.userDataIndex,users.join(";"));
+
+                /* Update the selection model if necessary */
+                if ( users.length == 1 && users[0] == "[any]" ) {
+                    sm.clearSelections();
+                    sm.selectFirstRow();
+                }
+                
                 if(this.fnCallback) {
                     this.fnCallback.call()
                 }
             }
-            this.hide();
+            return true;
         } else {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Please choose a user id/login or press Cancel!"));
+            return false;
         }
     },
+
+    saveAction : function()
+    {
+        if ( this.applyAction()) {
+            this.hide();
+        }
+    },
+
     closeWindow : function() {
         this.hide();
     }
