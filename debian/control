@@ -1221,7 +1221,7 @@ Depends: sun-java6-jre
 Conflicts: mvvm (<< 5.0), libuvm-thirdparty, libmvvm-thirdparty
 Provides: libuvm-thirdparty
 Replaces: libuvm-thirdparty
-XB-Display-Name: Untangle Platform Thirdparty Libraries
+XB-Display-Name: Platform Thirdparty Libraries
 XB-Untangle-Type: library
 XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
@@ -1253,8 +1253,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e
  3tKQEpgPAAAAAElFTkSuQmCC
-Description: Untangle Platform Thirdparty Libraries
- The Untangle Platform Thirdparty Libraries.
+Description: Platform Thirdparty Libraries
+ The Platform Thirdparty Libraries.
 
 Package: untangle-vm
 Architecture: all
@@ -1263,7 +1263,7 @@ Recommends: untangle-postgresql-config, untangle-gateway-light
 Provides: mvvm
 Conflicts: mvvm, untangle-restore-tools (<< 5.1), untangle-linux-image-2.6.16-ck11-untangle-prod-486, untangle-linux-image-2.6.16-ck11-untangle-prod-xd-486, untangle-linux-image-2.6.16-ck11-untangle-cd-486, untangle-slapd, untangle-libldap-2.2-7, untangle-ldap-utils, untangle-client
 Replaces: mvvm
-XB-Display-Name: Untangle Platform
+XB-Display-Name: Platform
 XB-Untangle-Type: library
 XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
@@ -1295,14 +1295,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e
  3tKQEpgPAAAAAElFTkSuQmCC
-Description: Untangle Platform
- The Untangle Platform.
+Description: Platform
+ The Platform.
 
 Package: untangle-libuvm
 Architecture: all
 Conflicts: untangle-vm (<< 5.1)
 Depends: sun-java6-jre
-XB-Display-Name: Untangle Platform Libraries
+XB-Display-Name: Platform Libraries
 XB-Untangle-Type: library
 XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
@@ -1334,11 +1334,11 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e
  3tKQEpgPAAAAAElFTkSuQmCC
-Description: Untangle Platform Libraries
- The Untangle Platform Libraries.
+Description: Platform Libraries
+ The Platform Libraries.
 
 Package: untangle-buildutil
 Architecture: all
 Depends: sun-java6-jre
-Description: Untangle Platform Build Utils
+Description: Platform Build Utils
  The Untangle Build Utils.
