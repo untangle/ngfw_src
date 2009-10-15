@@ -20,7 +20,7 @@ Ung.SetupWizard.TextField = Ext.extend( Ext.form.TextField, {
     {
         Ung.SetupWizard.TextField.superclass.onRender.call(this, ct, position);
 
-        var parent = this.el.parent()
+        var parent = this.el.parent();
 
         if( this.boxLabel ) {
             this.labelEl = parent.createChild({
@@ -38,7 +38,7 @@ Ung.SetupWizard.NumberField = Ext.extend( Ext.form.NumberField, {
     {
         Ung.SetupWizard.NumberField.superclass.onRender.call(this, ct, position);
 
-        var parent = this.el.parent()
+        var parent = this.el.parent();
 
         if( this.boxLabel ) {
             this.labelEl = parent.createChild({
@@ -55,7 +55,9 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object,
 {
     constructor : function( config )
     {
-        if ( config == null ) config = {};
+        if ( config == null ) {
+            config = {};
+        }
 
         this.emailTestMessage =
             i18n._( "Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct." );
@@ -75,7 +77,9 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object,
             return;
         }
 
-        if ( result != true ) message = i18n._( 'Warning!  Test failed.  Check your settings.' );
+        if ( result != true ) {
+            message = i18n._( 'Warning!  Test failed.  Check your settings.' );
+        }
 
         this.showTester( { progressText : message } );
     },
@@ -92,7 +96,9 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object,
 
     showTester : function( config )
     {
-        if ( config == null ) config = {};
+        if ( config == null ) {
+            config = {};
+        }
 
         Ext.MessageBox.show({
             title : i18n._('Email Test'),
@@ -147,7 +153,9 @@ Ext.apply( Ext.form.VTypes, {
     {
         var labels = val.split( "." );
         for ( var c = 0 ; c < labels.length ; c++ ) {
-            if ( !labels[c].match( this.hostnameRegex )) return false;
+            if ( !labels[c].match( this.hostnameRegex )) {
+                return false;
+            }
         }
 
         return true;
@@ -164,17 +172,17 @@ Ung.SetupWizard.Welcome = Ext.extend(Object,
     {
         var panel = new Ext.FormPanel({
             items : [{
-        xtype : 'label',
-        html : '<h2 class="wizard-title">'+i18n._( "Thanks for using Untangle" )+'</h2>'
-        },{
                 xtype : 'label',
-        cls : 'noborder',
+                html : '<h2 class="wizard-title">'+i18n._( "Thanks for using Untangle" )+'</h2>'
+            },{
+                xtype : 'label',
+                cls : 'noborder',
                 html : i18n._( 'This wizard will guide you through the initial setup and configuration of your Untangle Server.') +
                     '<br/><br/>'+
                     String.format(i18n._('Click {0}Next{1} to get started.'),'<b>','</b>')
             }]
         });
-
+        
         this.card = {
             title : i18n._( "Welcome" ),
             //cardTitle : i18n._( "Thanks for using Untangle" ),
@@ -379,7 +387,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     name : 'email',
                     id : 'registration_email',
                     width : 200,
-                    allowBlank : false,
+                    allowBlank : false
                 }, new Ung.SetupWizard.TextField({
                     fieldLabel : i18n._('Organization Name'),
                     boxLabel: i18n._( "(if applicable)" ),
@@ -519,10 +527,14 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
 
     setRegistrationValue : function( fieldName, map, isRequired, param )
     {
-        if ( param == null ) param = fieldName;
+        if ( param == null ) {
+            param = fieldName;
+        }
 
         var field = this.form.find( "name", fieldName );
-        if ( field == null || field.length == 0 ) return;
+        if ( field == null || field.length == 0 ) {
+            return;
+        }
         field = field[0];
         var value = null;
 
@@ -535,8 +547,12 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
             value = field.getValue();
         }
 
-        if ( value == null ) return;
-        if ( value.length == 0 ) return;
+        if ( value == null ) {
+            return;
+        }
+        if ( value.length == 0 ) {
+            return;
+        }
         map[param] = "" + value;
     }
 });
@@ -609,7 +625,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         var panelText = i18n._( "This step can help you identify your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. You can also drag and drop the interfaces to remap them at this time." );
 
         if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces == false ) {
-            panelText = i18n._( "Only one network card was detected. Untangle requires two network cards to install as a transparent bridge or network router. However, Untangle can be installed as a Re-Router\u2122 allowing out-of-line filtering of network traffic using a single Network Card. To do so click Next to continue." );
+            panelText = String.format( i18n._( "{0}Only one network card was detected. Untangle requires two network cards to install as a transparent bridge or network router. However, Untangle can be installed as a Re-Router\u2122 allowing out-of-line filtering of network traffic using a single Network Card. To do so click Next to continue.{1}{2}"), '<div class="wizard-network-rerouter"><span>', '</span></div>', '<img class="wizard-network-image" src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/re-router.png"/>' );
         }
         var panel = new Ext.Panel({
             defaults : { cls : 'noborder' },
@@ -660,29 +676,37 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         var rows=sm.getSelections();
         var cindex=dd.getDragData(e).rowIndex;
 
-        if ( typeof cindex == "undefined" ) return false;
-        if ( rows.length != 1 ) return false;
+        if ( typeof cindex == "undefined" ) {
+            return false;
+        }
+        if ( rows.length != 1 ) {
+            return false;
+        }
 
         var row = this.interfaceStore.getById(rows[0].id);
         var status = row.get( "status" );
 
         var c = 0;
-        var data = [];
+        var rowData = [];
         var index = -1;
 
         this.interfaceStore.each( function( currentRow ) {
-            if ( currentRow == row ) index = c;
-            data.push( currentRow.get( "status" ));
+            if ( currentRow == row ) {
+                index = c;
+            }
+            newData.push( currentRow.get( "status" ));
             c++;
         });
 
-        if ( index == cindex ) return true;
+        if ( index == cindex ) {
+            return true;
+        }
 
-        data.splice( index, 1 );
-        data.splice( cindex, 0, status );
+        newData.splice( index, 1 );
+        newData.splice( cindex, 0, status );
 
         this.interfaceStore.each( function( currentRow ) {
-            currentRow.set( "status", data.shift());
+            currentRow.set( "status", newData.shift());
         });
 
         sm.clearSelections();
@@ -696,11 +720,14 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         var cleanArray = [];
 
         var data = interfaceArray.list;
+        var c, i;
 
-        for ( var c = 0 ;  c < data.length ; c++ ) {
-            var i = data[c];
+        for ( c = 0 ;  c < data.length ; c++ ) {
+            i = data[c];
             /* This is the VPN interfaces, and this is a magic number. */
-            if ( i.argonIntf == 7 ) continue;
+            if ( i.argonIntf == 7 ) {
+                continue;
+            }
 
             /* This is an interface that does not exist */
             // if ( i.systemName.indexOf( 'nointerface' ) == 0 ) continue;
@@ -712,8 +739,8 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
          * to just have two few fields */
         interfaceList = [];
 
-        for ( var c = 0 ; c < cleanArray.length ; c++ ) {
-            var i = cleanArray[c];
+        for ( c = 0 ; c < cleanArray.length ; c++ ) {
+            i = cleanArray[c];
             interfaceList.push( [ i.name, [ i.systemName, i.connectionState, i.currentMedia ]] );
         }
 
@@ -1056,14 +1083,16 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             panel : panel,
             onLoad : function( complete )
             {
-                if ( !this.isInitialized ) this.cardPanel.layout.setActiveItem( 0 );
+                if ( !this.isInitialized ) {
+                    this.cardPanel.layout.setActiveItem( 0 );
+                }
 
                 this.isInitialized = true;
                 complete();
             }.createDelegate(this),
             onNext : this.saveSettings.createDelegate( this ),
             onValidate : this.validateInternetConnection.createDelegate(this)
-        }
+        };
     },
     validateInternetConnection : function()
     {
@@ -1091,7 +1120,9 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
     saveDHCP : function( handler, hideWindow )
     {
-        if ( hideWindow == null ) hideWindow = true;
+        if ( hideWindow == null ) {
+            hideWindow = true;
+        }
 
         var ns = Ung.SetupWizard.CurrentValues.networkSettings;
         ns.dhcpEnabled = true;
@@ -1109,7 +1140,9 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         ns.dhcpEnabled = false;
         ns.PPPoESettings.live = false;
 
-        if ( hideWindow == null ) hideWindow = true;
+        if ( hideWindow == null ) {
+            hideWindow = true;
+        }
 
         ns.host = this.staticPanel.find( "name", "ip" )[0].getValue();
         ns.netmask = this.staticPanel.find( "name", "netmask" )[0].getRawValue();
@@ -1117,8 +1150,11 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         ns.dns1 = this.staticPanel.find( "name", "dns1" )[0].getValue();
         var dns2 = this.staticPanel.find( "name", "dns2" )[0].getValue();
 
-        if ( dns2.length > 0 ) ns.dns2 = dns2;
-        else ns.dns2 = null;
+        if ( dns2.length > 0 ) {
+            ns.dns2 = dns2;
+        } else {
+            ns.dns2 = null;
+        }
 
         ns.singleNicEnabled = !Ung.SetupWizard.CurrentValues.hasMultipleInterfaces;
 
@@ -1132,7 +1168,9 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         ns.dhcpEnabled = true;
         ns.PPPoESettings.live = true;
 
-        if ( hideWindow == null ) hideWindow = true;
+        if ( hideWindow == null ) {
+            hideWindow = true;
+        }
 
         ns.PPPoESettings.username = this.pppoePanel.find( "name", "username" )[0].getValue();
         ns.PPPoESettings.password = this.pppoePanel.find( "name", "password" )[0].getValue();
@@ -1168,7 +1206,9 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
         this.refreshNetworkSettings();
 
-        if ( hideWindow || ( hideWindow == null )) Ext.MessageBox.hide();
+        if ( hideWindow || ( hideWindow == null )) {
+            Ext.MessageBox.hide();
+        }
 
         handler();
     },
@@ -1267,8 +1307,12 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
     /* Guard the field to shield strange values from the user. */
     updateValue : function( field, value )
     {
-        if ( field == null ) return;
-        if ( value == null || value == "0.0.0.0" ) value = "";
+        if ( field == null ) {
+            return;
+        }
+        if ( value == null || value == "0.0.0.0" ) {
+            value = "";
+        }
 
         field.setValue( value );
     }
@@ -1372,7 +1416,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             onLoad : this.onLoadInternalSuggestion.createDelegate(this),
             onNext : this.saveInternalNetwork.createDelegate( this ),
             onValidate : this.validateInternalNetwork.createDelegate(this)
-        }
+        };
     },
     onLoadInternalSuggestion : function( complete )
     {
@@ -1421,10 +1465,8 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                 break;
             }
         }
-        switch(nic){
-        case 'router' :
+        if ( nic == "router" ) {
             rv = _validate(this.panel.items.items);
-            break;
         }
         return rv;
     },
@@ -1551,7 +1593,9 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                         listeners : {
                             check : {
                                 fn : function( checkbox, checked ) {
-                                    if ( checked ) this.onSetSendDirectly( true );
+                                    if ( checked ) {
+                                        this.onSetSendDirectly( true );
+                                    }
                                 }.createDelegate( this )
                             }
                         }
@@ -1565,7 +1609,9 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                         listeners : {
                             check : {
                                 fn : function( checkbox, checked ) {
-                                    if ( checked ) this.onSetSendDirectly( false );
+                                    if ( checked ) {
+                                        this.onSetSendDirectly( false );
+                                    }
                                 }.createDelegate( this )
                             }
                         }
@@ -1645,11 +1691,13 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             onNext : this.saveSettings.createDelegate( this ),
             onLoad : this.setFromAddress.createDelegate( this ),
             onValidate : this.validateEmailConfiguration.createDelegate(this)
-        }
+        };
     },
     emailTest : function()
     {
-        if ( !this.validateEmailConfiguration()) return;
+        if ( !this.validateEmailConfiguration()) {
+            return;
+        }
 
         this.saveSettings( this.emailTester.showTester.createDelegate( this.emailTester ));
     },
@@ -1658,7 +1706,9 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
     {
         if ( !this.isInitialized ) {
             var hostname = Ung.SetupWizard.CurrentValues.addressSettings.hostName;
-            if ( hostname == null ) hostname = "example.com";
+            if ( hostname == null ) {
+                hostname = "example.com";
+            }
             this.panel.find( "name", "from-address-textfield" )[0].setValue( "untangle@" + hostname );
         }
 
@@ -1700,7 +1750,9 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         //if(!isSendDirectly){
         _invalidate(this.directlyArray);
         //}
-        if ( isSendDirectly ) this.onSetRequiresAuth( false );
+        if ( isSendDirectly ) {
+            this.onSetRequiresAuth( false );
+        }
     },
 
     onSetRequiresAuth : function( requiresAuth )
@@ -1793,7 +1845,7 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
             cardTitle : i18n._( "Congratulations!" ),
             panel : panel,
             onNext : this.openUserInterface.createDelegate( this )
-        }
+        };
     },
 
     openUserInterface : function( handler )
@@ -1809,7 +1861,9 @@ Ung.Setup = {
     isInitialized : false,
     init : function()
     {
-        if ( this.isInitialized == true ) return;
+        if ( this.isInitialized == true ) {
+            return;
+        }
         this.isInitialized = true;
 
         Ext.WindowMgr.zseed = 20000;
@@ -1833,7 +1887,7 @@ Ung.Setup = {
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
 
-        i18n = new Ung.I18N( { "map" : Ung.SetupWizard.CurrentValues.languageMap })
+        i18n = new Ung.I18N( { "map" : Ung.SetupWizard.CurrentValues.languageMap });
 
         document.title = i18n._( "Setup Wizard" );
 
@@ -1877,7 +1931,7 @@ Ung.Setup = {
         if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 0 );
+                this.wizard.goToPage( 5 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
 
