@@ -90,8 +90,8 @@ migrate_data()
     fi
     
     echo "[`date`] Creating database and user"
-    createuser -p 5433 -U postgres -dSR metavize 2>/dev/null || true
-    createuser -p 5433 -U postgres -dSR untangle 2>/dev/null || true
+    /usr/lib/postgresql/8.3/bin/createuser -p 5433 -U postgres -dSR metavize || true
+    /usr/lib/postgresql/8.3/bin/createuser -p 5433 -U postgres -dSR untangle || true
 
     # Drop that UVM database, and exit if it is unable to remove it
     psql -p 5433 -U postgres -c "DROP DATABASE IF EXISTS uvm" || {
