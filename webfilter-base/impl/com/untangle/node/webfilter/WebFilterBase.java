@@ -245,7 +245,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 settings.getPassedUrls().add(sr);
                 setWebFilterSettings(settings);
 
-		UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true, site,
+		UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true, 
+						   bd.getFormattedUrl(),
 						   getVendor(), getTid().getPolicy());
 		unblockEventLogger.log(ue);
                 return true;
@@ -263,7 +264,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 bypassMonitor.addBypassedSite(addr, site);
                 getBlacklist().addWhitelistHost(addr, site);
 
-		UnblockEvent ue = new UnblockEvent(addr, false, site,
+		UnblockEvent ue = new UnblockEvent(addr, false,
+						   bd.getFormattedUrl(),
 						   getVendor(), getTid().getPolicy());
 		unblockEventLogger.log(ue);
                 return true;
