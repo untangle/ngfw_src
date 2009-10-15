@@ -182,6 +182,9 @@ public class VpnNodeImpl extends AbstractNode
             this.certificateManager.updateCertificateStatus( newSettings );
         }
 
+        /* Copy in the old keys that were distributed over email */
+        saveDistributedKeys(newSettings);
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
@@ -253,6 +256,37 @@ public class VpnNodeImpl extends AbstractNode
             if (newGroup != null) {
                 client.setGroup(newGroup);
             }
+        }
+    }
+
+    private void saveDistributedKeys(VpnSettings newSettings)
+    {
+        if ( this.settings == null ) return;
+
+        /* If it is the same object, there is nothing to do */
+        if ( this.settings == newSettings ) return;
+
+        Map<String,String> clientMap = new HashMap<String,String>();
+        for ( VpnClientBase client : this.settings.getCompleteClientList()) {
+            clientMap.put( client.getInternalName(), client.getDistributionKey());
+        }
+
+        for ( VpnClientBase client : newSettings.getCompleteClientList()) {
+            String key = client.getDistributionKey();
+            /* If the key is in the settings object, then do not replace it with what is on the box. 
+             * (bulk update) */
+            if ( key != null && key.length() > 0 ) {
+                continue;
+            }
+
+            key = clientMap.get(client.getInternalName());
+
+            /* If the previous settings do not have a value, then do not use it. */
+            if ( key == null || key.length() == 0 ) {
+                continue;
+            }
+            
+            client.setDistributionKey(key);
         }
     }
 

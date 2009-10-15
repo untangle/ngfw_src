@@ -1711,28 +1711,79 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return true;
         },
 
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate( this ));
+        },
+        
+        completeSaveAction : function()
+        {
+            Ext.MessageBox.hide();
+            this.closeWindow();
+        },
 
-        // save function
-        saveAction : function() {
+        applyAction : function()
+        {
+            this.commitSettings(this.reloadSettings.createDelegate(this));
+        },
+
+        commitSettings : function(callback)
+        {            
             // validate first
             if(this.configState == "SERVER_ROUTE") {
                 if (this.validate()) {
-                    var vpnSettings=this.getVpnSettings();
-                    vpnSettings.groupList.list=this.gridGroups.getFullSaveList();
-                    vpnSettings.exportedAddressList.list=this.gridExports.getFullSaveList();
-                    vpnSettings.clientList.list=this.gridClients.getFullSaveList();
-                    vpnSettings.siteList.list=this.gridSites.getFullSaveList();
                     Ext.MessageBox.wait(this.i18n._("Saving..."), this.i18n._("Please wait"));
+
+                    var vpnSettings = this.getVpnSettings();
+                    vpnSettings.groupList.list = this.gridGroups.getFullSaveList();
+                    vpnSettings.exportedAddressList.list = this.gridExports.getFullSaveList();
+                    vpnSettings.clientList.list = this.gridClients.getFullSaveList();
+                    vpnSettings.siteList.list = this.gridSites.getFullSaveList();
+                    
                     this.getRpcNode().setVpnSettings(function(result, exception) {
-                        Ext.MessageBox.hide();
-                        if(Ung.Util.handleException(exception)) return;
-                        // exit settings screen
-                        this.closeWindow();
+                        if(Ung.Util.handleException(exception)) return;                        
+                        callback();
                     }.createDelegate(this), vpnSettings);
                 }
             } else {
-                this.closeWindow();
+                callback();
             }
+        },
+
+        reloadSettings : function()
+        {
+            this.getRpcNode().getVpnSettings(this.completeReloadSettings.createDelegate( this ));
+        },
+        
+        completeReloadSettings : function( result, exception )
+        {
+            
+            this.rpc.vpnSettings = result;
+
+            /* Assume the config state hasn't changed */
+            if (this.configState == "SERVER_ROUTE") {
+                this.gridClients.store.loadData( this.rpc.vpnSettings.clientList.list );
+                this.gridClients.clearChangedData();
+                this.groupsStore.loadData( this.rpc.vpnSettings.groupList.list );
+                
+                this.gridSites.store.loadData( this.rpc.vpnSettings.siteList.list );
+                this.gridSites.clearChangedData();
+                this.gridGroups.store.loadData( this.rpc.vpnSettings.groupList );
+                this.gridGroups.clearChangedData();
+                this.gridExports.store.loadData( this.rpc.vpnSettings.exportedAddressList.list );
+                this.gridExports.clearChangedData();
+                
+                Ext.getCmp( "openvpn_advanced_publicPort" ).setValue( this.rpc.vpnSettings.publicPort );
+                Ext.getCmp( "openvpn_advanced_siteName" ).setValue( this.rpc.vpnSettings.siteName );
+                
+                /* Assuming radio box is intact */
+                Ext.getCmp("openvpn_advanced_dns1").setValue( this.rpc.dns1 );
+                Ext.getCmp("openvpn_advanced_dns2").setValue( this.rpc.dns2 );
+            } else {
+                /* do nothing */
+            }
+
+            Ext.MessageBox.hide();
         },
         
         isDirty : function() {

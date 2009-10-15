@@ -586,17 +586,17 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         Ext.MessageBox.hide();                    
                         this.closeWindow();
                     }else{
-                    //refresh the settings
-                            Ext.MessageBox.hide();
-                            //refresh the settings
-                            this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                Ext.MessageBox.hide();                            
-                                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());                                      
-                                this.gridRules.setTotalRecords(result2.firewallRulesLength);
-                                this.gridRules.reloadGrid();
-                                this.initialRules =this.gridRules.getFullSaveList();                                 
-                            }.createDelegate(this));                        
-                            //this.gridEventLog.reloadGrid();                            
+                        //refresh the settings
+                        Ext.MessageBox.hide();
+                        //refresh the settings
+                        this.getRpcNode().getBaseSettings(function(result2,exception2){
+                            Ext.MessageBox.hide();                            
+                            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
+                            this.gridRules.setTotalRecords(result2.firewallRulesLength);
+                            this.gridRules.reloadGrid();
+                            this.initialRules =this.gridRules.getFullSaveList();                                 
+                        }.createDelegate(this));                        
+                        //this.gridEventLog.reloadGrid();                            
                     }
                 }.createDelegate(this), this.getBaseSettings(), this.gridRules ? {javaClass:"java.util.ArrayList",list:this.gridRules.getFullSaveList()} : null);
             }
