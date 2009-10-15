@@ -66,6 +66,9 @@ sleep .5
 
 echo "[`date`,start-openvpn] Starting the openvpn server"
 
+cp -f @PREFIX@/usr/share/untangle/openvpn/openvpn-monit.conf /etc/untangle/monit.d/untangle-openvpn.conf
+touch /etc/untangle/monit-to-restart
+
 ## This is required or else openvpn won't restart properly (sometimes the UDP port is still bound)
 for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
     ## These script don't return a non-zero value

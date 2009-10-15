@@ -15,6 +15,11 @@ else
     exit -2
 fi
 
+# stop monitoring
+rm -f /etc/untangle/monit.d/untangle-openvpn.conf
+touch /etc/untangle/monit-to-restart
+sleep 30 # to make sure monit has restarted
+
 ${OPENVPN_SCRIPT} stop
 
 ## Openvpn is kind of a fickle program.
