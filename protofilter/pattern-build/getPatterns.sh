@@ -37,6 +37,7 @@ rm bgp.pat
 rm rtp.pat
 rm xunlei.pat
 rm kugoo.pat
+rm pplive.pat
 
 # don't even work:
 rm skypeout.pat

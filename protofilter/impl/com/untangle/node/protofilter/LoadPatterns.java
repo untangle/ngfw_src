@@ -82,8 +82,6 @@ public class LoadPatterns {
 	pats.put(490, new ProtoFilterPattern(490, "IP printing", "Printing", " a new standard for UNIX printing - RFC 2911", "ipp://", "good notsofast notsofast", false,false,false));
 	pats.put(500, new ProtoFilterPattern(500, "IRC", "Instant Messenger", " Internet Relay Chat - RFC 1459", "^(nick[\\x09-\\x0d -~]*user[\\x09-\\x0d -~]*:|user[\\x09-\\x0d -~]*:[\\x02-\\x0d -~]*nick[\\x09-\\x0d -~]*\\x0d\\x0a)", "great fast fast", false,false,false));
 	pats.put(510, new ProtoFilterPattern(510, "Jabber (XMPP)", "Instant Messenger", " open instant messenger protocol - RFC 3920 - http://jabber.org", "<stream:stream[\\x09-\\x0d ][ -~]*[\\x09-\\x0d ]xmlns=['\"]jabber", "good notsofast notsofast", false,false,false));
-    // KuGoo signature overmatches
-	//pats.put(520, new ProtoFilterPattern(520, "KuGoo", "Peer to Peer", " a Chinese P2P program - http://www.kugoo.com", "^(\\x64.....\\x70....\\x50\\x37|\\x65.+)", "ok fast fast", false,false,false));
 	pats.put(530, new ProtoFilterPattern(530, "live365", "Music", " An Internet radio site - http://live365.com", "membername.*session.*player", "marginal notsofast notsofast", false,false,false));
 	pats.put(575, new ProtoFilterPattern(575, "MySpace IM", "Instant Messenger", " MySpace chat client", "^\\\\login2.*?\\\\final\\\\$", "chat proprietary", false,false,false));
 	pats.put(540, new ProtoFilterPattern(540, "LPD", "Printing", " Line Printer Daemon Protocol (old-style UNIX printing) - RFC 1179", "^(\\x01[!-~]+|\\x02[!-~]+\\x0a.[\\x01\\x02\\x03][\\x01-\\x0a -~]*|[\\x03\\x04][!-~]+[\\x09-\\x0d]+[a-z][\\x09-\\x0d -~]*|\\x05[!-~]+[\\x09-\\x0d]+([a-z][!-~]*[\\x09-\\x0d]+[1-9][0-9]?[0-9]?|root[\\x09-\\x0d]+[!-~]+).*)\\x0a$", "ok fast fast", false,false,false));
@@ -101,7 +99,6 @@ public class LoadPatterns {
 	pats.put(660, new ProtoFilterPattern(660, "OpenFT", "Peer to Peer", " P2P filesharing (implemented in giFT library)", "x-openftalias: [-)(0-9a-z ~.]", "good notsofast notsofast", false,false,false));
 	pats.put(670, new ProtoFilterPattern(670, "POCO and PP365", "Peer to Peer", " Chinese P2P filesharing - http://pp365.com http://poco.cn", "^\\x80\\x94\\x0a\\x01....\\x1f\\x9e", "ok veryfast fast", false,false,false));
 	pats.put(680, new ProtoFilterPattern(680, "POP3", "Email", " Post Office Protocol version 3 (popular e-mail protocol) - RFC 1939", "^(\\+ok |-err )", "great fast fast", false,false,false));
-	pats.put(685, new ProtoFilterPattern(685, "PPLive", "Peer to Peer", " Chinese P2P streaming video - http://pplive.com", "\\x01...\\xd3.+\\x0c.$", "ok notsofast notsofast", false,false,false));
 	pats.put(690, new ProtoFilterPattern(690, "pressplay", "Music", " A legal music distribution site - http://pressplay.com", "user-agent: nsplayer", "ok notsofast notsofast", false,false,false));
 	pats.put(710, new ProtoFilterPattern(710, "Quake 1", "Video Game", " A popular computer game.", "^\\x80\\x0c\\x01quake\\x03", "marginal veryfast fast", false,false,false));
 	pats.put(700, new ProtoFilterPattern(700, "Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)", "Video Game", "Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)", "^\\xff\\xff\\xff\\xffget(info|challenge)", "good veryfast fast", false,false,false));
@@ -139,8 +136,6 @@ public class LoadPatterns {
 	pats.put(950, new ProtoFilterPattern(950, "World of Warcraft", "Video Game", " popular network game - http://blizzard.com/", "^\\x06\\xec\\x01", "ok veryfast fast", false,false,false));
 	pats.put(960, new ProtoFilterPattern(960, "X Windows Version 11", "Remote Desktop", " Networked GUI system used in most Unices", "^[lb].?\\x0b", "good notsofast veryfast", false,false,false));
 	pats.put(970, new ProtoFilterPattern(970, "XBox Live", "Video Game", " Console gaming", "^\\x58\\x80........\\xf3|^\\x06\\x58\\x4e", "marginal slow notsofast", false,false,false));
-    // Xunlei signature overmatches
-    //	pats.put(980, new ProtoFilterPattern(980, "Xunlei", "Peer to Peer", " Chinese P2P filesharing - http://xunlei.com", "^([()]|get)(...?.?.?(reg|get|query)|.+User-Agent: (Mozilla/4\\.0 \\(compatible; (MSIE 6\\.0; Windows NT 5\\.1;? ?\\)|MSIE 5\\.00; Windows 98\\))))|Keep-Alive\\x0d\\x0a\\x0d\\x0a[26]", "good slow notsofast", false,false,false));
 	pats.put(990, new ProtoFilterPattern(990, "Yahoo messenger", "Instant Messenger", " an instant messenger protocol - http://yahoo.com", "^(ymsg|ypns|yhoo).?.?.?.?.?.?.?[lwt].*\\xc0\\x80", "good fast fast", false,false,false));
 	pats.put(1000, new ProtoFilterPattern(1000, "ZMAAP", "Networking", " Zeroconf Multicast Address Allocation Protocol", "^\\x1b\\xd7\\x3b\\x48[\\x01\\x02]\\x01?\\x01", "ok veryfast fast", false,false,false));
 
