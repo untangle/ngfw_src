@@ -170,7 +170,6 @@ def register_fact_table(fact_table):
     logging.info("registering fact table: '%s': '%s'" % (fact_table.name,
                                                          fact_table))
     __fact_tables[fact_table.name] = fact_table
-    logging.info('AFTER: %s' % __fact_tables)
 
 def get_fact_table(name):
     global __fact_tables

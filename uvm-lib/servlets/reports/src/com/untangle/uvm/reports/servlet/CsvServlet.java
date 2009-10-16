@@ -21,6 +21,10 @@ package com.untangle.uvm.reports.servlet;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.engine.DataSourceFactory;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.ColumnDesc;
 import com.untangle.uvm.reports.DetailSection;
@@ -93,6 +98,9 @@ public class CsvServlet extends HttpServlet
                                 header.add(cd.getTitle());
                             }
                             writeCsvRow(bw, header);
+
+                            doQuery(bw, ds.getSql());
+
                             break;
                         } catch (ClassCastException exn) {
                             logger.warn("could not get header", exn);
@@ -101,11 +109,6 @@ public class CsvServlet extends HttpServlet
                 }
             }
 
-            List<List> ll = rm.getAllDetailData(date, app, detail, type, value);
-
-            for (List l : ll) {
-                writeCsvRow(bw, l);
-            }
             bw.flush();
         } catch (ParseException exn) {
             logger.warn("could not parse date: " + dateStr, exn);
@@ -122,6 +125,35 @@ public class CsvServlet extends HttpServlet
                 }
             } catch (IOException exn) {
                 logger.warn("could not close data stream", exn);
+            }
+        }
+    }
+
+    private void doQuery(BufferedWriter bw, String sql)
+        throws IOException
+    {
+        Connection conn = null;
+        try {
+            conn = DataSourceFactory.factory().getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            int columnCount = rs.getMetaData().getColumnCount();
+            while (rs.next()) {
+                List l = new ArrayList(columnCount);
+                for (int i = 1; i <= columnCount; i++) {
+                    l.add(rs.getObject(i));
+                }
+                writeCsvRow(bw, l);
+            }
+        } catch (SQLException exn) {
+            logger.warn("could not get DetailData for: " + sql,
+                        exn);
+        } finally {
+            if (conn != null) {
+                try {
+                    DataSourceFactory.factory().closeConnection(conn);
+                } catch (Exception x) { }
+                conn = null;
             }
         }
     }
