@@ -240,8 +240,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 return false;
             } else {
                 logger.warn("permanently unblocking site: " + site);
-                StringRule sr = new StringRule(site, site, "user whitelisted",
-                                               "whitelisted by user", true);
+                StringRule sr = new StringRule(site, site, "user unblocked",
+                                               "unblocked by user", true);
                 settings.getPassedUrls().add(sr);
                 setWebFilterSettings(settings);
 

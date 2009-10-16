@@ -361,8 +361,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
                 return false;
             } else {
                 logger.warn("permanently unblocking site: " + site);
-                StringRule sr = new StringRule(site, site, "user whitelisted",
-                                               "whitelisted by user", true);
+                StringRule sr = new StringRule(site, site, "user unblocked",
+                                               "unblocked by user", true);
                 settings.getDomainWhitelist().add(sr);
                 setSpywareSettings(settings);
 
