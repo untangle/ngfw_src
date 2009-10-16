@@ -2671,7 +2671,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
                 name : "Save",
                 id : this.getId() + "_saveBtn",
                 iconCls : 'save-icon',
-                text : i18n._('Save'),
+                text : i18n._('OK'),
                 handler : function() {
                     this.saveAction.defer(1, this);
                 }.createDelegate(this)

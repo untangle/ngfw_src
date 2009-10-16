@@ -828,14 +828,14 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         Ext.MessageBox.hide();                    
                         this.closeWindow();
                     }else{
-                    //refresh the settings
-                            this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                Ext.MessageBox.hide();                            
-                                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());                                      
-                                this.gridPassList.setTotalRecords(result2.domainWhitelistLength);
-                                this.gridPassList.reloadGrid();
-                            }.createDelegate(this));
-                            //this.gridEventLog.reloadGrid();                                     
+                        //refresh the settings
+                        this.getRpcNode().getBaseSettings(function(result2,exception2){
+                            Ext.MessageBox.hide();                            
+                            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());                                      
+                            this.gridPassList.setTotalRecords(result2.domainWhitelistLength);
+                            this.gridPassList.reloadGrid();
+                        }.createDelegate(this));
+                        //this.gridEventLog.reloadGrid();                                     
                     }
                 }.createDelegate(this), this.getBaseSettings(), this.gridActiveXList ? this.gridActiveXList.getSaveList() : null,
                         this.gridCookiesList ? this.gridCookiesList.getSaveList() : null,
