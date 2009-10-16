@@ -517,8 +517,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return this.rpc.registrationInfo;
         },
 
-        getGroupsStore : function() {
-            if (this.groupsStore == null) {
+        getGroupsStore : function(force) {
+            if (this.groupsStore == null ||force===true) {
                 this.groupsStore = new Ext.data.JsonStore({
                     fields : ['id', 'name','javaClass'],
                     data : this.getVpnSettings().groupList.list
@@ -1759,19 +1759,27 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         {
             
             this.rpc.vpnSettings = result;
-
+            this.initialVpnSettings = this.rpc.vpnSettings;
             /* Assume the config state hasn't changed */
             if (this.configState == "SERVER_ROUTE") {
-                this.gridClients.store.loadData( this.rpc.vpnSettings.clientList.list );
-                this.gridClients.clearChangedData();
                 this.groupsStore.loadData( this.rpc.vpnSettings.groupList.list );
+
+                var defaultGroup  = this.getGroupsStore(true).getCount()>0?this.getGroupsStore(true).getAt(0).data:null;
+
+                this.gridSites.emptyRow.groupId = defaultGroup==null? null : defaultGroup.id;
+                this.gridSites.emptyRow.group = defaultGroup;
                 
-                this.gridSites.store.loadData( this.rpc.vpnSettings.siteList.list );
+                this.gridClients.emptyRow.groupId =  defaultGroup.id;
+                this.gridClients.emptyRow.group =  defaultGroup;   
+
+                this.gridClients.clearChangedData();
+                this.gridClients.store.loadData( this.rpc.vpnSettings.clientList.list );                                                
                 this.gridSites.clearChangedData();
-                this.gridGroups.store.loadData( this.rpc.vpnSettings.groupList );
+                this.gridSites.store.loadData( this.rpc.vpnSettings.siteList.list );
                 this.gridGroups.clearChangedData();
-                this.gridExports.store.loadData( this.rpc.vpnSettings.exportedAddressList.list );
+                this.gridGroups.store.loadData( this.rpc.vpnSettings.groupList );
                 this.gridExports.clearChangedData();
+                this.gridExports.store.loadData( this.rpc.vpnSettings.exportedAddressList.list );
                 
                 Ext.getCmp( "openvpn_advanced_publicPort" ).setValue( this.rpc.vpnSettings.publicPort );
                 Ext.getCmp( "openvpn_advanced_siteName" ).setValue( this.rpc.vpnSettings.siteName );
@@ -1797,7 +1805,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             	return false;
             }
         },
-
         configureVPNClient : function() {
             if (this.clientSetup) {
                 Ext.destroy(this.clientSetup)
