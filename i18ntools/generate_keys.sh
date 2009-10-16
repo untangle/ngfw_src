@@ -45,11 +45,12 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../ips/impl/com/untangle/node/ips/IpsNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../openvpn/impl/com/untangle/node/openvpn/VpnNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../protofilter/impl/com/untangle/node/protofilter/ProtoFilterImpl.java
-    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spam-base/impl/com/untangle/node/spam/SpamImpl.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../spyware/impl/com/untangle/node/spyware/SpywareImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../virus-base/impl/com/untangle/node/virus/VirusNodeImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../webfilter-base/impl/com/untangle/node/webfilter/WebFilterBase.java
-
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/rup/faild/impl/com/untangle/node/faild/FailDImpl.java
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/rup/splitd/impl/com/untangle/node/splitd/SplitDImpl.java 
     find ../../uvm/hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
 
     msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot

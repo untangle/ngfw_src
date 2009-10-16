@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-29 17:57-0700\n"
+"POT-Creation-Date: 2009-10-15 16:44-0700\n"
 "PO-Revision-Date: 2008-11-13 08:48-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -128,11 +128,11 @@ msgstr "razão para ação"
 msgid "server"
 msgstr "servidor"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:224
 msgid "Saving..."
 msgstr "Salvando..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:224
 msgid "Please wait"
 msgstr "Aguarde"
 

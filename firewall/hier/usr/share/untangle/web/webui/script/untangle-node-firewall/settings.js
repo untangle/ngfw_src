@@ -343,7 +343,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             fieldLabel : this.i18n._("Log")
                         }),
                         new Ext.form.FieldSet({
-                            title : i18n._('Rule') ,
+                            title : this.i18n._("Rule") ,
                             cls:'firewall-spacing-2',
                             autoHeight : true,
                             items:[
