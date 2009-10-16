@@ -70,6 +70,7 @@ class UvmNode(Node):
                         Column('uid', 'text'),
                         Column('policy_id', 'bigint'),
                         Column('client_intf', 'smallint'),
+                        Column('server_intf', 'smallint'),
                         Column('c_server_port', 'int4'),
                         Column('c_client_port', 'int4')],
                        [Column('new_sessions', 'bigint', 'count(*)'),
@@ -237,6 +238,7 @@ CREATE TABLE reports.sessions (
         c_server_port int4,
         c_client_port int4,
         client_intf int2,
+        server_intf int2,
         c2p_bytes int8,
         p2c_bytes int8,
         s2p_bytes int8,
@@ -254,7 +256,7 @@ CREATE TABLE reports.sessions (
 CREATE TEMPORARY TABLE newsessions AS
     SELECT endp.event_id, endp.time_stamp, endp.policy_id, mam.name,
            endp.c_client_addr, endp.c_server_addr, endp.c_server_port,
-           endp.c_client_port, endp.client_intf
+           endp.c_client_port, endp.client_intf, endp.server_intf
     FROM events.pl_endp endp
     LEFT OUTER JOIN reports.merged_address_map mam
       ON (endp.c_client_addr = mam.addr AND endp.time_stamp >= mam.start_time
@@ -265,13 +267,13 @@ CREATE TEMPORARY TABLE newsessions AS
             sql_helper.run_sql("""\
 INSERT INTO reports.sessions
     (pl_endp_id, time_stamp, end_time, hname, uid, policy_id, c_client_addr,
-     c_server_addr, c_server_port, c_client_port, client_intf, c2p_bytes, p2c_bytes,
-     s2p_bytes, p2s_bytes)
+     c_server_addr, c_server_port, c_client_port, client_intf, server_intf,
+     c2p_bytes, p2c_bytes, s2p_bytes, p2s_bytes)
     SELECT ses.event_id, ses.time_stamp, stats.time_stamp,
          COALESCE(NULLIF(ses.name, ''), HOST(ses.c_client_addr)) AS hname,
          stats.uid, policy_id, c_client_addr, c_server_addr, c_server_port,
-         c_client_port, client_intf,
-         stats.c2p_bytes, stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
+         c_client_port, client_intf, server_intf, stats.c2p_bytes,
+         stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
     FROM newsessions ses
     JOIN events.pl_stats stats ON (ses.event_id = stats.pl_endp_id)""",
                                connection=conn, auto_commit=False)
@@ -318,7 +320,7 @@ GROUP BY time, uid, hname""", (sd, ed), connection=conn, auto_commit=False)
             raise e
 
     def teardown(self):
-        print "TEARDOWN"
+        pass
 
     @print_timing
     def __generate_address_map(self, start_date, end_date):
