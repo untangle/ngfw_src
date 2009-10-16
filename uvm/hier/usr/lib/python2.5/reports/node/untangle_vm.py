@@ -245,6 +245,7 @@ CREATE TABLE reports.sessions (
         p2s_bytes int8)""", 'time_stamp', start_date, end_date)
 
         sql_helper.add_column('reports.sessions', 'policy_id', 'bigint')
+        sql_helper.add_column('reports.sessions', 'server_id', 'int2')
 
         sd = DateFromMx(sql_helper.get_update_info('reports.sessions',
                                                    start_date))
@@ -293,7 +294,14 @@ CREATE TABLE reports.session_counts (
         trunc_time timestamp,
         uid text,
         hname text,
+        client_intf smallint,
+        server_intf smallint,
         num_sessions int8)""", 'trunc_time', start_date, end_date)
+
+        sql_helper.add_column('reports.session_counts', 'client_intf',
+                              'smallint')
+        sql_helper.add_column('reports.session_counts', 'server_intf',
+                              'smallint')
 
         sd = DateFromMx(sql_helper.get_update_info('reports.session_counts',
                                                    start_date))
@@ -303,13 +311,15 @@ CREATE TABLE reports.session_counts (
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.session_counts
-    (trunc_time, uid, hname, num_sessions)
+    (trunc_time, uid, hname, client_intf, server_intf, num_sessions)
 SELECT (date_trunc('minute', time_stamp)
         + (generate_series(0, (extract('epoch' from (end_time - time_stamp))
-        / 60)::int) || ' minutes')::interval) AS time, uid, hname, count(*)
+        / 60)::int) || ' minutes')::interval) AS time, uid, hname,
+        client_intf, server_intf, count(*)
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
-GROUP BY time, uid, hname""", (sd, ed), connection=conn, auto_commit=False)
+GROUP BY time, uid, hname, client_intf, server_intf
+""", (sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.session_counts', ed,
                                        connection=conn, auto_commit=False)
