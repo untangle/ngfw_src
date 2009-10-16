@@ -1039,15 +1039,16 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
                     width : 200
-                }, {
+                }, new Ung.form.TextField({
                     xtype : "textfield",
                     name : "Network address",
                     dataIndex : "network",
                     fieldLabel : this.i18n._("Network address"),
+                    boxLabel : "(Internal address of remote site)",
                     allowBlank : false,
                     width : 200,
                     vtype : 'ipAddress'
-                }, {
+                }), {
                     xtype : "textfield",
                     name : "Network mask",
                     dataIndex : "netmask",
