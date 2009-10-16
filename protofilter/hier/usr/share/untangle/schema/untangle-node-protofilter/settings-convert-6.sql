@@ -18,3 +18,4 @@
 
 DELETE FROM n_protofilter_pattern WHERE protocol = 'KuGoo';
 DELETE FROM n_protofilter_pattern WHERE protocol = 'Xunlei';
+DELETE FROM n_protofilter_pattern WHERE protocol = 'PPLive';
