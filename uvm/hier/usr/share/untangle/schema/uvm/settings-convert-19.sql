@@ -21,5 +21,11 @@ ALTER TABLE settings.u_access_settings ADD COLUMN block_page_port INT4;
 UPDATE settings.u_access_settings SET block_page_port = 80;
 ALTER TABLE settings.u_access_settings ALTER COLUMN block_page_port SET NOT NULL;
 
+-- Create a column for whether or not a user has write access
+ALTER TABLE settings.u_user ADD COLUMN write_access bool;
+ALTER TABLE settings.u_user ADD COLUMN reports_access bool;
 
+UPDATE settings.u_user SET write_access = 't', reports_access = 't';
 
+ALTER TABLE settings.u_user ALTER COLUMN write_access SET NOT NULL;
+ALTER TABLE settings.u_user ALTER COLUMN reports_access SET NOT NULL;

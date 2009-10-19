@@ -62,7 +62,8 @@ public class User implements Serializable
     private String email = "[no email]";
     private String notes = "[no description]";
     private boolean sendAlerts = false;
-    private boolean readOnly = false;
+    private boolean hasWriteAccess = true;
+    private boolean hasReportsAccess = true;
 
     public User() { }
 
@@ -73,12 +74,11 @@ public class User implements Serializable
      * @param password in cleartext.
      * @param name human name.
      */
-    public User(String login, String password, String name, boolean readOnly)
+    public User(String login, String password, String name)
     {
         this.login = login;
         this.password = PasswordUtil.encrypt(password);
         this.name = name;
-        this.readOnly = readOnly;
     }
 
     /**
@@ -88,12 +88,11 @@ public class User implements Serializable
      * @param password hashed.
      * @param name human name.
      */
-    public User(String login, byte[] password, String name, boolean readOnly)
+    public User(String login, byte[] password, String name)
     {
         this.login = login;
         this.password = password;
         this.name = name;
-        this.readOnly = readOnly;
     }
 
     /**
@@ -106,12 +105,11 @@ public class User implements Serializable
      * @param notes notes about user.
      * @param sendAlerts true if user should get alerts.
      */
-    public User(String login, String password, String name, boolean readOnly,
+    public User(String login, String password, String name,
                 String email, String notes, boolean sendAlerts)
     {
         this.login = login;
         this.name = name;
-        this.readOnly = readOnly;
         this.password = PasswordUtil.encrypt(password);
         this.email = email;
         this.notes = notes;
@@ -180,20 +178,37 @@ public class User implements Serializable
     }
 
     /**
-     * Read only accounts can't change settings.
+     * True if this user can modify settings.
      *
-     * @return true if this is a read only.
+     * @return true True if this user can modify settings.
      */
-    @Column(name="read_only", nullable=false)
-    public boolean isReadOnly()
+    @Column(name="write_access", nullable=false)
+    public boolean getHasWriteAccess()
     {
-        return readOnly;
+        return hasWriteAccess;
     }
 
-    public void setReadOnly(boolean readOnly)
+    public void setHasWriteAccess(boolean newValue)
     {
-        this.readOnly = readOnly;
+        this.hasWriteAccess = newValue;
     }
+
+
+    /**
+     * True if this user can view reports.
+     *
+     * @return true if this user can view reports.
+     */
+    @Column(name="reports_access", nullable=false)
+    public boolean getHasReportsAccess()
+    {
+        return hasReportsAccess;
+    }
+
+    public void setHasReportsAccess(boolean newValue)
+    {
+        this.hasReportsAccess = newValue;
+    }    
 
     /**
      * Set password from a clear string.

@@ -100,8 +100,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
                         adminSettings = new AdminSettings();
                         adminSettings.addUser(new User(INITIAL_USER_LOGIN,
                                                        INITIAL_USER_PASSWORD,
-                                                       INITIAL_USER_NAME,
-                                                       false));
+                                                       INITIAL_USER_NAME));
                         s.save(adminSettings);
 
                     }

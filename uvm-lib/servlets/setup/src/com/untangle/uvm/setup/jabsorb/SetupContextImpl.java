@@ -67,7 +67,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         }
 
         if ( admin == null ) {
-            admin = new User( INITIAL_USER_LOGIN, password, INITIAL_USER_NAME, false );
+            admin = new User( INITIAL_USER_LOGIN, password, INITIAL_USER_NAME );
             as.addUser( admin );
         } else {
             admin.setClearPassword( password );
