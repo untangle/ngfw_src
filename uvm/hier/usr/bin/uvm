@@ -11,6 +11,7 @@ UVM_UVM_LOG=${UVM_UVM_LOG:-"@PREFIX@/var/log/uvm/uvm.log"}
 UVM_GC_LOG=${UVM_GC_LOG:-"@PREFIX@/var/log/uvm/gc.log"}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-"@PREFIX@/var/log/uvm/wrapper.log"}
 UVM_LAUNCH=${UVM_LAUNCH:-"@PREFIX@/usr/share/untangle/bin/bunnicula"}
+UVM_RUNDIR=${UVM_RUNDIR:-"@PREFIX@/var/run"}
 
 # Short enough to restart services and uvm promptly
 SLEEP_TIME=15
@@ -137,7 +138,17 @@ needToRestart() {
 
 update_monit()
 {
+    if [ -n "`find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null`" ]; then
+        echo "[`date`] Last forced unmmonitor less than 10 minutes ago." >> $UVM_WRAPPER_LOG
+        return 0
+    fi
+
     monit -c /etc/untangle/monit.conf status | grep -q 'monitoring status[ ]*not monitored' && {
+        if [ -n "`find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null`" ]; then
+            echo "[`date`] Last forced unmmonitor less than 10 minutes ago." >> $UVM_WRAPPER_LOG
+            return 0
+        fi
+
         echo "`date` telling monit to monitor all services." >> $UVM_WRAPPER_LOG
         monit -c /etc/untangle/monit.conf monitor all
     }
