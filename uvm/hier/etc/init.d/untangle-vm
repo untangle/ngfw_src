@@ -46,11 +46,19 @@ if [ "x" != "x@PREFIX@" ] ; then
 fi
 
 monitorAll() {
-  [ "x" = "x@PREFIX@" ] && $MONIT monitor all
+    [ "x" = "x@PREFIX@" ] && $MONIT monitor all
 }
 
 unmonitorAll() {
-  [ $(ps -p $PPID -o fname=) != 'monit' ] && $MONIT unmonitor all
+    [ $(ps -p $PPID -o fname=) != 'monit' ] && {
+        ## This file is used to make sure that the uvm script doesn't tell monit to resume
+        ## for a while.
+        touch "${UVM_RUNDIR}/unmonitor"
+
+        sleep 1
+
+        $MONIT unmonitor all
+    }
 }
 
 updateStatus() {
