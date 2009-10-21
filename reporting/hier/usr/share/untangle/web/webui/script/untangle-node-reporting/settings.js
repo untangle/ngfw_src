@@ -487,8 +487,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }
                     if ( user.hasWriteAccess || user.keepUser ) {
                         delete user.keepUser;
+                        delete user.password;
                         /* Encode all of the strings for safety." */
-                        users[c] = Ext.decode( Ext.encode( user ));
+                        users[c] = user;
                     }
                 }
                 adminSettings.users.set = users;
