@@ -166,7 +166,7 @@ FROM settings.u_address_settings""")
             if is_hostname_public:
                 host = hostname
                 port = https_port
-            elif has_pub
+            elif has_public_address:
                 host = public_address
                 port = public_port
 
