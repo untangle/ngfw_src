@@ -51,9 +51,10 @@ def mail_reports(date, file):
 
     url = __get_url(date)
 
+    report_users = __get_report_users()
 
     for receiver in receivers:
-        has_web_access = False
+        has_web_access = receiver in report_users
         mail(file, sender, receiver, date, company_name, has_web_access,
              url)
 
@@ -65,26 +66,23 @@ def mail(file, sender, receiver, date, company_name, has_web_access,
     msgRoot['To'] = receiver
 
     if has_web_access and url:
-        msg = """\
+        msg = _("""\
 The %(company)s Summary Reports for %(date)s are attached.
 The PDF file requires Adobe Acrobat Reader to view.
 
 For more in-depth online reports
 <a href='%(url)s'>click here to view Online %(company)s Reports</a>
-""" % { 'company': company_name,
-        'date': date.strftime(locale.nl_langinfo(locale.D_FMT)),
-        'url': url }
+""") % { 'company': company_name,
+         'date': date.strftime(locale.nl_langinfo(locale.D_FMT)),
+         'url': url }
     else:
-        msg = """\
+        msg = _("""\
 The %(company)s Summary Reports for %(date)s are attached.
 The PDF file requires Adobe Acrobat Reader to view.
-""" % { 'company': company_name,
+""") % { 'company': company_name,
         'date': date.strftime(locale.nl_langinfo(locale.D_FMT))}
 
-    msgRoot.attach(MIMEText(_("""\
-%(company)s Reports are attached for %(date)s is attached. The pdf file requires Adobe Acrobat Reader to view.\
-""") % {'company': company_name,
-        'date': date.strftime(locale.nl_langinfo(locale.D_FMT))}))
+    msgRoot.attach(MIMEText(msg))
 
     part = MIMEBase('application', "pdf")
     part.set_payload(open(file, 'rb').read())
@@ -142,10 +140,9 @@ SELECT company_name FROM settings.uvm_branding_settings""")
     return rv
 
 def __get_url(date):
-    conn = sql_helper.get_connection()
-
     rv = None
 
+    conn = sql_helper.get_connection()
     try:
         curs = conn.cursor()
         curs.execute("""\
@@ -183,4 +180,21 @@ FROM settings.u_address_settings""")
 
     return rv
 
+def __get_report_users():
+    rv = set()
+
+    conn = sql_helper.get_connection()
+    try:
+        curs = conn.cursor()
+        curs.execute('SELECT u_user FROM settings.u_user WHERE reports_access')
+
+        for r in curs.fetchall():
+            rv.add(r[0])
+
+    except Exception, e:
+        logging.warn('could not get hostname', exc_info=True)
+    finally:
+        conn.commit()
+
+    return rv
 
