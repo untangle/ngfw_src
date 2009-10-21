@@ -149,8 +149,7 @@ def __get_url(date):
         curs.execute("""\
 SELECT hostname, https_port, is_hostname_public, has_public_address,
        public_ip_addr, public_port
-FROM settings.u_address_settings
-""")
+FROM settings.u_address_settings""")
         r = curs.fetchone()
 
         if r:
@@ -176,7 +175,7 @@ FROM settings.u_address_settings
                     % (host, port, date.year, date.month, date.day)
 
     except Exception, e:
-        logging
+        logging.warn('could not get hostname', exc_info=True)
     finally:
         conn.commit()
 
