@@ -84,6 +84,7 @@ fi
 
 /etc/init.d/apache2 reload
 
+rm -f /etc/untangle/monit.d/uvm*
 touch /etc/untangle/monit-to-restart
 
 exit 0
