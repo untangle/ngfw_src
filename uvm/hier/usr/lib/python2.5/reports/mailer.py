@@ -49,7 +49,7 @@ def mail_reports(date, file):
     receivers, sender = __get_mail_info()
     company_name = __get_branding_info()
 
-    url = self.__get_url(date)
+    url = __get_url(date)
 
     for receiver in receivers:
         mail(file, sender, receiver, date, company_name, has_web_access,
