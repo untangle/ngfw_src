@@ -139,7 +139,7 @@ SELECT company_name FROM settings.uvm_branding_settings""")
 
     return rv
 
-def __get_url():
+def __get_url(date):
     conn = sql_helper.get_connection()
 
     rv = None
@@ -160,8 +160,6 @@ FROM settings.u_address_settings
             has_public_address = r[3]
             public_ip_addr = r[4]
             public_port = r[5]
-
-            date_str = '%s-%s-%s' %
 
             host = None
             port = None
