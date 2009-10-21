@@ -51,7 +51,9 @@ def mail_reports(date, file):
 
     url = __get_url(date)
 
+
     for receiver in receivers:
+        has_web_access = False
         mail(file, sender, receiver, date, company_name, has_web_access,
              url)
 
