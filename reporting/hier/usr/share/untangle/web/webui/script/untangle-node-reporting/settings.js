@@ -471,20 +471,23 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         };
 
                         /* Append the new user */
-                        users[Math.random()] = user;
+                        users[Math.round( Math.random() * 1000000 )] = user;
                     }
                 }
 
                 /* Delete all of the reporting only users that have not been updated. */
                 users = {};
+                
+                var c  = 1;
                 for ( var id in adminSettings.users.set ) {
                     user = adminSettings.users.set[id];
+                    c++;
                     if ( user == null ) {
                         continue;
                     }
                     if ( user.hasWriteAccess || user.keepUser ) {
                         delete user.keepUser;
-                        users[id] = user;
+                        users[c] = user;
                     }
                 }
                 adminSettings.users.set = users;
