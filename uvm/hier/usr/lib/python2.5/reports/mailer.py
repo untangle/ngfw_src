@@ -30,6 +30,7 @@ if PREFIX != '':
 
 import gettext
 import locale
+import logging
 import mx
 import os
 import smtplib
@@ -47,14 +48,36 @@ _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 def mail_reports(date, file):
     receivers, sender = __get_mail_info()
     company_name = __get_branding_info()
-    for receiver in receivers:
-        mail(file, sender, receiver, date, company_name)
 
-def mail(file, sender, receiver, date, company_name):
+    url = self.__get_url(date)
+
+    for receiver in receivers:
+        mail(file, sender, receiver, date, company_name, has_web_access,
+             url)
+
+def mail(file, sender, receiver, date, company_name, has_web_access,
+         url):
     msgRoot = MIMEMultipart('related')
     msgRoot['Subject'] = _('New %s Reports Available') % company_name
     msgRoot['From'] = sender
     msgRoot['To'] = receiver
+
+    if has_web_access and url:
+        msg = """\
+The %(company)s Summary Reports for %(date)s are attached.
+The PDF file requires Adobe Acrobat Reader to view.
+
+For more in-depth online reports
+<a href='%(url)s'>click here to view Online %(company)s Reports</a>
+""" % { 'company': company_name,
+        'date': date.strftime(locale.nl_langinfo(locale.D_FMT)),
+        'url': url }
+    else:
+        msg = """\
+The %(company)s Summary Reports for %(date)s are attached.
+The PDF file requires Adobe Acrobat Reader to view.
+""" % { 'company': company_name,
+        'date': date.strftime(locale.nl_langinfo(locale.D_FMT))}
 
     msgRoot.attach(MIMEText(_("""\
 %(company)s Reports are attached for %(date)s is attached. The pdf file requires Adobe Acrobat Reader to view.\
@@ -115,3 +138,50 @@ SELECT company_name FROM settings.uvm_branding_settings""")
         conn.commit()
 
     return rv
+
+def __get_url():
+    conn = sql_helper.get_connection()
+
+    rv = None
+
+    try:
+        curs = conn.cursor()
+        curs.execute("""\
+SELECT hostname, https_port, is_hostname_public, has_public_address,
+       public_ip_addr, public_port
+FROM settings.u_address_settings
+""")
+        r = curs.fetchone()
+
+        if r:
+            hostname = r[0]
+            https_port = r[1]
+            is_hostname_public = r[2]
+            has_public_address = r[3]
+            public_ip_addr = r[4]
+            public_port = r[5]
+
+            date_str = '%s-%s-%s' %
+
+            host = None
+            port = None
+
+            if is_hostname_public:
+                host = hostname
+                port = https_port
+            elif has_pub
+                host = public_address
+                port = public_port
+
+            if host and port:
+                rv = 'https://%s:%s/reports?date=%s-%s-%s' \
+                    % (host, port, date.year, date.month, date.day)
+
+    except Exception, e:
+        logging
+    finally:
+        conn.commit()
+
+    return rv
+
+
