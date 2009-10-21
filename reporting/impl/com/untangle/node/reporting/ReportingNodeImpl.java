@@ -19,11 +19,15 @@ package com.untangle.node.reporting;
 
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.security.User;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+
+import com.untangle.uvm.security.RemoteAdminManager;
 
 public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
@@ -98,12 +102,19 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
             String[] args = {""};
             postInit(args);
         }
+
+        /* If null, pull these from mail settings. */
+        if ( this.settings.getReportingUsers() == null ) {
+            loadReportingUsers(this.settings);
+        }
     }
 
     private ReportingSettings initSettings()
     {
         ReportingSettings settings = new ReportingSettings();
         settings.setTid(getTid());
+
+        loadReportingUsers(settings);
 
         return settings;
     }
@@ -127,5 +138,29 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
     public void setSettings(Object settings)
     {
         setReportingSettings((ReportingSettings)settings);
+    }
+
+    private void loadReportingUsers(ReportingSettings s)
+    {
+        RemoteAdminManager adminManager = LocalUvmContextFactory.context().adminManager();
+        String reportEmail = adminManager.getMailSettings().getReportEmail();
+        if ( reportEmail == null ) {
+            reportEmail = "";
+        }
+        
+        reportEmail = reportEmail.trim();
+        
+        /* Add in any other users that have reporting on and write access off. */
+        for ( User user : adminManager.getAdminSettings().getUsers()) {
+            if ( !user.getHasWriteAccess() && user.getHasReportsAccess()) {
+                if ( reportEmail.length() == 0 ) {
+                    reportEmail += ",";
+                }
+                
+                reportEmail += user.getName();
+            }
+        }
+        
+        s.setReportingUsers(reportEmail);
     }
 }

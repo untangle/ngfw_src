@@ -50,6 +50,8 @@ public class ReportingSettings implements Serializable
     private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
     private int daysToKeep = 7;
 
+    private String reportingUsers;
+
     public ReportingSettings() { }
 
     @Id
@@ -108,5 +110,21 @@ public class ReportingSettings implements Serializable
     public void setDaysToKeep(int daysToKeep)
     {
         this.daysToKeep = daysToKeep;
+    }
+
+    /**
+     * Email address of all of the reporting users (these are both
+     * users that get emails + users who can access the online
+     * reports.
+     */
+    @Column(name="reporting_users", nullable=true)
+    public String getReportingUsers()
+    {
+        return this.reportingUsers;
+    }
+
+    public void setReportingUsers(String newValue)
+    {
+        this.reportingUsers = newValue;
     }
 }

@@ -28,6 +28,7 @@ CREATE TABLE settings.n_reporting_settings (
     network_directory int8 NOT NULL,
     schedule int8,
     days_to_keep int4 NOT NULL,
+    reporting_users TEXT,
     PRIMARY KEY (id));
 
 -- com.untangle.tran.reporting.Schedule
