@@ -317,7 +317,7 @@ WHERE trunc_time >= %s AND trunc_time < %s
                                                    DateFromMx(end_date)))
 
         if host:
-            sql += " AND client_addr = %s" % (host,)
+            sql += " AND client_addr = %s" % (QuotedString(host),)
 
         return sql + " ORDER BY trunc_time"
 
