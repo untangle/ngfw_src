@@ -32,6 +32,8 @@ class ShellFlags
     static final String FLAG_OUT_MASK     = "UVM_ALLOW_OUT_MASK";
     static final String FLAG_EXCEPTION    = "UVM_IS_EXCEPTION_REPORTING_EN";
 
+    static final String FLAG_PUBLIC_URL = "UVM_PUBLIC_URL";
+
     static final String FLAG_EXTERNAL_HTTPS_PORT  = "HTTPS_EXTERNAL_PORT";
 
     static final String FLAG_EXTERNAL_ROUTER_ADDR = "HTTPS_PUBLIC_ADDR";

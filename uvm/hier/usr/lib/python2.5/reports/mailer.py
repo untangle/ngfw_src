@@ -160,36 +160,16 @@ SELECT company_name FROM settings.uvm_branding_settings""")
 def __get_url(date):
     rv = None
 
-    conn = sql_helper.get_connection()
     try:
-        curs = conn.cursor()
-        curs.execute("""\
-SELECT hostname, https_port, is_hostname_public, has_public_address,
-       public_ip_addr, public_port
-FROM settings.u_address_settings""")
-        r = curs.fetchone()
-
-        if r:
-            hostname = r[0]
-            https_port = r[1]
-            is_hostname_public = r[2]
-            has_public_address = r[3]
-            public_ip_addr = r[4]
-            public_port = r[5]
-
-            host = None
-            port = None
-
-            if is_hostname_public:
-                host = hostname
-                port = https_port
-            elif has_public_address:
-                host = public_address
-                port = public_port
-
-            if host and port:
-                rv = 'https://%s:%s/reports?date=%s-%s-%s' \
-                    % (host, port, date.year, date.month, date.day)
+        f = open( "%s/usr/share/untangle/conf/networking.sh" % PREFIX )
+        for line in f:
+            if ( line.startswith( "UVM_PUBLIC_URL=" )):
+                public_host = line.replace( "UVM_PUBLIC_URL=", "" )
+                public_host = public_host.replace( "\"", "" )
+                public_host = public_host.strip()
+                rv = 'https://%s/reports?date=%s-%s-%s' \
+                     % ( public_host, 2009, 11, 22 )
+                break
 
     except Exception, e:
         logging.warn('could not get hostname', exc_info=True)
