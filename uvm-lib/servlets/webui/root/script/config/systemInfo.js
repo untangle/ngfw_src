@@ -323,19 +323,39 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
 
             return misc;
         },
-        // save function
-        saveAction : function() {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                rpc.adminManager.setRegistrationInfo(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    this.closeWindow();
-                }.createDelegate(this), this.getRegistrationInfo());
-            }
+        applyAction : function()
+        {
+            this.commitSettings(this.reloadSettings.createDelegate(this));
         },
-        isDirty : function() {
-        	return this.dirty;
+        reloadSettings : function()
+        {
+            this.getRegistrationInfo(true);
+            Ext.MessageBox.hide();
+        },
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate(this));
+        },
+        completeSaveAction : function()
+        {
+            Ext.MessageBox.hide();
+            this.closeWindow();
+        },
+        // save function
+        commitSettings : function(callback)
+        {
+            if (!this.validate()) {
+                return;
+            }
+            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+            rpc.adminManager.setRegistrationInfo(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                callback();
+            }.createDelegate(this), this.getRegistrationInfo());
+        },
+        isDirty : function()
+        {
+            return this.dirty;
         }
 
     });

@@ -225,13 +225,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings());
             this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings());
 
-            // read-only is a check column
-            var readOnlyColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("read-only"),
-                dataIndex : 'readOnly',
-                fixed : true,
-                width : 60
-            });
             var changePasswordColumn = new Ext.grid.IconColumn({
                 header : this.i18n._("change password"),
                 width : 130,
@@ -273,7 +266,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     emptyRow : {
                         "login" : this.i18n._("[no login]"),
                         "name" : this.i18n._("[no description]"),
-                        "readOnly" : false,
+                        "hasWriteAccess" : true,
+                        "hasReportsAccess" : true,
                         "email" : this.i18n._("[no email]"),
                         "clearPassword" : "",
                         "javaClass" : "com.untangle.uvm.security.User"
@@ -297,8 +291,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }, {
                         name : 'sendAlerts'
                     }, {
-                        name : 'readOnly'
-                    }, {
+                        name : 'hasWriteAccess'
+                    },{
+                        name : "hasReportsAccess"
+                    },{
                         name : 'javaClass' //needed as users is a set
                     }],
                     autoExpandColumn: 'name',
@@ -320,7 +316,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         editor : new Ext.form.TextField({
                             allowBlank : false
                         })
-                    }, /* readOnlyColumn, */{
+                    },{
                         id : 'email',
                         header : this.i18n._("email"),
                         width : 200,
@@ -332,7 +328,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     ],
                     sortField : 'login',
                     columnsDefaultSortable : true,
-                    plugins : [readOnlyColumn,changePasswordColumn],
+                    plugins : [changePasswordColumn],
                     // the row input lines used by the row editor window
                     rowEditorInputLines : [new Ext.form.TextField({
                         name : "Login",
@@ -2178,19 +2174,58 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
             return true;
         },
+        applyAction : function()
+        {
+            this.commitSettings(this.reloadSettings.createDelegate(this));
+        },
+        reloadSettings : function()
+        {
+            /* If necessary, refresh the branding settings */
+            if (!this.isBrandingExpired()) {
+                this.needRefresh = this.needRefresh
+                    || !this.initialBrandingBaseSettings.defaultLogo && !this.getBrandingBaseSettings().defaultLogo && this.uploadedCustomLogo;
+            }
+            if (this.needRefresh) {
+                Ung.Util.goToStartPage();
+                return;
+            }
+
+            this.initialSkinSettings = Ung.Util.clone(this.getSkinSettings(true));
+            this.initialBrandingBaseSettings = Ung.Util.clone(this.getBrandingBaseSettings(true));
+            this.getAdminSettings(true);
+            this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings(true));
+            this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings(true));
+            this.initialSnmpSettings = Ung.Util.clone(this.getSnmpSettings(true));
+            this.initialLoggingSettings = Ung.Util.clone(this.getLoggingSettings(true));
+            this.getCurrentServerCertInfo(true);
+            this.getHostname(true);
+            
+            var storeData=[];
+            var storeDataSet=this.getAdminSettings().users.set;
+            for(var id in storeDataSet) {
+                storeData.push(storeDataSet[id]);
+            }
+
+            this.gridAdminAccounts.clearChangedData();
+            this.gridAdminAccounts.store.loadData(storeData);
+        },
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate(this));
+        },
+        completeSaveAction : function()
+        {
+            Ext.MessageBox.hide();
+            this.closeWindow();
+        },
         // save function
-        saveAction : function() {
+        commitSettings : function(callback)
+        {
             /* A hook for doing something in a node before attempting to save */
 
             //check to see if the remote administrative settings were changed in order to inform the user
-            var remoteChanges =
-                    this.initialAccessSettings.isOutsideAdministrationEnabled && !this.getAccessSettings().isOutsideAdministrationEnabled //external administration
-                    || this.initialAccessSettings.isInsideInsecureEnabled && !this.getAccessSettings().isInsideInsecureEnabled //internal administration
-                    || this.initialAccessSettings.isOutsideAccessRestricted && this.getAccessSettings().isOutsideAccessRestricted
-                        && (this.initialAccessSettings.outsideNetwork != Ext.getCmp('administration_outsideNetwork').getValue()
-                            || this.initialAccessSettings.outsideNetmask != Ext.getCmp('administration_outsideNetmask').getValue()) //external access
-                    || this.initialAddressSettings.httpsPort != this.getAddressSettings().httpsPort //external https port
-                    || !this.initialAccessSettings.isOutsideAccessRestricted && this.getAccessSettings().isOutsideAccessRestricted; //external access
+            var remoteChanges = this.hasRemoteChanges();
+
             if (remoteChanges) {
                 Ext.Msg.show({
                     title : this.i18n._("Warning"),
@@ -2200,15 +2235,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     icon : Ext.MessageBox.WARNING,
                     fn : function (btn, text) {
                         if (btn == 'yes'){
-                            this.completeSaveAction();
+                            this.completeCommitSettings(callback);
                         }
                     }.createDelegate(this)
                 });
             } else {
-                this.completeSaveAction();
+                this.completeCommitSettings(callback);
             }
         },
-        completeSaveAction : function() {
+        completeCommitSettings : function(callback)
+        {
             if (this.validate()) {
                 this.saveSemaphore = 6;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
@@ -2220,67 +2256,65 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
                 this.getAdminSettings().users.set=setAdministration;
                 rpc.adminManager.setAdminSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
+                    this.afterSave(exception, callback);
                 }.createDelegate(this), this.getAdminSettings());
 
-               delete this.getAddressSettings().publicAddress;
-               rpc.networkManager.setAddressSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
+                delete this.getAddressSettings().publicAddress;
+                rpc.networkManager.setAddressSettings(function(result, exception) {
+                    this.afterSave(exception, callback);
                 }.createDelegate(this), this.getAddressSettings());
 
                rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
+                   this.afterSave(exception, callback);
                 }.createDelegate(this), this.getSnmpSettings());
 
                 main.getLoggingManager().setLoggingSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
+                    this.afterSave(exception, callback);
                 }.createDelegate(this), this.getLoggingSettings());
 
                 rpc.skinManager.setSkinSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
+                    this.afterSave(exception, callback);
                 }.createDelegate(this), this.getSkinSettings());
 
                 if (!this.isBrandingExpired()) {
                     main.getBrandingManager().setBaseSettings(function(result, exception) {
                         Ext.MessageBox.hide();
-                        if(Ung.Util.handleException(exception)) return;
+                        
                         // update global branding settings
                         rpc.brandingManager.getBaseSettings(function (result, exception) {
-
-                          if(exception) { 
-                              var message = exception.message;
-                              if (message == "Unknown") {
-                                  message = i18n._("Please Try Again");
-                              }
-                              Ext.MessageBox.alert("Failed",message); 
-                              return;
-                          }
-                          rpc.brandingBaseSettings=result;
-                          document.title=rpc.brandingBaseSettings.companyName;
-                          this.afterSave();
+                            
+                            if(exception) { 
+                                var message = exception.message;
+                                if (message == "Unknown") {
+                                    message = i18n._("Please Try Again");
+                                }
+                                Ext.MessageBox.alert("Failed",message); 
+                                return;
+                            }
+                            rpc.brandingBaseSettings=result;
+                            document.title=rpc.brandingBaseSettings.companyName;
+                            this.afterSave(null,callback);
                         }.createDelegate(this));
                     }.createDelegate(this), this.getBrandingBaseSettings());
                 } else {
-                    this.afterSave();
+                    this.afterSave(null,callback);
                 }
             }
         },
-        afterSave : function() {
+        afterSave : function(exception,callback)
+        {
+            if(Ung.Util.handleException(exception)) return;
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
                 // access settings should be saved last as saving these changes may disconnect the user from the Untangle box
                 rpc.networkManager.setAccessSettings(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
-                    this.finalizeSave();
+                    this.finalizeSave(callback);
                 }.createDelegate(this), this.getAccessSettings());
             }
         },
-        finalizeSave : function() {
+        finalizeSave : function(callback)
+        {
             this.needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
             if (!this.isBrandingExpired()) {
                 this.needRefresh = this.needRefresh
@@ -2290,8 +2324,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                        || this.initialBrandingBaseSettings.contactName != this.getBrandingBaseSettings().contactName
                        || this.initialBrandingBaseSettings.contactEmail != this.getBrandingBaseSettings().contactEmail;
             }
-            Ext.MessageBox.hide();
-            this.closeWindow();
+            callback();
         },
 
         closeWindow : function() {
@@ -2331,8 +2364,40 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 || !Ung.Util.equals(this.getLoggingSettings(), this.initialLoggingSettings)
                 || !Ung.Util.equals(this.getSkinSettings(), this.initialSkinSettings)
                 || !this.isBrandingExpired() && !Ung.Util.equals(this.getBrandingBaseSettings(), this.initialBrandingBaseSettings);
-        }
+        },
 
+        hasRemoteChanges : function()
+        {
+            i_accessSettings = this.initialAccessSettings;
+            c_accessSettings = this.getAccessSettings();
+            i_addressSettings = this.initialAddressSettings;
+            
+            //external administration
+            if ( i_accessSettings.isOutsideAdministrationEnabled != c_accessSettings.isOutsideAdministrationEnabled ) {
+                return true;
+            }
+            
+            //internal administration
+            if ( i_accessSettings.isInsideInsecureEnabled != c_accessSettings.isInsideInsecureEnabled ) {
+                return true;
+            }
+            
+            if ( c_accessSettings.isOutsideAccessRestricted 
+                 && (i_accessSettings.outsideNetwork != Ext.getCmp('administration_outsideNetwork').getValue()
+                     || i_accessSettings.outsideNetmask != Ext.getCmp('administration_outsideNetmask').getValue())) {
+                return true;
+            }
+            
+            if ( i_addressSettings.httpsPort != this.getAddressSettings().httpsPort ) {
+                return true;
+            }
+            
+            if ( !i_accessSettings.isOutsideAccessRestricted && c_accessSettings.isOutsideAccessRestricted ) {
+                return true;
+            }
+            
+            return false;
+        }
     });
 
     // certificate generation window

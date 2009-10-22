@@ -26,7 +26,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             Ung.Upgrade.superclass.onRender.call(this, container, position);
             this.initSubCmps.defer(1, this);
         },
-        initSubCmps : function() {
+        initSubCmps : function()
+        {
             this.loadGridUpgrade();
         },
         getUpgradeSettings : function(forceReload) {
@@ -218,12 +219,12 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             // keep initial upgrade settings
             this.initialUpgradeSettings = Ung.Util.clone(this.getUpgradeSettings());
             
-        	var upgradeTime=new Date();
-        	upgradeTime.setTime(0);
-        	upgradeTime.setHours(this.getUpgradeSettings().period.hour);
-        	upgradeTime.setMinutes(this.getUpgradeSettings().period.minute);
+            var upgradeTime=new Date();
+            upgradeTime.setTime(0);
+            upgradeTime.setHours(this.getUpgradeSettings().period.hour);
+            upgradeTime.setMinutes(this.getUpgradeSettings().period.minute);
         	
-        	this.getUpgradeSettings().period.hour + ":" + this.getUpgradeSettings().period.minute
+            this.getUpgradeSettings().period.hour + ":" + this.getUpgradeSettings().period.minute
             this.panelSetup = new Ext.Panel({
                 // private fields
                 name : 'Upgrade Setup',
@@ -400,24 +401,45 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             });
 
         },
+        
+        applyAction : function()
+        {
+            this.commitSettings(this.reloadSettings.createDelegate(this));
+        },
+        reloadSettings : function()
+        {
+            this.initialUpgradeSettings = Ung.Util.clone(this.getUpgradeSettings(true));
+            this.loadGridUpgrade();
+        },
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate(this));
+        },
+        completeSaveAction : function()
+        {
+            Ext.MessageBox.hide();
+            this.closeWindow();
+        },
         // save function
-        saveAction : function() {
+        commitSettings : function(callback)
+        {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.saveSemaphore = 1;
                 // save language settings
 
                 rpc.toolboxManager.setUpgradeSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
+                    this.afterSave(exception,callback);
                 }.createDelegate(this), this.getUpgradeSettings());
             }
         },
-        afterSave : function() {
+        afterSave : function(exception, callback)
+        {
+            if(Ung.Util.handleException(exception)) return;
+
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
-                Ext.MessageBox.hide();
-                this.closeWindow();
+                callback();
             }
         },
         isDirty : function() {

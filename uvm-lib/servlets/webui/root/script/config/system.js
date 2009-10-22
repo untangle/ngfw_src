@@ -457,7 +457,8 @@ if (!Ung.hasResource["Ung.System"]) {
                 }]
             });
         },
-        buildProtocolSettings : function() {
+        buildProtocolSettings : function()
+        {
             var protocolSettingsItems = [];
             
             protocolSettingsItems.push({
@@ -1137,28 +1138,61 @@ if (!Ung.hasResource["Ung.System"]) {
                 return false;
             }
         },
+        applyAction : function()
+        {
+            this.commitSettings(this.reloadSettings.createDelegate(this));
+        },
+        reloadSettings : function()
+        {
+            this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings(true));
+            this.initialMiscSettings = Ung.Util.clone(this.getMiscSettings(true));
+            this.initialLanguageSettings = Ung.Util.clone(this.getLanguageSettings());
+            this.initialTimeZone = Ung.Util.clone(this.getTimeZone());
+
+            if (this.isHttpLoaded()) {
+                this.initialHttpSettings = Ung.Util.clone(this.getHttpSettings(true));
+            }
+
+            if (this.isMailLoaded()) {
+                this.initialMailSettings = Ung.Util.clone(this.getMailNodeSettings());
+            }
+
+            if (this.isFtpLoaded()) {
+                // keep initial ftp settings
+                this.initialFtpSettings = Ung.Util.clone(this.getFtpSettings(true));
+            }
+
+            Ext.MessageBox.hide();
+        },
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate(this));
+        },
+        completeSaveAction : function()
+        {
+            Ext.MessageBox.hide();
+            this.closeWindow();
+        },
         // save function
-        saveAction : function() {
+        commitSettings : function(callback)
+        {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.saveSemaphore = 6;
                 // save language settings
                 rpc.languageManager.setLanguageSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
+                    this.afterSave(exception,callback);
                 }.createDelegate(this), this.getLanguageSettings());
                 
                 // save network settings
                 rpc.networkManager.setSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
+                    this.afterSave(exception,callback);
                 }.createDelegate(this), this.getAccessSettings(), this.getMiscSettings());
                 
                 // save http settings
                 if (this.isHttpLoaded()) {
                     this.getHttpNode().setHttpSettings(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.afterSave();
+                        this.afterSave(exception,callback);
                     }.createDelegate(this), this.getHttpSettings());
                 } else {
                 	this.saveSemaphore--;
@@ -1167,8 +1201,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 // save ftp settings
                 if (this.isFtpLoaded()) {
                     this.getFtpNode().setFtpSettings(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.afterSave();
+                        this.afterSave(exception,callback);
                     }.createDelegate(this), this.getFtpSettings());
                 } else {
                     this.saveSemaphore--;
@@ -1180,8 +1213,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     delete quarantineSettings.secretKey;
 
                     this.getMailNode().setMailNodeSettings(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.afterSave();
+                        this.afterSave(exception,callback);
                     }.createDelegate(this), this.getMailNodeSettings());
                 } else {
                     this.saveSemaphore--;
@@ -1189,20 +1221,24 @@ if (!Ung.hasResource["Ung.System"]) {
                 
                 //save timezone
                 rpc.adminManager.setTimeZone(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
+                    this.afterSave(exception,callback);
                 }.createDelegate(this), this.rpc.timeZone);
             }
         },
-        afterSave : function() {
+        afterSave : function(exception,callback)
+        {
+            if(Ung.Util.handleException(exception)) return;
+
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
                 var needRefresh = this.initialLanguageSettings.language != this.getLanguageSettings().language;
-                Ext.MessageBox.hide();
-                this.closeWindow();
-                if (needRefresh) {
+
+                if (needRefresh) {                    
                     Ung.Util.goToStartPage();
+                    return;
                 }
+
+                callback();
             }
         },
         isDirty : function() {

@@ -168,23 +168,23 @@ if (!Ung.hasResource["Ung.Email"]) {
                     'activate': {
                         fn : function (){
                             (new Ext.ToolTip({
-                        			html : 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
-                        			target :Ext.getCmp('email_fromAddress').container.id,
-                        			autoWidth : true,
-                        			autoHeight : true,
-                        			showDelay : 200,
-                        			dismissDelay : 0,
-                        			hideDelay : 0
-                        		}));
+                        	html : 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
+                        	target :Ext.getCmp('email_fromAddress').container.id,
+                        	autoWidth : true,
+                        	autoHeight : true,
+                        	showDelay : 200,
+                        	dismissDelay : 0,
+                        	hideDelay : 0
+                            }));
                             (new Ext.ToolTip({
-                                    html : 'Some servers may require this but other servers may not support it.',
-                                        target :Ext.getCmp('email_smtpUseAuthentication').container.id,
-                                        autoWidth : true,
-                                        autoHeight : true,
-                                        showDelay : 200,
-                                        dismissDelay : 0,
-                                        hideDelay : 0
-                                        }));
+                                html : 'Some servers may require this but other servers may not support it.',
+                                target :Ext.getCmp('email_smtpUseAuthentication').container.id,
+                                autoWidth : true,
+                                autoHeight : true,
+                                showDelay : 200,
+                                dismissDelay : 0,
+                                hideDelay : 0
+                            }));
                         }
                     }
                 },
@@ -1254,62 +1254,80 @@ if (!Ung.hasResource["Ung.Email"]) {
             return true;
         },
         
-        // save function
-        saveAction : function() {
-            if (this.validate()) {
-                this.saveSemaphore = this.isMailLoaded() ? 3 : 1;
-                Ext.MessageBox.show({
-                   title : this.i18n._('Please wait'),
-                   msg : this.i18n._('Saving...'),
-                   modal : true,
-                   wait : true,
-                   waitConfig: {interval: 100},
-                   progressText : " ",
-                   width : 200
-                });
-                
-                // save mail settings
-                main.getMailSender().setMailSettings(function(result, exception) {
-	                if(Ung.Util.handleException(exception)) return;
-                    this.afterSave();
-                }.createDelegate(this), this.getMailSettings());
-                
-                if( this.isMailLoaded() ) {
-                    var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
-                    // save mail node settings 
-                    quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList();
-                    quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList();
-
-                    delete quarantineSettings.secretKey;
-                    this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.afterSave();
-                    }.createDelegate(this), this.getMailNodeSettings());
-    
-                    // save global safelist
-                    if ( this.loadedGlobalSafelist == true ) {
-                        var gridSafelistGlobalValues = this.gridSafelistGlobal.getFullSaveList();
-                        var globalList = [];
-                        for(var i=0; i<gridSafelistGlobalValues.length; i++) {
-                            globalList.push(gridSafelistGlobalValues[i].emailAddress);
-                        }
-                        this.getSafelistAdminView().replaceSafelist(function(result, exception) {
-                            if(Ung.Util.handleException(exception)) return;
-                            this.afterSave();
-                        }.createDelegate(this), 'GLOBAL', globalList);
-                    } else {
-                        /* Decrement the save semaphore */
-                        this.afterSave();
-                    }
-                }
-                
-            }
+        applyAction : function()
+        {
+            this.commitSettings(this.reloadSettings.createDelegate(this));
         },
-        afterSave : function() {
+        reloadSettings : function()
+        {
+            this.initialMailSettings = Ung.Util.clone(this.getMailSettings(true));
+            Ext.MessageBox.hide();
+        },
+        // save function
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate(this));
+        },
+        completeSaveAction : function()
+        {
+            Ext.MessageBox.hide();
+            this.closeWindow();
+        },
+        commitSettings : function(callback) {
+            if (!this.validate()) {
+                return;
+            }
+
+            this.saveSemaphore = this.isMailLoaded() ? 3 : 1;
+            Ext.MessageBox.show({
+                title : this.i18n._('Please wait'),
+                msg : this.i18n._('Saving...'),
+                modal : true,
+                wait : true,
+                waitConfig: {interval: 100},
+                   progressText : " ",
+                width : 200
+            });
+                
+            // save mail settings
+            main.getMailSender().setMailSettings(function(result, exception) {
+                this.afterSave(exception,callback);
+            }.createDelegate(this), this.getMailSettings());
+            
+            if( this.isMailLoaded() ) {
+                var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
+                // save mail node settings 
+                quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getFullSaveList();
+                quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getFullSaveList();
+                
+                delete quarantineSettings.secretKey;
+                this.getMailNode().setMailNodeSettingsWithoutSafelists(function(result, exception) {
+                    this.afterSave(exception,callback);
+                }.createDelegate(this), this.getMailNodeSettings());
+                
+                // save global safelist
+                if ( this.loadedGlobalSafelist == true ) {
+                    var gridSafelistGlobalValues = this.gridSafelistGlobal.getFullSaveList();
+                    var globalList = [];
+                    for(var i=0; i<gridSafelistGlobalValues.length; i++) {
+                        globalList.push(gridSafelistGlobalValues[i].emailAddress);
+                    }
+                    this.getSafelistAdminView().replaceSafelist(function(result, exception) {
+                        this.afterSave(exception,callback);
+                    }.createDelegate(this), 'GLOBAL', globalList);
+                } else {
+                    /* Decrement the save semaphore */
+                    this.afterSave(null,callback);
+                }
+            }            
+        },
+        afterSave : function(exception,callback)
+        {
+            if(Ung.Util.handleException(exception)) return;
+
             this.saveSemaphore--;
             if (this.saveSemaphore == 0) {
-                Ext.MessageBox.hide();
-                this.closeWindow();
+                callback();
             }
         },
         isDirty : function() {

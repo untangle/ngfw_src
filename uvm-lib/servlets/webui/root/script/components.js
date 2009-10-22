@@ -2651,7 +2651,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
             title : this.node.md.displayName
         }];
         if(this.bbar==null) {
-            this.bbar=['-',{
+            this.bbar=["-",{
                 name : "Remove",
                 id : this.getId() + "_removeBtn",
                 iconCls : 'node-remove-icon',
@@ -2659,7 +2659,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
                 handler : function() {
                     this.removeAction();
                 }.createDelegate(this)
-            },'-',{
+            },"-",{
                 name : 'Help',
                 id : this.getId() + "_helpBtn",
                 iconCls : 'icon-help',
@@ -2675,7 +2675,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
                 handler : function() {
                     this.saveAction.defer(1, this);
                 }.createDelegate(this)
-            },'-',{
+            },"-",{
                 name : "Cancel",
                 id : this.getId() + "_cancelBtn",
                 iconCls : 'cancel-icon',
@@ -2683,7 +2683,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
                 handler : function() {
                     this.cancelAction();
                 }.createDelegate(this)
-            },'-',{
+            },"-",{
                 name : "Apply",
                 id : this.getId() + "_applyBtn",
                 iconCls : 'apply-icon',
@@ -2691,7 +2691,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
                 handler : function() {
                     this.applyAction.defer(1, this);
                 }.createDelegate(this)
-            },'-'];
+            },"-"];
         }
         Ung.NodeWin.superclass.initComponent.call(this);
     },
@@ -2797,27 +2797,35 @@ Ung.ConfigWin = Ext.extend(Ung.SettingsWin, {
                 name : 'Help',
                 id : this.getId() + "_helpBtn",
                 iconCls : 'icon-help',
-                text : i18n._('Help'),
+                text : i18n._("Help"),
                 handler : function() {
                     this.helpAction();
                 }.createDelegate(this)
             },'->',{
-                name : 'Cancel',
-                id : this.getId() + "_cancelBtn",
-                iconCls : 'cancel-icon',
-                text : i18n._('Cancel'),
-                handler : function() {
-                    this.cancelAction();
-                }.createDelegate(this)
-            },'-',{
                 name : 'Save',
                 id : this.getId() + "_saveBtn",
                 iconCls : 'save-icon',
-                text : i18n._('Save'),
+                text : i18n._("OK"),
                 handler : function() {
-                    this.saveAction.defer(1, this);;
+                    this.saveAction.defer(1, this);
                 }.createDelegate(this)
-            },'-'];
+            },"-",{
+                name : 'Cancel',
+                id : this.getId() + "_cancelBtn",
+                iconCls : 'cancel-icon',
+                text : i18n._("Cancel"),
+                handler : function() {
+                    this.cancelAction();
+                }.createDelegate(this)
+            },"-",{
+                name : "Apply",
+                id : this.getId() + "_applyBtn",
+                iconCls : 'apply-icon',
+                text : i18n._("Apply"),
+                handler : function() {
+                    this.applyAction.defer(1, this,[true]);
+                }.createDelegate(this)
+            },"-"];
         }
         Ung.ConfigWin.superclass.initComponent.call(this);
     }

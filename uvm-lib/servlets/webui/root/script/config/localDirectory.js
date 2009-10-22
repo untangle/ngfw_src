@@ -270,7 +270,8 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             //});
         },
         
-        validateClient : function() {
+        validateClient : function()
+        {
             return  this.validateLocalDirectoryUsers();
         },
         
@@ -339,34 +340,63 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             
             return true;
         },
-        
-        // save function
-        saveAction : function() {
-            if (this.validate()) {
-                Ext.MessageBox.show({
-                   title : this.i18n._('Please wait'),
-                   msg : this.i18n._('Saving...'),
-                   modal : true,
-                   wait : true,
-                   waitConfig: {interval: 100},
-                   progressText : " ",
-                   width : 200
-                });
-                //save local users            
-                main.getAppAddressBook().setLocalUserEntries(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    Ext.MessageBox.hide();
-                    this.closeWindow();
-                    if(this.fnCallback) {
-                        this.fnCallback.call();
-                    }
-                }.createDelegate(this), this.gridUsers ? {javaClass:"java.util.ArrayList",list:this.gridUsers.getFullSaveList()} : null);
+
+        applyAction : function()
+        {
+            this.commitSettings(this.reloadSettings.createDelegate(this));
+        },
+        reloadSettings : function()
+        {
+            var storeData=main.getAppAddressBook().getLocalUserEntries().list;
+            for(var i=0; i<storeData.length; i++) {
+                storeData[i].password = "***UNCHANGED***";
+            }
+
+            this.gridUsers.clearChangedData();
+            this.gridUsers.store.loadData(storeData);
+
+            Ext.MessageBox.hide();
+        },
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate(this));
+        },
+
+        completeSaveAction : function()
+        {
+            // exit settings screen
+            Ext.MessageBox.hide();
+            this.closeWindow();
+            if(this.fnCallback) {
+                this.fnCallback.call();
             }
         },
         
-        isDirty : function() {
-                return this.gridUsers.isDirty();
+        // save function
+        commitSettings : function(callback)
+        {
+            if (!this.validate()) {
+                return;
+            }
+            Ext.MessageBox.show({
+                title : this.i18n._('Please wait'),
+                msg : this.i18n._('Saving...'),
+                modal : true,
+                wait : true,
+                waitConfig: {interval: 100},
+                progressText : " ",
+                width : 200
+            });
+            //save local users            
+            main.getAppAddressBook().setLocalUserEntries(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                callback();
+            }.createDelegate(this), this.gridUsers ? {javaClass:"java.util.ArrayList",list:this.gridUsers.getFullSaveList()} : null);
+        },
+        
+        isDirty : function()
+        {
+            return this.gridUsers.isDirty();
         }
         
     });
