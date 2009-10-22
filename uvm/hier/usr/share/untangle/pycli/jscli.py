@@ -37,7 +37,7 @@ class CurlRequestHandler(object):
         if content_type != None:
             self.__curl.setopt( pycurl.HTTPHEADER, [ "Content-Type: %s" % content_type ] )
         self.__curl.setopt( pycurl.VERBOSE, False )
-        self.__curl.setopt( pycurl.POSTFIELDS, str( postdata ))
+        self.__curl.setopt( pycurl.POSTFIELDS, postdata.encode( "utf-8" ))
         self.__curl.setopt( pycurl.WRITEFUNCTION, response.write )
         self.__curl.perform()
 
