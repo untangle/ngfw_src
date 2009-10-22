@@ -101,6 +101,14 @@ class Report:
         return self.__title
 
     @property
+    def name(self):
+        return self.__name
+
+    @property
+    def sections(self):
+        return self.__sections
+
+    @property
     def view_position(self):
         return self.__view_position
 
@@ -263,6 +271,31 @@ class DetailSection(Section):
 
     def get_flowables(self, report_base, date_base, end_date):
         return []
+
+    def write_csv(self, filename, start_date, end_date, host=None, user=None,
+                  email=None):
+        sql = self.get_sql(start_date, end_date, host=None, user=None,
+                           email=None)
+        f = open(filename, 'w')
+        w = csv.writer(f)
+        conn = sql_helper.get_connection()
+
+        try:
+            r = []
+            for c in self.get_columns(host=None, user=None, email=None):
+                r.append(c.title or '')
+            w.writerow(r)
+
+            curs = conn.cursor()
+            curs.execute(sql)
+
+            for r in curs.fetchall():
+                w.writerow(r)
+        except Exception:
+            logging.warn('error adding details, query: %s' % sql, exc_info=True)
+        finally:
+            f.close()
+            conn.commit()
 
 class ColumnDesc():
     def __init__(self, name, title, type=None):

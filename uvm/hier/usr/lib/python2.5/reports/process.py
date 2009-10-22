@@ -191,7 +191,7 @@ if not no_plot_gen:
 
 if not no_mail:
      f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date, mail_reports)
-     reports.mailer.mail_reports(end_date, f)
+     reports.mailer.mail_reports(start_date, end_date, f, mail_reports)
      os.remove(f)
 
 if not no_cleanup:

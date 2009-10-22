@@ -34,8 +34,11 @@ import logging
 import mx
 import os
 import smtplib
+import reports
 import reports.i18n_helper
 import reports.sql_helper as sql_helper
+import tempfile
+import shutil
 
 from email import Encoders
 from email.MIMEBase import MIMEBase
@@ -45,20 +48,28 @@ from email.MIMEText import MIMEText
 
 _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
-def mail_reports(date, file):
+def mail_reports(start_date, end_date, file, mail_reports):
+    if False: # XXX read setting
+        zip_dir = __make_zip_file(start_date, end_date, mail_reports)
+        zip_file = '%s/reports.zip' % zip_dir
+    else:
+        zip_file = None
+
     receivers, sender = __get_mail_info()
     company_name = __get_branding_info()
 
-    url = __get_url(date)
-
+    url = __get_url(end_date)
     report_users = __get_report_users()
 
     for receiver in receivers:
         has_web_access = receiver in report_users
-        mail(file, sender, receiver, date, company_name, has_web_access,
-             url)
+        mail(file, zip_file, sender, receiver, end_date, company_name,
+             has_web_access, url)
 
-def mail(file, sender, receiver, date, company_name, has_web_access,
+    if zip_file:
+        shutil.rmtree(zip_dir)
+
+def mail(file, zip_file, sender, receiver, date, company_name, has_web_access,
          url):
     msgRoot = MIMEMultipart('related')
     msgRoot['Subject'] = _('New %s Reports Available') % company_name
@@ -90,6 +101,13 @@ The PDF file requires Adobe Acrobat Reader to view.
     part.add_header('Content-Disposition', 'attachment; filename="reports-%d%02d%02d.pdf"'
                     % (date.year, date.month, date.day))
     msgRoot.attach(part)
+
+    if zip_file:
+        part = MIMEBase('application', "zip")
+        part.set_payload(open(zip_file, 'rb').read())
+        Encoders.encode_base64(part)
+        part.add_header('Content-Disposition', 'attachment; filename="reports.zip"')
+        msgRoot.attach(part)
 
     smtp = smtplib.SMTP()
     smtp.connect('localhost')
@@ -198,3 +216,24 @@ def __get_report_users():
 
     return rv
 
+def __make_zip_file(start_date, end_date, mail_reports):
+    tmp_dir = tempfile.mkdtemp()
+    base_dir = '%s/reports' % tmp_dir
+    os.mkdir(base_dir)
+
+    for r in mail_reports:
+        report_name = r.name
+        report_dir = '%s/%s' % (base_dir, report_name)
+        os.mkdir(report_dir)
+
+        for s in r.sections:
+            if isinstance(s, reports.DetailSection):
+                filename = '%s/%s.csv' % (report_dir, s.name)
+                s.write_csv(filename, start_date, end_date)
+
+    os.system("""\
+pushd %s;
+zip -r reports.zip ./reports;
+popd""" % tmp_dir)
+
+    return tmp_dir
