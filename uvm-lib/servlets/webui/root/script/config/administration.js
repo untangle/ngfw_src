@@ -236,11 +236,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             });
 
-            var storeData=[];
-            var storeDataSet=this.getAdminSettings().users.set;
-            for(var id in storeDataSet) {
-                storeData.push(storeDataSet[id]);
-            }
+            var storeData = this.buildUserList(false);
+
             this.panelAdministration = new Ext.Panel({
                 name : 'panelAdministration',
                 helpSource : 'administration',
@@ -2200,11 +2197,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.getCurrentServerCertInfo(true);
             this.getHostname(true);
             
-            var storeData=[];
-            var storeDataSet=this.getAdminSettings().users.set;
-            for(var id in storeDataSet) {
-                storeData.push(storeDataSet[id]);
-            }
+            var storeData = this.buildUserList(false);
 
             this.gridAdminAccounts.clearChangedData();
             this.gridAdminAccounts.store.loadData(storeData);
@@ -2253,6 +2246,19 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 var setAdministration={};
                 for(var i=0; i<listAdministration.length;i++) {
                     setAdministration[i]=listAdministration[i];
+                }
+                
+                /* Add in the reporting only users */
+                var storeDataSet=this.getAdminSettings().users.set;
+                for ( var id in storeDataSet ) {
+                    i++;
+
+                    var user = storeDataSet[id];
+                    if ( !user.hasWriteAccess ) {
+                        /* So the settings always parse */
+                        delete( user.password );
+                        setAdministration[i] = user;
+                    }
                 }
                 this.getAdminSettings().users.set=setAdministration;
                 rpc.adminManager.setAdminSettings(function(result, exception) {
@@ -2364,6 +2370,20 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 || !Ung.Util.equals(this.getLoggingSettings(), this.initialLoggingSettings)
                 || !Ung.Util.equals(this.getSkinSettings(), this.initialSkinSettings)
                 || !this.isBrandingExpired() && !Ung.Util.equals(this.getBrandingBaseSettings(), this.initialBrandingBaseSettings);
+        },
+
+        buildUserList : function(forceReload)
+        {
+            var storeData=[];
+            var storeDataSet=this.getAdminSettings(forceReload).users.set;
+            for(var id in storeDataSet) {
+                var user = storeDataSet[id];
+                
+                if ( user.hasWriteAccess ) {
+                    storeData.push(user);
+                }
+            }
+            return storeData;
         },
 
         hasRemoteChanges : function()
