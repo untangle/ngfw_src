@@ -949,6 +949,6 @@ FROM reports.n_admin_logins
 WHERE time_stamp >= %s AND time_stamp < %s AND not local
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
-        return sql + "ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp"
 
 reports.engine.register_node(UvmNode())

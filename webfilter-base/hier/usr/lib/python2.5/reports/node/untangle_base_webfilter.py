@@ -1133,7 +1133,7 @@ WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
         if user:
             sql += " AND uid = %s" % QuotedString(user)
 
-        return sql + "ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp"
 
 # Unused reports --------------------------------------------------------------
 

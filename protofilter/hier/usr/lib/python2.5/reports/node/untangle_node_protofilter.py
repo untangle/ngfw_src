@@ -651,6 +651,6 @@ AND pf_protocol != ''""" % (DateFromMx(start_date),
         if user:
             sql = sql + (" AND uid = %s" % QuotedString(user))
 
-        return sql + "ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp"
 
 reports.engine.register_node(Protofilter())

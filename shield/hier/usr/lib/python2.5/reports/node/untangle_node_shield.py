@@ -292,7 +292,7 @@ class ShieldDetail(DetailSection):
         DetailSection.__init__(self, 'attack-events', _('Attack Events'))
 
     def get_columns(self, host=None, user=None, email=None):
-        if host or user or email:
+        if user or email:
             return None
 
         rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
@@ -305,7 +305,7 @@ class ShieldDetail(DetailSection):
         return rv
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
-        if host or user or email:
+        if user or email:
             return None
 
         sql = "SELECT trunc_time, "
@@ -316,6 +316,9 @@ WHERE trunc_time >= %s AND trunc_time < %s
       AND (limited + dropped + rejected) > 0""" % (DateFromMx(start_date),
                                                    DateFromMx(end_date)))
 
-        return sql + "ORDER BY trunc_time"
+        if host:
+            sql += " AND client_addr = %s" % (host,)
+
+        return sql + " ORDER BY trunc_time"
 
 reports.engine.register_node(Shield())
