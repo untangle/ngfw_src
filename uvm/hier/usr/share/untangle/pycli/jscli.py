@@ -11,6 +11,7 @@ from copy import copy
 from uvm import Manager
 
 import pycurl
+import codecs
 
 # Always use pycurl.
 # 1. cookies are supported on python 2.3 (not supported cleanly in
