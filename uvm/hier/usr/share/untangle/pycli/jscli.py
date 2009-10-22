@@ -168,6 +168,17 @@ def make_proxy( parser, timeout=30 ):
 parser = ArgumentParser()
 
 try:
+    if ( sys.stdout.encoding != "UTF-8" ):
+        sys.stderr.write( "Changing to UTF-8 encoding\n" )
+        (e,d,sr,sw) = codecs.lookup("UTF-8")
+
+        sys.stdout = sw(sys.stdout)
+        sys.stderr = sw(sys.stderr)
+        
+except:
+    sys.stderr.write( "Unable to change to UTF-8 encoding\n" )
+
+try:
     script_args = parser.parse_args()
 except:
     printUsage()
