@@ -271,6 +271,11 @@ public abstract class Blacklist
             }
         }
 
+        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(),
+                                                null, null, null,
+                                                node.getVendor(), true);
+        node.log(hbe, host, port);
+
         return null;
     }
 
