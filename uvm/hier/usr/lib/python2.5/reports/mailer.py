@@ -48,8 +48,8 @@ from email.MIMEText import MIMEText
 
 _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
-def mail_reports(start_date, end_date, file, mail_reports):
-    if False: # XXX read setting
+def mail_reports(start_date, end_date, file, mail_reports, attach_csv=False):
+    if attach_csv:
         zip_dir = __make_zip_file(start_date, end_date, mail_reports)
         zip_file = '%s/reports.zip' % zip_dir
     else:
@@ -173,8 +173,6 @@ def __get_url(date):
 
     except Exception, e:
         logging.warn('could not get hostname', exc_info=True)
-    finally:
-        conn.commit()
 
     return rv
 
