@@ -70,6 +70,9 @@ class WebFilterBaseNode(Node):
         ft.dimensions.append(Column('wf_%s_category' % self.__vendor_name,
                                     'text'))
 
+        ft.dimensions.append(Column('wf_%s_action' % self.__vendor_name,
+                                    'text'))
+
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
@@ -575,7 +578,8 @@ SELECT wf_%s_category, sum(wf_%s_blocks)::int AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND wf_%s_category != ''
-AND wf_%s_blocks > 0""" % (4 * (self.__vendor_name,))
+AND wf_%s_action = 'B'
+AND wf_%s_blocks > 0""" % (5 * (self.__vendor_name,))
         if host:
             query = query + " AND hname = %s"
         elif user:
@@ -1001,7 +1005,9 @@ SELECT host, COALESCE(sum(hits), 0)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND NOT wf_%s_category IS NULL
-AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name)
+AND wf_%s_action = 'B'
+AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name, 
+                           self.__vendor_name)
         if host:
             query += " AND hname = %s"
         elif user:
@@ -1061,6 +1067,7 @@ class WebFilterDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
+               ColumnDesc('case', _('Blocked')),
                ColumnDesc('url', _('URL'), 'URL'),
                ColumnDesc('s_server_addr', _('Server IP')),
                ColumnDesc('c_client_addr', _('Client IP'))]
@@ -1072,12 +1079,15 @@ class WebFilterDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, wf_%s_category, 'http://' || host || uri,
+SELECT time_stamp, hname, uid, wf_%s_category,
+       CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END, 
+       'http://' || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
       AND NOT wf_%s_action ISNULL
-""" % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
+""" % (self.__vendor_name, self.__vendor_name, 
+       DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name)
 
         if host:
@@ -1110,6 +1120,7 @@ class WebFilterDetailAll(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
+               ColumnDesc('case', _('Blocked')),
                ColumnDesc('url', _('URL'), 'URL'),
                ColumnDesc('s_server_addr', _('Server IP')),
                ColumnDesc('c_client_addr', _('Client IP'))]
@@ -1121,10 +1132,13 @@ class WebFilterDetailAll(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, uid, wf_%s_category, 'http://' || host || uri,
+SELECT time_stamp, hname, uid, wf_%s_category,
+       CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END, 
+       'http://' || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
+                                                 self.__vendor_name,
                                                  DateFromMx(start_date),
                                                  DateFromMx(end_date))
 
