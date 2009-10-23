@@ -118,22 +118,39 @@ The PDF file requires Adobe Acrobat Reader to view.
 def __get_mail_info():
     conn = sql_helper.get_connection()
 
+
+    report_email = None
+    receivers = []
+
     try:
         curs = conn.cursor()
 
         curs.execute("""\
-SELECT report_email, from_address FROM settings.u_mail_settings""")
+SELECT report_email FROM settings.u_mail_settings
+""")
 
         row = curs.fetchone()
-
         if row:
-            rv = (row[0].split(','), row[1])
-        else:
-            rv = None
-    finally:
-        conn.commit()
+            report_email = r[0]
 
-    return rv
+        curs.execute("""\
+SELECT reporting_users FROM settings.n_reporting_settings
+JOIN u_node_persistent_state USING (tid)
+WHERE target_state = 'running' OR target_state = 'initialized'
+""")
+        row = curs.fetchone()
+        if row:
+            receiver_str = row[0]
+            if not receiver_str or receiver_str.strip() == '':
+                receivers = []
+            else:
+                receivers = receiver_str.split(',')
+        conn.commit()
+    except:
+        conn.rollback();
+        logging.warn('could not get mail info', exc_info=True)
+
+    return (receivers, report_email)
 
 def __get_branding_info():
     conn = sql_helper.get_connection()

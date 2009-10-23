@@ -321,6 +321,9 @@ class Graph:
         self.__name = name
         self.__title = title
 
+        self.__plot = None
+        self.__key_statistics = []
+
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         return (self.get_key_statistics(end_date, report_days, host, user, email),
                 self.get_plot(end_date, report_days, host, user, email))
@@ -404,7 +407,7 @@ class Graph:
 
         zebra_colors = [HexColor(0xE0E0E0), None]
 
-        if self.__plot.type == PIE_CHART:
+        if self.__plot and self.__plot.type == PIE_CHART:
             colors = self.__plot.colors
             background_colors = [None]
             data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']),

@@ -21,6 +21,7 @@ import mx
 import os
 import re
 import sets
+import shutil
 import reports.sql_helper as sql_helper
 import string
 

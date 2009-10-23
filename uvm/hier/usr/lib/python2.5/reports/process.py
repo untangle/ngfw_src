@@ -212,4 +212,5 @@ if not no_cleanup:
      reports.engine.reports_cleanup(reports_cutoff)
 
      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(reports_days)
-     reports.engine.delete_old_reports(REPORTS_OUTPUT_BASE, reports_cutoff)
+     reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
+                                       reports_cutoff)
