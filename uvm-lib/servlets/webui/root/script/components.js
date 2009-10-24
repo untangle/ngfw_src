@@ -975,6 +975,8 @@ Ung.Node = Ext.extend(Ext.Component, {
     buttonsPanel: null,
     subCmps : null,
     fnCallback: null,
+    //can the node be edited on the gui
+    isNodeEditable : true,
     constructor : function(config) {
         this.id = "node_" + config.tid;
         config.helpSource=config.md.displayName.toLowerCase().replace(/ /g,"_");
@@ -982,6 +984,9 @@ Ung.Node = Ext.extend(Ext.Component, {
             config.runState="INITIALIZED";
         }
         this.subCmps = [];
+        if(config.Tid.policy!=null){
+            this.isNodeEditable = config.Tid.policy.id == rpc.currentPolicy.id ? true : false;
+        }
         Ung.Node.superclass.constructor.apply(this, arguments);
     },
     // before Destroy
@@ -998,6 +1003,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     onRender : function(container, position) {
         Ung.Node.superclass.onRender.call(this, container, position);
         main.removeNodePreview(this.name);
+
         this.getEl().addClass("node");
         this.getEl().set({
             'viewPosition' : this.md.viewPosition
@@ -1040,6 +1046,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         var templateHTML = Ung.Node.template.applyTemplate({
             'id' : this.getId(),
             'image' : this.image,
+            'isNodeEditable' : this.isNodeEditable === true ? "none" : "",
             'displayName' : this.md.displayName,
             'nodePowerCls': this.hasPowerButton?(this.licenseStatus && this.licenseStatus.trial && this.licenseStatus.expired)?"node-power-expired":"node-power":"",
             'trialInfo' : this.getTrialInfo()
@@ -1401,7 +1408,7 @@ Ung.Node.getStatusTip = function() {
 Ung.Node.getPowerTip = function() {
     return i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".');
 };
-Ung.Node.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
+Ung.Node.template = new Ext.Template('<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
     '<div class="node-trial-info">{trialInfo}</div>',
     '<div class="node-blingers" id="node-blingers_{id}"></div>',
     '<div class="node-state" id="node-state_{id}" name="State"></div>',
@@ -3026,6 +3033,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                     for (var i = 0; i < this.inputLines.length; i++) {
                         var inputLine = this.inputLines[i];
                         if(inputLine.dataIndex!=null) {
+                           // this.record.data[inputLine.dataIndex] = inputLine.getValue();
                             this.record.set(inputLine.dataIndex, inputLine.getValue());
                         }
                     }

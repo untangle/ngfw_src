@@ -228,7 +228,7 @@ Ung.Main=Ext.extend(Object, {
         var contentRightArr=[
             '<div id="content-right">',
                 '<div id="racks" style="display:none;">',
-                    '<div id="rack-list"><div id="rack-select-container"></div>',
+                    '<div id="rack-list"><div id="rack-select-container"></div><div id="parent-rack-container"></div>',
                     '</div>',
                     '<div id="rack-nodes">',
                         '<div id="security_nodes"></div>',
@@ -756,6 +756,8 @@ Ung.Main=Ext.extend(Object, {
         var callback = function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
+            var parentRackName = rpc.currentPolicy.parent !=null ? rpc.currentPolicy.parent.name : "None";
+            Ext.get('parent-rack-container').dom.innerHTML = i18n._('Parent Rack')+" : "+parentRackName;            
             main.buildApps();
             main.buildNodes();
         }.createDelegate(this);
