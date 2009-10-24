@@ -1086,6 +1086,17 @@ Ung.Node = Ext.extend(Ext.Component, {
                 dismissDelay : 0,
                 hideDelay : 0
             }));
+            if(this.isNodeEditable==false){
+                this.subCmps.push(new Ext.ToolTip({
+                    html : Ung.Node.getNonEditableNodeTip(),
+                    target : 'node_' + this.tid,
+                    autoWidth : true,
+                    autoHeight : true,
+                    showDelay : 20,
+                    dismissDelay : 0,
+                    hideDelay : 0
+                }));                
+            }
         }
         this.updateRunState(this.runState, true);
         this.initBlingers();
@@ -1407,6 +1418,9 @@ Ung.Node.getStatusTip = function() {
 }
 Ung.Node.getPowerTip = function() {
     return i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".');
+};
+Ung.Node.getNonEditableNodeTip = function (){
+    return i18n._('This node belongs to the parent rack shown above.<br/> To access the settings for this node, select the parent rack.'); 
 };
 Ung.Node.template = new Ext.Template('<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
     '<div class="node-trial-info">{trialInfo}</div>',
