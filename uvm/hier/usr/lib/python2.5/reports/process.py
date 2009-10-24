@@ -133,7 +133,7 @@ if (sql_helper.table_exists('reports', 'daystoadd')
      try:
           sql_helper.run_sql('DROP SCHEMA reports CASCADE')
      except psycopg.ProgrammingError, e:
-          print e
+          logging.warn(e, exc_info=True)
 
 try:
      sql_helper.run_sql("CREATE SCHEMA reports");
