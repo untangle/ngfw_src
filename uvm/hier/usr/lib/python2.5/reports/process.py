@@ -48,6 +48,7 @@ try:
                                  'no-data-gen', 'no-mail', 'no-plot-gen',
                                  'verbose', 'attach-csv', 'events-days',
                                  'reports-days', 'date=', 'locale='])
+
 except getopt.GetoptError, err:
      print str(err)
      usage()

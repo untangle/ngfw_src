@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-15 16:44-0700\n"
+"POT-Creation-Date: 2009-10-26 09:42-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,10 +128,10 @@ msgid "description"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:386
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1063
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1112
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1194
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1255
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1069
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1122
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1208
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1269
 msgid "Category"
 msgstr ""
 
@@ -369,267 +369,272 @@ msgstr ""
 msgid "If you have any questions, Please contact {0}."
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:79
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:82
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:155
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:158
 msgid "Hourly Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:205
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:208
 msgid "max hits (1-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:205
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:207
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:218
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:220
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:208
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:210
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:221
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:223
 msgid "hits/minute"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:207
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:210
 msgid "avg hits (1-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:218
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:221
 msgid "max hits (7-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:220
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:223
 msgid "avg hits (7-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:231
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:234
 msgid "avg violations (1-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:232
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:244
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:235
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:247
 msgid "violations/hour"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:243
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:246
 msgid "avg violations (7-day)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:302
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:305
 msgid "Hour of Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:303
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:306
 msgid "Hits per Minute"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:307
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:431
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:542
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:602
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:647
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:696
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:748
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:853
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:968
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1026
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1186
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1247
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:310
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:434
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:545
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:606
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:651
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:700
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:752
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:857
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:972
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1032
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1200
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1261
 msgid "hits"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:308
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:432
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:311
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:435
 msgid "violations"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:315
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:318
 msgid "Daily Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:357
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:360
 msgid "max hits (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:357
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:359
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:360
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:362
 msgid "hits/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:359
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:362
 msgid "avg hits (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:361
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:364
 msgid "max violations (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:362
 #: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:365
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:368
 msgid "violations/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:364
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:367
 msgid "avg violations (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:426
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:486
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:429
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:489
 msgid "Date"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:427
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:487
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:551
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:658
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:707
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:758
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:862
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:977
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1035
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1195
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1256
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:430
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:490
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:554
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:662
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:711
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:762
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:866
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:981
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1041
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1209
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1270
 msgid "Hits per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:439
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:442
 msgid "Total Web Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:478
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:489
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:491
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:481
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:492
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:494
 msgid "total hits (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:480
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:490
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:492
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:483
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:493
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:495
 msgid "total violations (7-days)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:499
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:502
 msgid "Top Ten Categories of Violations (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:541
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1185
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1246
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:544
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1199
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1260
 msgid "Uncategorized"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:550
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:610
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:553
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:614
 msgid "Policy"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:560
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:563
 msgid "Top Ten Categories of Blocked Violations (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:611
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:615
 msgid "Blocks per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:619
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:623
 msgid "Top Ten Web Users (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:657
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:706
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:805
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:661
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:710
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:809
 msgid "Host"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:667
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:671
 msgid "Top Ten Host Violators (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:716
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:720
 msgid "Top Ten User Violators (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:757
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:761
 msgid "UID"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:767
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:771
 msgid "Top Ten Web Users (by size)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:806
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:920
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:810
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:924
 msgid "bytes/day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:815
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:819
 msgid "Top Ten Websites (by hits)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:861
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:919
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:976
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1034
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:865
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:923
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:980
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1040
 msgid "Hosts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:871
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:875
 msgid "Top Ten Websites (by size)"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:929
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:933
 msgid "Top Ten Violations"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:986
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:990
 msgid "Top Ten Blocked Violations"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1043
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1049
 msgid "Violation Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1051
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1100
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1057
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1110
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1054
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1056
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1103
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1105
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1060
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1062
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1113
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1115
 msgid "Client"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1059
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1061
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1108
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1110
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1065
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1067
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1118
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1120
 msgid "User"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1064
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1113
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1070
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1123
+msgid "Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1071
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1124
 msgid "URL"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1065
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1114
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1072
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1125
 msgid "Server IP"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1066
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1115
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1073
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1126
 msgid "Client IP"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1092
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1102
 msgid "All Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1143
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1157
 msgid "Web Usage By Category"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1203
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1217
 msgid "Violations By Category"
 msgstr ""
 
