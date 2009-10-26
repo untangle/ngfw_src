@@ -114,10 +114,11 @@ def run_sql(sql, args=None, connection=get_connection(), auto_commit=True):
             connection.commit()
 
     except Exception, e:
-        logging.warn("exception running '%s', %s" % (sql, e))
+        logging.warn("exception running '%s'" % sql, exc_info=True)
         if auto_commit:
             connection.rollback()
-        raise e
+        else:
+            raise e
 
 def add_column(tablename, column, type, ignore_errors=True):
     sql = "ALTER TABLE %s ADD COLUMN %s %s" % (tablename, column, type)

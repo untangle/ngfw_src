@@ -131,7 +131,7 @@ SELECT report_email FROM settings.u_mail_settings
 
         row = curs.fetchone()
         if row:
-            report_email = r[0]
+            report_email = row[0]
 
         curs.execute("""\
 SELECT reporting_users FROM settings.n_reporting_settings

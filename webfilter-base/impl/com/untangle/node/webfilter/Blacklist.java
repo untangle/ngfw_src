@@ -203,7 +203,6 @@ public abstract class Blacklist
                  Reason.PASS_URL, description, node.getVendor());
             logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
             node.log(hbe, host, port);
-
             return null;
         }
 
@@ -562,12 +561,14 @@ public abstract class Blacklist
             if (null != sr) {
                 stringRule = sr;
                 blockFound = stringRule.isLive();
-                Action a = Action.PASS;
-                Reason reason = Reason.BLOCK_URL;
-                WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), a, reason,
-                     stringRule.getDescription(), node.getVendor());
-                node.log(hbe, host, port);
+                if (!blockFound) {
+                    Action a = Action.PASS;
+                    Reason reason = Reason.BLOCK_URL;
+                    WebFilterEvent hbe = new WebFilterEvent
+                        (requestLine.getRequestLine(), a, reason,
+                         stringRule.getDescription(), node.getVendor());
+                    node.log(hbe, host, port);
+                }
             }
 
             dom = nextHost(dom);
