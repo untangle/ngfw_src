@@ -842,7 +842,7 @@ class VirusMailDetail(DetailSection):
 
         rv += [ColumnDesc('virus_%s_name' % (self.__vendor_name,), _('Virus Name')),
                ColumnDesc('subject', _('Subject')),
-               ColumnDesc('addr', _('Recipient')), # FIXME: or is it sender ?
+               ColumnDesc('addr', _('Recipient'), 'EmailLink'), # FIXME: or is it sender ?
                ColumnDesc('c_client_addr', _('Client IP')),
                ColumnDesc('c_client_port', _('Client Port'))]
 
