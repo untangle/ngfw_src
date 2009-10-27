@@ -788,7 +788,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             plot_query = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || date_part('minute', trunc_time))::time AS time,
-       sum(num_sessions) / %s AS sessions
+       COALESCE(sum(num_sessions), 0) / %s AS sessions
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -820,7 +820,7 @@ ORDER BY time asc"""
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
-                     xlabel=_('Hour of Day'), ylabel=_('Number of Sessions'),
+                     xlabel=_('Hour of Day'), ylabel=_('Sessions per Minute'),
                      major_formatter=TIME_OF_DAY_FORMATTER,
                      required_points=sql_helper.REQUIRED_TIME_POINTS)
 
