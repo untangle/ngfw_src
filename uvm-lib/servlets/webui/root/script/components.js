@@ -3622,8 +3622,12 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.changedData = {};
     },
     reloadGrid : function(){
-        this.clearChangedData();                                                
-        this.store.reload();   
+        this.clearChangedData();   
+        if(options){
+            this.store.loadData(options.data,false);
+        }else{
+            this.store.reload();           
+        }  
     },
     beforeDestroy : function() {
         Ext.each(this.subCmps, Ext.destroy);
