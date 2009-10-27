@@ -28,6 +28,7 @@ import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
@@ -326,6 +327,16 @@ class DefaultPolicyManager implements LocalPolicyManager
 
         this.userRules = userPolicyList.toArray(new UserPolicyRule[0]);
         this.cUserRules = completePolicyList.toArray(new UserPolicyRule[0]);
+    }
+
+    public boolean matchesPolicy(Node node, Policy p)
+    {
+        return false;
+    }
+
+    public Policy getParent(Policy p)
+    {
+        return null;
     }
 
     public Validator getValidator() {

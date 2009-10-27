@@ -36,6 +36,7 @@ package com.untangle.uvm.policy;
 import java.util.List;
 
 import com.untangle.uvm.license.LicensedProduct;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.Validator;
 
 public interface LocalPolicyManager extends LicensedProduct
@@ -100,9 +101,12 @@ public interface LocalPolicyManager extends LicensedProduct
 
     PolicyRule getDefaultPolicyRule();
 
+    boolean matchesPolicy(Node node, Policy p);
+
+    Policy getParent(Policy p);
+
     /** Gets the validator for IP and ports. used to validate UserPolicyRules
      * @return Validator
      */
-    public Validator getValidator();
-
+    Validator getValidator();
 }

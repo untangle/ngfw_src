@@ -36,10 +36,8 @@ package com.untangle.uvm.policy;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -61,7 +59,7 @@ public class Policy implements Serializable
     //    private boolean live;
     private String notes = NO_NOTES;
 
-    private Policy parent = null;
+    private Long parentId = null;
 
     // Constructors -----------------------------------------------------------
 
@@ -152,27 +150,16 @@ public class Policy implements Serializable
         this.notes = notes;
     }
 
-    @ManyToOne(fetch=FetchType.EAGER)
-    public Policy getParent()
+    @Column(name="parent_id")
+    public Long getParentId()
     {
-        return parent;
+        return parentId;
     }
 
-    public void setParent(Policy parent)
+    public void setParentId(Long parentId)
         throws PolicyException
     {
-        if (null != parent && isDefault) {
-            throw new PolicyException("default policy cannot have parent");
-        }
-
-        if (isParentOf(parent)) {
-            throw new PolicyException("adding parent would create cycle");
-        }
-
-        // XXX check for cycles
-        // check that not default policy
-
-        this.parent = parent;
+        this.parentId = parentId;
     }
 
     // Object methods ---------------------------------------------------------
@@ -205,19 +192,5 @@ public class Policy implements Serializable
     {
         return "Policy(" + (isDefault ? "default" : "non-default")
             + ": " + name + ")";
-    }
-
-    public boolean isParentOf(Policy parent)
-    {
-        Policy p = parent;
-
-        while (null != p) {
-            if (p.equals(this)) {
-                return true;
-            }
-            p = p.getParent();
-        }
-
-        return false;
     }
 }

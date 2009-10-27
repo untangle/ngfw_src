@@ -55,6 +55,7 @@ import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.node.UvmNodeHandler;
+import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.security.Tid;
@@ -848,10 +849,12 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     private List<Policy> getAllPolicies(Policy p)
     {
+        LocalPolicyManager lpi = LocalUvmContextFactory.context().policyManager();
+
         List<Policy> l = new ArrayList<Policy>();
         while (null != p) {
             l.add(p);
-            p = p.getParent();
+            p = lpi.getParent(p);
         }
 
         return l;

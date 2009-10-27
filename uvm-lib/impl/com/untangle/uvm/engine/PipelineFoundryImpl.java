@@ -352,6 +352,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
                                Map<Fitting, List<MPipe>> availMPipes,
                                Map<MPipe, MPipe> availCasings)
     {
+        UvmContextImpl upi = UvmContextImpl.getInstance();
+        LocalPolicyManager pmi = upi.policyManager();
+
         boolean welded = false;
 
         boolean tryAgain;
@@ -370,7 +373,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                             if (w) {
                                 welded = true;
                             }
-                        } else if (mPipe.getPipeSpec().matchesPolicy(p)) {
+                        } else if (pmi.matchesPolicy(mPipe.getPipeSpec().getNode(), p)) {
                             MPipeFitting mpf = new MPipeFitting(mPipe, start);
                             boolean w = mPipeFittings.add(mpf);
                             if (w) {
@@ -392,6 +395,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
                                 List<MPipe>> availMPipes,
                                 Map<MPipe, MPipe> availCasings)
     {
+        UvmContextImpl upi = UvmContextImpl.getInstance();
+        LocalPolicyManager pmi = upi.policyManager();
+
         boolean welded = false;
 
         boolean tryAgain;
@@ -402,7 +408,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 CasingPipeSpec ps = (CasingPipeSpec)insideMPipe.getPipeSpec();
                 Fitting f = ps.getInput();
 
-                if (!ps.matchesPolicy(p)) {
+                if (!pmi.matchesPolicy(ps.getNode(), p)) {
                     i.remove();
                 } else if (start.instanceOf(f)) {
                     MPipe outsideMPipe = availCasings.get(insideMPipe);

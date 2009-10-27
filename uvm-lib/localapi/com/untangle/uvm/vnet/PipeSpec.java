@@ -161,25 +161,6 @@ public abstract class PipeSpec
         return false;
     }
 
-    public boolean matchesPolicy(Policy p)
-    {
-        Policy tp = node.getTid().getPolicy();
-
-        if (null == tp) {
-            return true;
-        }
-
-        while (null != tp) {
-            if (tp.equals(p)) {
-                return true;
-            }
-
-            tp = tp.getParent();
-        }
-
-        return false;
-    }
-
     public void setSubscriptions(Set<Subscription> subscriptions)
     {
         synchronized (this) {
