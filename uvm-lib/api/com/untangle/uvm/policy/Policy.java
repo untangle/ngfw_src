@@ -33,9 +33,6 @@
 
 package com.untangle.uvm.policy;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,7 +41,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  * Policy.
@@ -65,8 +61,7 @@ public class Policy implements Serializable
     //    private boolean live;
     private String notes = NO_NOTES;
 
-    private transient Policy parent = null;
-    private transient Long parentId = null;
+    private Policy parent = null;
 
     // Constructors -----------------------------------------------------------
 
@@ -180,16 +175,6 @@ public class Policy implements Serializable
         this.parent = parent;
     }
 
-    @Transient
-    public Long getParentId()
-    {
-        if (parent == null) {
-            return parentId;
-        } else {
-            return parent.getId();
-        }
-    }
-
     // Object methods ---------------------------------------------------------
 
     public boolean equals(Object o)
@@ -234,19 +219,5 @@ public class Policy implements Serializable
         }
 
         return false;
-    }
-
-    private synchronized void writeObject(ObjectOutputStream stream)
-        throws IOException
-    {
-        stream.defaultWriteObject();
-        stream.writeLong(parent.getId());
-    }
-
-    private void readObject(ObjectInputStream stream)
-        throws IOException, ClassNotFoundException
-    {
-        stream.defaultReadObject();
-        parentId = stream.readLong();
     }
 }
