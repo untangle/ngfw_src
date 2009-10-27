@@ -2632,7 +2632,7 @@ Ung.SettingsWin = Ext.extend(Ung.Window, {
         if (this.validate()) {
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
             this.getRpcNode().setBaseSettings(function(result, exception) {
-                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());            
+                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings(true));            
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
             }.createDelegate(this), this.getBaseSettings());
@@ -3053,8 +3053,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                     }
                 }
                 if(this.addMode) {
-                        this.grid.getStore().insert(0, [this.record]);
-                        this.grid.updateChangedData(this.record, "added");
+                    this.grid.getStore().insert(0, [this.record]);
+                    this.grid.updateChangedData(this.record, "added");
                 }
             }
             this.hide();

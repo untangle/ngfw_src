@@ -1,6 +1,6 @@
 if (!Ung.hasResource["Ung.PolicyManager"]) {
     Ung.hasResource["Ung.PolicyManager"] = true;
-
+    
     Ung.PolicyManager = Ext.extend(Ung.ConfigWin, {
         fnCallback:null,
         panelPolicyManagement : null,
@@ -8,12 +8,14 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         gridRules : null,
         policyStore : null,
         node:null,
-        initComponent : function() {
+        rackKey : 1,
+        initComponent : function()
+        {
             this.breadcrumbs = [{
                 title : this.i18n._('Policy Manager')
             }];
             if(this.node!=null) {
-            /*
+                /*
                 this.bbar=['-',{
                     name : "Remove",
                     id : this.getId() + "_removeBtn",
@@ -31,7 +33,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     text : i18n._('Help'),
                     handler : function() {
                         this.helpAction();
-                    }.createDelegate(this)
+                          }.createDelegate(this)
                 },'->',{
                     name : "Cancel",
                     id : this.getId() + "_cancelBtn",
@@ -51,6 +53,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 },'-'];
                 */
             }
+            
+            this.rackDatabase = this.buildRackDatabase( this.getPolicyConfiguration().policies.list );
             this.buildPolicyManagement();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelPolicyManagement]);
@@ -158,85 +162,27 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 autoHeight : true
             });
         },
-        excludeDescendants: function(rec){
-            var allParents = this.getParentStoreData("fullSaveList"),
-            excludedDescendants = [allParents[0]],
-            descendants = this.getDescendants(rec,allParents),
-            i=1;
-            for(i=i;i<allParents.length;i++){
-                if((allParents[i].key.id in descendants) === false){
-                    excludedDescendants.push(allParents[i]);                
+        
+        makePolicies : function (list)
+        {
+            var saveMap = {};
+
+            for(var i=0;i<list.length;i++) {
+                saveMap[list[i].id] = list[i];
+            }
+
+            for ( var i = 0 ; i < list.length ; i++ ) {
+                if ( list[i].parent == 0 ) {
+                    list[i].parent = null;
+                } else {
+                    list[i].parent = saveMap[list[i].parent];
                 }
             }
-            return excludedDescendants;
-        },
-        getDescendants : function(rec,allParents){
-            var i,p1,parentString,
-            testString = rec != null ? "id:"+rec.id : 'null',descendantIds = {};
-            descendantIds[rec.id] = 1
             
-            for(i=1;i<allParents.length;i++){
-                p1 = allParents[i].key;
-                parentString = uneval(p1.parent);
-                if(parentString.indexOf(testString) >= 0 ){
-                    descendantIds[p1.id] = 1;
-                }
-            }
-            return descendantIds;
-        },
-        getParentStoreData : function(listType){            
-            var policiesListCollection = new Ext.util.MixedCollection(),
-            policiesList = this.getPolicyConfiguration().policies.list,//listType == "fullSaveList" ? this.gridRacks.getFullSaveList() :              
-            parentStoreData = [{key:null,name:i18n._('None'),policy:null,parent:null}];                             
-            policiesListCollection.addAll(policiesList);               
-            policiesListCollection.each(function(item,index,length){
-                if(parentStoreData.indexOf(item)==-1){ 
-                    parentStoreData.push({
-                       key : item,
-                       name : item.name,
-                       policy : uneval(item)
-                    });                
-                }
-            },this);
-            return parentStoreData;        
-        },
-        makePolicies : function (list){
-            for(var i=0;i<list.length;i++){
-                list[i].parent = eval(list[i].parent);
-            }
             return list;
         },
-        getRackData : function(parentType){
-            var x = parentType=="obj" ? eval : uneval,              
-            racks = eval(uneval(this.getPolicyConfiguration().policies)),
-            i;
-            for(i=0;i<racks.list.length;i++){
-                racks.list[i].parent = x(racks.list[i].parent);          
-            }
-            return racks;
-        },
-        buildRacks : function() {
-            /*
-            var policiesListCollection = new Ext.util.MixedCollection(),
-            policiesList = this.getPolicyConfiguration().policies.list;
-            this.parentStoreData = [{key:null,name:i18n._('None'),parent:null}];                                
-            policiesListCollection.addAll(policiesList);   
-            policiesListCollection.each(function(item,index,length){
-                if(this.parentStoreData.indexOf(item)==-1){
-                    this.parentStoreData.push({
-                       key : item,
-                       name : item.name,
-                       policy : item
-                    });                
-                }
-            },this);
-            */
-            this.parentStoreData = this.getParentStoreData();
-
-            this.parentStore = new Ext.data.JsonStore({
-                fields : ['key', 'name', 'policy'],
-                data : this.parentStoreData
-            });
+        buildRacks : function()
+        {   
             this.gridRacks = new Ung.EditorGrid({
                 settingsCmp : this,
                 anchor :"100% 50%",
@@ -253,10 +199,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     "notes" : this.i18n._("[no description]"),
                     "parent" : null
                 },
-                data : this.getRackData("string"),//this.getPolicyConfiguration().policies,
+                data : this.getPolicyConfiguration().policies,
                 dataRoot : 'list',
                 paginated : false,
-                //autoExpandColumn: "n  ame",
+                //autoExpandColumn: "name",
                 fields : [{
                     name : 'id'
                 }, {
@@ -269,39 +215,51 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     name : 'parent',
                 }],
                 columns : [{
+                    id : "rack-name",
                     header : this.i18n._("name"),
                     width : 200,
                     sortable : true,
                     dataIndex : 'name',
-                    editor : this.getPolicyManagerLicenseStatus().expired ? null : new Ext.form.TextField({allowBlank : false})
+                    editor : new Ext.form.TextField({allowBlank : false})
                 }, {
                     header : this.i18n._("description"),
                     width : 200,
                     sortable : true,
-                    dataIndex : 'notes',
-                    editor : this.getPolicyManagerLicenseStatus().expired ? null : new Ext.form.TextField({allowBlank : false})
+                    dataIndex : "notes",
+                    editor : new Ext.form.TextField({allowBlank : false})
                 },{
                     header : this.i18n._("Parent Rack"),
                     width : 200,
+                    id : "parent-rack",
                     sortable : true,
-                    dataIndex: 'parent',
-                    renderer : function (value,metadata,record){
-                        if(value  == null || value == "null"){
+                    dataIndex: "parent",
+                    renderer : function (value,metadata,record)
+                    {
+                        if ( value == null ) {
                             return this.i18n._("None");
-                        }else{
-                            return eval(value).name
                         }
-                    }.createDelegate(this)
-                    /*,
-                    editor : new Ext.form.ComboBox({
-                        store : this.parentStore,
-                        displayField : 'name',
-                        valueField : 'policy',
+                        
+                        var rack = this.rackDatabase[value];
+                        
+                        if ( rack == null ) {
+                            return this.i18n._("None");
+                        }
+                        
+                        return rack.name;
+                    }.createDelegate(this),
+                    editor : this.gridParentRackCombo = new Ext.form.ComboBox({
+                        store : this.parentStore = new Ext.data.SimpleStore({
+                            fields : ["id", "name"],
+                            data : [],
+                            autoLoad : false
+                        }),
+                        displayField : "name",
+                        valueField : "id",
                         editable : false,
-                        mode : 'local',
-                        triggerAction : 'all',
+                        mode : "local",
+                        triggerAction : "all",
                         listClass : 'x-combo-list-small'
-                    })*/                                           
+                    })
                 }],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "Name",
@@ -322,45 +280,83 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : true
                     })
-                }),new Ext.form.ComboBox({
-                            name : "Parent Rack",
-                            dataIndex : 'parent',
-                            fieldLabel : this.i18n._("Parent Rack"),
-                            store : this.parentStore,
-                            displayField : 'name',
-                            valueField : 'policy',
-                            forceSelection : true,
-                            typeAhead : true,
-                            mode : 'local',
-                            editable : true,
-                            triggerAction : 'all',
-                            listClass : 'x-combo-list-small',
-                            itemCls:'firewall-spacing-1',
-                            selectOnFocus : true
+                }),this.editorRackCombo = new Ext.form.ComboBox({
+                    name : "Parent Rack",
+                    dataIndex : 'parent',
+                    fieldLabel : this.i18n._("Parent Rack"),
+                    store : this.parentStore,
+                    displayField : 'name',
+                    valueField : "id",
+                    forceSelection : true,
+                    typeAhead : true,
+                    mode : 'local',
+                    editable : false,
+                    triggerAction : 'all',
+                    listClass : 'x-combo-list-small',
+                    itemCls : 'firewall-spacing-1',
+                    selectOnFocus : true
                 })],
+                listeners : {
+                    "beforeedit" : {
+                        fn : this.onBeforeEditRackCell,
+                        scope : this
+                    },
+                    "afteredit" : {
+                        fn : this.onAfterEditRackCell,
+                        scope : this
+                    }
+                },
                 addHandler : function() {
-                        if (this.getPolicyManagerLicenseStatus(true).expired){
-                                this.showProfessionalMessage();
-                        } else {
+                    if (this.getPolicyManagerLicenseStatus(true).expired){
+                        this.showProfessionalMessage();
+                    } else {
+                        this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
                         Ung.EditorGrid.prototype.addHandler.call(this.gridRacks);
-                        }
+                    }
                 }.createDelegate(this),
                 editHandler : function(record) {
-                        this.parentStore.loadData(this.excludeDescendants(record.data));
-                        if (this.getPolicyManagerLicenseStatus(true).expired){
-                                this.showProfessionalMessage();
-                        } else {
+                    if (this.getPolicyManagerLicenseStatus(true).expired){
+                        this.showProfessionalMessage();
+                    } else {
+                        this.updateParentRackStore( this.editorRackCombo, record );
                         Ung.EditorGrid.prototype.editHandler.call(this.gridRacks,record);
-                        }
+                        
+                    }
                 }.createDelegate(this),
                 deleteHandler : function(record) {
-                        if (this.getPolicyManagerLicenseStatus(true).expired){
-                                this.showProfessionalMessage();
-                        } else {
+                    if (this.getPolicyManagerLicenseStatus(true).expired){
+                        this.showProfessionalMessage();
+                    } else {
+                        
                         Ung.EditorGrid.prototype.deleteHandler.call(this.gridRacks,record);
-                        }
+                        this.removeRackFromDatabase( this.rackDatabase, record.data.id);
+
+                        this.gridRacks.store.reload();
+                    }
                 }.createDelegate(this)
             });
+
+            this.gridRacks.rowEditor.updateAction = function() 
+            {
+                Ung.RowEditorWindow.prototype.updateAction.call(this.gridRacks.rowEditor);
+
+                if ( this.gridRacks.rowEditor.record != null ) {
+                    var record = this.gridRacks.rowEditor.record;
+                    var id = record.get( "id" );
+                    if ( id == null ) {
+                        return;
+                    }
+                    
+                    var policy = this.rackDatabase[id];
+                    if ( policy == null ) {
+                        return;
+                    }
+                    policy.name = record.get("name");
+                }
+
+                
+                this.gridRacks.store.reload();
+            }.createDelegate(this);
         },
         showProfessionalMessage : function(){
             Ext.MessageBox.show({
@@ -1094,6 +1090,15 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         return false;
                     }
                 }
+                if ( this.isChild( rackList[i].id, rackList[i].parent )) {
+                    Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("The rack named {0} cannot have one its children as its parent."),rackList[i].name));
+                    return false;
+                }
+                var parent = this.convertIDToRack(rackList[i].parent);
+                if ( parent != null && parent.deleted ) {
+                    Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("The rack named {0} cannot have a deleted parent."),rackList[i].name));
+                    return false;
+                }
             }
             var rulesList=this.gridRules.getFullSaveList();
             var rackDeletedList=this.gridRacks.getDeletedList();
@@ -1115,6 +1120,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             {
                 try {
                     try {
+                        delete rackDeletedList[i].parent;
                         var result = rpc.nodeManager.nodeInstances(rackDeletedList[i]);
                     } catch (e) {
                         Ung.Util.rpcExHandler(e);
@@ -1163,12 +1169,12 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             }
             if (Ung.Util.hasData(validateData.map)) {
                 try {
-                        try {
+                    try {
                         var result = this.getPolicyManagerValidator().validate(validateData);
                     } catch (e) {
                         Ung.Util.rpcExHandler(e);
                     }
-
+                    
                     if (!result.valid) {
                         var errorMsg = "";
                         switch (result.errorCode) {
@@ -1200,18 +1206,22 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             return true;
         },
         // save function
-        saveAction : function() {
-            if (this.validate()) {
-                this.getPolicyConfiguration().policies.list=this.makePolicies(this.gridRacks.getFullSaveList());//{javaclass:'java.util.ArrayList',list:this.getRackData("obj")};
-                this.getPolicyConfiguration().userPolicyRules.list=this.gridRules.getFullSaveList();
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                rpc.policyManager.setPolicyConfiguration(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    Ext.MessageBox.hide();
-                    this.closeWindow();
-                    main.loadPolicies.defer(1,main);
-                }.createDelegate(this), this.getPolicyConfiguration());
+        saveAction : function()
+        {
+            if (!this.validate()) {
+                return;
             }
+            
+            this.getPolicyConfiguration().policies.list=this.makePolicies(this.gridRacks.getFullSaveList());
+                        
+            this.getPolicyConfiguration().userPolicyRules.list=this.gridRules.getFullSaveList();
+            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+            rpc.policyManager.setPolicyConfiguration(function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                Ext.MessageBox.hide();
+                this.closeWindow();
+                main.loadPolicies.defer(1,main);
+            }.createDelegate(this), this.getPolicyConfiguration());
         },
         // save function
         closeWindow : function() {
@@ -1222,6 +1232,174 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         },
         isDirty : function() {
                 return this.gridRacks.isDirty() || this.gridRules.isDirty();
+        },
+
+        /* A map of a random ID -> rack.  This is used to simplify parent / child management. */
+        buildRackDatabase : function( racks )
+        {
+            var rackDatabase = {}, c = 0;
+
+            for ( c =0 ; c < racks.length ; c++ ) {
+                this.addRackToDatabase( rackDatabase, racks[c] );
+            }
+
+            /* convert the parent to an id */
+            for ( c = 0 ; c < racks.length ; c++ ) {
+                if ( racks[c].parent != null ) {
+                    racks[c].parent = racks[c].parent.id;
+                } else {
+                    racks[c].parent = 0;
+                }
+            }
+                        
+            return rackDatabase;
+        },
+        removeRackFromDatabase : function( rackDatabase, id )
+        {
+            var rack = rackDatabase[id];
+
+            if ( rack == null ) {
+                return;
+            }
+
+            /* Change it to a policy that is marked as deleted.  This
+             * is so the user has a change to update the parent policy
+             * but still see the names. */
+            rackDatabase[id] = {
+                name : String.format( this.i18n._( "Deleted ({0})"), rack.name ),
+                deleted : true,
+                rack : rack
+            };
+
+        },
+        addRackToDatabase : function( rackDatabase, rack )
+        {
+            rackDatabase[rack.id] = rack;
+        },
+        
+        onBeforeEditRackCell : function( e )
+        {
+            if ( e.grid.getColumnModel().getColumnId( e.column ) != "parent-rack" ) {
+                return;
+            }
+            
+            this.updateParentRackStore( this.gridParentRackCombo, e.record );
+        },
+        onAfterEditRackCell : function( e )
+        {
+            var columnID = e.grid.getColumnModel().getColumnId( e.column );
+
+            /* Change the names of the other columns */
+            if ( columnID == "rack-name" ) {
+                var id = e.record.get( "id" );
+                if ( id == null ) {
+                    return;
+                }
+                
+                var policy = this.rackDatabase[id];
+                if ( policy == null ) {
+                    return;
+                }
+                policy.name = e.value;
+                
+                /* After edit is after editing, but before updating the store. */
+                this.gridRacks.store.reload();
+            }
+        },
+        updateParentRackStore : function( combo, record )
+        {
+            var storeData = [[0,this.i18n._("None")]], id = record.get( "id" ), c = 0, rack;
+
+            /* Default rack can't have a parent. */
+            if ( record.get( "default" )) {
+                combo.store.loadData(storeData);
+                return;
+            }
+
+            var parent = record.get("parent");
+            
+            for ( rackID in this.rackDatabase ) {
+                if ( rackID == id ) {
+                    continue;
+                }
+                
+                var rack = this.rackDatabase[rackID];
+                
+                if ( rack.deleted ) {
+                    continue;
+                }
+                
+                /* Have to remove children */
+                if ( this.isChild( id, rackID )) {
+                    continue;
+                }
+                
+                /* Just indicate that the value has been found */
+                if ( rackID == parent ) {
+                    parent = null;
+                }
+                
+                storeData.push([rackID,rack.name]);
+            }
+
+            combo.store.loadData(storeData);
+            
+            if ( parent !== null ) {
+                record.set("parent",0);
+            }
+        },
+
+        fetchRackFromStore : function( id )
+        {
+            if ( id == null ) {
+                return null;
+            }
+
+            var racks = this.gridRacks.store.query( "id", id );
+            if ( racks == null || racks.getCount() == 0 ) {
+                return null;
+            }
+            
+            return racks.first().data;
+        },
+        
+        /* Return true if rackB is a child of rackA */
+        isChild : function( idA, idB )
+        {
+            var rackA = this.fetchRackFromStore( idA );
+            var rackB = this.fetchRackFromStore( idB );
+            
+            if ( rackA == null ) {
+                /* this happens on a new rack, (it can't have children, so this doesn't matter) */
+                return false;
+            }
+
+            while ( true ) {
+                if ( rackB == null ) {
+                    return false;
+                }
+
+                if ( rackB.id == rackA.id ) {
+                    return true;
+                }
+
+                if ( rackB.parent == null ) {
+                    return false;
+                }
+
+                rackB = this.fetchRackFromStore( rackB.parent );
+            }
+        },
+
+        convertIDToRack : function( id )
+        {
+            var rack = null;
+            if ( id == null ) {
+                return null;
+            }
+
+            return this.rackDatabase[id];
         }
+        
     });
 }
