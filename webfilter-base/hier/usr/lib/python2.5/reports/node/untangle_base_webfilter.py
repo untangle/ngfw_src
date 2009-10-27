@@ -85,6 +85,7 @@ class WebFilterBaseNode(Node):
                             TotalWebUsage(self.__vendor_name),
                             TopTenWebUsageByHits(self.__vendor_name),
                             TopTenWebUsageBySize(self.__vendor_name),
+                            TopTenWebAdUsageByHits(self.__vendor_name),
                             TopTenWebPolicyViolationsByHits(self.__vendor_name),
                             TopTenWebBlockedPolicyViolationsByHits(self.__vendor_name),
                             TopTenWebsitesByHits(self.__vendor_name),
@@ -620,7 +621,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10""" \
 class TopTenWebUsageByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-users-by-hits',
-                       _('Top Ten Web Users (by hits)'))
+                       _('Top Ten Web Hosts (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -659,6 +660,57 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Host'),
+                     ylabel=_('Hits per Day'))
+
+        plot.add_pie_dataset(dataset)
+
+        return (lks, plot)
+
+class TopTenWebAdUsageByHits(Graph):
+    def __init__(self, vendor_name):
+        Graph.__init__(self, 'top-ten-web-ad-users-by-hits',
+                       _('Top Ten Web Users (by hits)'))
+
+        self.__vendor_name = vendor_name
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if host or user or email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT uid, sum(hits)::int as hits_sum
+FROM reports.n_http_totals
+WHERE trunc_time >= %s AND trunc_time < %s AND NOT uid IS NULL AND uid != ''
+GROUP BY uid ORDER BY hits_sum DESC LIMIT 10"""
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
+
+            curs = conn.cursor()
+
+            curs.execute(query, (one_week, ed))
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], _('hits'),
+                                  link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+
+        finally:
+            conn.commit()
+
+        if len(lks) == 0:
+            return None
+
+        plot = Chart(type=PIE_CHART,
+                     title=self.title,
+                     xlabel=_('User'),
                      ylabel=_('Hits per Day'))
 
         plot.add_pie_dataset(dataset)
@@ -768,7 +820,7 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
 class TopTenWebUsageBySize(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-web-users-by-size',
-                       _('Top Ten Web Users (by size)'))
+                       _('Top Ten Web Hosts (by size)'))
 
         self.__vendor_name = vendor_name
 
@@ -1006,7 +1058,7 @@ FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 AND NOT wf_%s_category IS NULL
 AND wf_%s_action = 'B'
-AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name, 
+AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name,
                            self.__vendor_name)
         if host:
             query += " AND hname = %s"
@@ -1080,13 +1132,13 @@ class WebFilterDetail(DetailSection):
 
         sql = """\
 SELECT time_stamp, hname, uid, wf_%s_category,
-       CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END, 
+       CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END,
        'http://' || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
       AND NOT wf_%s_action ISNULL
-""" % (self.__vendor_name, self.__vendor_name, 
+""" % (self.__vendor_name, self.__vendor_name,
        DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name)
 
@@ -1133,7 +1185,7 @@ class WebFilterDetailAll(DetailSection):
 
         sql = """\
 SELECT time_stamp, hname, uid, wf_%s_category,
-       CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END, 
+       CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END,
        'http://' || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
