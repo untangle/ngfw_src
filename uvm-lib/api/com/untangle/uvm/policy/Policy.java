@@ -169,15 +169,17 @@ public class Policy implements Serializable
         if (!(o instanceof Policy)) {
             return false;
         } else {
-            /* rbscott did this and it is bad.*/
+            
             Policy p = (Policy)o;
-            if (id == null) {
-                if (p.id == null) {
-                    return name.equals(p.name) && notes.equals(p.notes);
-                } else {
-                    return false;
-                }
-            }
+            
+            /* rbscott did this, and rbscott thinks it is bad.*/
+//             if (id == null) {
+//                 if (p.id == null) {
+//                     return name.equals(p.name) && notes.equals(p.notes);
+//                 } else {
+//                     return false;
+//                 }
+//             }
 
             return id.equals(p.id);
         }
