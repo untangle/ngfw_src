@@ -158,6 +158,12 @@ class DefaultPolicyManager implements LocalPolicyManager
         throw new PolicyException("Professional edition only");
     }
 
+    public void addPolicy(String name, String notes, Policy parent)
+        throws PolicyException
+    {
+        throw new PolicyException("Professional edition only");
+    }
+
     public void removePolicy(final Policy p) throws PolicyException
     {
         throw new PolicyException("Professional edition only");

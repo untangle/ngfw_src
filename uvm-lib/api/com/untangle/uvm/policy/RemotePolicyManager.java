@@ -74,7 +74,19 @@ public interface RemotePolicyManager extends LicensedProduct
      * new policy
      * @exception PolicyException if the named policy already exists
      */
-    void addPolicy(String name, String notes) throws PolicyException;
+    void addPolicy(String name, String notes)
+        throws PolicyException;
+
+    /**
+     * Adds a new policy to the system.
+     *
+     * @param name a <code>String</code> naming the new policy
+     * @param notes a <code>String</code> giving a description of the
+     * new policy
+     * @exception PolicyException if the named policy already exists
+     */
+    void addPolicy(String name, String notes, Policy parent)
+        throws PolicyException;
 
     /**
      * Removes a policy from the system.  If the policy is in use (has

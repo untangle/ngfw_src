@@ -52,9 +52,16 @@ class RemotePolicyManagerAdaptor implements RemotePolicyManager
         return pm.getPolicy(name);
     }
 
-    public void addPolicy(String name, String notes) throws PolicyException
+    public void addPolicy(String name, String notes)
+        throws PolicyException
     {
-        pm.addPolicy(name, notes);
+        pm.addPolicy(name, notes, null);
+    }
+
+    public void addPolicy(String name, String notes, Policy parent)
+        throws PolicyException
+    {
+        pm.addPolicy(name, notes, parent);
     }
 
     public void removePolicy(Policy policy) throws PolicyException

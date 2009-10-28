@@ -56,10 +56,12 @@ public interface LocalPolicyManager extends LicensedProduct
      */
     Policy getPolicy(String name);
 
+    void addPolicy(String name, String notes) throws PolicyException;
+
     /**
      * @see PolicyManager#addPolicy()
      */
-    void addPolicy(String name, String notes) throws PolicyException;
+    void addPolicy(String name, String notes, Policy parent) throws PolicyException;
 
     /**
      * @see PolicyManager#removePolicy()

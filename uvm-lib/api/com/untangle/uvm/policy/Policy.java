@@ -169,9 +169,9 @@ public class Policy implements Serializable
         if (!(o instanceof Policy)) {
             return false;
         } else {
-            
+
             Policy p = (Policy)o;
-            
+
             /* rbscott did this, and rbscott thinks it is bad.*/
 //             if (id == null) {
 //                 if (p.id == null) {
@@ -181,7 +181,11 @@ public class Policy implements Serializable
 //                 }
 //             }
 
-            return id.equals(p.id);
+            if (p == null) {
+                return false;
+            } else {
+                return id == null ? id == p.id : id.equals(p.id);
+            }
         }
     }
 
@@ -193,6 +197,6 @@ public class Policy implements Serializable
     public String toString()
     {
         return "Policy(" + (isDefault ? "default" : "non-default")
-            + ": " + name + ")";
+            + ": " + name + " id:" + id + " parentId: " + parentId + ")";
     }
 }
