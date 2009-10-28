@@ -2632,7 +2632,7 @@ Ung.SettingsWin = Ext.extend(Ung.Window, {
         if (this.validate()) {
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
             this.getRpcNode().setBaseSettings(function(result, exception) {
-                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings(true));            
+                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());            
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
             }.createDelegate(this), this.getBaseSettings());
@@ -2694,7 +2694,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
                 iconCls : 'save-icon',
                 text : i18n._('OK'),
                 handler : function() {
-                    this.saveAction.defer(1, this);
+                    this.saveAction.defer(1, this,[false]);
                 }.createDelegate(this)
             },"-",{
                 name : "Cancel",
@@ -2828,7 +2828,7 @@ Ung.ConfigWin = Ext.extend(Ung.SettingsWin, {
                 iconCls : 'save-icon',
                 text : i18n._("OK"),
                 handler : function() {
-                    this.saveAction.defer(1, this);
+                    this.saveAction.defer(1, this,[false]);
                 }.createDelegate(this)
             },"-",{
                 name : 'Cancel',
@@ -3053,8 +3053,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                     }
                 }
                 if(this.addMode) {
-                    this.grid.getStore().insert(0, [this.record]);
-                    this.grid.updateChangedData(this.record, "added");
+                        this.grid.getStore().insert(0, [this.record]);
+                        this.grid.updateChangedData(this.record, "added");
                 }
             }
             this.hide();
@@ -3621,13 +3621,13 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     clearChangedData : function () {
         this.changedData = {};
     },
-    reloadGrid : function(){
+    reloadGrid : function(options){
         this.clearChangedData();   
         if(options){
             this.store.loadData(options.data,false);
         }else{
             this.store.reload();           
-        }  
+        }                                             
     },
     beforeDestroy : function() {
         Ext.each(this.subCmps, Ext.destroy);
