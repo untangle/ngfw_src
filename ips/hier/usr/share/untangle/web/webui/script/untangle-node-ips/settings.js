@@ -288,6 +288,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
 		                    allowBlank : false,
 		                    width : 300
 						}), new Ext.form.TextField({
+
 		                    name : "Description",
 		                    dataIndex: "description",
 		                    fieldLabel : this.i18n._("Description"),
@@ -369,15 +370,31 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 
             });
         },
+        //apply function 
+        applyAction : function(){
+            this.saveAction(true);
+        },
         // save function
-        saveAction : function() {
+        saveAction : function(keepWindowOpen) {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.getRpcNode().updateAll(function(result, exception) {
-                    Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    this.closeWindow();
+                    if(keepWindowOpen!== true){
+                        Ext.MessageBox.hide();                    
+                        this.closeWindow();
+                    }else{
+                    //refresh the settings
+                            this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                Ext.MessageBox.hide();                            
+                                this.gridRules.setTotalRecords(result2.rulesLength);
+                                this.gridVariables.setTotalRecords(result2.variablesLength);
+                                this.gridRules.reloadGrid();
+                                this.gridVariables.reloadGrid();
+                            }.createDelegate(this));
+                            //this.gridEventLog.reloadGrid();                                     
+                    }
                 }.createDelegate(this), this.getBaseSettings(), this.gridRules ? this.gridRules.getSaveList() : null,
                         this.gridVariables ? this.gridVariables.getSaveList() : null,
                         null);
