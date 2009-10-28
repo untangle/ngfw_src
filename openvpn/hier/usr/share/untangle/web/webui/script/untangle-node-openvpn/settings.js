@@ -518,12 +518,18 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         getGroupsStore : function(force) {
-            if (this.groupsStore == null ||force===true) {
+            if (this.groupsStore == null ) {
                 this.groupsStore = new Ext.data.JsonStore({
                     fields : ['id', 'name','javaClass'],
                     data : this.getVpnSettings().groupList.list
                 });
+                force = false;
             }
+
+            if(force) {
+                this.groupsStore.loadData( this.getVpnSettings().groupList.list );
+            }
+
             return this.groupsStore;
         },
 
@@ -1758,14 +1764,17 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         
         completeReloadSettings : function( result, exception )
         {
+            if(Ung.Util.handleException(exception)) {
+                return;
+            }
             
             this.rpc.vpnSettings = result;
             this.initialVpnSettings = this.rpc.vpnSettings;
             /* Assume the config state hasn't changed */
             if (this.configState == "SERVER_ROUTE") {
-                this.groupsStore.loadData( this.rpc.vpnSettings.groupList.list );
+                var groupStore = this.getGroupsStore(true);
 
-                var defaultGroup  = this.getGroupsStore(true).getCount()>0?this.getGroupsStore(true).getAt(0).data:null;
+                var defaultGroup  = groupStore.getCount()>0 ?groupStore.getAt(0).data:null;
 
                 this.gridSites.emptyRow.groupId = defaultGroup==null? null : defaultGroup.id;
                 this.gridSites.emptyRow.group = defaultGroup;
