@@ -3622,7 +3622,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         this.changedData = {};
     },
     reloadGrid : function(options){
-        this.clearChangedData();   
+        this.clearChangedData();
         if(options){
             this.store.loadData(options.data,false);
         }else{
