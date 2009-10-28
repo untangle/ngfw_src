@@ -15,7 +15,6 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 title : this.i18n._('Policy Manager')
             }];
             if(this.node!=null) {
-                /*
                 this.bbar=['-',{
                     name : "Remove",
                     id : this.getId() + "_removeBtn",
@@ -30,28 +29,35 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     name : 'Help',
                     id : this.getId() + "_helpBtn",
                     iconCls : 'icon-help',
-                    text : i18n._('Help'),
+                    text : i18n._("Help"),
                     handler : function() {
                         this.helpAction();
-                          }.createDelegate(this)
-                },'->',{
-                    name : "Cancel",
-                    id : this.getId() + "_cancelBtn",
-                    iconCls : 'cancel-icon',
-                    text : i18n._('Cancel'),
-                    handler : function() {
-                        this.cancelAction();
                     }.createDelegate(this)
-                },'-',{
-                    name : "Save",
+                },'->',{
+                    name : 'Save',
                     id : this.getId() + "_saveBtn",
                     iconCls : 'save-icon',
-                    text : i18n._('Save'),
+                    text : i18n._("OK"),
                     handler : function() {
                         this.saveAction.defer(1, this);
                     }.createDelegate(this)
-                },'-'];
-                */
+                },"-",{
+                    name : 'Cancel',
+                    id : this.getId() + "_cancelBtn",
+                    iconCls : 'cancel-icon',
+                    text : i18n._("Cancel"),
+                    handler : function() {
+                        this.cancelAction();
+                    }.createDelegate(this)
+                },"-",{
+                    name : "Apply",
+                    id : this.getId() + "_applyBtn",
+                    iconCls : 'apply-icon',
+                    text : i18n._("Apply"),
+                    handler : function() {
+                        this.applyAction.defer(1, this,[true]);
+                    }.createDelegate(this)
+                },"-"];
             }
             
             this.rackDatabase = this.buildRackDatabase( this.getPolicyConfiguration().policies.list );
@@ -69,6 +75,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     var policyManager = rpc.jsonrpc.RemoteUvmContext.policyManager();
                     rpc.policyManager = policyManager;
                     this.rpc.policyConfiguration = rpc.policyManager.getPolicyConfiguration();
+
+                    if ( this.node ) {
+                        this.node.hasMultipleRacks = this.rpc.policyConfiguration.policies.list.length > 1;
+                    }
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -1212,6 +1222,24 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             this.gridRules.clearChangedData();
             this.gridRules.store.loadData(this.getPolicyConfiguration().userPolicyRules,false);
 
+            this.policyStoreData = [];
+            this.policyStoreData.push({
+                key : null,
+                name : this.i18n._("> No rack"),
+                policy : null
+            });
+            var policiesList = this.getPolicyConfiguration().policies.list;
+            
+            for (var i = 0; i < this.getPolicyConfiguration().policies.list.length; i++) {
+                this.policyStoreData.push({
+                    key : policiesList[i].name,
+                    name : policiesList[i].name,
+                    policy : policiesList[i]
+                });
+            }
+
+            this.policyStore.loadData(this.policyStoreData);
+
             Ext.MessageBox.hide();
         },
 
@@ -1407,6 +1435,5 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
             return this.rackDatabase[id];
         }
-        
     });
 }

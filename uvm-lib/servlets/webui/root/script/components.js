@@ -1283,8 +1283,8 @@ Ung.Node = Ext.extend(Ext.Component, {
     removeAction : function()
     {
         /* A hook for doing something in a node before attempting to remove it */
-        if (this.settings && this.settings.preRemoveAction ) {
-            this.settings.preRemoveAction( this, this.completeRemoveAction.createDelegate( this ));
+        if ( this.preRemoveAction ) {
+            this.preRemoveAction( this, this.completeRemoveAction.createDelegate( this ));
             return;
         }
 
