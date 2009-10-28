@@ -144,15 +144,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }],
                             grid : settingsCmp.gridBlacklistCategories,
                             applyAction : function(forceLoad){
-                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                            var saveList = settingsCmp.gridBlacklistCategories.getSaveList();
-                                            settingsCmp.getRpcNode().updateBlacklistCategories(function(result, exception) {
-                                                Ext.MessageBox.hide();
-                                                if(Ung.Util.handleException(exception)) return;
-                                                if(forceLoad===true){                                                
-                                                    this.gridBlacklistCategories.reloadGrid();
-                                                }
-                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                var saveList = settingsCmp.gridBlacklistCategories.getSaveList();
+                                settingsCmp.getRpcNode().updateBlacklistCategories(function(result, exception) {
+                                    Ext.MessageBox.hide();
+                                    if(Ung.Util.handleException(exception)) return;
+                                    if(forceLoad===true){                                                
+                                        this.gridBlacklistCategories.reloadGrid();
+                                    }
+                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
                             }                                                        
                         });
                     }
@@ -184,24 +184,25 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }],
                             grid : settingsCmp.gridBlockedUrls,
                             applyAction : function(forceLoad){
-                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                            var saveList = settingsCmp.gridBlockedUrls.getSaveList();
-                                            settingsCmp.getRpcNode().updateBlockedUrls(function(result, exception) {
-                                                if(Ung.Util.handleException(exception)){
-                                                    Ext.MessageBox.hide();
-                                                    return;
-                                                }
-                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                                    Ext.MessageBox.hide();                                                
-                                                    if(Ung.Util.handleException(exception2)){
-                                                        return;
-                                                    }
-                                                    this.gridBlockedUrls.setTotalRecords(result2.blockedUrlsLength);
-                                                    if(forceLoad===true){                                                
-                                                        this.gridBlockedUrls.reloadGrid();
-                                                    }                                                    
-                                                }.createDelegate(this));
-                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                var saveList = settingsCmp.gridBlockedUrls.getSaveList();
+                                settingsCmp.alterUrls(saveList);
+                                settingsCmp.getRpcNode().updateBlockedUrls(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)){
+                                        Ext.MessageBox.hide();
+                                        return;
+                                    }
+                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                        Ext.MessageBox.hide();                                                
+                                        if(Ung.Util.handleException(exception2)){
+                                            return;
+                                        }
+                                        this.gridBlockedUrls.setTotalRecords(result2.blockedUrlsLength);
+                                        if(forceLoad===true){                                                
+                                            this.gridBlockedUrls.reloadGrid();
+                                        }                                                    
+                                    }.createDelegate(this));
+                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
                             }                                                        
                         });
                     }
@@ -751,24 +752,25 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }],
                             grid : settingsCmp.gridPassedUrls,
                             applyAction : function(forceLoad){
-                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                            var saveList = settingsCmp.gridPassedUrls.getSaveList();
-                                            settingsCmp.getRpcNode().updatePassedUrls(function(result, exception) {
-                                                if(Ung.Util.handleException(exception)){
-                                                    Ext.MessageBox.hide();
-                                                    return;
-                                                }
-                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                                    Ext.MessageBox.hide();                                                
-                                                    if(Ung.Util.handleException(exception2)){
-                                                        return;
-                                                    }
-                                                    this.gridPassedUrls.setTotalRecords(result2.passedUrlsLength);
-                                                    if(forceLoad===true){                                                
-                                                        this.gridPassedUrls.reloadGrid();
-                                                    }                                                    
-                                                }.createDelegate(this));
-                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                var saveList = settingsCmp.gridPassedUrls.getSaveList();
+                                settingsCmp.alterUrls(saveList);
+                                settingsCmp.getRpcNode().updatePassedUrls(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)){
+                                        Ext.MessageBox.hide();
+                                        return;
+                                    }
+                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                        Ext.MessageBox.hide();                                                
+                                        if(Ung.Util.handleException(exception2)){
+                                            return;
+                                        }
+                                        this.gridPassedUrls.setTotalRecords(result2.passedUrlsLength);
+                                        if(forceLoad===true){                                                
+                                            this.gridPassedUrls.reloadGrid();
+                                        }                                                    
+                                    }.createDelegate(this));
+                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
                             }                            
                         });
                     }
@@ -799,26 +801,46 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 title : settingsCmp.i18n._("Client IP addresses")
                             }],
                             grid : settingsCmp.gridPassedClients,
-                            applyAction : function(forceLoad){
-                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                            var saveList = settingsCmp.gridPassedClients.getSaveList();
-                                            settingsCmp.getRpcNode().updatePassedClients(function(result, exception) {
-                                                if(Ung.Util.handleException(exception)){
-                                                    Ext.MessageBox.hide();
-                                                    return;
-                                                }
-                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                                    Ext.MessageBox.hide();                                                
-                                                    if(Ung.Util.handleException(exception2)){
-                                                        return;
-                                                    }
-                                                    this.gridPassedClients.setTotalRecords(result2.passedClientsLength);
-                                                    if(forceLoad===true){                                                
-                                                        this.gridPassedClients.reloadGrid();
-                                                    }                                                    
-                                                }.createDelegate(this));
-                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
-                            }                                                        
+                            saveAction : function()
+                            {
+                                this.commitSettings(this.completeSaveAction.createDelegate(this));
+                            },
+                            completeSaveAction : function()
+                            {
+                                Ext.MessageBox.hide();
+                                this.closeWindow();
+                            },
+                            applyAction : function()
+                            {
+                                this.commitSettings(this.reloadSettings.createDelegate(this));
+                            },
+                            reloadSettings : function()
+                            {
+                                this.grid.reloadGrid();
+                                Ext.MessageBox.hide();
+                            },
+                            commitSettings : function(callback){
+                                var saveList = settingsCmp.gridPassedClients.getSaveList();
+                                if ( !settingsCmp.validateServer(saveList)) {
+                                    return;
+                                }
+                                
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                
+                                settingsCmp.getRpcNode().updatePassedClients(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)){
+                                        return;
+                                    }
+                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                        
+                                        if(Ung.Util.handleException(exception2)){
+                                            return;
+                                        }
+                                        this.gridPassedClients.setTotalRecords(result2.passedClientsLength);
+                                        callback();
+                                    }.createDelegate(this));
+                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                            }                                                 
                         });
                     }
                     this.winPassedClients.show();
@@ -1161,17 +1183,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }]
             });
         },
-        // validation functions
-        validateClient : function() {
-            // no need for validation here...just alter the URLs
-            if (this.gridPassedUrls) {
-                this.alterUrls(this.gridPassedUrls.getSaveList());
-            }
-            if (this.gridBlockedUrls) {
-                this.alterUrls(this.gridBlockedUrls.getSaveList());
-            }
-            return true;
-        },
         // private method
         alterUrls : function(list) {
             if (list != null) {
@@ -1198,9 +1209,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             }
             return value.trim();
         },
-        validateServer : function() {
-            // ipMaddr list must be validated server side
-            var passedClientsSaveList = this.gridPassedClients ? this.gridPassedClients.getSaveList() : null;
+        validateServer : function(passedClientsSaveList)
+        {
+            // ipMaddr list must be validated server side\            
             if (passedClientsSaveList != null) {
                 var ipMaddrList = [];
                 // added
@@ -1250,35 +1261,39 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             }
             return true;
         },
-        validate : function() {
-            // reverse the order
-            return this.validateServer() && this.validateClient();
+        validate : function()
+        {
+            return true;
+        },
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate(this));
+        },
+        completeSaveAction : function()
+        {
+            Ext.MessageBox.hide();
+            if(Ung.Util.handleException(exception)) return;
+            // exit settings screen
+            this.closeWindow();
         },
         // save function
-        saveAction : function() {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().updateAll(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    this.closeWindow();
-                }.createDelegate(this), this.getBaseSettings(), this.gridPassedClients ? this.gridPassedClients.getSaveList() : null,
-                        this.gridPassedUrls ? this.gridPassedUrls.getSaveList() : null,
-                        this.gridBlockedUrls ? this.gridBlockedUrls.getSaveList() : null,
-                        this.gridBlockedMimeTypes ? this.gridBlockedMimeTypes.getSaveList() : null,
-                        this.gridBlockedExtensions ? this.gridBlockedExtensions.getSaveList() : null,
-                        this.gridBlacklistCategories ? this.gridBlacklistCategories.getSaveList() : null);
+        commitSettings : function(callback)
+        {
+            if (!this.validate()) {
+                return;
             }
+            
+            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+            this.getRpcNode().setBaseSettings(function(result, exception) {
+                if(Ung.Util.handleException(exception)) {
+                    return;
+                }
+                
+                callback();
+            }.createDelegate(this), this.getBaseSettings());
         },
         isDirty : function() {
-            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
-                || (this.gridPassedClients ? this.gridPassedClients.isDirty() : false)
-                || (this.gridPassedUrls ? this.gridPassedUrls.isDirty() : false)
-                || (this.gridBlockedUrls ? this.gridBlockedUrls.isDirty() : false)
-                || (this.gridBlockedMimeTypes ? this.gridBlockedMimeTypes.isDirty() : false)
-                || (this.gridBlockedExtensions ? this.gridBlockedExtensions.isDirty() : false)
-                || (this.gridBlacklistCategories ? this.gridBlacklistCategories.isDirty() : false);
+            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings);
         }
     });
 }

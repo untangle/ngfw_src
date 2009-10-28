@@ -430,14 +430,38 @@ if (!Ung.hasResource["Ung.Phish"]) {
             });
         },
 
+        // apply action
+        applyAction : function()
+        {
+            this.commitSettings(this.reloadSettings.createDelegate(this));
+        },
+        
+        reloadSettings : function()
+        {
+            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings(true));
+
+            Ext.MessageBox.hide();
+        },
+
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate(this));
+        },
+        
+        completeSaveAction : function()
+        {
+            Ext.MessageBox.hide();
+            this.closeWindow();
+        },
+
         // save function
-        saveAction : function() {
+        commitSettings : function(callback)
+        {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
             this.getRpcNode().setPhishBaseSettings(function(result, exception) {
-                Ext.MessageBox.hide();
+
                 if(Ung.Util.handleException(exception)) return;
-                // exit settings screen
-                this.closeWindow();
+                callback();
             }.createDelegate(this), this.getBaseSettings());
         },
         isDirty : function() {
