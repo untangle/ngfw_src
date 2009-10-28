@@ -32,8 +32,9 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         fieldLabel : this.i18n._('Status'),
                         name : 'Statistics Status',
                         allowBlank : false,
+                        style : 'color:green',
                         value : this.node.isRunning() ? this.i18n._('active') : this.i18n._('inactive'),
-                        disabled : true,
+                        /*disabled : true,*/
                         readOnly : true,
                         cls:'attack-blocker-style-1'
 
