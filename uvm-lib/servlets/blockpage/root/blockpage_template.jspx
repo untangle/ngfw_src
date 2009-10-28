@@ -54,22 +54,23 @@
           </c:if>
         </div>
         
-        <c:if test="${showUnblockNow}">
-          <button id="unblockNowButton" type="button" onclick="unblockSite(false)">
-            <uvm:i18n>Unblock For Now</uvm:i18n>
-          </button>
-        </c:if>
-        
-        <c:if test="${showUnblockGlobal}">
-          <button id="unblockGlobalButton" type="button" onclick="unblockSite(true)">
-            <uvm:i18n>Unblock Permanently</uvm:i18n>
-          </button>
-        </c:if>
-
         <c:if test="${!empty additional_fields}">
           ${additional_fields}
         </c:if>
-
+        <div class="u-form-item">
+            <c:if test="${showUnblockNow}">
+              <button id="unblockNowButton" type="button" onclick="unblockSite(false)">
+                <uvm:i18n>Unblock For Now</uvm:i18n>
+              </button>
+            </c:if>
+            
+            <c:if test="${showUnblockGlobal}">
+              <button id="unblockGlobalButton" type="button" onclick="unblockSite(true)">
+                <uvm:i18n>Unblock Permanently</uvm:i18n>
+              </button>
+            </c:if>
+        </div>
+        
         <p class="contact">
           <span>${contact}</span>
         </p>
