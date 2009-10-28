@@ -441,10 +441,10 @@ class FirewallDetail(DetailSection):
 
         rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied')),
                    ColumnDesc('firewall_was_blocked', _('Action')),
-                   ColumnDesc('c_server_addr', _('Source IP')),
-                   ColumnDesc('c_server_port', _('Source Port')),
-                   ColumnDesc('c_client_addr', _('Destination IP')),
-                   ColumnDesc('c_client_port', _('Destination Port'))]
+                   ColumnDesc('c_server_addr', _('Destination IP')),
+                   ColumnDesc('c_server_port', _('Destination Port')),
+                   ColumnDesc('c_client_addr', _('Source IP')),
+                   ColumnDesc('c_client_port', _('Source Port'))]
 
         return rv
 
