@@ -756,8 +756,8 @@ Ung.Main=Ext.extend(Object, {
         var callback = function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
-            var parentRackName = rpc.currentPolicy.parent !=null ? rpc.currentPolicy.parent.name : "None";
-            Ext.get('parent-rack-container').dom.innerHTML = i18n._('Parent Rack')+" : "+parentRackName;            
+            var parentRackName = this.getParentName( rpc.currentPolicy.parentId );
+            Ext.get('parent-rack-container').dom.innerHTML = i18n._("Parent Rack")+" : " + parentRackName;
             main.buildApps();
             main.buildNodes();
         }.createDelegate(this);
@@ -1067,5 +1067,26 @@ Ung.Main=Ext.extend(Object, {
             rpc.currentPolicy=rpc.policies[this.index];
             main.loadRackView();
         }
+    },
+
+    getParentName : function( parentId )
+    {
+        if( parentId == null ) {
+            return i18n._("None");
+        }
+
+        if ( rpc.policies === null ) {
+            return i18n._("None");
+        }
+        
+        var c = 0;
+
+        for ( c = 0 ; c < rpc.policies.length ; c++ ) {
+            if ( rpc.policies[c].id == parentId ){
+                return rpc.policies[c].name;
+            }
+        }
+        
+        return i18n._("None");
     }
 });
