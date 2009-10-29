@@ -968,7 +968,17 @@ Ung.Main=Ext.extend(Object, {
             Ext.destroy(nodePreview);
         }
     },
-
+    removeNode : function(index) {
+        var tid = main.nodes[index].tid,
+        nodeUI = tid != null ? Ext.getCmp('node_'+tid) : null;
+        delete main.nodes.splice(index, 1);
+        if(nodeUI){
+            Ext.destroy(nodeUI);
+            return true;        
+        }
+        return false;
+    }, 
+/*
     getNode : function(nodeName,nodePolicy) {
         var cp = rpc.currentPolicy.id ,np = null;
         if(main.nodes) {
@@ -987,6 +997,46 @@ Ung.Main=Ext.extend(Object, {
             }
         }
         return null;
+    },
+*/
+    getNode : function(nodeName,nodePolicy) {
+        var cp = rpc.currentPolicy.id ,np = null;
+        if(main.nodes) {
+            for (var i = 0; i < main.nodes.length; i++) {
+                if(nodePolicy==null){
+                    cp = null;
+                }else{
+                    np = nodePolicy.parentId;
+                    cp = main.nodes[i].Tid.policy == null ? null : main.nodes[i].Tid.policy.parentId;
+                }
+            
+                if ((nodeName == main.nodes[i].name)&& (np==cp)) {
+                    return main.nodes[i];
+                }
+            }
+        }
+        return null;
+    },
+    removeParentNode : function (node,nodePolicy){
+        var cp = rpc.currentPolicy.id ,np = null;    
+        if(main.nodes) {
+            for (var i = 0; i < main.nodes.length; i++) {
+                if(nodePolicy==null){
+                    cp = null;
+                }else{
+                    np = nodePolicy.parentId;
+                    cp = main.nodes[i].Tid.policy == null ? null : main.nodes[i].Tid.policy.parentId;
+                }
+            
+                if (node.name === main.nodes[i].name) {
+                    if(np!=cp){
+                        //parent found
+                        return main.removeNode(i); 
+                    }
+                }
+            }
+        }
+        return false;        
     },
     isNodeRunning : function(nodeName) {
         var node = main.getNode(nodeName);

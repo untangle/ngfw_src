@@ -1323,6 +1323,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                         main.updateSeparator();
                         // update AppItem button
                         main.loadApps();
+                        main.loadRackView();
                     }
                 }.createDelegate(this), this.Tid);
             }
@@ -1569,6 +1570,7 @@ Ung.MessageManager = {
                                     node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
+                                    main.removeParentNode(node,msg.nodeDesc.tid.policy);
                                 } else {
                                     main.loadLicenseStatus();
                                 }
