@@ -337,6 +337,16 @@ class DefaultPolicyManager implements LocalPolicyManager
 
     public boolean matchesPolicy(Node node, Policy p)
     {
+        Policy tp = node.getTid().getPolicy();
+        
+        if (null == tp) {
+            return true;
+        }
+
+        if (tp.equals(p)) {
+            return true;
+        }
+
         return false;
     }
 
