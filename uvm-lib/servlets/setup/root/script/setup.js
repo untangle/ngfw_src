@@ -694,7 +694,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             if ( currentRow == row ) {
                 index = c;
             }
-            newData.push( currentRow.get( "status" ));
+            rowData.push( currentRow.get( "status" ));
             c++;
         });
 
@@ -702,11 +702,11 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             return true;
         }
 
-        newData.splice( index, 1 );
-        newData.splice( cindex, 0, status );
+        rowData.splice( index, 1 );
+        rowData.splice( cindex, 0, status );
 
         this.interfaceStore.each( function( currentRow ) {
-            currentRow.set( "status", newData.shift());
+            currentRow.set( "status", rowData.shift());
         });
 
         sm.clearSelections();
