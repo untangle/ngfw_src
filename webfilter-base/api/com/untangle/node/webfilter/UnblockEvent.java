@@ -85,7 +85,7 @@ import org.hibernate.annotations.Type;
 	 */
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="policy_id")
-	public final Policy getPolicy() {
+	public Policy getPolicy() {
 	    return policy;
 	}
 
@@ -94,7 +94,7 @@ import org.hibernate.annotations.Type;
 	 *
 	 * @param newPolicy The new Policy value.
 	 */
-	public final void setPolicy(final Policy newPolicy) {
+	public void setPolicy(Policy newPolicy) {
 	    this.policy = newPolicy;
 	}
 
@@ -104,7 +104,7 @@ import org.hibernate.annotations.Type;
 	 * @return a <code>String</code> value
 	 */
 	@Column(name="request_uri")
-	public final String getRequestUri() {
+	public String getRequestUri() {
 	    return requestUri;
 	}
 
@@ -113,7 +113,7 @@ import org.hibernate.annotations.Type;
 	 *
 	 * @param newRequestUri The new RequestUri value.
 	 */
-	public final void setRequestUri(final String newRequestUri) {
+	public void setRequestUri(String newRequestUri) {
 	    this.requestUri = newRequestUri;
 	}
 
@@ -123,7 +123,7 @@ import org.hibernate.annotations.Type;
 	 * @return a <code>boolean</code> value
 	 */
 	@Column(name="is_permanent")
-	public final boolean isIsPermanent() {
+	public boolean isIsPermanent() {
 	    return isPermanent;
 	}
 
@@ -132,7 +132,7 @@ import org.hibernate.annotations.Type;
 	 *
 	 * @param newIsPermanent The new IsPermanent value.
 	 */
-	public final void setIsPermanent(final boolean newIsPermanent) {
+	public void setIsPermanent(boolean newIsPermanent) {
 	    this.isPermanent = newIsPermanent;
 	}
 
@@ -143,7 +143,7 @@ n	 *
 	 */
         @Column(name="client_address")
 	@Type(type="com.untangle.uvm.type.InetAddressUserType")
-	public final InetAddress getClientAddress() {
+	public InetAddress getClientAddress() {
 	    return clientAddress;
 	}
 
@@ -152,7 +152,7 @@ n	 *
 	 *
 	 * @param newClientAddress The new ClientAddress value.
 	 */
-	public final void setClientAddress(final InetAddress newClientAddress) {
+	public void setClientAddress(InetAddress newClientAddress) {
 	    this.clientAddress = newClientAddress;
 	}
 
