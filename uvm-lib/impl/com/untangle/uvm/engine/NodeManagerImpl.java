@@ -167,9 +167,14 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     public List<Tid> nodeInstances(String name, Policy policy)
     {
+        return nodeInstances(name,policy,true);
+    }
+
+    public List<Tid> nodeInstances(String name, Policy policy,boolean parents)
+    {
         List<Tid> l = new ArrayList<Tid>(tids.size());
 
-        for (Tid tid : getNodesForPolicy(policy)) {
+        for (Tid tid : getNodesForPolicy(policy,parents)) {
             NodeContext tc = tids.get(tid);
             if (null != tc) {
                 String n = tc.getNodeDesc().getName();
@@ -182,6 +187,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         return l;
     }
+
 
     public List<Tid> nodeInstances(Policy policy)
     {
@@ -270,7 +276,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         NodeDesc tDesc;
         synchronized (this) {
             //test if not duplicated
-            List<Tid> instancesList=this.nodeInstances(nodeName,p);
+            List<Tid> instancesList=this.nodeInstances(nodeName,p,false);
             if(instancesList.size()>0) {
                 logger.warn("A node instance already exists for " + nodeName + " under " + p + " policy; will not instantiate another one.");
                 return null; //return if the node is already installed
@@ -862,7 +868,20 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     private List<Tid> getNodesForPolicy(Policy policy)
     {
-        List<Policy> policies = getAllPolicies(policy);
+        return getNodesForPolicy(policy,true);
+    }
+
+    private List<Tid> getNodesForPolicy(Policy policy,boolean parents)
+    {
+        List<Policy> policies = null;
+
+        if (parents) {
+            policies = getAllPolicies(policy);
+        } else {
+            policies = new ArrayList<Policy>(1);
+            policies.add(policy);
+        }
+
         List<List<Tid>> ll = new ArrayList<List<Tid>>(policies.size());
         for (int i = 0; i < policies.size(); i++) {
             ll.add(new ArrayList<Tid>());

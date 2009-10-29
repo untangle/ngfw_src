@@ -79,13 +79,23 @@ public interface LocalNodeManager
     List<NodeDesc> visibleNodes(Policy policy);
 
     /**
-     * Node instances by name policy.
+     * Node instances by name policy, this gets the nodes in the parents to.
      *
      * @param name name of node.
      * @param policy policy of node.
      * @return tids of corresponding nodes.
      */
     List<Tid> nodeInstances(String name, Policy policy);
+
+    /**
+     * Node instances by name policy.
+     *
+     * @param name name of node.
+     * @param policy policy of node.
+     * @param parents true to fetch the nodes in the parents as well.
+     * @return tids of corresponding nodes.
+     */
+    List<Tid> nodeInstances(String name, Policy policy,boolean parents);
 
     /**
      * Create a new node instance under the given policy.  Note

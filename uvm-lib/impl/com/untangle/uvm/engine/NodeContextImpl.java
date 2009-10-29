@@ -464,7 +464,7 @@ class NodeContextImpl implements NodeContext
         if (nodeDesc.isSingleInstance()) {
             String n = nodeDesc.getName();
             Policy p = nodeDesc.getTid().getPolicy();
-            List<Tid> l = nodeManager.nodeInstances(n, p);
+            List<Tid> l = nodeManager.nodeInstances(n, p,false);
 
             if (1 == l.size()) {
                 if (!tid.equals(l.get(0))) {

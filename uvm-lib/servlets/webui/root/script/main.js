@@ -796,20 +796,26 @@ Ung.Main=Ext.extend(Object, {
     },
 
     installNode: function(mackageDesc, appItem) {
-        if(mackageDesc!==null) {
-        if(main.getNode(mackageDesc.name)!=null) {
+        
+        if(mackageDesc===null) {
+            return;
+        }
+        
+        /* Sanity check to see if the node is already installed. */
+        node = main.getNode(mackageDesc.name);
+        if (( node !== null ) && ( node.Tid.policy.id == rpc.currentPolicy.id )) {
             appItem.hide();
             return;
-            }
-            Ung.AppItem.updateState(mackageDesc.displayName, "installing");
-            main.addNodePreview(mackageDesc);
-            rpc.nodeManager.instantiateAndStart(function (result, exception) {
-                if(Ung.Util.handleException(exception)) {
-                    main.removeNodePreview(this.name);
-                    return;
-                }
-            }.createDelegate(mackageDesc), mackageDesc.name, rpc.currentPolicy);
         }
+        
+        Ung.AppItem.updateState(mackageDesc.displayName, "installing");
+        main.addNodePreview(mackageDesc);
+        rpc.nodeManager.instantiateAndStart(function (result, exception) {
+            if(Ung.Util.handleException(exception)) {
+                main.removeNodePreview(this.name);
+                return;
+            }
+        }.createDelegate(mackageDesc), mackageDesc.name, rpc.currentPolicy);
     },
     getIframeWin: function() {
         if(this.iframeWin==null) {
