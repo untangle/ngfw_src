@@ -1240,6 +1240,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
             this.policyStore.loadData(this.policyStoreData);
 
+            main.loadPolicies.defer(1,main);
+
             Ext.MessageBox.hide();
         },
 
