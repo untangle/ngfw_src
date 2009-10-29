@@ -969,10 +969,18 @@ Ung.Main=Ext.extend(Object, {
         }
     },
 
-    getNode : function(nodeName) {
+    getNode : function(nodeName,nodePolicy) {
+        var cp = rpc.currentPolicy.id ,np = null;
         if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
-                if (nodeName == main.nodes[i].name) {
+                if(nodePolicy==null){
+                    cp = null;
+                }else{
+                    np = nodePolicy.parentId;
+                    cp = main.nodes[i].Tid.policy == null ? null : main.nodes[i].Tid.policy.parentId;
+                }
+            
+                if ((nodeName == main.nodes[i].name)&& (np==cp)) {
                     return main.nodes[i];
                     break;
                 }

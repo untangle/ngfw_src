@@ -1564,7 +1564,7 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
                                 refreshApps=true;
-                                var node=main.getNode(msg.nodeDesc.mackageDesc.name);
+                                var node=main.getNode(msg.nodeDesc.mackageDesc.name,msg.nodeDesc.tid.policy);
                                 if(!node) {
                                     node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
                                     main.nodes.push(node);
