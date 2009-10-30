@@ -2201,6 +2201,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             this.gridAdminAccounts.clearChangedData();
             this.gridAdminAccounts.store.loadData(storeData);
+
+            Ext.MessageBox.hide();
         },
         saveAction : function()
         {
@@ -2284,8 +2286,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
                 if (!this.isBrandingExpired()) {
                     main.getBrandingManager().setBaseSettings(function(result, exception) {
-                        Ext.MessageBox.hide();
-                        
                         // update global branding settings
                         rpc.brandingManager.getBaseSettings(function (result, exception) {
                             

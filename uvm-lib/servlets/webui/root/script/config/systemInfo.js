@@ -330,6 +330,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         reloadSettings : function()
         {
             this.getRegistrationInfo(true);
+            this.dirty = false;
             Ext.MessageBox.hide();
         },
         saveAction : function()
@@ -357,7 +358,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         {
             return this.dirty;
         }
-
     });
 
 }
