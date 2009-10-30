@@ -45,47 +45,47 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
-                
+
             }
             return this.rpc.adminSettings;
         },
         // Status Panel
         buildStatus: function() {
-            this.panelStatus = new Ext.Panel({ 
+            this.panelStatus = new Ext.Panel({
                 title: this.i18n._('Status'),
                 name: 'Status',
                 helpSource: 'status',
                 layout: "form",
                 autoScroll: true,
                 cls: 'ung-panel',
-                items: [{ 
+                items: [{
                     title: this.i18n._('Status'),
                     xtype: 'fieldset',
                     autoHeight: true,
-                    items: [{ 
+                    items: [{
                         buttonAlign: 'center',
                         footer: false,
                         border: false,
-                        buttons: [{ 
+                        buttons: [{
                             xtype: 'button',
                             text: this.i18n._('View Reports'),
                             name: 'View Reports',
                             iconCls: 'action-icon',
                             handler: function() {
                                 var viewReportsUrl = "../reports/";
-                                var breadcrumbs = [{ 
+                                var breadcrumbs = [{
                                     title: i18n._(rpc.currentPolicy.name),
                                     action: function() {
                                         main.iframeWin.closeActionFn();
                                         this.cancelAction();
                                     }.createDelegate(this)
-                                }, { 
+                                }, {
                                     title: this.node.md.displayName,
                                     action: function() {
                                         main.iframeWin.closeActionFn();
                                     }.createDelegate(this)
                                 }, {
-                                    title: this.i18n._('View Reports') 
+                                    title: this.i18n._('View Reports')
                                 }];
                                 window.open(viewReportsUrl);
                             }.createDelegate(this)
@@ -107,7 +107,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 width : 100,
                 fixed : true
             });
-            
+
             // online reports is a check column
             var emailReports = new Ext.grid.CheckColumn({
                 header : this.i18n._("Email Reports"),
@@ -233,7 +233,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         border: false,
                         cls: 'description',
                         html: this.i18n._("Limit Data Retention to a number of days. The smaller the number the lower the disk space requirements and resource usage during report generation.")
-                    },{ 
+                    },{
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Limit Data Retention'),
                         name : 'Limit Data Retention',
@@ -248,6 +248,19 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             "change" : {
                                 fn : function(elem, newValue) {
                                     this.getReportingSettings().daysToKeep = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },{
+                        xtype : 'checkbox',
+                        boxLabel : this.i18n._('Attach Detail CSV zip file.'),
+                        name : 'Email Detail',
+                        hideLabel : true,
+                        checked : this.getReportingSettings().emailDetail,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().emailDetail = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -277,7 +290,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     width : 200
                 })]
             });
-            
+
             this.gridRecipients.rowEditorChangePassword.render("containter");
         },
         // IP Map grid
@@ -405,10 +418,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             this.gridRecipients.clearChangedData();
             this.gridRecipients.store.loadData( this.buildReportingUsersData());
-            var rdtk = Ext.getCmp("reporting_daysToKeep"); 
+            var rdtk = Ext.getCmp("reporting_daysToKeep");
             rdtk.setValue( this.getReportingSettings().daysToKeep );
             rdtk.originalValue = rdtk.getValue();
-            
+
             this.gridIpMap.clearChangedData();
             this.gridIpMap.store.loadData( this.getReportingSettings().networkDirectory.entries );
 
@@ -479,7 +492,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
                 /* Delete all of the reporting only users that have not been updated. */
                 users = {};
-                
+
                 var c  = 1;
                 for ( var id in adminSettings.users.set ) {
                     user = adminSettings.users.set[id];
@@ -495,7 +508,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     }
                 }
                 adminSettings.users.set = users;
-                
+
                 this.getMailSettings().reportEmail = recipientsList.join(",");
                 this.getReportingSettings().reportingUsers = reportingUsers.join(",");
 
@@ -507,7 +520,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 rpc.adminManager.setMailSettings(function(result, exception) {
                     this.afterSave(exception, callback);
                 }.createDelegate(this), this.getMailSettings());
-                
+
                 rpc.adminManager.setAdminSettings(function(result, exception) {
                     this.afterSave(exception, callback);
                 }.createDelegate(this), this.getAdminSettings());
@@ -545,18 +558,18 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             var reportEmail = this.getMailSettings().reportEmail || "";
             var adminUsers = this.getAdminSettings().users.set;
             var reportingUsers = this.getReportingSettings().reportingUsers || "", reportingUsersSet = {};
-            
+
             /* Convert the two comma separated lists to sets. */
             var temp = {}, values, c;
-            
+
             values = reportEmail.split(",");
             for ( c = 0 ; c < values.length ; c++ ) {
                 temp[values[c].trim()] = true;
             }
             reportEmail = temp;
-            
+
             values = reportingUsers.split(",");
-            
+
             for ( c = 0 ; c < values.length ; c++ ) {
                 values[c] = values[c].trim();
             }
@@ -576,10 +589,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     emailAddress : email
                 });
             }
-            
+
             return storeData;
         },
-        
+
         findAdminUser : function( adminUsers, emailAddress )
         {
             var id;
