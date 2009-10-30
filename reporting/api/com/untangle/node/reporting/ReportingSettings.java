@@ -49,6 +49,7 @@ public class ReportingSettings implements Serializable
 
     private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
     private int daysToKeep = 7;
+    private boolean emailDetail = false;
 
     private String reportingUsers;
 
@@ -110,6 +111,17 @@ public class ReportingSettings implements Serializable
     public void setDaysToKeep(int daysToKeep)
     {
         this.daysToKeep = daysToKeep;
+    }
+
+    @Column(name="email_detail", nullable=false)
+    public boolean getEmailDetail()
+    {
+        return emailDetail;
+    }
+
+    public void setEmailDetail(boolean emailDetail)
+    {
+        this.emailDetail = emailDetail;
     }
 
     /**
