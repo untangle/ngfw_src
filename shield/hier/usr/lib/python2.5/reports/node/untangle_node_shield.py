@@ -118,22 +118,22 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             r = curs.fetchone()
 
             lks = []
-            ks = KeyStatistic(_('avg requests/minute (7-days)'), r[0],
+            ks = KeyStatistic(_('avg requests/minute'), r[0],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('max requests/minute (7-days)'), r[1],
+            ks = KeyStatistic(_('max requests/minute'), r[1],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg limited/minute (7-days)'), r[2],
+            ks = KeyStatistic(_('avg limited/minute'), r[2],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('max limited/minute (7-days)'), r[3],
+            ks = KeyStatistic(_('max limited/minute'), r[3],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg blocked/minute (7-days)'), r[4],
+            ks = KeyStatistic(_('avg blocked/minute'), r[4],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('max blocked/minute (7-days)'), r[5],
+            ks = KeyStatistic(_('max blocked/minute'), r[5],
                               _('sessions/minute'))
             lks.append(ks)
 
