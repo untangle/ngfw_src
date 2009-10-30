@@ -422,10 +422,10 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 curs.execute(query, (report_days, one_week, ed))
 
             r = curs.fetchone()
-            ks = KeyStatistic(_('Avg URLs blocked'), r[0],
+            ks = KeyStatistic(_('Avg URLs blocked (7-days)'), r[0],
                               _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('Max URLs blocked'), r[1],
+            ks = KeyStatistic(_('Max URLs blocked (7-days)'), r[1],
                               _('hits/day'))
             lks.append(ks)
 

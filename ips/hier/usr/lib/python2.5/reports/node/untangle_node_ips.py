@@ -234,10 +234,10 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS attacks
                 curs.execute(query, (one_day, ed))
 
             r = curs.fetchone()
-            ks = KeyStatistic(_('max attacks'), r[0],
+            ks = KeyStatistic(_('max attacks (7-days)'), r[0],
                               _('attacks/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg attacks'), r[1],
+            ks = KeyStatistic(_('avg attacks (7-days)'), r[1],
                               _('attacks/day'))
             lks.append(ks)
         finally:

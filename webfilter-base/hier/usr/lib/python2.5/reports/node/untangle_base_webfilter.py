@@ -206,9 +206,9 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(hits_query, (1, one_day, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('max hits'), r[0], _('hits/minute'))
+            ks = KeyStatistic(_('max hits (1-day)'), r[0], _('hits/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg hits'), r[1], _('hits/minute'))
+            ks = KeyStatistic(_('avg hits (1-day)'), r[1], _('hits/minute'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -232,7 +232,7 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(violations_query, (one_day, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('avg violations'), r[0],
+            ks = KeyStatistic(_('avg violations (1-day)'), r[0],
                               _('violations/hour'))
             lks.append(ks)
 
@@ -358,14 +358,14 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
             else:
                 curs.execute(query, (one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('max hits'), r[0], _('hits/day'))
+            ks = KeyStatistic(_('max hits (7-days)'), r[0], _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg hits'), r[1], _('hits/day'))
+            ks = KeyStatistic(_('avg hits (7-days)'), r[1], _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('max violations'), r[2],
+            ks = KeyStatistic(_('max violations (7-days)'), r[2],
                               _('violations/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg violations'), r[3],
+            ks = KeyStatistic(_('avg violations (7-days)'), r[3],
                               _('violations/day'))
             lks.append(ks)
         finally:
@@ -479,9 +479,9 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
             hits = r[0]
             violations = r[1]
 
-            ks = KeyStatistic(_('total hits'), hits, 'hits')
+            ks = KeyStatistic(_('total hits (7-days)'), hits, 'hits')
             lks.append(ks)
-            ks = KeyStatistic(_('total violations'), violations,
+            ks = KeyStatistic(_('total violations (7-days)'), violations,
                               'violations')
             lks.append(ks)
         finally:
@@ -490,10 +490,10 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
         plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Date'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset({_('total hits'): hits,
-                              _('total violations'): violations},
-                             colors={_('total hits'): colors.goodness,
-                                     _('total violations'): colors.badness})
+        plot.add_pie_dataset({_('total hits (7-days)'): hits,
+                              _('total violations (7-days)'): violations},
+                             colors={_('total hits (7-days)'): colors.goodness,
+                                     _('total violations (7-days)'): colors.badness})
 
         return (lks, plot)
 
