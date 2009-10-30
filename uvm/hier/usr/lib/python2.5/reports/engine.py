@@ -198,7 +198,7 @@ def generate_reports(report_base, end_date):
     host_drilldown = []
     email_drilldown = []
 
-    for node_name in __get_node_partial_order():
+    for node_name in __get_node_partial_order(exclude_uninstalled=True):
         try:
             logging.info('doing process_graphs for: %s' % node_name)
             node = __nodes.get(node_name, None)
@@ -422,17 +422,41 @@ LIMIT 100
 
     return rv
 
-def __get_node_partial_order():
+def __get_node_partial_order(exclude_uninstalled=False):
     global __nodes
+
+    if exclude_uninstalled:
+        installed = __get_installed_nodes()
 
     available = sets.Set(__nodes.keys());
     list = []
 
     while len(available):
         name = available.pop()
-        __add_node(name, list, available)
+        if exclude_uninstalled:
+            if name in installed:
+                __add_node(name, list, available)
+        else:
+            __add_node(name, list, available)
 
     return list
+
+def __get_installed_nodes():
+    conn = sql_helper.get_connection()
+
+    try:
+        curs = conn.cursor()
+        curs.execute("""\
+SELECT DISTINCT name
+FROM settings.u_node_persistent_state
+WHERE target_state IN ('initialized', 'running')
+""")
+        rows = curs.fetchall()
+        rv = [rows[i][0] for i in range(len(rows))]
+    finally:
+        conn.commit()
+
+    return rv
 
 def __add_node(name, list, available):
     global __nodes
