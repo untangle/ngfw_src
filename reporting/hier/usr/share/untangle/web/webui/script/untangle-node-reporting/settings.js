@@ -405,7 +405,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             this.gridRecipients.clearChangedData();
             this.gridRecipients.store.loadData( this.buildReportingUsersData());
-            Ext.getCmp("reporting_daysToKeep").setValue( this.getReportingSettings().daysToKeep );
+            var rdtk = Ext.getCmp("reporting_daysToKeep"); 
+            rdtk.setValue( this.getReportingSettings().daysToKeep );
+            rdtk.originalValue = rdtk.getValue();
             
             this.gridIpMap.clearChangedData();
             this.gridIpMap.store.loadData( this.getReportingSettings().networkDirectory.entries );
