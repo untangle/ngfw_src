@@ -227,6 +227,23 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         })]
                     })]
                 },{
+                    title : this.i18n._("Email Attachment Settings"),
+                    items : [{                        
+                        xtype : 'checkbox',
+                        boxLabel : this.i18n._('Attach Detailed Report Logs to Email (CSV Zip File)'),
+                        name : 'Email Detail',
+                        hideLabel : true,
+                        checked : this.getReportingSettings().emailDetail,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().emailDetail = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }                  
+                    ]                                  
+                },{
                     title: this.i18n._("Data Retention"),
                     labelWidth: 150,
                     items: [{
@@ -248,19 +265,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             "change" : {
                                 fn : function(elem, newValue) {
                                     this.getReportingSettings().daysToKeep = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    },{
-                        xtype : 'checkbox',
-                        boxLabel : this.i18n._('Attach Detail CSV zip file.'),
-                        name : 'Email Detail',
-                        hideLabel : true,
-                        checked : this.getReportingSettings().emailDetail,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, newValue) {
-                                    this.getReportingSettings().emailDetail = newValue;
                                 }.createDelegate(this)
                             }
                         }
