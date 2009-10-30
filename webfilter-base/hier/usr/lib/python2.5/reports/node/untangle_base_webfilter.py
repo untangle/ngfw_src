@@ -206,9 +206,9 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(hits_query, (1, one_day, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('max hits (1-day)'), r[0], _('hits/minute'))
+            ks = KeyStatistic(_('max hits'), r[0], _('hits/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg hits (1-day)'), r[1], _('hits/minute'))
+            ks = KeyStatistic(_('avg hits'), r[1], _('hits/minute'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -232,7 +232,7 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             else:
                 curs.execute(violations_query, (one_day, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('avg violations (1-day)'), r[0],
+            ks = KeyStatistic(_('avg violations'), r[0],
                               _('violations/hour'))
             lks.append(ks)
 
