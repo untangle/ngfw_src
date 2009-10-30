@@ -2,7 +2,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
     Ung.hasResource["Ung.PolicyManager"] = true;
     
     Ung.PolicyManager = Ext.extend(Ung.ConfigWin, {
-        fnCallback:null,
+        fnCallback : null,
         panelPolicyManagement : null,
         gridRacks : null,
         gridRules : null,
@@ -204,7 +204,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }, {
                     name : 'notes'
                 },{
-                    name : 'parentId',
+                    name : 'parentId'
                 }],
                 columns : [{
                     id : "rack-name",
