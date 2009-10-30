@@ -25,5 +25,5 @@ UPDATE settings.n_webfilter_settings SET unblock_password = '';
 ALTER TABLE settings.n_webfilter_settings ALTER COLUMN unblock_password SET NOT NULL;
 
 ALTER TABLE settings.n_webfilter_settings ADD COLUMN enforce_safe_search bool;
-UPDATE settings.n_webfilter_settings SET enforce_safe_search = true;
+UPDATE settings.n_webfilter_settings SET enforce_safe_search = false;
 ALTER TABLE settings.n_webfilter_settings ALTER COLUMN enforce_safe_search SET NOT NULL;
