@@ -1272,7 +1272,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         completeSaveAction : function()
         {
             Ext.MessageBox.hide();
-            if(Ung.Util.handleException(exception)) return;
             // exit settings screen
             this.closeWindow();
         },
