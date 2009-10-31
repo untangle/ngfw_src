@@ -970,8 +970,10 @@ Ung.Main=Ext.extend(Object, {
     },
     removeNode : function(index) {
         var tid = main.nodes[index].tid,
+        nd,
         nodeUI = tid != null ? Ext.getCmp('node_'+tid) : null;
-        delete main.nodes.splice(index, 1);
+        nd = main.nodes.splice(index, 1);
+        delete(nd);
         if(nodeUI){
             Ext.destroy(nodeUI);
             return true;        
