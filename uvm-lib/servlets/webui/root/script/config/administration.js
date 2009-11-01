@@ -237,6 +237,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
 
             var storeData = this.buildUserList(false);
+            
+            /* getID returns the same value, and this causes the password
+             * field to not be rendered the second time around since it has an
+             * existing ID. */
+            var fieldID = "" + Math.round( Math.random() * 1000000 );
 
             this.panelAdministration = new Ext.Panel({
                 name : 'panelAdministration',
@@ -353,7 +358,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         inputType: 'password',
                         name : "Password",
                         dataIndex : "clearPassword",
-                        id : 'administration_rowEditor_password_'+this.getId(),
+                        id : 'administration_rowEditor_password_'+ fieldID,
                         fieldLabel : this.i18n._("Password"),
                         width : 200,
                         minLength : 3,
@@ -363,7 +368,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : "Confirm Password",
                         dataIndex : "clearPassword",
                         vtype: 'password',
-                        initialPassField: 'administration_rowEditor_password_'+this.getId(), // id of the initial password field
+                        initialPassField: 'administration_rowEditor_password_'+ fieldID, // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
                         width : 200
                     })],
@@ -372,7 +377,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         inputType: 'password',
                         name : "Password",
                         dataIndex : "clearPassword",
-                        id : 'administration_rowEditor1_password_'+ this.getId(),
+                        id : 'administration_rowEditor1_password_'+ fieldID,
                         fieldLabel : this.i18n._("Password"),
                         width : 200,
                         minLength : 3,
@@ -382,7 +387,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         name : "Confirm Password",
                         dataIndex : "clearPassword",
                         vtype: 'password',
-                        initialPassField: 'administration_rowEditor1_password_'+ this.getId(), // id of the initial password field
+                        initialPassField: 'administration_rowEditor1_password_'+ fieldID, // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
                         width : 200
                     })]
