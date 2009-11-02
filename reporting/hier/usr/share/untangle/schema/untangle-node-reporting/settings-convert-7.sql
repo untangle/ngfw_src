@@ -14,5 +14,8 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
--- Create a column for a list of users that have 
+-- Create a column for a list of users that have
 ALTER TABLE settings.n_reporting_settings ADD COLUMN reporting_users TEXT;
+
+ALTER TABLE settings.n_reporting_settings ADD COLUMN email_detail boolean;
+UPDATE settings.n_reporting_settings SET email_detail = false;

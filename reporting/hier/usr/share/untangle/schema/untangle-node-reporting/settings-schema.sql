@@ -24,7 +24,7 @@
 CREATE TABLE settings.n_reporting_settings (
     id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
-    email_detail bool,
+    email_detail bool NOT NULL,
     network_directory int8 NOT NULL,
     schedule int8,
     days_to_keep int4 NOT NULL,
