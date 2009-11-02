@@ -19,3 +19,4 @@ ALTER TABLE settings.n_reporting_settings ADD COLUMN reporting_users TEXT;
 
 ALTER TABLE settings.n_reporting_settings ADD COLUMN email_detail boolean;
 UPDATE settings.n_reporting_settings SET email_detail = false;
+ALTER TABLE settings.n_reporting_settings ALTER COLUMN email_detail SET NOT NULL;
