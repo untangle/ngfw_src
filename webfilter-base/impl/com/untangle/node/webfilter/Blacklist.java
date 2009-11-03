@@ -586,33 +586,43 @@ public abstract class Blacklist
 
     private int findMatch(CharSequence[] strs, String val)
     {
+	logger.debug("findMatch: strs = '" + Arrays.asList(strs) +
+		     "', val = '" + val  + "'");
+
         if (null == val || null == strs) {
             return -1;
         }
 
-        int i = Arrays.binarySearch(strs, val, CharSequenceUtil.COMPARATOR);
+	// we should probably do the "transform globbing into regex"
+	// once and for all, at the time they are entered by the
+	// administrator. To achieve that we'd simply need another
+	// field in the settings.u_string_rule, for instance "pattern".
+	// --Seb, 11/3/2009
+	String re;
+	for (CharSequence str : strs) {
+	    // transform globbing operators into regex ones
+	    re = str.toString();
+	    re = re.replaceAll(Pattern.quote("."), "\\.");
+	    re = re.replaceAll(Pattern.quote("*"), ".*");
+	    re = re.replaceAll(Pattern.quote("?"), ".");
+	    // possibly some path after a domain name... People
+	    // specifying 'google.com' certainly want to block
+	    // '"google.com/whatever"
+	    re = re + "(/.*)?";
 
-        if (0 <= i) {
-            return i;
-        } else {
-            int j = -i - 2; // insertion point - 1
-            if (0 <= j && j < strs.length
-                && CharSequenceUtil.startsWith(val, strs[j])) {
-                return j;
-            }
-        }
-
-    for (int k = 0 ; k < strs.length ; k++) {
-        if (CharSequenceUtil.contains(val, strs[k]))
-        return k;
-    }
-
-        return -1;
+	    // match
+	    if (Pattern.matches(re, val)) {
+		logger.debug("findMatch: ** matches pattern '" + re + "'");
+		return 1; // done, we do not care if others match too
+	    } else {
+		logger.debug("findMatch: ** does not match '" + re + "'");		
+	    }
+	}
+	return -1; // no matches at all
     }
 
     private StringRule lookupCategory(CharSequence match,
                                       Set<StringRule> rules)
-
     {
         for (StringRule rule : rules) {
             String uri = normalizeDomain(rule.getString());
@@ -659,8 +669,6 @@ public abstract class Blacklist
                 strings.add(uri);
             }
         }
-    //        Collections.sort(strings);
-
         return strings.toArray(new String[strings.size()]);
     }
 
@@ -671,7 +679,7 @@ public abstract class Blacklist
             ? url.substring("http://".length()) : url;
 
         while (0 < uri.length()
-               && ('*' == uri.charAt(0) || '.' == uri.charAt(0))) {
+               && ('.' == uri.charAt(0))) {
             uri = uri.substring(1);
         }
 
