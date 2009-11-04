@@ -89,7 +89,7 @@ class Shield(Node):
 
 class DailyRequest(Graph):
     def __init__(self):
-        Graph.__init__(self, 'daily-request', _('Daily Request'))
+        Graph.__init__(self, 'daily-request', _('Daily Requests'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -118,22 +118,22 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             r = curs.fetchone()
 
             lks = []
-            ks = KeyStatistic(_('avg requests/minute (7-days)'), r[0],
+            ks = KeyStatistic(_('Avg Requests'), r[0],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('max requests/minute (7-days)'), r[1],
+            ks = KeyStatistic(_('Max Requests'), r[1],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg limited/minute (7-days)'), r[2],
+            ks = KeyStatistic(_('Avg Limited'), r[2],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('max limited/minute (7-days)'), r[3],
+            ks = KeyStatistic(_('Max Limited'), r[3],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg blocked/minute (7-days)'), r[4],
+            ks = KeyStatistic(_('Avg Blocked'), r[4],
                               _('sessions/minute'))
             lks.append(ks)
-            ks = KeyStatistic(_('max blocked/minute (7-days)'), r[5],
+            ks = KeyStatistic(_('Max Blocked'), r[5],
                               _('sessions/minute'))
             lks.append(ks)
 

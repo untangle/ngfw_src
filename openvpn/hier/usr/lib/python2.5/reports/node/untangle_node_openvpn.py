@@ -142,11 +142,9 @@ WHERE time_stamp >= %s AND time_stamp < %s"""
 
                 r = curs.fetchone()
                 if r:
-                    ks = KeyStatistic(_('Avg data rate (%s-day)' % n),
-                                      r[0], N_('bytes/s'))
+                    ks = KeyStatistic(_('Avg Data Rate'), r[0], N_('bytes/s'))
                     lks.append(ks)
-                    ks = KeyStatistic(_('Peak data rate (%s-day)' % n), r[0],
-                                      N_('bytes/s'))
+                    ks = KeyStatistic(_('Max Data Rate'), r[0], N_('bytes/s'))
                     lks.append(ks)
 
             plot = Chart(type=TIME_SERIES_CHART,

@@ -589,7 +589,6 @@ class BandwidthUsage(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
@@ -597,8 +596,8 @@ class BandwidthUsage(Graph):
             lks = []
 
             ks_query = """\
-SELECT coalesce(sum(s2c_bytes + c2s_bytes), 0) / (24 * 60 * 60) AS avg_rate,
-       coalesce(max(s2c_bytes + c2s_bytes), 0) / 60 AS peak_rate
+SELECT COALESCE(sum(s2c_bytes + c2s_bytes), 0) AS total,
+       COALESCE(max(s2c_bytes + c2s_bytes), 0) AS max
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -610,55 +609,24 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             curs = conn.cursor()
 
             if user:
-                curs.execute(ks_query, (one_day, ed, user))
+                curs.execute(ks_query, (one_week, ed, user))
             elif host:
-                curs.execute(ks_query, (one_day, ed, host))
+                curs.execute(ks_query, (one_week, ed, host))
             else:
-                curs.execute(ks_query, (one_day, ed))
+                curs.execute(ks_query, (one_week, ed))
 
             r = curs.fetchone()
 
-            avg_rate = r[0]
-            peak_rate = r[1]
+            total = r[0]
+            max = r[1]
 
-            ks = KeyStatistic(_('Avg data rate (1-day)'),
-                              avg_rate, N_('bytes/s'))
+            ks = KeyStatistic(_('Avg Data Rate'),
+                              total / float(report_days * 24 * 60 * 60),
+                              N_('bytes/s'))
             lks.append(ks)
-            ks = KeyStatistic(_('Peak data rate (1-day)'),
-                              peak_rate, N_('bytes/s'))
+            ks = KeyStatistic(_('Peak Data Rate'), max / 60.0, N_('bytes/s'))
             lks.append(ks)
-
-            ks_query = """\
-SELECT coalesce(sum(s2c_bytes + c2s_bytes), 0) / %s AS avg_rate,
-       coalesce(sum(s2c_bytes + c2s_bytes), 0) AS total
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-"""
-
-            if user:
-                ks_query += "AND uid = %s"
-            elif host:
-                ks_query += "AND hname = %s"
-
-            curs = conn.cursor()
-
-            if user:
-                curs.execute(ks_query, (report_days, one_week, ed, user))
-            elif host:
-                curs.execute(ks_query, (report_days, one_week, ed, host))
-            else:
-                curs.execute(ks_query, (report_days, one_week, ed))
-
-            r = curs.fetchone()
-
-            avg_rate = r[0]
-            total = r[1]
-
-            ks = KeyStatistic(_('Avg data rate (%s-day)') % report_days,
-                              avg_rate, N_('bytes/day'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Data Transfered (%s-day)') % report_days,
-                              total, N_('bytes'))
+            ks = KeyStatistic(_('Data Transfered'), total, N_('bytes'))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -717,7 +685,6 @@ class ActiveSessions(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
@@ -725,39 +692,8 @@ class ActiveSessions(Graph):
             lks = []
 
             ks_query = """\
-SELECT coalesce(sum(num_sessions), 0) / (24 * 60) AS avg_sessions,
-       coalesce(max(num_sessions), 0)::int AS max_sessions
-FROM reports.session_counts
-WHERE trunc_time >= %s AND trunc_time < %s"""
-
-            if user:
-                ks_query += "AND uid = %s"
-            elif host:
-                ks_query += "AND hname = %s"
-
-            curs = conn.cursor()
-
-            if user:
-                curs.execute(ks_query, (one_day, ed, user))
-            elif host:
-                curs.execute(ks_query, (one_day, ed, host))
-            else:
-                curs.execute(ks_query, (one_day, ed))
-
-            r = curs.fetchone()
-
-            avg_sessions = r[0]
-            max_sessions = r[1]
-
-            ks = KeyStatistic(_('Avg active sessions (1-day)'),
-                              avg_sessions, _('sessions'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max active sessions (1-day)'),
-                              max_sessions, _('sessions'))
-            lks.append(ks)
-
-            ks_query = """\
-SELECT sum(num_sessions)::int AS total_sessions
+SELECT COALESCE(sum(num_sessions), 0) AS total,
+       COALESCE(max(num_sessions), 0)::int AS max
 FROM reports.session_counts
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -777,10 +713,38 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             r = curs.fetchone()
 
-            total_sessions = r[0]
+            total = r[0]
+            max = r[1]
 
-            ks = KeyStatistic(_('Total Sessions'), total_sessions,
-                              _('sessions'))
+            ks = KeyStatistic(_('Avg Active Sessions'),
+                              total / float(report_days * 24 * 60 * 60),
+                              _('sessions/sec'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Active Sessions'),
+                              max / 60.0, _('sessions/sec'))
+            lks.append(ks)
+
+            ks_query = """\
+SELECT sum(new_sessions)::int AS total
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+            if user:
+                ks_query += "AND uid = %s"
+            elif host:
+                ks_query += "AND hname = %s"
+
+            curs = conn.cursor()
+
+            if user:
+                 curs.execute(ks_query, (one_week, ed, user))
+            elif host:
+                 curs.execute(ks_query, (one_week, ed, host))
+            else:
+                curs.execute(ks_query, (one_week, ed))
+
+            total = r[0]
+            ks = KeyStatistic(_('Total Sessions'), total, _('sessions'))
             lks.append(ks)
 
             curs = conn.cursor()

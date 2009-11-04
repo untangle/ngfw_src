@@ -166,17 +166,13 @@ FROM (select date_trunc('day', time_stamp) AS day,
             else:
                 curs.execute(avg_max_query, (one_week, ed))
             r = curs.fetchone()
-            ks = reports.KeyStatistic(_('avg (1-week)'), r[0],
-                                      _('logged/day'))
+            ks = reports.KeyStatistic(_('Avg'), r[0], _('logged/day'))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('max (1-week)'), r[1],
-                                      _('logged/day'))
+            ks = reports.KeyStatistic(_('Max'), r[1], _('logged/day'))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('avg (1-week)'), r[2],
-                                      _('blocked/day'))
+            ks = reports.KeyStatistic(_('Avg'), r[2], _('blocked/day'))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('max (1-week)'), r[3],
-                                      _('blocked/day'))
+            ks = reports.KeyStatistic(_('Max'), r[3], _('blocked/day'))
             lks.append(ks)
         finally:
             conn.commit()

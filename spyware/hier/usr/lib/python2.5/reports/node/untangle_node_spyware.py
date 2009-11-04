@@ -215,7 +215,8 @@ WHERE reports.n_http_events.time_stamp >= %s
 
 class HourlyRates(Graph):
     def __init__(self):
-        Graph.__init__(self, 'hourly-spyware-events', _('Hourly Spyware Incidents'))
+        Graph.__init__(self, 'hourly-spyware-events',
+                       _('Hourly Blocked Incidents'))
 
     @print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
@@ -228,10 +229,16 @@ class HourlyRates(Graph):
         ed = DateFromMx(end_date)
 
         url_query = """\
-SELECT COALESCE(sum(sw_blacklisted), 0)::int / %s AS sw_blacklisted,
-       max(sw_cookies)::int AS sw_cookies
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+SELECT COALESCE(sum(sw_blacklisted), 0) AS sw_total_blacklisted,
+       max(sw_blacklisted)::int AS sw_max_blacklisted,
+       COALESCE(sum(sw_cookies), 0)  AS sw_total_cookies,
+       max(sw_cookies)::int AS sw_max_cookies
+FROM (SELECT date_trunc('hour', trunc_time) AS time,
+      COALESCE(sum(sw_blacklisted), 0) AS sw_blacklisted,
+      COALESCE(sum(sw_cookies), 0) AS sw_cookies
+      FROM reports.n_http_totals
+      WHERE trunc_time >= %s AND trunc_time < %s
+      GROUP BY time) AS foo"""
 
         if host:
             url_query += " AND hname = %s"
@@ -241,28 +248,44 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         conn = sql_helper.get_connection()
         try:
             curs = conn.cursor()
-            for n in (1, report_days):
-                sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
+            sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
-                if host:
-                    curs.execute(url_query, (report_days, sd, ed, host))
-                elif user:
-                    curs.execute(url_query, (report_days, sd, ed, user))
-                else:
-                    curs.execute(url_query, (report_days, sd, ed))
+            if host:
+                curs.execute(url_query, (sd, ed, host))
+            elif user:
+                curs.execute(url_query, (sd, ed, user))
+            else:
+                curs.execute(url_query, (sd, ed))
 
-                r = curs.fetchone()
-                ks = KeyStatistic(_('avg URLs blocked (%s-day)' % n), r[0],
-                                  _('blocks/hour'))
-                lks.append(ks)
-                ks = KeyStatistic(_('max cookies blocked (%s-day)' % n), r[1],
-                                  _('blocks/hour'))
-                lks.append(ks)
+            r = curs.fetchone()
+            total_blacklisted = r[0]
+            max_blacklisted = r[1]
+            total_cookies = r[2]
+            max_cookies = r[3]
+
+            ks = KeyStatistic(_('Avg URLs Blocked'),
+                              total_blacklisted / float(report_days * 24),
+                              _('blocks/hour'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max URLs Blocked'), max_blacklisted,
+                              _('blocks/hour'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg Cookies Blocked'),
+                              total_cookies / float(report_days * 24),
+                              _('blocks/hour'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Cookies Blocked'), max_blacklisted,
+                              _('blocks/hour'))
+            lks.append(ks)
 
             sessions_query = """\
-SELECT COALESCE(sum(sw_accesses), 0) / %s AS sw_accesses
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+SELECT COALESCE(sum(sw_accesses), 0) AS total_accesses,
+       max(sw_accesses)::int AS max_accesses
+FROM (SELECT date_trunc('hour', trunc_time) AS time,
+      COALESCE(sum(sw_accesses), 0) AS sw_accesses
+      FROM reports.session_totals
+      WHERE trunc_time >= %s AND trunc_time < %s
+      GROUP BY time) AS foo"""
 
             if host:
                 sessions_query = sessions_query + " AND hname = %s"
@@ -271,19 +294,25 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 
             curs = conn.cursor()
-            for n in (1, report_days):
-                sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
+            sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
-                if host:
-                    curs.execute(sessions_query, (report_days, sd, ed, host))
-                elif user:
-                    curs.execute(sessions_query, (report_days, sd, ed, user))
-                else:
-                    curs.execute(sessions_query, (report_days, sd, ed))
-                r = curs.fetchone()
-                ks = KeyStatistic(_('avg suspicious detected (%s-day)' % n), r[0],
-                                  _('detected/hour'))
-                lks.append(ks)
+            if host:
+                curs.execute(sessions_query, (sd, ed, host))
+            elif user:
+                curs.execute(sessions_query, (sd, ed, user))
+            else:
+                curs.execute(sessions_query, (sd, ed))
+            r = curs.fetchone()
+            total_accesses = r[0]
+            max_accesses = r[1]
+
+            ks = KeyStatistic(_('Avg Suspicious Traffic'),
+                              total_accesses / float(report_days * 24),
+                              _('detected/hour'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Suspicious Traffic'),
+                              max_accesses, _('detected/hour'))
+            lks.append(ks)
         finally:
             conn.commit()
 
@@ -309,8 +338,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             q = """\
 SELECT (date_part('hour', trunc_time) || ':'
         || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       coalesce(sum(sw_blacklisted) / 10, 0) AS sw_blacklisted,
-       coalesce(sum(sw_cookies) / 10, 0) AS sw_cookies
+       COALESCE(sum(sw_blacklisted) / 10, 0) AS sw_blacklisted,
+       COALESCE(sum(sw_cookies) / 10, 0) AS sw_cookies
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
             if host:
@@ -386,7 +415,8 @@ ORDER BY time asc"""
 
 class SpywareUrlsBlocked(Graph):
     def __init__(self):
-        Graph.__init__(self, 'summary-daily-blocked-urls', _('Daily Blocked URLs'))
+        Graph.__init__(self, 'summary-daily-blocked-urls',
+                       _('Daily Blocked URLs'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -401,8 +431,12 @@ class SpywareUrlsBlocked(Graph):
         query = """\
 SELECT COALESCE(sum(sw_blacklisted), 0) / %s AS avg_blocked,
        max(sw_blacklisted)::int AS max_blocked
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+FROM (SELECT date_trunc('day', trunc_time) AS time,
+             COALESCE(sum(sw_blacklisted), 0) AS sw_blacklisted,
+             COALESCE(sum(sw_cookies), 0) AS sw_cookies
+      FROM reports.n_http_totals
+      WHERE trunc_time >= %s AND trunc_time < %s
+      GROUP BY time) AS foo"""
 
         if host:
             query += " AND hname = %s"
@@ -422,10 +456,10 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 curs.execute(query, (report_days, one_week, ed))
 
             r = curs.fetchone()
-            ks = KeyStatistic(_('Avg URLs blocked (7-days)'), r[0],
+            ks = KeyStatistic(_('Avg URLs Blocked'), r[0],
                               _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('Max URLs blocked (7-days)'), r[1],
+            ks = KeyStatistic(_('Max URLs Blocked'), r[1],
                               _('hits/day'))
             lks.append(ks)
 

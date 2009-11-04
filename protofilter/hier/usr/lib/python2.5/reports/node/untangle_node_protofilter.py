@@ -167,11 +167,9 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
                 curs.execute(query, (report_days, one_week, ed))
 
             r = curs.fetchone()
-            ks = KeyStatistic(_('max detections (%s-days)') % report_days, r[0],
-                              _('detections/day'))
+            ks = KeyStatistic(_('Avg Detections'), r[1], _('detections/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg detections (%s-days)') % report_days, r[1],
-                              _('detections/day'))
+            ks = KeyStatistic(_('Max Detections'), r[0], _('detections/day'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -185,7 +183,7 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
 
         ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_day = DateFromMx(start_date)
+        one_week = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
         try:
@@ -206,11 +204,11 @@ AND pf_protocol != ''"""
             curs = conn.cursor()
 
             if host:
-                curs.execute(query, (one_day, ed, host))
+                curs.execute(query, (one_week, ed, host))
             elif user:
-                curs.execute(query, (one_day, ed, user))
+                curs.execute(query, (one_week, ed, user))
             else:
-                curs.execute(query, (one_day, ed))
+                curs.execute(query, (one_week, ed))
 
             dates = []
             detections = []

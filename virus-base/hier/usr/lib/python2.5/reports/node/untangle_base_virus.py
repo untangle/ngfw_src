@@ -255,7 +255,6 @@ class DailyVirusesBlocked(Graph):
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
                            email=None):
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
@@ -308,9 +307,9 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
                 curs.execute(avg_max_query, (report_days, one_week, ed,
                                              one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('max (7-day)'), r[1], _('viruses/day'))
+            ks = KeyStatistic(_('Avg'), r[0], _('viruses/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg (7-day)'), r[0], _('viruses/day'))
+            ks = KeyStatistic(_('Max'), r[1], _('viruses/day'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -422,7 +421,6 @@ class HourlyVirusesBlocked(Graph):
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
                            email=None):
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """
@@ -475,9 +473,9 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
                 curs.execute(avg_max_query, (report_days, one_week, ed,
                                              one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('max (7-day)'), r[1], _('viruses/hour'))
+            ks = KeyStatistic(_('Avg'), r[0], _('viruses/hour'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg (7-day)'), r[0], _('viruses/hour'))
+            ks = KeyStatistic(_('Max'), r[1], _('viruses/hour'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -652,7 +650,6 @@ class TopEmailVirusesDetected(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         avg_max_query = """\
