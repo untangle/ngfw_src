@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -41,7 +41,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.node.Rule;
 
 /**
  * An UVM user.
@@ -208,7 +207,7 @@ public class User implements Serializable
     public void setHasReportsAccess(boolean newValue)
     {
         this.hasReportsAccess = newValue;
-    }    
+    }
 
     /**
      * Set password from a clear string.
@@ -218,7 +217,11 @@ public class User implements Serializable
     @Transient
     public void setClearPassword(String password)
     {
-        this.password = PasswordUtil.encrypt(password);
+        if (password == null) {
+            this.password = null;
+        } else {
+            this.password = PasswordUtil.encrypt(password);
+        }
     }
 
     /**
@@ -299,9 +302,9 @@ public class User implements Serializable
             + " email = " + email + " notes = " + notes
             + " alerts = " + sendAlerts + " ]";
     }
-    
+
     public void updatePassword(User user) {
-		this.password = user.password;
-	}
-    
+        this.password = user.password;
+    }
+
 }
