@@ -13,4 +13,4 @@ def pytest_generate_tests(metafunc):
       for f in files:
         if not f.endswith('.js') or f.endswith('-min.js'):
           continue
-        metafunc.addcall(funcargs=dict(f=fullPath))
+        metafunc.addcall(funcargs=dict(fullPath=os.path.join(root, f)))
