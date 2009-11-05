@@ -48,7 +48,6 @@ import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -92,7 +91,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     protected final PartialListUtil listUtil = new PartialListUtil();
     protected final BlacklistCategoryHandler categoryHandler
-	= new BlacklistCategoryHandler();
+    = new BlacklistCategoryHandler();
 
     protected final BlingBlinger scanBlinger;
     protected final BlingBlinger passBlinger;
@@ -119,7 +118,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
         unblockEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         UnblockEventAllFilter ueaf = new UnblockEventAllFilter(this);
-	unblockEventLogger.addSimpleEventFilter(ueaf);
+    unblockEventLogger.addSimpleEventFilter(ueaf);
 
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
@@ -135,7 +134,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger,
                                      passBlinger, passLogBlinger);
 
-	bypassMonitor = new BypassMonitor(this);        
+    bypassMonitor = new BypassMonitor(this);
     }
 
     // WebFilter methods ------------------------------------------------------
@@ -153,7 +152,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
             return super.getSnmpCustomValue(id);
         }
     }
-
 
     public WebFilterSettings getWebFilterSettings()
     {
@@ -245,10 +243,10 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 settings.getPassedUrls().add(sr);
                 setWebFilterSettings(settings);
 
-		UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true, 
-						   bd.getFormattedUrl(),
-						   getVendor(), getTid().getPolicy());
-		unblockEventLogger.log(ue);
+        UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true,
+                           bd.getFormattedUrl(),
+                           getVendor(), getTid().getPolicy());
+        unblockEventLogger.log(ue);
                 return true;
             }
         } else {
@@ -264,10 +262,10 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 bypassMonitor.addBypassedSite(addr, site);
                 getBlacklist().addWhitelistHost(addr, site);
 
-		UnblockEvent ue = new UnblockEvent(addr, false,
-						   bd.getFormattedUrl(),
-						   getVendor(), getTid().getPolicy());
-		unblockEventLogger.log(ue);
+        UnblockEvent ue = new UnblockEvent(addr, false,
+                           bd.getFormattedUrl(),
+                           getVendor(), getTid().getPolicy());
+        unblockEventLogger.log(ue);
                 return true;
             }
         }
@@ -811,6 +809,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         getNodeContext().runTransaction(tw);
 
         getBlacklist().configure(settings);
+        reconfigure();
     }
 
     protected void updateCategories(final Set categories, final List added,
