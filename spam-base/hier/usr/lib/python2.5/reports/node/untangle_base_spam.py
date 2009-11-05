@@ -551,6 +551,7 @@ class SpamDetail(DetailSection):
             rv.append(ColumnDesc('hname', _('Source IP'), 'HostLink'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
+               ColumnDesc('addr', _('Address')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('s_server_addr', _('Destination IP')),
                ColumnDesc('case', _('Action')),
@@ -563,7 +564,7 @@ class SpamDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, %s_score, subject, host(s_server_addr),
+SELECT time_stamp, hname, %s_score, addr, subject, host(s_server_addr),
        CASE %s_action WHEN 'P' THEN '%s'
                       WHEN 'B' THEN '%s'
                       WHEN 'M' THEN '%s'
