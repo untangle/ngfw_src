@@ -221,10 +221,20 @@ def __make_zip_file(start_date, end_date, mail_reports):
         report_dir = '%s/%s' % (base_dir, report_name)
         os.mkdir(report_dir)
 
+        empty = True
+
         for s in r.sections:
             if isinstance(s, reports.DetailSection):
                 filename = '%s/%s.csv' % (report_dir, s.name)
                 s.write_csv(filename, start_date, end_date)
+                empty = False
+
+        if empty:
+            f = open('%s/no-reports' % report_dir, 'w')
+            try:
+                f.write(_('This report has no detail data.'))
+            finally:
+                f.close()
 
     os.system("""\
 pushd %s;
