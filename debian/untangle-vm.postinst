@@ -68,6 +68,9 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
     ourInit untangle-reports restart
 fi
 
+## Nuke the work directory for the servlets.
+rm -rf /usr/share/untangle/work/tomcat
+
 # It's almost never right to just start the untangle-vm after installation, so let
 # the user know what to do next.
 if [ -z "$2" ]; then
