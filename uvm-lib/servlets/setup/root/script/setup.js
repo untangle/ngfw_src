@@ -730,7 +730,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             }
 
             /* This is an interface that does not exist */
-            // if ( i.systemName.indexOf( 'nointerface' ) == 0 ) continue;
+            if ( i.systemName.indexOf( 'nointerface' ) == 0 ) continue;
 
             cleanArray.push( i );
         }
@@ -749,6 +749,12 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
     saveInterfaceList : function( handler )
     {
+        /* If there is only one interface, there is no point remapping the interfaces */
+        if ( !Ung.SetupWizard.CurrentValues.hasMultipleInterfaces ) {
+            handler();
+            return;
+        }
+
         Ext.MessageBox.wait( i18n._( "Remapping Network Interfaces" ), i18n._( "Please wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
@@ -767,6 +773,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             osArray.push( status[0] );
         });
 
+        
         rpc.networkManager.remapInterfaces( this.errorHandler.createDelegate( this, [ handler ], true ), osArray, userArray );
     },
 
