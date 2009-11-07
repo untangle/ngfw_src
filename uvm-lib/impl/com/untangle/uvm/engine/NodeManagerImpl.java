@@ -876,7 +876,12 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         List<Policy> policies = null;
 
         if (parents) {
-            policies = getAllPolicies(policy);
+            if (policy == null) {
+                policies = new ArrayList<Policy>(1);
+                policies.add(null);
+            } else {
+                policies = getAllPolicies(policy);
+            }
         } else {
             policies = new ArrayList<Policy>(1);
             policies.add(policy);
