@@ -75,7 +75,8 @@ import org.hibernate.annotations.Type;
 
             this.nonEvent = nonEvent;
 
-            if (nonEvent && null != requestLine) {
+            if (nonEvent && null != requestLine
+                && null != requestLine.getHttpRequestEvent()) {
                 setTimeStamp(requestLine.getHttpRequestEvent().getTimeStamp());
             }
         }
