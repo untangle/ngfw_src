@@ -118,7 +118,6 @@ The PDF file requires Adobe Acrobat Reader to view.
 def __get_mail_info():
     conn = sql_helper.get_connection()
 
-
     report_email = None
     receivers = []
 
@@ -126,7 +125,7 @@ def __get_mail_info():
         curs = conn.cursor()
 
         curs.execute("""\
-SELECT report_email FROM settings.u_mail_settings
+SELECT from_address FROM settings.u_mail_settings
 """)
 
         row = curs.fetchone()
