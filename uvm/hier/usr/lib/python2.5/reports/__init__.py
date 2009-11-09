@@ -112,9 +112,11 @@ class Report:
     def view_position(self):
         return self.__view_position
 
-    def generate(self, report_base, date_base, end_date, host=None, user=None,
-                 email=None):
-        node_base = get_node_base(self.__name, date_base, host, user, email)
+    def generate(self, report_base, date_base, end_date, report_days=1,
+                 host=None, user=None, email=None):
+        node_base = get_node_base(self.__name, date_base,
+                                  report_days=report_days, host=host, user=user,
+                                  email=email)
 
         element = Element('report')
         element.set('name', self.__name)
@@ -127,8 +129,9 @@ class Report:
             element.set('email', email)
 
         for s in self.__sections:
-            section_element = s.generate(report_base, node_base, end_date, host,
-                                         user, email)
+            section_element = s.generate(report_base, node_base, end_date,
+                                         report_days=report_days, host=host,
+                                         user=user, email=email)
 
             if section_element is not None:
                 element.append(section_element)
@@ -145,8 +148,9 @@ class Report:
             tree.write(report_file, encoding='utf-8', pretty_print=True,
                        xml_declaration=True)
 
-    def get_flowables(self, report_base, date_base, end_date):
-        node_base = get_node_base(self.__name, date_base)
+    def get_flowables(self, report_base, date_base, end_date, report_days=1):
+        node_base = get_node_base(self.__name, date_base,
+                                  report_days=report_days)
 
         sh = SectionHeader(self.__title)
 
@@ -189,8 +193,8 @@ class Section:
     def title(self):
         return self.__title
 
-    def generate(self, report_base, node_base, end_date, host=None, user=None,
-                 email=None):
+    def generate(self, report_base, node_base, end_date, report_days=1,
+                 host=None, user=None, email=None):
         pass
 
     def get_flowables(self, report_base, date_base, end_date):
@@ -202,8 +206,8 @@ class SummarySection(Section):
 
         self.__summary_items = summary_items
 
-    def generate(self, report_base, node_base, end_date, host=None, user=None,
-                 email=None):
+    def generate(self, report_base, node_base, end_date, report_days=1,
+                 host=None, user=None, email=None):
         section_base = "%s/%s" % (node_base, self.name)
 
         element = Element('summary-section')
@@ -212,7 +216,10 @@ class SummarySection(Section):
 
         for summary_item in self.__summary_items:
             report_element = summary_item.generate(report_base, section_base,
-                                                   end_date, host, user, email)
+                                                   end_date,
+                                                   report_days=report_days,
+                                                   host=host, user=user,
+                                                   email=email)
             if report_element is not None:
                 element.append(report_element)
 
@@ -242,13 +249,13 @@ class DetailSection(Section):
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
         pass
 
-    def generate(self, report_base, node_base, end_date, host=None, user=None,
-                 email=None):
+    def generate(self, report_base, node_base, end_date, report_days=1,
+                 host=None, user=None, email=None):
         element = Element('detail-section')
         element.set('name', self.name)
         element.set('title', self.title)
 
-        start_date = end_date - mx.DateTime.DateTimeDelta(7) # XXX report_days
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
         sql = self.get_sql(start_date, end_date, host, user, email)
 
         if not sql:
@@ -343,11 +350,12 @@ class Graph:
     def title(self):
         return self.__title
 
-    def generate(self, report_base, section_base, end_date, host=None,
-                 user=None, email=None):
+    def generate(self, report_base, section_base, end_date, report_days=1,
+                 host=None, user=None, email=None):
 
         try:
-            graph_data = self.get_graph(end_date, 7, host, user, email)
+            graph_data = self.get_graph(end_date, report_days, host, user,
+                                        email)
         except:
             logging.warn("could not generate graph: %s (%s)" \
                              % (self.name, self.title), exc_info=True)

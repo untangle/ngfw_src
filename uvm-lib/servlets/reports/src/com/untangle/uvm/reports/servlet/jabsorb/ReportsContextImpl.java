@@ -22,22 +22,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-
 import com.untangle.uvm.LanguageSettings;
-import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
-
+import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.reports.ApplicationData;
+import com.untangle.uvm.reports.DateItem;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.reports.TableOfContents;
-
-import com.untangle.uvm.client.RemoteUvmContext;
-
 import org.apache.commons.fileupload.FileItem;
 
 
@@ -46,8 +43,10 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     private final RemoteUvmContext context;
 
     private final RemoteSkinManager skinManager = new RemoteSkinManagerImpl();
-    private final RemoteReportingManager reportingManager = new RemoteReportingManagerImpl();
-    private final RemoteLanguageManager languageManager = new RemoteLanguageManagerImpl();
+    private final RemoteReportingManager reportingManager
+        = new RemoteReportingManagerImpl();
+    private final RemoteLanguageManager languageManager
+        = new RemoteLanguageManagerImpl();
 
 
     private ReportsContextImpl( RemoteUvmContext context )
@@ -59,12 +58,12 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     {
         return this.reportingManager;
     }
-    
+
     public RemoteSkinManager skinManager()
     {
         return this.skinManager;
     }
-    
+
     public RemoteLanguageManager languageManager()
     {
         return this.languageManager;
@@ -83,7 +82,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
          *
          * @return the settings.
          */
-	public SkinSettings getSkinSettings()
+        public SkinSettings getSkinSettings()
         {
             return context.skinManager().getSkinSettings();
         }
@@ -97,7 +96,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         {
             throw new RuntimeException("Unable to change the skin settings.");
         }
-        
+
         /**
          * Upload a new skin
          */
@@ -105,11 +104,13 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         {
             throw new RuntimeException("Unable to change the skin settings.");
         }
-    
-        
-        public List<SkinInfo> getSkinsList(boolean fetchAdminSkins, boolean fetchUserFacingSkins)
+
+
+        public List<SkinInfo> getSkinsList(boolean fetchAdminSkins,
+                                           boolean fetchUserFacingSkins)
         {
-            return context.skinManager().getSkinsList(fetchAdminSkins, fetchUserFacingSkins);
+            return context.skinManager().getSkinsList(fetchAdminSkins,
+                                                      fetchUserFacingSkins);
         }
     }
 
@@ -120,11 +121,11 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
          *
          * @return the settings.
          */
-	public LanguageSettings getLanguageSettings()
+    public LanguageSettings getLanguageSettings()
         {
             return context.languageManager().getLanguageSettings();
         }
-        
+
         /**
          * Set the settings.
          *
@@ -134,17 +135,18 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         {
             throw new RuntimeException("Unable to change the language settings.");
         }
-        
+
         /**
          * Upload New Language Pack
-         * 
-         * @return true if the uploaded language pack was processed with no errors; otherwise returns false 
+         *
+         * @return true if the uploaded language pack was processed
+         * with no errors; otherwise returns false.
          */
         public boolean uploadLanguagePack(FileItem item) throws UvmException
         {
             throw new RuntimeException("Unable to upload a language pack.");
         }
-        
+
         /**
          * Get list of available languages
          */
@@ -152,91 +154,110 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         {
             return context.languageManager().getLanguagesList();
         }
-        
+
         /**
-         * Return the map of translations for a module, for the current language
-         * 
+         * Return the map of translations for a module, for the
+         * current language.
+         *
          * @param module  the name of the module
-         * @return map of translations 
+         * @return map of translations
          */
         public Map<String, String> getTranslations(String module)
         {
             return context.languageManager().getTranslations(module);
-        }        
+        }
     }
 
     private class RemoteReportingManagerImpl implements RemoteReportingManager
     {
-        public List<Date> getDates()
+        public List<DateItem> getDates()
         {
             return context.reportingManager().getDates();
         }
 
-        public TableOfContents getTableOfContents(Date d)
+        public TableOfContents getTableOfContents(Date d, int numDays)
         {
-            return context.reportingManager().getTableOfContents(d);
-        }
-        
-        public TableOfContents getTableOfContentsForHost(Date d, String hostname)
-        {
-            return context.reportingManager().getTableOfContentsForHost(d,hostname);
+            return context.reportingManager().getTableOfContents(d, numDays);
         }
 
-        public TableOfContents getTableOfContentsForUser(Date d, String username)
+        public TableOfContents getTableOfContentsForHost(Date d, int numDays,
+                                                         String hostname)
         {
-            return context.reportingManager().getTableOfContentsForUser(d,username);
+            return context.reportingManager()
+                .getTableOfContentsForHost(d, numDays, hostname);
         }
 
-        public TableOfContents getTableOfContentsForEmail(Date d, String email)
+        public TableOfContents getTableOfContentsForUser(Date d, int numDays,
+                                                         String username)
         {
-            return context.reportingManager().getTableOfContentsForEmail(d,email);
-        }
-        
-        public ApplicationData getApplicationData(Date d, String appName, String type, String value)
-        {
-            return context.reportingManager().getApplicationData(d,appName,type,value);
-        }
-        
-        public ApplicationData getApplicationData(Date d, String appName)
-        {
-            return context.reportingManager().getApplicationData(d,appName);
-        }
-        
-        public ApplicationData getApplicationDataForUser(Date d, String appName,
-                                                  String username)
-        {
-            return context.reportingManager().getApplicationDataForUser(d,appName,username);
-        }
-        
-        
-        public ApplicationData getApplicationDataForEmail(Date d, String appName,
-                                                   String emailAddr)
-        {
-            return context.reportingManager().getApplicationDataForEmail(d,appName,emailAddr);
-        }
-        
-        public ApplicationData getApplicationDataForHost(Date d, String appName,
-                                                  String hostname)
-        {
-            return context.reportingManager().getApplicationDataForHost(d,appName,hostname);
-        }
-        
-        public List<List> getDetailData(Date d, String appName, String detailName,
-                                 String type, String value)
-        {
-            return context.reportingManager().getDetailData(d,appName,detailName,type,value);
-        }
-       
-        
-        public List<List> getAllDetailData(Date d, String appName, String detailName,
-                                    String type, String value)
-        {
-            return context.reportingManager().getAllDetailData(d,appName,detailName,type,value);
+            return context.reportingManager()
+                .getTableOfContentsForUser(d, numDays, username);
         }
 
-    // old stuff ---------------------------------------------------------------
-        
-        
+        public TableOfContents getTableOfContentsForEmail(Date d, int numDays,
+                                                          String email)
+        {
+            return context.reportingManager()
+                .getTableOfContentsForEmail(d, numDays, email);
+        }
+
+        public ApplicationData getApplicationData(Date d, int numDays,
+                                                  String appName, String type,
+                                                  String value)
+        {
+            return context.reportingManager()
+                .getApplicationData(d, numDays, appName, type, value);
+        }
+
+        public ApplicationData getApplicationData(Date d, int numDays,
+                                                  String appName)
+        {
+            return context.reportingManager()
+                .getApplicationData(d, numDays, appName);
+        }
+
+        public ApplicationData getApplicationDataForUser(Date d, int numDays,
+                                                         String appName,
+                                                         String username)
+        {
+            return context.reportingManager()
+                .getApplicationDataForUser(d, numDays, appName, username);
+        }
+
+
+        public ApplicationData getApplicationDataForEmail(Date d, int numDays,
+                                                          String appName,
+                                                          String emailAddr)
+        {
+            return context.reportingManager()
+                .getApplicationDataForEmail(d, numDays, appName, emailAddr);
+        }
+
+        public ApplicationData getApplicationDataForHost(Date d, int numDays,
+                                                         String appName,
+                                                         String hostname)
+        {
+            return context.reportingManager()
+                .getApplicationDataForHost(d, numDays, appName, hostname);
+        }
+
+        public List<List> getDetailData(Date d, int numDays, String appName,
+                                        String detailName, String type,
+                                        String value)
+        {
+            return context.reportingManager()
+                .getDetailData(d, numDays, appName, detailName, type, value);
+        }
+
+
+        public List<List> getAllDetailData(Date d, int numDays, String appName,
+                                           String detailName, String type,
+                                           String value)
+        {
+            return context.reportingManager()
+                .getAllDetailData(d, numDays, appName, detailName, type, value);
+        }
+
         /**
          *  Tests if reporting is enabled, that is if reports will be
          * generated nightly.  Currently this is the same thing as "is the
@@ -248,7 +269,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         {
             return context.reportingManager().isReportingEnabled();
         }
-        
+
         /**
          * Tests if reporting is enabled and reports have been generated
          * and are ready to view.  Currently this is the same thing as

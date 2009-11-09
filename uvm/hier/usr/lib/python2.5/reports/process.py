@@ -36,8 +36,8 @@ Options:
   -p | --no-plot-gen          skip graph image processing
   -m | --no-mail              skip mailing
   -a | --attach-csv           attach events as csv
-  -e | --events-days          number of days in events schema to keep
-  -r | --reports-days         number of days in reports schema to keep
+  -e | --events-retention     number of days in events schema to keep
+  -r | --report-days          number of days to report on
   -l | --locale               locale
   -d y-m-d | --date=y-m-d\
 """ % sys.argv[0]
@@ -46,8 +46,8 @@ try:
      opts, args = getopt.getopt(sys.argv[1:], "hncgpmave:r:d:l:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'no-plot-gen',
-                                 'verbose', 'attach-csv', 'events-days',
-                                 'reports-days', 'date=', 'locale='])
+                                 'verbose', 'attach-csv', 'events-retention',
+                                 'report-days', 'date=', 'locale='])
 
 except getopt.GetoptError, err:
      print str(err)
@@ -61,8 +61,8 @@ no_data_gen = False
 no_plot_gen = False
 no_mail = False
 attach_csv = False
-events_days = 3
-reports_days = None
+events_retention = 3
+report_days = 1
 end_date = mx.DateTime.today()
 locale = None
 
@@ -84,10 +84,10 @@ for opt in opts:
           no_mail = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
-     elif k == '-e' or k == '--events-days':
-          events_days = int(v)
-     elif k == '-r' or k == '--reports-days':
-          reports_days = int(v)
+     elif k == '-e' or k == '--events-retention':
+          events_retention = int(v)
+     elif k == '-r' or k == '--report-days':
+          report_days = int(v)
      elif k == '-v' or k == '--verbose':
           logging.basicConfig(level=logging.DEBUG)
      elif k == '-d' or k == '--date':
@@ -126,8 +126,6 @@ if locale:
 else:
      logging.info('locale not set')
 
-start_date = end_date - mx.DateTime.DateTimeDelta(30)
-
 if (sql_helper.table_exists('reports', 'daystoadd')
     or sql_helper.table_exists('reports', 'webpages')
     or sql_helper.table_exists('reports', 'emails')):
@@ -158,7 +156,7 @@ CREATE TABLE reports.table_updates (
 except Exception:
      pass
 
-if not reports_days or attach_csv:
+if not report_days or attach_csv:
      conn = sql_helper.get_connection()
 
      try:
@@ -170,48 +168,57 @@ WHERE target_state = 'running' OR target_state = 'initialized'
 """)
           r = curs.fetchone()
           if r:
-               if not reports_days:
-                    reports_days = r[0]
+               if not report_days:  # XXX
+                    report_days = r[0] # XXX
                if not attach_csv:
                     attach_csv = r[1]
           else:
-               reports_days = 7
+               report_days = 7 # XXX
           conn.commit()
      except Exception, e:
           conn.rollback()
           logging.warn("could not get report_days", exc_info=True)
 
-if not reports_days:
-     reports_days = 7
+if not report_days: # XXX
+     report_days = 7 # XXX
+
+reports.engine.fix_hierarchy(REPORTS_OUTPUT_BASE)
 
 reports.engine.init_engine(NODE_MODULE_DIR)
 if not no_migration:
-     reports.engine.setup(start_date, end_date)
-     reports.engine.process_fact_tables(start_date, end_date)
-     reports.engine.post_facttable_setup(start_date, end_date)
+     ## XXX need variable for schema data retention
+     init_date = end_date - mx.DateTime.DateTimeDelta(30)
+     reports.engine.setup(init_date, end_date)
+     reports.engine.process_fact_tables(init_date, end_date)
+     reports.engine.post_facttable_setup(init_date, end_date)
 
 mail_reports = []
 
 if not no_data_gen:
      mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
-                                                    end_date)
+                                                    end_date,
+                                                    report_days)
 
 if not no_plot_gen:
-     reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date)
+     reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date,
+                                   report_days)
 
 if not no_mail:
-     f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date, mail_reports)
-     reports.mailer.mail_reports(start_date, end_date, f, mail_reports,
+     f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date, report_days,
+                                  mail_reports)
+     reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
                                  attach_csv=attach_csv)
      os.remove(f)
 
 if not no_cleanup:
-     events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_days)
+     events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_retention)
      reports.engine.events_cleanup(events_cutoff)
 
-     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(2 * reports_days)
+     ## XXX need variable for schema data retention
+     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(30)
      reports.engine.reports_cleanup(reports_cutoff)
 
-     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(reports_days)
+     ## XXX need variable for reports output retention
+     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(30)
      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
                                        reports_cutoff)

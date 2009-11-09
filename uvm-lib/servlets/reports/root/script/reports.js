@@ -31,6 +31,7 @@ function handleTimeout(ex)
 JSONRpcClient.toplevel_ex_handler = function (ex) {
     handleTimeout(ex);
 };
+
 /**
  * Extended memory proxy to support local pagination
  *
@@ -437,7 +438,7 @@ Ung.Reports = Ext.extend(Object,{
     },
     changeDate : function(date)
     {
-        this.reportsDate=date;
+        this.reportsDate=date.date;
 
         for (var i = 0; i < this.reportDatesItems.length; i++) {
             var item = this.reportDatesItems[i];
@@ -467,7 +468,7 @@ Ung.Reports = Ext.extend(Object,{
                                                     root.collapse(true);
                                                     root.attributes.children=treeNodes;
                                                     Ext.getCmp('tree-panel').getLoader().load(root);
-                                                }.createDelegate(this), this.reportsDate);
+                                                }.createDelegate(this), this.reportsDate, 1);
     },
     getDateRangeText : function(selectedDate){
         var oneDay = 24*3600*1000,
@@ -476,6 +477,7 @@ Ung.Reports = Ext.extend(Object,{
         formatString = 'l, F j Y';
         return i18n.dateLongFormat(fromDate,formatString) + " - "  +   i18n.dateLongFormat(toDate,formatString);
     },
+
     getApplicationData: function(nodeName) {
         reports.progressBar.wait(i18n._("Please Wait"));
         rpc.reportingManager.getApplicationData(function (result, exception)
@@ -501,7 +503,7 @@ Ung.Reports = Ext.extend(Object,{
                                                                                          }
                                                                                      }
                                                                                    );
-                                                }.createDelegate(this), reports.reportsDate,nodeName);
+                                                }.createDelegate(this), reports.reportsDate, 1, nodeName);
     },
 
     getDrilldownTableOfContents: function(fnName, type, value)
@@ -523,7 +525,7 @@ Ung.Reports = Ext.extend(Object,{
                                          });
                                          this.reportDetails.buildReportDetails(); // XXX take to correct page
                                          reports.progressBar.hide();
-                                     }.createDelegate(this), reports.reportsDate, value);
+                                     }.createDelegate(this), reports.reportsDate, 1, value);
     },
 
     getTableOfContentsForUser: function(user)
@@ -561,7 +563,7 @@ Ung.Reports = Ext.extend(Object,{
                                                                   });
                                          this.reportDetails.buildReportDetails(); // XXX take to correct page
                                          reports.progressBar.hide();
-                                     }.createDelegate(this), reports.reportsDate, app, value);
+                                     }.createDelegate(this), reports.reportsDate, 1, app, value);
     },
 
     getApplicationDataForUser: function(app, user)
@@ -1068,7 +1070,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                             //store.loadData(data);
                             store.initialData.loaded = true;
                             reports.progressBar.hide();
-                        }.createDelegate(this), store.initialData.reportsDate, store.initialData.selectedApplication, store.initialData.name, store.initialData.drilldownType, store.initialData.drilldownValue);
+                        }.createDelegate(this), store.initialData.reportsDate, 1, store.initialData.selectedApplication, store.initialData.name, store.initialData.drilldownType, store.initialData.drilldownValue);
                     }
                 }.createDelegate(this)
             }
@@ -1091,7 +1093,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 }
 
                 store.loadData(data);
-            }.createDelegate(this), reports.reportsDate, reports.selectedApplication, section.name, rpc.drilldownType, rpc.drilldownValue);
+            }.createDelegate(this), reports.reportsDate, 1, reports.selectedApplication, section.name, rpc.drilldownType, rpc.drilldownValue);
         }else{
             store.initialData.loaded = false;
             store.initialData.reportsDate = reports.reportsDate;

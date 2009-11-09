@@ -61,13 +61,15 @@ public class CsvServlet extends HttpServlet
         throws ServletException, IOException
     {
         String dateStr = req.getParameter("date");
+        String numDaysStr = req.getParameter("numDays");
         String app = req.getParameter("app");
         String detail = req.getParameter("detail");
 
         String type = req.getParameter("type");
         String value = req.getParameter("value");
 
-        if (null == dateStr || null == app || null == detail) {
+        if (null == dateStr || null == numDaysStr || null == app
+            || null == detail) {
             return;
         }
 
@@ -86,8 +88,10 @@ public class CsvServlet extends HttpServlet
             DateFormat df = new SimpleDateFormat(DATE_FORMAT);
             Date date = df.parse(dateStr);
 
+            int numDays = Integer.parseInt(numDaysStr);
+
             ApplicationData ad = null;
-            ad = rm.getApplicationData(date, app, type, value);
+            ad = rm.getApplicationData(date, numDays, app, type, value);
             if (null != ad) {
                 for (Section s : ad.getSections()) {
                     if (s.getName().equals(detail)) {

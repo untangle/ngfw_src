@@ -48,9 +48,9 @@ from email.MIMEText import MIMEText
 
 _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
-def mail_reports(start_date, end_date, file, mail_reports, attach_csv=False):
+def mail_reports(end_date, report_days, file, mail_reports, attach_csv=False):
     if attach_csv:
-        zip_dir = __make_zip_file(start_date, end_date, mail_reports)
+        zip_dir = __make_zip_file(end_date, report_days, mail_reports)
         zip_file = '%s/reports.zip' % zip_dir
     else:
         zip_file = None
@@ -210,7 +210,9 @@ def __get_report_users():
 
     return rv
 
-def __make_zip_file(start_date, end_date, mail_reports):
+def __make_zip_file(end_date, report_days, mail_reports):
+    start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
+
     tmp_dir = tempfile.mkdtemp()
     base_dir = '%s/reports' % tmp_dir
     os.mkdir(base_dir)

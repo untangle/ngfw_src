@@ -44,33 +44,37 @@ import java.util.List;
  */
 public interface RemoteReportingManager
 {
-    List<Date> getDates();
+    List<DateItem> getDates();
 
-    TableOfContents getTableOfContents(Date d);
-    TableOfContents getTableOfContentsForHost(Date d, String hostname);
-    TableOfContents getTableOfContentsForUser(Date d, String username);
-    TableOfContents getTableOfContentsForEmail(Date d, String email);
-
-    ApplicationData getApplicationData(Date d, String appName, String type, String value);
-    ApplicationData getApplicationData(Date d, String appName);
-
-    ApplicationData getApplicationDataForUser(Date d, String appName,
+    TableOfContents getTableOfContents(Date d, int numDays);
+    TableOfContents getTableOfContentsForHost(Date d, int numDays,
+                                              String hostname);
+    TableOfContents getTableOfContentsForUser(Date d, int numDays,
                                               String username);
+    TableOfContents getTableOfContentsForEmail(Date d, int numDays,
+                                               String email);
 
-    ApplicationData getApplicationDataForEmail(Date d, String appName,
+    ApplicationData getApplicationData(Date d, int numDays, String appName,
+                                       String type, String value);
+    ApplicationData getApplicationData(Date d, int numDays, String appName);
+
+    ApplicationData getApplicationDataForUser(Date d, int numDays,
+                                              String appName, String username);
+
+    ApplicationData getApplicationDataForEmail(Date d, int numDays,
+                                               String appName,
                                                String emailAddr);
 
-    ApplicationData getApplicationDataForHost(Date d, String appName,
-                                              String hostname);
+    ApplicationData getApplicationDataForHost(Date d, int numDays,
+                                              String appName, String hostname);
 
-    List<List> getDetailData(Date d, String appName, String detailName,
-                             String type, String value);
+    List<List> getDetailData(Date d, int numDays, String appName,
+                             String detailName, String type, String value);
 
-    List<List> getAllDetailData(Date d, String appName, String detailName,
-                                String type, String value);
+    List<List> getAllDetailData(Date d, int numDays, String appName,
+                                String detailName, String type, String value);
 
     // old stuff ---------------------------------------------------------------
-
 
     /**
      * Tests if reporting is enabled, that is if reports will be

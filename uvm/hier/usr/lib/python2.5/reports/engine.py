@@ -185,7 +185,7 @@ def process_fact_tables(start_date, end_date):
         ft.process(start_date, end_date)
 
 @print_timing
-def generate_reports(report_base, end_date):
+def generate_reports(report_base, end_date, report_days):
     global __nodes
 
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
@@ -217,7 +217,8 @@ def generate_reports(report_base, end_date):
 
                 report = node.get_report()
                 if report:
-                    report.generate(report_base, date_base, end_date)
+                    report.generate(report_base, date_base, end_date,
+                                    report_days=report_days)
                     mail_reports.append(report)
         except:
             logging.warn('could not generate reports for: %s' % node_name,
@@ -231,8 +232,8 @@ def generate_reports(report_base, end_date):
     return mail_reports
 
 @print_timing
-def generate_sub_report(report_base, node_name, end_date, host=None, user=None,
-                        email=None):
+def generate_sub_report(report_base, node_name, end_date, report_days=1,
+                        host=None, user=None, email=None):
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
                                            end_date.day)
 
@@ -252,16 +253,18 @@ def generate_sub_report(report_base, node_name, end_date, host=None, user=None,
     if email:
         report.generate(report_base, date_base, end_date, email=email)
 
-    dir = get_node_base(node_name, date_base, host, user, email)
+    dir = get_node_base(node_name, date_base, report_days=report_days,
+                        host=host, user=user, email=email)
 
-    __generate_plots(report_base, dir)
+    __generate_plots(report_base, dir, report_days=report_days)
 
     return 'DONE'
 
 @print_timing
-def generate_plots(report_base, end_date):
-    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
-                                       end_date.day)
+def generate_plots(report_base, end_date, report_days=1):
+    date_base = 'data/%d-%02d-%02d/%s' % (end_date.year, end_date.month,
+                                          end_date.day,
+                                          report_days_dir(report_days))
     __generate_plots(report_base, date_base)
 
 @print_timing
@@ -332,15 +335,42 @@ def post_facttable_setup(start_date, end_date):
             logging.warn('coud not do post factable setup for: %s' % name,
                          exc_info=True)
 
-def get_node_base(name, date_base, host=None, user=None, email=None):
+@print_timing
+def fix_hierarchy(output_base):
+    base_dir = '%s/data' % output_base
+
+    if not os.path.isdir(base_dir):
+        os.makedirs(base_dir);
+
+    for date_dir in os.listdir(base_dir):
+        if re.match('^\d+-\d+-\d+$', date_dir):
+            one_day_dir = '%s/%s/1-day' % (base_dir, date_dir)
+            if not os.path.isdir(one_day_dir):
+                os.mkdir(one_day_dir)
+                for node_dir in os.listdir('%s/%s' % (base_dir, date_dir)):
+                    node_path = '%s/%s/%s' % (base_dir, date_dir, node_dir)
+                    if os.path.isdir(node_path) and not re.match('[0-9]+-days?$', node_dir):
+                        os.rename(node_path, '%s/%s' % (one_day_dir, node_dir))
+
+
+def get_node_base(name, date_base, report_days=1, host=None, user=None,
+                  email=None):
+    days_dir = report_days_dir(report_days)
+
     if host:
-        return '%s/host/%s/%s' % (date_base, host, name)
+        return '%s/%s/host/%s/%s' % (date_base, days_dir, host, name)
     elif user:
-        return '%s/user/%s/%s' % (date_base, user, name)
+        return '%s/%s/user/%s/%s' % (date_base, days_dir, user, name)
     elif email:
-        return '%s/email/%s/%s' % (date_base, email, name)
+        return '%s/%s/email/%s/%s' % (date_base, days_dir, email, name)
     else:
-        return '%s/%s' % (date_base, name)
+        return '%s/%s/%s' % (date_base, days_dir, name)
+
+def report_days_dir(report_days):
+    if report_days < 2:
+        return '%s-day' % report_days
+    else:
+        return '%s-days' % report_days
 
 def _first_page(canvas, doc):
     canvas.saveState()

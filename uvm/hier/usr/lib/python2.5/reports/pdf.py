@@ -246,10 +246,11 @@ class BodyTemplate(PageTemplate):
         canvas.restoreState()
 
 @print_timing
-def generate_pdf(report_base, end_date, mail_reports):
+def generate_pdf(report_base, end_date, report_days, mail_reports):
     file = tempfile.mktemp()
 
-    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month, end_date.day)
+    date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
+                                       end_date.day)
     date_str = end_date.strftime("%A %d %B %Y")
 
     doc = ReportDocTemplate(file, title=_('Report for %s') % date_str)

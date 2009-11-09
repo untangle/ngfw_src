@@ -49,6 +49,7 @@ import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.reports.Application;
 import com.untangle.uvm.reports.ApplicationData;
+import com.untangle.uvm.reports.DateItem;
 import com.untangle.uvm.reports.DetailSection;
 import com.untangle.uvm.reports.Email;
 import com.untangle.uvm.reports.Host;
@@ -75,7 +76,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static RemoteReportingManagerImpl REPORTING_MANAGER = new RemoteReportingManagerImpl();
+    private static RemoteReportingManagerImpl REPORTING_MANAGER
+        = new RemoteReportingManagerImpl();
 
     private RemoteReportingManagerImpl()
     {
@@ -86,20 +88,30 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return REPORTING_MANAGER;
     }
 
-    // NEW SHIZZLE -------------------------------------------------------------
-
-    public List<Date> getDates()
+    public List<DateItem> getDates()
     {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 
         Calendar c = Calendar.getInstance();
 
-        List<Date> l = new ArrayList<Date>();
+        List<DateItem> l = new ArrayList<DateItem>();
 
         if (REPORTS_DIR.exists()) {
             for (String s : REPORTS_DIR.list()) {
                 try {
-                    l.add(df.parse(s));
+                    Date d = df.parse(s);
+
+                    for (String ds : new File(REPORTS_DIR, s).list()) {
+                        String[] split = ds.split("-");
+                        if (split.length == 2) {
+                            String num = split[0];
+                            try {
+                                l.add(new DateItem(d, new Integer(num)));
+                            } catch (NumberFormatException exn) {
+                                logger.warn("skipping non-day directory" + ds);
+                            }
+                        }
+                    }
                 } catch (ParseException exn) {
                     logger.warn("skipping non-date directory: " + s, exn);
                 }
@@ -112,12 +124,11 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return l;
     }
 
-    public TableOfContents getTableOfContents(Date d)
+    public TableOfContents getTableOfContents(Date d, int numDays)
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d),
-                                                 "top-level");
+        List<Application> apps = getApplications(getDateDir(d), "top-level");
 
         List<User> users = getUsers(d);
         List<Host> hosts = getHosts(d);
@@ -127,7 +138,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                                    hosts, emails);
     }
 
-    public TableOfContents getTableOfContentsForHost(Date d, String hostname)
+    public TableOfContents getTableOfContentsForHost(Date d, int numDays,
+                                                     String hostname)
     {
         Application platform = new Application("untangle-vm", "System");
 
@@ -142,7 +154,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                                    platform, apps, users, hosts, emails);
     }
 
-    public TableOfContents getTableOfContentsForUser(Date d, String username)
+    public TableOfContents getTableOfContentsForUser(Date d, int numDays,
+                                                     String username)
     {
         Application platform = new Application("untangle-vm", "System");
 
@@ -157,7 +170,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                                    users, hosts, emails);
     }
 
-    public TableOfContents getTableOfContentsForEmail(Date d, String email)
+    public TableOfContents getTableOfContentsForEmail(Date d, int numDays,
+                                                      String email)
     {
         Application platform = new Application("untangle-vm", "System");
 
@@ -172,55 +186,65 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                                    hosts, emails);
     }
 
-    public ApplicationData getApplicationData(Date d, String appName, String type, String value)
+    public ApplicationData getApplicationData(Date d, int numDays,
+                                              String appName, String type,
+                                              String value)
     {
-        return readXml(d, appName, type, value);
+        return readXml(d, numDays, appName, type, value);
     }
 
-    public ApplicationData getApplicationData(Date d, String appName)
+    public ApplicationData getApplicationData(Date d, int numDays,
+                                              String appName)
     {
-        return readXml(d, appName, null, null);
+        return readXml(d, numDays, appName, null, null);
     }
 
-    public ApplicationData getApplicationDataForUser(Date d, String appName,
+    public ApplicationData getApplicationDataForUser(Date d, int numDays,
+                                                     String appName,
                                                      String username)
     {
-        return readXml(d, appName, "user", username);
+        return readXml(d, numDays, appName, "user", username);
     }
 
-    public ApplicationData getApplicationDataForHost(Date d, String appName,
+    public ApplicationData getApplicationDataForHost(Date d, int numDays,
+                                                     String appName,
                                                      String hostname)
     {
-        return readXml(d, appName, "host", hostname);
+        return readXml(d, numDays, appName, "host", hostname);
     }
 
-    public ApplicationData getApplicationDataForEmail(Date d, String appName,
+    public ApplicationData getApplicationDataForEmail(Date d, int numDays,
+                                                      String appName,
                                                       String emailAddr)
     {
-        return readXml(d, appName, "email", emailAddr);
+        return readXml(d, numDays, appName, "email", emailAddr);
     }
 
-    public List<List> getDetailData(Date d, String appName, String detailName,
-                                    String type, String value)
+    public List<List> getDetailData(Date d, int numDays, String appName,
+                                    String detailName, String type,
+                                    String value)
     {
-        return doGetDetailData(d, appName, detailName, type, value, true);
+        return doGetDetailData(d, numDays, appName, detailName, type, value,
+                               true);
     }
 
-    public List<List> getAllDetailData(Date d, String appName, String detailName,
-                                       String type, String value)
+    public List<List> getAllDetailData(Date d, int numDays, String appName,
+                                       String detailName, String type,
+                                       String value)
     {
-        return doGetDetailData(d, appName, detailName, type, value, false);
+        return doGetDetailData(d, numDays, appName, detailName, type, value,
+                               false);
     }
 
     // private methods ---------------------------------------------------------
 
-    private List<List> doGetDetailData(Date d, String appName, String detailName,
-                                       String type, String value,
-                                       boolean limitResultSet)
+    private List<List> doGetDetailData(Date d, int numDays, String appName,
+                                       String detailName, String type,
+                                       String value, boolean limitResultSet)
     {
         List<List> rv = new ArrayList<List>();
 
-        ApplicationData ad = readXml(d, appName, type, value);
+        ApplicationData ad = readXml(d, numDays, appName, type, value);
         if (null == ad) {
             return rv;
         }
@@ -265,12 +289,13 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return rv;
     }
 
-    private ApplicationData readXml(Date d, String appName, String type,
-                                    String value)
+    private ApplicationData readXml(Date d, int numDays, String appName,
+                                    String type, String value)
     {
         ReportXmlHandler h = new ReportXmlHandler();
 
-        File f = new File(getAppDir(d, appName, type, value) + "/report.xml");
+        File f = new File(getAppDir(d, numDays, appName, type, value)
+                          + "/report.xml");
 
         if (!f.exists() && type != null) {
             generateReport(d, appName, type, value);
@@ -397,16 +422,44 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         sb.append(df.format(d));
 
-        return String.format(sb.toString());
+        return sb.toString();
     }
 
-    private String getAppDir(Date d, String appName, String type, String val)
+    private String getDateDir(Date d, int numDays)
     {
         StringBuffer sb = new StringBuffer(BUNNICULA_REPORTS_DATA);
         sb.append("/");
 
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         sb.append(df.format(d));
+
+        sb.append("/");
+        sb.append(numDays);
+        if (numDays <= 1) {
+            sb.append("-day");
+        } else {
+            sb.append("-days");
+        }
+
+        return sb.toString();
+    }
+
+    private String getAppDir(Date d, int numDays, String appName, String type,
+                             String val)
+    {
+        StringBuffer sb = new StringBuffer(BUNNICULA_REPORTS_DATA);
+        sb.append("/");
+
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        sb.append(df.format(d));
+
+        sb.append("/");
+        sb.append(numDays);
+        if (numDays <= 1) {
+            sb.append("-day");
+        } else {
+            sb.append("-days");
+        }
 
         if (null != type) {
             sb.append("/");
@@ -567,8 +620,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         c.add(Calendar.DATE, -1);
         return c.getTimeInMillis();
     }
-
-    // OLD SHIT ----------------------------------------------------------------
 
     public boolean isReportingEnabled() {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
