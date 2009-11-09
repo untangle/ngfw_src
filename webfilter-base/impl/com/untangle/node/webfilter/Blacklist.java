@@ -599,7 +599,9 @@ public abstract class Blacklist
 	// field in the settings.u_string_rule, for instance "pattern".
 	// --Seb, 11/3/2009
 	String re;
-	for (CharSequence str : strs) {
+	CharSequence str;
+	for (int i = 0; i < strs.length; i++) {
+	    str = strs[i];
 	    // transform globbing operators into regex ones
 	    re = str.toString();
 	    re = re.replaceAll(Pattern.quote("."), "\\.");
@@ -613,7 +615,7 @@ public abstract class Blacklist
 	    // match
 	    if (Pattern.matches(re, val)) {
 		logger.debug("findMatch: ** matches pattern '" + re + "'");
-		return 1; // done, we do not care if others match too
+		return i; // done, we do not care if others match too
 	    } else {
 		logger.debug("findMatch: ** does not match '" + re + "'");		
 	    }
