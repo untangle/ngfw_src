@@ -62,6 +62,7 @@ class Ips(Node):
                                   "count(CASE WHEN NOT ips_blocked ISNULL THEN 1 ELSE null END)"))
 
         ft.dimensions.append(Column('ips_name', 'text'))
+        ft.dimensions.append(Column('ips_description', 'text'))
 
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
@@ -107,6 +108,8 @@ ALTER TABLE reports.sessions ADD COLUMN ips_blocked boolean""")
         try:
             sql_helper.run_sql("""\
 ALTER TABLE reports.sessions ADD COLUMN ips_name text""")
+            sql_helper.run_sql("""\
+ALTER TABLE reports.sessions ADD COLUMN ips_description text""")
         except: pass
 
         sd = DateFromMx(sql_helper.get_update_info('sessions[ips]',
@@ -117,7 +120,7 @@ ALTER TABLE reports.sessions ADD COLUMN ips_name text""")
         try:
             sql_helper.run_sql("""\
 UPDATE reports.sessions
-SET ips_blocked = blocked, ips_name = name
+SET ips_blocked = blocked, ips_name = name, ips_description = description
 FROM events.n_ips_evt join settings.n_ips_rule on rule_sid = sid
 WHERE reports.sessions.time_stamp >= %s
   AND reports.sessions.time_stamp < %s
@@ -150,17 +153,17 @@ class TopTenAttacksByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT ips_name, count(*) as hits_sum
+SELECT ips_description, count(*) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
-AND ips_name != ''"""
+AND ips_description != ''"""
 
         if host:
             query += " AND hname = %s"
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY ips_name ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query = query + " GROUP BY ips_description ORDER BY hits_sum DESC LIMIT " + self.TEN
 
         conn = sql_helper.get_connection()
         try:
@@ -211,7 +214,7 @@ SELECT COALESCE(max(attacks), 0), COALESCE(avg(attacks), 0)
 FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS attacks
       FROM reports.session_totals
       WHERE trunc_time >= %s AND trunc_time < %s
-      AND ips_name != ''"""
+      AND ips_description != ''"""
 
         if host:
             query += " AND hname = %s"
@@ -259,7 +262,7 @@ SELECT date_trunc('day', trunc_time) AS day,
        count(*) AS attacks
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
-AND ips_name != ''"""
+AND ips_description != ''"""
 
             if host:
                 query += " AND hname = %s"
@@ -318,7 +321,7 @@ class IpsDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('ips_name', _('SID:description')),
+        rv = rv + [ColumnDesc('ips_description', _('SID:description')),
                    ColumnDesc('ips_blocked', _('Blocked')),
                    ColumnDesc('c_server_addr', _('Server')),
                    ColumnDesc('c_server_port', _('Port'))]
@@ -336,11 +339,11 @@ class IpsDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""ips_name, ips_blocked::text, host(c_server_addr), c_server_port
+        sql = sql + ("""ips_description, ips_blocked::text, host(c_server_addr), c_server_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
-AND NOT ips_name ISNULL
-AND ips_name != '' """ % (DateFromMx(start_date),
+AND NOT ips_description ISNULL
+AND ips_description != '' """ % (DateFromMx(start_date),
                           DateFromMx(end_date)))
 
         if host:
