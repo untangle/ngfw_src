@@ -298,7 +298,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                           + "/report.xml");
 
         if (!f.exists() && type != null) {
-            generateReport(d, appName, type, value);
+            generateReport(d, numDays, appName, type, value);
         }
 
         if (!f.exists()) {
@@ -536,8 +536,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return l;
     }
 
-    private boolean generateReport(Date d, String appName, String type,
-                                   String value)
+    private boolean generateReport(Date d, int numDays, String appName,
+                                   String type, String value)
     {
         String user = "";
         String host = "";
@@ -557,7 +557,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
         String cmdStr = "generate_sub_report," + appName + "," + df.format(d)
-            + "," + host + "," + user + "," + email + "\n";
+            + "," + numDays + "," + host + "," + user + "," + email + "\n";
 
         Socket s = null;
         Writer w = null;
