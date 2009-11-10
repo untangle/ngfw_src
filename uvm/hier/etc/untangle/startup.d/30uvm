@@ -9,47 +9,58 @@ MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
 if [ $MEM -gt 3900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=2500m
+        MAX_VIRTUAL_SIZE=3000m
         MAX_BERKDB_MEG=180
     else
         MAX_HEAP_SIZE=2500m
+        MAX_VIRTUAL_SIZE=3000m
         MAX_BERKDB_MEG=180
     fi
 elif [ $MEM -gt 2900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=1600m
+        MAX_VIRTUAL_SIZE=2000m
         MAX_BERKDB_MEG=120
     else
         MAX_HEAP_SIZE=1600m
+        MAX_VIRTUAL_SIZE=2000m
         MAX_BERKDB_MEG=120
     fi
 elif [ $MEM -gt 1900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=800m
+        MAX_VIRTUAL_SIZE=1000m
         MAX_BERKDB_MEG=100
     else
         MAX_HEAP_SIZE=800m
+        MAX_VIRTUAL_SIZE=1000m
         MAX_BERKDB_MEG=80
     fi
 elif [ $MEM -gt 900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=380m
+        MAX_VIRTUAL_SIZE=500m
         MAX_BERKDB_MEG=48
     else
         MAX_HEAP_SIZE=320m
+        MAX_VIRTUAL_SIZE=400m
         MAX_BERKDB_MEG=32
     fi
 else
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=260m
+        MAX_VIRTUAL_SIZE=320m
         MAX_BERKDB_MEG=24
     else
         MAX_HEAP_SIZE=220m
+        MAX_VIRTUAL_SIZE=300m
         MAX_BERKDB_MEG=20
     fi
 fi
 
 echo "    Maximum heap size -> $MAX_HEAP_SIZE"
 echo "    Maximum BDB size -> ${MAX_BERKDB_MEG}M"
+echo "    Maximum virtual size -> ${MAX_VIRTUAL_SIZE}"
 
 cat >| $FILE <<EOF
 MAX_HEAP_SIZE=$MAX_HEAP_SIZE
