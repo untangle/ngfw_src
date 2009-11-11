@@ -1,4 +1,4 @@
-## $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
+# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
 # Copyright (c) 2003-2009 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -501,7 +501,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
         elif user:
             query = query + " AND uid = %s"
         query += """\
-GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10\
+GROUP BY wf_%s_category ORDER BY blocks_sum DESC
 """ % self.__vendor_name
 
         conn = sql_helper.get_connection()
@@ -533,9 +533,9 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10\
                      xlabel=_('Policy'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenWebBlockedPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
@@ -565,7 +565,7 @@ AND wf_%s_blocks > 0""" % (5 * (self.__vendor_name,))
         elif user:
             query = query + " AND uid = %s"
         query += """\
-GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10""" \
+GROUP BY wf_%s_category ORDER BY blocks_sum DESC""" \
             % self.__vendor_name
 
         conn = sql_helper.get_connection()
@@ -593,9 +593,9 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC LIMIT 10""" \
                      title=self.title,
                      xlabel=_('Policy'),
                      ylabel=_('Blocks per Day'))
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenWebUsageByHits(Graph):
     def __init__(self, vendor_name):
@@ -617,7 +617,7 @@ class TopTenWebUsageByHits(Graph):
 SELECT hname, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s
-GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
+GROUP BY hname ORDER BY hits_sum DESC"""
 
         conn = sql_helper.get_connection()
         try:
@@ -641,9 +641,9 @@ GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"""
                      xlabel=_('Host'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenWebAdUsageByHits(Graph):
     def __init__(self, vendor_name):
@@ -665,7 +665,7 @@ class TopTenWebAdUsageByHits(Graph):
 SELECT uid, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s AND NOT uid IS NULL AND uid != ''
-GROUP BY uid ORDER BY hits_sum DESC LIMIT 10"""
+GROUP BY uid ORDER BY hits_sum DESC"""
 
         conn = sql_helper.get_connection()
         try:
@@ -692,9 +692,9 @@ GROUP BY uid ORDER BY hits_sum DESC LIMIT 10"""
                      xlabel=_('User'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenWebPolicyViolatorsByHits(Graph):
     def __init__(self, vendor_name):
@@ -717,7 +717,7 @@ SELECT hname, COALESCE(sum(wf_%s_blocks), 0)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY hname
-ORDER BY blocks_sum DESC LIMIT 10""" % self.__vendor_name
+ORDER BY blocks_sum DESC""" % self.__vendor_name
 
         conn = sql_helper.get_connection()
         try:
@@ -741,9 +741,9 @@ ORDER BY blocks_sum DESC LIMIT 10""" % self.__vendor_name
                      xlabel=_('Host'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenWebPolicyViolatorsADByHits(Graph):
     def __init__(self, vendor_name):
@@ -768,7 +768,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 AND wf_%s_category != ''
 AND wf_%s_blocks > 0
 AND uid != ''
-GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
+GROUP BY uid ORDER BY blocks_sum DESC""" \
             % (3 * (self.__vendor_name,))
 
         conn = sql_helper.get_connection()
@@ -792,9 +792,9 @@ GROUP BY uid ORDER BY blocks_sum DESC LIMIT 10""" \
                      xlabel=_('UID'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenWebUsageBySize(Graph):
     def __init__(self, vendor_name):
@@ -816,7 +816,7 @@ class TopTenWebUsageBySize(Graph):
 SELECT hname, COALESCE(sum(s2c_content_length), 0)::bigint as size_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
-        query += " GROUP BY hname ORDER BY size_sum DESC LIMIT 10"
+        query += " GROUP BY hname ORDER BY size_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -840,9 +840,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                      xlabel=_('Host'),
                      ylabel=_('bytes/day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenWebsitesByHits(Graph):
     def __init__(self, vendor_name):
@@ -868,7 +868,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             query += " AND hname = %s"
         elif user:
             query += " AND uid = %s"
-        query += " GROUP BY host ORDER BY hits_sum DESC LIMIT 10"
+        query += " GROUP BY host ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -896,9 +896,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                      xlabel=_('Hosts'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenWebsitesBySize(Graph):
     def __init__(self, vendor_name):
@@ -925,7 +925,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         elif user:
             query += " AND uid = %s"
         query += """\
-GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
+GROUP BY host ORDER BY size_sum DESC"""
 
         conn = sql_helper.get_connection()
         try:
@@ -954,9 +954,9 @@ GROUP BY host ORDER BY size_sum DESC LIMIT 10"""
                      xlabel=_('Hosts'),
                      ylabel=_('bytes/day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenPolicyViolations(Graph):
     def __init__(self, vendor_name):
@@ -983,7 +983,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             query += " AND hname = %s"
         elif user:
             query += " AND uid = %s"
-        query += " GROUP BY host ORDER BY hits_sum DESC LIMIT 10"
+        query += " GROUP BY host ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -1011,9 +1011,9 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
                      xlabel=_('Hosts'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenBlockerPolicyViolations(Graph):
     def __init__(self, vendor_name):
@@ -1043,7 +1043,7 @@ AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name,
             query += " AND hname = %s"
         elif user:
             query += " AND uid = %s"
-        query += " GROUP BY host ORDER BY hits_sum DESC LIMIT 10"
+        query += " GROUP BY host ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -1071,9 +1071,9 @@ AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name,
                      xlabel=_('Hosts'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class WebFilterDetail(DetailSection):
     def __init__(self, vendor_name):
@@ -1238,9 +1238,9 @@ ORDER BY count_events DESC""" % self.__vendor_name
                      title=self.title,
                      xlabel=_('Category'),
                      ylabel=_('Hits per Day'))
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class ViolationsByCategory(Graph):
     def __init__(self, vendor_name):
@@ -1300,6 +1300,6 @@ ORDER BY blocks_sum DESC""" % self.__vendor_name
                      xlabel=_('Category'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)

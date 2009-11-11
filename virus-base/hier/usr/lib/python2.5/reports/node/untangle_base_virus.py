@@ -634,9 +634,9 @@ ORDER BY virus_%s_detected DESC
                      xlabel=_('name'),
                      ylabel=_('count'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopEmailVirusesDetected(Graph):
     def __init__(self, vendor_name):
@@ -663,7 +663,7 @@ WHERE NOT virus_%s_name IS NULL AND virus_%s_name != ''
         avg_max_query += """
 GROUP BY virus_%s_name
 ORDER BY virus_%s_detected DESC
-LIMIT 10""" % (2 * (self.__vendor_name,))
+""" % (2 * (self.__vendor_name,))
 
         conn = sql_helper.get_connection()
         try:
@@ -691,9 +691,9 @@ LIMIT 10""" % (2 * (self.__vendor_name,))
         plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Viruses'),
                      ylabel=_('Count'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopVirusesDetected(Graph):
     def __init__(self, vendor_name):
@@ -771,9 +771,9 @@ ORDER BY sum DESC""" % self.__vendor_name
                      xlabel=_('Viruses'),
                      ylabel=_('Count'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class VirusWebDetail(DetailSection):
     def __init__(self, vendor_name):

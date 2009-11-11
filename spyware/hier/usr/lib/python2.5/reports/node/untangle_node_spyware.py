@@ -533,7 +533,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY host ORDER BY hits_sum DESC LIMIT 10"
+        query = query + " GROUP BY host ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -561,9 +561,9 @@ AND (sw_blacklisted + sw_cookies) > 0"""
                      xlabel=_('Site'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenBlockedHostsByHits(Graph):
     def __init__(self):
@@ -589,7 +589,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"
+        query = query + " GROUP BY hname ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -618,9 +618,9 @@ AND (sw_blacklisted + sw_cookies) > 0"""
                      xlabel=_('Host'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenBlockedCookies(Graph):
     def __init__(self):
@@ -647,7 +647,7 @@ AND sw_cookies > 0"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY sw_cookie_ident ORDER BY hits_sum DESC LIMIT 10"
+        query = query + " GROUP BY sw_cookie_ident ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -675,9 +675,9 @@ AND sw_cookies > 0"""
                      xlabel=_('Cookie'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class SpywareCookiesBlocked(Graph):
     def __init__(self):
@@ -788,7 +788,7 @@ AND sw_accesses > 0"""
 
         query += """
 GROUP BY sw_access_ident
-ORDER BY hits_sum DESC LIMIT 10"""
+ORDER BY hits_sum DESC"""
 
         conn = sql_helper.get_connection()
         try:
@@ -816,9 +816,9 @@ ORDER BY hits_sum DESC LIMIT 10"""
                      xlabel=_('Subnet'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenSuspiciousTrafficHostsByHits(Graph):
     def __init__(self):
@@ -845,7 +845,7 @@ AND sw_accesses > 0"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT 10"
+        query = query + " GROUP BY hname ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -874,9 +874,9 @@ AND sw_accesses > 0"""
                      xlabel=_('Host'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class SpywareSubnetsDetected(Graph):
     def __init__(self):

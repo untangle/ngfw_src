@@ -503,8 +503,7 @@ SELECT addr, COALESCE(sum(%s_spam_msgs), 0)::int AS spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY addr
-ORDER BY spam_msgs desc
-LIMIT 10""" % (self.__short_name,)
+ORDER BY spam_msgs desc""" % (self.__short_name,)
 
             curs = conn.cursor()
             curs.execute(query, (one_week, ed))
@@ -527,9 +526,9 @@ LIMIT 10""" % (self.__short_name,)
         plot = Chart(type=PIE_CHART,
                      title=self.title)
 
-        plot.add_pie_dataset(pds)
+        plot.add_pie_dataset(pds, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class SpamDetail(DetailSection):
 

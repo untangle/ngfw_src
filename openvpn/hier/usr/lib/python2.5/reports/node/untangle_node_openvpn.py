@@ -197,8 +197,7 @@ SELECT client_name, sum(rx_bytes + tx_bytes)::int AS throughput
 FROM reports.n_openvpn_connect_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 GROUP BY client_name
-ORDER BY throughput desc
-LIMIT 10"""
+ORDER BY throughput desc"""
 
         conn = sql_helper.get_connection()
         try:
@@ -220,9 +219,9 @@ LIMIT 10"""
 
         plot = Chart(type=PIE_CHART, title=_('OpenVPN Top Users'))
 
-        plot.add_pie_dataset(pds)
+        plot.add_pie_dataset(pds, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class OpenVpnDetail(DetailSection):
     def __init__(self):

@@ -504,20 +504,34 @@ class Chart:
 
         self.__colors[label] = color
 
-    def add_pie_dataset(self, data, colors={}):
+    def add_pie_dataset(self, data, colors={}, display_limit=None):
         if self.__type != PIE_CHART:
             raise ValueError('using pie dataset for non-pie chart')
 
         for k, v in colors.iteritems():
             self.__colors[str(k)] = v
 
-        self.__datasets = {}
+        items = []
+
         for k, v in data.iteritems():
-            k = str(k)
-            self.__datasets[k] = v
-            if not self.__colors.has_key(k):
+            items.append([k, v])
+
+        items.sort(cmp=self.__pie_sort, reverse=True)
+
+        self.__datasets = {}
+
+        c = 0
+
+        for i in items:
+            k = str(i[0])
+            self.__datasets[k] = i[1]
+
+            if ((not display_limit or c < display_limit)
+                and (not self.__colors.has_key(k)
+                     and self.__color_num < len(reports.colors.color_palette))):
                 self.__colors[k] = reports.colors.color_palette[self.__color_num]
                 self.__color_num += 1
+                c += 1
 
     def generate_csv(self, filename, host=None, user=None, email=None):
         if self.__type == PIE_CHART:

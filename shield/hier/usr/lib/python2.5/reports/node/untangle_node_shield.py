@@ -211,8 +211,7 @@ SELECT client_addr, sum(dropped + rejected) AS blocked
 FROM reports.n_shield_rejection_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 GROUP BY client_addr
-ORDER BY blocked desc
-LIMIT 10"""
+ORDER BY blocked desc"""
 
         conn = sql_helper.get_connection()
         try:
@@ -235,10 +234,10 @@ LIMIT 10"""
         plot = Chart(type=PIE_CHART,
                      title=_('Top Blocked Hosts'))
 
-        plot.add_pie_dataset(pds)
+        plot.add_pie_dataset(pds, display_limit=10)
 
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class LimitedHosts(Graph):
     def __init__(self):
@@ -258,8 +257,7 @@ SELECT client_addr, sum(limited) AS limited
 FROM reports.n_shield_rejection_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 GROUP BY client_addr
-ORDER BY limited desc
-LIMIT 10"""
+ORDER BY limited desc"""
 
         conn = sql_helper.get_connection()
         try:
@@ -282,9 +280,9 @@ LIMIT 10"""
 
         plot = Chart(type=PIE_CHART, title=_('Top Limited Hosts'))
 
-        plot.add_pie_dataset(pds)
+        plot.add_pie_dataset(pds, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class ShieldDetail(DetailSection):
 

@@ -238,8 +238,6 @@ AND pf_protocol != ''"""
         return plot
 
 class TopTenBlockedProtocolsByHits(Graph):
-    TEN="10"
-
     def __init__(self):
         Graph.__init__(self, 'top-ten-blocked-protocols-by-hits',
                        _('Top Ten Blocked Protocols By Hits'))
@@ -263,7 +261,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         elif user:
             query += " AND uid = %s"
 
-        query += " GROUP BY pf_protocol ORDER BY hits_sum DESC LIMIT 10"
+        query += " GROUP BY pf_protocol ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -292,13 +290,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                      xlabel=_('Protocol'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenDetectedProtocolsByHits(Graph):
-    TEN="10"
-
     def __init__(self):
         Graph.__init__(self, 'top-ten-detected-protocols-by-hits', _('Top Ten Detected Protocols By Hits'))
 
@@ -324,7 +320,7 @@ WHERE trunc_time >= %s AND trunc_time < %s
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY pf_protocol ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query = query + " GROUP BY pf_protocol ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -353,13 +349,11 @@ WHERE trunc_time >= %s AND trunc_time < %s
                      xlabel=_('Protocol'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenBlockedHostsByHits(Graph):
-    TEN="10"
-
     def __init__(self):
         Graph.__init__(self, 'top-ten-blocked-hosts-by-hits', _('Top Ten Blocked Hosts By Hits'))
 
@@ -386,7 +380,7 @@ AND pf_protocol != ''
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query = query + " GROUP BY hname ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -416,13 +410,11 @@ AND pf_protocol != ''
                      xlabel=_('Host'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenLoggedHostsByHits(Graph):
-    TEN="10"
-
     def __init__(self):
         Graph.__init__(self, 'top-ten-logged-hosts-by-hits',
                        _('Top Ten Logged Hosts By Hits'))
@@ -448,7 +440,7 @@ AND pf_protocol != ''
         elif user:
             query += " AND uid = %s"
 
-        query +=" GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query +=" GROUP BY hname ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -477,13 +469,11 @@ AND pf_protocol != ''
                      xlabel=_('Host'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenBlockedUsersByHits(Graph):
-    TEN="10"
-
     def __init__(self):
         Graph.__init__(self, 'top-ten-blocked-users-by-hits', _('Top Ten Blocked Users By Hits'))
 
@@ -510,7 +500,7 @@ AND pf_protocol != ''
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query = query + " GROUP BY uid ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -539,13 +529,11 @@ AND pf_protocol != ''
                      xlabel=_('User'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenLoggedUsersByHits(Graph):
-    TEN="10"
-
     def __init__(self):
         Graph.__init__(self, 'top-ten-logged-users-by-hits', _('Top Ten Logged Users By Hits'))
 
@@ -571,7 +559,7 @@ AND pf_protocol != ''
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query += " GROUP BY uid ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -600,9 +588,9 @@ AND pf_protocol != ''
                      xlabel=_('User'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class ProtofilterDetail(DetailSection):
     def __init__(self):

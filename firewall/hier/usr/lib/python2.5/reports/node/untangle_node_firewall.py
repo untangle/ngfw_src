@@ -243,8 +243,6 @@ ORDER BY time asc"""
         return plot
 
 class TopTenBlockedHostsByHits(Graph):
-    TEN="10"
-
     def __init__(self):
         Graph.__init__(self, 'top-ten-firewall-blocked-hosts-by-hits', _('Top Ten Firewall Blocked Hosts By Hits'))
 
@@ -269,7 +267,7 @@ AND firewall_rule_index IS NOT NULL"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY hname ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query = query + " GROUP BY hname ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -296,14 +294,11 @@ AND firewall_rule_index IS NOT NULL"""
                      title=_('Top Ten Firewall Blocked Hosts (by hits)'),
                      xlabel=_('Host'),
                      ylabel=_('Blocks per Day'))
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenBlockingRulesByHits(Graph):
-    TEN="10"
-
     def __init__(self):
         Graph.__init__(self, 'top-ten-firewall-blocking-rules-by-hits', _('Top Ten Firewall Blocking Rules By Hits'))
 
@@ -328,7 +323,7 @@ AND firewall_rule_index IS NOT NULL"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -356,13 +351,11 @@ AND firewall_rule_index IS NOT NULL"""
                      xlabel=_('Rule #'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class TopTenBlockedUsersByHits(Graph):
-    TEN="10"
-
     def __init__(self):
         Graph.__init__(self, 'top-ten-firewall-blocked-users-by-hits', _('Top Ten Firewall Blocked Users By Hits'))
 
@@ -388,7 +381,7 @@ AND firewall_rule_index IS NOT NULL"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY uid ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query += " GROUP BY uid ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -416,9 +409,9 @@ AND firewall_rule_index IS NOT NULL"""
                      xlabel=_('User'),
                      ylabel=_('Blocks per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class FirewallDetail(DetailSection):
     def __init__(self):

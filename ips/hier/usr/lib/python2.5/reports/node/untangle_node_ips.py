@@ -136,8 +136,6 @@ WHERE reports.sessions.time_stamp >= %s
             raise e
 
 class TopTenAttacksByHits(Graph):
-    TEN="10"
-
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-ten-attacks-by-hits', _('Top Ten Attacks By Hits'))
 
@@ -163,7 +161,7 @@ AND ips_description != ''"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY ips_description ORDER BY hits_sum DESC LIMIT " + self.TEN
+        query += " GROUP BY ips_description ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -190,9 +188,9 @@ AND ips_description != ''"""
                      title=self.title, xlabel=_('Attacks'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset(dataset)
+        plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks, plot)
+        return (lks[0:10], plot)
 
 class DailyUsage(Graph):
     def __init__(self, vendor_name):
