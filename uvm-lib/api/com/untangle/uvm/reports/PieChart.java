@@ -55,17 +55,19 @@ public class PieChart extends Plot
     private final String xLabel;
     private final String yLabel;
     private final String majorFormatter;
+    private final int displayLimit;
 
     private final Logger logger = Logger.getLogger(getClass());
 
     public PieChart(String title, String xLabel, String yLabel,
-                    String majorFormatter)
+                    String majorFormatter, int displayLimit)
     {
         super(title);
 
         this.xLabel = xLabel;
         this.yLabel = yLabel;
         this.majorFormatter = majorFormatter;
+        this.displayLimit = displayLimit;
     }
 
     public void generate(String reportBase, String csvUrl, String imageUrl)
@@ -89,9 +91,12 @@ public class PieChart extends Plot
             String columnKey = (String)cd.getColumnKey(i);
 
             for (int j = 0; j < cd.getRowCount(); j++) {
-                String rowKey = cd.getRowKey(j).toString();
-
-                dpd.setValue(rowKey, cd.getValue(rowKey, columnKey));
+                if (displayLimit >= 0 && j >= displayLimit) {
+                    break;
+                } else {
+                    String rowKey = cd.getRowKey(j).toString();
+                    dpd.setValue(rowKey, cd.getValue(rowKey, columnKey));
+                }
             }
         }
 

@@ -478,6 +478,8 @@ class Chart:
 
         self.__required_points = required_points
 
+        self.__display_limit = None
+
     @property
     def type(self):
         return self.__type
@@ -505,6 +507,8 @@ class Chart:
         self.__colors[label] = color
 
     def add_pie_dataset(self, data, colors={}, display_limit=None):
+        self.__display_limit = display_limit
+
         if self.__type != PIE_CHART:
             raise ValueError('using pie dataset for non-pie chart')
 
@@ -551,6 +555,8 @@ class Chart:
             element.set('y-label', self.__ylabel)
         if self.__major_formatter:
             element.set('major-formatter', self.__major_formatter.name)
+        if self.__display_limit:
+            element.set('display-limit', str(self.__display_limit))
 
         for t, c in self.__colors.iteritems():
             ce = Element('color')

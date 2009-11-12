@@ -116,6 +116,8 @@ public class ReportXmlHandler extends DefaultHandler
             String xLabel = attrs.getValue("x-label");
             String yLabel = attrs.getValue("y-label");
             String majorFormatter = attrs.getValue("major-formatter");
+            String displayLimit = attrs.getValue("display-limit");
+
             if (null == type) {
                 logger.warn("null plot type");
             }
@@ -126,8 +128,19 @@ public class ReportXmlHandler extends DefaultHandler
                 currentPlot = new StackedBarChart(title, xLabel, yLabel,
                                                   majorFormatter);
             } else if (type.equals("pie-chart")) {
+                int dl = -1;
+
+                if (displayLimit != null) {
+                    try {
+                        dl = Integer.valueOf(displayLimit);
+                    } catch (NumberFormatException exn) {
+                        logger.warn("Ignoring bad display-limit: "
+                                    + displayLimit, exn);
+                    }
+                }
+
                 currentPlot = new PieChart(title, xLabel, yLabel,
-                                           majorFormatter);
+                                           majorFormatter, dl);
             } else {
                 logger.warn("unknown plot: " + type);
             }
@@ -138,7 +151,7 @@ public class ReportXmlHandler extends DefaultHandler
 
         } else if (qName.equals("detail-section")) {
             currentDetailSection = new DetailSection(attrs.getValue("name"),
-                                                        attrs.getValue("title"));
+                                                     attrs.getValue("title"));
             sections.add(currentDetailSection);
         } else if (qName.equals("sql")) {
             sqlBuilder = new StringBuilder();
