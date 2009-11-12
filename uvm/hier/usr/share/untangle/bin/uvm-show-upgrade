@@ -1,0 +1,44 @@
+#! /bin/sh
+
+BASENAME="uvm-upgrade"
+
+SHARE="@PREFIX@/usr/share/untangle/web/upgrade"
+
+APACHE_HTML_PAGE="${SHARE}/${BASENAME}.html"
+APACHE_JS_PAGE="${SHARE}/${BASENAME}.js"
+APACHE_UPGRADE_HTML_DIR="/var/www"
+APACHE_UPGRADE_HTML_PAGE="${APACHE_UPGRADE_HTML_DIR}/${BASENAME}.html"
+APACHE_UPGRADE_JS_PAGE="${APACHE_UPGRADE_HTML_DIR}/${BASENAME}.js"
+APACHE_UPGRADE_CONFIG="RedirectMatch 302 ^/(webui|auth/login).* /uvm-upgrade.html"
+APACHE_UPGRADEDONE_CONFIG="RedirectMatch 302 ^/$(basename $APACHE_HTML_PAGE).* /webui"
+APACHE_UPGRADE_CONFIG_FILE="/etc/apache2/conf.d/${BASENAME}"
+
+CONSOLIDATED_UPGRADE_LOG="/var/www/${BASENAME}.log"
+UPGRADE_LOGS=$(ls @PREFIX@/var/log/uvm/{wrapper,uvm,console,apt}.log)
+
+PIDFILE=/var/run/${BASENAME}.pid
+
+case "$1" in
+  start)
+    # setup upgrade page
+    cp -f $APACHE_HTML_PAGE $APACHE_UPGRADE_HTML_PAGE
+    cp -f $APACHE_JS_PAGE $APACHE_UPGRADE_JS_PAGE
+    echo $APACHE_UPGRADE_CONFIG >| $APACHE_UPGRADE_CONFIG_FILE
+    a2ensite default
+
+    # setup consolidated upgrade log
+    rm -f $CONSOLIDATED_UPGRADE_LOG
+    touch $CONSOLIDATED_UPGRADE_LOG
+    nohup tail -f $UPGRADE_LOGS >> $CONSOLIDATED_UPGRADE_LOG 2>&1 &
+    echo $! >| $PIDFILE
+
+    /etc/init.d/apache2 restart ;;
+
+  stop)
+    a2dissite default
+    echo $APACHE_UPGRADEDONE_CONFIG >| $APACHE_UPGRADE_CONFIG_FILE
+    /etc/init.d/apache2 restart
+    kill $(cat $PIDFILE)
+    rm -f $CONSOLIDATED_UPGRADE_LOG $PIDFILE
+    rm -f $APACHE_UPGRADE_HTML_PAGE $APACHE_UPGRADE_JS_PAGE ;;
+esac

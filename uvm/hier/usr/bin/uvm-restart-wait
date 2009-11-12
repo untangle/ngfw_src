@@ -33,6 +33,7 @@ while true; do
             exit
         else
             rm $pidfile
+	    /usr/share/untangle/bin/uvm-show-upgrade stop
             /etc/init.d/untangle-vm start
             exit
         fi
