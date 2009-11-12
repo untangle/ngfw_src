@@ -20,17 +20,16 @@ package com.untangle.node.reporting;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.security.User;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-
-import com.untangle.uvm.security.RemoteAdminManager;
 
 public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
@@ -84,6 +83,11 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
                         s.merge(settings);
                     }
 
+                    if (null == settings.getSchedule()) {
+                        settings.setSchedule(new Schedule());
+                        s.merge(settings);
+                    }
+
                     return true;
                 }
 
@@ -131,7 +135,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         setReportingSettings((ReportingSettings)settings);
     }
 
-    /* 
+    /*
      * Add admin users to the list of reporting users, and set them up for
      * emailed reports.
      *
@@ -142,32 +146,32 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
     {
         RemoteAdminManager adminManager = LocalUvmContextFactory.context().adminManager();
         String reportEmail = adminManager.getMailSettings().getReportEmail();
-	HashSet<String> res = new HashSet();
+    HashSet<String> res = new HashSet();
         if ((reportEmail != null) && (!reportEmail.isEmpty())) {
-	    reportEmail = reportEmail.trim();
-	    res.addAll(Arrays.asList(reportEmail.split(",")));
-	}
+        reportEmail = reportEmail.trim();
+        res.addAll(Arrays.asList(reportEmail.split(",")));
+    }
 
         /* add in all other admins with an email */
-	String email;
+    String email;
         for (User user : adminManager.getAdminSettings().getUsers()) {
-	    email = user.getEmail();
-	    if ((email != null) && (!email.equals("[no email]")
-				    && (!email.isEmpty()))) {
-		res.add(email);
-	    }
+        email = user.getEmail();
+        if ((email != null) && (!email.equals("[no email]")
+                    && (!email.isEmpty()))) {
+        res.add(email);
+        }
         }
 
-	// assemble back the comma-separated string
-	String[] rea = res.toArray(new String[0]);
-	reportEmail = rea[0];
-	for (int i = 1 ; i < rea.length ; i++)
-	    reportEmail += "," + rea[i];
+    // assemble back the comma-separated string
+    String[] rea = res.toArray(new String[0]);
+    reportEmail = rea[0];
+    for (int i = 1 ; i < rea.length ; i++)
+        reportEmail += "," + rea[i];
 
-	// modify the passed-in ReportingSettings, so the users we gathered
-	// are now known to the report node
+    // modify the passed-in ReportingSettings, so the users we gathered
+    // are now known to the report node
         s.setReportingUsers(reportEmail);
-	// also sign them up for emailed reports
-	adminManager.getMailSettings().setReportEmail(reportEmail);
+    // also sign them up for emailed reports
+    adminManager.getMailSettings().setReportEmail(reportEmail);
     }
 }

@@ -98,6 +98,51 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         buildGeneration: function() {
             var storeData = this.buildReportingUsersData();
 
+            // WEEKLY SCHEDULE
+            var weeklySundayCurrent = false;
+            var weeklyMondayCurrent = false;
+            var weeklyTuesdayCurrent = false;
+            var weeklyWednesdayCurrent = false;
+            var weeklyThursdayCurrent = false;
+            var weeklyFridayCurrent = false;
+            var weeklySaturdayCurrent = false;
+            var weeklySched = this.getReportingSettings().schedule.weeklySched.list;
+            for(var i=0; i<weeklySched.length;i++) {
+                switch (weeklySched[i].day)
+                    {
+                    case 1: //Schedule.SUNDAY
+                        weeklySundayCurrent = true;
+                        break;
+                    case 2: //Schedule.MONDAY:
+                        weeklyMondayCurrent = true;
+                        break;
+                    case 3: //Schedule.TUESDAY:
+                        weeklyTuesdayCurrent = true;
+                        break;
+                    case 4: //Schedule.WEDNESDAY:
+                        weeklyWednesdayCurrent = true;
+                        break;
+                    case 5: //Schedule.THURSDAY:
+                        weeklyThursdayCurrent = true;
+                        break;
+                    case 6: //Schedule.FRIDAY:
+                        weeklyFridayCurrent = true;
+                        break;
+                    case 7: //Schedule.SATURDAY:
+                        weeklySaturdayCurrent = true;
+                        break;
+                    }
+            }
+
+            // MONTHLY SCHEDULE
+            var schedule = this.getReportingSettings().schedule;
+            var monthlyFirstCurrent = schedule.monthlyNFirst;
+            var monthlyEverydayCurrent = schedule.monthlyNDaily;
+            var monthlyOnceCurrent = ( schedule.monthlyNDayOfWk != -1 /*Schedule.NONE*/ );
+            var monthlyOnceDayCurrent = schedule.monthlyNDayOfWk;
+            var monthlyNoneCurrent = !( monthlyFirstCurrent || monthlyEverydayCurrent || monthlyOnceCurrent );
+            var monthlyOnceComboCurrent = monthlyOnceCurrent ? schedule.monthlyNDayOfWk : 1 /*SUNDAY*/ ;
+
             var fieldID = "" + Math.round( Math.random() * 1000000 );
 
             // email reports is a check column
@@ -228,7 +273,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     })]
                 },{
                     title : this.i18n._("Email Attachment Settings"),
-                    items : [{                        
+                    items : [{
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Attach Detailed Report Logs to Email (CSV Zip File)'),
                         name : 'Email Detail',
@@ -241,8 +286,158 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }                  
-                    ]                                  
+                    }
+                    ]
+                },{
+                    title : this.i18n._("Daily Reports"),
+                    labelWidth: 150,
+                    items : [{
+                        border : false,
+                        cls: 'description',
+                        html : this.i18n._('Daily Reports are generated at midnight and covers events from the previous 24 hours, up to, but not including the day of generation.')
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Generate Daily Reports',
+                        fieldLabel : this.i18n._('Generate Daily Reports'),
+                        boxLabel : this.i18n._('Every Day'),
+                        checked : this.getReportingSettings().schedule.daily,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().schedule.daily = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                },{
+                    title : this.i18n._("Weekly Reports"),
+                    labelWidth: 150,
+                    items : [{
+                        border : false,
+                        cls: 'description',
+                        html : this.i18n._('Weekly Reports are generated at midnight and covers events from the previous 7 days, up to, but not including the day of generation.')
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Sunday',
+                        id : 'reporting_weeklySunday',
+                        fieldLabel : this.i18n._('Generate Weekly Reports'),
+                        boxLabel : this.i18n._('Sunday'),
+                        checked : weeklySundayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Monday',
+                        id : 'reporting_weeklyMonday',
+                        boxLabel : this.i18n._('Monday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyMondayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Tuesday',
+                        id : 'reporting_weeklyTuesday',
+                        boxLabel : this.i18n._('Tuesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyTuesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Wednesday',
+                        id : 'reporting_weeklyWednesday',
+                        boxLabel : this.i18n._('Wednesday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyWednesdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Thursday',
+                        id : 'reporting_weeklyThursday',
+                        boxLabel : this.i18n._('Thursday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyThursdayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Friday',
+                        id : 'reporting_weeklyFriday',
+                        boxLabel : this.i18n._('Friday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklyFridayCurrent
+                    },  {
+                        xtype : 'checkbox',
+                        name : 'Saturday',
+                        id : 'reporting_weeklySaturday',
+                        boxLabel : this.i18n._('Saturday'),
+                        hasLabel : false,
+                        labelSeparator : '',
+                        checked : weeklySaturdayCurrent
+                    }]
+                },{
+                    title : this.i18n._("Monthly Reports"),
+                    labelWidth: 150,
+                    items : [{
+                        border : false,
+                        cls: 'description',
+                        html : this.i18n._('Monthly Reports are generated at midnight and covers events from the previous 30 days, up to, but not including the day of generation.')
+                    },  {
+                        xtype : 'radiogroup',
+                        name : 'Generate Monthly Reports',
+                        fieldLabel : 'Generate Monthly Reports',
+                        itemCls: 'x-check-group-alt',
+                        columns: 1,
+                        items : [{
+                            boxLabel : this.i18n._('Never'),
+                            name: 'rb-col',
+                            id : 'reporting_monthlyNone',
+                            checked : monthlyNoneCurrent
+                        },{
+                            boxLabel : this.i18n._('First Day of Month'),
+                            name: 'rb-col',
+                            id : 'reporting_monthlyFirst',
+                            checked : monthlyFirstCurrent
+                        },{
+                            boxLabel : this.i18n._('Everyday'),
+                            name: 'rb-col',
+                            id : 'reporting_monthlyEveryday',
+                            checked : monthlyEverydayCurrent
+                        },{
+                            boxLabel : this.i18n._('Once Per Week'),
+                            name: 'rb-col',
+                            id : 'reporting_monthlyOnce',
+                            checked : monthlyOnceCurrent,
+                            listeners : {
+                                "check" : {
+                                    fn : function(elem, checked) {
+                                            Ext.getCmp('reporting_monthlyOnceCombo').setDisabled(!checked);
+                                    }
+                                }
+                            }
+                        }]
+                    }, {
+                        xtype : 'combo',
+                        editable : false,
+                        mode : 'local',
+                        fieldLabel : '',
+                        labelSeparator : '',
+                        name : "Once Per Week combo",
+                        id : 'reporting_monthlyOnceCombo',
+                        store : new Ext.data.SimpleStore({
+                            fields : ['monthlyOnceValue', 'monthlyOnceName'],
+                            data : [[1, this.i18n._("Sunday")],
+                                    [2, this.i18n._("Monday")],
+                                    [3, this.i18n._("Tuesday")],
+                                    [4, this.i18n._("Wednesday")],
+                                    [5, this.i18n._("Thursday")],
+                                    [6, this.i18n._("Friday")],
+                                    [7, this.i18n._("Saturday")]]
+                        }),
+                        displayField : 'monthlyOnceName',
+                        valueField : 'monthlyOnceValue',
+                        value : monthlyOnceComboCurrent,
+                        disabled : !monthlyOnceCurrent,
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small'
+                    }]
                 },{
                     title: this.i18n._("Data Retention"),
                     labelWidth: 150,
@@ -269,8 +464,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             }
                         }
                     }]
-                }]
-            });
+                }]});
 
             /* Create the row editor for updating the password */
             this.gridRecipients.rowEditorChangePassword = new Ung.RowEditorWindow({

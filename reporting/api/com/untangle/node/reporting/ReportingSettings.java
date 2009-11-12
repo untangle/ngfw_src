@@ -53,6 +53,8 @@ public class ReportingSettings implements Serializable
 
     private String reportingUsers;
 
+    private Schedule schedule = new Schedule();
+
     public ReportingSettings() { }
 
     @Id
@@ -138,5 +140,22 @@ public class ReportingSettings implements Serializable
     public void setReportingUsers(String newValue)
     {
         this.reportingUsers = newValue;
+    }
+
+    /**
+     * Schedule (daily, weekly, monthly) for reports
+     *
+     * @return schedule for reports
+     */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="schedule", nullable=false)
+    public Schedule getSchedule()
+    {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule)
+    {
+        this.schedule = schedule;
     }
 }
