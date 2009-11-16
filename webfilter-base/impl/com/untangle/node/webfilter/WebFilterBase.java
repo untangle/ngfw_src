@@ -734,12 +734,12 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         blockBlinger.increment();
     }
 
-    void incrementPassCount()
+    public void incrementPassCount()
     {
         passBlinger.increment();
     }
 
-    void incrementPassLogCount()
+    public void incrementPassLogCount()
     {
         passLogBlinger.increment();
     }
