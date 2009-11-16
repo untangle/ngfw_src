@@ -245,7 +245,7 @@ CREATE TABLE reports.sessions (
         p2s_bytes int8)""", 'time_stamp', start_date, end_date)
 
         sql_helper.add_column('reports.sessions', 'policy_id', 'bigint')
-        sql_helper.add_column('reports.sessions', 'server_id', 'int2')
+        sql_helper.add_column('reports.sessions', 'server_intf', 'int2')
 
         sd = DateFromMx(sql_helper.get_update_info('reports.sessions',
                                                    start_date))
