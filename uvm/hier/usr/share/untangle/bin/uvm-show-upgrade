@@ -18,6 +18,11 @@ UPGRADE_LOGS=$(ls @PREFIX@/var/log/uvm/{wrapper,uvm,console,apt}.log)
 
 PIDFILE=/var/run/${BASENAME}.pid
 
+# during the preinst of the 1st untangle-vm package containing the
+# show-upgrade mechanism, the necessary files are not there yet, so do
+# not proceed
+[ -d "$SHARE" ] || exit 0
+
 case "$1" in
   start)
     # setup upgrade page
@@ -42,3 +47,5 @@ case "$1" in
     rm -f $CONSOLIDATED_UPGRADE_LOG $PIDFILE
     rm -f $APACHE_UPGRADE_HTML_PAGE $APACHE_UPGRADE_JS_PAGE ;;
 esac
+
+exit 0
