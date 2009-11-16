@@ -550,7 +550,7 @@ class SpamDetail(DetailSection):
             rv.append(ColumnDesc('hname', _('Source IP'), 'HostLink'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
-               ColumnDesc('addr', _('Address')),
+               ColumnDesc('m2.addr', _('Msg sender')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('s_server_addr', _('Destination IP')),
                ColumnDesc('case', _('Action')),
@@ -563,18 +563,21 @@ class SpamDetail(DetailSection):
             return None
 
         sql = """\
-SELECT time_stamp, hname, %s_score, addr, subject, host(s_server_addr),
-       CASE %s_action WHEN 'P' THEN '%s'
+SELECT m1.time_stamp, m1.hname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
+       CASE m1.%s_action WHEN 'P' THEN '%s'
                       WHEN 'B' THEN '%s'
                       WHEN 'M' THEN '%s'
                       WHEN 'Q' THEN '%s'
                       WHEN 'S' THEN '%s'
                       WHEN 'Z' THEN '%s'
                       END,
-       addr
-FROM reports.n_mail_addrs
-WHERE time_stamp >= %s AND time_stamp < %s
-      AND %s_is_spam AND addr_kind = 'T'
+       m1.addr
+FROM reports.n_mail_addrs AS m1, reports.n_mail_addrs AS m2
+WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
+AND m2.time_stamp >= %s AND m2.time_stamp < %s
+AND m1.%s_is_spam AND m1.addr_kind = 'T'
+AND m2.addr_kind = 'F'
+AND m1.msg_id = m2.msg_id
 """ % (self.__short_name, self.__short_name,
        _('passed'),
        _('blocked'),
