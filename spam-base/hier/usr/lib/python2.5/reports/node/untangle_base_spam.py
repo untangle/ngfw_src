@@ -583,8 +583,9 @@ AND m1.msg_id = m2.msg_id
        _('quarantined'),
        _('safelisted'),
        _('oversize'),
-       DateFromMx(start_date),
-       DateFromMx(end_date), self.__short_name)
+       DateFromMx(start_date), DateFromMx(end_date),
+       DateFromMx(start_date), DateFromMx(end_date),
+       self.__short_name)
 
         if host:
             sql += " AND hname = %s" % QuotedString(host)
