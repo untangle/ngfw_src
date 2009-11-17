@@ -555,6 +555,10 @@ Ung.Reports = Ext.extend(Object,{
                                              }
                                              return;
                                          }
+                                         if(result==null){
+                                            Ext.MessageBox.alert(i18n._("No Data Available"),i18n._("The report detail you selected does not contain any data. \n This is most likely because its not possible to drill down any further into some reports."));
+                                            return;
+                                         }
                                          rpc.applicationData=result;
                                          reports.breadcrumbs.push({ text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
                                                                     handler: this[fnName].createDelegate(this,[app, type, value])
