@@ -27,7 +27,8 @@ CREATE TABLE settings.n_reporting_settings (
     email_detail bool NOT NULL,
     network_directory int8 NOT NULL,
     schedule int8,
-    days_to_keep int4 NOT NULL,
+    db_retention int4 NOT NULL,
+    file_retention int4 NOT NULL,
     reporting_users TEXT,
     PRIMARY KEY (id));
 

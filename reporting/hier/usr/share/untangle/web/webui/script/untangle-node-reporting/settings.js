@@ -450,7 +450,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         fieldLabel : this.i18n._('Limit Data Retention'),
                         name : 'Limit Data Retention',
                         id: 'reporting_daysToKeep',
-                        value : this.getReportingSettings().daysToKeep,
+                        value : this.getReportingSettings().fileRetention,
                         width: 25,
                         allowDecimals: false,
                         allowNegative: false,
@@ -459,7 +459,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getReportingSettings().daysToKeep = newValue;
+                                    this.getReportingSettings().fileRetention = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -617,7 +617,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.gridRecipients.clearChangedData();
             this.gridRecipients.store.loadData( this.buildReportingUsersData());
             var rdtk = Ext.getCmp("reporting_daysToKeep");
-            rdtk.setValue( this.getReportingSettings().daysToKeep );
+            rdtk.setValue( this.getReportingSettings().fileRetention );
             rdtk.originalValue = rdtk.getValue();
 
             this.gridIpMap.clearChangedData();

@@ -37,17 +37,19 @@ Options:
   -m | --no-mail              skip mailing
   -a | --attach-csv           attach events as csv
   -e | --events-retention     number of days in events schema to keep
-  -r | --report-days          number of days to report on
+  -r | --report-length        number of days to report on
   -l | --locale               locale
   -d y-m-d | --date=y-m-d\
 """ % sys.argv[0]
+
+# main
 
 try:
      opts, args = getopt.getopt(sys.argv[1:], "hncgpmave:r:d:l:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'no-plot-gen',
                                  'verbose', 'attach-csv', 'events-retention',
-                                 'report-days', 'date=', 'locale='])
+                                 'report-length', 'date=', 'locale='])
 
 except getopt.GetoptError, err:
      print str(err)
@@ -55,6 +57,7 @@ except getopt.GetoptError, err:
      sys.exit(2)
 
 logging.basicConfig(level=logging.INFO)
+report_lengths = None
 no_migration = False
 no_cleanup = False
 no_data_gen = False
@@ -62,9 +65,10 @@ no_plot_gen = False
 no_mail = False
 attach_csv = False
 events_retention = 3
-report_days = 1
 end_date = mx.DateTime.today()
 locale = None
+db_retention = None
+file_retention = None
 
 no_cleanup = False
 for opt in opts:
@@ -86,8 +90,8 @@ for opt in opts:
           attach_csv = True
      elif k == '-e' or k == '--events-retention':
           events_retention = int(v)
-     elif k == '-r' or k == '--report-days':
-          report_days = int(v)
+     elif k == '-r' or k == '--report-length':
+          report_lengths = [int(v)]
      elif k == '-v' or k == '--verbose':
           logging.basicConfig(level=logging.DEBUG)
      elif k == '-d' or k == '--date':
@@ -108,9 +112,62 @@ import reports.engine
 import reports.mailer
 import reports.sql_helper as sql_helper
 
-if not locale:
-     conn = sql_helper.get_connection()
+def get_report_lengths():
+    lengths = []
 
+    date = mx.DateTime.now()
+    day_of_week = ((date.day_of_week + 1) % 7) + 1
+
+    conn = sql_helper.get_connection()
+
+    try:
+        curs = conn.cursor()
+        curs.execute("""
+SELECT sched.id, daily, monthly_n_daily, monthly_n_day_of_wk, monthly_n_first
+FROM settings.n_reporting_sched sched
+JOIN settings.n_reporting_settings ON (schedule = sched.id)
+JOIN settings.u_node_persistent_state USING (tid)
+WHERE target_state = 'running' OR target_state = 'initialized'
+""")
+        r = curs.fetchone()
+        if r:
+            setting_id = r[0]
+            daily = r[1]
+            monthly_n_daily = r[2]
+            monthly_n_day_of_wk = r[3]
+            monthly_n_first = r[4]
+
+            if daily:
+                lengths.append(1)
+
+            if monthly_n_daily:
+                lengths.append(30)
+            elif monthly_n_day_of_wk == day_of_week:
+                lengths.append(30)
+            elif monthly_n_first and date.day == 1:
+                lengths.append(30)
+            conn.commit()
+
+            curs = conn.cursor()
+            curs.execute("""
+SELECT day
+FROM settings.n_reporting_wk_sched_rule rule
+JOIN settings.n_reporting_wk_sched sched ON (sched.rule_id = rule.id)
+WHERE sched.setting_id = %s AND day = %s
+""", (setting_id, day_of_week))
+            if r.rowcount > 0:
+                lengths.append(7)
+            conn.commit()
+    except Exception, e:
+        conn.rollback()
+        logging.warn("could not get locale");
+
+    return lengths
+
+def get_locale():
+     locale = None
+
+     conn = sql_helper.get_connection()
      try:
           curs = conn.cursor()
           curs.execute("SELECT language FROM settings.u_language_settings")
@@ -120,12 +177,46 @@ if not locale:
      except Exception, e:
           logging.warn("could not get locale");
 
+     return locale
+
+def get_settings():
+     settings = {}
+
+     conn = sql_helper.get_connection()
+     try:
+          curs = conn.cursor()
+          curs.execute("""\
+SELECT db_retention, file_retention, email_detail
+FROM settings.n_reporting_settings
+JOIN settings.u_node_persistent_state USING (tid)
+WHERE target_state = 'running' OR target_state = 'initialized'
+""")
+          r = curs.fetchone()
+          if r:
+               settings['db_retention'] = r[0]
+               settings['file_retention'] = r[1]
+               settings['email_detail'] = r[2]
+          conn.commit()
+     except Exception, e:
+          conn.rollback()
+          logging.warn("could not get db_retention", exc_info=True)
+
+     return settings
+
+if not report_lengths:
+     report_lengths = get_report_lengths()
+
+if not locale:
+     locale = get_locale()
+
+# set locale
 if locale:
      logging.info('using locale: %s' % locale);
      os.environ['LANGUAGE'] = locale
 else:
      logging.info('locale not set')
 
+# if old reports schema detected, drop the schema
 if (sql_helper.table_exists('reports', 'daystoadd')
     or sql_helper.table_exists('reports', 'webpages')
     or sql_helper.table_exists('reports', 'emails')):
@@ -156,31 +247,12 @@ CREATE TABLE reports.table_updates (
 except Exception:
      pass
 
-if not report_days or attach_csv:
-     conn = sql_helper.get_connection()
+settings = get_settings()
 
-     try:
-          curs = conn.cursor()
-          curs.execute("""\
-SELECT days_to_keep, email_detail FROM settings.n_reporting_settings
-JOIN u_node_persistent_state USING (tid)
-WHERE target_state = 'running' OR target_state = 'initialized'
-""")
-          r = curs.fetchone()
-          if r:
-               if not report_days:  # XXX
-                    report_days = r[0] # XXX
-               if not attach_csv:
-                    attach_csv = r[1]
-          else:
-               report_days = 7 # XXX
-          conn.commit()
-     except Exception, e:
-          conn.rollback()
-          logging.warn("could not get report_days", exc_info=True)
-
-if not report_days: # XXX
-     report_days = 7 # XXX
+if not db_retention:
+     db_retention = settings.get('db_retention', 7)
+if not file_retention:
+     file_retention = settings.get('file_retention', 30)
 
 reports.engine.fix_hierarchy(REPORTS_OUTPUT_BASE)
 
@@ -194,31 +266,31 @@ if not no_migration:
 
 mail_reports = []
 
-if not no_data_gen:
-     mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
-                                                    end_date,
-                                                    report_days)
+for report_days in report_lengths:
+     if not no_data_gen:
+          mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
+                                                         end_date, report_days)
 
-if not no_plot_gen:
-     reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date,
-                                   report_days)
+     if not no_plot_gen:
+          reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date,
+                                        report_days)
 
-if not no_mail:
-     f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date, report_days,
-                                  mail_reports)
-     reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
-                                 attach_csv=attach_csv)
-     os.remove(f)
+     if not no_mail:
+          f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date,
+                                       report_days, mail_reports)
+          reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
+                                      attach_csv=attach_csv)
+          os.remove(f)
 
 if not no_cleanup:
      events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_retention)
      reports.engine.events_cleanup(events_cutoff)
 
      ## XXX need variable for schema data retention
-     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(30)
+     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
      reports.engine.reports_cleanup(reports_cutoff)
 
      ## XXX need variable for reports output retention
-     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(30)
+     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
                                        reports_cutoff)

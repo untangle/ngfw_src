@@ -48,7 +48,8 @@ public class ReportingSettings implements Serializable
     private Tid tid;
 
     private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
-    private int daysToKeep = 7;
+    private int dbRetention = 7;
+    private int fileRetention = 30;
     private boolean emailDetail = false;
 
     private String reportingUsers;
@@ -104,15 +105,26 @@ public class ReportingSettings implements Serializable
         this.networkDirectory = networkDirectory;
     }
 
-    @Column(name="days_to_keep", nullable=false)
-    public int getDaysToKeep()
+    @Column(name="db_retention", nullable=false)
+    public int getDbRetention()
     {
-        return daysToKeep;
+        return dbRetention;
     }
 
-    public void setDaysToKeep(int daysToKeep)
+    public void setDbRetention(int dbRetention)
     {
-        this.daysToKeep = daysToKeep;
+        this.dbRetention = dbRetention;
+    }
+
+    @Column(name="file_retention", nullable=false)
+    public int getFileRetention()
+    {
+        return fileRetention;
+    }
+
+    public void setFileRetention(int fileRetention)
+    {
+        this.fileRetention = fileRetention;
     }
 
     @Column(name="email_detail", nullable=false)
