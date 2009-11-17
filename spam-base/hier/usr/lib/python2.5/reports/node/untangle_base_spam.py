@@ -544,10 +544,7 @@ class SpamDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        if email:
-            rv.append(ColumnDesc('hname', _('Client'), 'String'))
-        else:
-            rv.append(ColumnDesc('hname', _('Source IP'), 'HostLink'))
+        rv.append(ColumnDesc('hname', _('Client'), 'String'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
                ColumnDesc('m2.addr', _('Msg sender')),
@@ -585,8 +582,9 @@ AND m1.msg_id = m2.msg_id
        _('quarantined'),
        _('safelisted'),
        _('oversize'),
-       DateFromMx(start_date),
-       DateFromMx(end_date), self.__short_name)
+       DateFromMx(start_date), DateFromMx(end_date),
+       DateFromMx(start_date), DateFromMx(end_date),
+       self.__short_name)
 
         if host:
             sql += " AND hname = %s" % QuotedString(host)
