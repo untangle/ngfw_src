@@ -16,6 +16,8 @@
 
 -- Create a column for a list of users that have
 ALTER TABLE settings.n_reporting_settings ADD COLUMN reporting_users TEXT;
+UPDATE settings.n_reporting_settings
+SET reporting_users = (SELECT report_email FROM settings.u_mail_settings);
 
 ALTER TABLE settings.n_reporting_settings ADD COLUMN email_detail boolean;
 UPDATE settings.n_reporting_settings SET email_detail = false;
