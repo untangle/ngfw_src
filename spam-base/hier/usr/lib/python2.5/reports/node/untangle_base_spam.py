@@ -545,10 +545,7 @@ class SpamDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        if email:
-            rv.append(ColumnDesc('hname', _('Client'), 'String'))
-        else:
-            rv.append(ColumnDesc('hname', _('Source IP'), 'HostLink'))
+        rv.append(ColumnDesc('hname', _('Client'), 'String'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
                ColumnDesc('m2.addr', _('Msg sender')),
