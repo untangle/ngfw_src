@@ -209,8 +209,9 @@ Ung.Reports = Ext.extend(Object,{
         this.reportDatesItems = [];
         for (var i = 0; i < rpc.dates.list.length; i++) {
             this.reportDatesItems.push({
-                text : i18n.dateFormat(rpc.dates.list[i]),
-                dt : rpc.dates.list[i],
+                text : i18n.dateFormat(rpc.dates.list[i].date),
+                dt : rpc.dates.list[i].date,                
+                numDays :rpc.dates.list[i].numDays,
                 handler : function()
                 {
                     reports.changeDate(this.dt);
@@ -253,11 +254,22 @@ Ung.Reports = Ext.extend(Object,{
                         cls : 'dateContainer',
                         id : 'rangeFieldSet',
                         items : [{
+                            xtype : 'label',
+                            id : 'report-day-menu',
+                            html : i18n._('View Other Reports'),
+                            listeners : {
+                                "render" : {
+                                    fn : function(comp) {
+                                       comp.getEl().on("click",this.showAvailableReports,this);
+                                    }.createDelegate(this)
+                                }
+                            }                            
+                        },/*{
                             xtype : 'splitbutton',
                             id : 'report-day-menu',
                             text : this.reportDatesItems[0].text,
                             menu : new Ext.menu.Menu({ items : this.reportDatesItems })
-                        },{
+                        },*/{
                             xtype : 'label',
                             id : 'report-date-range',
                             html : reports.getDateRangeText(this.reportDatesItems[0]),
@@ -325,7 +337,7 @@ Ung.Reports = Ext.extend(Object,{
                                     ime: d.getTime()
                                 });
                             } else if (rpc.dates && rpc.dates.list.length > 0) {
-                                reports.changeDate(rpc.dates.list[0]);
+                                reports.changeDate(rpc.dates.list[0].date);
                             }
                         }
                     }
@@ -346,7 +358,129 @@ Ung.Reports = Ext.extend(Object,{
             }]
         });
     },
-
+    getAvailableReportsData : function (){
+        return this.reportDatesItems;            
+    },
+    showReportFor : function(value){
+        var found = -1,i ;
+        for(i=0;i<this.reportDatesItems.length;i++){
+            if(value==this.reportDatesItems[i].dt.time){
+                found = i;
+                break;        
+            }
+        }
+        if(found == -1){
+            Ext.MessageBox("Unable to load reports","Could not load the selected report");
+        }else{
+            this.availableReportsWindow.hide();
+            this.changeDate(this.reportDatesItems[found].dt);            
+        }
+    },
+    showAvailableReports : function(){
+        if(!this.availableReportsWindow){
+            this.datesGrid = new Ung.EditorGrid({
+                paginated : false,
+                hasReorder : false,
+                hasEdit : false,
+                hasDelete : false,
+                width : 950,
+                height : getWinHeight()-60,                
+                hasAdd : false,
+                data : this.getAvailableReportsData(),
+                autoExpandColumn : "_dateRange",
+                title : i18n._( "Report Details" ),
+                fields :  [{
+                    name : "dt"
+                },{
+                    name : "numDays"
+                },{
+                    name : "text"
+                }],
+                columns : [{
+                    id : "_generated",
+                    header : i18n._( "Generated" ),
+                    width : 70,
+                    dataIndex : "text",
+                    renderer : function (value){
+                        return i18n._(value);   
+                    }
+                },{
+                    id : "_dateRange",
+                    header : i18n._( "Date Range" ),
+                    width : 470,
+                    dataIndex : "dt",
+                    renderer : function (value,meta,record){
+                        return reports.getDateRangeText(record.data);
+                    }
+                },{
+                    id : "_view",
+                    header : i18n._( "View" ),
+                    width : 85,
+                    dataIndex : "dt",                    
+                    renderer : function(value,meta,record){
+                        return '<a href="javascript:reports.showReportFor('+value.time+')">'+i18n._("View Report")+'</a>';
+                    }
+                    
+                },{
+                    id : "_rangeSize",
+                    header : i18n._( "Range Size (days)" ),
+                    width : 150,
+                    dataIndex : "numDays",
+                    renderer : function(value){
+                        return value; 
+                    }
+                },{
+                    id : "_dynamic",
+                    header : i18n._( "Dynamic Reports Available" ),
+                    width : 168,
+                    dataIndex : "dt",                    
+                    renderer : function (){
+                        return i18n._("Yes");
+                    }
+                }]               
+            });
+            
+            this.availableReportsWindow = new Ext.Window({
+                applyTo : 'window-container',
+                layout : 'fit',
+                title : i18n._("Available Reports"),
+                width : 960,
+                height : getWinHeight()-30,
+                closeAction :'hide',
+                plain : true,
+                items : new Ext.Panel({
+                    deferredRender : false,
+                    border : false,
+                    items : this.datesGrid
+                }),
+                buttons: [{
+                    text : i18n._('Close'),
+                    handler : function(){
+                        this.availableReportsWindow.hide();
+                    }.createDelegate(this)
+                }]
+            });        
+        /*
+            this.availableReportsWindow = new Ung.ManageListWindow({
+                    breadcrumbs : [{
+                        title : i18n._("Available Reports"),
+                        action : function() {
+                                    this.availableReportsWindow.closeWindow();
+                               }.createDelegate(this)
+                    }, {
+                        title : i18n._("Available Reports")
+                    }],
+                    //grid : settingsCmp.gridBlacklistCategories,
+                    applyAction : function(forceLoad){
+                        Ext.MessageBox.wait("", i18n._("Please wait"));
+                        this.availableReportsWindow.close();
+                    }.createDelegate(this)                                                        
+                });
+        */                
+        }
+        
+        this.availableReportsWindow.show();                        
+    },
     getTreeNodesFromTableOfContent : function(tableOfContents)
     {
         var treeNodes = [];
@@ -438,14 +572,14 @@ Ung.Reports = Ext.extend(Object,{
     },
     changeDate : function(date)
     {
-        this.reportsDate=date.date;
+        this.reportsDate=date;
 
         for (var i = 0; i < this.reportDatesItems.length; i++) {
             var item = this.reportDatesItems[i];
             var found = false;
 
             if (item.dt.time == date.time) {
-                Ext.getCmp('report-day-menu').setText(item.text);
+                //Ext.getCmp('report-day-menu').setText(item.text);
                 Ext.getCmp('report-date-range').setText(reports.getDateRangeText(item));
                 found = true;
                 break;
@@ -473,7 +607,7 @@ Ung.Reports = Ext.extend(Object,{
     getDateRangeText : function(selectedDate){
         var oneDay = 24*3600*1000,
         toDate =new Date(selectedDate.dt.time - oneDay),
-        fromDate = new Date(selectedDate.dt.time - (8*oneDay)),
+        fromDate = new Date(selectedDate.dt.time - ((selectedDate.numDays+1)*oneDay)),
         formatString = 'l, F j Y';
         return i18n.dateLongFormat(fromDate,formatString) + " - "  +   i18n.dateLongFormat(toDate,formatString);
     },
