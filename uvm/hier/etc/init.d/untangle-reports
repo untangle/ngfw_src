@@ -15,8 +15,8 @@
 DESC="Untangle Reports"
 
 NAME="reports"
-DAEMON="/usr/share/untangle/bin/untangle-reports-wrapper.sh"
-PID_FILE="/var/run/untangle-reports-wrapper.pid"
+DAEMON="@PREFIX@/usr/share/untangle/bin/untangle-reports-wrapper.sh"
+PID_FILE="@PREFIX@/var/run/untangle-reports-wrapper.pid"
 
 start() {
   log_daemon_msg "Starting $DESC"
