@@ -1214,7 +1214,7 @@ class WebFilterDetailDomains(DetailSection):
             return None
 
         sql = """\
-SELECT regexp_replace(host, E'.*?([^.]+\.[^.]+)($|:)', E'\\1') AS domain,
+SELECT regexp_replace(host, E'.*?([^.]+\.[^.]+)(:[0-9]+)?$', E'\\1') AS domain,
        count(*), sum(s2c_content_length) / 10^6
 FROM reports.n_http_events
 WHERE regexp_replace(host, E'[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?', '') != ''
