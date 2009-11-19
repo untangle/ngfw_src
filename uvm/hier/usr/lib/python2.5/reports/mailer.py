@@ -106,7 +106,7 @@ The PDF file requires Adobe Acrobat Reader to view.
         part = MIMEBase('application', "zip")
         part.set_payload(open(zip_file, 'rb').read())
         Encoders.encode_base64(part)
-        part.add_header('Content-Disposition', 'attachment; filename="reports.zip"')
+        part.add_header('Content-Disposition', 'attachment; filename="reports-%d%02d%02d.zip"' % (date.year, date.month, date.day))
         msgRoot.attach(part)
 
     smtp = smtplib.SMTP()
