@@ -1203,7 +1203,7 @@ class WebFilterDetailDomains(DetailSection):
         else:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv += [ColumnDesc('domain' % self.__vendor_name, _('Domain')),
+        rv += [ColumnDesc('domain', _('Domain')),
                ColumnDesc('hits', _('Hits')),
                ColumnDesc('size', _('Size'))]
 
