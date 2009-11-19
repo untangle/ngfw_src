@@ -98,6 +98,7 @@ class WebFilterBaseNode(Node):
 
         sections.append(WebFilterDetail(self.__vendor_name))
         sections.append(WebFilterDetailAll(self.__vendor_name))
+        sections.append(WebFilterDetailDomains(self.__vendor_name))
 
         return Report(self.name, sections)
 
@@ -1172,6 +1173,53 @@ WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
                                                  self.__vendor_name,
                                                  DateFromMx(start_date),
                                                  DateFromMx(end_date))
+
+        if host:
+            sql += " AND hname = %s" % QuotedString(host)
+        if user:
+            sql += " AND uid = %s" % QuotedString(user)
+
+        return sql + " ORDER BY time_stamp"
+
+class WebFilterDetailDomains(DetailSection):
+    def __init__(self, vendor_name):
+        DetailSection.__init__(self, 'domains', _('Domain Events'))
+
+        self.__vendor_name = vendor_name
+
+    def get_columns(self, host=None, user=None, email=None):
+        if email:
+            return None
+
+        rv = []
+
+        if host:
+            rv.append(ColumnDesc('hname', _('Client')))
+        else:
+            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+
+        if user:
+            rv.append(ColumnDesc('uid', _('User')))
+        else:
+            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+
+        rv += [ColumnDesc('domain' % self.__vendor_name, _('Domain')),
+               ColumnDesc('hits', _('Hits')),
+               ColumnDesc('size', _('Size'))]
+
+        return rv
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        if email:
+            return None
+
+        sql = """\
+SELECT regexp_replace(host, E'.*?([^.]+\.[^.]+)($|:)', E'\\1') AS domain,
+       count(*), sum(s2c_content_length) / 10^6
+FROM reports.n_http_events
+WHERE regexp_replace(host, E'[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?', '') != ''
+AND time_stamp >= %s AND time_stamp < %s""" % (DateFromMx(start_date),
+                                               DateFromMx(end_date))
 
         if host:
             sql += " AND hname = %s" % QuotedString(host)
