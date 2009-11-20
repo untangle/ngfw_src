@@ -128,11 +128,11 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d), "top-level");
-
-        List<User> users = getUsers(d);
-        List<Host> hosts = getHosts(d);
-        List<Email> emails = getEmails(d);
+        List<Application> apps = getApplications(getDateDir(d, numDays),
+                                                 "top-level");
+        List<User> users = getUsers(d, numDays);
+        List<Host> hosts = getHosts(d, numDays);
+        List<Email> emails = getEmails(d, numDays);
 
         return new TableOfContents(d, null, null, null, platform, apps, users,
                                    hosts, emails);
@@ -143,7 +143,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d),
+        List<Application> apps = getApplications(getDateDir(d, numDays),
                                                  "user-drilldown");
 
         List<User> users = new ArrayList<User>();
@@ -159,7 +159,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d),
+        List<Application> apps = getApplications(getDateDir(d, numDays),
                                                  "user-drilldown");
 
         List<User> users = new ArrayList<User>();
@@ -175,7 +175,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d),
+        List<Application> apps = getApplications(getDateDir(d, numDays),
                                                  "email-drilldown");
 
         List<User> users = new ArrayList<User>();
@@ -327,7 +327,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return h.getReport();
     }
 
-    private List<Host> getHosts(Date d)
+    private List<Host> getHosts(Date d, int numDays)
     {
         List<Host> l = new ArrayList<Host>();
 
@@ -356,7 +356,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return l;
     }
 
-    private List<User> getUsers(Date d)
+    private List<User> getUsers(Date d, int numDays)
     {
         List<User> l = new ArrayList<User>();
 
@@ -385,7 +385,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return l;
     }
 
-    private List<Email> getEmails(Date d)
+    private List<Email> getEmails(Date d, int numDays)
     {
         List<Email> l = new ArrayList<Email>();
 
@@ -412,17 +412,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         }
 
         return l;
-    }
-
-    private String getDateDir(Date d)
-    {
-        StringBuffer sb = new StringBuffer(BUNNICULA_REPORTS_DATA);
-        sb.append("/");
-
-        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-        sb.append(df.format(d));
-
-        return sb.toString();
     }
 
     private String getDateDir(Date d, int numDays)
@@ -510,7 +499,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         List<String> l = new ArrayList<String>();
 
-        String f = dirName + "/" + type;
+        String f = dirName + "/../" + type;
 
         BufferedReader br = null;
 

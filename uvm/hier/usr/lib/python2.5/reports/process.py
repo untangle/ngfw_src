@@ -25,6 +25,8 @@ import os
 import psycopg
 import sys
 
+from psycopg import DateFromMx
+
 def usage():
      print """\
 usage: %s [options]
@@ -112,10 +114,9 @@ import reports.engine
 import reports.mailer
 import reports.sql_helper as sql_helper
 
-def get_report_lengths():
+def get_report_lengths(date):
     lengths = []
 
-    date = mx.DateTime.now()
     day_of_week = ((date.day_of_week + 1) % 7) + 1
 
     conn = sql_helper.get_connection()
@@ -203,8 +204,50 @@ WHERE target_state = 'running' OR target_state = 'initialized'
 
      return settings
 
+def write_cutoff_date(date):
+     try:
+          sql_helper.run_sql("""\
+CREATE TABLE reports.reports_state (
+        last_cutoff timestamp NOT NULL)""")
+     except Exception:
+          pass
+
+     update = False
+
+     conn = sql_helper.get_connection()
+     try:
+          curs = conn.cursor()
+          curs.execute('SELECT * FROM reports.reports_state')
+
+          if curs.rowcount > 0:
+               update = True
+          else:
+               update = False
+
+          conn.commit()
+     except Exception, e:
+          conn.rollback()
+          logging.warn("could not get db_retention", exc_info=True)
+
+     conn = sql_helper.get_connection()
+     try:
+          curs = conn.cursor()
+
+          if update:
+               curs.execute('UPDATE reports.reports_state SET last_cutoff = %s',
+                            (date,))
+          else:
+               curs.execute("""\
+INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
+
+          conn.commit()
+     except Exception, e:
+          conn.rollback()
+          logging.warn("could not get db_retention", exc_info=True)
+
+
 if not report_lengths:
-     report_lengths = get_report_lengths()
+     report_lengths = get_report_lengths(end_date)
 
 if not locale:
      locale = get_locale()
@@ -289,6 +332,7 @@ if not no_cleanup:
      ## XXX need variable for schema data retention
      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
      reports.engine.reports_cleanup(reports_cutoff)
+     write_cutoff_date(DateFromMx(reports_cutoff))
 
      ## XXX need variable for reports output retention
      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
