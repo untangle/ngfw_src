@@ -46,6 +46,8 @@ public interface RemoteReportingManager
 {
     List<DateItem> getDates();
 
+    Date getReportsCutoff();
+
     TableOfContents getTableOfContents(Date d, int numDays);
     TableOfContents getTableOfContentsForHost(Date d, int numDays,
                                               String hostname);

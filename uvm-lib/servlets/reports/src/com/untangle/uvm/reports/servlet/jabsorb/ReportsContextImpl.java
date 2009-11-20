@@ -175,6 +175,11 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
             return context.reportingManager().getDates();
         }
 
+        public Date getReportsCutoff()
+        {
+            return context.reportingManager().getReportsCutoff();
+        }
+
         public TableOfContents getTableOfContents(Date d, int numDays)
         {
             return context.reportingManager().getTableOfContents(d, numDays);

@@ -32,6 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -122,6 +123,34 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         Collections.reverse(l);
 
         return l;
+    }
+
+    public Date getReportsCutoff()
+    {
+        Date d = null;
+
+        Connection conn = null;
+        try {
+            conn = DataSourceFactory.factory().getConnection();
+
+            PreparedStatement ps = conn.prepareStatement("SELECT last_cutoff FROM reports.reports_state");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Timestamp ts = rs.getTimestamp(1);
+                d = new Date(ts.getTime());
+            }
+        } catch (SQLException exn) {
+            logger.warn("could not get reports cutoff", exn);
+        } finally {
+            if (conn != null) {
+                try {
+                    DataSourceFactory.factory().closeConnection(conn);
+                } catch (Exception x) { }
+                conn = null;
+            }
+        }
+
+        return d;
     }
 
     public TableOfContents getTableOfContents(Date d, int numDays)
