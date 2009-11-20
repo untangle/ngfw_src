@@ -445,6 +445,9 @@ Ung.Reports = Ext.extend(Object,{
                 layout : 'fit',
                 title : i18n._("Available Reports"),
                 width : 960,
+                resizable : false,
+                modal : true,
+                draggable : false,                
                 height : getWinHeight()-30,
                 closeAction :'hide',
                 plain : true,
@@ -459,24 +462,7 @@ Ung.Reports = Ext.extend(Object,{
                         this.availableReportsWindow.hide();
                     }.createDelegate(this)
                 }]
-            });        
-        /*
-            this.availableReportsWindow = new Ung.ManageListWindow({
-                    breadcrumbs : [{
-                        title : i18n._("Available Reports"),
-                        action : function() {
-                                    this.availableReportsWindow.closeWindow();
-                               }.createDelegate(this)
-                    }, {
-                        title : i18n._("Available Reports")
-                    }],
-                    //grid : settingsCmp.gridBlacklistCategories,
-                    applyAction : function(forceLoad){
-                        Ext.MessageBox.wait("", i18n._("Please wait"));
-                        this.availableReportsWindow.close();
-                    }.createDelegate(this)                                                        
-                });
-        */                
+            });                
         }
         
         this.availableReportsWindow.show();                        
