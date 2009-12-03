@@ -60,11 +60,12 @@ fi
 
 MAX_VIRTUAL_SIZE=$(( ${MAX_VIRTUAL_SIZE/m} * 1000 ))
 
-echo "    Maximum heap size -> $MAX_HEAP_SIZE"
+echo "    Maximum heap size -> ${MAX_HEAP_SIZE}"
 echo "    Maximum BDB size -> ${MAX_BERKDB_MEG}M"
 echo "    Maximum virtual size -> ${MAX_VIRTUAL_SIZE}"
 
 cat >| $FILE <<EOF
 MAX_HEAP_SIZE=$MAX_HEAP_SIZE
 MAX_BERKDB_MEG=$MAX_BERKDB_MEG
+MAX_VIRTUAL_SIZE=$MAX_VIRTUAL_SIZE
 EOF
