@@ -103,8 +103,9 @@ needToRestart() {
     # detect garbage collection failure due to heap full.  Continuous repeat of
     # failure necessary, as a few can happen some temporary non-full conditions.
     cmfcount=`tail -50 $UVM_GC_LOG | grep -ci "concurrent mode failure"`
+
     if [ $cmfcount -gt 4 ]; then
-        echo "*** java heap cmf on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
+        echo "*** java heap cmf on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG        
         return 0;
     fi
 
@@ -112,7 +113,7 @@ needToRestart() {
     if [ `date +%H` -eq 1 ]; then
         VIRT="`getVirtualMemUsage $pid`"
         if [ $VIRT -gt $MAX_VIRTUAL_SIZE ] ; then
-            echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
+            echo "*** Virt Size too high ($VIRT > $MAX_VIRTUAL_SIZE) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
             return 0;
         fi
     fi
@@ -191,8 +192,17 @@ while true; do
                 echo "*** restarting missing bunnicula $? on `date` ***" >> $UVM_WRAPPER_LOG
                 break
             fi
+
             if needToRestart; then
+                if [ -n "`find ${UVM_RUNDIR}/last_forced_restart -mmin -7 2> /dev/null`" ]; then
+                    echo "*** ignoring restart of $? at `date` ***" >> $UVM_WRAPPER_LOG
+                    continue
+                fi
+                
                 echo "*** need to restart bunnicula $? on `date` ***" >> $UVM_WRAPPER_LOG
+                ## These file is created so it doesn't continuously restart every 15 seconds
+                touch "${UVM_RUNDIR}/last_forced_restart"
+
                 nukeIt
                 break
             fi
