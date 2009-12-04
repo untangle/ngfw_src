@@ -90,4 +90,10 @@ fi
 rm -f /etc/untangle/monit.d/uvm*
 touch /etc/untangle/monit-to-restart
 
+
+## Restart untangle-hardware-config just in case.
+if [ -x "/etc/init.d/untangle-hardware-config" ]; then
+    ourInit untangle-hardware-config restart
+fi
+
 exit 0
