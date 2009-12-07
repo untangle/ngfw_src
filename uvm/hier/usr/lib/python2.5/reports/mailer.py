@@ -28,6 +28,7 @@ import sys
 if PREFIX != '':
     sys.path.insert(0, REPORTS_PYTHON_DIR)
 
+import datetime
 import gettext
 import locale
 import logging
@@ -78,21 +79,23 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access,
 
     if has_web_access and url:
         msg = _("""\
-The %(company)s Summary Reports for %(date)s are attached.
+The %(company)s Summary Reports for %(date_start)s - %(date_end)s are attached.
 The PDF file requires Adobe Acrobat Reader to view.
 
 For more in-depth online reports
 <a href='%(url)s'>click here to view Online %(company)s Reports</a>
 """) % { 'company': company_name,
-         'date': date.strftime(locale.nl_langinfo(locale.D_FMT)),
+         'date_start': (date - datetime.timedelta(days=1)).strftime(locale.nl_langinfo(locale.D_FMT)),
+         'date_end': (date - datetime.timedelta(days=8)).strftime(locale.nl_langinfo(locale.D_FMT)),         
          'url': url }
     else:
         msg = _("""\
-The %(company)s Summary Reports for %(date)s are attached.
+The %(company)s Summary Reports for %(date_start)s - %(date_end)s are attached.
 The PDF file requires Adobe Acrobat Reader to view.
 """) % { 'company': company_name,
-        'date': date.strftime(locale.nl_langinfo(locale.D_FMT))}
-
+         'date_start': (date - datetime.timedelta(days=1)).strftime(locale.nl_langinfo(locale.D_FMT)),
+         'date_end': (date - datetime.timedelta(days=8)).strftime(locale.nl_langinfo(locale.D_FMT)) }
+        
     msgRoot.attach(MIMEText(msg))
 
     part = MIMEBase('application', "pdf")
@@ -198,7 +201,7 @@ def __get_report_users():
     conn = sql_helper.get_connection()
     try:
         curs = conn.cursor()
-        curs.execute('SELECT u_user FROM settings.u_user WHERE reports_access')
+        curs.execute('SELECT email FROM settings.u_user WHERE reports_access IS TRUE')
 
         for r in curs.fetchall():
             rv.add(r[0])
