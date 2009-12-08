@@ -349,6 +349,6 @@ AND ips_description != '' """ % (DateFromMx(start_date),
         if user:
             sql = sql + (" AND uid = %s" % QuotedString(user))
 
-        return sql + " ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp DESC"
 
 reports.engine.register_node(Ips('untangle-node-ips', 'IPS', 'ips'))

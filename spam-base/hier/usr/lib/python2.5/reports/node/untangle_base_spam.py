@@ -589,4 +589,4 @@ AND m1.msg_id = m2.msg_id
         if host:
             sql += " AND hname = %s" % QuotedString(host)
 
-        return sql + " ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp DESC"

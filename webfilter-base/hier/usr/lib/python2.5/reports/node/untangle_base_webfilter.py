@@ -1127,7 +1127,7 @@ WHERE time_stamp >= %s AND time_stamp < %s
         if user:
             sql += " AND uid = %s" % QuotedString(user)
 
-        return sql + " ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp DESC"
 
 class WebFilterDetailAll(DetailSection):
     def __init__(self, vendor_name):
@@ -1179,7 +1179,7 @@ WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
         if user:
             sql += " AND uid = %s" % QuotedString(user)
 
-        return sql + " ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp DESC"
 
 class WebFilterDetailDomains(DetailSection):
     def __init__(self, vendor_name):
@@ -1226,7 +1226,7 @@ AND time_stamp >= %s AND time_stamp < %s""" % (DateFromMx(start_date),
         if user:
             sql += " AND uid = %s" % QuotedString(user)
 
-        return sql + " ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp DESC"
 
 # Unused reports --------------------------------------------------------------
 

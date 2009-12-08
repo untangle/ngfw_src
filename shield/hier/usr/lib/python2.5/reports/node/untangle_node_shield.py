@@ -317,6 +317,6 @@ WHERE trunc_time >= %s AND trunc_time < %s
         if host:
             sql += " AND client_addr = %s" % (QuotedString(host),)
 
-        return sql + " ORDER BY trunc_time"
+        return sql + " ORDER BY trunc_time DESC"
 
 reports.engine.register_node(Shield())

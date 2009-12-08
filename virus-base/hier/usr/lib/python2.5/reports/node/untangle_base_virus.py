@@ -816,7 +816,7 @@ AND NOT virus_%s_clean
         if user:
             sql = sql + (" AND uid = %s" % QuotedString(user))
 
-        return sql + " ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp DESC"
 
 class VirusMailDetail(DetailSection):
     def __init__(self, vendor_name):
@@ -860,4 +860,4 @@ AND NOT virus_%s_clean
         if user:
             sql = sql + (" AND uid = %s" % QuotedString(user))
 
-        return sql + " ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp DESC"

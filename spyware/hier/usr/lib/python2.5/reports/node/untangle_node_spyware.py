@@ -999,7 +999,7 @@ WHERE time_stamp >= %s AND time_stamp < %s
         if user:
             sql += " AND uid = %s" % QuotedString(user)
 
-        return sql + " ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp DESC"
 
 class UrlBlockDetail(DetailSection):
     def __init__(self):
@@ -1088,6 +1088,6 @@ WHERE time_stamp >= %s AND time_stamp < %s AND NOT sw_access_ident IS NULL
         if user:
             sql += " AND uid = %s" % QuotedString(user)
 
-        return sql + " ORDER BY time_stamp"
+        return sql + " ORDER BY time_stamp DESC"
 
 reports.engine.register_node(Spyware())
