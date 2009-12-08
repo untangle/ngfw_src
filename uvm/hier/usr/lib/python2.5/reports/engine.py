@@ -36,6 +36,7 @@ TOP_LEVEL = 'top-level'
 USER_DRILLDOWN = 'user-drilldown'
 HOST_DRILLDOWN = 'host-drilldown'
 EMAIL_DRILLDOWN = 'email-drilldown'
+MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
 
 class Node:
     def __init__(self, name):
@@ -219,7 +220,12 @@ def generate_reports(report_base, end_date, report_days):
                 if report:
                     report.generate(report_base, date_base, end_date,
                                     report_days=report_days)
-                    mail_reports.append(report)
+                    if node_name in MAIL_REPORT_BLACKLIST:
+                        logging.info('Not including report for %s in emailed reports, since it is blacklisted' % (node_name,))
+                    else:
+                        logging.info('Including report for %s in emailed reports' % (node_name,))
+                        mail_reports.append(report)
+
         except:
             logging.warn('could not generate reports for: %s' % node_name,
                          exc_info=True)
