@@ -186,8 +186,8 @@ def __get_url(date):
                 public_host = line.replace( "UVM_PUBLIC_URL=", "" )
                 public_host = public_host.replace( "\"", "" )
                 public_host = public_host.strip()
-                rv = 'https://%s/reports?date=%s-%s-%s' \
-                     % ( public_host, 2009, 11, 22 )
+                rv = 'https://%s/reports?time=%s' \
+                     % ( public_host, date.strftime("%Y-%m-%d") )
                 break
 
     except Exception, e:
