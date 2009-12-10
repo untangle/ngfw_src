@@ -23,6 +23,18 @@ REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
 REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
 NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
 
+BODY_TEMPLATE_SIMPLE = """
+The %(company)s Summary Reports for %(date_start)s - %(date_end)s are attached.
+The PDF file requires Adobe Reader to view.
+"""
+
+BODY_TEMPLATE_LINK = BODY_TEMPLATE_SIMPLE + """
+For more in-depth online reports, click %(link)s to view
+Online %(company)s Reports.
+"""
+
+HTML_LINK_TEMPLATE = '<a href="%s">here</a>'
+
 import sys
 
 if PREFIX != '':
@@ -65,51 +77,55 @@ def mail_reports(end_date, report_days, file, mail_reports, attach_csv=False):
     for receiver in receivers:
         has_web_access = receiver in report_users
         mail(file, zip_file, sender, receiver, end_date, company_name,
-             has_web_access, url)
+             has_web_access, url, report_days)
 
     if zip_file:
         shutil.rmtree(zip_dir)
 
 def mail(file, zip_file, sender, receiver, date, company_name, has_web_access,
-         url):
+         url, report_days):
+    msgRoot = MIMEMultipart('alternative')
+
+    h = { 'company': company_name,
+          'date_start': (date - datetime.timedelta(days=report_days+1)).strftime(locale.nl_langinfo(locale.D_FMT)),
+          'date_end': (date - datetime.timedelta(days=1)).strftime(locale.nl_langinfo(locale.D_FMT)) }
+
+    if has_web_access and url:
+        h.update({'link' : url})
+        msg_plain = BODY_TEMPLATE_LINK % h
+        h.update({'link' : HTML_LINK_TEMPLATE % (url,)})
+        msg_html = BODY_TEMPLATE_LINK % h
+    else:
+        msg_plain = msg_html = BODY_TEMPLATE_SIMPLE % h
+
+    print receiver
+    print msg_plain
+    print "=="
+    print msg_html
+    msgRoot.attach(MIMEText(msg_plain, 'plain'))
+    msgRoot.attach(MIMEText("<HTML>" + msg_html + "</HTML>", 'html'))
+
+    tmpMsgRoot = msgRoot
     msgRoot = MIMEMultipart('related')
+    msgRoot.attach(tmpMsgRoot)
+
     msgRoot['Subject'] = _('New %s Reports Available') % company_name
     msgRoot['From'] = sender
     msgRoot['To'] = receiver
 
-    if has_web_access and url:
-        msg = _("""\
-The %(company)s Summary Reports for %(date_start)s - %(date_end)s are attached.
-The PDF file requires Adobe Acrobat Reader to view.
-
-For more in-depth online reports
-<a href='%(url)s'>click here to view Online %(company)s Reports</a>
-""") % { 'company': company_name,
-         'date_start': (date - datetime.timedelta(days=1)).strftime(locale.nl_langinfo(locale.D_FMT)),
-         'date_end': (date - datetime.timedelta(days=8)).strftime(locale.nl_langinfo(locale.D_FMT)),         
-         'url': url }
-    else:
-        msg = _("""\
-The %(company)s Summary Reports for %(date_start)s - %(date_end)s are attached.
-The PDF file requires Adobe Acrobat Reader to view.
-""") % { 'company': company_name,
-         'date_start': (date - datetime.timedelta(days=1)).strftime(locale.nl_langinfo(locale.D_FMT)),
-         'date_end': (date - datetime.timedelta(days=8)).strftime(locale.nl_langinfo(locale.D_FMT)) }
-        
-    msgRoot.attach(MIMEText(msg))
-
     part = MIMEBase('application', "pdf")
     part.set_payload(open(file, 'rb').read())
     Encoders.encode_base64(part)
-    part.add_header('Content-Disposition', 'attachment; filename="reports-%d%02d%02d.pdf"'
-                    % (date.year, date.month, date.day))
+    part.add_header('Content-Disposition', 'attachment; filename="reports-%s.pdf"'
+                    % (date.strftime(locale.nl_langinfo(locale.D_FMT)),))
     msgRoot.attach(part)
 
     if zip_file:
         part = MIMEBase('application', "zip")
         part.set_payload(open(zip_file, 'rb').read())
         Encoders.encode_base64(part)
-        part.add_header('Content-Disposition', 'attachment; filename="reports-%d%02d%02d.zip"' % (date.year, date.month, date.day))
+        part.add_header('Content-Disposition', 'attachment; filename="reports-%s.zip"'
+                        % (date.strftime(locale.nl_langinfo(locale.D_FMT)),))
         msgRoot.attach(part)
 
     smtp = smtplib.SMTP()
@@ -187,7 +203,7 @@ def __get_url(date):
                 public_host = public_host.replace( "\"", "" )
                 public_host = public_host.strip()
                 rv = 'https://%s/reports?time=%s' \
-                     % ( public_host, date.strftime("%Y-%m-%d") )
+                     % ( public_host, date.strftime(locale.nl_langinfo(locale.D_FMT)), )
                 break
 
     except Exception, e:
