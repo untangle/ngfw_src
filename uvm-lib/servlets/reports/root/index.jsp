@@ -81,8 +81,8 @@ if (!reportsAvailable || !reportingEnabled) {
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
 
     <script type="text/javascript" src="/script/i18n.js"></script>
-    <script type="text/javascript" src="/webui/script/components.js"></script>
     <script type="text/javascript" src="script/components.js"></script>
+    <script type="text/javascript" src="script/reports-components.js"></script>
     <script type="text/javascript" src="script/reports.js"></script>
 
     <script type="text/javascript">
