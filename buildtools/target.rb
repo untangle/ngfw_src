@@ -385,9 +385,9 @@ class ServletBuilder < Target
     script_dir = "#{path}/root/script"
     if File.exist? script_dir
       YuiCompressorTarget.make_min_targets(package, script_dir,
-                                       "#{@destRoot}/script",
-                                       "js").each do |t|
-         @srcJar.register_dependency(t)
+                                           "#{@destRoot}/script",
+                                           "js").each do |t|
+        @srcJar.register_dependency(t)
       end
     end
 
@@ -642,10 +642,16 @@ class YuiCompressorTarget < Target
   def YuiCompressorTarget.listFiles(src, type, relative_path = nil)
     files = []
     Dir.new("#{src}").each do |f|
+      
       if not f =~ /^\./ and File.directory?("#{src}/#{f}")
         files = files + YuiCompressorTarget.listFiles("#{src}/#{f}", type, (relative_path ? "#{relative_path}/#{f}" : f))
+        next
       end
-      files << (relative_path ? "#{relative_path}/#{f}" : f) if /\.#{type}$/ =~ f
+
+      file_path = "#{src}/#{f}"
+      if ( /\.#{type}$/ =~ f )
+        files << (relative_path ? "#{relative_path}/#{f}" : f) 
+      end
     end
     files
   end

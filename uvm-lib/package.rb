@@ -45,8 +45,14 @@ taglib = JarTarget.build_target(uvm_lib, deps, 'taglib', "./uvm-lib/taglib")
 BuildEnv::SRC.installTarget.install_jars(taglib, "#{uvm_lib.distDirectory}/usr/share/java/uvm" )
 
 # servlets
+components_js = CopyFiles.new(uvm_lib,
+                              MoveSpec.fileMove("./uvm-lib/servlets/reports/components.js",
+                                                "#{uvm_lib.distDirectory}/usr/share/untangle/web/reports/script/",
+                                                "components.js" ),
+                              "servlet-reports-apache")
+
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
-                   "./uvm-lib/servlets/reports", [uvm_lib['bootstrap']])
+                   "./uvm-lib/servlets/reports", [uvm_lib['bootstrap'], components_js])
 
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.alpaca.jsp',
                    "./uvm-lib/servlets/alpaca")
