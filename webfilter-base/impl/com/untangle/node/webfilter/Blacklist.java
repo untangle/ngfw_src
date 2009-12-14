@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
@@ -613,11 +614,15 @@ public abstract class Blacklist
 	    re = re + "(/.*)?";
 
 	    // match
-	    if (Pattern.matches(re, val)) {
-		logger.debug("findMatch: ** matches pattern '" + re + "'");
-		return i; // done, we do not care if others match too
-	    } else {
-		logger.debug("findMatch: ** does not match '" + re + "'");		
+	    try {
+		if (Pattern.matches(re, val)) {
+		    logger.debug("findMatch: ** matches pattern '" + re + "'");
+		    return i; // done, we do not care if others match too
+		} else {
+		    logger.debug("findMatch: ** does not match '" + re + "'");		
+		}
+	    } catch (PatternSyntaxException e) {
+		logger.error("findMatch: ** invalid pattern '" + re + "'");		
 	    }
 	}
 	return -1; // no matches at all
