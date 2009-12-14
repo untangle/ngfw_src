@@ -1240,45 +1240,28 @@ class WebFilterDetailDomains(DetailSection):
         self.__vendor_name = vendor_name
 
     def get_columns(self, host=None, user=None, email=None):
-        if email:
+        if email or host or user:
             return None
 
-        rv = []
-
-        if host:
-            rv.append(ColumnDesc('hname', _('Client')))
-        else:
-            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
-
-        if user:
-            rv.append(ColumnDesc('uid', _('User')))
-        else:
-            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
-
-        rv += [ColumnDesc('domain', _('Domain')),
-               ColumnDesc('hits', _('Hits')),
-               ColumnDesc('size', _('Size'))]
+        rv = [ColumnDesc('domain', _('Domain')),
+              ColumnDesc('hits', _('Hits')),
+              ColumnDesc('size', _('Size'))]
 
         return rv
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
-        if email:
+        if email or host or user:
             return None
 
         sql = """\
-SELECT regexp_replace(host, E'.*?([^.]+\.[^.]+)(:[0-9]+)?$', E'\\1') AS domain,
-       count(*) AS count, sum(s2c_content_length) / 10^6
+SELECT regexp_replace(host, E'.*?([^.]+\.[^.]+)(:[0-9]+)?$', E'\\\\1') AS domain,
+       count(*) AS count, COALESCE(sum(s2c_content_length) / 10^6, 0)
 FROM reports.n_http_events
 WHERE regexp_replace(host, E'[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?', '') != ''
-AND time_stamp >= %s AND time_stamp < %s""" % (DateFromMx(start_date),
-                                               DateFromMx(end_date))
+AND time_stamp >= %s AND time_stamp < %s
+GROUP BY domain""" % (DateFromMx(start_date),
+                      DateFromMx(end_date))
 
-        if host:
-            sql += " AND hname = %s" % QuotedString(host)
-        if user:
-            sql += " AND uid = %s" % QuotedString(user)
-
-        sql += "GROUP BY domain"
         return sql + " ORDER BY count DESC"
 
 # Unused reports --------------------------------------------------------------
