@@ -458,6 +458,7 @@ LIMIT 100
 
     return rv
 
+# do not care about uninstalled nodes anymore
 def __get_node_partial_order(exclude_uninstalled=True):
     global __nodes
 
