@@ -83,9 +83,10 @@ class WebFilterBaseNode(Node):
                            [HourlyWebUsage(self.__vendor_name),
                             DailyWebUsage(self.__vendor_name),
                             TotalWebUsage(self.__vendor_name),
-                            TopTenWebUsageByHits(self.__vendor_name),
-                            TopTenWebUsageBySize(self.__vendor_name),
-                            TopTenWebAdUsageByHits(self.__vendor_name),
+                            TopTenWebBrowsingHostsByHits(self.__vendor_name),
+                            TopTenWebBrowsingHostsBySize(self.__vendor_name),
+                            TopTenWebBrowsingUsersByHits(self.__vendor_name),
+                            TopTenWebBrowsingUsersBySize(self.__vendor_name),
                             TopTenWebPolicyViolationsByHits(self.__vendor_name),
                             TopTenWebBlockedPolicyViolationsByHits(self.__vendor_name),
                             TopTenWebsitesByHits(self.__vendor_name),
@@ -598,10 +599,10 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC""" \
 
         return (lks[0:10], plot)
 
-class TopTenWebUsageByHits(Graph):
+class TopTenWebBrowsingHostsByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-users-by-hits',
-                       _('Top Ten Web Hosts (by hits)'))
+        Graph.__init__(self, 'top-ten-web-browsing-hosts-by-hits',
+                       _('Top Ten Web Browsing Hosts (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -646,10 +647,10 @@ GROUP BY hname ORDER BY hits_sum DESC"""
 
         return (lks[0:10], plot)
 
-class TopTenWebAdUsageByHits(Graph):
+class TopTenWebBrowsingUsersByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-ad-users-by-hits',
-                       _('Top Ten Web Users (by hits)'))
+        Graph.__init__(self, 'top-ten-web-browsing-users-by-hits',
+                       _('Top Ten Web Browsing Users (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -692,6 +693,57 @@ GROUP BY uid ORDER BY hits_sum DESC"""
                      title=self.title,
                      xlabel=_('User'),
                      ylabel=_('Hits per Day'))
+
+        plot.add_pie_dataset(dataset, display_limit=10)
+
+        return (lks[0:10], plot)
+
+class TopTenWebBrowsingUsersBySize(Graph):
+    def __init__(self, vendor_name):
+        Graph.__init__(self, 'top-ten-web-browsing-users-by-size',
+                       _('Top Ten Web Browsing Users (by size)'))
+
+        self.__vendor_name = vendor_name
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if host or user or email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT uid, COALESCE(sum(s2c_content_length), 0)::bigint as size_sum
+FROM reports.n_http_totals
+WHERE trunc_time >= %s AND trunc_time < %s AND NOT uid IS NULL AND uid != ''
+GROUP BY uid ORDER BY size_sum DESC"""
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+            dataset = {}
+
+            curs = conn.cursor()
+
+            curs.execute(query, (one_week, ed))
+            for r in curs.fetchall():
+                ks = KeyStatistic(r[0], r[1], _('bytes'),
+                                  link_type=reports.HNAME_LINK)
+                lks.append(ks)
+                dataset[r[0]] = r[1]
+
+        finally:
+            conn.commit()
+
+        if len(lks) == 0:
+            return None
+
+        plot = Chart(type=PIE_CHART,
+                     title=self.title,
+                     xlabel=_('User'),
+                     ylabel=_('bytes/day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -797,10 +849,10 @@ GROUP BY uid ORDER BY blocks_sum DESC""" \
 
         return (lks[0:10], plot)
 
-class TopTenWebUsageBySize(Graph):
+class TopTenWebBrowsingHostsBySize(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-users-by-size',
-                       _('Top Ten Web Hosts (by size)'))
+        Graph.__init__(self, 'top-ten-web-browsing-hosts-by-size',
+                       _('Top Ten Web Browsing Hosts (by size)'))
 
         self.__vendor_name = vendor_name
 
