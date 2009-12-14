@@ -205,7 +205,7 @@ class DailyUsage(Graph):
             return None
 
         ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
+        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
 SELECT COALESCE(max(attacks), 0), COALESCE(avg(attacks), 0)
