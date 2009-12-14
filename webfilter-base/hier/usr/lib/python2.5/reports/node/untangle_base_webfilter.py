@@ -1267,7 +1267,7 @@ class WebFilterDetailDomains(DetailSection):
 
         sql = """\
 SELECT regexp_replace(host, E'.*?([^.]+\.[^.]+)(:[0-9]+)?$', E'\\1') AS domain,
-       count(*), sum(s2c_content_length) / 10^6
+       count(*) AS count, sum(s2c_content_length) / 10^6
 FROM reports.n_http_events
 WHERE regexp_replace(host, E'[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?', '') != ''
 AND time_stamp >= %s AND time_stamp < %s""" % (DateFromMx(start_date),
@@ -1278,7 +1278,8 @@ AND time_stamp >= %s AND time_stamp < %s""" % (DateFromMx(start_date),
         if user:
             sql += " AND uid = %s" % QuotedString(user)
 
-        return sql + " ORDER BY time_stamp DESC"
+        sql += "GROUP BY domain"
+        return sql + " ORDER BY count DESC"
 
 # Unused reports --------------------------------------------------------------
 
