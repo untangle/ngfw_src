@@ -101,7 +101,7 @@ import org.hibernate.annotations.Type;
 	 *
 	 * @return a <code>String</code> value
 	 */
-	public final String getDomain() {
+	public String getDomain() {
 	    return domain;
 	}
 
@@ -110,7 +110,7 @@ import org.hibernate.annotations.Type;
 	 *
 	 * @param newDomain The new Domain value.
 	 */
-	public final void setDomain(final String newDomain) {
+	public void setDomain(String newDomain) {
 	    this.domain = newDomain;
 	}
 
@@ -119,7 +119,7 @@ import org.hibernate.annotations.Type;
 	 *
 	 * @return a <code>String</code> value
 	 */
-	public final String getEvent() {
+	public String getEvent() {
 	    return event;
 	}
 
@@ -128,7 +128,7 @@ import org.hibernate.annotations.Type;
 	 *
 	 * @param newEvent The new Event value.
 	 */
-	public final void setEvent(final String newEvent) {
+	public void setEvent(String newEvent) {
 	    this.event = newEvent;
 	}
 
