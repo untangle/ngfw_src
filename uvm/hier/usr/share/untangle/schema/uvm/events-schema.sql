@@ -114,6 +114,16 @@ CREATE TABLE events.u_lookup_evt (
     time_stamp  TIMESTAMP,
     PRIMARY KEY (event_id));
 
+-- LoginEvent
+CREATE TABLE events.n_login_evt (
+    event_id    INT8 NOT NULL,
+    login_name  TEXT,
+    domain	TEXT,
+    type	CHAR, -- LOGIN|UPDATE|LOGOUT
+    time_stamp  TIMESTAMP,
+    client_addr inet,
+    PRIMARY KEY (event_id));
+
 CREATE TABLE events.event_data_days (
         day_name text NOT NULL,
         day_begin date NOT NULL);

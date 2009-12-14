@@ -31,6 +31,9 @@ from psycopg import DateFromMx
 REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 30 * 60)]
 HOURLY_REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 60 * 60)]
 
+DEFAULT_TIME_FIELD = 'trunc_time'
+DEFAULT_SLICES = 150
+
 def print_timing(func):
     def wrapper(*arg):
         t1 = time.time()
@@ -290,6 +293,25 @@ def get_required_points(start, end, interval):
         a.append(v)
         v = v + interval
     return a
+
+def get_averaged_query(sums, table_name, start_date, end_date,
+                       time_field = DEFAULT_TIME_FIELD, slices = DEFAULT_SLICES):
+    query = "SELECT %(start_date)s + trunc((%(time_field) - %(start_date)) / %(time_interval)s) * %(time_interval) AS time"
+
+    for s in sums:
+        query += ", " + s + " / %(time_interval)s"
+
+    query += """
+FROM %(table_name)
+WHERE %(time_field)s >= %(start_date)s AND %(time_field)s < %(end_date)s
+GROUP by time
+ORDER BY time"""
+
+    return query, { 'table_name' : table_name,
+                    'start_date' : start_date,
+                    'end_date' : end_date,
+                    'time_field' : time_field,
+                    'time_interval' : (end_date - start_date) / slices }
 
 def __make_trigger(schema, tablename, timestamp_column, all_dates):
     full_tablename = '%s.%s' % (schema, tablename)
