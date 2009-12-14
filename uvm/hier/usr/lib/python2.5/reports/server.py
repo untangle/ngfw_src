@@ -68,9 +68,10 @@ class Worker(Thread):
     def run(self):
         while 1:
             buf = self.__socket.recv(4096)
-            print time.asctime()
-            print "got '%s'" % buf
-            sys.stdout.flush()
+            if buf != '':
+                 print time.asctime()
+                 print "got '%s'" % buf
+                 sys.stdout.flush()
 
             if not buf:
                 break
