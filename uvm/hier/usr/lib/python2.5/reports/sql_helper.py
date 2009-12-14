@@ -52,7 +52,7 @@ def print_timing(func):
         fun_name = "%s (%s:%s)" % (func.func_name, filename, line_number)
 
 
-        logging.info('%s took %0.3f ms' % (fun_name, (t2-t1)*1000.0))
+        logging.debug('%s took %0.3f ms' % (fun_name, (t2-t1)*1000.0))
         return res
 
     return wrapper
@@ -117,20 +117,21 @@ def run_sql(sql, args=None, connection=get_connection(), auto_commit=True):
             connection.commit()
 
     except Exception, e:
-        logging.warn("exception running '%s'" % sql, exc_info=True)
+        show_error = True
+        if not re.search(r'DELETE ', sql) and not re.search(r'already exists', e.message):
+            print 'meh'
+            logging.warn("SQL exception begin", exc_info=True)
+            logging.warn("SQL exception end")
+            show_error = False
+            
         if auto_commit:
             connection.rollback()
-        else:
+        elif show_error:
             raise e
 
-def add_column(tablename, column, type, ignore_errors=True):
+def add_column(tablename, column, type):
     sql = "ALTER TABLE %s ADD COLUMN %s %s" % (tablename, column, type)
-    try:
-        run_sql(sql)
-    except Exception, e:
-        logging.warn("exception running '%s', %s" % (sql, e))
-        if not ignore_errors:
-            raise e
+    run_sql(sql)
 
 def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
                              clear_tables=False):
@@ -283,7 +284,7 @@ WHERE tablename LIKE %s""", '%s%%' % prefix)
     return rv
 
 def get_date_range(start_date, end_date):
-    l = (end_date - start_date).days
+    l = int(round((end_date - start_date).days))
     return [end_date - mx.DateTime.DateTimeDelta(i + 1) for i in range(l)]
 
 def get_required_points(start, end, interval):

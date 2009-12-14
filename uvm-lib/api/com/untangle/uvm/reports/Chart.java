@@ -112,7 +112,7 @@ public class Chart extends SummaryItem implements Serializable
     {
         Logger logger = Logger.getLogger(getClass());
 
-        System.out.println("generating: " + imageUrl + " from: " + csvUrl);
+        logger.debug("generating: " + imageUrl + " from: " + csvUrl);
 
         if (null == plot) {
             logger.warn("no plot: " + imageUrl);

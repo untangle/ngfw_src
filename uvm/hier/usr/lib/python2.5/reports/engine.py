@@ -458,7 +458,7 @@ LIMIT 100
 
     return rv
 
-def __get_node_partial_order(exclude_uninstalled=False):
+def __get_node_partial_order(exclude_uninstalled=True):
     global __nodes
 
     if exclude_uninstalled:
