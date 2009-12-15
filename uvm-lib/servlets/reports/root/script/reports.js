@@ -1156,7 +1156,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 handler: function() {
                     var rd = new Date(reports.reportsDate.time);
                     var d = rd.getFullYear() + "-" + (rd.getMonth() + 1) + "-" + rd.getDate();
-                    var u = 'csv?date=' + d + '&app=' + appName + '&detail=' + section.name;
+                    var u = 'csv?date=' + d + '&app=' + appName + '&detail=' + section.name + '&numDays=' + numDays;
                     var t = store.initialData.drilldownType;
                     if (t) {
                         u += '&type=' + t;

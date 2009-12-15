@@ -41,6 +41,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.engine.DataSourceFactory;
 import com.untangle.uvm.reports.ApplicationData;
+import com.untangle.uvm.reports.Chart;
 import com.untangle.uvm.reports.ColumnDesc;
 import com.untangle.uvm.reports.DetailSection;
 import com.untangle.uvm.reports.RemoteReportingManager;
@@ -67,6 +68,12 @@ public class CsvServlet extends HttpServlet
 
         String type = req.getParameter("type");
         String value = req.getParameter("value");
+
+	logger.error("Got a CSV request: date='" + dateStr +
+		    "', numDays='" + numDaysStr + "', app='" +
+		    app + "', detail='" + detail +
+		    "', type='" + type + "', value='" +
+		    value + "'");
 
         if (null == dateStr || null == numDaysStr || null == app
             || null == detail) {
