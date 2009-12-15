@@ -253,7 +253,14 @@ def generate_pdf(report_base, end_date, report_days, mail_reports):
                                        end_date.day)
     date_str = end_date.strftime("%A %d %B %Y")
 
-    doc = ReportDocTemplate(file, title=_('Report for %s') % date_str)
+    if report_days == 1:
+        days = _('day')
+    else:
+        days = _('days')
+                 
+    title = '%s %s %s' % (_('Report for'), report_days, days)
+
+    doc = ReportDocTemplate(file, title=title)
 
     story = []
 
@@ -261,7 +268,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports):
 
     story.append(Image('/var/www/images/BrandingLogo.gif'))
     story.append(Spacer(1, 0.5 * inch))
-    story.append(Paragraph('Daily Report', STYLESHEET['MainTitle']))
+    story.append(Paragraph(title, STYLESHEET['MainTitle']))
     story.append(Paragraph(date_str, STYLESHEET['SubTitle']))
     story.append(Paragraph(platform.node(), STYLESHEET['SubTitle']))
 
@@ -286,7 +293,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports):
     mail_reports.sort(__node_cmp)
 
     for r in mail_reports:
-        story += r.get_flowables(report_base, date_base, end_date)
+        story += r.get_flowables(report_base, date_base, end_date, report_days)
 
     doc.multiBuild(story)
 

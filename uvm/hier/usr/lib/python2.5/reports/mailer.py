@@ -98,10 +98,6 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access,
     else:
         msg_plain = msg_html = BODY_TEMPLATE_SIMPLE % h
 
-    print receiver
-    print msg_plain
-    print "=="
-    print msg_html
     msgRoot.attach(MIMEText(msg_plain, 'plain'))
     msgRoot.attach(MIMEText("<HTML>" + msg_html + "</HTML>", 'html'))
 
@@ -258,7 +254,7 @@ def __make_zip_file(end_date, report_days, mail_reports):
 
     os.system("""\
 pushd %s;
-zip -r reports.zip ./reports;
+zip -r reports.zip ./reports > /dev/null;
 popd""" % tmp_dir)
 
     return tmp_dir

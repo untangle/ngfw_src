@@ -202,6 +202,7 @@ WHERE target_state = 'running' OR target_state = 'initialized'
           conn.rollback()
           logging.warn("could not get db_retention", exc_info=True)
 
+     logging.info("db_settings: %s" % (settings,))
      return settings
 
 def write_cutoff_date(date):
@@ -296,6 +297,7 @@ if not db_retention:
      db_retention = settings.get('db_retention', 7)
 if not file_retention:
      file_retention = settings.get('file_retention', 30)
+attach_csv = attach_csv or settings.get('email_detail')
 
 reports.engine.fix_hierarchy(REPORTS_OUTPUT_BASE)
 
@@ -311,14 +313,17 @@ mail_reports = []
 
 for report_days in report_lengths:
      if not no_data_gen:
+          logging.info("Generating reports for %s days" % (report_days,))
           mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
                                                          end_date, report_days)
 
      if not no_plot_gen:
+          logging.info("Generating plots for %s days" % (report_days,))          
           reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date,
                                         report_days)
 
      if not no_mail:
+          logging.info("About to email reports for %s days" % (report_days,))          
           f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date,
                                        report_days, mail_reports)
           reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
@@ -329,12 +334,10 @@ if not no_cleanup:
      events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_retention)
      reports.engine.events_cleanup(events_cutoff)
 
-     ## XXX need variable for schema data retention
      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
      reports.engine.reports_cleanup(reports_cutoff)
      write_cutoff_date(DateFromMx(reports_cutoff))
 
-     ## XXX need variable for reports output retention
      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
                                        reports_cutoff)
