@@ -18,11 +18,26 @@
 
 ALTER SCHEMA events OWNER TO postgres;
 
-CREATE TABLE events.n_login_evt (
+CREATE TABLE events.n_login_evt(
     event_id    INT8 NOT NULL,
     login_name  TEXT,
     domain	TEXT,
     type	CHAR, -- LOGIN|UPDATE|LOGOUT
     time_stamp  TIMESTAMP,
     client_addr inet,
+    PRIMARY KEY (event_id));
+
+CREATE TABLE events.n_server_evt (
+    event_id    INT8 NOT NULL,
+    time_stamp  TIMESTAMP,
+    mem_free 	INT8,
+    mem_cache 	INT8,
+    mem_buffers INT8,
+    load_1 	DECIMAL(6, 2),
+    load_5 	DECIMAL(6, 2),
+    load_15	DECIMAL(6, 2),
+    cpu_user 	DECIMAL(6, 3),
+    cpu_system 	DECIMAL(6, 3),
+    disk_total 	INT8,
+    disk_free 	INT8,
     PRIMARY KEY (event_id));

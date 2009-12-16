@@ -86,6 +86,7 @@ import org.hibernate.annotations.Type;
          *
          * @return a <code>String</code> giving the login for the user
          */
+        @Column(name="login_name")
         public String getLoginName()
         {
             return loginName;
@@ -101,6 +102,7 @@ import org.hibernate.annotations.Type;
 	 *
 	 * @return a <code>String</code> value
 	 */
+        @Column(name="domain")
 	public String getDomain() {
 	    return domain;
 	}
@@ -119,6 +121,7 @@ import org.hibernate.annotations.Type;
 	 *
 	 * @return a <code>String</code> value
 	 */
+        @Column(name="type")
 	public String getEvent() {
 	    return event;
 	}

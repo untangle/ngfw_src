@@ -35,6 +35,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.SystemStatEvent;
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
@@ -98,6 +101,8 @@ class MessageManagerImpl implements LocalMessageManager
     private long lastDiskUpdate = System.currentTimeMillis();
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
+
+    private EventLogger eventLogger = EventLoggerFactory.factory().getEventLogger();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -432,6 +437,10 @@ class MessageManagerImpl implements LocalMessageManager
 
     private class SystemStatCollector implements Runnable
     {
+	private int LOG_DELAY = 60; // in seconds
+	private long ONE_BILLION = 1000000000l;
+	private long timeStamp = 0;
+
         private long user0 = 0;
         private long nice0 = 0;
         private long system0 = 0;
@@ -455,6 +464,25 @@ class MessageManagerImpl implements LocalMessageManager
                 logger.warn("could not get memory information", exn);
             }
 
+	    long time = System.nanoTime();
+	    if ((time - timeStamp)/ONE_BILLION >= LOG_DELAY) {
+		SystemStatEvent sse = new SystemStatEvent();
+		// FIXME: wrap the following in public method in SystemStatEvent
+		sse.setMemFree(Long.parseLong(m.get("MemFree").toString()));
+		sse.setMemCache(Long.parseLong(m.get("Cached").toString()));
+		sse.setMemCache(Long.parseLong(m.get("Buffers").toString()));
+		sse.setLoad1(Float.parseFloat(m.get("oneMinuteLoadAvg").toString()));
+		sse.setLoad5(Float.parseFloat(m.get("fiveMinuteLoadAvg").toString()));
+		sse.setLoad15(Float.parseFloat(m.get("fifteenMinuteLoadAvg").toString()));
+		sse.setCpuUser(Float.parseFloat(m.get("userCpuUtilization").toString()));
+		sse.setCpuSystem(Float.parseFloat(m.get("systemCpuUtilization").toString()));
+		sse.setDiskTotal(Long.parseLong(m.get("totalDiskSpace").toString()));
+		sse.setDiskFree(Long.parseLong(m.get("freeDiskSpace").toString()));
+		logger.debug("Logging SystemStatEvent");
+		eventLogger.log(sse);
+		timeStamp = time;
+	    }
+
             systemStats = Collections.unmodifiableMap(m);
         }
 
@@ -474,13 +502,13 @@ class MessageManagerImpl implements LocalMessageManager
             if (null != i) {
                 memFree += i;
             }
-            m.remove("Cached");
+	    //            m.remove("Cached");
 
             i = (Long)m.get("Buffers");
             if (null != i) {
                 memFree += i;
             }
-            m.remove("Buffers");
+	    //            m.remove("Buffers");
 
             m.put("MemFree", memFree);
         }
