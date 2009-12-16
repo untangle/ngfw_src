@@ -69,6 +69,11 @@ public interface RemoteToolboxManager
         throws MackageException, InterruptedException;
 
     /**
+     * Returns true if the box can reach updates.untangle.com
+     */
+    boolean isUpgradeServerAvailable();
+
+    /**
      * All known mackages.
      *
      * @return an array of <code>MackageDesc</code>s.

@@ -56,6 +56,8 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.script.ScriptRunner;
+
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.Application;
@@ -97,6 +99,11 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private final Logger logger = Logger.getLogger(getClass());
 
     private static RemoteToolboxManagerImpl TOOLBOX_MANAGER;
+
+    
+    /* Prints out true if the upgrade server is available */
+    private static final String UPGRADE_SERVER_AVAILABLE = System.getProperty( "bunnicula.home" ) + 
+        "/bin/upgrade-server-available";
 
     static {
         try {
@@ -298,6 +305,21 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                                  upgradable.length > 0);
     }
 
+    /**
+     * Returns true if the box can reach updates.untangle.com
+     */
+    public boolean isUpgradeServerAvailable()
+    {
+        try {
+            String result = ScriptRunner.getInstance().exec( UPGRADE_SERVER_AVAILABLE );
+            result = result.trim();
+            return result.equalsIgnoreCase( "true");
+        } catch ( Exception e ) {
+            logger.warn( "Unable to run the script '" + UPGRADE_SERVER_AVAILABLE + "'", e );
+            return false;
+        }
+    }
+    
     // all known mackages
     public MackageDesc[] available()
     {
