@@ -70,7 +70,7 @@ public class GraphGenerator
             } else if (f.getName().equals("report.xml")) {
                 ReportXmlHandler h = new ReportXmlHandler();
                 try {
-                    System.out.println("processing: " + f);
+                    logger.info("processing: " + f);
                     FileInputStream fis = new FileInputStream(f);
                     XMLReader xr = XMLReaderFactory.createXMLReader();
                     xr.setContentHandler(h);
@@ -96,7 +96,7 @@ public class GraphGenerator
                         try {
                             c.generate(reportBase);
                         } catch (Exception exn) {
-                            logger.warn("Could not generate graph", exn);
+                            logger.warn("Could not generate graph for " + c.getName(), exn);
                         }
                     }
                 }
