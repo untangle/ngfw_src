@@ -57,6 +57,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -687,21 +688,13 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         eventLogger.log(se);
     }
 
-    void log(WebFilterEvent se, String host, int port)
+    protected void log(WebFilterEvent se, String host, int port, TCPNewSessionRequestEvent event)
     {
-        eventLogger.log(se);
-        if (443 == port) {
-            RequestLine rl = se.getRequestLine();
-            final HttpRequestEvent e = new HttpRequestEvent(rl, host, 0);
-            TransactionWork tw = new TransactionWork()
-                {
-                    public boolean doWork(Session s)
-                    {
-                        s.save(e);
-                        return true;
-                    }
-                };
-            getNodeContext().runTransaction(tw);
+        /* only pass in the event if you don't want to log immediately. */
+        if (event == null) {
+            eventLogger.log(se);
+        } else {
+            event.sessionRequest().attach(se);
         }
     }
 
