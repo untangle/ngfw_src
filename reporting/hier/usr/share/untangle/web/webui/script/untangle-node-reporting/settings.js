@@ -467,7 +467,34 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype : 'numberfield',
                         fieldLabel : this.i18n._('Limit Data Retention'),
                         name : 'Limit Data Retention',
-                        id: 'reporting_daysToKeep',
+                        id: 'reporting_daysToKeepDB',
+                        value : this.getReportingSettings().dbRetention,
+                        width: 25,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 1,
+                        maxValue: 30,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().dbRetention = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+			},
+{
+                    title: this.i18n._("Reports Retention"),
+                    labelWidth: 150,
+                    items: [{
+                        border: false,
+                        cls: 'description',
+                        html: this.i18n._("Keep old reports on the server for this number of days.")
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Reports Retention days'),
+                        name : 'Reports Retention days',
+                        id: 'reporting_daysToKeepFiles',
                         value : this.getReportingSettings().fileRetention,
                         width: 25,
                         allowDecimals: false,
@@ -482,7 +509,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             }
                         }
                     }]
-                }]});
+                }
+
+]});
 
             /* Create the row editor for updating the password */
             this.gridRecipients.rowEditorChangePassword = new Ung.RowEditorWindow({

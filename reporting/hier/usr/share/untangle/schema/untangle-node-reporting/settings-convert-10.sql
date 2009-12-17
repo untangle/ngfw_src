@@ -19,3 +19,7 @@ ALTER TABLE settings.n_reporting_settings
 UPDATE settings.n_reporting_settings SET attachment_size_limit = 10;
 ALTER TABLE settings.n_reporting_settings 
    ALTER COLUMN attachment_size_limit SET NOT NULL;
+
+UPDATE settings.n_reporting_settings
+   SET db_retention = 7
+   WHERE db_retention = 14;
