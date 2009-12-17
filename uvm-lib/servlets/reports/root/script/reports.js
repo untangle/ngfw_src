@@ -322,7 +322,7 @@ Ung.Reports = Ext.extend(Object,{
                                                               reports.breadcrumbs=[];
                                                               rpc.drilldownType = null;
                                                               rpc.drilldownValue = null;
-                                                              reports.getApplicationData(node.attributes.name);
+                                                              reports.getApplicationData(node.attributes.name, reports.getAvailableReportsData()[0].numDays);
                                                           }
                                                       });
 
@@ -604,7 +604,7 @@ Ung.Reports = Ext.extend(Object,{
         return i18n.dateLongFormat(fromDate,formatString) + " - "  +   i18n.dateLongFormat(toDate,formatString);
     },
 
-    getApplicationData: function(nodeName) {
+    getApplicationData: function(nodeName, numDays) {
         reports.progressBar.wait(i18n._("Please Wait"));
         rpc.reportingManager.getApplicationData(function (result, exception)
                                                 {
@@ -629,7 +629,7 @@ Ung.Reports = Ext.extend(Object,{
                                                                                          }
                                                                                      }
                                                                                    );
-                                                }.createDelegate(this), reports.reportsDate, 1, nodeName);
+                                                }.createDelegate(this), reports.reportsDate, numDays, nodeName);
     },
 
     getDrilldownTableOfContents: function(fnName, type, value)
