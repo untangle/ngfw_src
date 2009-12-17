@@ -476,7 +476,13 @@ Ung.Reports = Ext.extend(Object,{
                 name : tableOfContents.platform.name,
                 leaf: true,
                 icon : "./node-icons/untangle-vm.png"
-            });
+			},{
+		    text : i18n._("Server"),
+			name : "untangle-node-reporting",
+			leaf: true,
+			icon : "./node-icons/server.png"
+
+		});
         }
 
         if (tableOfContents.applications != null) {
