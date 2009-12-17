@@ -157,13 +157,13 @@ FROM settings.n_reporting_wk_sched_rule rule
 JOIN settings.n_reporting_wk_sched sched ON (sched.rule_id = rule.id)
 WHERE sched.setting_id = %s AND day = %s
 """, (setting_id, day_of_week))
-            if r.rowcount > 0:
+            if r:
                 lengths.append(7)
             conn.commit()
     except Exception, e:
         conn.rollback()
-        logging.warn("could not get locale");
-
+        raise e
+    
     return lengths
 
 def get_locale():
