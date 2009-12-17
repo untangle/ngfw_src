@@ -48,9 +48,11 @@ public class ReportingSettings implements Serializable
     private Tid tid;
 
     private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
-    private int dbRetention = 7;
-    private int fileRetention = 30;
+    private int dbRetention = 7; // days
+    private int fileRetention = 30; // days
     private boolean emailDetail = false;
+
+    private int attachmentSizeLimit = 10; // MB
 
     private String reportingUsers;
 
@@ -136,6 +138,17 @@ public class ReportingSettings implements Serializable
     public void setEmailDetail(boolean emailDetail)
     {
         this.emailDetail = emailDetail;
+    }
+
+    @Column(name="attachment_size_limit", nullable=false)
+    public int getAttachmentSizeLimit()
+    {
+        return attachmentSizeLimit;
+    }
+
+    public void setAttachmentSizeLimit(int limit)
+    {
+        attachmentSizeLimit = limit;
     }
 
     /**

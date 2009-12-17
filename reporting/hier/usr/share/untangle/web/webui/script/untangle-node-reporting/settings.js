@@ -286,8 +286,26 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }
-                    ]
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Attachment size limit'),
+                        name : 'Attachement size limit',
+                        id: 'reporting_attachment_size_limit',
+                        value : this.getReportingSettings().attachmentSizeLimit,
+                        width: 30,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 1,
+                        maxValue: 30,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().attachmentSizeLimit = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+				}
+			]
                 },{
                     title : this.i18n._("Daily Reports"),
                     labelWidth: 150,

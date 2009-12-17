@@ -25,6 +25,7 @@ CREATE TABLE settings.n_reporting_settings (
     id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
     email_detail bool NOT NULL,
+    attachment_size_limit int8 NOT NULL,
     network_directory int8 NOT NULL,
     schedule int8,
     db_retention int4 NOT NULL,

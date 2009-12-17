@@ -66,6 +66,7 @@ no_data_gen = False
 no_plot_gen = False
 no_mail = False
 attach_csv = False
+attachment_size_limit = 10
 events_retention = 3
 end_date = mx.DateTime.today()
 locale = None
@@ -187,7 +188,7 @@ def get_settings():
      try:
           curs = conn.cursor()
           curs.execute("""\
-SELECT db_retention, file_retention, email_detail
+SELECT db_retention, file_retention, email_detail, attachment_size_limit
 FROM settings.n_reporting_settings
 JOIN settings.u_node_persistent_state USING (tid)
 WHERE target_state = 'running' OR target_state = 'initialized'
@@ -197,6 +198,7 @@ WHERE target_state = 'running' OR target_state = 'initialized'
                settings['db_retention'] = r[0]
                settings['file_retention'] = r[1]
                settings['email_detail'] = r[2]
+               settings['attachment_size_limit'] = r[3]
           conn.commit()
      except Exception, e:
           conn.rollback()
@@ -298,6 +300,7 @@ if not db_retention:
 if not file_retention:
      file_retention = settings.get('file_retention', 30)
 attach_csv = attach_csv or settings.get('email_detail')
+attachment_size_limit = settings.get('attachment_size_limit')
 
 reports.engine.fix_hierarchy(REPORTS_OUTPUT_BASE)
 
@@ -327,7 +330,8 @@ for report_days in report_lengths:
           f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date,
                                        report_days, mail_reports)
           reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
-                                      attach_csv=attach_csv)
+                                      attach_csv=attach_csv,
+                                      attachment_size_limit=attachment_size_limit)
           os.remove(f)
 
 if not no_cleanup:

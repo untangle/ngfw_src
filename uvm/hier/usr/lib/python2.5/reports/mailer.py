@@ -33,6 +33,11 @@ For more in-depth online reports, click %(link)s to view
 Online %(company)s Reports.
 """
 
+ATTACHMENT_TOO_BIG_TEMPLATE = """
+The detailed reports were %sMB, which is too large to attach to this email:
+the user-defined limit is currently %sMB.
+"""
+
 HTML_LINK_TEMPLATE = '<a href="%s">here</a>'
 
 import sys
@@ -45,7 +50,7 @@ import gettext
 import locale
 import logging
 import mx
-import os
+import os.path
 import smtplib
 import reports
 import reports.i18n_helper
@@ -61,7 +66,8 @@ from email.MIMEText import MIMEText
 
 _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
-def mail_reports(end_date, report_days, file, mail_reports, attach_csv=False):
+def mail_reports(end_date, report_days, file, mail_reports,
+                 attach_csv, attachment_size_limit):
     if attach_csv:
         zip_dir = __make_zip_file(end_date, report_days, mail_reports)
         zip_file = '%s/reports.zip' % zip_dir
@@ -77,13 +83,13 @@ def mail_reports(end_date, report_days, file, mail_reports, attach_csv=False):
     for receiver in receivers:
         has_web_access = receiver in report_users
         mail(file, zip_file, sender, receiver, end_date, company_name,
-             has_web_access, url, report_days)
+             has_web_access, url, report_days, attachment_size_limit)
 
     if zip_file:
         shutil.rmtree(zip_dir)
 
-def mail(file, zip_file, sender, receiver, date, company_name, has_web_access,
-         url, report_days):
+def mail(file, zip_file, sender, receiver, date, company_name,
+         has_web_access, url, report_days, attachment_size_limit):
     msgRoot = MIMEMultipart('alternative')
 
     h = { 'company': company_name,
@@ -97,6 +103,14 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access,
         msg_html = BODY_TEMPLATE_LINK % h
     else:
         msg_plain = msg_html = BODY_TEMPLATE_SIMPLE % h
+
+    attachment_size = os.path.getsize(zip_file) / float(10**6)
+    attachment_too_big = attachment_size > attachment_size_limit
+    if attachment_too_big:
+        note = ATTACHMENT_TOO_BIG_TEMPLATE % (attachment_size,
+                                              attachment_size_limit)
+        msg_plain += note
+        msg_html += note
 
     msgRoot.attach(MIMEText(msg_plain, 'plain'))
     msgRoot.attach(MIMEText("<HTML>" + msg_html + "</HTML>", 'html'))
@@ -116,7 +130,7 @@ def mail(file, zip_file, sender, receiver, date, company_name, has_web_access,
                     % (date.strftime(locale.nl_langinfo(locale.D_FMT)),))
     msgRoot.attach(part)
 
-    if zip_file:
+    if zip_file and not attachment_too_big:
         part = MIMEBase('application', "zip")
         part.set_payload(open(zip_file, 'rb').read())
         Encoders.encode_base64(part)
