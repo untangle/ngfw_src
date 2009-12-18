@@ -48,17 +48,26 @@ public final class UserSetMatcher extends UserDBMatcher
 
     private final Set<String> userSet;
     private final String string;
+    private final boolean matchUnauthenticated;
 
     private UserSetMatcher( Set<String> userSet, String string )
     {
+        this( userSet, string, false );
+    }
+
+    private UserSetMatcher( Set<String> userSet, String string, boolean matchUnauthenticated )
+    {
         this.userSet = userSet;
         this.string  = string;
+        this.matchUnauthenticated = matchUnauthenticated;
     }
 
     public boolean isMatch( String user )
     {
-        if (user == null)
-            return false;
+        if ( user == null ) {
+            return this.matchUnauthenticated;
+        }
+
         return ( this.userSet.contains( user.toLowerCase()));
     }
 
@@ -74,29 +83,51 @@ public final class UserSetMatcher extends UserDBMatcher
 
     public static UserDBMatcher makeInstance( String ... userArray )
     {
+        return makeInstance( false, userArray );
+    }
+    
+    public static UserDBMatcher makeInstance( boolean matchUnauthenticated, String ... userArray )
+    {
         Set<String> userSet = new TreeSet<String>();
 
         for ( String user : userArray ) userSet.add( user );
 
-        return makeInstance( userSet );
+        return makeInstance( userSet, matchUnauthenticated );
     }
 
     public static UserDBMatcher makeInstance( Set<String> userSet ) 
+    {
+        return makeInstance( userSet, false );
+    }
+
+    public static UserDBMatcher makeInstance( Set<String> userSet, boolean matchUnauthenticated )
     {
         if ( userSet == null ) return UserSimpleMatcher.getNilMatcher();
                 
         StringBuilder value = new StringBuilder();
         int i = 0;
         for ( String user  : userSet ) {
+            if ( user.equals( UserMatcherConstants.MARKER_AUTHENTICATED ))
             if ( i > 0 )
                 value.append(" ").append(UserMatcherConstants.MARKER_SEPERATOR).append(" ");
             value.append(user);
             i++;
         }
+        
+        /* If matchUnauthenticated is not true, check if it is in the set of users (done in reverse to always remove the unauthenticated marker */ 
+        matchUnauthenticated = userSet.remove( UserMatcherConstants.MARKER_UNAUTHENTICATED ) || matchUnauthenticated;
+        
+        if ( userSet.remove( UserMatcherConstants.MARKER_AUTHENTICATED )) {
+            if ( matchUnauthenticated )  {
+                return UserSimpleMatcher.getAllMatcher();
+            } else {
+                return UserSimpleMatcher.getAuthenticatedMatcher();
+            }
+        }
 
         userSet = Collections.unmodifiableSet( userSet );
     
-        return new UserSetMatcher( userSet, value.toString() );
+        return new UserSetMatcher( userSet, value.toString(), matchUnauthenticated );        
     }
 
     /* This is just for matching a list of users */

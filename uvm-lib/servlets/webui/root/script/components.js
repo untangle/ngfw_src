@@ -4187,7 +4187,12 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             }
         });
         this.populateSemaphore=2;
-        this.userEntries=this.singleSelectUser ? [] : [{firstName : '', lastName: '',UID: "[any]"}];
+        this.userEntries = [];
+        if ( !this.singleSelectUser ) {
+            this.userEntries.push({ firstName : "", lastName : "", UID: "[any]"});
+            this.userEntries.push({ firstName : "", lastName : "", UID: "[authenticated]"});
+            this.userEntries.push({ firstName : "", lastName : "", UID: "[unauthenticated]"});
+        } 
         if (this.loadActiveDirectoryUsers && main.isNodeRunning('untangle-node-adconnector')){
             main.getAppAddressBook().getUserEntries(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {

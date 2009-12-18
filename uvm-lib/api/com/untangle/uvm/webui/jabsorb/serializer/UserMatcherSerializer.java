@@ -22,8 +22,14 @@ public class UserMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { UserMatcher.class, UserDBMatcher.class, UserSetMatcher.class, UserSingleMatcher.class, 
-                                UserSimpleMatcher.class, UserSimpleMatcher.getAllMatcher().getClass(), UserSimpleMatcher.getNilMatcher().getClass() };
+	private static Class[] _serializableClasses = 
+            new Class[] { UserMatcher.class, UserDBMatcher.class, UserSetMatcher.class, 
+                          UserSingleMatcher.class, 
+                          UserSimpleMatcher.class, UserSimpleMatcher.getAllMatcher().getClass(), 
+                          UserSimpleMatcher.getNilMatcher().getClass(),
+                          UserSimpleMatcher.getAuthenticatedMatcher().getClass(),
+                          UserSimpleMatcher.getUnauthenticatedMatcher().getClass()
+        };
 
 	/*
 	 * (non-Javadoc)

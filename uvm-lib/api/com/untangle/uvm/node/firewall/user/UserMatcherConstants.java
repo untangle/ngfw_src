@@ -42,8 +42,7 @@ public class UserMatcherConstants
 
     public static final String MARKER_NONE = "[none]";
 
-    public static final String MARKER_UNKNOWN = "[unknown]";
+    public static final String MARKER_UNAUTHENTICATED = "[unauthenticated]";
 
-    public static final String MARKER_KNOWN = "[known]";
-
+    public static final String MARKER_AUTHENTICATED = "[authenticated]";
 }

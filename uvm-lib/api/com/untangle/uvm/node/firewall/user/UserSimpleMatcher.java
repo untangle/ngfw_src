@@ -77,13 +77,12 @@ public final class UserSimpleMatcher
                 return UserMatcherConstants.MARKER_NONE;
             }
         };
-
-    private static final UserDBMatcher KNOWN_MATCHER     = new UserDBMatcher()
+    
+    private static final UserDBMatcher AUTHENTICATED_MATCHER     = new UserDBMatcher()
         {
             public boolean isMatch( String user )
             {
-                /******** This has to look up inside of the user manager *****/
-                return true;
+                return user != null;
             }
 
             public List<String> toDatabaseList()
@@ -93,18 +92,16 @@ public final class UserSimpleMatcher
             
             public String toString()
             {
-                return UserMatcherConstants.MARKER_KNOWN;
+                return UserMatcherConstants.MARKER_AUTHENTICATED;
             }
         };
 
-    private static final UserDBMatcher UNKNOWN_MATCHER     = new UserDBMatcher()
-        {
+    private static final UserDBMatcher UNAUTHENTICATED_MATCHER  = new UserDBMatcher() {
             public boolean isMatch( String user )
             {
-                /******** This has to look up inside of the user manager *****/
-                return true;
+                return user == null;
             }
-
+            
             public List<String> toDatabaseList()
             {
                 return Collections.nCopies( 1, toString());
@@ -112,7 +109,7 @@ public final class UserSimpleMatcher
             
             public String toString()
             {
-                return UserMatcherConstants.MARKER_UNKNOWN;
+                return UserMatcherConstants.MARKER_UNAUTHENTICATED;
             }
         };
         
@@ -124,6 +121,16 @@ public final class UserSimpleMatcher
     public static UserDBMatcher getNilMatcher()
     {
         return NOTHING_MATCHER;
+    }
+
+    public static UserDBMatcher getUnauthenticatedMatcher()
+    {
+        return UNAUTHENTICATED_MATCHER;
+    }
+
+    public static UserDBMatcher getAuthenticatedMatcher()
+    {
+        return AUTHENTICATED_MATCHER;
     }
 
     /* This is just for matching a list of interfaces */
@@ -138,8 +145,8 @@ public final class UserSimpleMatcher
         {
             return ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_ANY ) ||
                      value.equalsIgnoreCase( ParsingConstants.MARKER_WILDCARD ) ||
-                     value.equalsIgnoreCase( UserMatcherConstants.MARKER_UNKNOWN ) ||
-                     value.equalsIgnoreCase( UserMatcherConstants.MARKER_KNOWN ) ||
+                     value.equalsIgnoreCase( UserMatcherConstants.MARKER_UNAUTHENTICATED ) ||
+                     value.equalsIgnoreCase( UserMatcherConstants.MARKER_AUTHENTICATED ) ||
                      value.equalsIgnoreCase( UserMatcherConstants.MARKER_NONE ));
         }
         
@@ -154,10 +161,10 @@ public final class UserSimpleMatcher
                      return ALL_MATCHER;
                  } else if ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_NONE )) {
                      return NOTHING_MATCHER;
-                 } else if ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_UNKNOWN )) {
-                     return UNKNOWN_MATCHER;
-                 } else if ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_KNOWN )) {
-                     return KNOWN_MATCHER;
+                 } else if ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_UNAUTHENTICATED )) {
+                     return UNAUTHENTICATED_MATCHER;
+                 } else if ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_AUTHENTICATED )) {
+                     return AUTHENTICATED_MATCHER;
                  } 
             
             throw new ParseException( "Invalid user simple matcher '" + value + "'" );
