@@ -45,10 +45,12 @@ public class Launcher extends HttpServlet
     private static final String FIELD_SOURCE = "source";
 
     private static final String ACTION_MY_ACCOUNT = "my_account";
+    private static final String ACTION_WELCOME = "online-welcome";    
     private static final String ACTION_BROWSE = "browse";
     private static final String ACTION_BUY = "buy";
     private static final String ACTION_WIZARD = "wizard";
     private static final String ACTION_HELP = "help";
+    private static final String ACTION_OFFLINE = "offline";
 
     private static final String HTTP_USER_AGENT = "User-Agent";
     private static final String HTTP_CONTENT_TYPE = "Content-Type";
@@ -88,6 +90,11 @@ public class Launcher extends HttpServlet
                 String libitem = request.getParameter( FIELD_LIBITEM );
                 if ( libitem == null ) redirect = getMyAccountURL( request );
                 else redirect = getBuyURL( request, libitem );
+            } else if ( ACTION_WELCOME.equals( action )) {
+                String libitem = request.getParameter( FIELD_LIBITEM );
+                redirect = getWelcomeURL( request, libitem );
+            } else if ( ACTION_OFFLINE.equals( action )) {
+                redirect = getOfflineURL( request );
             } else {
                 redirect = getMyAccountURL( request );
             }
@@ -102,7 +109,13 @@ public class Launcher extends HttpServlet
     {
         return getActionURL( request, "my_account", null );
     }
-
+    private URL getOfflineURL ( HttpServletRequest request ) throws MalformedURLException 
+    {
+        String protocol = request.getParameter( FIELD_PROTOCOL );    
+        String host = request.getParameter( FIELD_HOST );
+        String path = "/webui/offline.jsp";    
+        return new URL(protocol + "://" + host + path);
+    }
     private URL getWizardURL( HttpServletRequest request ) throws MalformedURLException
 
     {
@@ -117,6 +130,10 @@ public class Launcher extends HttpServlet
     private URL getBuyURL( HttpServletRequest request, String mackageName ) throws MalformedURLException
     {
         return getActionURL( request, "buy", mackageName );
+    }
+    private URL getWelcomeURL( HttpServletRequest request, String mackageName ) throws MalformedURLException
+    {
+        return getActionURL( request, "welcome", mackageName );
     }
 
     private URL getActionURL( HttpServletRequest request, String action, String mackageName )
@@ -182,6 +199,7 @@ public class Launcher extends HttpServlet
         }
 
         String query = "boxkey=" + URLEncoder.encode( context.getActivationKey());
+        String lang = context.languageManager().getLanguageSettings().getLanguage();        
         query += "&untangleFullVersion=" + URLEncoder.encode( Version.getFullVersion());
         query += "&host=" + URLEncoder.encode( host );
         if ( port != null ) query += "&port=" + port;
@@ -189,7 +207,7 @@ public class Launcher extends HttpServlet
         query += "&action=" + URLEncoder.encode( action );
         query += "&webui=" + URLEncoder.encode( String.valueOf( true ));
         query += "&arch=" + URLEncoder.encode( System.getProperty( "os.arch" ));
-
+        query += "&lang=" +URLEncoder.encode(lang);
         return query;
     }
 }

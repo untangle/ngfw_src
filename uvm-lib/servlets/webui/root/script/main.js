@@ -22,6 +22,7 @@ Ung.Main=Ext.extend(Object, {
     // the application build version
     version: null,
     iframeWin: null,
+    IEWin:null,
     upgradeStatus:null,
     upgradeLastCheckTime: null,
     firstTimeRun: null,
@@ -164,7 +165,7 @@ Ung.Main=Ext.extend(Object, {
       this.startApplication();
     },
     warnOnUpgrades : function(handler) {
-        if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
+        if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable ) {
             main.warnOnUpgradesCallback(main.upgradeStatus,handler);
         } else {
             if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null) {
@@ -378,7 +379,6 @@ Ung.Main=Ext.extend(Object, {
         this.loadConfig();
         this.loadPolicies();
     },
-
     openStore : function (action,title) {
         var currentLocation = window.location;
         var query = "host=" + currentLocation.hostname;
@@ -432,6 +432,7 @@ Ung.Main=Ext.extend(Object, {
             });
         } else {
             if ( w ) w.focus();
+            this.IEWin = w;
         }
     },
 
@@ -440,6 +441,9 @@ Ung.Main=Ext.extend(Object, {
         var iframeWin = main.getIframeWin();
         iframeWin.show();
         iframeWin.setTitle(title);
+        window.frames["iframeWin_iframe"].location.href = url;
+    },
+    setIFrameLocation : function (url){
         window.frames["iframeWin_iframe"].location.href = url;
     },
 
@@ -817,6 +821,12 @@ Ung.Main=Ext.extend(Object, {
             }
         }.createDelegate(mackageDesc), mackageDesc.name, rpc.currentPolicy);
     },
+    /**
+     *  Returns the reference to the IE window if one exists
+     **/         
+    getIEWin : function(){
+        return this.IEWin;
+    },
     getIframeWin: function() {
         if(this.iframeWin==null) {
             this.iframeWin=new Ung.Window({
@@ -1054,7 +1064,8 @@ Ung.Main=Ext.extend(Object, {
     updateSeparator: function() {
         if(this.nodes.length==0) {
             document.getElementById("racks").style.display="none";
-            Ext.getCmp("help_empty_rack").show();
+            this.showInitialScreen();
+            //Ext.getCmp("help_empty_rack").show();
         } else {
             Ext.getCmp("help_empty_rack").hide();
             document.getElementById("racks").style.display="";
@@ -1148,5 +1159,74 @@ Ung.Main=Ext.extend(Object, {
         }
         
         return i18n._("None");
+    },
+    /**
+     *  Prepares the uvm to display the welcome screen
+     **/      
+    showInitialScreen : function (){
+      
+        try{
+            Ext.MessageBox.wait.defer(40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
+            rpc.toolboxManager.isUpgradeServerAvailable(function (result, exception) {
+                if(Ung.Util.handleException(exception)) throw Exception("failure");
+                    this.updateInitialScreen(result);
+            }.createDelegate(this));
+        }catch(e){
+             this.updateInitialScreen(false);
+        }
+      
+    },
+    /**
+     *  Displays the appropriate screen after determining connectivity
+     **/     
+    updateInitialScreen : function(result){
+        var ifr = main.getIframeWin(),
+            position = [],
+            size = main.viewport.getSize(),
+            centerSize = Ext.getCmp('center').getSize(),
+            centerPosition = Ext.getCmp('center').getPosition();
+        if(result===true){
+            this.showWelcomeScreen();
+        }else{
+            this.showFailureScreen();        
+        }            
+           
+        ifr.initialConfig.sizeToRack = false;
+        ifr.setSize({width:800,height:600});        
+        position[0] = centerPosition[0]+Math.round(centerSize.width/5);
+        position[1] = centerPosition[1]+Math.round(centerSize.height/10);
+        ifr.setPosition(position[0],position[1]);
+        Ext.MessageBox.hide();
+        Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});            
+    },
+    /**
+     *  Displays the offline welcome screen
+     **/             
+    showFailureScreen : function (){
+        this.openStore("offline",i18n._("Congratulations"));
+    },
+    /**
+     *  Displays the online welcome screen
+     **/         
+    showWelcomeScreen : function (){
+        this.openStore("online-welcome",i18n._("Congratulations"));            
+    },
+    /**
+     *  Hides the welcome screen
+     */         
+    hideWelcomeScreen : function(){
+        var win = null;
+        if(Ext.isIE===true){
+            win = this.IEWin;
+            if(win != null){
+                win.close();
+                this.IEWin = null;
+            }
+        }else{
+            win = main.getIframeWin();
+            if(win != null){
+                win.closeActionFn();
+            }            
+        }        
     }
 });
