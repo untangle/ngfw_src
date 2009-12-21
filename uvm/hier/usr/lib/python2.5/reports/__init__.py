@@ -165,7 +165,6 @@ class Report:
         title = None
         view_position = None
 
-        print "meh " + name
         stdout = commands.getoutput('apt-cache show ' + name)
 
         for l in stdout.split("\n"):
