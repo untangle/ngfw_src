@@ -65,7 +65,7 @@ String[] messageArguments = {
         <h1 class="no-bottom-margin"><%= I18nUtil.tr("Congratulations!", i18n_map ) %></h1>
         <h2><%= I18nUtil.tr("Installation Complete", i18n_map ) %></h2>
       </div>
-      <div class="full-width-2 push-05 append-4 last">
+      <div class="full-width-2 push-05 last">
         <p><%= I18nUtil.tr("Welcome to Untangle.", i18n_map ) %></p>
         <p><%= I18nUtil.tr("Untangle Installation is complete and ready for deployment. The next step is installing apps from the Untangle App Store.", i18n_map ) %></p>
         <p class="red"><%= I18nUtil.tr("Unfortunately, Untangle was unable to contact the Untangle App Store.", i18n_map ) %></p>
