@@ -1192,9 +1192,9 @@ Ung.Main=Ext.extend(Object, {
         }            
            
         ifr.initialConfig.sizeToRack = false;
-        ifr.setSize({width:800,height:600});        
-        position[0] = centerPosition[0]+Math.round(centerSize.width/5);
-        position[1] = centerPosition[1]+Math.round(centerSize.height/10);
+        ifr.setSize({width:centerSize.width*0.75,height:centerSize.height*0.75});        
+        position[0] = centerPosition[0]+Math.round(centerSize.width/8);
+        position[1] = centerPosition[1]+Math.round(centerSize.height/8);
         ifr.setPosition(position[0],position[1]);
         Ext.MessageBox.hide();
         Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});            
