@@ -824,7 +824,7 @@ AND wf_%s_category != ''
 AND wf_%s_blocks > 0
 AND uid != ''
 GROUP BY uid ORDER BY blocks_sum DESC""" \
-            % (3 * (self.__vendor_name,))
+            % (4 * (self.__vendor_name,))
 
         conn = sql_helper.get_connection()
         try:
