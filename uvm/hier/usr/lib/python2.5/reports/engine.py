@@ -262,7 +262,7 @@ def generate_sub_report(report_base, node_name, end_date, report_days=1,
     dir = get_node_base(node_name, date_base, report_days=report_days,
                         host=host, user=user, email=email)
 
-    __generate_plots(report_base, dir, report_days=report_days)
+    __generate_plots(report_base, dir)
 
     return 'DONE'
 
