@@ -64,7 +64,7 @@ class WebFilterBaseNode(Node):
 
         ft.measures.append(Column('wf_%s_blocks' % self.__vendor_name,
                                   'integer',
-                                  "count(CASE WHEN NOT wf_%s_action ISNULL THEN 1 ELSE null END)"
+                                  "count(CASE WHEN wf_%s_action = 'B' THEN 1 ELSE null END)"
                                   % self.__vendor_name))
 
         ft.dimensions.append(Column('wf_%s_category' % self.__vendor_name,
@@ -769,8 +769,9 @@ class TopTenWebPolicyViolatorsByHits(Graph):
 SELECT hname, COALESCE(sum(wf_%s_blocks), 0)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
+AND wf_%s_action = 'B'
 GROUP BY hname
-ORDER BY blocks_sum DESC""" % self.__vendor_name
+ORDER BY blocks_sum DESC""" % ((self.__vendor_name,)*2)
 
         conn = sql_helper.get_connection()
         try:
@@ -818,6 +819,7 @@ class TopTenWebPolicyViolatorsADByHits(Graph):
 SELECT uid, sum(wf_%s_blocks)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
+AND wf_%s_action = 'B'
 AND wf_%s_category != ''
 AND wf_%s_blocks > 0
 AND uid != ''
