@@ -16,12 +16,12 @@
 #
 # Aaron Read <amread@untangle.com>
 
+import commands
 import csv
 import gettext
 import logging
 import mx
 import os
-import popen2
 import re
 import reportlab.lib.colors
 import reports.colors
@@ -165,20 +165,18 @@ class Report:
         title = None
         view_position = None
 
-        (stdout, stdin) = popen2.popen2(['apt-cache', 'show', name])
-        try:
-            for l in stdout:
-                if l == "\n":
-                    break
-                m = re.search('Display-Name: (.*)', l)
-                if m:
-                    title = m.group(1)
-                m = re.search('View-Position: ([0-9]*)', l)
-                if m:
-                    view_position = int(m.group(1))
-        finally:
-            stdout.close()
-            stdin.close()
+        print "meh " + name
+        stdout = commands.getoutput('apt-cache show ' + name)
+
+        for l in stdout.split("\n"):
+            if l == "":
+                break
+            m = re.search('Display-Name: (.*)', l)
+            if m:
+                title = m.group(1)
+            m = re.search('View-Position: ([0-9]*)', l)
+            if m:
+                view_position = int(m.group(1))
 
         return (title, view_position)
 
