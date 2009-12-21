@@ -288,7 +288,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         }
                     },{
                         xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Attachment size limit'),
+                        fieldLabel : this.i18n._('Attachment size limit (MB)'),
                         name : 'Attachement size limit',
                         id: 'reporting_attachment_size_limit',
                         value : this.getReportingSettings().attachmentSizeLimit,
