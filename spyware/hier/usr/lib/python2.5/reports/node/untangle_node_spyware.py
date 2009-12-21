@@ -241,9 +241,9 @@ FROM (SELECT date_trunc('hour', trunc_time) AS time,
       GROUP BY time) AS foo"""
 
         if host:
-            url_query += " AND hname = %s"
+            url_query += " WHERE hname = %s"
         elif user:
-            url_query += " AND uid = %s"
+            url_query += " WHERE uid = %s"
 
         conn = sql_helper.get_connection()
         try:
@@ -439,9 +439,9 @@ FROM (SELECT date_trunc('day', trunc_time) AS time,
       GROUP BY time) AS foo"""
 
         if host:
-            query += " AND hname = %s"
+            query += " WHERE hname = %s"
         elif user:
-            query += " AND uid = %s"
+            query += " WHERE uid = %s"
 
         conn = sql_helper.get_connection()
         try:
