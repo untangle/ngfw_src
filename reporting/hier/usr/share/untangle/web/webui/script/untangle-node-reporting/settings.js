@@ -196,7 +196,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     items: [ this.gridRecipients = new Ung.EditorGrid({
                         width : 710,
                         name: 'Recipients',
-                        title: this.i18n._("Recipients"),
+                        title: this.i18n._("Reports Recipients and Users"),
                         hasEdit: false,
                         settingsCmp: this,
                         paginated: false,
@@ -228,7 +228,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         columnsDefaultSortable: true,
                         columns: [{
                             id: "emailAddress",
-                            header: this.i18n._("email address"),
+                            header: this.i18n._("Email Address (username)"),
                             dataIndex: "emailAddress",
                             width : 200,
                             editor: new Ext.form.TextField({
