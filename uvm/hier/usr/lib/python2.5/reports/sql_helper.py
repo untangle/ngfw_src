@@ -119,7 +119,6 @@ def run_sql(sql, args=None, connection=get_connection(), auto_commit=True):
     except Exception, e:
         show_error = True
         if not re.search(r'DELETE ', sql) and not re.search(r'already exists', e.message):
-            print 'meh'
             logging.warn("SQL exception begin", exc_info=True)
             logging.warn("SQL exception end")
             show_error = False
@@ -296,23 +295,48 @@ def get_required_points(start, end, interval):
     return a
 
 def get_averaged_query(sums, table_name, start_date, end_date,
+                       extra_where = [],
+                       avgs = [],
+                       extra_fields = [],
                        time_field = DEFAULT_TIME_FIELD, slices = DEFAULT_SLICES):
-    query = "SELECT %(start_date)s + trunc((%(time_field) - %(start_date)) / %(time_interval)s) * %(time_interval) AS time"
+    time_interval = time.mktime(end_date.timetuple()) - time.mktime(start_date.timetuple())
+    time_interval = time_interval / slices
 
+    params_regular = { 'table_name' : table_name,
+                     'time_field' : time_field }
+    params_to_quote =  { 'start_date' : DateFromMx(start_date),
+                         'end_date' : DateFromMx(end_date),
+                         'time_interval' : time_interval }
+    
+    query = """
+SELECT date(%%(start_date)s) +
+       date_trunc('second',
+                  (%(time_field)s - %%(start_date)s) / %%(time_interval)s) * %%(time_interval)s
+       AS time"""
+
+    for e in extra_fields:
+        query += ", " + e
     for s in sums:
-        query += ", " + s + " / %(time_interval)s"
+        query += ", " + s + " / %%(time_interval)s"
+    for a in avgs:
+        query += ", " + a
+        
+    query += """
+FROM %(table_name)s
+WHERE %(table_name)s.%(time_field)s >= %%(start_date)s AND %(table_name)s.%(time_field)s < %%(end_date)s"""
+
+    for ex in extra_where: # of the form (strTemplate, dictionary)
+        template, h = ex
+        query += "\n" + template
+        params_to_quote.update(h)
 
     query += """
-FROM %(table_name)
-WHERE %(time_field)s >= %(start_date)s AND %(time_field)s < %(end_date)s
 GROUP by time
-ORDER BY time"""
+ORDER BY time ASC"""
 
-    return query, { 'table_name' : table_name,
-                    'start_date' : start_date,
-                    'end_date' : end_date,
-                    'time_field' : time_field,
-                    'time_interval' : (end_date - start_date) / slices }
+    logging.info((query % params_regular) % params_to_quote)
+    
+    return query % params_regular, params_to_quote
 
 def __make_trigger(schema, tablename, timestamp_column, all_dates):
     full_tablename = '%s.%s' % (schema, tablename)

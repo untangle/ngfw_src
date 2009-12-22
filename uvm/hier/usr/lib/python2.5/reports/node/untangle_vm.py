@@ -35,6 +35,7 @@ from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
 from reports import SummarySection
+from reports import TIMESTAMP_FORMATTER
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
@@ -631,44 +632,33 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             curs = conn.cursor()
 
-            plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       sum(s2c_bytes + c2s_bytes) / (1000 * 10 * 60) AS throughput
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+            # kB
+            sums = ["coalesce(sum(s2c_bytes + c2s_bytes), 0) / 1000",]
 
-            if user:
-                plot_query += " AND uid = %s"
-            elif host:
-                plot_query += " AND hname = %s"
+            extra_where = []
+            if host:
+                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
+            elif user:
+                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
 
-            plot_query += """\
-GROUP BY time
-ORDER BY time asc"""
+            q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where)
+            curs.execute(q, h)
 
             dates = []
             throughput = []
 
-            curs = conn.cursor()
-
-            if user:
-                curs.execute(plot_query, (one_week, ed, user))
-            elif host:
-                curs.execute(plot_query, (one_week, ed, host))
-            else:
-                curs.execute(plot_query, (one_week, ed))
-
             for r in curs.fetchall():
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 throughput.append(r[1])
         finally:
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
-                     xlabel=_('Hour of Day'), ylabel=_('Throughput (KB/s)'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=sql_helper.REQUIRED_TIME_POINTS)
+                     xlabel=_('Time'), ylabel=_('Throughput (KB/s)'),
+                     major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, throughput, _('Usage'))
 
@@ -747,46 +737,33 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             ks = KeyStatistic(_('Total Sessions'), total, _('sessions'))
             lks.append(ks)
 
-            curs = conn.cursor()
+            # per minute
+            sums = ["coalesce(sum(num_sessions), 0) * 60"]
 
-            plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || date_part('minute', trunc_time))::time AS time,
-       COALESCE(sum(num_sessions), 0) / %s AS sessions
-FROM reports.session_counts
-WHERE trunc_time >= %s AND trunc_time < %s"""
+            extra_where = []
+            if host:
+                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
+            elif user:
+                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
 
-            if user:
-                plot_query += " AND uid = %s"
-            elif host:
-                plot_query += " AND hname = %s"
-
-            plot_query += """\
-GROUP BY time
-ORDER BY time asc"""
+            q, h = sql_helper.get_averaged_query(sums, "reports.session_counts",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where)
+            curs.execute(q, h)
 
             dates = []
             num_sessions = []
 
-            curs = conn.cursor()
-
-            if user:
-                curs.execute(plot_query, (report_days, one_week, ed, user))
-            elif host:
-                curs.execute(plot_query, (report_days, one_week, ed, host))
-            else:
-                curs.execute(plot_query, (report_days, one_week, ed))
-
             for r in curs.fetchall():
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 num_sessions.append(r[1])
         finally:
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
                      xlabel=_('Hour of Day'), ylabel=_('Sessions per Minute'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=sql_helper.REQUIRED_TIME_POINTS)
+                     major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, num_sessions, _('Sessions'))
 

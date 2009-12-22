@@ -34,6 +34,7 @@ from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
+from reports import TIMESTAMP_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
 from reports.engine import HOST_DRILLDOWN
@@ -239,34 +240,26 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
         if email:
             return None
 
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            q = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       coalesce(sum(hits), 0) / (10 * %%s) AS hits,
-       coalesce(sum(wf_%s_blocks), 0) / (10 * %%s) AS wf_%s_blocks
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
-            if host:
-                q = q + " AND hname = %s"
-            elif user:
-                q = q + " AND uid = %s"
-            q = q + """
-GROUP BY time
-ORDER BY time asc"""
-
-            curs = conn.cursor()
+            # per minute
+            sums = ["sum(hits)",
+                    "sum(wf_%s_blocks)" % (self.__vendor_name,)]
 
             if host:
-                curs.execute(q, (report_days, report_days, one_week, ed, host))
+                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
             elif user:
-                curs.execute(q, (report_days, report_days, one_week, ed, user))
+                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
             else:
-                curs.execute(q, (report_days, report_days, one_week, ed))
+                extra_where = []
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where)
+
+            curs.execute(q, h)
 
             dates = []
             hits = []
@@ -276,8 +269,7 @@ ORDER BY time asc"""
                 r = curs.fetchone()
                 if not r:
                     break
-
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 hits.append(r[1])
                 blocks.append(r[2])
         finally:
@@ -285,12 +277,13 @@ ORDER BY time asc"""
 
         plot = Chart(type=TIME_SERIES_CHART,
                      title=self.title,
-                     xlabel=_('Hour of Day'),
-                     ylabel=_('Hits per Minute'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=sql_helper.REQUIRED_TIME_POINTS)
+                     xlabel=_('Time'),
+                     ylabel=_('Hits per minute'),
+                     major_formatter=TIMESTAMP_FORMATTER)
+#                     required_points=sql_helper.REQUIRED_TIME_POINTS)
 
-        plot.add_dataset(dates, hits, label=_('hits'), color=colors.goodness)
+        plot.add_dataset(dates, hits, label=_('hits'),
+                         color=colors.goodness)
         plot.add_dataset(dates, blocks, label=_('violations'),
                          color=colors.badness)
 
@@ -686,9 +679,6 @@ GROUP BY uid ORDER BY hits_sum DESC"""
         finally:
             conn.commit()
 
-        if len(lks) == 0:
-            return None
-
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('User'),
@@ -736,9 +726,6 @@ GROUP BY uid ORDER BY size_sum DESC"""
 
         finally:
             conn.commit()
-
-        if len(lks) == 0:
-            return None
 
         plot = Chart(type=PIE_CHART,
                      title=self.title,

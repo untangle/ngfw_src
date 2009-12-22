@@ -32,6 +32,7 @@ from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
 from reports import SummarySection
+from reports import TIMESTAMP_FORMATTER
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
@@ -147,31 +148,35 @@ WHERE time_stamp >= %s AND time_stamp < %s"""
                     ks = KeyStatistic(_('Max Data Rate'), r[0], N_('bytes/s'))
                     lks.append(ks)
 
-            plot = Chart(type=TIME_SERIES_CHART,
-                         title=_('Bandwidth Usage'),
-                         xlabel=_('Hour of Day'),
-                         ylabel=_('Throughput (Kb/sec)'),
-                         major_formatter=TIME_OF_DAY_FORMATTER,
-                         required_points=sql_helper.REQUIRED_TIME_POINTS)
 
-            plot_query = """\
-SELECT (date_part('hour', time_stamp) || ':'
-        || (date_part('minute', time_stamp)::int / 10 * 10))::time,
-       sum(rx_bytes + tx_bytes)::int / sum(seconds) / 1000
-FROM reports.n_openvpn_stats
-WHERE time_stamp >= %s AND time_stamp < %s
-GROUP BY time
-ORDER BY time"""
+            # kB
+            sums = ["coalesce(sum(rx_bytes + tx_bytes) / 1000, 0)"]
+
+            extra_where = []
+            if host:
+                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
+            elif user:
+                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_openvpn_stats",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_field = "time_stamp")
+            curs.execute(q, h)
 
             dates = []
             throughput = []
 
-            curs = conn.cursor()
-            curs.execute(plot_query, (one_week, ed))
-
             for r in curs.fetchall():
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 throughput.append(r[1])
+
+            plot = Chart(type=TIME_SERIES_CHART,
+                         title=_('Bandwidth Usage'),
+                         xlabel=_('Hour of Day'),
+                         ylabel=_('Throughput (Kb/sec)'),
+                         major_formatter=TIMESTAMP_FORMATTER)
 
             plot.add_dataset(dates, throughput, _('Usage (KB/sec)'))
         finally:

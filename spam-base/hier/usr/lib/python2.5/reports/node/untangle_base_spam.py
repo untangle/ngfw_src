@@ -34,6 +34,7 @@ from reports import PIE_CHART
 from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
+from reports import TIMESTAMP_FORMATTER
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
@@ -300,42 +301,27 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
                               _('messages/hour'))
             lks.append(ks)
 
-            curs = conn.cursor()
+            # per hour
+            sums = ["coalesce(sum(msgs), 0)::float * 60 * 60",
+                    "coalesce(sum(%s_spam_msgs), 0)::float * 60 * 60 " % (self.__short_name)]
 
             if email:
-                plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
-       COALESCE(sum(msgs), 0)::float / %%d AS msgs,
-       COALESCE(sum(%s_spam_msgs), 0)::float / %%d AS %s_spam_msgs
-FROM reports.n_mail_addr_totals
-WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
-GROUP BY time
-ORDER BY time asc""" % (2 * (self.__short_name,))
+                extra_where = (("AND addr_kind = 'T' AND addr = %(email)s", { 'email' : email }),)
             else:
-                plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':00')::time AS time,
-       COALESCE(sum(msgs), 0)::float / %%d AS msgs,
-       COALESCE(sum(%s_spam_msgs), 0)::float / %%d AS %s_spam_msgs
-FROM reports.n_mail_msg_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
-GROUP BY time
-ORDER BY time asc""" % (2 * (self.__short_name,))
+                extra_where = []
+                
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_mail_addr_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where)
+            curs.execute(q, h)
 
             dates = []
             ham = []
             spam = []
 
-            curs = conn.cursor()
-
-            if email:
-                curs.execute(plot_query, (report_days, report_days, email,
-                                          one_week, ed))
-            else:
-                curs.execute(plot_query, (report_days, report_days, one_week,
-                                          ed))
-
             for r in curs.fetchall():
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 m = r[1]
                 s = r[2]
                 h = m - s
@@ -348,8 +334,7 @@ ORDER BY time asc""" % (2 * (self.__short_name,))
                      title=self.title,
                      xlabel=_('Hour of Day'),
                      ylabel=_('Emails per Hour'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=sql_helper.HOURLY_REQUIRED_TIME_POINTS)
+                     major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label),
                          color=colors.badness)

@@ -33,6 +33,7 @@ from reports import PIE_CHART
 from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
+from reports import TIMESTAMP_FORMATTER
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
@@ -323,41 +324,27 @@ FROM (SELECT date_trunc('hour', trunc_time) AS time,
         if email:
             return None
 
-        plot = Chart(type=TIME_SERIES_CHART,
-                     title=self.title,
-                     xlabel=_('Hour of Day'),
-                     ylabel=_('Hits per Minute'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=sql_helper.REQUIRED_TIME_POINTS)
-
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            q = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       COALESCE(sum(sw_blacklisted) / 10, 0) AS sw_blacklisted,
-       COALESCE(sum(sw_cookies) / 10, 0) AS sw_cookies
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-            if host:
-                q = q + " AND hname = %s"
-            elif user:
-                q = q + " AND uid = %s"
-            q = q + """
-GROUP BY time
-ORDER BY time asc"""
+            # per minute
+            sums = ["coalesce(sum(sw_blacklisted), 0) * 60",
+                    "coalesce(sum(sw_cookies), 0) * 60"]
 
-            curs = conn.cursor()
-
+            extra_where = []
             if host:
-                curs.execute(q, (one_week, ed, host))
+                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
             elif user:
-                curs.execute(q, (one_week, ed, user))
-            else:
-                curs.execute(q, (one_week, ed))
+                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where)
+            curs.execute(q, h)
 
             dates = []
             sw_blacklisted = []
@@ -367,35 +354,32 @@ ORDER BY time asc"""
                 r = curs.fetchone()
                 if not r:
                     break
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 sw_blacklisted.append(r[1])
                 sw_cookies.append(r[2])
+
+            plot = Chart(type=TIME_SERIES_CHART,
+                         title=self.title,
+                         xlabel=_('Hour of Day'),
+                         ylabel=_('Hits per Minute'),
+                         major_formatter=TIMESTAMP_FORMATTER)
 
             plot.add_dataset(dates, sw_blacklisted, label=_('URLs'))
             plot.add_dataset(dates, sw_cookies, label=_('cookies'))
 
-            q = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       coalesce(sum(sw_accesses) / 10, 0) AS sw_accesses
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-            if host:
-                q = q + " AND hname = %s"
-            elif user:
-                q = q + " AND uid = %s"
-            q = q + """
-GROUP BY time
-ORDER BY time asc"""
+            sums = ["coalesce(sum(sw_accesses), 0)"]
 
-            curs = conn.cursor()
-
+            extra_where = []
             if host:
-                curs.execute(q, (one_week, ed, host))
+                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
             elif user:
-                curs.execute(q, (one_week, ed, user))
-            else:
-                curs.execute(q, (one_week, ed))
+                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where)
+            curs.execute(q, h)
 
             dates = []
             sw_accesses = []
@@ -404,7 +388,7 @@ ORDER BY time asc"""
                 r = curs.fetchone()
                 if not r:
                     break
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 sw_accesses.append(r[1])
         finally:
             conn.commit()

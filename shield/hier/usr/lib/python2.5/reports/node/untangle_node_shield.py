@@ -32,6 +32,7 @@ from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
 from reports import SummarySection
+from reports import TIMESTAMP_FORMATTER
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
@@ -137,17 +138,22 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                               _('sessions/minute'))
             lks.append(ks)
 
-            query = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       sum(accepted) as accepted, sum(limited) as limited,
-       sum(dropped + rejected) as blocked
-FROM reports.n_shield_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-GROUP BY time
-ORDER BY time asc"""
+            # per minute
+            sums = ["coalesce(sum(accepted), 0) * 60",
+                    "coalesce(sum(limited), 0) * 60",
+                    "coalesce(sum(dropped+rejected), 0) * 60"]
 
-            curs.execute(query, (one_week, ed))
+            extra_where = []
+            if host:
+                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
+            elif user:
+                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_shield_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where)
+            curs.execute(q, h)
 
             times = []
             accepted = []
@@ -155,29 +161,10 @@ ORDER BY time asc"""
             blocked = []
 
             for r in curs.fetchall():
-                if not len(times) and not r[0].seconds:
-                    times.append(0)
-                    accepted.append(0)
-                    limited.append(0)
-                    blocked.append(0)
-                times.append(r[0].seconds)
+                times.append(r[0])
                 accepted.append(r[1])
                 limited.append(r[2])
                 blocked.append(r[3])
-            if len(times) == 0:
-                times.append(0)
-                accepted.append(0)
-                limited.append(0)
-                blocked.append(0)
-                times.append(60 * 60 * 24)
-                accepted.append(0)
-                limited.append(0)
-                blocked.append(0)
-            elif times[len(times) - 1] < 60 * 60 * 24:
-                times.append(60 * 60 * 24)
-                accepted.append(0)
-                limited.append(0)
-                blocked.append(0)
         finally:
             conn.commit()
 
@@ -185,7 +172,7 @@ ORDER BY time asc"""
                      title=_('Daily Request'),
                      xlabel=_('Hour of Day'),
                      ylabel=_('Requests per Minute'),
-                     major_formatter=TIME_OF_DAY_FORMATTER)
+                     major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(times, accepted, label=_('accepted'))
         plot.add_dataset(times, limited, label=_('limited'))

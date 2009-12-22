@@ -33,13 +33,18 @@
 
 package com.untangle.uvm.reports;
 
+import com.untangle.uvm.util.DateTruncator;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,17 +53,23 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.DateTickUnit;
+import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.io.CSV;
 import org.jfree.data.time.Minute;
+import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
 public class TimeSeriesChart extends Plot
 {
+    private static final DateFormat DF = 
+	new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
     private final String xLabel;
     private final String yLabel;
     private final String majorFormatter;
@@ -73,6 +84,45 @@ public class TimeSeriesChart extends Plot
         this.xLabel = xLabel;
         this.yLabel = yLabel;
         this.majorFormatter = majorFormatter;
+    }
+
+    private Date parseTimeStamp(String timeStr) {
+	Date date = null;
+	try {
+	    date = DF.parse(timeStr);
+	} catch (java.text.ParseException exn) {
+	    logger.warn("Couldn't parse time for row key: " + timeStr, exn);
+	}
+	return date;
+    }
+
+    private void formatDateAxis(DateAxis da) {
+	Date min = da.getMinimumDate();
+	Date max = da.getMaximumDate();
+	// range in seconds
+	long range = (max.getTime() - min.getTime()) / 1000;
+
+	int trunc; // where to truncate the boundaries
+	String dateFormatStr; // the format for X-axix ticks
+	logger.debug(min + " -> " + max + " (" + range + ")");
+	if (range < 45 * 60) { // less than 45min
+	    trunc = Calendar.MINUTE;
+	    dateFormatStr = "mm:ss";
+	} else if (range < 18 * 60 * 60) { // less than 18h
+	    trunc = Calendar.HOUR;
+	    dateFormatStr = "HH:mm";
+	} else {
+	    trunc = Calendar.DATE;
+	    dateFormatStr = "MM-dd";
+	}
+	min = DateTruncator.truncateDate(min, trunc, true);
+	max = DateTruncator.truncateDate(max, trunc, false);
+	logger.debug("truncated to: " + min + " -> " + max);
+	da.setMinimumDate(min);
+	da.setMaximumDate(max);
+
+        da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
+// 	da.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1));
     }
 
     public void generate(String reportBase, String csvUrl, String imageUrl)
@@ -109,28 +159,13 @@ public class TimeSeriesChart extends Plot
             for (int j = 0; j < cd.getRowCount(); j++) {
                 Comparable rowKey = cd.getRowKey(j);
                 try {
-                    String timeStr = (String)rowKey;
-                    String[] split = timeStr.split(":");
-                    int hour = Integer.parseInt(split[0]);
-                    int minute = Integer.parseInt(split[1]);
-
-                    Minute m = new Minute(minute, hour, 1, 1, 1900);
-
+		    Date d = parseTimeStamp((String)rowKey);
                     double v = cd.getValue(rowKey, columnKey).doubleValue();
-
-                    ds.add(m, v);
-                } catch (IndexOutOfBoundsException exn) {
-                    System.out.println(exn);
-                    logger.warn("Bad row key: " + rowKey, exn);
-                } catch (ClassCastException exn) {
-                    System.out.println(exn);
-                    logger.warn("Bad row key: " + rowKey, exn);
-                } catch (NumberFormatException exn) {
-                    System.out.println(exn);
+                    ds.add(new Minute(d), v);
+                } catch (Exception exn) {
                     logger.warn("Bad row key: " + rowKey, exn);
                 }
             }
-
             tsc.addSeries(ds);
         }
 
@@ -147,7 +182,9 @@ public class TimeSeriesChart extends Plot
         p.getRangeAxis().setLabelFont(AXIS_FONT);
         DateAxis da = (DateAxis)p.getDomainAxis();
         da.setLabelFont(AXIS_FONT);
-        da.setDateFormatOverride(new SimpleDateFormat("kk:mm"));
+
+	formatDateAxis(da);
+
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
                                       jfChart, CHART_WIDTH, CHART_HEIGHT,
                                       null, false, CHART_COMPRESSION_PNG);

@@ -36,6 +36,7 @@ from reports import PIE_CHART
 from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
+from reports import TIMESTAMP_FORMATTER
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
@@ -191,42 +192,33 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                               N_('MB'))
             lks.append(ks)
 
-            curs = conn.cursor()
+            # MB
+            sums = ["avg(mem_free) / 1000000",
+                    "avg(mem_cache) / 1000000",
+                    "avg(mem_buffers) / 1000000"]
 
-            plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       avg(mem_free) / (1000 * 10 * 60),
-       avg(mem_cache) / (1000 * 10 * 60),
-       avg(mem_buffers) / (1000 * 10 * 60)
-FROM reports.n_server_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-GROUP BY time
-ORDER BY time asc"""
+            q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 avgs=sums)
+            curs.execute(q, h)
 
             dates = []
             free = []
             cached = []
             buffered = []
 
-            curs = conn.cursor()
-
-            curs.execute(plot_query, (one_week, ed))
-
             for r in curs.fetchall():
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 free.append(r[1])
                 cached.append(r[2])
                 buffered.append(r[3])
         finally:
             conn.commit()
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-        plot = Chart(type=STACKED_BAR_CHART, title=self.title,
-                     xlabel=_('Hour of Day'), ylabel=_('Memory (MB)'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=rp)
+        plot = Chart(type=TIME_SERIES_CHART, title=self.title,
+                     xlabel=_('TIME'), ylabel=_('Memory (MB)'),
+                     major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, free, _('Free memory'))
         plot.add_dataset(dates, buffered, _('Buffered memory'))
@@ -271,42 +263,33 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                               N_(''))
             lks.append(ks)
 
-            curs = conn.cursor()
+            sums = ["avg(load_1)",
+                    "avg(load_5)",
+                    "avg(load_15)"]
 
-            plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       avg(load_1),
-       avg(load_5),
-       avg(load_15)
-FROM reports.n_server_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-GROUP BY time
-ORDER BY time asc"""
+            q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 avgs=sums)
 
+            curs.execute(q, h)
+                                                 
             dates = []
             load1 = []
             load5 = []
             load15 = []
 
-            curs = conn.cursor()
-
-            curs.execute(plot_query, (one_week, ed))
-
             for r in curs.fetchall():
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 load1.append(r[1])
                 load5.append(r[2])
                 load15.append(r[3])
         finally:
             conn.commit()
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-        plot = Chart(type=STACKED_BAR_CHART, title=self.title,
-                     xlabel=_('Hour of Day'), ylabel=_('Load'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=rp)
+        plot = Chart(type=TIME_SERIES_CHART, title=self.title,
+                     xlabel=_('Time'), ylabel=_('Load'),
+                     major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, load1, _('1-min load'))
         plot.add_dataset(dates, load5, _('5-min load'))
@@ -316,7 +299,7 @@ ORDER BY time asc"""
 
 class CpuUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'cpu-usage', _('Cpu Usage'))
+        Graph.__init__(self, 'cpu-usage', _('CPU Usage'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -348,39 +331,29 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                               N_('%'))
             lks.append(ks)
 
-            curs = conn.cursor()
+            sums = ["avg(cpu_user)",
+                    "avg(cpu_system)"]
 
-            plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       avg(cpu_user),
-       avg(cpu_system)
-FROM reports.n_server_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-GROUP BY time
-ORDER BY time asc"""
+            q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 avgs=sums)
+            curs.execute(q, h)
 
             dates = []
             cpuUser = []
             cpuSystem = []
             
-            curs = conn.cursor()
-
-            curs.execute(plot_query, (one_week, ed))
-
             for r in curs.fetchall():
-                dates.append(r[0].seconds)
+                dates.append(r[0])
                 cpuUser.append(r[1])
                 cpuSystem.append(r[2])
         finally:
             conn.commit()
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-        plot = Chart(type=STACKED_BAR_CHART, title=self.title,
-                     xlabel=_('Hour of Day'), ylabel=_('CPU (%)'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=rp)
+        plot = Chart(type=TIME_SERIES_CHART, title=self.title,
+                     xlabel=_('Time'), ylabel=_('CPU (%)'),
+                     major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, cpuUser, _('CPU user'))
         plot.add_dataset(dates, cpuSystem, _('CPU system'))
@@ -421,36 +394,28 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                               N_('%'))
             lks.append(ks)
 
-            curs = conn.cursor()
+            # GB
+            sums = ["avg(disk_free) / 1000000000"]
+                                                 
+            q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 avgs=sums)
 
-            plot_query = """\
-SELECT (date_part('hour', trunc_time) || ':'
-        || (date_part('minute', trunc_time)::int / 10 * 10))::time AS time,
-       avg(disk_free)
-FROM reports.n_server_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-GROUP BY time
-ORDER BY time asc"""
+            curs.execute(q, h)
 
             dates = []
             diskFree = []
-            
-            curs = conn.cursor()
-
-            curs.execute(plot_query, (one_week, ed))
 
             for r in curs.fetchall():
-                dates.append(r[0].seconds)
-                diskFree.append(r[1] /  10**9)
+                dates.append(r[0])
+                diskFree.append(r[1])
         finally:
             conn.commit()
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-        plot = Chart(type=STACKED_BAR_CHART, title=self.title,
-                     xlabel=_('Hour of Day'), ylabel=_('Disk (GB)'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=rp)
+        plot = Chart(type=TIME_SERIES_CHART, title=self.title,
+                     xlabel=_('Time'), ylabel=_('Disk (GB)'),
+                     major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, diskFree, _('Free disk'))
 

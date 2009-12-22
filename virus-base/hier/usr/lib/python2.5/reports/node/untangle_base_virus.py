@@ -36,6 +36,7 @@ from reports import PIE_CHART
 from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
+from reports import TIMESTAMP_FORMATTER
 from reports import TIME_OF_DAY_FORMATTER
 from reports import TIME_SERIES_CHART
 from reports.engine import Column
@@ -489,86 +490,62 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
         one_week = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            q = """\
-SELECT date_trunc('hour', trunc_time)::time AS time,
-       COALESCE(sum(viruses_%s_blocked), 0)::float / %%s as viruses_%s_blocked
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
+            sums = ["coalesce(sum(viruses_%s_blocked), 0)::float * 60 * 60" % (self.__vendor_name)]
+
+            extra_where = []
             if host:
-                q += " AND hname = %s"
+                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
             elif user:
-                q += " AND uid = %s"
-            q += """
-GROUP BY time
-ORDER BY time asc"""
+                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
 
-            curs = conn.cursor()
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where)
+            curs.execute(q, h)
 
-            if host:
-                curs.execute(q, (report_days, one_week, ed, host))
-            elif user:
-                curs.execute(q, (report_days, one_week, ed, user))
-            else:
-                curs.execute(q, (report_days, one_week, ed))
-
-            blocks_by_date = {}
+            dates = []
+            blocks = []
 
             while 1:
                 r = curs.fetchone()
                 if not r:
                     break
+                dates.append(r[0])
+                blocks.append(r[1])
 
-                blocks_by_date[r[0]] = r[1]
+            sums = ["coalesce(sum(viruses_%s_blocked), 0)::float * 60 * 60" % (self.__vendor_name)]
 
-            q = """\
-SELECT date_trunc('hour', trunc_time)::time AS time,
-       COALESCE(sum(viruses_%s_blocked), 0)::int / %%s as viruses_%s_blocked
-FROM reports.n_mail_msg_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
+            extra_where = []
             if host:
-                q += " AND hname = %s"
+                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
             elif user:
-                q += " AND uid = %s"
-            q += """
-GROUP BY time
-ORDER BY time asc"""
+                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
 
-            curs = conn.cursor()
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_mail_msg_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 extra_where = extra_where)
+            curs.execute(q, h)
 
-            if host:
-                curs.execute(q, (report_days, one_week, ed, host))
-            elif user:
-                curs.execute(q, (report_days, one_week, ed, user))
-            else:
-                curs.execute(q, (report_days, one_week, ed))
-
+            i = 0
             while 1:
                 r = curs.fetchone()
                 if not r:
                     break
+                blocks[i] += r[1]
+                i += 1
 
-                if blocks_by_date.has_key(r[0]):
-                    blocks_by_date[r[0]] += r[1]
-                else:
-                    blocks_by_date[r[0]] = r[1]
         finally:
             conn.commit()
-
-        dates = []
-        blocks = []
-        date_list = blocks_by_date.keys()
-        date_list.sort()
-        for k in date_list:
-            dates.append(k.seconds)
-            blocks.append(blocks_by_date[k])
 
         plot = Chart(type=TIME_SERIES_CHART,
                      title=self.title,
                      xlabel=_('hour'),
                      ylabel=_('viruses/hour'),
-                     major_formatter=TIME_OF_DAY_FORMATTER,
-                     required_points=sql_helper.HOURLY_REQUIRED_TIME_POINTS)
+                     major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, blocks, label=_('viruses blocked'),
                          color=colors.badness)

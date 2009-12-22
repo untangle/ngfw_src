@@ -66,6 +66,9 @@ def __time_of_day_formatter(x, pos):
 def __date_formatter(x, pos):
     return x.strftime("%b-%d")
 
+def __timestamp_formatter(x, pos):
+    return x.strftime("%Y-%m-%d %H:%M")
+
 def __identity_formatter(x, pos):
     return x
 
@@ -84,6 +87,7 @@ class Formatter:
 
 TIME_OF_DAY_FORMATTER = Formatter('time-of-day', __time_of_day_formatter)
 DATE_FORMATTER = Formatter('date', __date_formatter)
+TIMESTAMP_FORMATTER = Formatter('timestamp', __timestamp_formatter)
 IDENTITY_FORMATTER = Formatter('identity', __identity_formatter)
 
 TIME_SERIES_CHART = 'time-series-chart'
@@ -579,7 +583,7 @@ class Chart:
                     a[z] = y
                     data[x] = a
             z = z + 1
-
+            
         for x in self.__required_points:
             a = data.get(x, None)
             if not a:
