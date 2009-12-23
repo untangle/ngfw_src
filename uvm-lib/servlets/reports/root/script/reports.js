@@ -73,6 +73,8 @@ Ung.Reports = Ext.extend(Object,{
     selectedApplication: null,
     //report details object
     reportDetails:null,
+    //cuttOffdate 
+    cutOffDateInMillisecs : null,    
     // breadcrumbs object for the report details
     breadcrumbs: null,
     //progress bar for various actions
@@ -182,6 +184,13 @@ Ung.Reports = Ext.extend(Object,{
         }
         rpc.reportingManager = result;
         rpc.reportingManager.getDates(this.completeGetDates.createDelegate( this ));
+        rpc.reportingManager.getReportsCutoff(function(result,exception){
+            if(exception){
+                Ext.MessageBox.alert(i18n._("Failed"), i18n._("Could not retrieve the cutoff date"));
+                return;
+            }
+            this.cutOffDateInMillisecs = result.time;
+        }.createDelegate(this));         
     },
 
     completeGetDates : function( result, exception )
@@ -373,6 +382,9 @@ Ung.Reports = Ext.extend(Object,{
             Ext.MessageBox("Unable to load reports","Could not load the selected report");
         }else{
             this.availableReportsWindow.hide();
+            if(this.isDynamicDataAvailable(this.reportDatesItems[found])===false){
+                alert(i18n._("The data used to calculate the selected report is older than the \"Retention Time\" setting and has been removed from the server. So you may not see any dynamic data for this report.")); //this has to be an alert - inorder to be blocking.
+            } 
             this.changeDate(this.reportDatesItems[found].dt);            
         }
     },
@@ -419,7 +431,7 @@ Ung.Reports = Ext.extend(Object,{
                     dataIndex : "dt",                    
                     renderer : function(value,meta,record){
                         return '<a href="javascript:reports.showReportFor('+value.time+')">'+i18n._("View Report")+'</a>';
-                    }
+                    }.createDelegate(this)
                     
                 },{
                     id : "_rangeSize",
@@ -434,9 +446,9 @@ Ung.Reports = Ext.extend(Object,{
                     header : i18n._( "Dynamic Reports Available" ),
                     width : 168,
                     dataIndex : "dt",                    
-                    renderer : function (){
-                        return i18n._("Yes");
-                    }
+                    renderer : function (value,meta,record){
+                        return this.isDynamicDataAvailable(record.data) === true ? i18n._("Yes") : i18n._("No")                           
+                    }.createDelegate(this)
                 }]               
             });
             
@@ -467,6 +479,14 @@ Ung.Reports = Ext.extend(Object,{
         
         this.availableReportsWindow.show();                        
     },
+    isDynamicDataAvailable : function(selectedDate){
+         var oneDay = 24*3600*1000,
+        toDateInMillisecs =selectedDate.dt.time - oneDay,
+        fromDateInMillisecs = new Date(selectedDate.dt.time - ((selectedDate.numDays+1)*oneDay)),        
+        cutOffDateInMillisecs = this.cutOffDateInMillisecs;
+        
+        return fromDateInMillisecs  - cutOffDateInMillisecs < 0  ? false : true;                  
+    },    
     getTreeNodesFromTableOfContent : function(tableOfContents)
     {
         var treeNodes = [];
