@@ -39,7 +39,7 @@ import com.untangle.uvm.node.TemplateValues;
 /**
  * Virus scan result.  <br><br> This class also implements {@link
  * com.untangle.node.util.TemplateValues TemplateValues}.  There is
- * only one key which can be derefferenced -
+ * only one key which can be dereferenced -
  * <code>VirusReport:VIRUS_NAME</code>.  This will be replaced with
  * the name of the virus which was found.
  *
