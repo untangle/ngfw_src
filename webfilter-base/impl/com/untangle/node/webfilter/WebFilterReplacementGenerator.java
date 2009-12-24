@@ -18,6 +18,9 @@
 
 package com.untangle.node.webfilter;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
@@ -72,4 +75,23 @@ public class WebFilterReplacementGenerator
         return "http://" + host + "/webfilter/blockpage?nonce=" + nonce
             + "&tid=" + tid;
     }
+
+    @Override
+    protected WebFilterBlockDetails getTestData()
+    {
+        try {
+            WebFilterBase wf = (WebFilterBase)LocalUvmContextFactory.context().nodeManager().
+                nodeContext(getTid()).node();
+
+            return new WebFilterBlockDetails( wf.getWebFilterSettings(),
+                                              "test-host.example.com", 
+                                              "/sample-webfilter", 
+                                              "testing",
+                                              InetAddress.getByName( "192.168.1.101" ),
+                                              "untangle-base-webfilter" );
+        } catch ( Exception e ) {
+            return null;
+        }
+    }
+
 }

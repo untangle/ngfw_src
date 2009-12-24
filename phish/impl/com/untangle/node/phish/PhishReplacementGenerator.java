@@ -18,6 +18,9 @@
 
 package com.untangle.node.phish;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.BrandingSettings;
@@ -64,5 +67,17 @@ class PhishReplacementGenerator
     {
         return "http://" + host + "/idblocker/blockpage?nonce=" + nonce
             + "&tid=" + tid;
+    }
+
+    @Override
+    protected PhishBlockDetails getTestData()
+    {
+        try {
+            return new PhishBlockDetails( "test-host.example.com", 
+                                          "/sample-phish", 
+                                          InetAddress.getByName( "192.168.1.101" ));
+        } catch ( UnknownHostException e ) {
+            return null;
+        }
     }
 }

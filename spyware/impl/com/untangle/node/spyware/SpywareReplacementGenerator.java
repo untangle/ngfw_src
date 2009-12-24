@@ -18,6 +18,9 @@
 
 package com.untangle.node.spyware;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
@@ -64,5 +67,17 @@ public class SpywareReplacementGenerator
     {
         return "http://" + host + "/spyware/detect.jsp?nonce=" + nonce
             + "&tid=" + tid;
+    }
+
+    @Override
+    protected SpywareBlockDetails getTestData()
+    {
+        try {
+            return new SpywareBlockDetails( "test-host.example.com", 
+                                            "/simple-spyware", 
+                                            InetAddress.getByName( "192.168.1.101" ));
+        } catch ( UnknownHostException e ) {
+            return null;
+        }
     }
 }

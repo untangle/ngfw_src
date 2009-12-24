@@ -72,4 +72,12 @@ class VirusReplacementGenerator
         return "http://" + host + "/virus/blockpage?nonce=" + nonce
             + "&tid=" + tid;
     }
+
+    @Override
+    protected VirusBlockDetails getTestData()
+    {
+        return new VirusBlockDetails( "test-host.example.com", 
+                                      "http://test-host.example.com/sample-virus", 
+                                      "testing", "virus" );
+    }
 }
