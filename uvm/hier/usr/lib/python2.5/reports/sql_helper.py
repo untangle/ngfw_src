@@ -331,7 +331,12 @@ WHERE %(table_name)s.%(time_field)s >= %%(start_date)s AND %(table_name)s.%(time
         params_to_quote.update(h)
 
     query += """
-GROUP by time
+GROUP by time"""
+
+    for e in extra_fields:
+        query += ", " + e
+
+    query += """
 ORDER BY time ASC"""
 
     logging.info((query % params_regular) % params_to_quote)
