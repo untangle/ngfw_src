@@ -169,8 +169,8 @@ def register_node(node):
 def register_fact_table(fact_table):
     global __fact_tables
 
-    logging.info("registering fact table: '%s': '%s'" % (fact_table.name,
-                                                         fact_table))
+    logging.debug("registering fact table: '%s': '%s'" % (fact_table.name,
+                                                          fact_table))
     __fact_tables[fact_table.name] = fact_table
 
 def get_fact_table(name):
@@ -201,7 +201,7 @@ def generate_reports(report_base, end_date, report_days):
 
     for node_name in __get_node_partial_order(exclude_uninstalled=True):
         try:
-            logging.info('doing process_graphs for: %s' % node_name)
+            logging.debug('doing process_graphs for: %s' % node_name)
             node = __nodes.get(node_name, None)
             if not node:
                 logger.warn('could not get node %s' % node_name)
@@ -223,7 +223,7 @@ def generate_reports(report_base, end_date, report_days):
                     if node_name in MAIL_REPORT_BLACKLIST:
                         logging.info('Not including report for %s in emailed reports, since it is blacklisted' % (node_name,))
                     else:
-                        logging.info('Including report for %s in emailed reports' % (node_name,))
+                        logging.debug('Including report for %s in emailed reports' % (node_name,))
                         mail_reports.append(report)
 
         except:
@@ -315,7 +315,7 @@ def setup(start_date, end_date):
 
     for name in __get_node_partial_order():
         try:
-            logging.info('doing setup for: %s' % name)
+            logging.debug('doing setup for: %s' % name)
             node = __nodes.get(name, None)
 
             if not node:
@@ -331,7 +331,7 @@ def post_facttable_setup(start_date, end_date):
 
     for name in __get_node_partial_order():
         try:
-            logging.info('doing post_facttable_setup for: %s' % name)
+            logging.debug('doing post_facttable_setup for: %s' % name)
             node = __nodes.get(name, None)
             if not node:
                 logger.warn('could not get node %s' % name)

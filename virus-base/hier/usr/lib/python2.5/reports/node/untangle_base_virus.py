@@ -31,6 +31,7 @@ from reports import ColumnDesc
 from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
+from reports import Highlight
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -118,7 +119,8 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                                   [DailyVirusesBlocked(self.__vendor_name),
+                                   [VirusHighlight(self.name, self.__vendor_name),
+                                    DailyVirusesBlocked(self.__vendor_name),
                                     HourlyVirusesBlocked(self.__vendor_name),
                                     TopVirusesDetected(self.__vendor_name),
                                     TopEmailVirusesDetected(self.__vendor_name),
@@ -246,6 +248,77 @@ WHERE reports.%s.time_stamp >= %%s
         except Exception, e:
             conn.rollback()
             raise e
+
+class VirusHighlight(Highlight):
+    def __init__(self, name, vendor_name):
+        Highlight.__init__(self, name,
+                           _(name) + " " +
+                           _("scanned") + " " + "%(documents)s" + " " +
+                           _("documents and detected and blocked") + " " +
+                           "%(viruses)s" + " " + _("viruses"))
+        self.__vendor_name = vendor_name
+
+    @print_timing
+    def get_highlights(self, end_date, report_days,
+                       host=None, user=None, email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        # FIXME: doing it twice is nasty...
+        query_web = """
+SELECT COALESCE(sum(hits), 0)::int AS documents,
+       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses
+FROM reports.n_http_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s
+""" % (self.__vendor_name,)
+        query_mail = """
+SELECT COALESCE(sum(msgs), 0)::int AS documents,
+       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses
+FROM reports.n_mail_msg_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s
+""" % (self.__vendor_name,)
+
+        if host:
+            query_web += " AND hname = %s"
+            query_mail += " AND hname = %s"
+        elif user:
+            query_web += " AND uid = %s"
+            query_mail += " AND uid = %s"
+
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+
+        h = {}
+        h2 = {}
+        try:
+            if host:
+                curs.execute(query_web, (one_week, ed, host))
+            elif user:
+                curs.execute(query_web, (one_week, ed, user))
+            else:
+                curs.execute(query_web, (one_week, ed))
+
+            h = sql_helper.get_result_dictionary(curs)
+
+            if host:
+                curs.execute(query_mail, (one_week, ed, host))
+            elif user:
+                curs.execute(query_mail, (one_week, ed, user))
+            else:
+                curs.execute(query_mail, (one_week, ed))
+
+            h2 = sql_helper.get_result_dictionary(curs)
+
+        finally:
+            conn.commit()
+
+        for k in h:
+            h[k] += h2[k]
+            
+        return h
 
 class DailyVirusesBlocked(Graph):
     def __init__(self, vendor_name):
@@ -543,8 +616,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
 
         plot = Chart(type=TIME_SERIES_CHART,
                      title=self.title,
-                     xlabel=_('hour'),
-                     ylabel=_('viruses/hour'),
+                     xlabel=_('Time'),
+                     ylabel=_('Viruses'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, blocks, label=_('viruses blocked'),

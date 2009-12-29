@@ -28,6 +28,7 @@ from reports import ColumnDesc
 from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
+from reports import Highlight
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -81,12 +82,52 @@ class Shield(Node):
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [DailyRequest(), BlockedHosts(), LimitedHosts()])
+                           [ShieldHighlight(self.name),
+                            DailyRequest(),
+                            BlockedHosts(),
+                            LimitedHosts()])
         sections.append(s)
 
         sections.append(ShieldDetail())
 
         return Report(self.name, sections)
+
+class ShieldHighlight(Highlight):
+    def __init__(self, name):
+        Highlight.__init__(self, name,
+                           _(name) + " " +
+                           _("scanned") + " " + "%(sessions)s" + " " +
+                           _("sessions and blocked") +
+                           " " + "%(blocks)s" + " " + _("of them"))
+
+    @print_timing
+    def get_highlights(self, end_date, report_days,
+                       host=None, user=None, email=None):
+        if host or user or email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """
+SELECT COALESCE(sum(accepted+limited+dropped+rejected), 0) AS sessions,
+       COALESCE(sum(dropped+rejected), 0) AS blocks
+FROM reports.n_shield_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+
+        h = {}
+        try:
+            curs.execute(query, (one_week, ed))
+
+            h = sql_helper.get_result_dictionary(curs)
+                
+        finally:
+            conn.commit()
+
+        return h
 
 class DailyRequest(Graph):
     def __init__(self):

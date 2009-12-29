@@ -193,9 +193,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             lks.append(ks)
 
             # MB
-            sums = ["avg(mem_free) / 1000000",
-                    "avg(mem_cache) / 1000000",
-                    "avg(mem_buffers) / 1000000"]
+            sums = ["COALESCE(AVG(mem_free),0) / 1000000",
+                    "COALESCE(AVG(mem_cache), 0) / 1000000",
+                    "COALESCE(AVG(mem_buffers), 0) / 1000000"]
 
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -263,9 +263,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                               N_(''))
             lks.append(ks)
 
-            sums = ["avg(load_1)",
-                    "avg(load_5)",
-                    "avg(load_15)"]
+            sums = ["COALESCE(AVG(load_1),0)",
+                    "COALESCE(AVG(load_5),0)",
+                    "COALESCE(AVG(load_15),0)"]
 
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -331,8 +331,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                               N_('%'))
             lks.append(ks)
 
-            sums = ["avg(cpu_user)",
-                    "avg(cpu_system)"]
+            sums = ["COALESCE(AVG(cpu_user),0)",
+                    "COALESCE(AVG(cpu_system),0)"]
 
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -395,7 +395,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             lks.append(ks)
 
             # GB
-            sums = ["avg(disk_free) / 1000000000"]
+            sums = ["COALESCE(AVG(disk_free),0) / 1000000000"]
                                                  
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),

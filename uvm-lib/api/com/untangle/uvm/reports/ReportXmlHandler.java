@@ -56,6 +56,7 @@ public class ReportXmlHandler extends DefaultHandler
     private SummarySection currentSummary;
     private Chart currentChart;
     private Plot currentPlot;
+    private Highlight currentHighlight;
     private DetailSection currentDetailSection;
 
     private StringBuilder sqlBuilder;
@@ -107,6 +108,22 @@ public class ReportXmlHandler extends DefaultHandler
                                                    attrs.getValue("unit"),
                                                    attrs.getValue("link-type"));
                 currentChart.addKeyStatistic(ks);
+            }
+        } else if (qName.equals("highlight")) {
+            if (null == currentSummary) {
+                logger.warn("no currentSummary for highlight");
+            } else {
+                currentHighlight = new Highlight(attrs.getValue("name"),
+						 attrs.getValue("string-template"));
+                currentSummary.addSummaryItem(currentHighlight);
+            }
+        } else if (qName.equals("highlight-value")) {
+            if (null == currentHighlight) {
+                logger.warn("no currentHighlight for highlight-value");
+            } else {
+                currentHighlight.addValue(attrs.getValue("name"),
+					  attrs.getValue("value"));
+// 		logger.info(currentHighlight);
             }
         } else if (qName.equals("plot")) {
             currentPlot = null;

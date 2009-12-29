@@ -326,6 +326,53 @@ class ColumnDesc():
 
         return element
 
+class Highlight:
+    def __init__(self, node_name, string_template):
+        self.__name = node_name
+        self.__string_template = string_template
+        self.__values = ()
+
+    @property
+    def name(self):
+        return self.__name
+
+    def generate(self, report_base, section_base,
+                 end_date, report_days=1,
+                 host=None, user=None, email=None):
+        try:
+            self.__values = self.get_highlights(end_date, report_days,
+                                                host, user, email)
+        except:
+            logging.warn("could not generate highlight: %s" \
+                             % (self.name,), exc_info=True)
+            self.__values = None
+
+        if not self.__values:
+            return None
+
+        element = Element('highlight')
+        element.set('name', self.__name)
+        element.set('string-template', self.__string_template)        
+
+        for k,v in self.__values.iteritems():
+            value_element = Element('highlight-value')
+            value_element.set('name', str(k))
+            value_element.set('value', str(v))
+            element.append(value_element)
+
+        return element
+
+    def get_flowables(self, report_base, section_base, end_date):
+        data = [[Paragraph(_('Highlights'),
+                           STYLESHEET['TableTitle']),
+                 '']]
+
+        data.append(['', self.__string_template % self.__values])
+
+        table = Table(data)
+
+        return [table,]
+
 class Graph:
     def __init__(self, name, title):
         self.__name = name

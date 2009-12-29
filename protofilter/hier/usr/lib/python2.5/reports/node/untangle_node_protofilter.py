@@ -30,6 +30,7 @@ from reports import ColumnDesc
 from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
+from reports import Highlight
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -66,7 +67,8 @@ class Protofilter(Node):
     def get_report(self):
         sections = []
         s = reports.SummarySection('summary', _('Summary Report'),
-                                   [DailyUsage(),
+                                   [ProtocolsHighlight(self.name),
+                                    DailyUsage(),
                                     TopTenBlockedProtocolsByHits(),
                                     TopTenDetectedProtocolsByHits(),
                                     TopTenBlockedHostsByHits(),
@@ -124,6 +126,56 @@ WHERE reports.sessions.time_stamp >= %s
         except Exception, e:
             conn.rollback()
             raise e
+
+class ProtocolsHighlight(Highlight):
+    def __init__(self, name):
+        Highlight.__init__(self, name,
+                           _(name) + " " +
+                           _("scanned") + " " + "%(sessions)s" + " " +
+                           _("sessions and detected") + " " +
+                           "%(protocols)s" + " " + _("protocols of which") +
+                           " " + "%(blocks)s" + " " + _("were blocked"))
+
+    @print_timing
+    def get_highlights(self, end_date, report_days,
+                       host=None, user=None, email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT COALESCE(SUM(new_sessions),0) AS sessions,
+       COALESCE(sum(CASE WHEN NULLIF(pf_protocol,'') IS NULL THEN 0 ELSE 1 END), 0) AS protocols,
+       COALESCE(sum(pf_blocks), 0) AS blocks
+FROM reports.session_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        if host:
+            query = query + " AND hname = %s"
+        elif user:
+            query = query + " AND uid = %s"
+
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+
+        h = {}
+        try:
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
+
+            h = sql_helper.get_result_dictionary(curs)
+                
+        finally:
+            conn.commit()
+
+        return h
+
 
 class DailyUsage(Graph):
     def __init__(self):

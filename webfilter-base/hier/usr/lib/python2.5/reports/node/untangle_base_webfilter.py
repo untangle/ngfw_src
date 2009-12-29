@@ -28,6 +28,7 @@ from reports import ColumnDesc
 from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
+from reports import Highlight
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -81,7 +82,8 @@ class WebFilterBaseNode(Node):
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [HourlyWebUsage(self.__vendor_name),
+                           [WebHighlight(self.__title, self.__vendor_name),
+                            HourlyWebUsage(self.__vendor_name),
                             DailyWebUsage(self.__vendor_name),
                             TotalWebUsage(self.__vendor_name),
                             TopTenWebBrowsingHostsByHits(self.__vendor_name),
@@ -156,6 +158,57 @@ WHERE reports.n_http_events.time_stamp >= %%s
         except Exception, e:
             conn.rollback()
             raise e
+
+class WebHighlight(Highlight):
+    def __init__(self, name, vendor_name):
+        Highlight.__init__(self, name,
+                           _(name) + " " +
+                           _("scanned") + " " + "%(hits)s" + " " +
+                           _("web hits and detected") + " " +
+                           "%(violations)s" + " " + _("violations of which") +
+                           " " + "%(blocks)s" + " " + _("were blocked"))
+        self.__vendor_name = vendor_name
+
+    @print_timing
+    def get_highlights(self, end_date, report_days,
+                       host=None, user=None, email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT COALESCE(sum(hits), 0)::int AS hits,
+       COALESCE(sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL THEN 0 ELSE hits END), 0)::int AS violations,
+       COALESCE(sum(wf_%s_blocks), 0)::int AS blocks
+FROM reports.n_http_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s
+""" % (self.__vendor_name, self.__vendor_name)
+
+        if host:
+            query = query + " AND hname = %s"
+        elif user:
+            query = query + " AND uid = %s"
+
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+
+        h = {}
+        try:
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
+
+            h = sql_helper.get_result_dictionary(curs)
+                
+        finally:
+            conn.commit()
+
+        return h
 
 class HourlyWebUsage(Graph):
     def __init__(self, vendor_name):

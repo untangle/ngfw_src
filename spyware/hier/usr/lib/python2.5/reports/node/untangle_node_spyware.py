@@ -28,6 +28,7 @@ from reports import ColumnDesc
 from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
+from reports import Highlight
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -92,7 +93,8 @@ DELETE FROM events.n_spyware_evt_cookie
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [HourlyRates(),
+                           [SpywareHighlight(self.name),
+                            HourlyRates(),
                             SpywareUrlsBlocked(),
                             TopTenBlockedSpywareSitesByHits(),
                             TopTenBlockedHostsByHits(),
@@ -212,6 +214,53 @@ WHERE reports.n_http_events.time_stamp >= %s
         ft.measures.append(Column('sw_cookies', 'integer',
                                   'count(sw_cookie_ident)'))
         ft.dimensions.append(Column('sw_cookie_ident', 'text'))
+
+class SpywareHighlight(Highlight):
+    def __init__(self, name):
+        Highlight.__init__(self, name,
+                           _(name) + " " +
+                           _("scanned") + " " + "%(hits)s" + " " +
+                           _("web hits and blocked") + " " +
+                           "%(blocks)s" + " " + _("activities"))
+
+    @print_timing
+    def get_highlights(self, end_date, report_days,
+                       host=None, user=None, email=None):
+        if email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT COALESCE(sum(hits), 0)::int AS hits,
+       COALESCE(sum(sw_blacklisted+sw_cookies), 0) AS blocks
+FROM reports.n_http_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+        if host:
+            query = query + " AND hname = %s"
+        elif user:
+            query = query + " AND uid = %s"
+
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+
+        h = {}
+        try:
+            if host:
+                curs.execute(query, (one_week, ed, host))
+            elif user:
+                curs.execute(query, (one_week, ed, user))
+            else:
+                curs.execute(query, (one_week, ed))
+
+            h = sql_helper.get_result_dictionary(curs)
+                
+        finally:
+            conn.commit()
+
+        return h
 
 
 class HourlyRates(Graph):

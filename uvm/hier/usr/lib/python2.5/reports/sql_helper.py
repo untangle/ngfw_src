@@ -294,6 +294,17 @@ def get_required_points(start, end, interval):
         v = v + interval
     return a
 
+def get_result_dictionary(curs):
+    row = curs.fetchone()
+
+    i = 0
+    h = {}
+    for desc in curs.description:
+        h[desc[0]] = row[i]
+        i += 1
+
+    return h
+
 def get_averaged_query(sums, table_name, start_date, end_date,
                        extra_where = [],
                        avgs = [],
@@ -339,7 +350,7 @@ GROUP by time"""
     query += """
 ORDER BY time ASC"""
 
-    logging.info((query % params_regular) % params_to_quote)
+    logging.debug((query % params_regular) % params_to_quote)
     
     return query % params_regular, params_to_quote
 

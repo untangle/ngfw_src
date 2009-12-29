@@ -943,15 +943,33 @@ Ung.ReportDetails = Ext.extend(Object, {
         } else if (section.javaClass=="com.untangle.uvm.reports.DetailSection") {
             sectionPanel=this.buildDetailSection(appName, section);
         }
-
         return sectionPanel;
     },
+
+    getHighlightHTML: function(summaryItem) {
+	    stringTemplate = summaryItem.stringTemplate;
+	    hvm = summaryItem.highlightValues.map;
+	    for (var key in hvm) {
+		stringTemplate = stringTemplate.replace('%(' + key + ')s',
+							'<b>' + hvm[key] + '</b>');
+	    }
+	    return stringTemplate;
+	},
 
     buildSummarySection: function (appName, section) {
         var items = [];
 
         for (var i = 0; i < section.summaryItems.list.length; i++) {
             var summaryItem = section.summaryItems.list[i];
+
+	    if (summaryItem.stringTemplate) {
+		str = this.getHighlightHTML(summaryItem)
+		// FIXME: this should span the 2 columns
+		columns = [];
+		items.push({html:str, bodyStyle:'font-size:30%,background-color:#888888;'});
+		items.push({});
+	    } else {
+		
             // graph
             items.push({html:'<img src="'+summaryItem.imageUrl+'"/>', bodyStyle:'padding:20px'});
             // key statistics
@@ -1035,7 +1053,6 @@ Ung.ReportDetails = Ext.extend(Object, {
                     return unit == null ? v : (v + " " + this.i18n._(unit));
                 }.createDelegate(this)
             });
-
             items.push(new Ext.grid.GridPanel({
                 store: new Ext.data.SimpleStore({
                     fields: [
@@ -1067,6 +1084,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 enableColumnMove: false
             })
                       );
+	    }
         }
         return new Ext.Panel({
             title : section.title,

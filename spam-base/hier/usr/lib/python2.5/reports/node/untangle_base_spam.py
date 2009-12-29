@@ -29,6 +29,7 @@ from reports import ColumnDesc
 from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
+from reports import Highlight
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -93,7 +94,8 @@ class SpamBaseNode(Node):
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [TotalEmail(self.__short_name, self.__vendor_name,
+                           [SpamHighlight(self.__title, self.__short_name),
+                            TotalEmail(self.__short_name, self.__vendor_name,
                                        self.__spam_label, self.__ham_label),
                             HourlySpamRate(self.__short_name,
                                            self.__vendor_name,
@@ -174,6 +176,53 @@ WHERE %s.time_stamp >= %%s
         except Exception, e:
             conn.rollback()
             raise e
+
+class SpamHighlight(Highlight):
+    def __init__(self, name, short_name):
+        Highlight.__init__(self, name,
+                           _(name) + " " +
+                           _("scanned") + " " +
+                           "%(messages)s" + " " +
+                           _("messages and detected and processed") +
+                           " " +
+                           "%(spam)s" + " " + _("spam messages"))
+        self.__short_name = short_name
+
+    @print_timing
+    def get_highlights(self, end_date, report_days,
+                       host=None, user=None, email=None):
+        if host or user:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """\
+SELECT coalesce(sum(msgs), 0)::int AS messages,
+       coalesce(sum(%s_spam_msgs), 0)::int AS spam
+FROM reports.n_mail_msg_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__short_name,)
+        if email:
+            query += """
+AND addr_kind = 'T'
+AND addr = %s"""
+
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+
+        h = {}
+        try:
+            if email:
+                curs.execute(query, (one_week, ed, email))
+            else:
+                curs.execute(query, (one_week, ed))
+
+            h = sql_helper.get_result_dictionary(curs)
+                
+        finally:
+            conn.commit()
+
+        return h
 
 class TotalEmail(Graph):
     def __init__(self, short_name, vendor_name, spam_label, ham_label):
