@@ -11,12 +11,15 @@
   <jsp:directive.page contentType="text/html"/>
 
   <head>
-    <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>  
+    <meta content="IE=7.0000" http-equiv="X-UA-Compatible"/>  
     <link rel="icon"  type="image/png" href="/images/block-favicon.png"/>  
     <title><c:out value="${pageTitle}"/></title>
 
     <uvm:skin src="user.css" name="${ss.userPagesSkin}"/>
-    
+    <c:if test="${!untangle_plus}">
+      <script type="text/javascript" src="http://www.untangle.com/get-status.php?h=${bd.formattedHost}&amp;u=${bd.formattedUrl}&amp;r=${reason}"><!-- --></script>
+    </c:if>
+
     <uvm:inlineScript>
       <![CDATA[
           var nonce = '${param.nonce}';
@@ -33,19 +36,25 @@
   </head>
   
   <body id="simple" class="blockpage">
-    <div id="content">
-      <div id="header">
+    <div id="content" style="width:728px !important;padding:0px 0px 12px !important">
+      <div id="header" style="margin:3px !important;">
         <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
         <div class="title"><c:out value="${title}" escapeXml="false"/></div>
       </div>
       
-      <div id="main">
+      <div id="main" style="top: 110px !important;height:auto !important;">
         <p class="icon-block">
             <br/>
         </p>
-        <p class="description">
+        <p class="description" style="text-align:left;">
           <span>${description}</span>
+          <br/>
+          
+          <span style="font-size:8pt;">${contact}</span>
         </p>
+        <p class="contact" style="bottom:110px !important;left:70px;">
+
+        </p>        
         <div class="info-list">
           <div><b><uvm:i18n>Host:</uvm:i18n></b> <c:out value="${bd.formattedHost}"/></div>
           <div><b><uvm:i18n>URL:</uvm:i18n></b> <c:out value="${bd.formattedUrl}"/></div>
@@ -70,17 +79,16 @@
               </button>
             </c:if>
         </div>
-        
-        <p class="contact">
-          <span>${contact}</span>
-        </p>
-        
       </div>
-
+        
+      <c:if test="${!untangle_plus}">
+        <script type="text/javascript" src="http://www.untangle.com/get-status-2.php?h=${bd.formattedHost}&amp;u=${bd.formattedUrl}&amp;r=${reason}"><!-- --></script>
+      </c:if>
+      
       <div id="footer">
         <p><span><c:out value="${footer}"/></span></p>
       </div>
-
+      
       <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
       <div id="extra-div-1"><span></span></div>
       <div id="extra-div-2"><span></span></div>

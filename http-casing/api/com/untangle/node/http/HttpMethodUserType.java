@@ -54,7 +54,7 @@ public class HttpMethodUserType implements UserType
     private static final int[] SQL_TYPES = { Types.CHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return HttpMethod.class; }
+    public Class<HttpMethod> returnedClass() { return HttpMethod.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }

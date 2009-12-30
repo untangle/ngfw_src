@@ -30,27 +30,24 @@ import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
-public class CPDImpl extends AbstractNode implements CPD
-{
-    private final Logger logger = Logger.getLogger(CPDImpl.class);   
+public class CPDImpl extends AbstractNode implements CPD {
+    private final Logger logger = Logger.getLogger(CPDImpl.class);
 
     private final PipeSpec[] pipeSpecs;
-    
+
     private final PhoneBookAssistant phoneBookAssistant;
 
     private CPDSettings settings;
 
     // constructor ------------------------------------------------------------
 
-    public CPDImpl()
-    {
+    public CPDImpl() {
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
         this.phoneBookAssistant = new PhoneBookAssistant();
     }
 
-    public void initializeSettings()
-    {
+    public void initializeSettings() {
         CPDSettings settings = new CPDSettings(this.getTid());
         logger.info("Initializing Settings...");
 
@@ -60,79 +57,70 @@ public class CPDImpl extends AbstractNode implements CPD
     // TestNode methods --------------------------------------------------
 
     @Override
-    public void setCPDSettings(final CPDSettings settings)
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    CPDImpl.this.settings = (CPDSettings)s.merge(settings);
-                    return true;
-                }
+    public void setCPDSettings(final CPDSettings settings) {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
+            public boolean doWork(Session s) {
+                CPDImpl.this.settings = (CPDSettings) s.merge(settings);
+                return true;
+            }
 
-                public Object getResult()
-                {
-                	return null;
-                }
-            };
+            public Object getResult() {
+                return null;
+            }
+        };
         getNodeContext().runTransaction(tw);
     }
 
-    public CPDSettings getCPDSettings()
-    {
+    public CPDSettings getCPDSettings() {
         return this.settings;
     }
-    
-	@Override
-	public Map<String, String> getUserMap()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public String registerUser (String addressString, String username,
-			Date expirationDate) throws UnknownHostException {
-		InetAddress address = InetAddress.getByName(addressString);
-		
-		return this.phoneBookAssistant.addOrUpdate(address, username, expirationDate);		
-	}
+    @Override
+    public Map<String, String> getUserMap() {
+        return this.phoneBookAssistant.getUserMap();
+    }
 
-	@Override
-	public String removeUser(String addressString) throws UnknownHostException {
-		InetAddress address = InetAddress.getByName(addressString);
-		return this.phoneBookAssistant.removeEntry(address);
-	}
+    @Override
+    public String registerUser(String addressString, String username,
+            Date expirationDate) throws UnknownHostException {
+        InetAddress address = InetAddress.getByName(addressString);
 
+        return this.phoneBookAssistant.addOrUpdate(address, username,
+                expirationDate);
+    }
+
+    @Override
+    public String removeUser(String addressString) throws UnknownHostException {
+        InetAddress address = InetAddress.getByName(addressString);
+        return this.phoneBookAssistant.removeEntry(address);
+    }
 
     // AbstractNode methods ----------------------------------------------
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
-    {
+    protected PipeSpec[] getPipeSpecs() {
         return pipeSpecs;
     }
 
     // lifecycle --------------------------------------------------------------
 
-    protected void postInit(final String[] args)
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from CPDSettings cs where cs.tid = :tid");
-                    q.setParameter("tid", getTid());
+    protected void postInit(final String[] args) {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
+            public boolean doWork(Session s) {
+                Query q = s
+                        .createQuery("from CPDSettings cs where cs.tid = :tid");
+                q.setParameter("tid", getTid());
 
-                    CPDImpl.this.settings = (CPDSettings)q.uniqueResult();
-                    return true;
-                }
+                CPDImpl.this.settings = (CPDSettings) q.uniqueResult();
+                return true;
+            }
 
-                public Object getResult() { return null; }
-            };
+            public Object getResult() {
+                return null;
+            }
+        };
         getNodeContext().runTransaction(tw);
     }
-
 
     // private methods -------------------------------------------------------
 }

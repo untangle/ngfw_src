@@ -24,14 +24,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmException;
 import com.untangle.uvm.util.I18nUtil;
 
 public class BlockPageUtil
 {
     private static final BlockPageUtil INSTANCE = new BlockPageUtil();
+    
+    private final Logger logger = Logger.getLogger(this.getClass());
 
     private BlockPageUtil()
     {
@@ -55,6 +60,17 @@ public class BlockPageUtil
         request.setAttribute( "pageTitle", handler.getPageTitle( bs, i18n_map ));
         request.setAttribute( "title", handler.getTitle( bs, i18n_map ));
         request.setAttribute( "footer", handler.getFooter( bs, i18n_map ));
+        
+        boolean untanglePlus = false;
+        try {
+        	untanglePlus = uvm.localLicenseManager().getUntanglePlus();
+        } catch ( UvmException e ) {
+        	logger.debug( "Unable to load license manager.", e );
+        	untanglePlus = false;
+        }
+        
+    	request.setAttribute( "untangle_plus", untanglePlus );
+
         String value = handler.getScriptFile();
         if ( value != null ) request.setAttribute( "javascript_file", value );
         value = handler.getAdditionalFields( i18n_map );

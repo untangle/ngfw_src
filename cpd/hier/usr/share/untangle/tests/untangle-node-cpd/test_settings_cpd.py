@@ -29,9 +29,6 @@ class TestSettingsCPD(UvmSetup):
 
     def test_passed_clients( self ):
         settings = self.node.getCPDSettings()
-
-        print( settings["pageType"] )
-        print( settings )
         
         new_value = "foo-random-value" + str(random.randint( 4500, 7000 ))
         settings["passedClients"] = new_value

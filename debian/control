@@ -1094,6 +1094,75 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAACXBIWXMAAAsTAAALEw
 Description: Ad Blocker
  The Ad Blocker application.
 
+Package: untangle-node-cpd
+Architecture: all
+Depends: untangle-vm, untangle-cpd
+XB-Display-Name: Captive Portal
+XB-Untangle-Type: node
+XB-View-Position: 30
+XB-Is-Core: true
+XB-Untangle-Pkg-Type: service
+XB-Desc-Icon:  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
+ TkSuQmCC
+Description: Captive Portal
+ The Captive Portal.
+
+
 Package: untangle-base-virus
 Architecture: all
 Depends: untangle-libuvm, untangle-casing-http, untangle-casing-mail

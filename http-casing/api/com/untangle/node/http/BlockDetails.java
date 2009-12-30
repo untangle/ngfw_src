@@ -44,7 +44,8 @@ import java.lang.StringBuffer;
  */
 public class BlockDetails implements Serializable
 {
-    private static final int SUB_LINE_LEN = 80;
+	private static final long serialVersionUID = 577462065375834496L;
+	private static final int SUB_LINE_LEN = 80;
     private static final int MAX_LEN = 40;
 
     private final String host;

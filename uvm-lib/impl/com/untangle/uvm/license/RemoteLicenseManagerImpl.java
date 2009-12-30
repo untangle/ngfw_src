@@ -16,92 +16,100 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package com.untangle.uvm.license;
+
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-public class RemoteLicenseManagerImpl implements RemoteLicenseManager
-{
+public class RemoteLicenseManagerImpl implements RemoteLicenseManager {
     private final Logger logger = Logger.getLogger(getClass());
 
     private String standardLicense;
 
     private final LocalLicenseManager licenseManager;
 
-    RemoteLicenseManagerImpl( LocalLicenseManager licenseManager )
-    {
+    RemoteLicenseManagerImpl(LocalLicenseManager licenseManager) {
         this.licenseManager = licenseManager;
     }
-    
+
     /**
      * Reload all of the available licenses
      */
-    public void reloadLicenses()
-    {
-        if ( this.licenseManager == null ) {
-            logger.warn( "The license manager is not available, unable to load licenses" );
+    public void reloadLicenses() {
+        if (this.licenseManager == null) {
+            logger
+                    .warn("The license manager is not available, unable to load licenses");
             return;
         }
 
         licenseManager.reloadLicenses();
     }
-    
+
     /**
      * Get the status of a license on a product.
      */
-    public LicenseStatus getLicenseStatus( String identifier )
-    {
-        if ( this.licenseManager == null ) {
+    public LicenseStatus getLicenseStatus(String identifier) {
+        if (this.licenseManager == null) {
             /* no manager, so status is always no license */
-            return new LicenseStatus( false, identifier, "no-mackage", "invalid", new Date( 0 ), "expired", 
-                                      false);
+            return new LicenseStatus(false, identifier, "no-mackage",
+                    "invalid", new Date(0), "expired", false);
         }
 
-        return this.licenseManager.getLicenseStatus( identifier );
+        return this.licenseManager.getLicenseStatus(identifier);
     }
 
-    public synchronized LicenseStatus getMackageStatus( String mackageName )
-    {
-        if ( this.licenseManager == null ) {
+    public synchronized LicenseStatus getMackageStatus(String mackageName) {
+        if (this.licenseManager == null) {
             /* no manager, so status is always no license */
-            return new LicenseStatus( false, "unknown", mackageName, "invalid", new Date( 0 ), "expired", 
-                                      false);
+            return new LicenseStatus(false, "unknown", mackageName, "invalid",
+                    new Date(0), "expired", false);
         }
 
-        return this.licenseManager.getMackageStatus( mackageName );
+        return this.licenseManager.getMackageStatus(mackageName);
     }
 
     /**
      * Return true if the user has any premium products.
      */
-    public boolean hasPremiumLicense()
-    {     
-        if ( this.licenseManager == null ) {
-            /* can only have a premium license if they have the full license manager */
+    public boolean hasPremiumLicense() {
+        if (this.licenseManager == null) {
+            /*
+             * can only have a premium license if they have the full license
+             * manager
+             */
             return false;
         }
-        
+
         return this.licenseManager.hasPremiumLicense();
     }
 
     /**
      * Return the content of the license agreement.
      */
-    public String getLicenseAgreement()
-    {     
-        if ( this.licenseManager == null ) {
-            if ( this.standardLicense == null ) loadLicenseAgreement();
-            if ( this.standardLicense == null ) return "";
-            
+    @Override
+    public String getLicenseAgreement() {
+        if (this.licenseManager == null) {
+            if (this.standardLicense == null)
+                loadLicenseAgreement();
+            if (this.standardLicense == null)
+                return "";
+
             return this.standardLicense;
         }
-        
+
         return this.licenseManager.getLicenseAgreement();
     }
 
-    private void loadLicenseAgreement()
-    {
-        this.standardLicense = 
-            LicenseManagerFactory.loadLicenseText( LicenseManagerFactory.STANDARD_LICENSE_RESOURCE );
+    @Override
+    public boolean getUntanglePlus() {
+        if (this.licenseManager == null) {
+            return false;
+        }
+        return this.licenseManager.getUntanglePlus();
+    }
+
+    private void loadLicenseAgreement() {
+        this.standardLicense = LicenseManagerFactory
+                .loadLicenseText(LicenseManagerFactory.STANDARD_LICENSE_RESOURCE);
     }
 }

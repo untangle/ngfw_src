@@ -45,9 +45,9 @@ import java.util.Map;
  */
 public class HttpMethod implements Serializable
 {
-    // XXX serial UID
-
-    public static final HttpMethod OPTIONS = new HttpMethod('O', "OPTIONS");
+	private static final long serialVersionUID = -8178244830103574962L;
+	
+	public static final HttpMethod OPTIONS = new HttpMethod('O', "OPTIONS");
     public static final HttpMethod GET = new HttpMethod('G', "GET");
     public static final HttpMethod HEAD = new HttpMethod('H', "HEAD");
     public static final HttpMethod POST = new HttpMethod('P', "POST");
@@ -57,8 +57,8 @@ public class HttpMethod implements Serializable
     public static final HttpMethod CONNECT = new HttpMethod('C', "CONNECT");
     public static final HttpMethod NON_STANDARD = new HttpMethod('X', "NON-STANDARD");
 
-    private static final Map INSTANCES = new HashMap();
-    private static final Map BY_NAME = new HashMap();
+    private static final Map<Character, HttpMethod> INSTANCES = new HashMap<Character, HttpMethod>();
+    private static final Map<String, HttpMethod> BY_NAME = new HashMap<String, HttpMethod>();
 
     static {
         INSTANCES.put(OPTIONS.getKey(), OPTIONS);
@@ -97,12 +97,12 @@ public class HttpMethod implements Serializable
 
     public static HttpMethod getInstance(char key)
     {
-        return (HttpMethod)INSTANCES.get(key);
+        return INSTANCES.get(key);
     }
 
     public static HttpMethod getInstance(String methStr)
     {
-        HttpMethod method = (HttpMethod)BY_NAME.get(methStr.toUpperCase());
+        HttpMethod method = BY_NAME.get(methStr.toUpperCase());
         if (null == method) { /* XXX setting about accepting unknown methods */
             method = new HttpMethod('X', methStr);
         }

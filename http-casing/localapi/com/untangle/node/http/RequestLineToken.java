@@ -93,7 +93,7 @@ public class RequestLineToken implements Token
         return httpVersion;
     }
 
-    public void setHttpVersion()
+    public void setHttpVersion(String httpVersion)
     {
         this.httpVersion = httpVersion;
     }
