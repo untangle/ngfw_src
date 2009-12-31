@@ -2,6 +2,34 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:uvm="http://java.untangle.com/jsp/uvm"
       xmlns="http://www.w3.org/1999/xhtml">
+  
+  <jsp:directive.page import="java.net.URLEncoder"/>
+  <jsp:directive.page import="java.util.Random"/>
+  <jsp:directive.page import="com.untangle.node.http.BlockDetails"/>
+
+  
+  <jsp:scriptlet>
+    <![CDATA[
+             BlockDetails blockDetails = (BlockDetails)request.getAttribute( "bd" );
+             StringBuilder urlParams = new StringBuilder();
+             Object tempObject;
+             urlParams.append( "h=" );
+             tempObject = blockDetails.getHost();
+             if ( tempObject == null ) tempObject = "";
+             urlParams.append( URLEncoder.encode( tempObject.toString(), "UTF-8" ));
+             urlParams.append( "&u=" );
+             tempObject = blockDetails.getUrl();
+             if ( tempObject == null ) tempObject = "";
+             urlParams.append( URLEncoder.encode( tempObject.toString(), "UTF-8" ));
+             urlParams.append( "&r=" );
+             tempObject = request.getAttribute( "reason" );
+             if ( tempObject == null ) tempObject = "";
+             urlParams.append( URLEncoder.encode( tempObject.toString(), "UTF-8" ));
+             urlParams.append( "&c=" );
+             urlParams.append( URLEncoder.encode( String.valueOf( new Random().nextInt(Integer.MAX_VALUE)), "UTF-8" ));
+             request.setAttribute( "urlParams", urlParams.toString());
+    ]]>
+  </jsp:scriptlet>
 
   <jsp:output omit-xml-declaration="true"
       doctype-root-element="html"      
@@ -17,7 +45,7 @@
 
     <uvm:skin src="user.css" name="${ss.userPagesSkin}"/>
     <c:if test="${!untangle_plus}">
-      <script type="text/javascript" src="http://www.untangle.com/get-status.php?h=${bd.formattedHost}&amp;u=${bd.formattedUrl}&amp;r=${reason}"><!-- --></script>
+      <script type="text/javascript" src="http://www.untangle.com/get-status.php?${urlParams}"><!-- --></script>
     </c:if>
 
     <uvm:inlineScript>
@@ -82,7 +110,7 @@
       </div>
         
       <c:if test="${!untangle_plus}">
-        <script type="text/javascript" src="http://www.untangle.com/get-status-2.php?h=${bd.formattedHost}&amp;u=${bd.formattedUrl}&amp;r=${reason}"><!-- --></script>
+        <script type="text/javascript" src="http://www.untangle.com/get-status-2.php?${urlParams}"><!-- --></script>
       </c:if>
       
       <div id="footer">
