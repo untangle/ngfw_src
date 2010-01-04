@@ -271,6 +271,10 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                                        String detailName, String type,
                                        String value, boolean limitResultSet)
     {
+	if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff())) {
+	    return null;
+	}
+
         List<List> rv = new ArrayList<List>();
 
         ApplicationData ad = readXml(d, numDays, appName, type, value);
@@ -637,6 +641,24 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         c.setTime(d);
         c.add(Calendar.DATE, -1);
         return c.getTimeInMillis();
+    }
+
+    private Date getDaysBefore(Date d, int numDays)
+    {
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        c.add(Calendar.DATE, -numDays);
+        return c.getTime();
+    }
+
+    private boolean isDateBefore(Date d1, Date d2) 
+    {
+	Calendar c1 = Calendar.getInstance();
+	c1.setTime(d1);
+	Calendar c2 = Calendar.getInstance();
+	c2.setTime(d2);
+
+	return c1.before(c2);
     }
 
     public boolean isReportingEnabled() {
