@@ -40,6 +40,7 @@ import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import org.apache.log4j.Logger;
 
 /**
@@ -156,19 +157,31 @@ public abstract class Blacklist
      * Remove all the unblocked sites for all the clients.
      */
     void removeAllUnblockedSites() {
-    hostWhitelists.clear();
+        hostWhitelists.clear();
+    }
+
+    public String checkRequest(InetAddress clientIp, int port,
+                               RequestLineToken requestLine, Header header)
+    {
+        return checkRequest(clientIp, port, requestLine, header, null);
     }
 
     /**
      * Checks if the request should be blocked, giving an appropriate
      * response if it should.
      *
+     * @param clientIp IP That made the request.
+     * @param port Port that the request was made to.
+     * @param requestLine
+     * @param header
      * @param host the requested host.
      * @param path the requested path.
+     * @param event This is the new sessions request associated with this request, (or null if this is later.)
      * @return an HTML response.
      */
     public String checkRequest(InetAddress clientIp, int port,
-                               RequestLineToken requestLine, Header header)
+                               RequestLineToken requestLine, Header header,
+                               TCPNewSessionRequestEvent event)
     {
         URI uri = requestLine.getRequestUri().normalize();
         String description;
@@ -202,7 +215,7 @@ public abstract class Blacklist
                 (requestLine.getRequestLine(), Action.PASS,
                  Reason.PASS_URL, description, node.getVendor());
             logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
-            node.log(hbe, host, port);
+            node.log(hbe, host, port, event);
             return null;
         }
 
@@ -213,7 +226,7 @@ public abstract class Blacklist
                  Reason.PASS_BYPASS, "unblocked",
                  node.getVendor());
             logger.debug("LOG: in bypass list: " + requestLine.getRequestLine());
-            node.log(hbe, host, port);
+            node.log(hbe, host, port, event);
             return null;
         }
 
@@ -226,7 +239,7 @@ public abstract class Blacklist
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_IP_HOST, host, node.getVendor());
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
-                node.log(hbe, host, port);
+                node.log(hbe, host, port, event);
 
                 Map<String,String> i18nMap = LocalUvmContextFactory.context().
                     languageManager().getTranslations("untangle-node-webfilter");
@@ -240,7 +253,7 @@ public abstract class Blacklist
         }
 
         // check in WebFilterSettings
-        String nonce = checkBlacklist(clientIp, host, port, requestLine);
+        String nonce = checkBlacklist(clientIp, host, port, requestLine, event);
 
         if (null != nonce) {
             return nonce;
@@ -257,7 +270,7 @@ public abstract class Blacklist
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_EXTENSION, exn, node.getVendor());
                 logger.debug("LOG: in extensions list: " + requestLine.getRequestLine());
-                node.log(hbe, host, port);
+                node.log(hbe, host, port, event);
 
                 Map<String,String> i18nMap = LocalUvmContextFactory.context().
                     languageManager().getTranslations("untangle-node-webfilter");
@@ -273,7 +286,7 @@ public abstract class Blacklist
         WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(),
                                                 null, null, null,
                                                 node.getVendor(), true);
-        node.log(hbe, host, port);
+        node.log(hbe, host, port, event);
 
         return null;
     }
@@ -442,7 +455,7 @@ public abstract class Blacklist
     }
 
     private String checkBlacklist(InetAddress clientIp, String host, int port,
-                                  RequestLineToken requestLine)
+                                  RequestLineToken requestLine, TCPNewSessionRequestEvent event)
     {
         URI reqUri = requestLine.getRequestUri();
 
@@ -458,7 +471,7 @@ public abstract class Blacklist
 
         StringRule stringRule;
         if (null == category || !category.getBlock()) {
-            stringRule = findBestRule(host, uri, port, requestLine);
+            stringRule = findBestRule(host, uri, port, requestLine, event);
         } else {
             stringRule = null;
         }
@@ -469,7 +482,7 @@ public abstract class Blacklist
             WebFilterEvent hbe = new WebFilterEvent
                 (requestLine.getRequestLine(), a, reason,
                  category.getDisplayName(), node.getVendor());
-            node.log(hbe, host, port);
+            node.log(hbe, host, port,event);
 
             WebFilterBlockDetails bd = new WebFilterBlockDetails
                 (settings, host, uri, category.getDescription(), clientIp,
@@ -481,7 +494,7 @@ public abstract class Blacklist
             WebFilterEvent hbe = new WebFilterEvent
                 (requestLine.getRequestLine(), a, reason,
                  stringRule.getDescription(), node.getVendor());
-            node.log(hbe, host, port);
+            node.log(hbe, host, port, event);
 
             WebFilterBlockDetails bd = new WebFilterBlockDetails
                 (settings, host, uri, stringRule.getDescription(), clientIp,
@@ -493,7 +506,7 @@ public abstract class Blacklist
             WebFilterEvent hbe = new WebFilterEvent
                 (requestLine.getRequestLine(), a, reason,
                  category.getDisplayName(), node.getVendor());
-            node.log(hbe, host, port);
+            node.log(hbe, host, port, event);
             node.incrementPassLogCount();
             return null;
         } else if (stringRule != null) {
@@ -503,7 +516,7 @@ public abstract class Blacklist
             WebFilterEvent hbe = new WebFilterEvent
                 (requestLine.getRequestLine(), a, reason,
                  stringRule.getDescription(), node.getVendor());
-            node.log(hbe, host, port);
+            node.log(hbe, host, port, event);
             return null;
         } else {
             return null;
@@ -546,7 +559,7 @@ public abstract class Blacklist
     }
 
     private StringRule findBestRule(String host, String uri, int port,
-                                    RequestLineToken requestLine)
+                                    RequestLineToken requestLine, TCPNewSessionRequestEvent event)
     {
         StringRule stringRule = null;
         boolean blockFound = false;
@@ -567,7 +580,7 @@ public abstract class Blacklist
                     WebFilterEvent hbe = new WebFilterEvent
                         (requestLine.getRequestLine(), a, reason,
                          stringRule.getDescription(), node.getVendor());
-                    node.log(hbe, host, port);
+                    node.log(hbe, host, port, event);
                 }
             }
 
