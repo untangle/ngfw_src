@@ -45,7 +45,8 @@ public class WebFilterBaseSettings implements Serializable {
 
     private boolean blockAllIpHosts = false;
 
-    private boolean enableHttps = true;
+    /* Disabling HTTPs by default */
+    private boolean enableHttps = false;
     
     private boolean unblockPasswordEnabled = false;
     private boolean unblockPasswordAdmin = false;
