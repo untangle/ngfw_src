@@ -15,6 +15,11 @@ if [ -f "@UVM_HOME@/activation.key" ]; then
     /usr/lib/python2.5/reports/process.py >> @UVM_LOG@/report.log 2>&1
 
     @UVM_HOME@/bin/utregister
+
+    if [ -x "@UVM_HOME@/bin/update_blockpage" ]; then
+        @UVM_HOME@/bin/update_blockpage
+    fi
 fi
+
 
 exit 0
