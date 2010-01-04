@@ -4031,6 +4031,28 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.title == null) {
             this.title = i18n._('Portal Question');
         }
+        if(this.bbar == null){
+            this.bbar =  [
+                    '->',
+                    {
+                        name : "Cancel",
+                        id : this.getId() + "_cancelBtn",
+                        iconCls : 'cancel-icon',
+                        text : i18n._('Cancel'),
+                        handler : function() {
+                            this.cancelAction();
+                        }.createDelegate(this)
+                    },'-',{
+                        name : "Done",
+                        id : this.getId() + "_doneBtn",
+                        iconCls : 'apply-icon',
+                        text : i18n._('Done'),
+                        handler : function() {
+                            this.saveAction.defer(1, this);
+                        }.createDelegate(this)
+                    },'-'
+            ];         
+        }
         var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectUser});
         this.usersGrid=new Ext.grid.GridPanel({
            // title: i18n._('Users'),
