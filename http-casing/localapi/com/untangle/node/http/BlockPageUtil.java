@@ -61,15 +61,17 @@ public class BlockPageUtil
         request.setAttribute( "title", handler.getTitle( bs, i18n_map ));
         request.setAttribute( "footer", handler.getFooter( bs, i18n_map ));
         
-        boolean untanglePlus = false;
-        try {
-        	untanglePlus = uvm.localLicenseManager().getUntanglePlus();
-        } catch ( UvmException e ) {
-        	logger.debug( "Unable to load license manager.", e );
-        	untanglePlus = false;
+        if ( request.getAttribute( "untangle_plus") == null ) {
+            boolean untanglePlus = false;
+            try {
+                untanglePlus = uvm.localLicenseManager().getUntanglePlus();
+            } catch ( UvmException e ) {
+                logger.debug( "Unable to load license manager.", e );
+                untanglePlus = false;
+            }
+
+            request.setAttribute( "untangle_plus", untanglePlus );
         }
-        
-    	request.setAttribute( "untangle_plus", untanglePlus );
 
         String value = handler.getScriptFile();
         if ( value != null ) request.setAttribute( "javascript_file", value );

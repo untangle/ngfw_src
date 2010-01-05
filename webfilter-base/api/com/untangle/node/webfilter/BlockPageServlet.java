@@ -43,7 +43,6 @@ public class BlockPageServlet extends HttpServlet
         throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
         LocalNodeManager nm = uvm.nodeManager();
 
         Map<String,String> i18n_map = LocalUvmContextFactory.context().
