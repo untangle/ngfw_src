@@ -23,10 +23,14 @@ import psycopg
 import re
 import string
 import md5
+import sys
 import time
 
 from sets import Set
 from psycopg import DateFromMx
+
+from reports.log import *
+logger = getLogger(__name__)
 
 REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 30 * 60)]
 HOURLY_REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 60 * 60)]
@@ -52,7 +56,7 @@ def print_timing(func):
         fun_name = "%s (%s:%s)" % (func.func_name, filename, line_number)
 
 
-        logging.debug('%s took %0.3f ms' % (fun_name, (t2-t1)*1000.0))
+        logger.debug('%s took %0.3f ms' % (fun_name, (t2-t1)*1000.0))
         return res
 
     return wrapper
@@ -70,7 +74,7 @@ def get_connection():
         curs.execute("SELECT 1")
         __conn.commit()
     except:
-        logging.warn("could not access database, getting new connection",
+        logger.warn("could not access database, getting new connection",
                      exc_info=True)
         try:
             __conn.close()
@@ -91,7 +95,7 @@ def drop_table(tablename):
         curs = conn.cursor()
         curs.execute("DROP TABLE %s" % tablename)
     except:
-        logging.debug('did not drop table: %s' % tablename)
+        logger.debug('did not drop table: %s' % tablename)
     finally:
         conn.commit()
 
@@ -119,8 +123,8 @@ def run_sql(sql, args=None, connection=get_connection(), auto_commit=True):
     except Exception, e:
         show_error = True
         if not re.search(r'DELETE ', sql) and not re.search(r'already exists', e.message):
-            logging.warn("SQL exception begin", exc_info=True)
-            logging.warn("SQL exception end")
+            logger.warn("SQL exception begin", exc_info=True)
+            logger.warn("SQL exception end")
             show_error = False
             
         if auto_commit:
@@ -156,7 +160,7 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
             else:
                 drop_table(t, schema='reports')
         else:
-            logging.warn('ignoring table: %s' % tablename)
+            logger.warn('ignoring table: %s' % tablename)
 
     all_dates = Set(get_date_range(start_date, end_date))
 
@@ -240,7 +244,7 @@ def drop_table(table, schema=None):
         curs = conn.cursor()
         curs.execute('DROP TABLE %s' % tn)
     except psycopg.ProgrammingError:
-        logging.debug('cannot drop table: %s' % table)
+        logger.debug('cannot drop table: %s' % table)
     finally:
         conn.commit()
 
@@ -350,7 +354,7 @@ GROUP by time"""
     query += """
 ORDER BY time ASC"""
 
-    logging.debug((query % params_regular) % params_to_quote)
+#    logger.debug((query % params_regular) % params_to_quote)
     
     return query % params_regular, params_to_quote
 

@@ -58,7 +58,21 @@ except getopt.GetoptError, err:
      usage()
      sys.exit(2)
 
-logging.basicConfig(level=logging.INFO)
+PREFIX = '@PREFIX@'
+REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
+REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
+NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
+
+if (PREFIX != ''):
+     sys.path.insert(0, REPORTS_PYTHON_DIR)
+
+import reports.i18n_helper
+import reports.engine
+import reports.mailer
+import reports.sql_helper as sql_helper
+from reports.log import *
+logger = getLogger(__name__)
+
 report_lengths = None
 no_migration = False
 no_cleanup = False
@@ -74,6 +88,7 @@ db_retention = None
 file_retention = None
 
 no_cleanup = False
+
 for opt in opts:
      k, v = opt
      if k == '-h' or k == '--help':
@@ -96,24 +111,11 @@ for opt in opts:
      elif k == '-r' or k == '--report-length':
           report_lengths = [int(v)]
      elif k == '-v' or k == '--verbose':
-          logging.basicConfig(level=logging.DEBUG)
+          setLogLevel(logging.DEBUG)
      elif k == '-d' or k == '--date':
           end_date = mx.DateTime.DateFrom(v)
      elif k == '-l' or k == '--locale':
           locale = v
-
-PREFIX = '@PREFIX@'
-REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
-REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
-NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
-
-if (PREFIX != ''):
-     sys.path.insert(0, REPORTS_PYTHON_DIR)
-
-import reports.i18n_helper
-import reports.engine
-import reports.mailer
-import reports.sql_helper as sql_helper
 
 def get_report_lengths(date):
     lengths = []
@@ -177,7 +179,7 @@ def get_locale():
           if r:
                locale = r[0]
      except Exception, e:
-          logging.warn("could not get locale");
+          logger.warn("could not get locale");
 
      return locale
 
@@ -202,9 +204,9 @@ WHERE target_state = 'running' OR target_state = 'initialized'
           conn.commit()
      except Exception, e:
           conn.rollback()
-          logging.warn("could not get db_retention", exc_info=True)
+          logger.warn("could not get db_retention", exc_info=True)
 
-     logging.info("db_settings: %s" % (settings,))
+     logger.info("db_settings: %s" % (settings,))
      return settings
 
 def write_cutoff_date(date):
@@ -230,7 +232,7 @@ CREATE TABLE reports.reports_state (
           conn.commit()
      except Exception, e:
           conn.rollback()
-          logging.warn("could not get db_retention", exc_info=True)
+          logger.warn("could not get db_retention", exc_info=True)
 
      conn = sql_helper.get_connection()
      try:
@@ -246,7 +248,7 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
           conn.commit()
      except Exception, e:
           conn.rollback()
-          logging.warn("could not get db_retention", exc_info=True)
+          logger.warn("could not get db_retention", exc_info=True)
 
 
 if not report_lengths:
@@ -257,10 +259,10 @@ if not locale:
 
 # set locale
 if locale:
-     logging.info('using locale: %s' % locale);
+     logger.info('using locale: %s' % locale);
      os.environ['LANGUAGE'] = locale
 else:
-     logging.info('locale not set')
+     logger.info('locale not set')
 
 # if old reports schema detected, drop the schema
 if (sql_helper.table_exists('reports', 'daystoadd')
@@ -269,7 +271,7 @@ if (sql_helper.table_exists('reports', 'daystoadd')
      try:
           sql_helper.run_sql('DROP SCHEMA reports CASCADE')
      except psycopg.ProgrammingError, e:
-          logging.warn(e, exc_info=True)
+          logger.warn(e, exc_info=True)
 
 try:
      sql_helper.run_sql("CREATE SCHEMA reports");
@@ -316,17 +318,17 @@ mail_reports = []
 
 for report_days in report_lengths:
      if not no_data_gen:
-          logging.info("Generating reports for %s days" % (report_days,))
+          logger.info("Generating reports for %s days" % (report_days,))
           mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
                                                          end_date, report_days)
 
      if not no_plot_gen:
-          logging.info("Generating plots for %s days" % (report_days,))          
+          logger.info("Generating plots for %s days" % (report_days,))          
           reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date,
                                         report_days)
 
      if not no_mail:
-          logging.info("About to email reports for %s days" % (report_days,))          
+          logger.info("About to email reports for %s days" % (report_days,))          
           f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date,
                                        report_days, mail_reports)
           reports.mailer.mail_reports(end_date, report_days, f, mail_reports,

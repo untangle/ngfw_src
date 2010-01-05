@@ -27,7 +27,11 @@ import reportlab.lib.colors
 import reports.colors
 import reports.sql_helper as sql_helper
 import reports.i18n_helper
+from reports.log import *
 import string
+import sys
+
+logger = getLogger(__name__)
 
 from lxml.etree import CDATA
 from lxml.etree import Element
@@ -148,7 +152,7 @@ class Report:
 
             report_file = "%s/%s/report.xml" % (report_base, node_base)
 
-            logging.info('writing %s' % report_file)
+            logger.info('writing %s' % report_file)
             tree.write(report_file, encoding='utf-8', pretty_print=True,
                        xml_declaration=True)
 
@@ -262,7 +266,7 @@ class DetailSection(Section):
         sql = self.get_sql(start_date, end_date, host, user, email)
 
         if not sql:
-            logging.warn('no sql for DetailSection: %s' % self.name)
+            logger.warn('no sql for DetailSection: %s' % self.name)
             sql = ''
 
         sql_element = Element('sql')
@@ -271,7 +275,7 @@ class DetailSection(Section):
 
         columns = self.get_columns(host, user, email)
         if not columns:
-            logging.warn('no columns for DetailSection: %s' % self.name)
+            logger.warn('no columns for DetailSection: %s' % self.name)
             columns = []
 
         for c in columns:
@@ -302,7 +306,7 @@ class DetailSection(Section):
             for r in curs.fetchall():
                 w.writerow(r)
         except Exception:
-            logging.warn('error adding details, query: %s' % sql, exc_info=True)
+            logger.warn('error adding details, query: %s' % sql, exc_info=True)
         finally:
             f.close()
             conn.commit()
@@ -343,7 +347,7 @@ class Highlight:
             self.__values = self.get_highlights(end_date, report_days,
                                                 host, user, email)
         except:
-            logging.warn("could not generate highlight: %s" \
+            logger.warn("could not generate highlight: %s" \
                              % (self.name,), exc_info=True)
             self.__values = None
 
@@ -407,7 +411,7 @@ class Graph:
             graph_data = self.get_graph(end_date, report_days, host, user,
                                         email)
         except:
-            logging.warn("could not generate graph: %s (%s)" \
+            logger.warn("could not generate graph: %s (%s)" \
                              % (self.name, self.title), exc_info=True)
             return None
 
@@ -459,7 +463,7 @@ class Graph:
     def get_flowables(self, report_base, section_base, end_date):
         img_file = '%s/%s-%s.png' % (report_base, section_base, self.__name)
         if not os.path.exists(img_file):
-            logging.warn('skipping summary for missing png: %s' % img_file)
+            logger.warn('skipping summary for missing png: %s' % img_file)
             return []
         image = Image(img_file)
 
@@ -675,10 +679,10 @@ class Chart:
 class KeyStatistic:
     def __init__(self, name, value, unit=None, link_type=None):
         if name is None:
-            logging.warn('KeyStatistic name is None')
+            logger.warn('KeyStatistic name is None')
             name = _("Unknown")
         if value is None:
-            logging.warn('KeyStatistic for %s value is None' % name)
+            logger.warn('KeyStatistic for %s value is None' % name)
             value = 0
 
         self.__name = name

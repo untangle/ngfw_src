@@ -24,11 +24,14 @@ import sets
 import shutil
 import reports.sql_helper as sql_helper
 import string
+import sys
 
 from mx.DateTime import DateTimeDelta
 from psycopg import DateFromMx
 from reports.pdf import ReportDocTemplate
 from sql_helper import print_timing
+from reports.log import *
+logger = getLogger(__name__)
 
 UVM_JAR_DIR = '@PREFIX@/usr/share/java/uvm/'
 
@@ -169,7 +172,7 @@ def register_node(node):
 def register_fact_table(fact_table):
     global __fact_tables
 
-    logging.debug("registering fact table: '%s': '%s'" % (fact_table.name,
+    logger.debug("registering fact table: '%s': '%s'" % (fact_table.name,
                                                           fact_table))
     __fact_tables[fact_table.name] = fact_table
 
@@ -201,7 +204,7 @@ def generate_reports(report_base, end_date, report_days):
 
     for node_name in __get_node_partial_order(exclude_uninstalled=True):
         try:
-            logging.debug('doing process_graphs for: %s' % node_name)
+            logger.debug('doing process_graphs for: %s' % node_name)
             node = __nodes.get(node_name, None)
             if not node:
                 logger.warn('could not get node %s' % node_name)
@@ -221,13 +224,13 @@ def generate_reports(report_base, end_date, report_days):
                     report.generate(report_base, date_base, end_date,
                                     report_days=report_days)
                     if node_name in MAIL_REPORT_BLACKLIST:
-                        logging.info('Not including report for %s in emailed reports, since it is blacklisted' % (node_name,))
+                        logger.info('Not including report for %s in emailed reports, since it is blacklisted' % (node_name,))
                     else:
-                        logging.debug('Including report for %s in emailed reports' % (node_name,))
+                        logger.debug('Including report for %s in emailed reports' % (node_name,))
                         mail_reports.append(report)
 
         except:
-            logging.warn('could not generate reports for: %s' % node_name,
+            logger.warn('could not generate reports for: %s' % node_name,
                          exc_info=True)
 
     __write_toc(report_base, date_base, 'top-level', top_level)
@@ -247,7 +250,7 @@ def generate_sub_report(report_base, node_name, end_date, report_days=1,
 
     if not node:
         msg = 'UNKNOWN_NODE: %s' % node_name
-        logging.warn(msg)
+        logger.warn(msg)
         return msg
 
     report = node.get_report()
@@ -282,7 +285,7 @@ def events_cleanup(cutoff):
             node = __nodes.get(name, None)
             node.events_cleanup(co)
         except:
-            logging.warn('count not cleanup events for: %s' % name,
+            logger.warn('count not cleanup events for: %s' % name,
                          exc_info=True)
 
 @print_timing
@@ -294,7 +297,7 @@ def reports_cleanup(cutoff):
             node = __nodes.get(name, None)
             node.reports_cleanup(co)
         except:
-            logging.warn('count not cleanup reports for: %s' % name,
+            logger.warn('count not cleanup reports for: %s' % name,
                          exc_info=True)
 
 @print_timing
@@ -315,7 +318,7 @@ def setup(start_date, end_date):
 
     for name in __get_node_partial_order():
         try:
-            logging.debug('doing setup for: %s' % name)
+            logger.debug('doing setup for: %s' % name)
             node = __nodes.get(name, None)
 
             if not node:
@@ -323,7 +326,7 @@ def setup(start_date, end_date):
             else:
                 node.setup(start_date, end_date)
         except:
-            logging.warn('could not setup for: %s' % name, exc_info=True)
+            logger.warn('could not setup for: %s' % name, exc_info=True)
 
 @print_timing
 def post_facttable_setup(start_date, end_date):
@@ -331,14 +334,14 @@ def post_facttable_setup(start_date, end_date):
 
     for name in __get_node_partial_order():
         try:
-            logging.debug('doing post_facttable_setup for: %s' % name)
+            logger.debug('doing post_facttable_setup for: %s' % name)
             node = __nodes.get(name, None)
             if not node:
                 logger.warn('could not get node %s' % name)
             else:
                 node.post_facttable_setup(start_date, end_date)
         except:
-            logging.warn('coud not do post factable setup for: %s' % name,
+            logger.warn('coud not do post factable setup for: %s' % name,
                          exc_info=True)
 
 @print_timing
@@ -500,7 +503,7 @@ def __add_node(name, list, available):
 
     node = __nodes.get(name, None)
     if not node:
-        logging.warn('node not found %s' % name)
+        logger.warn('node not found %s' % name)
     else:
         for p in node.parents():
             if p in available:
