@@ -45,7 +45,7 @@
 
     <uvm:skin src="user.css" name="${ss.userPagesSkin}"/>
     <c:if test="${!untangle_plus}">
-      <script type="text/javascript" src="http://www.untangle.com/get-status.php?${urlParams}"><!-- --></script>
+      <script type="text/javascript" ><!-- --></script>
     </c:if>
 
     <uvm:inlineScript>
@@ -64,13 +64,13 @@
   </head>
   
   <body id="simple" class="blockpage">
-    <div id="content" style="width:728px !important;padding:0px 0px 12px !important">
+    <div id="content" style="width:728px !important;padding:0px 0px 0px !important;margin-bottom:0px !important">
       <div id="header" style="margin:3px !important;">
         <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
         <div class="title"><c:out value="${title}" escapeXml="false"/></div>
       </div>
       
-      <div id="main" style="top: 110px !important;height:auto !important;">
+      <div id="main" style="top: auto !important;height:auto !important;position:relative !important;">
         <p class="icon-block">
             <br/>
         </p>
@@ -108,11 +108,7 @@
             </c:if>
         </div>
       </div>
-        
-      <c:if test="${!untangle_plus}">
-        <script type="text/javascript" src="http://www.untangle.com/get-status-2.php?${urlParams}"><!-- --></script>
-      </c:if>
-      
+              
       <div id="footer">
         <p><span><c:out value="${footer}"/></span></p>
       </div>
@@ -125,5 +121,8 @@
       <div id="extra-div-5"><span></span></div>
       <div id="extra-div-6"><span></span></div>
     </div>
+      <c:if test="${!untangle_plus}">
+        <script type="text/javascript" src="http://guide.untangle.com/bp/get-status-2.php?${urlParams}"><!-- --></script>
+      </c:if>    
   </body>
 </html>
