@@ -104,7 +104,7 @@ DELETE FROM events.n_server_events WHERE time_stamp < %s""", (cutoff,))
                            [MemoryUsage(), LoadUsage(),
                             CpuUsage(), DiskUsage()])
         sections.append(s)
-        return Report(self.name, sections)
+        return Report(self, sections)
 
     @print_timing
     def __create_n_server_events(self, start_date, end_date):

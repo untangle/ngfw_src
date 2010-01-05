@@ -94,7 +94,7 @@ class SpamBaseNode(Node):
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [SpamHighlight(self.__title, self.__short_name),
+                           [SpamHighlight(self.name, self.__short_name),
                             TotalEmail(self.__short_name, self.__vendor_name,
                                        self.__spam_label, self.__ham_label),
                             HourlySpamRate(self.__short_name,
@@ -117,7 +117,7 @@ class SpamBaseNode(Node):
 
         sections.append(SpamDetail(self.__title, self.__short_name))
 
-        return Report(self.name, sections)
+        return Report(self, sections)
 
     def events_cleanup(self, cutoff):
         pass

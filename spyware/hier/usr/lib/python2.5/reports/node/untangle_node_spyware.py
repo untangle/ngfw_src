@@ -109,7 +109,7 @@ DELETE FROM events.n_spyware_evt_cookie
         sections.append(UrlBlockDetail())
         sections.append(SubnetDetail())
 
-        return Report(self.name, sections)
+        return Report(self, sections)
 
     @print_timing
     def __update_access(self, start_date, end_date):

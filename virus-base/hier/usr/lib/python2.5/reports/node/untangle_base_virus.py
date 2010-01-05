@@ -130,7 +130,7 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
         sections.append(VirusWebDetail(self.__vendor_name))
         sections.append(VirusMailDetail(self.__vendor_name))
 
-        return Report(self.name, sections)
+        return Report(self, sections)
 
     def events_cleanup(self, cutoff):
         sql_helper.run_sql("""\

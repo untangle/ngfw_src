@@ -1,23 +1,24 @@
 import logging
 
 MODULE_NAME = 'reports'
+LOGFILE = "/var/log/uvm/reporter.log"
 
+# line format
 format = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
 dateFmt = '%Y-%m-%d %H:%M:%S'
 formatter = logging.Formatter(format, dateFmt)
 
-f = logging.FileHandler("%s/var/log/uvm/reporter.log" % ('@PREFIX@',))
+# file logging
+f = logging.FileHandler("%s%s" % ('@PREFIX@', LOGFILE))
 f.setLevel(logging.DEBUG)
 f.setFormatter(formatter)
 logging.getLogger('').addHandler(f)
 
+# stdout logging
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
-
-#  # default for root logger
-# logging.getLogger('').setLevel(logging.DEBUG)
 
 def getLogger(name):
   name = name.replace('%s.' % (MODULE_NAME,), '')
@@ -25,6 +26,6 @@ def getLogger(name):
   logger.setLevel(logging.DEBUG)
   return logger
 
-def setLogLevel(level):
+def setConsoleLogLevel(level):
   global console
   console.setLevel(level)

@@ -90,7 +90,7 @@ class Shield(Node):
 
         sections.append(ShieldDetail())
 
-        return Report(self.name, sections)
+        return Report(self, sections)
 
 class ShieldHighlight(Highlight):
     def __init__(self, name):

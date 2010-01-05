@@ -82,7 +82,7 @@ class WebFilterBaseNode(Node):
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [WebHighlight(self.__title, self.__vendor_name),
+                           [WebHighlight(self.name, self.__vendor_name),
                             HourlyWebUsage(self.__vendor_name),
                             DailyWebUsage(self.__vendor_name),
                             TotalWebUsage(self.__vendor_name),
@@ -104,7 +104,7 @@ class WebFilterBaseNode(Node):
         sections.append(WebFilterDetailAll(self.__vendor_name))
         sections.append(WebFilterDetailDomains(self.__vendor_name))
 
-        return Report(self.name, sections)
+        return Report(self, sections)
 
     def events_cleanup(self, cutoff):
         sql_helper.run_sql("""\

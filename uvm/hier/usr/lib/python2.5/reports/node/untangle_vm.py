@@ -160,7 +160,7 @@ DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
         sections.append(s)
         sections.append(AdministrativeLoginsDetail())
 
-        return Report(self.name, sections)
+        return Report(self, sections)
 
     @print_timing
     def __make_users_table(self, start_date, end_date):

@@ -16,7 +16,6 @@
 #
 # Aaron Read <amread@untangle.com>
 
-import commands
 import csv
 import gettext
 import logging
@@ -99,9 +98,9 @@ STACKED_BAR_CHART = 'stacked-bar-chart'
 PIE_CHART = 'pie-chart'
 
 class Report:
-    def __init__(self, name, sections):
-        self.__name = name
-        self.__title, self.__view_position = self.__get_node_info(self.__name)
+    def __init__(self, node, sections):
+        self.__name = node.name
+        self.__title, self.__view_position = node.info()
         self.__sections = sections
 
     @property
@@ -152,7 +151,7 @@ class Report:
 
             report_file = "%s/%s/report.xml" % (report_base, node_base)
 
-            logger.info('writing %s' % report_file)
+            logger.info('writing in .../%s' % node_base)
             tree.write(report_file, encoding='utf-8', pretty_print=True,
                        xml_declaration=True)
 
@@ -168,24 +167,6 @@ class Report:
             story += s.get_flowables(report_base, node_base, end_date)
 
         return story
-
-    def __get_node_info(self, name):
-        title = None
-        view_position = None
-
-        stdout = commands.getoutput('apt-cache show ' + name)
-
-        for l in stdout.split("\n"):
-            if l == "":
-                break
-            m = re.search('Display-Name: (.*)', l)
-            if m:
-                title = m.group(1)
-            m = re.search('View-Position: ([0-9]*)', l)
-            if m:
-                view_position = int(m.group(1))
-
-        return (title, view_position)
 
 class Section:
     def __init__(self, name, title):

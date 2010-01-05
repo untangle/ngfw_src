@@ -16,6 +16,7 @@
 #
 # Aaron Read <amread@untangle.com>
 
+import commands
 import logging
 import mx
 import os
@@ -69,6 +70,24 @@ class Node:
 
     def parents(self):
         return []
+
+    def info(self):
+        title = None
+        view_position = None
+
+        stdout = commands.getoutput('apt-cache show ' + self.__name)
+
+        for l in stdout.split("\n"):
+            if l == "":
+                break
+            m = re.search('Display-Name: (.*)', l)
+            if m:
+                title = m.group(1)
+            m = re.search('View-Position: ([0-9]*)', l)
+            if m:
+                view_position = int(m.group(1))
+
+        return (title, view_position)
 
 class FactTable:
     def __init__(self, name, detail_table, time_column, dimensions, measures):
@@ -169,6 +188,18 @@ def register_node(node):
 
     __nodes[node.name] = node
 
+def limit_nodes(trial_report_node):
+    global __nodes
+
+    toRemove = []
+
+    for node_name, node in __nodes.iteritems():
+        if node != trial_report_node and node_name not in trial_report_node.parents():
+            toRemove.append(node_name)
+
+    for node_name in toRemove:
+        del __nodes[node_name]
+    
 def register_fact_table(fact_table):
     global __fact_tables
 
@@ -202,13 +233,14 @@ def generate_reports(report_base, end_date, report_days):
     host_drilldown = []
     email_drilldown = []
 
-    for node_name in __get_node_partial_order(exclude_uninstalled=True):
+    for node_name in __get_node_partial_order():
         try:
             logger.debug('doing process_graphs for: %s' % node_name)
             node = __nodes.get(node_name, None)
             if not node:
                 logger.warn('could not get node %s' % node_name)
             else:
+                logger.info('generating report for %s' % node_name)                
                 tocs = node.get_toc_membership()
                 if TOP_LEVEL in tocs:
                     top_level.append(node_name)
@@ -230,7 +262,7 @@ def generate_reports(report_base, end_date, report_days):
                         mail_reports.append(report)
 
         except:
-            logger.warn('could not generate reports for: %s' % node_name,
+            logger.error('could not generate reports for: %s' % node_name,
                          exc_info=True)
 
     __write_toc(report_base, date_base, 'top-level', top_level)
@@ -481,6 +513,9 @@ def __get_node_partial_order(exclude_uninstalled=True):
 
     return list
 
+def __get_node(name):
+    return __nodes[name]
+
 def __get_installed_nodes():
     conn = sql_helper.get_connection()
 
@@ -529,3 +564,4 @@ def __write_toc(report_base, date_base, type, list):
             f.write("\n")
     finally:
         f.close()
+

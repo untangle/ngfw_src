@@ -79,7 +79,7 @@ class Ips(Node):
 
         sections.append(IpsDetail())
 
-        return Report(self.name, sections)
+        return Report(self, sections)
 
     def parents(self):
         return ['untangle-vm']

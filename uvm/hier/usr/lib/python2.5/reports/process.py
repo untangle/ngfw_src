@@ -38,6 +38,7 @@ Options:
   -p | --no-plot-gen          skip graph image processing
   -m | --no-mail              skip mailing
   -a | --attach-csv           attach events as csv
+  -t | --trial-report         only report on given trial
   -e | --events-retention     number of days in events schema to keep
   -r | --report-length        number of days to report on
   -l | --locale               locale
@@ -47,11 +48,12 @@ Options:
 # main
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmave:r:d:l:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmave:r:d:l:t:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'no-plot-gen',
                                  'verbose', 'attach-csv', 'events-retention',
-                                 'report-length', 'date=', 'locale='])
+                                 'report-length', 'date=', 'locale=',
+                                 'trial-report'])
 
 except getopt.GetoptError, err:
      print str(err)
@@ -86,6 +88,7 @@ end_date = mx.DateTime.today()
 locale = None
 db_retention = None
 file_retention = None
+trial_report = None
 
 no_cleanup = False
 
@@ -106,12 +109,14 @@ for opt in opts:
           no_mail = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
+     elif k == '-t' or k == '--trial-report':
+          trial_report = v
      elif k == '-e' or k == '--events-retention':
           events_retention = int(v)
      elif k == '-r' or k == '--report-length':
           report_lengths = [int(v)]
      elif k == '-v' or k == '--verbose':
-          setLogLevel(logging.DEBUG)
+          setConsoleLogLevel(logging.DEBUG)
      elif k == '-d' or k == '--date':
           end_date = mx.DateTime.DateFrom(v)
      elif k == '-l' or k == '--locale':
@@ -253,7 +258,7 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
 
 if not report_lengths:
      report_lengths = get_report_lengths(end_date)
-
+     
 if not locale:
      locale = get_locale()
 
@@ -304,16 +309,27 @@ if not file_retention:
 attach_csv = attach_csv or settings.get('email_detail')
 attachment_size_limit = settings.get('attachment_size_limit')
 
+if trial_report:
+     if db_retention >= 14:
+          report_lengths = (14,)
+     else:
+          report_lengths = (db_retention,)
+
 reports.engine.fix_hierarchy(REPORTS_OUTPUT_BASE)
 
 reports.engine.init_engine(NODE_MODULE_DIR)
+
+if trial_report:
+     trial_report = reports.engine.__get_node(trial_report)
+     reports.engine.limit_nodes(trial_report)
+
 if not no_migration:
      ## XXX need variable for schema data retention
      init_date = end_date - mx.DateTime.DateTimeDelta(30)
      reports.engine.setup(init_date, end_date)
      reports.engine.process_fact_tables(init_date, end_date)
      reports.engine.post_facttable_setup(init_date, end_date)
-
+     
 mail_reports = []
 
 for report_days in report_lengths:
@@ -330,7 +346,8 @@ for report_days in report_lengths:
      if not no_mail:
           logger.info("About to email reports for %s days" % (report_days,))          
           f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date,
-                                       report_days, mail_reports)
+                                       report_days, mail_reports,
+                                       trial_report)
           reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
                                       attach_csv=attach_csv,
                                       attachment_size_limit=attachment_size_limit)
