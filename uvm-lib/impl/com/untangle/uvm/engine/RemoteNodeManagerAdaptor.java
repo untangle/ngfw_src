@@ -20,6 +20,7 @@ package com.untangle.uvm.engine;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
@@ -116,4 +117,10 @@ class RemoteNodeManagerAdaptor implements RemoteNodeManager
     {
         return nodeManager.allNodeStates();
     }
+
+    @Override
+    public Set<String> getEnabledNodes(Policy policy) {
+        return nodeManager.getEnabledNodes(policy);
+    }
+    
 }

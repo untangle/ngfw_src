@@ -33,11 +33,14 @@
 package com.untangle.uvm.toolbox;
 
 import java.io.IOException;
+
 import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import sun.misc.BASE64Decoder;
+
+import  org.apache.commons.codec.binary.Base64;
+
 
 /**
  * Holds information about a Debian package.
@@ -243,14 +246,6 @@ public class MackageDesc implements Serializable
     {
         v = v.replaceAll("[ \t]", "");
 
-        byte[] icon = null;
-
-        try {
-            icon = new BASE64Decoder().decodeBuffer(v);
-        } catch (IOException exn) {
-            logger.warn("could not decode icon", exn);
-        }
-
-        return icon;
+        return Base64.decodeBase64(v.getBytes());
     }
 }

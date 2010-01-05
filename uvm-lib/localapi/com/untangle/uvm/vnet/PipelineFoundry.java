@@ -57,6 +57,9 @@ public interface PipelineFoundry
     void registerCasing(MPipe insideMPipe, MPipe outsideMPipe);
     void deregisterCasing(MPipe insideMPipe);
 
+    /* Remove all of the cached chains */
+    void clearChains();
+
     void registerConnection(InetSocketAddress socketAddress, Fitting fitting);
     Pipeline getPipeline(int sessionId);
 }

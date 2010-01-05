@@ -417,6 +417,9 @@ public abstract class NodeBase implements Node
                     tl.stateChange(te);
                 }
             }
+            
+            LocalUvmContextFactory.context().nodeManager().flushNodeStateCache();
+            LocalUvmContextFactory.context().pipelineFoundry().clearChains();
         }
     }
 

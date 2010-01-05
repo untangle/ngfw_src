@@ -94,8 +94,17 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     private final Pulse cleanerPulse = new Pulse("session-cleaner",
                                                  true,
                                                  new SessionExpirationWorker());
+    
+    private Map<String,Set<String>> enabledNodes = new HashMap<String,Set<String>>();
 
     private boolean live = true;
+
+    /*
+     * Update this value to a new long whenever clearing enabled nodes.  This way
+     * it is possible to quickly determine if an enabled nodes lookup should be cached
+     * without synchronizing the entire operation.
+     */
+    private long enabledNodesCleared = 0;
 
     NodeManagerImpl(UvmRepositorySelector repositorySelector)
     {
@@ -203,7 +212,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             NodeContext nc = nodeContext(tid);
             MackageDesc md = nc.getMackageDesc();
 
-            MackageDesc.Type type = md.getType();
             if (!md.isInvisible()) {
                 NodeDesc nd = nc.getNodeDesc();
                 l.add(nd);
@@ -243,7 +251,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         throws DeployException
     {
         Policy policy = getDefaultPolicyForNode(nodeName);
-        return instantiate(nodeName, null, new String[0]);
+        return instantiate(nodeName, policy, new String[0]);
     }
 
     public NodeDesc instantiate(String nodeName, String[] args)
@@ -318,7 +326,9 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             LocalMessageManager mm = mctx.localMessageManager();
             mm.submitMessage(ne);
         }
-
+        
+        clearEnabledNodes();
+        
         return tDesc;
     }
 
@@ -348,6 +358,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
 
         tc.destroyPersistentState();
+        
+        clearEnabledNodes();
     }
 
     public Map<Tid, NodeState> allNodeStates()
@@ -361,6 +373,61 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
         return result;
     }
+    
+    /**
+     * Get a map of nodes that are enabled for a policy, this takes into account
+     * parent / child relationships
+     */
+    @Override
+    public Set<String> getEnabledNodes(Policy policy)
+    {
+        Set<String> policyNodes = null;
+        String policyName = policy.getName();
+        boolean isNew = false;
+        long enabledNodesCleared = 0;
+        
+        /* With the lock, check if there is an entry and return it if exists.
+         * Otherwise, create an
+         */
+        synchronized ( this.enabledNodes ) {
+            policyNodes = this.enabledNodes.get(policyName);
+            enabledNodesCleared = this.enabledNodesCleared ;
+        }
+
+        if ( policyNodes == null ) {
+            policyNodes = new HashSet<String>();
+            List<Tid> policyTids = getNodesForPolicy(policy, true);
+
+            for ( Tid tid : policyTids ) {
+                NodeContext nodeContext = tids.get(tid);
+                if ( nodeContext == null ) {
+                    logger.warn( "Node context is null for tid: " + tid );
+                    continue;
+                }
+
+                if ( nodeContext.getRunState() == NodeState.RUNNING ) {
+                    policyNodes.add(tid.getNodeName());
+                }
+            }
+            
+            synchronized( this.enabledNodes ) {
+                if ( enabledNodesCleared == this.enabledNodesCleared ) {
+                    this.enabledNodes.put(policyName,policyNodes);
+                }
+            }
+                
+
+        }
+        
+        return policyNodes;
+    }
+    
+    @Override
+    public void flushNodeStateCache()
+    {
+        this.clearEnabledNodes();
+    }
+
 
     // Manager lifetime -------------------------------------------------------
 
@@ -379,10 +446,9 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         synchronized (this) {
             live = false;
 
-            Set s = new HashSet(tids.keySet());
+            Set<Tid> s = new HashSet<Tid>(tids.keySet());
 
-            for (Iterator i = s.iterator(); i.hasNext(); ) {
-                Tid tid = (Tid)i.next();
+            for ( Tid tid : s ) {
                 if (null != tid) {
                     unload(tid);
                 }
@@ -412,7 +478,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     public void deregisterThreadContext()
     {
         threadContexts.remove();
-        repositorySelector.uvmContext();
+        repositorySelector.uvmContext();        
     }
 
     // UvmLoggingContextFactory methods ---------------------------------------
@@ -439,6 +505,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             tc.unload();
             tids.remove(tid);
         }
+        
+        clearEnabledNodes();
     }
 
     void restart(String name)
@@ -457,7 +525,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                 if (0 < tc.getNodeDesc().getExports().size()) {
                     // exported resources, must restart everything
                     for (Tid tid : tids.keySet()) {
-                        NodeDesc td = tids.get(tid).getNodeDesc();
                         MackageDesc md = tids.get(tid).getMackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
@@ -468,7 +535,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                     }
                 } else {
                     for (Tid tid : mkgTids) {
-                        NodeDesc td = tids.get(tid).getNodeDesc();
                         MackageDesc md = tids.get(tid).getMackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
@@ -481,6 +547,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                 restartUnloaded();
             }
         }
+        
+        clearEnabledNodes();
     }
 
     void startAutoStart(MackageDesc extraPkg)
@@ -558,8 +626,6 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
 
         UvmContextImpl mctx = UvmContextImpl.getInstance();
-
-        RemoteToolboxManager tbm = mctx.toolboxManager();
 
         while (0 < unloaded.size()) {
             List<NodePersistentState> startQueue = getLoadable(unloaded,
@@ -887,11 +953,25 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             policies.add(policy);
         }
 
+        /*
+         * This is a list of tids.  Each index of the first list corresponds to its
+         * policy in the policies array.  Each index in the second list is a tid of the nodes
+         * in the policy
+         * ll[0] == list of tids in policies[0]
+         * ll[1] == list of tids in policies[1]
+         * ...
+         * ll[n] == list of tids in policies[n]
+         * Policies are ordered ll[0] is the current policy, ll[1] is its parent.
+         */
         List<List<Tid>> ll = new ArrayList<List<Tid>>(policies.size());
         for (int i = 0; i < policies.size(); i++) {
             ll.add(new ArrayList<Tid>());
         }
 
+        /*
+         * Fill in the inner list, at the end each of these is the list of 
+         * nodes in the policy.
+         */
         for (Tid tid : tids.keySet()) {
             NodeContext tc = tids.get(tid);
 
@@ -906,6 +986,10 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             }
         }
 
+        /*
+         * Strip out duplicates.  By iterating the list in order, this
+         * will only add the first entry (which will be most specific node.
+         */
         List<Tid> l = new ArrayList<Tid>(tids.size());
         Set<String> names = new HashSet<String>();
 
@@ -922,6 +1006,18 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         }
 
         return l;
+    }
+    
+    /*
+     * Used to empty the cache of the enabled nodes.  This cache is used to build
+     * the pipeline, so it must be updated whenever the node state changes.
+     */
+    private void clearEnabledNodes() {
+        logger.debug( "clearing the cache of enabled nodes." );
+        synchronized ( this.enabledNodes ) {
+            this.enabledNodes.clear();
+            this.enabledNodesCleared = System.nanoTime();
+        }
     }
 
     // private static classes -------------------------------------------------

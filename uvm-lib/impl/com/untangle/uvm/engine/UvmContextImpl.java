@@ -30,7 +30,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
@@ -66,18 +72,12 @@ import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.security.RegistrationInfo;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
 import com.untangle.uvm.user.RemotePhoneBook;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.MPipeManager;
-import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.SessionFactory;
-import org.hibernate.Session;
 
 /**
  * Implements LocalUvmContext.
@@ -1121,7 +1121,7 @@ public class UvmContextImpl extends UvmContextBase
         // apis.
         private URL[] getClasspath()
         {
-            List<URL> urls = new ArrayList();
+            List<URL> urls = new ArrayList<URL>();
             for (URL url : urls) {
                 logger.info("cli cp: " + url);
             }

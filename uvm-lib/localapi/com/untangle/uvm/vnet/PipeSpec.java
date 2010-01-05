@@ -33,14 +33,14 @@
 
 package com.untangle.uvm.vnet;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
-import org.apache.log4j.Logger;
 
 /**
  * Describes the fittings for this pipe.
@@ -81,7 +81,7 @@ public abstract class PipeSpec
      * @param name display name of the PipeSpec.
      * @param subscriptions set of Subscriptions.
      */
-    protected PipeSpec(String name, Node node, Set subscriptions)
+    protected PipeSpec(String name, Node node, Set<Subscription> subscriptions)
     {
         this.name = name;
         this.node = node;
@@ -139,28 +139,6 @@ public abstract class PipeSpec
     }
 
     // public methods ---------------------------------------------------------
-
-    public boolean matches(PolicyRule pr, com.untangle.uvm.node.IPSessionDesc sd)
-    {
-        Policy tp = node.getTid().getPolicy();
-        Policy p = null == pr ? null : pr.getPolicy();
-
-        // We want the node if its policy matches, or the node has no
-        // policy (is a service).
-        if (enabled && (null == tp || tp.equals(p))) {
-            Set s = subscriptions;
-
-            for (Iterator i = s.iterator(); i.hasNext(); ) {
-                Subscription subscription = (Subscription)i.next();
-                if (subscription.matches(sd)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     public void setSubscriptions(Set<Subscription> subscriptions)
     {
         synchronized (this) {
@@ -181,4 +159,21 @@ public abstract class PipeSpec
             subscriptions.remove(subscription);
         }
     }
+    
+    public boolean matches(com.untangle.uvm.node.IPSessionDesc sd)
+    {
+        if ( !enabled ) {
+            return false;
+        }
+        
+        Set<Subscription> s = subscriptions;
+
+        for ( Subscription subscription : s ) {
+            if (subscription.matches(sd)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

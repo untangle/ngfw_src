@@ -26,8 +26,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.PipelineDesc;
 import com.untangle.uvm.argon.SessionEndpoints;
@@ -35,6 +39,7 @@ import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.InterfaceComparator;
+import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.PipelineStats;
 import com.untangle.uvm.policy.LocalPolicyManager;
@@ -44,57 +49,51 @@ import com.untangle.uvm.policy.UserPolicyRule;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import org.apache.log4j.Logger;
 
 /**
  * Implements PipelineFoundry.
- *
+ * 
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class PipelineFoundryImpl implements PipelineFoundry
-{
-    private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL
-        = new PipelineFoundryImpl();
+public class PipelineFoundryImpl implements PipelineFoundry {
+    private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL = new PipelineFoundryImpl();
 
-    private static final EventLogger eventLogger
-        = UvmContextImpl.context().eventLogger();
+    private static final EventLogger eventLogger = UvmContextImpl.context()
+            .eventLogger();
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Map<Fitting, List<MPipe>> mPipes
-        = new HashMap<Fitting, List<MPipe>>();
+    private final Map<Fitting, List<MPipe>> mPipes = new HashMap<Fitting, List<MPipe>>();
     private final Map<MPipe, MPipe> casings = new HashMap<MPipe, MPipe>();
 
-    private final Map<InetSocketAddress, Fitting> connectionFittings
-        = new ConcurrentHashMap<InetSocketAddress, Fitting>();
+    private final Map<InetSocketAddress, Fitting> connectionFittings = new ConcurrentHashMap<InetSocketAddress, Fitting>();
 
-    private final Map<Integer, PipelineImpl> pipelines
-        = new ConcurrentHashMap<Integer, PipelineImpl>();
+    private final Map<Integer, PipelineImpl> pipelines = new ConcurrentHashMap<Integer, PipelineImpl>();
 
     // These don't need to be concurrent and being able to use a null key
     // is currently useful for the null policy.
-    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> chains
-        = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
+    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> chains = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
+    
+    private PipelineFoundryImpl() {
+    }
 
-    private PipelineFoundryImpl() { }
-
-    public static PipelineFoundryImpl foundry()
-    {
+    public static PipelineFoundryImpl foundry() {
         return PIPELINE_FOUNDRY_IMPL;
     }
 
-    public PipelineDesc weld(IPSessionDesc sd)
-    {
+    public PipelineDesc weld(IPSessionDesc sd) {
         Long t0 = System.nanoTime();
 
         PolicyRule pr = selectPolicy(sd);
         if (pr == null) {
             logger.error("No policy rule found for session " + sd);
         }
-        Policy p = null == pr ? null : pr.getPolicy();
+        Policy policy = null == pr ? null : pr.getPolicy();
+
 
         InetAddress sAddr = sd.serverAddr();
         int sPort = sd.serverPort();
@@ -135,7 +134,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         long ct0 = System.nanoTime();
-        List<MPipeFitting> chain = makeChain(sd, p, start);
+        List<MPipeFitting> chain = makeChain(sd, policy, start);
         long ct1 = System.nanoTime();
 
         // filter list
@@ -146,7 +145,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
         MPipe end = null;
 
-        for (Iterator<MPipeFitting> i = chain.iterator(); i.hasNext(); ) {
+        UvmContextImpl upi = UvmContextImpl.getInstance();
+                       
+        for (Iterator<MPipeFitting> i = chain.iterator(); i.hasNext();) {
             MPipeFitting mpf = i.next();
 
             if (null != end) {
@@ -155,13 +156,18 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 }
             } else {
                 MPipe mPipe = mpf.mPipe;
-                if (mPipe.getPipeSpec().matches(pr, sd)) {
+                PipeSpec pipeSpec = mPipe.getPipeSpec();
+
+                // We want the node if its policy matches (this policy or one of
+                // is parents), or the node has no
+                // policy (is a service).
+                if (pipeSpec.matches(sd)) {
                     ml.add(mpf);
                     /* XXXX Nasty cast */
-                    al.add( ((MPipeImpl)mPipe).getArgonAgent());
+                    al.add(((MPipeImpl) mPipe).getArgonAgent());
                 } else {
                     end = mpf.end;
-               }
+                }
             }
         }
 
@@ -173,27 +179,23 @@ public class PipelineFoundryImpl implements PipelineFoundry
         Long t1 = System.nanoTime();
         if (logger.isDebugEnabled()) {
             logger.debug("sid: " + sd.id() + " pipe in " + (t1 - t0)
-                         + " made: " + (ct1 - ct0)
-                         + " filtered: " + (ft1 - ft0)
-                         + " chain: " + ml);
+                    + " made: " + (ct1 - ct0) + " filtered: " + (ft1 - ft0)
+                    + " chain: " + ml);
         }
 
         return new PipelineDesc(pr, al);
     }
 
-    public PipelineEndpoints createInitialEndpoints(IPSessionDesc start)
-    {
+    public PipelineEndpoints createInitialEndpoints(IPSessionDesc start) {
         return new PipelineEndpoints(start);
     }
 
-    public void registerEndpoints(PipelineEndpoints pe)
-    {
+    public void registerEndpoints(PipelineEndpoints pe) {
         eventLogger.log(pe);
     }
 
     public void destroy(IPSessionDesc start, IPSessionDesc end,
-                        PipelineEndpoints pe, String uid)
-    {
+            PipelineEndpoints pe, String uid) {
         PipelineImpl pipeline = pipelines.remove(start.id());
 
         if (logger.isDebugEnabled()) {
@@ -208,15 +210,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
         pipeline.destroy();
     }
 
-    public void registerMPipe(MPipe mPipe)
-    {
-        SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
+    public void registerMPipe(MPipe mPipe) {
+        SoloPipeSpec sps = (SoloPipeSpec) mPipe.getPipeSpec();
         Fitting f = sps.getFitting();
 
         List<MPipe> l = mPipes.get(f);
 
         if (null == l) {
-            l = new ArrayList();
+            l = new ArrayList<MPipe>();
             l.add(null);
             mPipes.put(f, l);
         }
@@ -227,12 +228,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
         clearCache();
     }
 
-    public void deregisterMPipe(MPipe mPipe)
-    {
-        SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
+    public void deregisterMPipe(MPipe mPipe) {
+        SoloPipeSpec sps = (SoloPipeSpec) mPipe.getPipeSpec();
         Fitting f = sps.getFitting();
 
-        List l = mPipes.get(f);
+        List<MPipe> l = mPipes.get(f);
 
         int i = Collections.binarySearch(l, mPipe, MPipeComparator.COMPARATOR);
         if (0 > i) {
@@ -244,8 +244,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         clearCache();
     }
 
-    public void registerCasing(MPipe insideMPipe, MPipe outsideMPipe)
-    {
+    public void registerCasing(MPipe insideMPipe, MPipe outsideMPipe) {
         if (insideMPipe.getPipeSpec() != outsideMPipe.getPipeSpec()) {
             throw new IllegalArgumentException("casing constraint violated");
         }
@@ -256,8 +255,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
     }
 
-    public void deregisterCasing(MPipe insideMPipe)
-    {
+    public void deregisterCasing(MPipe insideMPipe) {
         synchronized (this) {
             casings.remove(insideMPipe);
             clearCache();
@@ -265,20 +263,26 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     public void registerConnection(InetSocketAddress socketAddress,
-                                   Fitting fitting)
-    {
+            Fitting fitting) {
         connectionFittings.put(socketAddress, fitting);
     }
 
-    public Pipeline getPipeline(int sessionId)
-    {
-        return (Pipeline)pipelines.get(sessionId);
+    public Pipeline getPipeline(int sessionId) {
+        return (Pipeline) pipelines.get(sessionId);
     }
+    
+    /* Remove all of the cached chains */
+    public void clearChains()
+    {
+        synchronized( this ) {
+            clearCache();
+        }
+    }
+
 
     // package protected methods ----------------------------------------------
 
-    PolicyRule selectPolicy(IPSessionDesc sd)
-    {
+    PolicyRule selectPolicy(IPSessionDesc sd) {
         UvmContextImpl upi = UvmContextImpl.getInstance();
         LocalPolicyManager pmi = upi.policyManager();
         LocalIntfManager im = upi.localIntfManager();
@@ -299,37 +303,57 @@ public class PipelineFoundryImpl implements PipelineFoundry
     // private methods --------------------------------------------------------
 
     private List<MPipeFitting> makeChain(IPSessionDesc sd, Policy p,
-                                         Fitting start)
-    {
+            Fitting start) {
         List<MPipeFitting> mPipeFittings = null;
 
+        /*
+         * Check if there is a cache for this policy. First time is without the
+         * lock
+         */
         Map<Fitting, List<MPipeFitting>> fcs = chains.get(p);
 
+        /* If there is a cache, check if the chain exists for this fitting */
         if (null != fcs) {
             mPipeFittings = fcs.get(start);
         }
 
         if (null == mPipeFittings) {
             synchronized (this) {
+                /* Check if there is a cache again, after grabbing the lock */
                 fcs = chains.get(p);
 
                 if (null == fcs) {
+                    /* Cache doesn't exist, create a new one */
                     fcs = new HashMap<Fitting, List<MPipeFitting>>();
                     chains.put(p, fcs);
                 } else {
+                    /* Cache exists, get the chain for this fitting */
                     mPipeFittings = fcs.get(start);
                 }
 
                 if (null == mPipeFittings) {
-                    Map<MPipe, MPipe> availCasings = new HashMap(casings);
+                    /*
+                     * Chain hasn't been created, create a list of available
+                     * casings
+                     */
+                    Map<MPipe, MPipe> availCasings = new HashMap<MPipe, MPipe>(
+                            casings);
 
-                    Map<Fitting, List<MPipe>> availMPipes
-                        = new HashMap<Fitting, List<MPipe>>(mPipes);
+                    /*
+                     * Chain hasn't been created, create a list of available
+                     * nodes mPipes is ordered so iterating the list of mPipes
+                     * will insert them in the correct order
+                     */
+                    Map<Fitting, List<MPipe>> availMPipes = new HashMap<Fitting, List<MPipe>>(
+                            mPipes);
 
                     int s = availCasings.size() + availMPipes.size();
                     mPipeFittings = new ArrayList<MPipeFitting>(s);
 
+                    /* Weld together the nodes and the casings */
                     weld(mPipeFittings, start, p, availMPipes, availCasings);
+                    
+                    removeDuplicates(p, mPipeFittings);
 
                     fcs.put(start, mPipeFittings);
                 }
@@ -340,18 +364,15 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     private void weld(List<MPipeFitting> mPipeFittings, Fitting start,
-                      Policy p, Map<Fitting, List<MPipe>> availMPipes,
-                      Map<MPipe, MPipe> availCasings)
-    {
+            Policy p, Map<Fitting, List<MPipe>> availMPipes,
+            Map<MPipe, MPipe> availCasings) {
         weldMPipes(mPipeFittings, start, p, availMPipes, availCasings);
         weldCasings(mPipeFittings, start, p, availMPipes, availCasings);
     }
 
-    private boolean weldMPipes(List<MPipeFitting> mPipeFittings,
-                               Fitting start, Policy p,
-                               Map<Fitting, List<MPipe>> availMPipes,
-                               Map<MPipe, MPipe> availCasings)
-    {
+    private boolean weldMPipes(List<MPipeFitting> mPipeFittings, Fitting start,
+            Policy p, Map<Fitting, List<MPipe>> availMPipes,
+            Map<MPipe, MPipe> availCasings) {
         UvmContextImpl upi = UvmContextImpl.getInstance();
         LocalPolicyManager pmi = upi.policyManager();
 
@@ -360,20 +381,30 @@ public class PipelineFoundryImpl implements PipelineFoundry
         boolean tryAgain;
         do {
             tryAgain = false;
-            for (Iterator<Fitting> i = availMPipes.keySet().iterator(); i.hasNext(); ) {
+            /* Iterate the Map Fittings to available Nodes */
+            for (Iterator<Fitting> i = availMPipes.keySet().iterator(); i
+                    .hasNext();) {
                 Fitting f = i.next();
                 if (start.instanceOf(f)) {
-                    List l = availMPipes.get(f);
+                    /*
+                     * If this fitting is an instance of the start, get the list
+                     * of nodes
+                     */
+                    List<MPipe> l = availMPipes.get(f);
+
+                    /* Remove this list of nodes from the available nodes */
                     i.remove();
-                    for (Iterator<MPipe> j = l.iterator(); j.hasNext(); ) {
+
+                    for (Iterator<MPipe> j = l.iterator(); j.hasNext();) {
                         MPipe mPipe = j.next();
                         if (null == mPipe) {
                             boolean w = weldCasings(mPipeFittings, start, p,
-                                                    availMPipes, availCasings);
+                                    availMPipes, availCasings);
                             if (w) {
                                 welded = true;
                             }
-                        } else if (pmi.matchesPolicy(mPipe.getPipeSpec().getNode(), p)) {
+                        } else if (pmi.matchesPolicy(mPipe.getPipeSpec()
+                                .getNode(), p)) {
                             MPipeFitting mpf = new MPipeFitting(mPipe, start);
                             boolean w = mPipeFittings.add(mpf);
                             if (w) {
@@ -391,10 +422,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     private boolean weldCasings(List<MPipeFitting> mPipeFittings,
-                                Fitting start, Policy p, Map<Fitting,
-                                List<MPipe>> availMPipes,
-                                Map<MPipe, MPipe> availCasings)
-    {
+            Fitting start, Policy p, Map<Fitting, List<MPipe>> availMPipes,
+            Map<MPipe, MPipe> availCasings) {
         UvmContextImpl upi = UvmContextImpl.getInstance();
         LocalPolicyManager pmi = upi.policyManager();
 
@@ -403,9 +432,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
         boolean tryAgain;
         do {
             tryAgain = false;
-            for (Iterator<MPipe> i = availCasings.keySet().iterator(); i.hasNext(); ) {
+            for (Iterator<MPipe> i = availCasings.keySet().iterator(); i
+                    .hasNext();) {
                 MPipe insideMPipe = i.next();
-                CasingPipeSpec ps = (CasingPipeSpec)insideMPipe.getPipeSpec();
+                CasingPipeSpec ps = (CasingPipeSpec) insideMPipe.getPipeSpec();
                 Fitting f = ps.getInput();
 
                 if (!pmi.matchesPolicy(ps.getNode(), p)) {
@@ -415,17 +445,18 @@ public class PipelineFoundryImpl implements PipelineFoundry
                     i.remove();
                     int s = mPipeFittings.size();
                     mPipeFittings.add(new MPipeFitting(insideMPipe, start,
-                                                       outsideMPipe));
-                    CasingPipeSpec cps = (CasingPipeSpec)insideMPipe
-                        .getPipeSpec();
+                            outsideMPipe));
+                    CasingPipeSpec cps = (CasingPipeSpec) insideMPipe
+                            .getPipeSpec();
                     Fitting insideFitting = cps.getOutput();
 
                     boolean w = weldMPipes(mPipeFittings, insideFitting, p,
-                                           availMPipes, availCasings);
+                            availMPipes, availCasings);
 
                     if (w) {
                         welded = true;
-                        mPipeFittings.add(new MPipeFitting(outsideMPipe, insideFitting));
+                        mPipeFittings.add(new MPipeFitting(outsideMPipe,
+                                insideFitting));
                     } else {
                         while (mPipeFittings.size() > s) {
                             mPipeFittings.remove(mPipeFittings.size() - 1);
@@ -441,8 +472,106 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return welded;
     }
 
-    private void clearCache()
-    {
+    private void clearCache() {
         chains.clear();
     }
+    
+    private void removeDuplicates(Policy policy, List<MPipeFitting> chain) {
+        LocalPolicyManager pmi = LocalUvmContextFactory.context()
+                .policyManager();
+        LocalNodeManager nodeManager = LocalUvmContextFactory.context()
+                .nodeManager();
+
+        Set<String> enabledNodes = nodeManager.getEnabledNodes(policy);
+
+        Map<String, Integer> numParents = new HashMap<String, Integer>();
+        Map<MPipeFitting, Integer> fittingDistance = new HashMap<MPipeFitting, Integer>();
+
+        for (Iterator<MPipeFitting> i = chain.iterator(); i.hasNext();) {
+            MPipeFitting mpf = i.next();
+
+            Policy nodePolicy = mpf.mPipe.node().getTid().getPolicy();
+
+            if (nodePolicy == null) {
+                continue;
+            }
+
+            String nodeName = mpf.mPipe.node().getNodeDesc().getName();
+            /* Remove the items that are not enabled in this policy */
+            if (!enabledNodes.contains(nodeName)) {
+                i.remove();
+                continue;
+            }
+
+            Integer n = numParents.get(nodeName);
+            int distance = pmi.getNumParents(policy, nodePolicy);
+
+            if (distance < 0) {
+                /* Removing nodes that are not in this policy */
+                logger.info("The policy " + policy.getName()
+                        + " is not a child of " + nodePolicy.getName());
+                i.remove();
+                continue;
+            }
+
+            fittingDistance.put(mpf, distance);
+
+            /* If an existing node is closer then this node, remove this node. */
+            if (n == null) {
+                /*
+                 * If we haven't seen another node at any distance, add it to
+                 * the hash
+                 */
+                numParents.put(nodeName, distance);
+                continue;
+            } else if (distance == n) {
+                /* Keep nodes at the same distance */
+                continue;
+            } else if (distance < n) {
+                /*
+                 * Current node is closer then the other one, have to remove the
+                 * other node done on another iteration
+                 */
+                numParents.put(nodeName, distance);
+            }
+        }
+
+        for (Iterator<MPipeFitting> i = chain.iterator(); i.hasNext();) {
+            MPipeFitting mpf = i.next();
+
+            Policy nodePolicy = mpf.mPipe.node().getTid().getPolicy();
+
+            /* Keep items in the NULL Racks */
+            if (nodePolicy == null) {
+                continue;
+            }
+
+            String nodeName = mpf.mPipe.node().getNodeDesc().getName();
+
+            Integer n = numParents.get(nodeName);
+
+            if (n == null) {
+                logger
+                        .info("Programming error, numParents null for non-null policy.");
+                continue;
+            }
+
+            Integer distance = fittingDistance.get(mpf);
+
+            if (distance == null) {
+                logger
+                        .info("Programming error, distance null for a fitting.");
+                continue;
+            }
+
+            if (distance > n) {
+                i.remove();
+            } else if (distance < n) {
+                logger
+                        .info("Programming error, numParents missing minimum value");
+            }
+        }
+
+    }
+    
 }

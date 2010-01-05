@@ -71,7 +71,7 @@ public class CasingPipeSpec extends PipeSpec
 
     // constructors -----------------------------------------------------------
 
-    public CasingPipeSpec(String name, Node node, Set subscriptions,
+    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions,
                           CasingFactory casingFactory,
                           Fitting input, Fitting output)
     {

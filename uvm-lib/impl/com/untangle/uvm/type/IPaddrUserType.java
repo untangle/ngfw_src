@@ -34,7 +34,7 @@ public class IPaddrUserType extends StringBasedUserType
     /* special string used to represent an empty ip addr */
     private static final String EMPTY_STRING = "0.0.0.0/31";
 
-    public Class returnedClass()
+    public Class<IPaddr> returnedClass()
     {
         return IPaddr.class;
     }

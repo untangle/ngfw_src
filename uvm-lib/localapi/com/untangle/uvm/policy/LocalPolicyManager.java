@@ -82,7 +82,7 @@ public interface LocalPolicyManager extends LicensedProduct
     /**
      * @see PolicyManager#setUserPolicyRules()
      */
-    void setUserPolicyRules(List rules);
+    void setUserPolicyRules(List<UserPolicyRule> rules);
 
     /**
      * @see PolicyManager#getPolicyConfiguration()
@@ -104,6 +104,17 @@ public interface LocalPolicyManager extends LicensedProduct
     PolicyRule getDefaultPolicyRule();
 
     boolean matchesPolicy(Node node, Policy p);
+    
+    /*
+    * @param child: The node to test if this is a child.
+    * @param parent: The node to see the distance from the child to parent.
+    * @return.  The number of racks in between the child policy and parent.
+    *   This is 0 if child == parent.
+    *   This is -1 if child is not a child of parent.
+    *   The null rack is a child of every parent.
+    *   The null rack is never the parent of any child.
+    */
+    int getNumParents(Policy child, Policy parent);
 
     Policy getParent(Policy p);
 

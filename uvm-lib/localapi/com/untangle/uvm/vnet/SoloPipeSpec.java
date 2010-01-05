@@ -66,7 +66,7 @@ public class SoloPipeSpec extends PipeSpec
 
     // constructors -----------------------------------------------------------
 
-    public SoloPipeSpec(String name, Node node, Set subscriptions,
+    public SoloPipeSpec(String name, Node node, Set<Subscription> subscriptions,
                         SessionEventListener listener,
                         Fitting fitting, Affinity affinity, int strength)
     {

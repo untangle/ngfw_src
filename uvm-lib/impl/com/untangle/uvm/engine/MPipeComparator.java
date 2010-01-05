@@ -30,17 +30,14 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class MPipeComparator implements Comparator
+class MPipeComparator implements Comparator<MPipe>
 {
     static final MPipeComparator COMPARATOR = new MPipeComparator();
 
     private MPipeComparator() { }
 
-    public int compare(Object o1, Object o2)
+    public int compare(MPipe mp1, MPipe mp2)
     {
-        MPipe mp1 = (MPipe)o1;
-        MPipe mp2 = (MPipe)o2;
-
         SoloPipeSpec ps1 = null == mp1 ? null : (SoloPipeSpec)mp1.getPipeSpec();
         SoloPipeSpec ps2 = null == mp2 ? null : (SoloPipeSpec)mp2.getPipeSpec();
 

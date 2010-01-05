@@ -180,14 +180,14 @@ class DefaultPolicyManager implements LocalPolicyManager
         return userRules;
     }
 
-    public void setUserPolicyRules(final List rules) {
+    public void setUserPolicyRules(final List<UserPolicyRule> rules) {
         // Sanity checking XXX
         synchronized(policyRuleLock) {
             TransactionWork tw = new TransactionWork()
                 {
                     public boolean doWork(Session s)
                     {
-                        List urs = userRuleSet.getRules();
+                        List<UserPolicyRule> urs = userRuleSet.getRules();
                         urs.clear();
                         urs.addAll(rules);
                         updateRules(rules);
@@ -199,12 +199,14 @@ class DefaultPolicyManager implements LocalPolicyManager
                 };
             LocalUvmContextFactory.context().runTransaction(tw);
         }
+        
+        updateEngines();
     }
 
     // For da UI
     public PolicyConfiguration getPolicyConfiguration()
     {
-        List pl = new ArrayList();
+        List<Policy> pl = new ArrayList<Policy>();
         pl.add(defaultPolicy);
 
         PolicyConfiguration result = new PolicyConfiguration(pl, cUserRules);
@@ -216,13 +218,13 @@ class DefaultPolicyManager implements LocalPolicyManager
     public void setPolicyConfiguration(PolicyConfiguration pc)
         throws PolicyException
     {
-        List userpc = pc.getUserPolicyRules();
+        List<UserPolicyRule> userpc = pc.getUserPolicyRules();
 
         // Sanity check the user rules
         if (userpc == null)
             throw new PolicyException("User rules missing");
         // Really need more checking here.  XXX
-        List newUserRules = new ArrayList(userpc.size());
+        List<UserPolicyRule> newUserRules = new ArrayList<UserPolicyRule>(userpc.size());
         for (Object o : userpc) {
             UserPolicyRule upr = (UserPolicyRule)o;
             newUserRules.add(upr);
@@ -232,6 +234,8 @@ class DefaultPolicyManager implements LocalPolicyManager
         synchronized(policyRuleLock) {
             setUserPolicyRules(newUserRules);
         }
+        
+        updateEngines();
     }
 
     /**
@@ -282,7 +286,7 @@ class DefaultPolicyManager implements LocalPolicyManager
                     {
                         Query userq = s.createQuery("from UserPolicyRuleSet uprs");
                         UserPolicyRuleSet uprs = (UserPolicyRuleSet) userq.uniqueResult();
-                        List existingUser = uprs.getRules();
+                        List<UserPolicyRule> existingUser = uprs.getRules();
 
                         userRuleSet = uprs;
                         updateRules(existingUser);
@@ -333,6 +337,8 @@ class DefaultPolicyManager implements LocalPolicyManager
 
         this.userRules = userPolicyList.toArray(new UserPolicyRule[0]);
         this.cUserRules = completePolicyList.toArray(new UserPolicyRule[0]);
+        
+        updateEngines();
     }
 
     public boolean matchesPolicy(Node node, Policy p)
@@ -349,6 +355,21 @@ class DefaultPolicyManager implements LocalPolicyManager
 
         return false;
     }
+    
+    @Override
+    public int getNumParents(Policy child, Policy parent)
+    {
+        if ( null == child ) {
+            return 0;
+        }
+        
+        if (child.equals( parent )) {
+            return 0;
+        }
+        
+        return -1;
+    }
+
 
     public Policy getParent(Policy p)
     {
@@ -357,5 +378,11 @@ class DefaultPolicyManager implements LocalPolicyManager
 
     public Validator getValidator() {
         return new PolicyValidator();
+    }
+    
+    void updateEngines()
+    {
+        LocalUvmContextFactory.context().nodeManager().flushNodeStateCache();
+        LocalUvmContextFactory.context().pipelineFoundry().clearChains();
     }
 }

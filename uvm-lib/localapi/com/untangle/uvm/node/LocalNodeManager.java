@@ -35,6 +35,7 @@ package com.untangle.uvm.node;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
@@ -189,6 +190,17 @@ public interface LocalNodeManager
      * @return a <code>Map</code> from Tid to NodeState for all nodes
      */
     Map<Tid, NodeState> allNodeStates();
+    
+    /**
+     * Get a map of nodes that are enabled for a policy, this takes into account
+     * parent / child relationships
+     */
+    Set<String> getEnabledNodes(Policy policy);
+    
+    /**
+     * Clear out any state related to the nodes in the node manager.
+     */
+    void flushNodeStateCache();
 
     /**
      * Return the NodeContext for the thread.
