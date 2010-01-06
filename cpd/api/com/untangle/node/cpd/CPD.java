@@ -20,9 +20,11 @@ package com.untangle.node.cpd;
 
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 
 public interface CPD extends Node
 {
@@ -32,6 +34,18 @@ public interface CPD extends Node
 	 */
     public void setCPDSettings(CPDSettings settings);
     public CPDSettings getCPDSettings();
+    
+    public CPDBaseSettings getBaseSettings();
+    public void setBaseSettings(CPDBaseSettings baseSettings);
+    
+    public List<CaptureRule> getCaptureRules();
+    public void setCaptureRules( List<CaptureRule> captureRules );
+    
+    public List<PassedClient> getPassedClients();
+    public void setPassedClients( List<PassedClient> newValue ); 
+       
+    public List<PassedServer> getPassedServers();
+    public void setPassedServers( List<PassedServer> newValue ); 
     
     /**
      * 

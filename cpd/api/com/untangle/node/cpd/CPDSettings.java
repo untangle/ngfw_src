@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -56,22 +57,13 @@ public class CPDSettings implements Serializable
     private Tid tid;
 
     private List<CaptureRule> captureRules = null;
-
-    /* List of IPDBMatchers, separated by ';' */
-    private String passedClients = "";
-    private String passedServers = "";
-
-    private boolean captureBypassedTraffic = true;
-    private AuthenticationType authenticationType = AuthenticationType.NONE;
-    private int idleTimeout = 0;
-    private int timeout = 0;
-    private boolean isLogoutButtonEnabled = false;
-    private boolean areConcurrentLoginsEnabled = true;
-    private PageType pageType = PageType.BASIC_MESSAGE;
-    private String pageParameters = "";
-    private String redirectUrl = "";
-    private boolean useHttpsPage= false;
-    private boolean isRedirectHttpsEnabled = false; 
+    
+    private List<PassedClient> passedClients = null;
+    private List<PassedServer> passedServers = null;
+    
+    private CPDBaseSettings baseSettings;
+    
+    
 
     public CPDSettings()
     {
@@ -129,150 +121,45 @@ public class CPDSettings implements Serializable
     {
         this.captureRules = newValue;
     }
-
-    @Column(name="passed_clients", nullable=false)
-    public String getPassedClients()
+    
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<PassedClient> getPassedClients()
     {
         return this.passedClients;
     }
 
-    public void setPassedClients(String newValue)
+    public void setPassedClients(List<PassedClient> newValue)
     {
         this.passedClients = newValue;
     }
 
-    @Column(name="passed_servers", nullable=false)
-    public String getPassedServers()
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<PassedServer> getPassedServers()
     {
         return this.passedServers;
     }
 
-    public void setPassedServers(String newValue)
+    public void setPassedServers(List<PassedServer> newValue)
     {
         this.passedServers = newValue;
     }
 
-    @Column(name="capture_bypassed_traffic", nullable=false)
-    public boolean getCaptureBypassedTraffic()
-    {
-        return this.captureBypassedTraffic;
+    
+    @Embedded
+    public CPDBaseSettings getBaseSettings() {
+        return baseSettings;
     }
 
-    public void setCaptureBypassedTraffic(boolean newValue)
-    {
-        this.captureBypassedTraffic = newValue;
-    }
-    
-    @Column(name="authentication_type", nullable=false)
-    @Type(type="com.untangle.node.cpd.AuthenticationTypeUserType")
-    public AuthenticationType getAuthenticationType()
-    {
-    	return this.authenticationType;
-    }
-    
-    public void setAuthenticationType( AuthenticationType newValue )
-    {
-    	this.authenticationType = newValue;
-    }
-    
-    
-    @Column(name="idle_timeout", nullable=false)
-    public int getIdleTimeout()
-    {
-    	return this.idleTimeout;
-    }
-    
-    public void setIdleTimeout( int newValue )
-    {
-    	this.idleTimeout = newValue;
+    public void setBaseSettings(CPDBaseSettings baseSettings) {
+        this.baseSettings = baseSettings;
     }
 
-    @Column(name="timeout", nullable=false)
-    public int getTimeout()
-    {
-    	return this.timeout;
-    }
-    
-    public void setTimeout( int newValue )
-    {
-    	this.timeout = newValue;
-    }
-    
-    @Column(name="logout_button", nullable=false)
-    public boolean getLogoutButtonEnabled()
-    {
-    	return this.isLogoutButtonEnabled;
-    }
-    
-    public void setLogoutButtonEnabled( boolean newValue)
-    {
-    	this.isLogoutButtonEnabled = newValue;
-    }
-    
-    @Column(name="concurrent_logins", nullable=false)
-    public boolean getConcurrentLoginsEnabled()
-    {
-    	return this.areConcurrentLoginsEnabled;
-    }
-    
-    public void setConcurrentLoginsEnabled( boolean newValue)
-    {
-    	this.areConcurrentLoginsEnabled = newValue;
-    }
-
-    @Column(name="page_type", nullable=false)
-    @Type(type="com.untangle.node.cpd.PageTypeUserType")
-    public PageType getPageType()
-    {
-    	return this.pageType;
-    }
-    
-    public void setPageType( PageType newValue)
-    {
-    	this.pageType = newValue;
-    }
-    
-    @Column(name="page_parameters", nullable=false)
-    public String getPageParameters()
-    {
-    	return this.pageParameters;
-    }
-    
-    public void setPageParameters( String newValue)
-    {
-    	this.pageParameters = newValue;
-    }
- 
-    @Column(name="redirect_url", nullable=false)
-    public String getRedirectUrl()
-    {
-    	return this.redirectUrl;
-    }
-    
-    public void setRedirectUrl( String newValue)
-    {
-    	this.redirectUrl = newValue;
-    }
-    
-    @Column(name="https_page", nullable=false)
-    public boolean getUseHttpsPage()
-    {
-    	return this.useHttpsPage;
-    }
-    
-    public void setUseHttpsPage( boolean newValue)
-    {
-    	this.useHttpsPage = newValue;
-    }
-
-    @Column(name="redirect_https", nullable=false)
-    public boolean getRedirectHttpsEnabled()
-    {
-    	return this.isRedirectHttpsEnabled;
-    }
-    
-    public void setRedirectHttpsEnabled( boolean newValue)
-    {
-    	this.isRedirectHttpsEnabled = newValue;
-    }
 }

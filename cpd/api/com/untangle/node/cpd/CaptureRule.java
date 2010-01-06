@@ -18,7 +18,6 @@
 
 package com.untangle.node.cpd;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;

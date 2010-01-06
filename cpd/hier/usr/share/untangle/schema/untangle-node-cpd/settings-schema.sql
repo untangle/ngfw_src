@@ -40,13 +40,38 @@ CREATE TABLE settings.n_cpd_capture_rule (
     days TEXT,
     PRIMARY KEY (rule_id));
 
+-- com.untangle.node.cpd.PassedClient
+CREATE TABLE settings.n_cpd_passed_client (
+    rule_id INT8 NOT NULL,
+    settings_id INT8,
+    position INT4,
+    name TEXT,
+    category TEXT,
+    description TEXT,
+    live BOOL,
+    alert BOOL,
+    log BOOL,
+    address TEXT,
+    PRIMARY KEY (rule_id));
+
+-- com.untangle.node.cpd.PassedServer
+CREATE TABLE settings.n_cpd_passed_server (
+    rule_id INT8 NOT NULL,
+    settings_id INT8,
+    position INT4,
+    name TEXT,
+    category TEXT,
+    description TEXT,
+    live BOOL,
+    alert BOOL,
+    log BOOL,
+    address TEXT,
+    PRIMARY KEY (rule_id));
 
 -- com.untangle.node.cpd.CPDSettings
 CREATE TABLE settings.n_cpd_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
-    passed_clients TEXT,
-    passed_servers TEXT,
     capture_bypassed_traffic BOOL,
     authentication_type TEXT,
     idle_timeout INT4,

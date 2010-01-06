@@ -31,7 +31,9 @@ public class PhoneBookAssistant implements Assistant {
     /* Default to 30 minutes of cache for time */
     protected static long CACHE_FOR = 1800000;
 
-    /* These are the special addresses that are inside of the DNS map */
+    /*
+     * Map from the address to the Data (username, expiration date)
+     */
     private Map<InetAddress, Data> userMap = new ConcurrentHashMap<InetAddress, Data>();
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -151,17 +153,23 @@ public class PhoneBookAssistant implements Assistant {
     }
 
     public void clearExpiredData() {
+        logger.debug( "Clearing the expired data.");
+        
         Iterator<InetAddress> keyIterator = userMap.keySet().iterator();
         InetAddress address;
         Data data;
 
+        int numEntries = 0;
         while (keyIterator.hasNext()) {
             address = keyIterator.next();
             data = userMap.get(address);
             if (data.isExpired()) {
+                numEntries++;
                 keyIterator.remove();
             }
         }
+        
+        logger.debug( "Cleared " + numEntries + " entries." );
     }
 
     public Map<String, String> getUserMap() {
