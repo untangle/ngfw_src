@@ -48,7 +48,7 @@
 
   <servlet>
     <servlet-name>ImageServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.ImageServlet</servlet-class>
+    <servlet-class>com.untangle.uvm.servlet.ImageServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
