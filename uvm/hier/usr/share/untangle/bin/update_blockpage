@@ -51,7 +51,7 @@ download_update()
     local t_output
     t_output=$1
 
-    curl http://www.untangle.com/download/patches/blockpage.tar.gz > ${t_output}
+    wget -O ${t_output} http://guide.untangle.com/download/patches/blockpage.tar.gz 2> /dev/null
 }
 
 install_update()

@@ -16,8 +16,9 @@ if [ -f "@UVM_HOME@/activation.key" ]; then
 
     @UVM_HOME@/bin/utregister
 
+    ## Ignore errors here.
     if [ -x "@UVM_HOME@/bin/update_blockpage" ]; then
-        @UVM_HOME@/bin/update_blockpage
+        @UVM_HOME@/bin/update_blockpage || true
     fi
 fi
 
