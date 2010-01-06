@@ -948,12 +948,13 @@ Ung.ReportDetails = Ext.extend(Object, {
 
     getHighlightHTML: function(summaryItem) {
 	    stringTemplate = summaryItem.stringTemplate;
+	    stringTemplate = stringTemplate.replace(reports.selectedApplication,'<strong>'+reports.selectedNode.text+'</strong>');
 	    hvm = summaryItem.highlightValues.map;
 	    for (var key in hvm) {
 		stringTemplate = stringTemplate.replace('%(' + key + ')s',
-							'<b>' + hvm[key] + '</b>');
+							'<strong>' + hvm[key] + '</strong>');
 	    }
-	    return stringTemplate;
+	    return '<div class="highlight"><p style="background-image:url(/reports/image?name='+reports.selectedApplication+')">'+stringTemplate+'</p></div>';
 	},
 
     buildSummarySection: function (appName, section) {
@@ -966,8 +967,7 @@ Ung.ReportDetails = Ext.extend(Object, {
 		str = this.getHighlightHTML(summaryItem)
 		// FIXME: this should span the 2 columns
 		columns = [];
-		items.push({html:str, bodyStyle:'font-size:30%,background-color:#888888;'});
-		items.push({});
+		items.push({html:str,colspan:2});
 	    } else {
 		
             // graph
