@@ -67,6 +67,9 @@ require "#{SRC_HOME}/adblocker/package.rb"
 ## Virus based nodes
 require "#{SRC_HOME}/clam/package.rb"
 
+## Captive portal
+require "#{SRC_HOME}/cpd/package.rb"
+
 ## Other packages
 require "#{SRC_HOME}/util/package.rb"
 
