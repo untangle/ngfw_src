@@ -23,7 +23,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.buildCaptiveHosts();
             this.buildPassedHosts();
             this.buildUserAuthentication();
-//             this.buildCaptivePage();
+            this.buildCaptivePage();
 //             this.buildLoginEventLog();
 //             this.buildBlockEventLog();
 
@@ -31,7 +31,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
             // this.buildTabPanel([this.panelCaptiveHosts, this.panelPassedHosts, this.panelUserAuthentication,
             // this.panelCaptivePage, this.gridLoginEventLog, this.gridBlockEventLog]);
             
-            this.buildTabPanel([ this.panelCaptiveHosts, this.panelPassedHosts, this.panelUserAuthentication ]);
+            this.buildTabPanel([ this.panelCaptiveHosts, this.panelPassedHosts, this.panelUserAuthentication,
+                                 this.panelCaptivePage ]);
 
             Ung.CPD.superclass.initComponent.call(this);
         },
@@ -64,11 +65,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().captureBypassedTraffic,
                         listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().captureBypassedTraffic = checked;
-                                }.createDelegate(this)
-                            }
+                            "check" : function(elem, checked) {
+                                this.getBaseSettings().captureBypassedTraffic = checked;
+                            }.createDelegate(this)
                         }
                     }]
                 }]
@@ -420,6 +419,18 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         buildUserAuthentication : function()
         {
+            var onUpdateRadioButton = function( elem, checked )
+            {
+                if ( checked ) {
+                    this.getBaseSettings().authenticationType = elem.inputValue;
+                }
+            }.createDelegate(this);
+
+            var onRenderRadioButton = function( elem )
+            {
+                elem.setValue(this.getBaseSettings().authenticationType);
+            }.createDelegate(this);
+
             this.panelUserAuthentication = new Ext.Panel({
                 name : "panelUserAuthentication",
                 helpSource : '',
@@ -439,13 +450,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : this.i18n._("None"),
                         hideLabel : true,
                         name : "authenticationType",
-                        checked : !this.getBaseSettings().defaultAccept,
+                        inputValue : "NONE",
                         listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().authenticationType = "NONE";
-                                }.createDelegate(this)
-                            }
+                            "check" : onUpdateRadioButton,
+                            "render" : onRenderRadioButton
                         }
                     },{
                         xtype : "radio",
@@ -453,13 +461,11 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                                   "<i>", "</i>" ),
                         hideLabel : true,
                         name : "authenticationType",
-                        checked : this.getBaseSettings().defaultAccept,
+                        inputValue : "RADIUS",
+                        checked : this.getBaseSettings().authenticationType == "RADIUS",
                         listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().authenticationType = "RADIUS";
-                                }.createDelegate(this)
-                            }
+                            "check" : onUpdateRadioButton,
+                            "render" : onRenderRadioButton
                         }
                     },{
                         xtype : "radio",
@@ -467,13 +473,11 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                                   "<i>", "</i>" ),
                         hideLabel : true,
                         name : "authenticationType",
-                        checked : this.getBaseSettings().defaultAccept,
+                        checked : this.getBaseSettings().authenticationType == "ACTIVE_DIRECTORY",
+                        inputValue : "ACTIVE_DIRECTORY",
                         listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().authenticationType = "ACTIVE_DIRECTORY";
-                                }.createDelegate(this)
-                            }
+                            "check" : onUpdateRadioButton,
+                            "render" : onRenderRadioButton
                         }
                     }]
                 },{
@@ -489,11 +493,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : this.i18n._( "minutes" ),
                         value : this.getBaseSettings().idleTimeout,
                         listeners : {
-                            "change" : {
-                                fn : function( elem, newValue ){
-                                    this.getBaseSettings().idleTimeout = newValue;
-                                }.createDelegate(this)
-                            }
+                            "change" : function( elem, newValue ){
+                                this.getBaseSettings().idleTimeout = newValue;
+                            }.createDelegate(this)
                         }
                     },{
                         xtype : "unumberfield",
@@ -504,11 +506,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : this.i18n._( "minutes" ),
                         value : this.getBaseSettings().timeout,
                         listeners : {
-                            "change" : {
-                                fn : function( elem, newValue ){
-                                    this.getBaseSettings().timeout = newValue;
-                                }.createDelegate(this)
-                            }
+                            "change" : function( elem, newValue ){
+                                this.getBaseSettings().timeout = newValue;
+                            }.createDelegate(this)
                         }
                     },{
                         xtype : "checkbox",
@@ -516,11 +516,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().logoutButtonEnabled,
                         listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().logoutButtonEnabled = checked;
-                                }.createDelegate(this)
-                            }
+                            "check" : function(elem, checked) {
+                                this.getBaseSettings().logoutButtonEnabled = checked;
+                            }.createDelegate(this)
                         }
                     },{
                         xtype : "checkbox",
@@ -528,15 +526,154 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         hideLabel : true,
                         checked : this.getBaseSettings().concurrentLoginsEnabled,
                         listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    this.getBaseSettings().concurrentLoginsEnabled = checked;
-                                }.createDelegate(this)
-                            }
+                            "check" : function(elem, checked) {
+                                this.getBaseSettings().concurrentLoginsEnabled = checked;
+                            }.createDelegate(this)
                         }
                     }]
                 }]
             });
+        },
+
+        buildCaptivePage : function()
+        {
+            var onUpdateRadioButton = function( elem, checked )
+            {
+                if ( checked ) {
+                    this.getBaseSettings().pageType = elem.inputValue;
+                    this.captivePageHideComponents( elem.inputValue );
+                }
+            }.createDelegate(this);
+            
+            var onRenderRadioButton = function( elem )
+            {
+                this.panelCaptivePage.find( "name", "pageType" )[0].setValue(this.getBaseSettings().pageType);
+            }.createDelegate(this);
+
+            this.panelCaptivePage = new Ext.Panel({
+                name : "panelCaptivePage",
+                helpSource : "",
+                // private fields
+                gridRulesList : null,
+                parentId : this.getId(),
+                title : this.i18n._("Captive Page"),
+                autoScroll : true,
+                border : false,
+                cls: "ung-panel",
+                
+                items : [{
+                    xtype : "fieldset",
+                    autoHeight : true,
+                    title : this.i18n._( "Captive Portal Page" ),
+                    items : [{
+                        xtype : "radio",
+                        boxLabel : this.i18n._("Basic Login"),
+                        hideLabel : true,
+                        name : "pageType",
+                        inputValue : "BASIC_LOGIN",
+                        listeners : {
+                            "check" : onUpdateRadioButton
+                        }
+                    },{
+                        xtype : "radio",
+                        boxLabel : this.i18n._("Basic Message"),
+                        hideLabel : true,
+                        name : "pageType",
+                        inputValue : "BASIC_MESSAGE",
+                        listeners : {
+                            "check" : onUpdateRadioButton
+                        }
+                    },{
+                        xtype : "radio",
+                        boxLabel : this.i18n._("Custom"),
+                        hideLabel : true,
+                        name : "pageType",
+                        inputValue : "CUSTOM",
+                        listeners : {
+                            "check" : onUpdateRadioButton
+                        }
+                    },{
+                        xtype : "fieldset",
+                        height : 400,
+                        title : this.i18n._( "Captive Portal Page Configuration" ),
+                        items : [{
+                            xtype : "textfield",
+                            allowBlank : false,
+                            name : "basicLoginPageTitle",
+                            fieldLabel : this.i18n._("Page Title"),
+                            pageType : "BASIC_LOGIN"
+                        },{
+                            xtype : "textfield",
+                            allowBlank : false,
+                            name : "basicLoginUsername",
+                            fieldLabel : this.i18n._("Username Text"),
+                            pageType : "BASIC_LOGIN"
+                        },{
+                            xtype : "textfield",
+                            allowBlank : false,
+                            name : "basicLoginPassword",
+                            fieldLabel : this.i18n._("Password Text"),
+                            pageType : "BASIC_LOGIN"
+                        },{
+                            xtype : "textfield",
+                            allowBlank : false,
+                            name : "basicLoginFooter",
+                            fieldLabel : this.i18n._("Lower Text"),
+                            pageType : "BASIC_LOGIN"
+                        },{
+                            xtype : "textfield",
+                            allowBlank : false,
+                            name : "basicMessagePageTitle",
+                            fieldLabel : this.i18n._("Page Title"),
+                            pageType : "BASIC_MESSAGE"
+                        },{
+                            xtype : "textarea",
+                            allowBlank : false,
+                            name : "basicMessageMessageText",
+                            width : 400,
+                            height : 250,
+                            fieldLabel : this.i18n._("Message Text"),
+                            pageType : "BASIC_MESSAGE"
+                        },{
+                            xtype : "checkbox",
+                            allowBlank : false,
+                            name : "basicMessageAgree",
+                            fieldLabel : this.i18n._("Agree Checkbox"),
+                            pageType : "BASIC_MESSAGE"
+                        },{
+                            xtype : "textfield",
+                            allowBlank : false,
+                            name : "basicMessageAgreeText",
+                            fieldLabel : this.i18n._("Agree Text"),
+                            pageType : "BASIC_MESSAGE"
+                        },{
+                            fieldLabel : this.i18n._("File"),
+                            name : "customUploadFile",
+                            inputType : "file",
+                            xtype : "textfield",
+                            pageType : "CUSTOM",
+                            allowBlank : false
+                        }]
+                    },{
+                        xtype: "button",
+                        name : "viewPage",
+                        text : i18n._("View Page")
+                    }]
+                }]
+            });
+            
+            // this.panelCaptivePage.addListener(,function() { alert( "foo" )});
+        },
+
+        captivePageHideComponents : function( currentValue )
+        {
+            var values = [ "BASIC_LOGIN", "BASIC_MESSAGE", "CUSTOM" ];
+            for ( var c = 0 ; c < values.length ; c++ ) {
+                var item = values[c];
+                Ext.each( this.panelCaptivePage.find( "pageType", item ), function( component ) { 
+                    component.setContainerVisible( currentValue == item );
+                }.createDelegate(this));
+            }
         },
 
         validateServer : function() {

@@ -79,6 +79,32 @@ Ext.override(Ext.TabPanel, {
     }
 });
 
+Ext.override( Ext.form.Field, {
+    showContainer : function()
+    {
+        this.show();
+        this.enable();
+        /* show entire container and children (including label if applicable) */
+        this.getEl().up('.x-form-item').setDisplayed( true );
+    },
+    
+    hideContainer : function()
+    {
+        this.disable();
+        this.hide();
+        this.getEl().up('.x-form-item').setDisplayed( false );
+    },
+    setContainerVisible: function(visible) {
+        if (visible) {
+            this.showContainer();
+        } else {
+            this.hideContainer();
+        }
+        return this;
+    }
+});
+
+
 
 Ung.form.TextField = Ext.extend( Ext.form.TextField, {
     onRender : function(ct, position)
