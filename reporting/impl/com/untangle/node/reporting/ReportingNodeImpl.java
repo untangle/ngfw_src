@@ -19,6 +19,7 @@ package com.untangle.node.reporting;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.Validator;
@@ -43,16 +44,17 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
     {
         ReportingNodeImpl.this.settings = settings;
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Void> tw = new TransactionWork<Void>() {
+            public boolean doWork(Session s)
             {
-                public boolean doWork(Session s)
-                {
-                    s.saveOrUpdate(settings);
-                    return true;
-                }
+                s.saveOrUpdate(settings);
+                return true;
+            }
 
-                public Object getResult() { return null; }
+            public Void getResult() {
+                return null;
             };
+        };
         getNodeContext().runTransaction(tw);
     }
 
@@ -69,30 +71,31 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 
     protected void postInit(String[] args)
     {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery
-                        ("from ReportingSettings ts where ts.tid = :tid");
-                    q.setParameter("tid", getTid());
-                    settings = (ReportingSettings)q.uniqueResult();
+        TransactionWork<Void> tw = new TransactionWork<Void>() {
+            public boolean doWork(Session s) {
+                Query q = s
+                .createQuery("from ReportingSettings ts where ts.tid = :tid");
+                q.setParameter("tid", getTid());
+                settings = (ReportingSettings) q.uniqueResult();
 
-                    if (null == settings) {
-                        settings = initSettings();
-                        s.merge(settings);
-                    }
-
-                    if (null == settings.getSchedule()) {
-                        settings.setSchedule(new Schedule());
-                        s.merge(settings);
-                    }
-
-                    return true;
+                if (null == settings) {
+                    settings = initSettings();
+                    s.merge(settings);
                 }
 
-                public Object getResult() { return null; }
-            };
+                if (null == settings.getSchedule()) {
+                    settings.setSchedule(new Schedule());
+                    s.merge(settings);
+                }
+
+                return true;
+            }
+
+            public Void getResult() {
+                return null;
+            }
+        };
+
         getNodeContext().runTransaction(tw);
     }
 
@@ -146,32 +149,35 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
     {
         RemoteAdminManager adminManager = LocalUvmContextFactory.context().adminManager();
         String reportEmail = adminManager.getMailSettings().getReportEmail();
-    HashSet<String> res = new HashSet();
+        Set<String> res = new HashSet<String>();
         if ((reportEmail != null) && (!reportEmail.isEmpty())) {
-        reportEmail = reportEmail.trim();
-        res.addAll(Arrays.asList(reportEmail.split(",")));
-    }
+            reportEmail = reportEmail.trim();
+            res.addAll(Arrays.asList(reportEmail.split(",")));
+        }
 
         /* add in all other admins with an email */
-    String email;
         for (User user : adminManager.getAdminSettings().getUsers()) {
-        email = user.getEmail();
-        if ((email != null) && (!email.equals("[no email]")
+            String email = user.getEmail();
+            if ((email != null) && (!email.equals("[no email]")
                     && (!email.isEmpty()))) {
-        res.add(email);
-        }
+                res.add(email);
+            }
         }
 
-    // assemble back the comma-separated string
-    String[] rea = res.toArray(new String[0]);
-    reportEmail = rea[0];
-    for (int i = 1 ; i < rea.length ; i++)
-        reportEmail += "," + rea[i];
+        // assemble back the comma-separated string
+        StringBuilder sb = new StringBuilder();
+        for ( String email : res ) {
+            if ( sb.length() > 0 ) {
+                sb.append(",");
+            }
+            sb.append(email);
+        }
 
-    // modify the passed-in ReportingSettings, so the users we gathered
-    // are now known to the report node
+        reportEmail = sb.toString();
+        // modify the passed-in ReportingSettings, so the users we gathered
+        // are now known to the report node
         s.setReportingUsers(reportEmail);
-    // also sign them up for emailed reports
-    adminManager.getMailSettings().setReportEmail(reportEmail);
+        // also sign them up for emailed reports
+        adminManager.getMailSettings().setReportEmail(reportEmail);
     }
 }
