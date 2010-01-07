@@ -28,6 +28,11 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.user.ADLoginEvent;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Worker;
 import com.untangle.uvm.util.WorkerRunner;
@@ -43,12 +48,19 @@ public class CPDImpl extends AbstractNode implements CPD {
 
     private final PhoneBookAssistant phoneBookAssistant;
     private final WorkerRunner worker = new WorkerRunner(new CacheMonitor(), null);
+    
+    private final EventLogger<ADLoginEvent> loginEventLogger;
+    private final EventLogger<BlockEvent> blockEventLogger;
 
     private CPDSettings settings;
 
     // constructor ------------------------------------------------------------
 
     public CPDImpl() {
+        NodeContext nodeContext = getNodeContext();
+        this.loginEventLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
+        this.blockEventLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
+        
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
         this.phoneBookAssistant = new PhoneBookAssistant();
@@ -228,6 +240,19 @@ public class CPDImpl extends AbstractNode implements CPD {
         InetAddress address = InetAddress.getByName(addressString);
         return this.phoneBookAssistant.removeEntry(address);
     }
+    
+    @Override
+    public EventManager<ADLoginEvent> getLoginEventManager()
+    {
+        return this.loginEventLogger;
+    }
+    
+    @Override
+    public EventManager<BlockEvent> getBlockEventManager()
+    {
+        return this.blockEventLogger;
+    }
+
 
     // AbstractNode methods ----------------------------------------------
 

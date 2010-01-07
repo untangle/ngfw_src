@@ -23,8 +23,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.user.ADLoginEvent;
 
 public interface CPD extends Node
 {
@@ -58,4 +59,8 @@ public interface CPD extends Node
     public String registerUser( String address, String username, Date expirationDate ) throws UnknownHostException;
     public Map<String,String> getUserMap();
     public String removeUser( String address ) throws UnknownHostException;
+    
+    public EventManager<ADLoginEvent> getLoginEventManager();
+    public EventManager<BlockEvent> getBlockEventManager();
+
 }

@@ -23,8 +23,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.node.http.HttpRequestEvent;
-import com.untangle.node.http.RequestLine;
+import org.apache.catalina.Valve;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
@@ -46,6 +49,7 @@ import com.untangle.uvm.node.IPMaddrValidator;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.util.I18nUtil;
@@ -58,10 +62,6 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import org.apache.catalina.Valve;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Implementation of the Web Filter.
@@ -108,9 +108,9 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         this.replacementGenerator = buildReplacementGenerator();
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-        SimpleEventFilter sef = new WebFilterBlockedFilter(this);
+        SimpleEventFilter<WebFilterEvent> sef = new WebFilterBlockedFilter(this);
         eventLogger.addSimpleEventFilter(sef);
-        ListEventFilter lef = new WebFilterAllFilter(this);
+        ListEventFilter<WebFilterEvent> lef = new WebFilterAllFilter(this);
         eventLogger.addListEventFilter(lef);
         sef = new WebFilterWhitelistFilter(this);
         eventLogger.addSimpleEventFilter(sef);
@@ -119,7 +119,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
         unblockEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         UnblockEventAllFilter ueaf = new UnblockEventAllFilter(this);
-    unblockEventLogger.addSimpleEventFilter(ueaf);
+        unblockEventLogger.addSimpleEventFilter(ueaf);
 
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
@@ -164,7 +164,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     public void setWebFilterSettings(final WebFilterSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Void> tw = new TransactionWork<Void>()
             {
                 public boolean doWork(Session s)
                 {
@@ -173,7 +173,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                     return true;
                 }
 
-                public Object getResult() { return null; }
+                public Void getResult() { return null; }
             };
         getNodeContext().runTransaction(tw);
 
@@ -256,17 +256,16 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 logger.warn("cannot unblock null host");
                 return false;
             } else {
-                String url = "http://" + site;
                 logger.warn("temporarily unblocking site: " + site);
                 InetAddress addr = bd.getClientAddress();
 
                 bypassMonitor.addBypassedSite(addr, site);
                 getBlacklist().addWhitelistHost(addr, site);
 
-        UnblockEvent ue = new UnblockEvent(addr, false,
-                           bd.getFormattedUrl(),
-                           getVendor(), getTid().getPolicy());
-        unblockEventLogger.log(ue);
+                UnblockEvent ue = new UnblockEvent(addr, false,
+                        bd.getFormattedUrl(),
+                        getVendor(), getTid().getPolicy());
+                unblockEventLogger.log(ue);
                 return true;
             }
         }
@@ -293,14 +292,14 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     public void setBaseSettings(final WebFilterBaseSettings baseSettings) {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Void> tw = new TransactionWork<Void>() {
                 public boolean doWork(Session s) {
                     settings.setBaseSettings(baseSettings);
                     s.merge(settings);
                     return true;
                 }
 
-                public Object getResult() {
+                public Void getResult() {
                     return null;
                 }
             };
@@ -381,7 +380,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                           final List[] blockedMimeTypes, final List[] blockedExtensions,
                           final List[] blacklistCategories) {
 
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Void> tw = new TransactionWork<Void>() {
                 public boolean doWork(Session s) {
                     if (baseSettings != null) {
                         settings.setBaseSettings(baseSettings);
@@ -399,7 +398,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                     return true;
                 }
 
-                public Object getResult() {
+                public Void getResult() {
                     return null;
                 }
             };
@@ -441,7 +440,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
         WebFilterSettings settings = new WebFilterSettings(getTid());
 
-        Set s = new HashSet<StringRule>();
+        Set<StringRule> s = new HashSet<StringRule>();
 
         // this third column is more of a description than a category, the way the client is using it
         // the second column is being used as the "category"
@@ -468,148 +467,148 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
         settings.setBlockedExtensions(s);
 
-        s = new HashSet<MimeTypeRule>();
-        s.add(new MimeTypeRule(new MimeType("application/octet-stream"), "unspecified data", "byte stream", false));
+        Set<MimeTypeRule> m = new HashSet<MimeTypeRule>();
+        m.add(new MimeTypeRule(new MimeType("application/octet-stream"), "unspecified data", "byte stream", false));
 
-        s.add(new MimeTypeRule(new MimeType("application/x-msdownload"), "Microsoft download", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/exe"), "executable", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-exe"), "executable", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/dos-exe"), "DOS executable", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-winexe"), "Windows executable", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/msdos-windows"), "MS-DOS executable", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-msdos-program"), "MS-DOS program", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-oleobject"), "Microsoft OLE Object", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-msdownload"), "Microsoft download", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/exe"), "executable", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-exe"), "executable", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/dos-exe"), "DOS executable", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-winexe"), "Windows executable", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/msdos-windows"), "MS-DOS executable", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-msdos-program"), "MS-DOS program", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-oleobject"), "Microsoft OLE Object", "executable", false));
 
-        s.add(new MimeTypeRule(new MimeType("application/x-java-applet"), "Java Applet", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-java-applet"), "Java Applet", "executable", false));
 
-        s.add(new MimeTypeRule(new MimeType("audio/mpegurl"), "MPEG audio URLs", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-mpegurl"), "MPEG audio URLs", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/mp3"), "MP3 audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-mp3"), "MP3 audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/mpeg"), "MPEG audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/mpg"), "MPEG audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-mpeg"), "MPEG audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-mpg"), "MPEG audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-ogg"), "Ogg Vorbis", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/m4a"), "MPEG 4 audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/mp2"), "MP2 audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/mp1"), "MP1 audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("application/ogg"), "Ogg Vorbis", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/wav"), "Microsoft WAV", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-wav"), "Microsoft WAV", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-pn-wav"), "Microsoft WAV", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/aac"), "Advanced Audio Coding", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/midi"), "MIDI audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/mpeg"), "MPEG audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/aiff"), "AIFF audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-aiff"), "AIFF audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-pn-aiff"), "AIFF audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-pn-windows-acm"), "Windows ACM", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-pn-windows-pcm"), "Windows PCM", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/basic"), "8-bit u-law PCM", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-pn-au"), "Sun audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/3gpp"), "3GPP", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/3gpp-encrypted"), "encrypted 3GPP", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/scpls"), "streaming mp3 playlists", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-scpls"), "streaming mp3 playlists", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("application/smil"), "SMIL", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("application/sdp"), "Streaming Download Project", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-sdp"), "Streaming Download Project", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/amr"), "AMR codec", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/amr-encrypted"), "AMR encrypted codec", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/amr-wb"), "AMR-WB codec", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/amr-wb-encrypted"), "AMR-WB encrypted codec", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr"), "3GPP codec", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr-encrypted"), "3GPP-AMR encrypted codec", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr-wb"), "3gpp-AMR-WB codec", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr-wb-encrypted"), "3gpp-AMR_WB encrypted codec", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("application/streamingmedia"), "Streaming Media", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/mpegurl"), "MPEG audio URLs", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-mpegurl"), "MPEG audio URLs", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/mp3"), "MP3 audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-mp3"), "MP3 audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/mpeg"), "MPEG audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/mpg"), "MPEG audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-mpeg"), "MPEG audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-mpg"), "MPEG audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-ogg"), "Ogg Vorbis", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/m4a"), "MPEG 4 audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/mp2"), "MP2 audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/mp1"), "MP1 audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("application/ogg"), "Ogg Vorbis", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/wav"), "Microsoft WAV", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-wav"), "Microsoft WAV", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-pn-wav"), "Microsoft WAV", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/aac"), "Advanced Audio Coding", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/midi"), "MIDI audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/mpeg"), "MPEG audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/aiff"), "AIFF audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-aiff"), "AIFF audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-pn-aiff"), "AIFF audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-pn-windows-acm"), "Windows ACM", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-pn-windows-pcm"), "Windows PCM", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/basic"), "8-bit u-law PCM", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-pn-au"), "Sun audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/3gpp"), "3GPP", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/3gpp-encrypted"), "encrypted 3GPP", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/scpls"), "streaming mp3 playlists", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-scpls"), "streaming mp3 playlists", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("application/smil"), "SMIL", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("application/sdp"), "Streaming Download Project", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-sdp"), "Streaming Download Project", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/amr"), "AMR codec", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/amr-encrypted"), "AMR encrypted codec", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/amr-wb"), "AMR-WB codec", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/amr-wb-encrypted"), "AMR-WB encrypted codec", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr"), "3GPP codec", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr-encrypted"), "3GPP-AMR encrypted codec", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr-wb"), "3gpp-AMR-WB codec", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr-wb-encrypted"), "3gpp-AMR_WB encrypted codec", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("application/streamingmedia"), "Streaming Media", "audio", false));
 
-        s.add(new MimeTypeRule(new MimeType("video/mpeg"), "MPEG video", "video", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-ms-wma"), "Windows Media", "video", false));
-        s.add(new MimeTypeRule(new MimeType("video/quicktime"), "QuickTime", "video", false));
-        s.add(new MimeTypeRule(new MimeType("video/x-ms-asf"), "Microsoft ASF", "video", false));
-        s.add(new MimeTypeRule(new MimeType("video/x-msvideo"), "Microsoft AVI", "video", false));
-        s.add(new MimeTypeRule(new MimeType("video/x-sgi-mov"), "SGI movie", "video", false));
-        s.add(new MimeTypeRule(new MimeType("video/3gpp"), "3GPP video", "video", false));
-        s.add(new MimeTypeRule(new MimeType("video/3gpp-encrypted"), "3GPP encrypted video", "video", false));
-        s.add(new MimeTypeRule(new MimeType("video/3gpp2"), "3GPP2 video", "video", false));
+        m.add(new MimeTypeRule(new MimeType("video/mpeg"), "MPEG video", "video", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-ms-wma"), "Windows Media", "video", false));
+        m.add(new MimeTypeRule(new MimeType("video/quicktime"), "QuickTime", "video", false));
+        m.add(new MimeTypeRule(new MimeType("video/x-ms-asf"), "Microsoft ASF", "video", false));
+        m.add(new MimeTypeRule(new MimeType("video/x-msvideo"), "Microsoft AVI", "video", false));
+        m.add(new MimeTypeRule(new MimeType("video/x-sgi-mov"), "SGI movie", "video", false));
+        m.add(new MimeTypeRule(new MimeType("video/3gpp"), "3GPP video", "video", false));
+        m.add(new MimeTypeRule(new MimeType("video/3gpp-encrypted"), "3GPP encrypted video", "video", false));
+        m.add(new MimeTypeRule(new MimeType("video/3gpp2"), "3GPP2 video", "video", false));
 
-        s.add(new MimeTypeRule(new MimeType("audio/x-realaudio"), "RealAudio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("text/vnd.rn-realtext"), "RealText", "text", false));
-        s.add(new MimeTypeRule(new MimeType("audio/vnd.rn-realaudio"), "RealAudio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-pn-realaudio"), "RealAudio plug-in", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("image/vnd.rn-realpix"), "RealPix", "image", false));
-        s.add(new MimeTypeRule(new MimeType("application/vnd.rn-realmedia"), "RealMedia", "video", false));
-        s.add(new MimeTypeRule(new MimeType("application/vnd.rn-realmedia-vbr"), "RealMedia VBR", "video", false));
-        s.add(new MimeTypeRule(new MimeType("application/vnd.rn-realmedia-secure"), "secure RealMedia", "video", false));
-        s.add(new MimeTypeRule(new MimeType("application/vnd.rn-realaudio-secure"), "secure RealAudio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("audio/x-realaudio-secure"), "secure RealAudio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("video/vnd.rn-realvideo-secure"), "secure RealVideo", "video", false));
-        s.add(new MimeTypeRule(new MimeType("video/vnd.rn-realvideo"), "RealVideo", "video", false));
-        s.add(new MimeTypeRule(new MimeType("application/vnd.rn-realsystem-rmj"), "RealSystem media", "video", false));
-        s.add(new MimeTypeRule(new MimeType("application/vnd.rn-realsystem-rmx"), "RealSystem secure media", "video", false));
-        s.add(new MimeTypeRule(new MimeType("audio/rn-mpeg"), "MPEG audio", "audio", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-shockwave-flash"), "Macromedia Shockwave", "multimedia", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-director"), "Macromedia Shockwave", "multimedia", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-authorware-bin"), "Macromedia Authorware binary", "multimedia", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-authorware-map"), "Macromedia Authorware shocked file", "multimedia", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-authorware-seg"), "Macromedia Authorware shocked packet", "multimedia", false));
-        s.add(new MimeTypeRule(new MimeType("application/futuresplash"), "Macromedia FutureSplash", "multimedia", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-realaudio"), "RealAudio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("text/vnd.rn-realtext"), "RealText", "text", false));
+        m.add(new MimeTypeRule(new MimeType("audio/vnd.rn-realaudio"), "RealAudio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-pn-realaudio"), "RealAudio plug-in", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("image/vnd.rn-realpix"), "RealPix", "image", false));
+        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realmedia"), "RealMedia", "video", false));
+        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realmedia-vbr"), "RealMedia VBR", "video", false));
+        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realmedia-secure"), "secure RealMedia", "video", false));
+        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realaudio-secure"), "secure RealAudio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("audio/x-realaudio-secure"), "secure RealAudio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("video/vnd.rn-realvideo-secure"), "secure RealVideo", "video", false));
+        m.add(new MimeTypeRule(new MimeType("video/vnd.rn-realvideo"), "RealVideo", "video", false));
+        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realsystem-rmj"), "RealSystem media", "video", false));
+        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realsystem-rmx"), "RealSystem secure media", "video", false));
+        m.add(new MimeTypeRule(new MimeType("audio/rn-mpeg"), "MPEG audio", "audio", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-shockwave-flash"), "Macromedia Shockwave", "multimedia", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-director"), "Macromedia Shockwave", "multimedia", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-authorware-bin"), "Macromedia Authorware binary", "multimedia", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-authorware-map"), "Macromedia Authorware shocked file", "multimedia", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-authorware-seg"), "Macromedia Authorware shocked packet", "multimedia", false));
+        m.add(new MimeTypeRule(new MimeType("application/futuresplash"), "Macromedia FutureSplash", "multimedia", false));
 
-        s.add(new MimeTypeRule(new MimeType("application/zip"), "ZIP", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-lzh"), "LZH archive", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/zip"), "ZIP", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-lzh"), "LZH archive", "archive", false));
 
-        s.add(new MimeTypeRule(new MimeType("image/gif"), "Graphics Interchange Format", "image", false));
-        s.add(new MimeTypeRule(new MimeType("image/png"), "Portable Network Graphics", "image", false));
-        s.add(new MimeTypeRule(new MimeType("image/jpeg"), "JPEG", "image", false));
-        s.add(new MimeTypeRule(new MimeType("image/bmp"), "Microsoft BMP", "image", false));
-        s.add(new MimeTypeRule(new MimeType("image/tiff"), "Tagged Image File Format", "image", false));
-        s.add(new MimeTypeRule(new MimeType("image/x-freehand"), "Macromedia Freehand", "image", false));
-        s.add(new MimeTypeRule(new MimeType("image/x-cmu-raster"), "CMU Raster", "image", false));
-        s.add(new MimeTypeRule(new MimeType("image/x-rgb"), "RGB image", "image", false));
+        m.add(new MimeTypeRule(new MimeType("image/gif"), "Graphics Interchange Format", "image", false));
+        m.add(new MimeTypeRule(new MimeType("image/png"), "Portable Network Graphics", "image", false));
+        m.add(new MimeTypeRule(new MimeType("image/jpeg"), "JPEG", "image", false));
+        m.add(new MimeTypeRule(new MimeType("image/bmp"), "Microsoft BMP", "image", false));
+        m.add(new MimeTypeRule(new MimeType("image/tiff"), "Tagged Image File Format", "image", false));
+        m.add(new MimeTypeRule(new MimeType("image/x-freehand"), "Macromedia Freehand", "image", false));
+        m.add(new MimeTypeRule(new MimeType("image/x-cmu-raster"), "CMU Raster", "image", false));
+        m.add(new MimeTypeRule(new MimeType("image/x-rgb"), "RGB image", "image", false));
 
-        s.add(new MimeTypeRule(new MimeType("text/css"), "cascading style sheet", "text", false));
-        s.add(new MimeTypeRule(new MimeType("text/html"), "HTML", "text", false));
-        s.add(new MimeTypeRule(new MimeType("text/plain"), "plain text", "text", false));
-        s.add(new MimeTypeRule(new MimeType("text/richtext"), "rich text", "text", false));
-        s.add(new MimeTypeRule(new MimeType("text/tab-separated-values"), "tab separated values", "text", false));
-        s.add(new MimeTypeRule(new MimeType("text/xml"), "XML", "text", false));
-        s.add(new MimeTypeRule(new MimeType("text/xsl"), "XSL", "text", false));
-        s.add(new MimeTypeRule(new MimeType("text/x-sgml"), "SGML", "text", false));
-        s.add(new MimeTypeRule(new MimeType("text/x-vcard"), "vCard", "text", false));
+        m.add(new MimeTypeRule(new MimeType("text/css"), "cascading style sheet", "text", false));
+        m.add(new MimeTypeRule(new MimeType("text/html"), "HTML", "text", false));
+        m.add(new MimeTypeRule(new MimeType("text/plain"), "plain text", "text", false));
+        m.add(new MimeTypeRule(new MimeType("text/richtext"), "rich text", "text", false));
+        m.add(new MimeTypeRule(new MimeType("text/tab-separated-values"), "tab separated values", "text", false));
+        m.add(new MimeTypeRule(new MimeType("text/xml"), "XML", "text", false));
+        m.add(new MimeTypeRule(new MimeType("text/xsl"), "XSL", "text", false));
+        m.add(new MimeTypeRule(new MimeType("text/x-sgml"), "SGML", "text", false));
+        m.add(new MimeTypeRule(new MimeType("text/x-vcard"), "vCard", "text", false));
 
-        s.add(new MimeTypeRule(new MimeType("application/mac-binhex40"), "Macintosh BinHex", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-stuffit"), "Macintosh Stuffit archive", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/macwriteii"), "MacWrite Document", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/applefile"), "Macintosh File", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/mac-compactpro"), "Macintosh Compact Pro", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/mac-binhex40"), "Macintosh BinHex", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-stuffit"), "Macintosh Stuffit archive", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/macwriteii"), "MacWrite Document", "document", false));
+        m.add(new MimeTypeRule(new MimeType("application/applefile"), "Macintosh File", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/mac-compactpro"), "Macintosh Compact Pro", "archive", false));
 
-        s.add(new MimeTypeRule(new MimeType("application/x-bzip2"), "block compressed", "compressed", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-shar"), "shell archive", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-gtar"), "gzipped tar archive", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-gzip"), "gzip compressed", "compressed", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-tar"), "4.3BSD tar archive", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-ustar"), "POSIX tar archive", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-cpio"), "old cpio archive", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-bcpio"), "POSIX cpio archive", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-sv4crc"), "System V cpio with CRC", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-compress"), "UNIX compressed", "compressed", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-sv4cpio"), "System V cpio", "archive", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-sh"), "UNIX shell script", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-csh"), "UNIX csh script", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-tcl"), "Tcl script", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-javascript"), "JavaScript", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-bzip2"), "block compressed", "compressed", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-shar"), "shell archive", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-gtar"), "gzipped tar archive", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-gzip"), "gzip compressed", "compressed", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-tar"), "4.3BSD tar archive", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-ustar"), "POSIX tar archive", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-cpio"), "old cpio archive", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-bcpio"), "POSIX cpio archive", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-sv4crc"), "System V cpio with CRC", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-compress"), "UNIX compressed", "compressed", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-sv4cpio"), "System V cpio", "archive", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-sh"), "UNIX shell script", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-csh"), "UNIX csh script", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-tcl"), "Tcl script", "executable", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-javascript"), "JavaScript", "executable", false));
 
-        s.add(new MimeTypeRule(new MimeType("application/x-excel"), "Microsoft Excel", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/mspowerpoint"), "Microsoft Powerpoint", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/msword"), "Microsoft Word", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/wordperfect5.1"), "Word Perfect", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/rtf"), "Rich Text Format", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
+        m.add(new MimeTypeRule(new MimeType("application/x-excel"), "Microsoft Excel", "document", false));
+        m.add(new MimeTypeRule(new MimeType("application/mspowerpoint"), "Microsoft Powerpoint", "document", false));
+        m.add(new MimeTypeRule(new MimeType("application/msword"), "Microsoft Word", "document", false));
+        m.add(new MimeTypeRule(new MimeType("application/wordperfect5.1"), "Word Perfect", "document", false));
+        m.add(new MimeTypeRule(new MimeType("application/rtf"), "Rich Text Format", "document", false));
+        m.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
+        m.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
 
-        settings.setBlockedMimeTypes(s);
+        settings.setBlockedMimeTypes(m);
 
         getBlacklist().updateToCurrentCategories(settings);
 
@@ -619,7 +618,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     @Override
     protected void postInit(String[] args)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Void> tw = new TransactionWork<Void>()
             {
                 public boolean doWork(Session s)
                 {
@@ -646,7 +645,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                     return true;
                 }
 
-                public Object getResult() { return null; }
+                public Void getResult() { return null; }
             };
         getNodeContext().runTransaction(tw);
 
@@ -784,9 +783,9 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
-    protected void updateRules(final Set rules, final List added,
-                             final List<Long> deleted, final List modified) {
-        TransactionWork tw = new TransactionWork() {
+    protected <T extends Rule> void updateRules(final Set<T> rules, final List<T> added,
+                             final List<Long> deleted, final List<T> modified) {
+        TransactionWork<Void> tw = new TransactionWork<Void>() {
                 public boolean doWork(Session s) {
                     listUtil.updateCachedItems(rules, added, deleted, modified);
 
@@ -795,7 +794,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                     return true;
                 }
 
-                public Object getResult() {
+                public Void getResult() {
                     return null;
                 }
             };
@@ -805,9 +804,9 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         reconfigure();
     }
 
-    protected void updateCategories(final Set categories, final List added,
-                                  final List<Long> deleted, final List modified) {
-        TransactionWork tw = new TransactionWork() {
+    protected void updateCategories(final Set<BlacklistCategory> categories, final List<BlacklistCategory> added,
+                                  final List<Long> deleted, final List<BlacklistCategory> modified) {
+        TransactionWork<Void> tw = new TransactionWork<Void>() {
                 public boolean doWork(Session s) {
                     listUtil.updateCachedItems(categories, categoryHandler, added, deleted, modified);
 
@@ -816,7 +815,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                     return true;
                 }
 
-                public Object getResult() {
+                public Void getResult() {
                     return null;
                 }
             };

@@ -24,15 +24,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.buildPassedHosts();
             this.buildUserAuthentication();
             this.buildCaptivePage();
-//             this.buildLoginEventLog();
-//             this.buildBlockEventLog();
+            this.buildLoginEventLog();
+            this.buildBlockEventLog();
 
             // builds the tab panel with the tabs
-            // this.buildTabPanel([this.panelCaptiveHosts, this.panelPassedHosts, this.panelUserAuthentication,
-            // this.panelCaptivePage, this.gridLoginEventLog, this.gridBlockEventLog]);
-            
             this.buildTabPanel([ this.panelCaptiveHosts, this.panelPassedHosts, this.panelUserAuthentication,
-                                 this.panelCaptivePage ]);
+                                 this.panelCaptivePage, this.gridLoginEventLog, this.gridBlockEventLog ]);
 
             Ung.CPD.superclass.initComponent.call(this);
         },
@@ -254,73 +251,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 }
             });
         },        
-
-        // Event Log
-        buildEventLog : function() {
-            this.gridEventLog = new Ung.GridEventLog({
-                settingsCmp : this,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'timeStamp',
-                    sortType : Ung.SortTypes.asTimestamp
-                }, {
-                    name : 'action',
-                    mapping : 'wasBlocked',
-                    type : 'string',
-                    convert : function(value) {
-                        return value ? this.i18n._("blocked") : this.i18n._("passed");
-                    }.createDelegate(this)
-                }, {
-                    name : 'ruleIndex'
-                }, {
-                    name : 'client',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asClient
-                }, {
-                    name : 'server',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asServer
-                }],
-                columns : [{
-                    header : this.i18n._("timestamp"),
-                    width : 130,
-                    sortable : true,
-                    dataIndex : 'timeStamp',
-                    renderer : function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header : this.i18n._("action"),
-                    width : 100,
-                    sortable : true,
-                    dataIndex : 'action'
-                }, {
-                    header : this.i18n._("client"),
-                    width : 165,
-                    sortable : true,
-                    dataIndex : 'client',
-                    renderer : Ung.SortTypes.asClient
-                }, {
-                    id: 'ruleIndex',
-                    header : this.i18n._('reason for action'),
-                    width : 150,
-                    sortable : true,
-                    dataIndex : 'ruleIndex',
-                    renderer : function(value, metadata, record) {
-                           return String.format(this.i18n._("rule #{0}"), value);
-                    }.createDelegate(this)
-                }, {
-                    header : this.i18n._("server"),
-                    width : 165,
-                    sortable : true,
-                    dataIndex : 'server',
-                    renderer : Ung.SortTypes.asServer
-                }],
-                autoExpandColumn: 'ruleIndex'
-
-            });
-        },
 
         buildPassedHosts : function()
         {
@@ -651,18 +581,51 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             name : "customUploadFile",
                             inputType : "file",
                             xtype : "textfield",
-                            pageType : "CUSTOM",
-                            allowBlank : false
+                            pageType : "CUSTOM"
+                        },{
+                            xtype: "button",
+                            name : "customSendFile",
+                            text : i18n._("Upload File"),
+                            width : 400,
+                            pageType : "CUSTOM"
                         }]
                     },{
                         xtype: "button",
                         name : "viewPage",
                         text : i18n._("View Page")
                     }]
+                },{
+                    xtype : "fieldset",
+                    autoHeight : true,
+                    title : this.i18n._( "Session Redirect" ),
+                    items : [{
+                        xtype : "textfield",
+                        name : "redirectUrl",
+                        fieldLabel : this.i18n._("Redirect URL"),
+                        value : this.getBaseSettings().redirectUrl
+                    },{
+                        xtype : "checkbox",
+                        boxLabel : this.i18n._("Redirect HTTP traffic to HTTPS captive page"),
+                        hideLabel : true,
+                        checked : this.getBaseSettings().useHttpsPage,
+                        listeners : {
+                            "check" : function(elem, checked) {
+                                this.getBaseSettings().useHttpsPage = checked;
+                            }.createDelegate(this)
+                        }
+                    },{
+                        xtype : "checkbox",
+                        boxLabel : this.i18n._("Redirect HTTPS traffic to HTTPS captive page"),
+                        hideLabel : true,
+                        checked : this.getBaseSettings().redirectHttpsEnabled,
+                        listeners : {
+                            "check" : function(elem, checked) {
+                                this.getBaseSettings().redirectHttpsEnabled = checked;
+                            }.createDelegate(this)
+                        }
+                    }]
                 }]
             });
-            
-            // this.panelCaptivePage.addListener(,function() { alert( "foo" )});
         },
 
         captivePageHideComponents : function( currentValue )
@@ -671,83 +634,116 @@ if (!Ung.hasResource["Ung.CPD"]) {
             for ( var c = 0 ; c < values.length ; c++ ) {
                 var item = values[c];
                 Ext.each( this.panelCaptivePage.find( "pageType", item ), function( component ) { 
-                    component.setContainerVisible( currentValue == item );
+                    if ( component.setContainerVisible ) {
+                        component.setContainerVisible( currentValue == item );
+                    } else {
+                        component.setVisible( currentValue == item );
+                    }
                 }.createDelegate(this));
             }
         },
 
-        validateServer : function() {
-            // ipMaddr list must be validated server side
-            var passedAddresses = this.gridRules ? this.gridRules.getFullSaveList() : null;
-            if (passedAddresses != null) {
-                var srcAddrList = [];
-                var dstAddrList = [];
-                var srcPortList = [];
-                var dstPortList = [];
-                for (var i = 0; i < passedAddresses.length; i++) {
-                    srcAddrList.push(passedAddresses[i]["srcAddress"]);
-                    dstAddrList.push(passedAddresses[i]["dstAddress"]);
-                    srcPortList.push(passedAddresses[i]["srcPort"]);
-                    dstPortList.push(passedAddresses[i]["dstPort"]);
-                }
-                var validateData = {
-                    map : {},
-                    javaClass : "java.util.HashMap"
-                };
-                if (srcAddrList.length > 0) {
-                    validateData.map["SRC_ADDR"] = {"javaClass" : "java.util.ArrayList", list : srcAddrList};
-                }
-                if (dstAddrList.length > 0) {
-                    validateData.map["DST_ADDR"] = {"javaClass" : "java.util.ArrayList", list : dstAddrList};
-                }
-                if (srcPortList.length > 0) {
-                    validateData.map["SRC_PORT"] = {"javaClass" : "java.util.ArrayList", list : srcPortList};
-                }
-                if (dstPortList.length > 0) {
-                    validateData.map["DST_PORT"] = {"javaClass" : "java.util.ArrayList", list : dstPortList};
-                }
-                if (Ung.Util.hasData(validateData.map)) {
-                    try {
-                        var result=null;
-                        try {
-                            result = this.getValidator().validate(validateData);
-                        } catch (e) {
-                            Ung.Util.rpcExHandler(e);
-                        }
-                        if (!result.valid) {
-                            var errorMsg = "";
-                            switch (result.errorCode) {
-                                case 'INVALID_SRC_ADDR' :
-                                    errorMsg = this.i18n._("Invalid address specified for Source Address") + ": " + result.cause;
-                                break;
-                                case 'INVALID_DST_ADDR' :
-                                    errorMsg = this.i18n._("Invalid address specified for Destination Address") + ": " + result.cause;
-                                break;
-                                case 'INVALID_SRC_PORT' :
-                                    errorMsg = this.i18n._("Invalid port specified for Source Port") + ": " + result.cause;
-                                break;
-                                case 'INVALID_DST_PORT' :
-                                    errorMsg = this.i18n._("Invalid port specified for Destination Port") + ": " + result.cause;
-                                break;
-                                default :
-                                    errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
-                            }
-                            Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
-                            return false;
-                        }
-                    } catch (e) {
-                        var message = exception.message;
-                        if (message == null || message == "Unknown") {
-                            message = i18n._("Please Try Again");
-                        }
-                        
-                        Ext.MessageBox.alert(i18n._("Failed"), message);
-                        return false;
+        buildLoginEventLog : function() {
+            this.gridLoginEventLog = new Ung.GridEventLog({
+                title : this.i18n._( "Login Event Log" ),
+                eventManagerFn : this.getRpcNode().getLoginEventManager(),
+                settingsCmp : this,
+                autoExpandColumn: "username",
+                fields : [{
+                    name : "id"
+                },{
+                    name : "timeStamp",
+                    sortType : Ung.SortTypes.asTimestamp
+                },{
+                    name : "clientAddr"
+                },{
+                    name : "loginName"
+                }],
+                
+                columns : [{
+                    header : this.i18n._("timestamp"),
+                    width : 130,
+                    sortable : true,
+                    dataIndex : "timeStamp",
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
                     }
-                }
-            }
-            return true;
+                },{
+                    header : this.i18n._("client"),
+                    width : 100,
+                    sortable : true,
+                    dataIndex : "clientAddr"
+                },{
+                    header : this.i18n._("username"),
+                    id : "username",
+                    width : 165,
+                    sortable : true,
+                    dataIndex : "loginName",
+                    renderer : Ung.SortTypes.asClient
+                }]
+            });
         },
+
+        buildBlockEventLog : function() {
+            this.gridBlockEventLog = new Ung.GridEventLog({
+                title : this.i18n._( "Block Event Log" ),
+                eventManagerFn : this.getRpcNode().getBlockEventManager(),
+                settingsCmp : this,
+                autoExpandColumn: "reason",
+                fields : [{
+                    name : "id"
+                },{
+                    name : "timeStamp",
+                    sortType : Ung.SortTypes.asTimestamp
+                },{
+                    name : "client",
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asClient
+                }, {
+                    name : "server",
+                    mapping : 'pipelineEndpoints',
+                    sortType : Ung.SortTypes.asServer
+                }],
+                
+                columns : [{
+                    header : this.i18n._("timestamp"),
+                    width : 130,
+                    sortable : true,
+                    dataIndex : "timeStamp",
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                },{
+                    header : this.i18n._("action"),
+                    width : 100,
+                    sortable : false,
+                    renderer : function(value) {
+                        return this.i18n._( "block" );
+                    }.createDelegate( this )
+                },{
+                    header : this.i18n._("client"),
+                    width : 100,
+                    sortable : true,
+                    dataIndex : "clientAddr",
+                    renderer : Ung.SortTypes.asServer
+                },{
+                    header : this.i18n._("reason"),
+                    id : "reason",
+                    width : 100,
+                    sortable : false,
+                    renderer : function(value) {
+                        return this.i18n._( "unauthenticated" );
+                    }.createDelegate( this )
+                },{
+                    header : this.i18n._("server"),
+                    width : 100,
+                    sortable : true,
+                    dataIndex : "server",
+                    renderer : Ung.SortTypes.asServer
+                }]
+            });
+        },
+
         //apply function 
         applyAction : function()
         {
