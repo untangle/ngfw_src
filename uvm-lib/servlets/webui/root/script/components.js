@@ -106,6 +106,26 @@ Ext.override( Ext.form.Field, {
 
 
 
+Ung.form.TimeField = Ext.extend(Ext.form.TimeField, {
+    /* Default the format to 24 hour */
+    format : "H:i",
+
+    initComponent : function()
+    {
+        /* Save the store before init to determin if one was passed in */
+        var store = this.store;
+
+        Ung.form.TimeField.superclass.initComponent.call(this);
+        
+        /* If necesary, add the last minute of the day. */
+        if ( this.endTime && store == null && this.maxValue == null && this.minValue == null && this.format == "H:i" ) {
+            this.store.add([new Ext.data.Record({text : "23:59"})]);
+        }
+    }
+});
+Ext.ComponentMgr.registerType('utimefield', Ung.form.TimeField);
+
+
 Ung.form.TextField = Ext.extend( Ext.form.TextField, {
     onRender : function(ct, position)
     {
@@ -3043,6 +3063,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         }
     },
     // populate is called whent a record is edited, tot populate the edit window
+    // This function should be deprecated for populateTree.
     populate : function(record, addMode) {
         this.addMode=addMode;
         this.record = record;
@@ -3053,6 +3074,45 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                 inputLine.suspendEvents();
                 inputLine.setValue(record.get(inputLine.dataIndex));
                 inputLine.resumeEvents();
+            }
+        }
+    },
+    populateTree : function(record,addMode)
+    {
+        this.addMode=addMode;
+        this.record = record;
+        this.initialRecordData = Ext.encode(record.data);
+
+        this.populateChild(this, record);
+    },
+    populateChild : function(component,record)
+    {
+        if ( component == null ) {
+            return;
+        }
+
+        if (component.dataIndex != null && component.setValue ) {
+            component.suspendEvents();
+            component.setValue(record.get(component.dataIndex));
+            component.resumeEvents();
+        }
+
+        var items = null;
+        if (component.inputLines) {
+            items = component.inputLines;
+        } else {
+            items = component.items;
+        }
+
+        if ( items ) {
+            for (var i = 0; i < items.length; i++) {
+                var item = null;
+                if ( items.get != null ) {
+                    item = items.get(i);
+                } else {
+                    item = items[i];
+                }
+                this.populateChild( item, record);
             }
         }
     },
@@ -3075,14 +3135,14 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                     for (var i = 0; i < this.inputLines.length; i++) {
                         var inputLine = this.inputLines[i];
                         if(inputLine.dataIndex!=null) {
-                           // this.record.data[inputLine.dataIndex] = inputLine.getValue();
+                            // this.record.data[inputLine.dataIndex] = inputLine.getValue();
                             this.record.set(inputLine.dataIndex, inputLine.getValue());
                         }
                     }
                 }
                 if(this.addMode) {
-                        this.grid.getStore().insert(0, [this.record]);
-                        this.grid.updateChangedData(this.record, "added");
+                    this.grid.getStore().insert(0, [this.record]);
+                    this.grid.updateChangedData(this.record, "added");
                 }
             }
             this.hide();

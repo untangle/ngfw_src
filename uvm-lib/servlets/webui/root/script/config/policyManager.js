@@ -615,7 +615,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         record.data.startTime = {"time":dt.getTime(),"javaClass":"java.sql.Time"};
                         return value;
                     }.createDelegate(this),
-                    editor : new Ext.form.TimeField({
+                    editor : new Ung.form.TimeField({
                         format : "H:i",
                         allowBlank : false
                     })
@@ -630,9 +630,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         record.data.endTime = {"time":dt.getTime(),"javaClass":"java.sql.Time"};
                         return value;
                     }.createDelegate(this),
-                    editor : new Ext.form.TimeField({
+                    editor : new Ung.form.TimeField({
                         format : "H:i",
-                        allowBlank : false
+                        allowBlank : false,
+                        endTime : true
                     })
                 }, {
                     header : this.i18n._("day of week"),
@@ -950,18 +951,17 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         cls: 'description',
                         border : false,
                         html : this.i18n._("The time of day you would like this policy active.")
-                    }, {
-                        xtype : 'timefield',
+                    },{
+                        xtype : 'utimefield',
                         name : 'Start Time',
-                        format : "H:i",
                         id : 'gridRules_rowEditor_start_time',
                         fieldLabel : this.i18n._("Start Time"),
                         allowBlank : false
-                    }, {
-                        xtype : 'timefield',
+                    },{
+                        xtype : 'utimefield',
                         name : 'End Time',
+                        endTime : true,
                         id : 'gridRules_rowEditor_end_time',
-                        format : "H:i",
                         fieldLabel : this.i18n._("End Time"),
                         allowBlank : false
                     }]

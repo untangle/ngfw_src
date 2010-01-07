@@ -14,6 +14,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
         gridBlockEventLog : null,
         pageParameters : null,
 
+        
+
         initComponent : function()
         {
             Ung.Util.clearInterfaceStore();
@@ -109,9 +111,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     "live" : true,
                     "capture" : true,
                     "log" : false,
-                    "clientInterface" : "",
+                    "clientInterface" : "internal",
                     "clientAddress" : "any",
                     "serverAddress" : "any",
+                    "days" : "mon,tue,wed,thu,fri,sat,sun",
+                    "startTime" : "00:00",
+                    "endTime" : "23:59",
                     "name" : this.i18n._("[no name]"),
                     "category" : this.i18n._("[no category]"),
                     "description" : this.i18n._("[no description]"),
@@ -139,9 +144,15 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     name : "name"
                 },{
                     name : "category"
-                }, {
+                },{
                     name : "description"
-                }, {
+                },{
+                    name : "startTime"
+                },{
+                    name : "endTime"
+                },{
+                    name : "days"
+                },{
                     name : "javaClass"
                 }],
                 columns : [liveColumn, captureColumn, {
@@ -158,108 +169,144 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 plugins : [liveColumn, captureColumn]
             });
 
-            //var rowEditor = this.buildGridCaptureRulesRowEditor();
-            //this.gridCaptureRules.rowEditor = rowEditor;
+            var rowEditor = this.buildGridCaptureRulesRowEditor();
+            this.gridCaptureRules.rowEditor = rowEditor;
         },
     
         buildGridCaptureRulesRowEditor : function()
         {
             return new Ung.RowEditorWindow({
                 grid : this,
-                sizeToGrid : true,
-                inputLines : this.customInputLines,
-                rowEditorLabelWidth:120,
+                title : this.i18n._("Capture Rule"),
+                inputLines : [{
+                    xtype : "label",
+                    html : this.i18n._( "Modify the hosts Capture Rule." )
+                },{
+                    xtype : "fieldset",
+                    title : this.i18n._("Interface"),
+                    autoHeight : true,
+                    items : [{
+                        cls: "description",
+                        border : false,
+                        html : this.i18n._("The ethernet interface (NIC).")
+                    },new Ung.Util.InterfaceCombo({
+                        name : "Client",
+                        dataIndex : "clientInterface",
+                        fieldLabel : this.i18n._("Client")
+                    })]
+                },{
+                    xtype : "fieldset",
+                    title : this.i18n._("Address"),
+                    autoHeight : true,
+                    items : [{
+                        cls: "description",
+                        border : false,
+                        html : this.i18n._("The IP addresses.")
+                    },{
+                        xtype : "textfield",
+                        name : "clientAddress",
+                        dataIndex : "clientAddress",
+                        fieldLabel : this.i18n._("Client"),
+                        allowBlank : false
+                    },{
+                        xtype : "textfield",
+                        name : "serverAddress",
+                        dataIndex : "serverAddress",
+                        fieldLabel : this.i18n._("Server"),
+                        allowBlank : false
+                    }]
+                },{
+                    xtype : "fieldset",
+                    autoHeight : true,
+                    title : this.i18n._("Time of Day"),
+                    items : [{
+                        cls: "description",
+                        border : false,
+                        html : this.i18n._("The time of day.")
+                    },{
+                        xtype : "utimefield",
+                        name : "startTime",
+                        dataIndex : "startTime",
+                        fieldLabel : this.i18n._("Start Time"),
+                        allowBlank : false
+                    },{
+                        xtype : "utimefield",
+                        endTime : true,
+                        name : "endTime",
+                        dataIndex : "endTime",
+                        fieldLabel : this.i18n._("End Time"),
+                        allowBlank : false
+                    }]
+                },{
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    title : this.i18n._("Days of Week"),
+                    items : [{
+                        cls: "description",
+                        border : false,
+                        html : this.i18n._("The days of the week.")
+                    }, {
+                        xtype : "checkbox",
+                        name : "sunday",
+                        dataIndex : "sun",
+                        boxLabel : this.i18n._("Sunday"),
+                        hideLabel : true
+                    }, {
+                        xtype : "checkbox",
+                        name : "monday",
+                        dataIndex : "mon",
+                        boxLabel : this.i18n._("Monday"),
+                        hideLabel : true
+                    }, {
+                        xtype : "checkbox",
+                        name : "tuesday",
+                        dataIndex : "tue",
+                        boxLabel : this.i18n._("Tuesday"),
+                        hideLabel : true
+                    }, {
+                        xtype : "checkbox",
+                        name : "wednesday",
+                        dataIndex : "wed",
+                        boxLabel : this.i18n._("Wednesday"),
+                        hideLabel : true
+                    }, {
+                        xtype : "checkbox",
+                        name : "thursday",
+                        dataIndex : "thu",
+                        boxLabel : this.i18n._("Thursday"),
+                        hideLabel : true
+                    }, {
+                        xtype : "checkbox",
+                        name : "friday",
+                        dataIndex : "fri",
+                        boxLabel : this.i18n._("Friday"),
+                        hideLabel : true
+                    }, {
+                        xtype : "checkbox",
+                        name : "saturday",
+                        dataIndex : "sat",
+                        boxLabel : this.i18n._("Saturday"),
+                        hideLabel : true
+                    }]                    
+                }],
+                                
                 populate : function(record, addMode) {
-                    this.addMode=addMode;
-                    this.record = record;
-                    this.initialRecordData = Ext.encode(record.data);
-                    for (var i = 0; i < this.inputLines.length; i++) {
-                        var inputLine = this.inputLines[i];
-                        if (inputLine instanceof Ext.form.Field) {
-                            this.populateField(inputLine, record);
-                        } else if (inputLine instanceof Ext.Panel) {
-                            for (var j = 0; j < inputLine.items.length; j++) {
-                                var field = inputLine.items.get(j);
-                                if ( field instanceof Ext.form.Field) {
-                                    this.populateField(field, record);
-                                }
-                            }
-                        }
+                    var days = record.get("days").split( "," );
+                    for ( var c = 0 ; c < Ung.CPD.daysOfWeek.length ; c++ ) {
+                        var day = Ung.CPD.daysOfWeek[c];
+                        record.set( day, days.indexOf( day ) >= 0 );
                     }
-                },
-                populateField : function(field, record) {
-                    if(field.dataIndex!=null) {
-                        field.suspendEvents();
-                        field.setValue(record.get(field.dataIndex));
-                        field.resumeEvents();
-                    }
+                    
+                    Ung.RowEditorWindow.prototype.populateTree.call(this, record, addMode);
                 },
                 isFormValid : function() {
-                    for (var i = 0; i < this.inputLines.length; i++) {
-                        var inputLine = this.inputLines[i];
-                        if (inputLine instanceof Ext.form.Field && !inputLine.isValid()) {
-                            return false;
-                        } else if (inputLine instanceof Ext.Panel) {
-                            for (var j = 0; j < inputLine.items.length; j++) {
-                                var field = inputLine.items.get(j);
-                                if (field instanceof Ext.form.Field && !field.isValid()) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                    return true;
+                    return Ung.RowEditorWindow.prototype.isFormValid.call(this);
                 },
                 updateAction : function() {
-                    if (this.isFormValid()) {
-                        if (this.record !== null) {
-                            for (var i = 0; i < this.inputLines.length; i++) {
-                                var inputLine = this.inputLines[i];
-                                if (inputLine instanceof Ext.form.Field) {
-                                    this.record.set(inputLine.dataIndex, inputLine.getValue());
-                                } else if (inputLine instanceof Ext.Panel) {
-                                    for (var j = 0; j < inputLine.items.length; j++) {
-                                        var field = inputLine.items.get(j);
-                                        if (field instanceof Ext.form.Field) {
-                                            this.record.set(field.dataIndex, field.getValue());
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            if (this.addMode) {
-                                this.grid.getStore().insert(0, [this.record]);
-                                this.grid.updateChangedData(this.record, "added");
-                            }
-                        }
-                        this.hide();
-                    } else {
-                        Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
-                    }
+                    Ung.RowEditorWindow.prototype.updateAction.call(this);
                 },
                 isDirty : function() {
-                    if (this.record !== null) {
-                        if (this.inputLines) {
-                            for (var i = 0; i < this.inputLines.length; i++) {
-                                var inputLine = this.inputLines[i];
-                                if(inputLine instanceof Ext.form.Field) {
-                                    if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
-                                        return true;
-                                    }
-                                } else if (inputLine instanceof Ext.Panel) {
-                                    for (var j = 0; j < inputLine.items.length; j++) {
-                                        var field = inputLine.items.get(j);
-                                        if (field instanceof Ext.form.Field) {
-                                            if (this.record.get(field.dataIndex) != field.getValue()) {
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    return false;
+                    return Ung.RowEditorWindow.prototype.isDirty.call(this);
                 }
             });
         },        
@@ -288,7 +335,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 layout : "form",
                 autoScroll : true,
                 border : false,
-                cls: 'ung-panel',
+                cls: "ung-panel",
                 items : [ this.gridPassedClients, this.gridPassedServers ]
             });
         },
@@ -491,9 +538,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
             {
                 this.panelCaptivePage.find( "name", "pageType" )[0].setValue(this.getBaseSettings().pageType);
             }.createDelegate(this);
-
-            
-            
 
             this.panelCaptivePage = new Ext.Panel({
                 name : "panelCaptivePage",
@@ -908,4 +952,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 || this.gridPassedServers.isDirty();
         }
     });
+
+    Ung.CPD.daysOfWeek = ["mon","tue","wed","thu","fri","sat","sun"];
 }
