@@ -3120,8 +3120,21 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     // this is the default functionality which can be overwritten
     isFormValid : function() {
         for (var i = 0; i < this.inputLines.length; i++) {
-            var inputLine = this.inputLines[i];
-            if (!inputLine.isValid()) {
+            var item = null;
+            if ( this.inputLines.get != null ) {
+                item = this.inputLines.get(i);
+            } else {
+                item = this.inputLines[i];
+            }
+            if ( item == null ) {
+                continue;
+            }
+
+            if ( item.isValid == null ) {
+                continue;
+            }
+            
+            if (!item.isValid()) {
                 return false;
             }
         }
@@ -3148,6 +3161,54 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             this.hide();
         } else {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
+        }
+    },
+
+    updateActionTree : function()
+    {
+        if (!this.isFormValid()) {
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
+            return;
+        }
+
+        if (this.record !== null) {
+            this.updateActionChild(this, this.record);
+
+            if(this.addMode) {
+                this.grid.getStore().insert(0, [this.record]);
+                this.grid.updateChangedData(this.record, "added");
+            }
+        }
+
+        this.hide();        
+    },
+    updateActionChild : function( component, record )
+    {
+        if ( component == null ) {
+            return;
+        }
+        
+        if (component.dataIndex != null && component.setValue ) {
+            this.record.set(component.dataIndex, component.getValue());
+        }
+
+        var items = null;
+        if (component.inputLines) {
+            items = component.inputLines;
+        } else {
+            items = component.items;
+        }
+
+        if ( items ) {
+            for (var i = 0; i < items.length; i++) {
+                var item = null;
+                if ( items.get != null ) {
+                    item = items.get(i);
+                } else {
+                    item = items[i];
+                }
+                this.updateActionChild( item, record);
+            }
         }
     },
     isDirty : function() {
