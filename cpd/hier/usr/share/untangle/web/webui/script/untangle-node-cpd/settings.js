@@ -176,11 +176,27 @@ if (!Ung.hasResource["Ung.CPD"]) {
         buildGridCaptureRulesRowEditor : function()
         {
             return new Ung.RowEditorWindow({
-                grid : this,
+                grid : this.gridCaptureRules,
                 title : this.i18n._("Capture Rule"),
                 inputLines : [{
-                    xtype : "label",
-                    html : this.i18n._( "Modify the hosts Capture Rule." )
+                    xtype : "checkbox",
+                    name : "live",
+                    dataIndex : "live",
+                    boxLabel : this.i18n._("Enabled"),
+                    hideLabel : true
+                },{
+                    xtype : "checkbox",
+                    name : "capture",
+                    dataIndex : "capture",
+                    boxLabel : this.i18n._("Capture"),
+                    hideLabel : true
+                },{
+                    xtype : "textfield",
+                    name : "description",
+                    width : 220,
+                    dataIndex : "description",
+                    fieldLabel : this.i18n._("Client"),
+                    allowBlank : false
                 },{
                     xtype : "fieldset",
                     title : this.i18n._("Interface"),
@@ -245,19 +261,19 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         cls: "description",
                         border : false,
                         html : this.i18n._("The days of the week.")
-                    }, {
+                    },{
                         xtype : "checkbox",
                         name : "sunday",
                         dataIndex : "sun",
                         boxLabel : this.i18n._("Sunday"),
                         hideLabel : true
-                    }, {
+                    },{
                         xtype : "checkbox",
                         name : "monday",
                         dataIndex : "mon",
                         boxLabel : this.i18n._("Monday"),
                         hideLabel : true
-                    }, {
+                    },{
                         xtype : "checkbox",
                         name : "tuesday",
                         dataIndex : "tue",
@@ -303,13 +319,27 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     return Ung.RowEditorWindow.prototype.isFormValid.call(this);
                 },
                 updateAction : function() {
-                    Ung.RowEditorWindow.prototype.updateAction.call(this);
+                    Ung.RowEditorWindow.prototype.updateActionTree.call(this);
+                    
+                    if ( this.record !== null ) {
+                        /* Create an array of the days, and then convert it to a string */
+                        var days = [];
+                        for ( var c = 0 ; c < Ung.CPD.daysOfWeek.length ; c++ ) {
+                            var day = Ung.CPD.daysOfWeek[c];
+                            if ( this.record.get( day ) === true ) {
+                                days.push( day );
+                            }
+                            this.record.set( day, null );
+                        }
+                        
+                        this.record.set( "days", days.join( "," ));
+                    }
                 },
                 isDirty : function() {
                     return Ung.RowEditorWindow.prototype.isDirty.call(this);
                 }
             });
-        },        
+        },
 
         buildPassedHosts : function()
         {
