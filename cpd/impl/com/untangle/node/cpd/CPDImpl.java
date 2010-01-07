@@ -221,6 +221,44 @@ public class CPDImpl extends AbstractNode implements CPD {
         reconfigure();
     }
     
+    public void setAll( final CPDBaseSettings baseSettings, 
+            final List<CaptureRule> captureRules,
+            final List<PassedClient> passedClients, 
+            final List<PassedServer> passedServers )
+    {
+        TransactionWork<Void> tw = new TransactionWork<Void>()
+        {
+            public boolean doWork(Session s)
+            {
+                if ( baseSettings != null ) {
+                    CPDImpl.this.settings.setBaseSettings( baseSettings );
+                }
+                
+                if ( captureRules != null ) {
+                    CPDImpl.this.settings.setCaptureRules(captureRules);
+                }
+                
+                if ( passedClients != null ) {
+                    CPDImpl.this.settings.setPassedClients( passedClients );
+                }
+
+                if ( passedServers != null ) {
+                    CPDImpl.this.settings.setPassedServers( passedServers );
+                }
+                CPDImpl.this.settings = (CPDSettings)s.merge(settings);
+                return true;
+            }
+
+            public Void getResult() {
+                return null;
+            }
+        };
+        getNodeContext().runTransaction(tw);
+        
+        reconfigure();
+    }
+
+    
     @Override
     public Map<String, String> getUserMap() {
         return this.phoneBookAssistant.getUserMap();

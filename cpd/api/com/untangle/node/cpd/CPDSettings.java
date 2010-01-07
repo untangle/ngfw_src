@@ -56,12 +56,12 @@ public class CPDSettings implements Serializable
     private Long id;
     private Tid tid;
 
-    private List<CaptureRule> captureRules = null;
+    private List<CaptureRule> captureRules = new LinkedList<CaptureRule>();
     
-    private List<PassedClient> passedClients = null;
-    private List<PassedServer> passedServers = null;
+    private List<PassedClient> passedClients = new LinkedList<PassedClient>();
+    private List<PassedServer> passedServers = new LinkedList<PassedServer>();
     
-    private CPDBaseSettings baseSettings;
+    private CPDBaseSettings baseSettings = new CPDBaseSettings();
     
     
 

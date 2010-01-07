@@ -12,12 +12,24 @@ if (!Ung.hasResource["Ung.CPD"]) {
         
         gridLoginEventLog : null,
         gridBlockEventLog : null,
+        pageParameters : null,
+
         initComponent : function()
         {
             Ung.Util.clearInterfaceStore();
 
             // keep initial base settings
             this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
+
+            try {
+                this.pageParameters = Ext.util.JSON.decode( this.getBaseSettings().pageParameters );
+            } catch ( e ) {
+                /* User should never see this. */
+                /* XXX Currently this doesn't work because execution continues. */
+                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("The current settings have an error, previous values may be lost."));
+                this.pageParameters = {};
+            }
+            this.initialPageParameters = Ung.Util.clone(this.pageParameters);
             
             // builds the tabs
             this.buildCaptiveHosts();
@@ -52,7 +64,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     title : this.i18n._('Note'),
                     cls: "description",
                     bodyStyle : "padding: 5px 5px 5px; 5px;",
-                    html : this.i18n._("The <b>Capture Rules</b> area  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evailuated in order.")
+                    html : this.i18n._("The <b>Capture Rules</b> are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evailuated in order.")
                 }, this.gridCaptureRules, {
                     xtype : "fieldset",
                     autoHeight : true,
@@ -257,13 +269,13 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.gridPassedClients = 
                 this.buildGridPassedList( "gridPassedClients", 
                                           this.i18n._( "Passed Listed Client Addresses"), 
-                                          "com.untangle.node.cpd.PassedClients", 
+                                          "com.untangle.node.cpd.PassedClient", 
                                           this.getRpcNode().getPassedClients);
 
             this.gridPassedServers = 
                 this.buildGridPassedList( "gridPassedServers", 
                                           this.i18n._( "Passed Listed Server Addresses"), 
-                                          "com.untangle.node.cpd.PassedServers", 
+                                          "com.untangle.node.cpd.PassedServer", 
                                           this.getRpcNode().getPassedServers);
             
             this.panelPassedHosts = new Ext.Panel({
@@ -480,6 +492,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 this.panelCaptivePage.find( "name", "pageType" )[0].setValue(this.getBaseSettings().pageType);
             }.createDelegate(this);
 
+            
+            
+
             this.panelCaptivePage = new Ext.Panel({
                 name : "panelCaptivePage",
                 helpSource : "",
@@ -531,31 +546,61 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             allowBlank : false,
                             name : "basicLoginPageTitle",
                             fieldLabel : this.i18n._("Page Title"),
-                            pageType : "BASIC_LOGIN"
+                            pageType : "BASIC_LOGIN",
+                            value : this.pageParameters.basicLoginPageTitle,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicLoginPageTitle = newValue;
+                                }.createDelegate(this)
+                            }
                         },{
                             xtype : "textfield",
                             allowBlank : false,
                             name : "basicLoginUsername",
                             fieldLabel : this.i18n._("Username Text"),
-                            pageType : "BASIC_LOGIN"
+                            pageType : "BASIC_LOGIN",
+                            value : this.pageParameters.basicLoginUsername,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicLoginUsername = newValue;
+                                }.createDelegate(this)
+                            }
                         },{
                             xtype : "textfield",
                             allowBlank : false,
                             name : "basicLoginPassword",
                             fieldLabel : this.i18n._("Password Text"),
-                            pageType : "BASIC_LOGIN"
+                            pageType : "BASIC_LOGIN",
+                            value : this.pageParameters.basicLoginPassword,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicLoginPassword = newValue;
+                                }.createDelegate(this)
+                            }
                         },{
                             xtype : "textfield",
                             allowBlank : false,
                             name : "basicLoginFooter",
                             fieldLabel : this.i18n._("Lower Text"),
-                            pageType : "BASIC_LOGIN"
+                            pageType : "BASIC_LOGIN",
+                            value : this.pageParameters.basicLoginFooter,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicLoginFooter = newValue;
+                                }.createDelegate(this)
+                            }
                         },{
                             xtype : "textfield",
                             allowBlank : false,
                             name : "basicMessagePageTitle",
                             fieldLabel : this.i18n._("Page Title"),
-                            pageType : "BASIC_MESSAGE"
+                            pageType : "BASIC_MESSAGE",
+                            value : this.pageParameters.basicMessagePageTitle,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicMessagePageTitle = newValue;
+                                }.createDelegate(this)
+                            }
                         },{
                             xtype : "textarea",
                             allowBlank : false,
@@ -563,19 +608,37 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             width : 400,
                             height : 250,
                             fieldLabel : this.i18n._("Message Text"),
-                            pageType : "BASIC_MESSAGE"
+                            pageType : "BASIC_MESSAGE",
+                            value : this.pageParameters.basicMessageMessageText,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicMessageMessageText = newValue;
+                                }.createDelegate(this)
+                            }
                         },{
                             xtype : "checkbox",
                             allowBlank : false,
                             name : "basicMessageAgree",
                             fieldLabel : this.i18n._("Agree Checkbox"),
-                            pageType : "BASIC_MESSAGE"
+                            pageType : "BASIC_MESSAGE",
+                            checked : this.pageParameters.basicMessageAgree,
+                            listeners : {
+                                "check" : function(elem, checked) {
+                                    this.pageParameters.basicMessageAgree = checked;
+                                }.createDelegate(this)
+                            }
                         },{
                             xtype : "textfield",
                             allowBlank : false,
                             name : "basicMessageAgreeText",
                             fieldLabel : this.i18n._("Agree Text"),
-                            pageType : "BASIC_MESSAGE"
+                            pageType : "BASIC_MESSAGE",
+                            value : this.pageParameters.basicMessageAgreeText,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicMessageAgreeText = newValue;
+                                }.createDelegate(this)
+                            }
                         },{
                             fieldLabel : this.i18n._("File"),
                             name : "customUploadFile",
@@ -602,7 +665,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         xtype : "textfield",
                         name : "redirectUrl",
                         fieldLabel : this.i18n._("Redirect URL"),
-                        value : this.getBaseSettings().redirectUrl
+                        value : this.getBaseSettings().redirectUrl,
+                        listeners : {
+                            "change" : function( elem, newValue ){
+                                this.getBaseSettings().redirectUrl = newValue;
+                            }.createDelegate(this)
+                        }
                     },{
                         xtype : "checkbox",
                         boxLabel : this.i18n._("Redirect HTTP traffic to HTTPS captive page"),
@@ -747,38 +815,94 @@ if (!Ung.hasResource["Ung.CPD"]) {
         //apply function 
         applyAction : function()
         {
-            this.saveAction(true);
-        },         
-        // save function
-        saveAction : function(keepWindowOpen)
+            this.commitSettings(this.reloadSettings.createDelegate(this));
+        },
+        saveAction : function()
+        {
+            this.commitSettings(this.completeSaveAction.createDelegate(this));
+        },
+        completeSaveAction : function()
+        {
+            Ext.MessageBox.hide();
+            // exit settings screen
+            this.closeWindow();
+        },
+        reloadSettings : function()
+        {
+            this.getRpcNode().getBaseSettings(this.completeReloadSettings.createDelegate( this ));
+        },
+        completeReloadSettings : function( result, exception )
+        {
+            if(Ung.Util.handleException(exception)) {
+                return;
+            }
+
+            this.rpc.baseSettings = result;
+            this.initialBaseSettings = Ung.Util.clone(this.rpc.baseSettings);
+
+            try {
+                this.pageParameters = Ext.util.JSON.decode( this.getBaseSettings().pageParameters );
+            } catch ( e ) {
+                /* User should never see this. */
+                Ext.MessageBox.alert(i18n._("Warning"), i18n._("The current settings have an error, previous values may be lost."));
+                this.pageParameters = {};
+            }
+            this.initialPageParameters = Ung.Util.clone(this.pageParameters);
+            
+            /* Only reload the data for the grids if they have already been rendered. */
+            if ( this.gridCaptureRules.rendered ) {
+                this.gridCaptureRules.reloadGrid();
+            }
+            if ( this.gridPassedClients.rendered ) {
+                this.gridPassedClients.reloadGrid();
+            }
+            if ( this.gridPassedServers.rendered ) {
+                this.gridPassedServers.reloadGrid();
+            }
+
+            Ext.MessageBox.hide();
+        },
+        // commit function
+        commitSettings : function(callback)
         {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().updateAll(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(!keepWindowOpen){
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    }else{
-                        //refresh the settings
-                        Ext.MessageBox.hide();
-                        //refresh the settings
-                        this.getRpcNode().getBaseSettings(function(result2,exception2){
-                            Ext.MessageBox.hide();                            
-                            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
-                            this.gridRules.setTotalRecords(result2.firewallRulesLength);
-                            this.gridRules.reloadGrid();
-                            this.initialRules =this.gridRules.getFullSaveList();                                 
-                        }.createDelegate(this));                        
-                        //this.gridEventLog.reloadGrid();                            
+                var captureRules = null, passedClients = null, passedServers = null;
+                this.getBaseSettings().pageParameters = Ext.util.JSON.encode( this.pageParameters );
+
+                if ( this.gridCaptureRules.rendered ) {
+                    captureRules = { 
+                        javaClass : "java.util.ArrayList", 
+                        list : this.gridCaptureRules.getFullSaveList()
+                    };
+                }
+                if ( this.gridPassedClients.rendered ) {
+                    passedClients = {
+                        javaClass : "java.util.ArrayList", 
+                        list : this.gridPassedClients.getFullSaveList()
+                    };
+                }
+                if ( this.gridPassedServers.rendered ) {
+                    passedServers = {
+                        javaClass : "java.util.ArrayList", 
+                        list : this.gridPassedServers.getFullSaveList()
+                    };
+                }
+                
+                var wrapper = function( result, exception )
+                {
+                    if(Ung.Util.handleException(exception)) {
+                        return;
                     }
-                }.createDelegate(this), this.getBaseSettings(), this.gridRules ? {javaClass:"java.util.ArrayList",list:this.gridRules.getFullSaveList()} : null);
+                    callback();
+                }.createDelegate(this);
+                this.getRpcNode().setAll(wrapper, this.getBaseSettings(), 
+                                         captureRules, passedClients, passedServers );
             }
         },
         isDirty : function() {
             return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
+                || !Ung.Util.equals(this.pageParameters, this.initialPageParameters )
                 || this.gridCaptureRules.isDirty() 
                 || this.gridPassedClients.isDirty()
                 || this.gridPassedServers.isDirty();

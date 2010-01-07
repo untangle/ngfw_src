@@ -234,24 +234,24 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }],
                             grid : settingsCmp.gridBlockedExtensions,
                             applyAction : function(forceLoad){
-                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                            var saveList = settingsCmp.gridBlockedExtensions.getSaveList();
-                                            settingsCmp.getRpcNode().updateBlockedExtensions(function(result, exception) {
-                                                if(Ung.Util.handleException(exception)){
-                                                    Ext.MessageBox.hide();
-                                                    return;
-                                                }
-                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                                    Ext.MessageBox.hide();                                                
-                                                    if(Ung.Util.handleException(exception2)){
-                                                        return;
-                                                    }
-                                                    this.gridBlockedExtensions.setTotalRecords(result2.blockedExtensionsLength);
-                                                    if(forceLoad===true){                                                
-                                                        this.gridBlockedExtensions.reloadGrid();
-                                                    }                                                    
-                                                }.createDelegate(this));
-                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                var saveList = settingsCmp.gridBlockedExtensions.getSaveList();
+                                settingsCmp.getRpcNode().updateBlockedExtensions(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)){
+                                        Ext.MessageBox.hide();
+                                        return;
+                                    }
+                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                        Ext.MessageBox.hide();                                                
+                                        if(Ung.Util.handleException(exception2)){
+                                            return;
+                                        }
+                                        this.gridBlockedExtensions.setTotalRecords(result2.blockedExtensionsLength);
+                                        if(forceLoad===true){                                                
+                                            this.gridBlockedExtensions.reloadGrid();
+                                        }                                                    
+                                    }.createDelegate(this));
+                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
                             }                                                        
                         });
                     }

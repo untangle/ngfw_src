@@ -17,7 +17,7 @@ public class CPDBaseSettings implements Serializable {
     private boolean isLogoutButtonEnabled = false;
     private boolean areConcurrentLoginsEnabled = true;
     private PageType pageType = PageType.BASIC_MESSAGE;
-    private String pageParameters = "";
+    private String pageParameters = "{}";
     private String redirectUrl = "";
     private boolean useHttpsPage= false;
     private boolean isRedirectHttpsEnabled = false; 

@@ -22,6 +22,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfSimpleMatcher;
@@ -58,6 +60,7 @@ public class CaptureRule extends Rule
     }
 
     @Column(name="client_interface", nullable=false)
+    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
     public IntfDBMatcher getClientInterface()
     {
         return this.clientInterface;
@@ -69,6 +72,7 @@ public class CaptureRule extends Rule
     }
 
     @Column(name="client_address", nullable=false)
+    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
     public IPDBMatcher getClientAddress()
     {
         return this.clientAddress;
@@ -80,6 +84,7 @@ public class CaptureRule extends Rule
     }
 
     @Column(name="server_address", nullable=false)
+    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
     public IPDBMatcher getServerAddress()
     {
         return this.serverAddress;

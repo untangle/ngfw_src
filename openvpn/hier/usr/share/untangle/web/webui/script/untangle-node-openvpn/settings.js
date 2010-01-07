@@ -1769,7 +1769,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
             
             this.rpc.vpnSettings = result;
-            this.initialVpnSettings = this.rpc.vpnSettings;
+            this.initialVpnSettings = Ung.Util.clone(this.rpc.vpnSettings);
             /* Assume the config state hasn't changed */
             if (this.configState == "SERVER_ROUTE") {
                 var groupStore = this.getGroupsStore(true);

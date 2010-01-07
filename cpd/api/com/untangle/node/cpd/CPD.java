@@ -46,7 +46,10 @@ public interface CPD extends Node
     public void setPassedClients( List<PassedClient> newValue ); 
        
     public List<PassedServer> getPassedServers();
-    public void setPassedServers( List<PassedServer> newValue ); 
+    public void setPassedServers( List<PassedServer> newValue );
+    
+    public void setAll( CPDBaseSettings baseSettings, List<CaptureRule> captureRules,
+            List<PassedClient> passedClients, List<PassedServer> passedServers );
     
     /**
      * 
