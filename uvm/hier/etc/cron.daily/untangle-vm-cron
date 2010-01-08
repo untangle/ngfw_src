@@ -12,7 +12,7 @@ if [ -f "@UVM_HOME@/activation.key" ]; then
     /usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
     /usr/bin/find @UVM_HOME@/tmp -name velocity -prune -o -type f -mtime +15 -print | /usr/bin/xargs -r /bin/rm
 
-    /usr/lib/python2.5/reports/process.py >> @UVM_LOG@/report.log 2>&1
+    /usr/lib/python2.5/reports/process.py 2>&1
 
     @UVM_HOME@/bin/utregister
 

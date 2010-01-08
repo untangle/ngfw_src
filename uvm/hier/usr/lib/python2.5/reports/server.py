@@ -27,7 +27,7 @@ import time
 
 from threading import Thread
 
-LOGFILE = "/var/log/uvm/report.log"
+LOGFILE = "/var/log/uvm/reporter.log"
 sys.stdout = sys.stderr = open(LOGFILE, 'a+')
 
 locale = 'en'
