@@ -553,6 +553,24 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 }]
             });
         },
+        captivePageHideComponents : function( currentValue )
+        {
+            var values = [ "BASIC_LOGIN", "BASIC_MESSAGE", "CUSTOM" ];
+            for ( var c = 0 ; c < values.length ; c++ ) {
+                var item = values[c];
+                Ext.each( this.panelCaptivePage.find( "pageType", item ), function( component ) { 
+                    if ( component.setContainerVisible ) {
+                        component.setContainerVisible( currentValue == item );
+                    } else {
+                        component.setVisible( currentValue == item );
+                    }
+                }.createDelegate(this));
+            }
+        },
+        setCaptivePageDefaults : function (){
+            this.panelCaptivePage.find( "name", "pageType" )[0].setValue(this.getBaseSettings().pageType);  
+            this.captivePageHideComponents(this.getBaseSettings().pageType );                          
+        },
 
         buildCaptivePage : function()
         {
@@ -568,8 +586,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
             {
                 this.panelCaptivePage.find( "name", "pageType" )[0].setValue(this.getBaseSettings().pageType);
             }.createDelegate(this);
-
-            this.panelCaptivePage = new Ext.Panel({
+            
+            this.panelCaptivePage = new Ext.form.FormPanel({
                 name : "panelCaptivePage",
                 helpSource : "",
                 // private fields
@@ -579,7 +597,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 autoScroll : true,
                 border : false,
                 cls: "ung-panel",
-                
+                listeners : {
+                    "activate" : this.setCaptivePageDefaults.createDelegate(this)
+                },
                 items : [{
                     xtype : "fieldset",
                     autoHeight : true,
@@ -767,22 +787,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     }]
                 }]
-            });
-        },
-
-        captivePageHideComponents : function( currentValue )
-        {
-            var values = [ "BASIC_LOGIN", "BASIC_MESSAGE", "CUSTOM" ];
-            for ( var c = 0 ; c < values.length ; c++ ) {
-                var item = values[c];
-                Ext.each( this.panelCaptivePage.find( "pageType", item ), function( component ) { 
-                    if ( component.setContainerVisible ) {
-                        component.setContainerVisible( currentValue == item );
-                    } else {
-                        component.setVisible( currentValue == item );
-                    }
-                }.createDelegate(this));
-            }
+            });            
         },
 
         buildLoginEventLog : function() {
