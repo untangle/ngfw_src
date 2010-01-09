@@ -119,7 +119,13 @@ def mail(file, zip_file, sender, receiver, date, company_name,
     msgRoot = MIMEMultipart('related')
     msgRoot.attach(tmpMsgRoot)
 
-    msgRoot['Subject'] = _('New %s Reports Available') % company_name
+    if report_days == 1:
+        a = "daily"
+    elif report_days == 7:
+        a = "weekly"
+    else:
+        a = "monthly"
+    msgRoot['Subject'] = _('New %s %s Reports Available') % (company_name, a)
     msgRoot['From'] = sender
     msgRoot['To'] = receiver
 
