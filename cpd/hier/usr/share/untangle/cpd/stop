@@ -1,0 +1,17 @@
+#!/bin/dash
+
+mkdir -p /var/log/untangle-cpd
+exec >> /var/log/untangle-cpd/monitor.log 2>&1
+
+logger -t untangle-node-cpd "Stopping CPD Daemon"
+
+/etc/init.d/untangle-cpd stop
+
+rm -f /etc/apache2/cpd.conf
+
+logger -t untangle-node-cpd "Reloading apache"
+
+# Reload apache
+/etc/init.d/apache2 reload
+
+logger -t untangle-node-cpd "Reload Apache complete"

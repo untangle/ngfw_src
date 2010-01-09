@@ -41,25 +41,20 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.user.ADLoginEvent;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.util.Worker;
-import com.untangle.uvm.util.WorkerRunner;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
 public class CPDImpl extends AbstractNode implements CPD {
-    public static final long CACHE_DELAY_MS = 10l * 60l * 1000l;
-
     private final Logger logger = Logger.getLogger(CPDImpl.class);
 
     private final PipeSpec[] pipeSpecs;
 
     private final PhoneBookAssistant phoneBookAssistant;
-    private final WorkerRunner worker = new WorkerRunner(new CacheMonitor(), null);
     
     private final EventLogger<ADLoginEvent> loginEventLogger;
     private final EventLogger<BlockEvent> blockEventLogger;
     
-    private final CPDManager manager = new CPDManager();
+    private final CPDManager manager = new CPDManager(this);
 
     private CPDSettings settings;
 
@@ -364,28 +359,14 @@ public class CPDImpl extends AbstractNode implements CPD {
             }
             
             LocalUvmContextFactory.context().localPhoneBook().registerAssistant(this.phoneBookAssistant);
+            
+            this.manager.start();
+        } else {
+            this.manager.stop();
         }
     }
 
-
-    private class CacheMonitor implements Worker
-    {
-        @Override
-        public void start() {
-            // nothing special
-        }
-
-        @Override
-        public void stop() {
-            // Nothing special
-        }
-
-        @Override
-        public void work() throws InterruptedException {
-            Thread.sleep( CACHE_DELAY_MS );
-            
-            CPDImpl.this.phoneBookAssistant.clearExpiredData();
-        }
-        
+    PhoneBookAssistant getPhoneBookAssistant() {
+        return this.phoneBookAssistant;
     }
 }

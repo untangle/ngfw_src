@@ -1,0 +1,47 @@
+#!/bin/dash
+
+set -e
+
+mkdir -p /var/log/untangle-cpd
+exec >> /var/log/untangle-cpd/monitor.log 2>&1
+
+CPD_BIND_PORT=3005
+
+/etc/init.d/untangle-cpd start
+
+logger -t untangle-node-cpd "Started cpd."
+
+is_running()
+{
+    curl -sf -F 'json_request=@-' -m 2 "http://localhost:${CPD_BIND_PORT}"  > /dev/null 2>&1 <<EOF
+{ "function" : "hello_world" }
+EOF
+}
+
+started=false
+for t in `seq 1 10`; do
+    sleep 0.5
+
+    is_running && {
+        started=true
+        break;
+    }
+done
+
+if [ "$started" != "true" ]; then
+    logger -t untangle-node-cpd "Unable to start the captive Portal Daemon."
+    exit 1
+fi
+
+logger -t untangle-node-cpd "Waited ${t} ticks for cpd to start."
+
+# Create a symlink for apache to know where the captive portal redirects are.
+ln -sf @UVM_HOME@/cpd/apache2-cpd.conf /etc/apache2/cpd.conf
+
+logger -t untangle-node-cpd "Reloading apache"
+
+# Reload apache
+/etc/init.d/apache2 reload
+
+logger -t untangle-node-cpd "Reload Apache complete"
+
