@@ -37,6 +37,22 @@ public class CaptureRule extends Rule
 	public CaptureRule()
     {
     }
+	
+	public CaptureRule( boolean live, boolean capture, String description, 
+	        IntfDBMatcher clientInterface, IPDBMatcher clientAddress, IPDBMatcher serverAddress,
+	        String startTime, String endTime, String days )
+	{
+	    setLive(live);
+	    setDescription(description);
+	    
+	    this.capture = capture;
+	    this.clientInterface = clientInterface;
+	    this.clientAddress = clientAddress;
+	    this.serverAddress = serverAddress;
+	    this.startTime = startTime;
+	    this.endTime = endTime;
+	    this.days = days;
+	}
 
     private boolean capture = true;
     private IntfDBMatcher clientInterface = IntfSimpleMatcher.getAllMatcher();

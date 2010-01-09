@@ -17,6 +17,7 @@
  */
 package com.untangle.node.cpd;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -27,11 +28,17 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.json.JSONException;
 
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.user.ADLoginEvent;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Worker;
@@ -51,6 +58,8 @@ public class CPDImpl extends AbstractNode implements CPD {
     
     private final EventLogger<ADLoginEvent> loginEventLogger;
     private final EventLogger<BlockEvent> blockEventLogger;
+    
+    private final CPDManager manager = new CPDManager();
 
     private CPDSettings settings;
 
@@ -70,13 +79,18 @@ public class CPDImpl extends AbstractNode implements CPD {
         CPDSettings settings = new CPDSettings(this.getTid());
         logger.info("Initializing Settings...");
 
-        setCPDSettings(settings);
+        try {
+            setCPDSettings(settings);
+        } catch (NodeException e) {
+            logger.error( "Unable to initialize the settings", e );
+            throw new IllegalStateException("Error initializing cpd", e);
+        }
     }
 
     // TestNode methods --------------------------------------------------
 
     @Override
-    public void setCPDSettings(final CPDSettings settings) {
+    public void setCPDSettings(final CPDSettings settings) throws NodeException {
         if ( settings == this.settings ) {
             throw new IllegalArgumentException("Unable to update original settings, set this.settings to null first.");
         }
@@ -115,7 +129,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     }
     
     @Override
-    public void setBaseSettings(final CPDBaseSettings baseSettings)
+    public void setBaseSettings(final CPDBaseSettings baseSettings) throws NodeException
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -147,7 +161,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     }
     
     @Override
-    public void setCaptureRules( final List<CaptureRule> captureRules )
+    public void setCaptureRules( final List<CaptureRule> captureRules ) throws NodeException
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -174,7 +188,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     }
     
     @Override
-    public void setPassedClients( final List<PassedClient> newValue )
+    public void setPassedClients( final List<PassedClient> newValue ) throws NodeException
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -201,7 +215,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     }
 
     @Override
-    public void setPassedServers( final List<PassedServer> newValue )
+    public void setPassedServers( final List<PassedServer> newValue ) throws NodeException
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -224,7 +238,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     public void setAll( final CPDBaseSettings baseSettings, 
             final List<CaptureRule> captureRules,
             final List<PassedClient> passedClients, 
-            final List<PassedServer> passedServers )
+            final List<PassedServer> passedServers ) throws NodeException
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -301,6 +315,20 @@ public class CPDImpl extends AbstractNode implements CPD {
 
     // lifecycle --------------------------------------------------------------
 
+    @Override
+    protected void preStart() throws NodeStartException
+    {
+        reconfigure(true);
+           
+        super.preStart();
+     }
+    
+    @Override
+    protected void preStop() throws NodeStopException
+    {
+        LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant(this.phoneBookAssistant);
+    }
+    
     protected void postInit(final String[] args) {
         TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
@@ -320,10 +348,23 @@ public class CPDImpl extends AbstractNode implements CPD {
     }
 
     // private methods -------------------------------------------------------
+    private void reconfigure() throws NodeException
+    {
+        reconfigure(false);
+    }
     
-    private void reconfigure() {
-        // TODO Auto-generated method stub
-        
+    private void reconfigure(boolean force) throws NodeStartException {
+        if ( force || this.getRunState() == NodeState.RUNNING) {
+            try {
+                this.manager.setConfig(this.settings);
+            } catch (JSONException e) {
+                throw new NodeStartException( "Unable to convert the JSON while setting the configuration.", e);
+            } catch (IOException e) {
+                throw new NodeStartException( "Unable to write settings.", e);
+            }
+            
+            LocalUvmContextFactory.context().localPhoneBook().registerAssistant(this.phoneBookAssistant);
+        }
     }
 
 

@@ -195,7 +195,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     name : "description",
                     width : 220,
                     dataIndex : "description",
-                    fieldLabel : this.i18n._("Client"),
+                    fieldLabel : this.i18n._("Description"),
                     allowBlank : false
                 },{
                     xtype : "fieldset",
@@ -456,7 +456,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 // private fields
                 gridRulesList : null,
                 parentId : this.getId(),
-                title : this.i18n._("Captive Hosts"),
+                title : this.i18n._("User Authentication"),
                 autoScroll : true,
                 border : false,
                 cls: 'ung-panel',
@@ -476,7 +476,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     },{
                         xtype : "radio",
-                        boxLabel : String.format( this.i18n._("Radius {0}(requires Directory Connector){1}"),
+                        boxLabel : String.format( this.i18n._("RADIUS {0}(requires Directory Connector){1}"),
                                                   "<i>", "</i>" ),
                         hideLabel : true,
                         name : "authenticationType",
@@ -733,6 +733,18 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                     this.pageParameters.basicMessageAgreeText = newValue;
                                 }.createDelegate(this)
                             }
+                        },{
+                            xtype : "textfield",
+                            allowBlank : false,
+                            name : "basicMessageFooter",
+                            fieldLabel : this.i18n._("Page Title"),
+                            pageType : "BASIC_MESSAGE",
+                            value : this.pageParameters.basicMessageFooter,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicMessageFooter = newValue;
+                                }.createDelegate(this)
+                            },
                         },{
                             fieldLabel : this.i18n._("File"),
                             name : "customUploadFile",

@@ -1096,7 +1096,7 @@ Description: Ad Blocker
 
 Package: untangle-node-cpd
 Architecture: all
-Depends: untangle-vm, untangle-cpd
+Depends: untangle-vm, untangle-cpd, php5-pgsql
 XB-Display-Name: Captive Portal
 XB-Untangle-Type: node
 XB-View-Position: 30

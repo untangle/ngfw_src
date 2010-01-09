@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.user.ADLoginEvent;
 
 public interface CPD extends Node
@@ -32,24 +33,25 @@ public interface CPD extends Node
 	/**
 	 * 
 	 * @param settings
+	 * @throws NodeException 
 	 */
-    public void setCPDSettings(CPDSettings settings);
+    public void setCPDSettings(CPDSettings settings) throws NodeException;
     public CPDSettings getCPDSettings();
     
     public CPDBaseSettings getBaseSettings();
-    public void setBaseSettings(CPDBaseSettings baseSettings);
+    public void setBaseSettings(CPDBaseSettings baseSettings) throws NodeException;
     
     public List<CaptureRule> getCaptureRules();
-    public void setCaptureRules( List<CaptureRule> captureRules );
+    public void setCaptureRules( List<CaptureRule> captureRules ) throws NodeException;
     
     public List<PassedClient> getPassedClients();
-    public void setPassedClients( List<PassedClient> newValue ); 
+    public void setPassedClients( List<PassedClient> newValue ) throws NodeException; 
        
     public List<PassedServer> getPassedServers();
-    public void setPassedServers( List<PassedServer> newValue );
+    public void setPassedServers( List<PassedServer> newValue ) throws NodeException;
     
     public void setAll( CPDBaseSettings baseSettings, List<CaptureRule> captureRules,
-            List<PassedClient> passedClients, List<PassedServer> passedServers );
+            List<PassedClient> passedClients, List<PassedServer> passedServers ) throws NodeException;
     
     /**
      * 
