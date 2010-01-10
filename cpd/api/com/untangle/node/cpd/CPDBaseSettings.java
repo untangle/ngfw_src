@@ -10,6 +10,7 @@ import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.node.cpd.CPDSettings.PageType;
 
 public class CPDBaseSettings implements Serializable {
+    private static final long serialVersionUID = 601889164122486170L;
     private boolean captureBypassedTraffic = true;
     private AuthenticationType authenticationType = AuthenticationType.NONE;
     private int idleTimeout = 0;
@@ -50,7 +51,7 @@ public class CPDBaseSettings implements Serializable {
     }
     
     /**
-     * @return Idle timeout in minutes.
+     * @return Idle timeout in seconds.
      */
     @Column(name="idle_timeout", nullable=false)
     public int getIdleTimeout()
@@ -60,7 +61,7 @@ public class CPDBaseSettings implements Serializable {
 
     /**
      * Set the idle timeout.
-     * @param newValue The new idle timeout in minutes.
+     * @param newValue The new idle timeout in seconds.
      */
     public void setIdleTimeout( int newValue )
     {
@@ -69,7 +70,7 @@ public class CPDBaseSettings implements Serializable {
 
     /**
      * Retrieve the session timeout.
-     * @return The session timeout in minutes
+     * @return The session timeout in seconds
      */
     @Column(name="timeout", nullable=false)
     public int getTimeout()
@@ -79,7 +80,7 @@ public class CPDBaseSettings implements Serializable {
 
     /**
      * Set the session timeout.
-     * @param newValue The new session timeout in minutes.
+     * @param newValue The new session timeout in seconds.
      */
     public void setTimeout( int newValue )
     {

@@ -476,12 +476,21 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     },{
                         xtype : "radio",
+                        boxLabel : this.i18n._("Local Directory"),
+                        hideLabel : true,
+                        name : "authenticationType",
+                        inputValue : "LOCAL_DIRECTORY",
+                        listeners : {
+                            "check" : onUpdateRadioButton,
+                            "render" : onRenderRadioButton
+                        }
+                    },{
+                        xtype : "radio",
                         boxLabel : String.format( this.i18n._("RADIUS {0}(requires Directory Connector){1}"),
                                                   "<i>", "</i>" ),
                         hideLabel : true,
                         name : "authenticationType",
                         inputValue : "RADIUS",
-                        checked : this.getBaseSettings().authenticationType == "RADIUS",
                         listeners : {
                             "check" : onUpdateRadioButton,
                             "render" : onRenderRadioButton
@@ -492,7 +501,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                                   "<i>", "</i>" ),
                         hideLabel : true,
                         name : "authenticationType",
-                        checked : this.getBaseSettings().authenticationType == "ACTIVE_DIRECTORY",
                         inputValue : "ACTIVE_DIRECTORY",
                         listeners : {
                             "check" : onUpdateRadioButton,
@@ -510,10 +518,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         name : "idleTimeout",
                         fieldLabel : this.i18n._( "Idle Timeout" ),
                         boxLabel : this.i18n._( "minutes" ),
-                        value : this.getBaseSettings().idleTimeout,
+                        value : this.getBaseSettings().idleTimeout / 60,
                         listeners : {
                             "change" : function( elem, newValue ){
-                                this.getBaseSettings().idleTimeout = newValue;
+                                this.getBaseSettings().idleTimeout = newValue * 60;
                             }.createDelegate(this)
                         }
                     },{
@@ -523,10 +531,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         name : "timeout",
                         fieldLabel : this.i18n._( "Timeout" ),
                         boxLabel : this.i18n._( "minutes" ),
-                        value : this.getBaseSettings().timeout,
+                        value : this.getBaseSettings().timeout / 60,
                         listeners : {
                             "change" : function( elem, newValue ){
-                                this.getBaseSettings().timeout = newValue;
+                                this.getBaseSettings().timeout = newValue * 60;
                             }.createDelegate(this)
                         }
                     },{

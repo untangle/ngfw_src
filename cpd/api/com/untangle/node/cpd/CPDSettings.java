@@ -50,7 +50,7 @@ import org.hibernate.annotations.Type;
 @Table(name="n_cpd_settings", schema="settings")
 public class CPDSettings implements Serializable
 {
-    public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, NONE };    
+    public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, NONE };    
     public static enum PageType { BASIC_LOGIN, BASIC_MESSAGE, CUSTOM };
 
     private Long id;
@@ -63,8 +63,6 @@ public class CPDSettings implements Serializable
     
     private CPDBaseSettings baseSettings = new CPDBaseSettings();
     
-    
-
     public CPDSettings()
     {
     }

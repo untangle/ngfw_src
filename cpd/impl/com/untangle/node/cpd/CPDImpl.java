@@ -321,6 +321,14 @@ public class CPDImpl extends AbstractNode implements CPD {
     @Override
     protected void preStop() throws NodeStopException
     {
+        try {
+            this.manager.setConfig(this.settings, false);
+        } catch (JSONException e) {
+            logger.warn( "Unable to convert the JSON while disabling the configuration, continuing.", e);
+        } catch (IOException e) {
+            logger.warn( "Unable to write settings, continuing.", e);
+        }
+        this.manager.stop();
         LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant(this.phoneBookAssistant);
     }
     
@@ -351,7 +359,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     private void reconfigure(boolean force) throws NodeStartException {
         if ( force || this.getRunState() == NodeState.RUNNING) {
             try {
-                this.manager.setConfig(this.settings);
+                this.manager.setConfig(this.settings, true);
             } catch (JSONException e) {
                 throw new NodeStartException( "Unable to convert the JSON while setting the configuration.", e);
             } catch (IOException e) {
@@ -360,9 +368,22 @@ public class CPDImpl extends AbstractNode implements CPD {
             
             LocalUvmContextFactory.context().localPhoneBook().registerAssistant(this.phoneBookAssistant);
             
-            this.manager.start();
+            try {
+                this.manager.start();
+            } catch ( NodeException e ) {
+                throw new NodeStartException( "Unable to start CPD", e );
+            }
         } else {
+            try {
+                this.manager.setConfig(this.settings, false);
+            } catch (JSONException e) {
+                logger.warn( "Unable to convert the JSON while disabling the configuration, continuing.", e);
+            } catch (IOException e) {
+                logger.warn( "Unable to write settings, continuing.", e);
+            }
+
             this.manager.stop();
+            LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant(this.phoneBookAssistant);
         }
     }
 

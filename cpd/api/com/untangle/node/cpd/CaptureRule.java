@@ -34,7 +34,9 @@ import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 @Table(name="n_cpd_capture_rule", schema="settings")
 public class CaptureRule extends Rule
 {
-	public CaptureRule()
+    private static final long serialVersionUID = 4602132207988197210L;
+
+    public CaptureRule()
     {
     }
 	

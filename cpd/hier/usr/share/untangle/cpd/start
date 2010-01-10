@@ -7,7 +7,7 @@ exec >> /var/log/untangle-cpd/monitor.log 2>&1
 
 CPD_BIND_PORT=3005
 
-/etc/init.d/untangle-cpd start
+/etc/init.d/untangle-cpd restart
 
 logger -t untangle-node-cpd "Started cpd."
 
@@ -36,7 +36,7 @@ fi
 logger -t untangle-node-cpd "Waited ${t} ticks for cpd to start."
 
 # Create a symlink for apache to know where the captive portal redirects are.
-ln -sf @UVM_HOME@/cpd/apache2-cpd.conf /etc/apache2/cpd.conf
+ln -sf @UVM_HOME@/cpd/apache2-cpd.conf /etc/apache2/sites-enabled/cpd.conf
 
 logger -t untangle-node-cpd "Reloading apache"
 
