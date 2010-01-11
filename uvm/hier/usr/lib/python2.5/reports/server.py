@@ -27,10 +27,6 @@ import time
 
 from threading import Thread
 
-from reports.log import *
-
-logger = getLogger(__name__)
-
 locale = 'en'
 
 def usage():
@@ -58,6 +54,9 @@ if (PREFIX != ''):
 
 import reports.i18n_helper
 import reports.engine
+
+from reports.log import *
+logger = getLogger(__name__)
 
 class Worker(Thread):
     def __init__(self, socket):
