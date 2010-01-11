@@ -46,6 +46,8 @@ public interface RemoteReportingManager
 {
     List<DateItem> getDates();
 
+    List<Highlight> getHighlights(Date d, int numDays);
+
     Date getReportsCutoff();
 
     TableOfContents getTableOfContents(Date d, int numDays);

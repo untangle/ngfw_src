@@ -33,6 +33,7 @@ import com.untangle.uvm.UvmException;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.DateItem;
+import com.untangle.uvm.reports.Highlight;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.reports.TableOfContents;
 import org.apache.commons.fileupload.FileItem;
@@ -173,6 +174,11 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         public List<DateItem> getDates()
         {
             return context.reportingManager().getDates();
+        }
+
+        public List<Highlight> getHighlights(Date d, int numDays)
+        {
+            return context.reportingManager().getHighlights(d, numDays);
         }
 
         public Date getReportsCutoff()
