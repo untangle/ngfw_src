@@ -38,6 +38,9 @@ logger -t untangle-node-cpd "Waited ${t} ticks for cpd to start."
 # Create a symlink for apache to know where the captive portal redirects are.
 ln -sf @UVM_HOME@/cpd/apache2-cpd.conf /etc/apache2/sites-enabled/cpd.conf
 
+# Enable apache rewrite
+ln -sf /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-available/
+
 logger -t untangle-node-cpd "Reloading apache"
 
 # Reload apache

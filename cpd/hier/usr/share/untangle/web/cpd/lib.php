@@ -61,17 +61,11 @@ END_OF_QUERY;
     return $row;    
 }
 
-function replace_host($username)
+function run_command($postdata)
 {
     $curl_handle = curl_init();
     curl_setopt($curl_handle, CURLOPT_URL, "http://localhost:3005/");
 
-    $postdata = array(
-        "function" => "replace_host", 
-        "username" => $username, 
-        "ipv4_addr" => $_SERVER['REMOTE_ADDR']
-        );
-    
     curl_setopt($curl_handle,CURLOPT_POSTFIELDS, "json_request=" . json_encode( $postdata));
     curl_setopt($curl_handle,CURLOPT_POST, 1 );
     curl_setopt($curl_handle,CURLOPT_RETURNTRANSFER, 1 );
@@ -81,5 +75,22 @@ function replace_host($username)
 
     return !$has_error;
 }
+
+
+function replace_host($username)
+{
+    return run_command(array("function" => "replace_host", 
+                             "username" => $username, 
+                             "ipv4_addr" => $_SERVER['REMOTE_ADDR']
+                           ));
+}
+
+function remove_host()
+{
+    return run_command(array("function" => "remove_ipv4_addr", 
+                             "ipv4_addr" => $_SERVER['REMOTE_ADDR']
+                           ));
+}
+
 
 ?>
