@@ -291,7 +291,10 @@ class DetailSection(Section):
             curs = conn.cursor()
             curs.execute(sql)
 
-            for r in curs.fetchall():
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
                 w.writerow(r)
         except Exception:
             logger.warn('error adding details, query: %s' % sql, exc_info=True)
