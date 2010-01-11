@@ -27,8 +27,9 @@ import time
 
 from threading import Thread
 
-LOGFILE = "/var/log/uvm/reporter.log"
-sys.stdout = sys.stderr = open(LOGFILE, 'a+')
+from reports.log import *
+
+logger = getLogger(__name__)
 
 locale = 'en'
 
@@ -68,10 +69,6 @@ class Worker(Thread):
     def run(self):
         while 1:
             buf = self.__socket.recv(4096)
-            if buf != '':
-                 print time.asctime()
-                 print "got '%s'" % buf
-                 sys.stdout.flush()
 
             if not buf:
                 break
@@ -103,6 +100,7 @@ class Worker(Thread):
         try:
             (cmd, node_name, end_date, report_days, host, user,
              email) = line.split(',')
+            logger.info('Got line: %s' % (line,))
         except:
             if line == 'PING':
                 return "PONG"
@@ -125,7 +123,7 @@ class Worker(Thread):
                                                      report_days, host,
                                                      user, email)
              except:
-                  logging.error("could not process request line: %s" % line,
+                  logger.error("could not process request line: %s" % line,
                                 exc_info=True);
                   return 'ERROR: see server log'
              return 'DONE'

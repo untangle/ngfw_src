@@ -280,6 +280,11 @@ def generate_sub_report(report_base, node_name, end_date, report_days=1,
 
     node = __nodes.get(node_name, None)
 
+    logger.info("About to generate sub-report for %s: host='%s', user='%s', email='%s'" % (node_name,
+                                                                                           host,
+                                                                                           user,
+                                                                                           email))
+
     if not node:
         msg = 'UNKNOWN_NODE: %s' % node_name
         logger.warn(msg)

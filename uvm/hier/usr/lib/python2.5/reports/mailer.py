@@ -48,7 +48,6 @@ if PREFIX != '':
 import datetime
 import gettext
 import locale
-import logging
 import mx
 import os.path
 import smtplib
@@ -57,6 +56,9 @@ import reports.i18n_helper
 import reports.sql_helper as sql_helper
 import tempfile
 import shutil
+
+from reports.log import *
+logger = getLogger(__name__)
 
 from email import Encoders
 from email.MIMEBase import MIMEBase
@@ -120,11 +122,11 @@ def mail(file, zip_file, sender, receiver, date, company_name,
     msgRoot.attach(tmpMsgRoot)
 
     if report_days == 1:
-        a = "daily"
+        a = "Daily"
     elif report_days == 7:
-        a = "weekly"
+        a = "Weekly"
     else:
-        a = "monthly"
+        a = "Monthly"
     msgRoot['Subject'] = _('New %s %s Reports Available') % (company_name, a)
     msgRoot['From'] = sender
     msgRoot['To'] = receiver
@@ -146,7 +148,7 @@ def mail(file, zip_file, sender, receiver, date, company_name,
 
     smtp = smtplib.SMTP()
     smtp.connect('localhost')
-    print "SENDER: '%s' RECEIVER: '%s'" % (sender, receiver)
+    logger.info("SENDER: '%s' RECEIVER: '%s'" % (sender, receiver))
     smtp.sendmail(sender, receiver, msgRoot.as_string())
     smtp.quit()
 
@@ -182,7 +184,7 @@ WHERE target_state = 'running' OR target_state = 'initialized'
         conn.commit()
     except:
         conn.rollback();
-        logging.warn('could not get mail info', exc_info=True)
+        logger.warn('could not get mail info', exc_info=True)
 
     return (receivers, report_email)
 
@@ -223,7 +225,7 @@ def __get_url(date):
                 break
 
     except Exception, e:
-        logging.warn('could not get hostname', exc_info=True)
+        logger.warn('could not get hostname', exc_info=True)
 
     return rv
 
@@ -239,7 +241,7 @@ def __get_report_users():
             rv.add(r[0])
 
     except Exception, e:
-        logging.warn('could not get hostname', exc_info=True)
+        logger.warn('could not get hostname', exc_info=True)
     finally:
         conn.commit()
 

@@ -53,10 +53,13 @@ import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.DateItem;
 import com.untangle.uvm.reports.DetailSection;
 import com.untangle.uvm.reports.Email;
+import com.untangle.uvm.reports.Highlight;
 import com.untangle.uvm.reports.Host;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.reports.ReportXmlHandler;
 import com.untangle.uvm.reports.Section;
+import com.untangle.uvm.reports.SummaryItem;
+import com.untangle.uvm.reports.SummarySection;
 import com.untangle.uvm.reports.TableOfContents;
 import com.untangle.uvm.reports.User;
 import com.untangle.uvm.security.Tid;
@@ -151,6 +154,24 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         }
 
         return d;
+    }
+
+    // FIXME: this is ugly; SummarySection should 
+    public List<Highlight> getHighlights(Date d, int numDays)
+    {
+	List<Highlight> list = new ArrayList<Highlight>();
+
+        for (Application app : getApplications(getDateDir(d, numDays),
+					      "top-level")) {
+	    for (Section s : getApplicationData(d, numDays, app.getName()).
+		     getSections()) {
+		if (s instanceof SummarySection) {
+		    list.addAll(((SummarySection)s).getHighlights());
+		}
+	    }
+	}
+
+	return list;
     }
 
     public TableOfContents getTableOfContents(Date d, int numDays)
@@ -271,6 +292,10 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                                        String detailName, String type,
                                        String value, boolean limitResultSet)
     {
+	logger.info("doGetDetailData for '" + appName + "' (detail='" +
+		    detailName + "', type='" + type + 
+		    "', limitResultSet='" + limitResultSet + "')");
+
 	if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff())) {
 	    return null;
 	}
@@ -287,7 +312,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                 DetailSection sds = (DetailSection)section;
                 if (sds.getName().equals(detailName)) {
                     String sql = sds.getSql();
-
+		    logger.info("** '" + sql + "'");
                     Connection conn = null;
                     try {
                         conn = DataSourceFactory.factory().getConnection();
@@ -297,6 +322,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                         }
                         ResultSet rs = stmt.executeQuery(sql);
                         int columnCount = rs.getMetaData().getColumnCount();
+			logger.info("** got " + columnCount + " columns.");
                         while (rs.next()) {
                             List l = new ArrayList(columnCount);
                             for (int i = 1; i <= columnCount; i++) {

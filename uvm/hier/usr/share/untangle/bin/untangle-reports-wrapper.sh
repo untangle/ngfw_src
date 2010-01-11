@@ -2,7 +2,7 @@
 
 RESTART_FILE=/etc/untangle/reports-to-restart
 DAEMON=/usr/lib/python2.5/reports/server.py
-LOGFILE=/var/log/uvm/report.log
+LOGFILE=/var/log/uvm/reporter.log
 
 pid=foo
 

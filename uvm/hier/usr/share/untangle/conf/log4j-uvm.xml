@@ -47,6 +47,16 @@
     </layout>
   </appender>
 
+  <appender name="REPORTER" class="org.apache.log4j.FileAppender">
+    <param name="File" value="@UVM_HOME@/log/reporter.log"/>
+    <param name="Append" value="true"/>
+    <param name="Threshold" value="ALL"/>
+    <layout class="com.untangle.uvm.logging.UtPatternlayout">
+      <!-- This is actually the default conversion, so we could leave it out... -->
+      <param name="ConversionPattern" value="%D %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+
   <!-- Log Emailer -->
 
   <appender name="EmailAppender"
@@ -78,8 +88,25 @@
     <priority value="WARN"/>
   </category>
 
+
   <category name="com.untangle.uvm.logging">
     <priority value="WARN"/>
+  </category>
+
+  <!-- reports logs go *only* to a separate file -->
+  <category name="com.untangle.uvm.reporting" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="REPORTER"/>
+  </category>
+
+  <category name="com.untangle.uvm.engine.RemoteReportingManagerImpl" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="REPORTER"/>
+  </category>
+
+  <category name="com.untangle.uvm.reports" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="REPORTER"/>
   </category>
 
   <!-- normal level for engine and following is INFO -->
@@ -92,10 +119,6 @@
   </category>
 
   <category name="com.untangle.node.util">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.reporting">
     <priority value="INFO"/>
   </category>
 

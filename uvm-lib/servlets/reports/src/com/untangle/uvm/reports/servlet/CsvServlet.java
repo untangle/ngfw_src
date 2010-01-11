@@ -69,7 +69,7 @@ public class CsvServlet extends HttpServlet
         String type = req.getParameter("type");
         String value = req.getParameter("value");
 
-	logger.error("Got a CSV request: date='" + dateStr +
+	logger.info("Got a CSV request: date='" + dateStr +
 		    "', numDays='" + numDaysStr + "', app='" +
 		    app + "', detail='" + detail +
 		    "', type='" + type + "', value='" +
@@ -143,12 +143,15 @@ public class CsvServlet extends HttpServlet
     private void doQuery(BufferedWriter bw, String sql)
         throws IOException
     {
+	logger.info("About to do query: '" + sql + "'");
+
         Connection conn = null;
         try {
             conn = DataSourceFactory.factory().getConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             int columnCount = rs.getMetaData().getColumnCount();
+	    logger.info("** got " + columnCount + " columns");
             while (rs.next()) {
                 List l = new ArrayList(columnCount);
                 for (int i = 1; i <= columnCount; i++) {
@@ -157,7 +160,7 @@ public class CsvServlet extends HttpServlet
                 writeCsvRow(bw, l);
             }
         } catch (SQLException exn) {
-            logger.warn("could not get DetailData for: " + sql,
+            logger.warn("** could not get DetailData...",
                         exn);
         } finally {
             if (conn != null) {

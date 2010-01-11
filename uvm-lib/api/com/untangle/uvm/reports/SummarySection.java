@@ -51,8 +51,23 @@ public class SummarySection extends Section implements Serializable
         return summaryItems;
     }
 
+    public List<Highlight> getHighlights()
+    {
+	List<Highlight> list = new ArrayList<Highlight>();
+
+	for (SummaryItem i : getSummaryItems()) {
+	    if (i instanceof Highlight) {
+		list.add((Highlight)i);
+	    }
+	}
+
+        return list;
+    }
+
     public void addSummaryItem(SummaryItem item)
     {
         summaryItems.add(item);
     }
+
+
 }

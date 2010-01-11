@@ -28,11 +28,9 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      debug="false">
 
-  <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+  <appender name="FILE" class="org.apache.log4j.FileAppender">
     <param name="File" value="@UVM_HOME@/log/reporter.log"/>
     <param name="Append" value="true"/>
-    <param name="MaxFileSize" value="500KB"/>
-    <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="ALL"/>
     <layout class="com.untangle.uvm.logging.UtPatternlayout">
       <!-- This is actually the default conversion, so we could leave it out... -->

@@ -121,6 +121,11 @@ class Report:
 
     def generate(self, report_base, date_base, end_date, report_days=1,
                  host=None, user=None, email=None):
+        logger.info("About to generate report for %s: host='%s', user='%s', email='%s'" % (self.__name,
+                                                                                           host,
+                                                                                           user,
+                                                                                           email))
+        
         node_base = get_node_base(self.__name, date_base,
                                   report_days=report_days, host=host, user=user,
                                   email=email)
@@ -269,6 +274,8 @@ class DetailSection(Section):
 
     def write_csv(self, filename, start_date, end_date, host=None, user=None,
                   email=None):
+        logger.debug('Generating CSV for %s' % (self.name,))
+
         sql = self.get_sql(start_date, end_date, host=None, user=None,
                            email=None)
         f = open(filename, 'w')
