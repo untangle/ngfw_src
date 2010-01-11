@@ -1207,7 +1207,7 @@ class WebFilterDetail(DetailSection):
         sql = """\
 SELECT time_stamp, hname, uid, wf_%s_category,
        CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END,
-       'http://' || host || uri,
+       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
@@ -1260,7 +1260,7 @@ class WebFilterDetailAll(DetailSection):
         sql = """\
 SELECT time_stamp, hname, uid, wf_%s_category,
        CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END,
-       'http://' || host || uri,
+       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
