@@ -663,9 +663,23 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             this.gridRecipients.clearChangedData();
             this.gridRecipients.store.loadData( this.buildReportingUsersData());
-            var rdtk = Ext.getCmp("reporting_daysToKeep");
+            var cmpIds = this.getEditableFields(),
+                i;
+            for (i = 0; i < cmpIds.length; i++) {
+                if (cmpIds[i].isDirty()){
+                    cmpIds[i].originalValue = cmpIds[i].getValue();
+                    cmpIds[i].reset();
+                }
+            }
+            /*
+            var rdtk = Ext.getCmp("reporting_daysToKeepFiles");
             rdtk.setValue( this.getReportingSettings().fileRetention );
             rdtk.originalValue = rdtk.getValue();
+            
+            rdtk = Ext.getCmp('reporting_daysToKeepDB');            
+            rdtk.setValue( this.getReportingSettings().dbRetention );
+            rdtk.originalValue = rdtk.getValue();
+            */
 
             this.gridIpMap.clearChangedData();
             this.gridIpMap.store.loadData( this.getReportingSettings().networkDirectory.entries );
@@ -782,11 +796,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 callback();
             }
         },
+        getEditableFields : function(){
+                return this.panelGeneration.findBy(function(obj){return obj.xtype =='checkbox' || obj.xtype == 'radiogroup' || obj.xtype == 'numberfield' || obj.xtype == 'textfield' ? true : false;});        
+        },
         isDirty: function() {
             if(this.panelGeneration.rendered) {
-                var cmpIds = [ 'reporting_daysToKeep'];
-                for (var i = 0; i < cmpIds.length; i++) {
-                    if (Ext.getCmp(cmpIds[i]).isDirty()){
+                var cmpIds = this.getEditableFields(),
+                    i;
+                for (i = 0; i < cmpIds.length; i++) {
+                    if (cmpIds[i].isDirty()){
                         return true;
                     }
                 }
