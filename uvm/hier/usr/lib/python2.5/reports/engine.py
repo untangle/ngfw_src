@@ -29,7 +29,6 @@ import sys
 
 from mx.DateTime import DateTimeDelta
 from psycopg import DateFromMx
-from reports.pdf import ReportDocTemplate
 from sql_helper import print_timing
 from reports.log import *
 logger = getLogger(__name__)
@@ -45,7 +44,8 @@ MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
 class Node:
     def __init__(self, name):
         self.__name = name
-
+        self.__display_title, self.__view_position = self.info()
+        
     def get_report(self):
         return None
 
@@ -67,6 +67,14 @@ class Node:
     @property
     def name(self):
         return self.__name
+
+    @property
+    def display_title(self):
+        return self.__display_title
+
+    @property
+    def view_position(self):
+        return self.__view_position
 
     def parents(self):
         return []
@@ -418,6 +426,9 @@ def report_days_dir(report_days):
     else:
         return '%s-days' % report_days
 
+def get_node(name):
+    return __nodes[name]
+
 def _first_page(canvas, doc):
     canvas.saveState()
     canvas.setFont('Times-Bold',16)
@@ -517,9 +528,6 @@ def __get_node_partial_order(exclude_uninstalled=True):
             __add_node(name, list, available)
 
     return list
-
-def __get_node(name):
-    return __nodes[name]
 
 def __get_installed_nodes():
     conn = sql_helper.get_connection()

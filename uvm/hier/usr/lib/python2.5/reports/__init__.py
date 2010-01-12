@@ -23,20 +23,14 @@ import mx
 import os
 import re
 import reportlab.lib.colors
-import reports.colors
-import reports.sql_helper as sql_helper
-import reports.i18n_helper
-from reports.log import *
 import string
 import sys
-
-logger = getLogger(__name__)
 
 from lxml.etree import CDATA
 from lxml.etree import Element
 from lxml.etree import ElementTree
 from mx.DateTime import DateTimeDeltaFromSeconds
-
+from reportlab.graphics.shapes import Rect
 from reportlab.lib.colors import HexColor
 from reportlab.lib.colors import Color
 from reportlab.lib.styles import getSampleStyleSheet
@@ -48,12 +42,17 @@ from reportlab.platypus.flowables import Image
 from reportlab.platypus.flowables import KeepTogether
 from reportlab.platypus.tables import Table
 from reportlab.platypus.tables import TableStyle
-from reports.engine import ReportDocTemplate
-from reports.engine import get_node_base
+
+import reports.colors
+import reports.sql_helper as sql_helper
+import reports.i18n_helper
+
+from reports.engine import get_node, get_node_base
 from reports.pdf import STYLESHEET
 from reports.pdf import SectionHeader
 
-from reportlab.graphics.shapes import Rect
+from reports.log import *
+logger = getLogger(__name__)
 
 HNAME_LINK = 'HostLink'
 USER_LINK = 'UserLink'
@@ -100,7 +99,8 @@ PIE_CHART = 'pie-chart'
 class Report:
     def __init__(self, node, sections):
         self.__name = node.name
-        self.__title, self.__view_position = node.info()
+        self.__title = node.display_title
+        self.__view_position = node.view_position
         self.__sections = sections
 
     @property
@@ -198,6 +198,10 @@ class SummarySection(Section):
         Section.__init__(self, name, title)
 
         self.__summary_items = summary_items
+
+    @property
+    def summary_items(self):
+        return self.__summary_items
 
     def generate(self, report_base, node_base, end_date, report_days=1,
                  host=None, user=None, email=None):
@@ -324,7 +328,10 @@ class ColumnDesc():
 class Highlight:
     def __init__(self, node_name, string_template):
         self.__name = node_name
-        self.__string_template = string_template
+        self.__title = get_node(node_name).display_title
+        self.__string_template = string_template.replace(self.__name,
+                                                         self.__title)
+
         self.__values = ()
 
     @property
@@ -347,7 +354,7 @@ class Highlight:
 
         element = Element('highlight')
         element.set('name', self.__name)
-        element.set('string-template', self.__string_template)        
+        element.set('string-template', self.__string_template)
 
         for k,v in self.__values.iteritems():
             value_element = Element('highlight-value')
@@ -359,14 +366,21 @@ class Highlight:
 
     def get_flowables(self, report_base, section_base, end_date):
         data = [[Paragraph(_('Highlights'),
-                           STYLESHEET['TableTitle']),
-                 '']]
+                           STYLESHEET['TableTitle']),]]
 
-        data.append(['', self.__string_template % self.__values])
+        data.append([Paragraph(self.get_string(), STYLESHEET['Smaller']),])
 
         table = Table(data)
 
         return [table,]
+
+    def get_string(self):
+        h = {}
+        for k, v in self.__values.iteritems():
+            h[k] = "<b>%s</b>" % (v,)
+        return (self.__string_template % h).replace(self.__title,
+                                                    "<b>%s</b>" % (self.__title,))
+
 
 class Graph:
     def __init__(self, name, title):

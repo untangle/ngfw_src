@@ -20,10 +20,8 @@ import gettext
 import mx
 import platform
 import tempfile
-import reportlab.lib.colors as colors
-import reports.i18n_helper
-import reports.engine
 
+from reportlab.lib.colors import grey
 from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.enums import TA_CENTER
@@ -45,7 +43,14 @@ from reportlab.platypus.frames import Frame
 from reportlab.platypus.tables import Table
 from reportlab.platypus.tableofcontents import TableOfContents
 from reportlab.rl_config import defaultPageSize
+
+import reports
+import reports.i18n_helper
+
+from reports.engine import get_node_base
 from sql_helper import print_timing
+from log import *
+logger = getLogger(__name__)
 
 PAGE_HEIGHT = defaultPageSize[1]
 PAGE_WIDTH = defaultPageSize[0]
@@ -59,6 +64,11 @@ def __getStyleSheet():
     stylesheet.add(ParagraphStyle(name='Normal',
                                   fontName='Helvetica',
                                   fontSize=10,
+                                  leading=12))
+
+    stylesheet.add(ParagraphStyle(name='Smaller',
+                                  fontName='Helvetica',
+                                  fontSize=8,
                                   leading=12))
 
     stylesheet.add(ParagraphStyle(name='Title',
@@ -260,7 +270,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
         days = _('days')
 
     if trial_report_node:
-        title = trial_report_node.info()[0] + " " + _('trial report')
+        title = trial_report_node.display_title + " " + _('trial report')
     else:
         title = '%s %s %s' % (_('Report for'), report_days, days)
 
@@ -279,9 +289,9 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
         start_date_str = start_date.strftime("%d %B %Y")
         story.append(Paragraph(start_date_str + " -> " + date_str, STYLESHEET['SubTitle']))
         story.append(Paragraph(platform.node(), STYLESHEET['SubTitle']))
-        story.append(Paragraph(_("Thank you for trying") + " " + trial_report_node.info()[0],
+        story.append(Paragraph(_("Thank you for trying") + " " + trial_report_node.display_title,
                                STYLESHEET['SubTitle']))
-        story.append(Paragraph(_("The trial period has now expired. To continue using") + " " + trial_report_node.info()[0] + ", " + _('click on "Buy Now" in the administrator interface and follow directions.'),
+        story.append(Paragraph(_("The trial period has now expired. To continue using") + " " + trial_report_node.display_title + ", " + _('click on "Buy Now" in the administrator interface and follow directions.'),
                                STYLESHEET['SubTitle']))
     else:
         story.append(Paragraph(date_str, STYLESHEET['SubTitle']))
@@ -309,6 +319,27 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
 
     mail_reports.sort(__node_cmp)
 
+    # higlights summary
+    story += [SectionHeader(_("Highlights Summary")), Spacer(1, 0.25 * inch)]
+    hs = [ [Paragraph(_('Highlights'), STYLESHEET['TableTitle']),], ]
+    for r in mail_reports:
+        for s in r.sections:
+            if isinstance(s, reports.SummarySection):
+                for i in s.summary_items:
+                    if isinstance(i, reports.Highlight):
+                        node_base = get_node_base(r.name, date_base,
+                                                  report_days=report_days)
+                        
+                        hs.append([Paragraph(i.get_string(), STYLESHEET['Smaller']),])
+    zebra_colors = [HexColor(0xE0E0E0), None]
+    style = [ ['ROWBACKGROUNDS', (0, 1), (-1, -1), zebra_colors],
+              ['BACKGROUND', (0, 0), (-1, 0), grey],
+              ['BOX', (0, 0), (-1, -1), 1, grey] ]
+    story += [Table(hs, style=style),]
+
+    story.append(PageBreak())
+    
+    # apps reports
     for r in mail_reports:
         story += r.get_flowables(report_base, date_base, end_date, report_days)
 
