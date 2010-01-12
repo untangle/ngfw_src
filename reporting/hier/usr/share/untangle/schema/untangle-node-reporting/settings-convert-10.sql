@@ -23,3 +23,6 @@ ALTER TABLE settings.n_reporting_settings
 UPDATE settings.n_reporting_settings
    SET db_retention = 7
    WHERE db_retention = 14;
+
+CREATE TABLE reports.reports_state (
+        last_cutoff timestamp NOT NULL);
