@@ -117,7 +117,7 @@ public class TimeSeriesChart extends Plot
 	}
 	min = DateTruncator.truncateDate(min, trunc, true);
 	max = DateTruncator.truncateDate(max, trunc, false);
-	logger.debug("truncated to: " + min + " -> " + max);
+	logger.debug("... adapted to: " + min + " -> " + max);
 	da.setMinimumDate(min);
 	da.setMaximumDate(max);
 

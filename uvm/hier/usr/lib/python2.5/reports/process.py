@@ -324,7 +324,6 @@ if trial_report:
      reports.engine.limit_nodes(trial_report)
 
 if not no_migration:
-     ## XXX need variable for schema data retention
      init_date = end_date - mx.DateTime.DateTimeDelta(30)
      reports.engine.setup(init_date, end_date)
      reports.engine.process_fact_tables(init_date, end_date)
