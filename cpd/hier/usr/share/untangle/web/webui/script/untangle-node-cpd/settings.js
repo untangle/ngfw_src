@@ -1,6 +1,6 @@
 if (!Ung.hasResource["Ung.CPD"]) {
     Ung.hasResource["Ung.CPD"] = true;
-    Ung.NodeWin.registerClassName('untangle-node-cpd', 'Ung.CPD');
+    Ung.NodeWin.registerClassName("untangle-node-cpd", "Ung.CPD");
 
     Ung.CPD = Ext.extend(Ung.NodeWin, {
         panelCaptiveHosts: null,
@@ -54,16 +54,16 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
             this.panelCaptiveHosts = new Ext.Panel({
                 name : "panelCaptiveHosts",
-                helpSource : '',
+                helpSource : "",
                 // private fields
                 gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._("Captive Hosts"),
                 autoScroll : true,
                 border : false,
-                cls: 'ung-panel',
+                cls: "ung-panel",
                 items : [{
-                    title : this.i18n._('Note'),
+                    title : this.i18n._("Note"),
                     cls: "description",
                     bodyStyle : "padding: 5px 5px 5px; 5px;",
                     html : this.i18n._("The <b>Capture Rules</b> are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evailuated in order.")
@@ -103,7 +103,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             });
             
             this.gridCaptureRules = new Ung.EditorGrid({
-                name : 'gridCaptureRules',
+                name : "gridCaptureRules",
                 settingsCmp : this,
                 height : 500,
                 hasReorder : true,
@@ -254,7 +254,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         allowBlank : false
                     }]
                 },{
-                    xtype : 'fieldset',
+                    xtype : "fieldset",
                     autoHeight : true,
                     title : this.i18n._("Days of Week"),
                     items : [{
@@ -452,14 +452,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
             this.panelUserAuthentication = new Ext.Panel({
                 name : "panelUserAuthentication",
-                helpSource : '',
+                helpSource : "",
                 // private fields
                 gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._("User Authentication"),
                 autoScroll : true,
                 border : false,
-                cls: 'ung-panel',
+                cls: "ung-panel",
                 items : [{
                     xtype : "fieldset",
                     autoHeight : true,
@@ -595,7 +595,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 this.panelCaptivePage.find( "name", "pageType" )[0].setValue(this.getBaseSettings().pageType);
             }.createDelegate(this);
             
-            this.panelCaptivePage = new Ext.form.FormPanel({
+            this.panelCaptivePage = new Ext.Panel({
                 name : "panelCaptivePage",
                 helpSource : "",
                 // private fields
@@ -754,23 +754,35 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                 }.createDelegate(this)
                             },
                         },{
-                            fieldLabel : this.i18n._("File"),
-                            name : "customUploadFile",
-                            inputType : "file",
-                            xtype : "textfield",
-                            pageType : "CUSTOM"
-                        },{
-                            xtype: "button",
-                            name : "customSendFile",
-                            text : i18n._("Upload File"),
-                            width : 400,
-                            pageType : "CUSTOM"
+                            fileUpload : true,
+                            xtype : "form",
+                            bodyStyle : "padding:0px 0px 0px 25px",
+                            buttonAlign : "left",
+                            id : "upload_custom_php",
+                            url : "upload",
+                            pageType : "CUSTOM",
+                            border : false,
+                            items : [{
+                                fieldLabel : this.i18n._("File"),
+                                name : "customUploadFile",
+                                inputType : "file",
+                                xtype : "textfield"
+                            },{
+                                xtype: "button",
+                                name : "customSendFile",
+                                text : i18n._("Upload File"),
+                                handler : this.onUploadCustomFile.createDelegate(this)
+                            },{
+                                xtype : "hidden",
+                                name : "type",
+                                value : "cpd-custom-page"
+                            }]
                         }]
                     },{
                         xtype: "button",
                         name : "viewPage",
                         text : i18n._("View Page")
-                    }]
+                    }],
                 },{
                     xtype : "fieldset",
                     autoHeight : true,
@@ -807,7 +819,31 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     }]
                 }]
-            });            
+            });
+        },
+
+        onUploadCustomFile : function()
+        {
+            var form = this.panelCaptivePage.find( "id", "upload_custom_php" )[0].getForm();
+            form.submit({
+                parentID : this.panelCaptivePage.getId(),
+                waitMsg : this.i18n._("Please wait while uploading your custom captive portal page..."),
+                success : this.uploadCustomFileSuccess.createDelegate( this ),
+                failure : this.uploadCustomFileFailure.createDelegate( this )
+            });
+        },
+
+        uploadCustomFileSuccess : function()
+        {
+            Ext.MessageBox.alert( this.i18n._("Succeeded"), this.i18n._("Uploading Custom Captive Portal Page succeeded"));
+            var field = this.panelCaptivePage.find( "name", "customUploadFile" )[0];
+            field.reset();
+        },
+
+        uploadCustomFileFailure : function()
+        {
+            Ext.MessageBox.alert(this.i18n._("Failed"), 
+                                 this.i18n._("There was an error uploading the Custom Captive Portal Page." ));
         },
 
         buildLoginEventLog : function() {
@@ -864,11 +900,11 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     sortType : Ung.SortTypes.asTimestamp
                 },{
                     name : "client",
-                    mapping : 'pipelineEndpoints',
+                    mapping : "pipelineEndpoints",
                     sortType : Ung.SortTypes.asClient
                 }, {
                     name : "server",
-                    mapping : 'pipelineEndpoints',
+                    mapping : "pipelineEndpoints",
                     sortType : Ung.SortTypes.asServer
                 }],
                 

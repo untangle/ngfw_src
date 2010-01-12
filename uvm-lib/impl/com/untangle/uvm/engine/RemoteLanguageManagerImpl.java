@@ -47,6 +47,7 @@ import com.untangle.uvm.UvmException;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
@@ -95,7 +96,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     RemoteLanguageManagerImpl(UvmContextImpl uvmContext) {
         this.uvmContext = uvmContext;
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Void> tw = new TransactionWork<Void>()
         {
             public boolean doWork(Session s)
             {
@@ -110,11 +111,19 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
                 return true;
             }
+            
+            @Override
+            public Void getResult()
+            {
+                return null;
+            }
         };
         uvmContext.runTransaction(tw);
 
         allLanguages = loadAllLanguages();
         allCountries = loadAllCountries();
+        
+        LocalUvmContextFactory.context().uploadManager().registerHandler(new LanguageUploadHandler());
     }
 
     // public methods ---------------------------------------------------------
@@ -462,6 +471,24 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
     private boolean isValidCountryCode(String code) {
         return allCountries.containsKey(code);
+    }
+    
+    private class LanguageUploadHandler implements UploadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "language";
+        }
+        
+        @Override
+        public String handleFile(FileItem fileItem) throws Exception
+        {
+            if ( uploadLanguagePack(fileItem)) {
+                return "Uploaded language pack successfully";
+            }
+            return "Language Pack Uploaded With Errors";
+        }
     }
 
 }

@@ -17,6 +17,7 @@
  */
 package com.untangle.node.cpd;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -25,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -39,13 +41,16 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.user.ADLoginEvent;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
 public class CPDImpl extends AbstractNode implements CPD {
+    private final CustomUploadHandler uploadHandler = new CustomUploadHandler(); 
     private final Logger logger = Logger.getLogger(CPDImpl.class);
+
 
     private final PipeSpec[] pipeSpecs;
 
@@ -315,6 +320,8 @@ public class CPDImpl extends AbstractNode implements CPD {
     {
         reconfigure(true);
            
+        LocalUvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
+
         super.preStart();
      }
     
@@ -332,6 +339,7 @@ public class CPDImpl extends AbstractNode implements CPD {
         LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant(this.phoneBookAssistant);
     }
     
+    
     protected void postInit(final String[] args) {
         TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
@@ -347,8 +355,28 @@ public class CPDImpl extends AbstractNode implements CPD {
                 return null;
             }
         };
+        
         getNodeContext().runTransaction(tw);
+        
+        LocalUvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
     }
+    
+    @Override
+    protected void preDestroy() throws NodeException
+    {
+        LocalUvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
+
+        super.preDestroy();
+    }
+    
+    @Override
+    protected void uninstall()
+    {
+        LocalUvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
+
+        super.uninstall();
+    }
+
 
     // private methods -------------------------------------------------------
     private void reconfigure() throws NodeException
@@ -389,5 +417,23 @@ public class CPDImpl extends AbstractNode implements CPD {
 
     PhoneBookAssistant getPhoneBookAssistant() {
         return this.phoneBookAssistant;
+    }
+    
+    private class CustomUploadHandler implements UploadHandler
+    {
+        @Override
+        public String getName() {
+            return "cpd-custom-page";
+        }
+
+        @Override
+        public String handleFile(FileItem fileItem) throws Exception {
+            File temp = File.createTempFile("untangle-cpd", ".zip");
+            fileItem.write(temp);
+            manager.loadCustomPage(temp.getAbsolutePath());
+            return "Successfully uploaded a custom portal page";
+            
+        }
+        
     }
 }

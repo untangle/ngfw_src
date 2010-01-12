@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +38,8 @@ class CPDManager {
     private static final String START_SCRIPT =  System.getProperty( "bunnicula.home" ) + "/cpd/start";
     private static final String STOP_SCRIPT = System.getProperty( "bunnicula.home" ) + "/cpd/stop";
 
-    
+    private static final String LOAD_CUSTOM_SCRIPT = System.getProperty( "bunnicula.home" ) + "/cpd/load_custom";
+        
     private final WorkerRunner worker;
 
     private final CPDImpl cpd;
@@ -74,6 +76,10 @@ class CPDManager {
         worker.stop();
     }
     
+    void loadCustomPage( String fileName ) throws NodeException
+    {
+        ScriptRunner.getInstance().exec( LOAD_CUSTOM_SCRIPT, fileName );
+    }
 
     private JSONObject serializeCPDSettings( CPDSettings settings, boolean isEnabled ) throws JSONException
     {

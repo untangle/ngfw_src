@@ -44,6 +44,7 @@ import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.license.ProductIdentifier;
 
+import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
@@ -105,6 +106,9 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
                 }
             };
         uvmContext.runTransaction(tw);
+
+        /* Register a handler to upload skins */
+        uvmContext.uploadManager().registerHandler(new SkinUploadHandler());
     }
 
     // public methods ---------------------------------------------------------
@@ -278,5 +282,21 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
         
     static {
         SKINS_DIR = System.getProperty("bunnicula.skins.dir");
+    }
+    
+    private class SkinUploadHandler implements UploadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "skin";
+        }
+        
+        @Override
+        public String handleFile(FileItem fileItem) throws Exception
+        {
+            uploadSkin(fileItem);
+            return "Successfully updated a skin";
+        }
     }
 }

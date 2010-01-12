@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -72,6 +73,8 @@ import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.user.LocalPhoneBook;
 import com.untangle.uvm.user.PhoneBookFactory;
@@ -147,6 +150,7 @@ public class UvmContextImpl extends UvmContextBase
     private LicenseManagerFactory licenseManagerFactory;
     private TomcatManager tomcatManager;
     private HeapMonitor heapMonitor;
+    private UploadManagerImpl uploadManager;
 
     // Will be null if cliServer is not enabled
     private CliServerManager cliServerManager;
@@ -733,6 +737,8 @@ public class UvmContextImpl extends UvmContextBase
     @Override
     protected void init()
     {
+        uploadManager = new UploadManagerImpl();
+
         cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
         UvmRepositorySelector repositorySelector = UvmRepositorySelector.selector();
@@ -813,9 +819,9 @@ public class UvmContextImpl extends UvmContextBase
 
         appServerManager = new AppServerManagerImpl(this);
         remoteAppServerManager = new RemoteAppServerManagerAdaptor(appServerManager);
-
+        
         licenseManagerFactory = LicenseManagerFactory.makeInstance();
-
+        
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
@@ -1070,6 +1076,12 @@ public class UvmContextImpl extends UvmContextBase
         }
         return null;
     }
+    
+    @Override
+    public UploadManager uploadManager()
+    {
+        return this.uploadManager;
+    }
 
     // private methods --------------------------------------------------------
 
@@ -1247,6 +1259,24 @@ public class UvmContextImpl extends UvmContextBase
             };
 
         return this.context().runTransaction(tw);
+    }
+    
+    private class RestoreUploadHandler implements UploadHandler
+    {
+
+        @Override
+        public String getName() {
+            return "restore";
+        }
+
+        @Override
+        public String handleFile(FileItem fileItem) throws Exception {
+            byte[] backupFileBytes=fileItem.get();
+            restoreBackup(backupFileBytes);
+
+            return "restored backup file.";
+        }
+        
     }
 
     // static initializer -----------------------------------------------------

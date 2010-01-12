@@ -54,6 +54,7 @@ import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.RemoteAdminManager;
+import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.user.ADPhoneBookAssistant;
@@ -430,4 +431,6 @@ public interface LocalUvmContext
     Environment getBdbEnvironment();
 
     String getPopID();
+    
+    UploadManager uploadManager();
 }

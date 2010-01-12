@@ -20,24 +20,23 @@ package com.untangle.uvm.webui.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.RemoteBrandingManager;
-import com.untangle.uvm.RemoteLanguageManager;
-import com.untangle.uvm.RemoteSkinManager;
-import com.untangle.uvm.client.RemoteUvmContext;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.servlet.UploadManager;
 
 /**
  * A servlet for uploading a skin
@@ -67,38 +66,17 @@ public class UploadServlet extends HttpServlet
             String uploadType = getUploadType(items);
 
             // Process the uploaded items
-            RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
+            UploadManager uploadManager = LocalUvmContextFactory.context().uploadManager();
 
-            Iterator iter = items.iterator();
-            while (iter.hasNext()) {
-                FileItem item = (FileItem) iter.next();
-
+            for ( FileItem item : items ) {
                 if (!item.isFormField()) {
-                    if ("skin".equals(uploadType)) {
-                        RemoteSkinManager skinManager = uvm.skinManager();
-                        skinManager.uploadSkin(item);
-                    } else if ("language".equals(uploadType)) {
-                        RemoteLanguageManager languageManager = uvm.languageManager();
-                        boolean success = languageManager.uploadLanguagePack(item);
-                        if (!success) {
-                            msg = "Language Pack Uploaded With Errors";
-                        }
-                    } else if ("logo".equals(uploadType)) {
-                        if (item.getName().toLowerCase().endsWith(".gif")
-                          || item.getName().toLowerCase().endsWith(".png")
-                          || item.getName().toLowerCase().endsWith(".jpg")
-                          || item.getName().toLowerCase().endsWith(".jpeg") )  {
-                            byte[] logo=item.get();
-                            RemoteBrandingManager brandingManager = uvm.brandingManager();
-                            brandingManager.setLogo(logo);
-                        } else {
-                            throw new Exception("Branding logo must be GIF, PNG, or JPG");
-                        }
-                    } else if ("restore".equals(uploadType)) {
-                        byte[] backupFileBytes=item.get();
-                        uvm.restoreBackup(backupFileBytes);
-
-                    }
+                    UploadHandler handler = uploadManager.getUploadHandler(uploadType);
+                    if ( handler == null ) {
+                        msg = "Do not know how to handler the type '" + uploadType + "'";
+                        logger.info("Unable to handle an upload of type: " + uploadType );
+                    } else {
+                        msg = handler.handleFile(item);
+                    }                    
                 }
             }
         } catch (Exception exn) {
@@ -111,8 +89,7 @@ public class UploadServlet extends HttpServlet
 
     private String getUploadType(List<FileItem> items)
     {
-        for (Iterator iterator = items.iterator(); iterator.hasNext();) {
-            FileItem fileItem = (FileItem) iterator.next();
+        for ( FileItem fileItem : items ) {
             if (fileItem.isFormField() && "type".equals(fileItem.getFieldName())) {
                 return fileItem.getString();
             }

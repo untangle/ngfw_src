@@ -31,7 +31,11 @@ import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.RemoteBrandingManager;
+import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.TransactionWork;
+
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -73,6 +77,8 @@ class DefaultBrandingManagerImpl implements LocalBrandingManager
         LocalUvmContextFactory.context().runTransaction(tw);
 
         this.settings = tw.getResult();
+        
+        LocalUvmContextFactory.context().uploadManager().registerHandler(new LogoUploadHandler());
     }
 
     // public methods ---------------------------------------------------------
@@ -116,4 +122,31 @@ class DefaultBrandingManagerImpl implements LocalBrandingManager
         BRANDING_LOGO = new File(id, "BrandingLogo.gif");
         BRANDING_LOGO_WEB_PATH = "images/BrandingLogo.gif";
     }
+    
+    private class LogoUploadHandler implements UploadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "logo";
+        }
+        
+        @Override
+        public String handleFile(FileItem fileItem) throws Exception
+        {
+            if (fileItem.getName().toLowerCase().endsWith(".gif")
+                    || fileItem.getName().toLowerCase().endsWith(".png")
+                    || fileItem.getName().toLowerCase().endsWith(".jpg")
+                    || fileItem.getName().toLowerCase().endsWith(".jpeg") ) {
+                      byte[] logo=fileItem.get();
+  
+                      /* Use the context in order to properly handler premium vs normal. */
+                      LocalUvmContextFactory.context().brandingManager().setLogo(logo);
+                  } else {
+                      throw new Exception("Branding logo must be GIF, PNG, or JPG");
+                  }
+            return "Uploaded new branding logo";
+        }
+    }
+
 }
