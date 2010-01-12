@@ -39,7 +39,7 @@ logger -t untangle-node-cpd "Waited ${t} ticks for cpd to start."
 ln -sf @UVM_HOME@/cpd/apache2-cpd.conf /etc/apache2/sites-enabled/cpd.conf
 
 # Enable apache rewrite
-ln -sf /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-available/
+ln -sf /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/
 
 logger -t untangle-node-cpd "Reloading apache"
 
