@@ -65,6 +65,8 @@ Ext.extend(Ext.data.PagedMemoryProxy, Ext.data.MemoryProxy, {
 Ung.Reports = Ext.extend(Object,{
     //The selected reports date
     reportsDate:null,
+    //The number of days of data in the report
+    numDays: null,
     // the table of contents data for the left side
     tableOfContents:null,
     //the selected node from the left side tree
@@ -331,7 +333,7 @@ Ung.Reports = Ext.extend(Object,{
                                                               reports.breadcrumbs=[];
                                                               rpc.drilldownType = null;
                                                               rpc.drilldownValue = null;
-                                                              reports.getApplicationData(node.attributes.name, reports.getAvailableReportsData()[0].numDays);
+                                                              reports.getApplicationData(node.attributes.name, reports.numDays);
                                                           }
                                                       });
 
@@ -370,16 +372,16 @@ Ung.Reports = Ext.extend(Object,{
     getAvailableReportsData : function (){
         return this.reportDatesItems;            
     },
-    showReportFor : function(value){
+    showReportFor : function(value,numDays){
         var found = -1,i ;
         for(i=0;i<this.reportDatesItems.length;i++){
-            if(value==this.reportDatesItems[i].dt.time){
+            if(value==this.reportDatesItems[i].dt.time && numDays == this.reportDatesItems[i].numDays ){
                 found = i;
                 break;        
             }
         }
         if(found == -1){
-            Ext.MessageBox("Unable to load reports","Could not load the selected report");
+            Ext.MessageBox.alert("Unable to load reports","Could not load the selected report");
         }else{
             this.availableReportsWindow.hide();
             if(this.isDynamicDataAvailable(this.reportDatesItems[found])===false){
@@ -430,7 +432,7 @@ Ung.Reports = Ext.extend(Object,{
                     width : 85,
                     dataIndex : "dt",                    
                     renderer : function(value,meta,record){
-                        return '<a href="javascript:reports.showReportFor('+value.time+')">'+i18n._("View Report")+'</a>';
+                        return '<a href="javascript:reports.showReportFor('+value.time+','+record.data.numDays+')">'+i18n._("View Report")+'</a>';
                     }.createDelegate(this)
                     
                 },{
@@ -491,18 +493,27 @@ Ung.Reports = Ext.extend(Object,{
     {
         var treeNodes = [];
         if (tableOfContents.platform != null) {
-            treeNodes.push({
-                text : i18n._(tableOfContents.platform.title),
-                name : tableOfContents.platform.name,
-                leaf: true,
-                icon : "./node-icons/untangle-vm.png"
-			},{
-		    text : i18n._("Server"),
-			name : "untangle-node-reporting",
-			leaf: true,
-			icon : "./node-icons/server.png"
-
-		});
+            treeNodes.push(
+                {
+                    text : i18n._('Summary'),
+                    name : 'untangle-pnode-summary',
+                    leaf: true,
+                    icon : "./node-icons/untangle-vm.png"
+    			},
+                {
+                    text : i18n._(tableOfContents.platform.title),
+                    name : tableOfContents.platform.name,
+                    leaf: true,
+                    icon : "./node-icons/untangle-vm.png"
+    			},
+                {
+        		    text : i18n._("Server"),
+        			name : "untangle-node-reporting",
+        			leaf: true,
+        			icon : "./node-icons/server.png"
+    
+    		    }
+            );
         }
 
         if (tableOfContents.applications != null) {
@@ -585,10 +596,10 @@ Ung.Reports = Ext.extend(Object,{
     changeDate : function(date)
     {
         this.reportsDate=date;
-
+        var item, found = false;
         for (var i = 0; i < this.reportDatesItems.length; i++) {
-            var item = this.reportDatesItems[i];
-            var found = false;
+            item = this.reportDatesItems[i];
+            found = false;
 
             if (item.dt.time == date.time) {
                 //Ext.getCmp('report-day-menu').setText(item.text);
@@ -597,24 +608,26 @@ Ung.Reports = Ext.extend(Object,{
                 break;
             }
         }
-
-        rpc.reportingManager.getTableOfContents(function(result, exception)
-                                                {
-                                                    if (exception) {
-                                                        if (!handleTimeout(exception)) {
-                                                            Ext.MessageBox.alert("Failed", exception.message);
+        if(found){
+            this.numDays =  this.reportDatesItems[i].numDays;   
+            rpc.reportingManager.getTableOfContents(function(result, exception)
+                                                    {
+                                                        if (exception) {
+                                                            if (!handleTimeout(exception)) {
+                                                                Ext.MessageBox.alert("Failed", exception.message);
+                                                            }
+                                                            return;
                                                         }
-                                                        return;
-                                                    }
-
-                                                    this.tableOfContents = result;
-                                                    var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
-                                                    Ext.getCmp('tree-panel').getSelectionModel().clearSelections();
-                                                    var root= Ext.getCmp('tree-panel').getRootNode();
-                                                    root.collapse(true);
-                                                    root.attributes.children=treeNodes;
-                                                    Ext.getCmp('tree-panel').getLoader().load(root);
-                                                }.createDelegate(this), this.reportsDate, 1);
+    
+                                                        this.tableOfContents = result;
+                                                        var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
+                                                        Ext.getCmp('tree-panel').getSelectionModel().clearSelections();
+                                                        var root= Ext.getCmp('tree-panel').getRootNode();
+                                                        root.collapse(true);
+                                                        root.attributes.children=treeNodes;
+                                                        Ext.getCmp('tree-panel').getLoader().load(root);
+                                                    }.createDelegate(this), this.reportsDate, this.numDays);        
+        }
     },
     getDateRangeText : function(selectedDate){
         var oneDay = 24*3600*1000,
@@ -625,33 +638,66 @@ Ung.Reports = Ext.extend(Object,{
     },
 
     getApplicationData: function(nodeName, numDays) {
-        reports.progressBar.wait(i18n._("Please Wait"));
-        rpc.reportingManager.getApplicationData(function (result, exception)
-                                                {
-                                                    if (exception) {
-                                                        if (!handleTimeout(exception)) {
-                                                            Ext.MessageBox.alert("Failed",exception.message);
-                                                        }
-                                                        return;
-                                                    }
-                                                    rpc.applicationData=result;
-                                                    reports.breadcrumbs.push({ text: this.selectedNode.attributes.text,
-                                                                               handler: this.getApplicationData.createDelegate(this, [nodeName])
-                                                                             });
+        reports.progressBar.wait(i18n._("Please Wait"));        
 
-                                                    Ung.Util.loadModuleTranslations( nodeName, i18n,
-                                                                                     function(){
-                                                                                         try{
-                                                                                             reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
-                                                                                             reports.progressBar.hide();
-                                                                                         }catch(e){
-                                                                                             alert(e.message);
-                                                                                         }
-                                                                                     }
-                                                                                   );
-                                                }.createDelegate(this), reports.reportsDate, numDays, nodeName);
+        if(nodeName == 'untangle-pnode-summary'){
+            rpc.reportingManager.getHighlights(function(result,exception){
+                this.processHiglightsData(result,exception,nodeName,numDays);
+            }.createDelegate(this), reports.reportsDate, numDays);
+                    
+        }else{
+            rpc.reportingManager.getApplicationData(function(result,exception){
+                this.processApplicationData(result,exception,nodeName,numDays);
+            }.createDelegate(this), reports.reportsDate, numDays, nodeName);
+        }
+        
     },
-
+    processHiglightsData : function(result,exception,nodeName,numDays){
+        if (exception) {
+            if (!handleTimeout(exception)) {
+                Ext.MessageBox.alert("Failed",exception.message);
+            }
+            return;
+        }
+        rpc.applicationData=result;
+        reports.breadcrumbs.push({ text: this.selectedNode.attributes.text,
+                                   handler: this.getApplicationData.createDelegate(this, [nodeName,numDays])
+                                 });
+    
+        Ung.Util.loadModuleTranslations( nodeName, i18n,
+             function(){
+                 try{
+                     reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
+                     reports.progressBar.hide();
+                 }catch(e){
+                     alert(e.message);
+                 }
+             }
+        );         
+    },
+    processApplicationData : function (result,exception,nodeName,numDays){
+        if (exception) {
+            if (!handleTimeout(exception)) {
+                Ext.MessageBox.alert("Failed",exception.message);
+            }
+            return;
+        }
+        rpc.applicationData=result;
+        reports.breadcrumbs.push({ text: this.selectedNode.attributes.text,
+                                   handler: this.getApplicationData.createDelegate(this, [nodeName,numDays])
+                                 });
+    
+        Ung.Util.loadModuleTranslations( nodeName, i18n,
+             function(){
+                 try{
+                     reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
+                     reports.progressBar.hide();
+                 }catch(e){
+                     alert(e.message);
+                 }
+             }
+        );    
+    },
     getDrilldownTableOfContents: function(fnName, type, value)
     {
         rpc.drilldownType = type;
@@ -874,14 +920,19 @@ Ung.ReportDetails = Ext.extend(Object, {
         var itemsArray=[],i;
         //TODO rpc.applicationData should never be null
         if (rpc.applicationData != null) {
-            if(rpc.applicationData.sections != null){
-                for(i=0;i<rpc.applicationData.sections.list.length ;i++) {
-                    var section=rpc.applicationData.sections.list[i];
-                    var sectionPanel=this.buildSection(rpc.applicationData.name, section);
-                    itemsArray.push(sectionPanel);
+            if(reports.selectedApplication =='untangle-pnode-summary'){
+                itemsArray.push(this.buildHighlightSection(rpc.applicationData, 'Summary'));                     
+            }else{
+                if(rpc.applicationData.sections != null){
+                    for(i=0;i<rpc.applicationData.sections.list.length ;i++) {
+                        var section=rpc.applicationData.sections.list[i];
+                        var sectionPanel=this.buildSection(rpc.applicationData.name, section);
+                        itemsArray.push(sectionPanel);
+                    }
                 }
             }
         }
+    
 
         //create breadcrums item
         var breadcrumbArr=[];
@@ -931,7 +982,9 @@ Ung.ReportDetails = Ext.extend(Object, {
                     selectedType = rpc.applicationData.javaClass;
                 }
             }
-            reportDetails.add(reportTypeMap[this.reportType][selectedType]());
+            if(reportTypeMap[this.reportType] != null){
+                reportDetails.add(reportTypeMap[this.reportType][selectedType]());
+            }
         }
         reportDetails.doLayout();
     },
@@ -945,16 +998,41 @@ Ung.ReportDetails = Ext.extend(Object, {
         }
         return sectionPanel;
     },
-
+    buildHighlightSection : function (highlights){
+        var items = [],i,str;
+        for(i=0;i<highlights.list.length;i++){
+            str = this.getHighlightHTML(highlights.list[i]);
+            if( i != 0 ){
+                str = str.replace('first','');
+            }
+            if(i % 2){
+                str = str.replace('highlight', 'highlight odd');
+            }
+            items.push({html:str,colspan:2});                    
+        }
+        return new Ext.Panel({
+            title : i18n._('Summary'),
+            layout:'table',
+            defaults: {
+                border: false,
+                columnWidth: 0.5
+            },
+            layoutConfig: {
+                columns: 2
+            },
+            items : items
+        })        
+        
+    },
     getHighlightHTML: function(summaryItem) {
 	    stringTemplate = summaryItem.stringTemplate;
-	    stringTemplate = stringTemplate.replace(reports.selectedApplication,'<strong>'+reports.selectedNode.text+'</strong>');
+	    stringTemplate = stringTemplate.replace(summaryItem.name,'<strong>'+summaryItem.title+'</strong>');
 	    hvm = summaryItem.highlightValues.map;
 	    for (var key in hvm) {
 		stringTemplate = stringTemplate.replace('%(' + key + ')s',
 							'<strong>' + hvm[key] + '</strong>');
 	    }
-	    return '<div class="highlight"><p style="background-image:url(/reports/image?name='+reports.selectedApplication+')">'+stringTemplate+'</p></div>';
+	    return '<div class="highlight first"><p style="background-image:url(/reports/image?name='+summaryItem.name+')">'+stringTemplate+'</p></div>';
 	},
 
     buildSummarySection: function (appName, section) {
@@ -964,10 +1042,9 @@ Ung.ReportDetails = Ext.extend(Object, {
             var summaryItem = section.summaryItems.list[i];
 
 	    if (summaryItem.stringTemplate) {
-		str = this.getHighlightHTML(summaryItem)
-		// FIXME: this should span the 2 columns
-		columns = [];
-		items.push({html:str,colspan:2});
+    		str = this.getHighlightHTML(summaryItem)
+    		columns = [];
+    		items.push({html:str,colspan:2});
 	    } else {
 		
             // graph
