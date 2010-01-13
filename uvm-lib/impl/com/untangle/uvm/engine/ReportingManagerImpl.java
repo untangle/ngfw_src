@@ -144,6 +144,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
             }
         } catch (SQLException exn) {
             logger.warn("could not get reports cutoff", exn);
+	    
         } finally {
             if (conn != null) {
                 try {
@@ -296,9 +297,12 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 		    detailName + "', type='" + type + 
 		    "', limitResultSet='" + limitResultSet + "')");
 
-	if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff())) {
+	Date cutoff = getReportsCutoff();
+	if (cutoff == null)
 	    return null;
-	}
+
+	if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff()))
+	    return null;
 
         List<List> rv = new ArrayList<List>();
 
