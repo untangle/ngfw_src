@@ -254,7 +254,8 @@ ORDER BY blocked desc"""
                 host = r[0]
                 num = r[1]
 
-                lks.append(KeyStatistic(host, num, _('blocks')))
+                lks.append(KeyStatistic(host, num, _('blocks'),
+                           link_type=reports.HNAME_LINK))
                 pds[host] = num
         finally:
             conn.commit()
