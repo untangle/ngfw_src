@@ -48,19 +48,8 @@ public abstract class UserDBMatcher implements UserMatcher, Serializable
     }
 
     public abstract boolean isMatch( String username );
-
-    public String toDatabaseString() {
-        // Kinda yucky, but...
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        for (String s : toDatabaseList()) {
-            if (i > 0)
-                sb.append(UserMatcherConstants.MARKER_SEPERATOR);
-            sb.append(s);
-            i++;
-        }
-        return sb.toString();
-    }
+    
+    public abstract String toDatabaseString();
 
     /* These lists are typically not modifiable */
     public abstract List<String> toDatabaseList();

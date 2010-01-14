@@ -512,12 +512,4 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
 
         return new ArrayList<GroupEntry>();
     }
-
-    public void joinDomain(String smbWorkgroup)    
-    {
-	try {
-	    m_localAdapter.joinDomain(smbWorkgroup);
-	} catch (ServiceUnavailableException x) { }
-    }
-
 }

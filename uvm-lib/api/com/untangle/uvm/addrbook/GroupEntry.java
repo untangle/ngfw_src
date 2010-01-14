@@ -36,20 +36,22 @@ package com.untangle.uvm.addrbook;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 
 /**
  * Lightweight class to encapsulate an entry (group)
  * in the Address Book service.
  *
  */
-public final class GroupEntry implements Serializable {
+public final class GroupEntry implements Serializable, DirectoryEntry {
 
     private String m_cn;
     private int m_gid;
+    private String m_dn;
     private String m_samaccountname;
     private String m_samaccounttype;
     private String m_description;
-    private String[] m_members;
     private RepositoryType m_storedIn;
 
     public GroupEntry() {
@@ -60,16 +62,8 @@ public final class GroupEntry implements Serializable {
                      int gid,
                      String samaccountname,
                      String samaccounttype,
-                     String description,
-                     String[] members) {
-
-        m_cn = cn;
-        m_gid = gid;
-        m_samaccountname = samaccountname;
-        m_samaccounttype = samaccounttype;
-        m_description = description;
-        m_members = members;
-        m_storedIn = RepositoryType.NONE;
+                     String description) {
+        this(cn,gid,samaccountname,samaccounttype,description,null,RepositoryType.NONE);
     }
 
     public GroupEntry(String cn,
@@ -77,7 +71,7 @@ public final class GroupEntry implements Serializable {
                      String samaccountname,
                      String samaccounttype,
                      String description,
-                     String[] members,
+                     String dn,
                      RepositoryType storedIn) {
 
         m_cn = cn;
@@ -85,7 +79,7 @@ public final class GroupEntry implements Serializable {
         m_samaccountname = samaccountname;
         m_samaccounttype = samaccounttype;
         m_description = description;
-        m_members = members;
+        m_dn = dn;
         m_storedIn = storedIn;
     }
 
@@ -132,6 +126,16 @@ public final class GroupEntry implements Serializable {
     public void setSAMAccountType(String samaccounttype) {
         m_samaccounttype = samaccounttype;
     }
+    
+    public String getDN() {
+        return this.m_dn;
+    }
+    
+    public void setDN( String newValue )
+    {
+        this.m_dn = newValue;
+    }
+
 
     public RepositoryType getStoredIn() {
         return m_storedIn;
@@ -140,7 +144,6 @@ public final class GroupEntry implements Serializable {
     public void setStoredIn(RepositoryType type) {
         m_storedIn = type;
     }
-
 
     /**
      * Equality test based on uid (case sensitive - although I'm not sure
@@ -159,8 +162,27 @@ public final class GroupEntry implements Serializable {
     public int hashCode() {
         return new String(makeNotNull(m_cn).toString() + makeNotNull(m_storedIn).toString()).hashCode();
     }
+ 
+    @Transient
+    @Override
+    public DirectoryEntry.Type getType()
+    {
+        return DirectoryEntry.Type.GROUP;
+    }
 
-
+    @Transient
+    @Override
+    public UserEntry getUserEntry()
+    {
+        return null;
+    }
+    @Transient
+    @Override
+    public GroupEntry getGroupEntry()
+    {
+        return this;
+    }
+    
     /**
      * For debugging
      */

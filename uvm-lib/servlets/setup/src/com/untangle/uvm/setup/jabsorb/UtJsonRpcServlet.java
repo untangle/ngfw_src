@@ -27,26 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.transaction.TransactionRolledbackException;
 
-import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.HostNameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPMaddrSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPaddrSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IntfMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.PortMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ProtocolMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.UserMatcherSerializer;
+import com.untangle.uvm.servlet.ServletUtils;
+
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
@@ -129,34 +111,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             s.setAttribute(BRIDGE_ATTRIBUTE, b);
 
             try {
-                // general serializers
-                b.registerSerializer(new JSONBeanSerializer());
-                b.registerSerializer(new EnumSerializer());
-                b.registerSerializer(new URLSerializer());
-                b.registerSerializer(new InetAddressSerializer());
-                b.registerSerializer(new TimeSerializer());
-                // uvm related serializers
-                b.registerSerializer(new IPMaddrSerializer());
-                b.registerSerializer(new IPaddrSerializer());
-                b.registerSerializer(new HostNameSerializer());
-                b.registerSerializer(new HostAddressSerializer());
-                b.registerSerializer(new TimeZoneSerializer());
-
-                b.registerSerializer(new MimeTypeSerializer());
-                b.registerSerializer(new RFC2253NameSerializer());
-                // hibernate related serializers
-                b.registerSerializer(new LazyInitializerSerializer());
-                b.registerSerializer(new ExtendedListSerializer());
-                b.registerSerializer(new ExtendedSetSerializer());
-
-                // firewal related serializers
-                b.registerSerializer(new ProtocolMatcherSerializer());
-                b.registerSerializer(new IntfMatcherSerializer());
-                b.registerSerializer(new IPMatcherSerializer());
-                b.registerSerializer(new PortMatcherSerializer());
-                b.registerSerializer(new TimeMatcherSerializer());
-                b.registerSerializer(new UserMatcherSerializer());
-
+                ServletUtils.getInstance().registerSerializers(b);
             } catch (Exception e) {
                 logger.warn( "Unable to register serializers", e );
             }

@@ -54,6 +54,12 @@ public final class UserSimpleMatcher
                 return Collections.nCopies( 1, toString());
             }
             
+            @Override
+            public String toDatabaseString()
+            {
+                return UserMatcherConstants.MARKER_ANY;
+            }
+            
             public String toString()
             {
                 return UserMatcherConstants.MARKER_ANY;
@@ -70,6 +76,12 @@ public final class UserSimpleMatcher
             public List<String> toDatabaseList()
             {
                 return Collections.nCopies( 1, toString());
+            }
+            
+            @Override
+            public String toDatabaseString()
+            {
+                return UserMatcherConstants.MARKER_NONE;
             }
             
             public String toString()
@@ -90,6 +102,12 @@ public final class UserSimpleMatcher
                 return Collections.nCopies( 1, toString());
             }
             
+            @Override
+            public String toDatabaseString()
+            {
+                return UserMatcherConstants.MARKER_AUTHENTICATED;
+            }
+            
             public String toString()
             {
                 return UserMatcherConstants.MARKER_AUTHENTICATED;
@@ -106,6 +124,13 @@ public final class UserSimpleMatcher
             {
                 return Collections.nCopies( 1, toString());
             }
+            
+            @Override
+            public String toDatabaseString()
+            {
+                return UserMatcherConstants.MARKER_UNAUTHENTICATED;
+            }
+            
             
             public String toString()
             {

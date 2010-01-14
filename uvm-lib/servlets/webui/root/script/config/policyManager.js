@@ -811,11 +811,6 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         loadLocalDirectoryUsers: false
                     });
 
-                    this.groupsWindow= new Ung.GroupsWindow({
-                        grid : this,
-                        userDataIndex : "group",
-                        loadLocalDirectoryGroups: false
-                    });
                     Ung.EditorGrid.prototype.initComponent.call(this);
                 },
                 customInputLines : [{
@@ -916,34 +911,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             }.createDelegate(this));
                         }.createDelegate(this)
                     }]
-                }, /*{
-                    xtype : 'fieldset',
-                    autoHeight : true,
-                    title : this.i18n._("Groups"),
-                    items : [{
-                        cls: 'description',
-                        border : false,
-                        html : this.i18n._("The groups you would like to apply this policy to.")
-                    }, {
-                        xtype : 'textfield',
-                        name : 'Groups',
-                        width : 200,
-                        readOnly : true,
-                        id : 'gridRules_rowEditor_group',
-                        fieldLabel : this.i18n._("Groups"),
-                        allowBlank : false
-                    }, {
-                        xtype: "button",
-                        name : 'Change Groups',
-                        text : i18n._("Change Groups"),
-                        handler : function() {
-                            this.gridRules.groupsWindow.show();
-                            this.gridRules.groupsWindow.populate(this.gridRules.rowEditor.record,function() {
-                                Ext.getCmp("gridRules_rowEditor_group").setValue(this.gridRules.rowEditor.record.data.group);
-                            }.createDelegate(this));
-                        }.createDelegate(this)
-                    }]
-                }, */{
+                },{
                     xtype : 'fieldset',
                     autoHeight : true,
                     title : this.i18n._("Time of Day"),

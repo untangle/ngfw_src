@@ -102,6 +102,8 @@ abstract class LdapAdapter {
      * Get the attribute used to hold the mail (e.g. "mail").
      */
     protected abstract String getMailAttributeName();
+    
+    protected abstract String getPrimaryGroupIDAttribute();
 
     /**
      * Get the name of the attribute used to hold
@@ -134,17 +136,6 @@ abstract class LdapAdapter {
      */
     public abstract boolean authenticate(String uid, String pwd)
         throws ServiceUnavailableException;
-
-
-    /**
-     * Join a domain.  Creates a computer account for the Untangle server in the ADs
-     * domain, or the equivalent in the local LDAP directory.
-     *
-     * @param smbWorkgroup The Netbios Domain name (usually first word of realm) to join
-     */
-    public abstract void joinDomain(String smbWorkgroup)
-        throws ServiceUnavailableException;
-
 
     /**
      * Authenticate the user who owns the given email addres
@@ -214,75 +205,25 @@ abstract class LdapAdapter {
         }
     }
 
-    public List<GroupEntry> listAllGroups()
-        throws ServiceUnavailableException {
-        List<GroupEntry> ret = new ArrayList<GroupEntry>();
-        try {
-            SimpleExec.SimpleExecResult result = SimpleExec.exec(
-                                                                 "getent",//cmd
-                                                                 new String[] {//args
-                                                                     "group"
-                                                                 },
-                                                                 null,//env
-                                                                 null,//rootDir
-                                                                 true,//stdout
-                                                                 true,//stderr
-                                                                 1000*20);
-
-            if(result.exitCode==0) {
-                String output = new String(result.stdOut);
-                String[] lines = output.split("\n");
-                for (String line : lines) {
-                    String[] groupPieces = line.split(":");
-                    if (filterGID(Integer.valueOf(groupPieces[2]).intValue())) {
-                        continue;
-                    }
-                    GroupEntry ge = new GroupEntry(
-                              groupPieces[0],
-                              Integer.valueOf(groupPieces[2]).intValue(),
-                              groupPieces[0],
-                              "",
-                              "",
-                              null,
-                              getRepositoryType());
-                    ret.add(ge);
-
-                }
-            }
-        } catch (IOException ioe) {
-            m_logger.warn("Exception group listing entries", ioe);
-            throw new ServiceUnavailableException(ioe.toString());
-         
-        }
-            //List<Map<String, String[]>> list =
-                //queryAsSuperuser(getSearchBase(),
-                                 //getListAllGroupsSearchString(),
-                                 //getGroupEntrySearchControls());
-//
-            //List<GroupEntry> ret = new ArrayList<GroupEntry>();
-//
-            //if(list == null || list.size() == 0) {
-                //return ret;
-            //}
-//
-            //for(Map<String, String[]> map : list) {
-                //GroupEntry entry = toGroupEntry(map);
-                //if(entry != null) {
-                    //ret.add(entry);
-                //}
-            //}
-            //return ret;
-            //}
-            //catch(NamingException ex) {
-            // m_logger.warn("Exception group listing entries", ex);
-            // throw new ServiceUnavailableException(ex.toString());
-            //}
-        return ret;
-    }
-
-
-
-
+    /**
+     * Get all of the groups that are available for this adapter.
+     * @return
+     */
+    public abstract List<GroupEntry> listAllGroups() throws ServiceUnavailableException;
+    
+    /**
+     * Get all of the groups that a user belongs to.
+     * @param user The username to query.
+     * @return A List of all of the groups that a user belongs to.
+     */
+    public abstract List<GroupEntry> listUserGroups( String user ) throws ServiceUnavailableException;
+    
+    /**
+     * Get all of the users that belong to a group.
+     * @param group Name of the group to query.
+     * @return A list of all of the users that belong to a group.
+     */
+    public abstract List<UserEntry> listGroupMembers( String group ) throws ServiceUnavailableException;
 
     /**
      * Tests if the given userid exists in this repository
@@ -358,6 +299,15 @@ abstract class LdapAdapter {
         return results.toString();
     }
     
+    /**
+     * rbscott is not sure why this is recursive and thinks it should be deprecated for the non-recursive remix joinValues. XXX
+     * @param prefix
+     * @param values
+     * @param operator
+     * @param open
+     * @param close
+     * @param results
+     */
     protected static void queryStringsRecursive(String prefix, String[] values, String operator, String open, String close, StringBuilder results) {
         if (values.length == 1) {
             results.append(open + prefix + values[0] + close);
@@ -368,6 +318,55 @@ abstract class LdapAdapter {
             queryStringsRecursive(prefix, valuesDequed, operator, open, close, results);
             results.append(close);
         }
+    }
+
+    /**
+     * Join a series of criteria into a larger string. For instance to join
+     * "objectClass", {user | group} ->
+     * (|(objectClass=user)(objectClass=group))
+     * 
+     * @param operator The operator to link the criteria together, typically | or &
+     * @param parameter The name of the field to link together. (eg. objectClass=)
+     * @param values Array of values to link together. (eg. ["user","group"] )
+     * @return
+     */
+    public static String joinCriteria( String operator, String parameter, String[] values ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+        sb.append(operator);
+        for ( String value : values ) {
+            sb.append("(");
+            sb.append(parameter);
+            sb.append(value);
+            sb.append(")");
+        }
+        sb.append(")");
+        
+        return sb.toString();
+    }
+    
+    /**
+     * Join a series of criteria into a larger string. For instance to join
+     * "objectClass=user" or "objectClass=group" ->
+     * (|(objectClass=user)(objectClass=group))
+     * 
+     * @param operator The operator to link the criteria together, typically | or &
+     * @param criteria An array of search criteria, eg objectClass=group
+     * @return
+     */
+    public static String joinCriteria( String operator, String[] criteria )
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+        sb.append(operator);
+        for ( String component : criteria ) {
+            sb.append("(");
+            sb.append(component);
+            sb.append(")");
+        }
+        sb.append(")");
+        
+        return sb.toString();
     }
 
     /**
@@ -611,6 +610,7 @@ abstract class LdapAdapter {
             List<Map<String, String[]>> ret = new ArrayList<Map<String, String[]>>();
             while (answer.hasMoreElements()) {
                 SearchResult sr = (SearchResult)answer.next();
+                
                 Attributes attrs = sr.getAttributes();
                 if (attrs != null) {
                     Map<String, String[]> map = new HashMap<String, String[]>();
@@ -623,6 +623,12 @@ abstract class LdapAdapter {
                             values.add(e.next().toString());
                         }
                         map.put(attrName, (String[]) values.toArray(new String[values.size()]));
+                    }
+                    
+                    try {
+                        map.put( "dn=", new String[] { sr.getNameInNamespace()});
+                    } catch ( UnsupportedOperationException e ) {
+                        m_logger.warn( "Unable to determine fully qualified DN for a result", e);
                     }
                     ret.add(map);
                 }
@@ -761,7 +767,7 @@ abstract class LdapAdapter {
      * Helper to convert (based on our "standard" returned controls)
      * the USerEntry.
      */
-    private UserEntry toUserEntry(Map<String, String[]> map) {
+    protected UserEntry toUserEntry(Map<String, String[]> map) {
         Pair<String, String> parsedName =
             parseFullName(getFirstEntryOrNull(map.get(getFullNameAttributeName())));
 
@@ -770,6 +776,8 @@ abstract class LdapAdapter {
                              parsedName.a,
                              parsedName.b,
                              getFirstEntryOrNull(map.get(getMailAttributeName())),
+                             getFirstEntryOrNull(map.get(getPrimaryGroupIDAttribute())),
+                             getFirstEntryOrNull(map.get("dn=")),
                              getRepositoryType());
     }
 
@@ -777,14 +785,14 @@ abstract class LdapAdapter {
      * Helper to convert (based on our "standard" returned controls)
      * the GroupEntry.
      */
-    private GroupEntry toGroupEntry(Map<String, String[]> map) {
+    protected GroupEntry toGroupEntry(Map<String, String[]> map) {
         return new GroupEntry(
                               getFirstEntryOrNull(map.get(getCNName())),
                               0, //TODO fix this later
                               getFirstEntryOrNull(map.get(getGroupName())),
                               getFirstEntryOrNull(map.get(getGroupTypeName())),
                               getFirstEntryOrNull(map.get(getGroupDescriptionName())),
-                              map.get(getGroupMembersName()),
+                              getFirstEntryOrNull(map.get("dn=")),
                               getRepositoryType());
     }
 
@@ -821,10 +829,11 @@ abstract class LdapAdapter {
     /**
      * Helper to create the search controls used when fetching a UserEntry
      */
-    private SearchControls getUserEntrySearchControls() {
+    protected SearchControls getUserEntrySearchControls() {
          return createSimpleSearchControls(
                                           getUIDAttributeName(),
                                           getMailAttributeName(),
+                                          getPrimaryGroupIDAttribute(),
                                           getFullNameAttributeName());
      }
 
@@ -832,13 +841,14 @@ abstract class LdapAdapter {
     /**
      * Helper to create the search controls used when fetching a GroupEntry
      */
-    private SearchControls getGroupEntrySearchControls() {
+    protected SearchControls getGroupEntrySearchControls() {
         return createSimpleSearchControls(
                                           "cn",
                                           "description",
                                           "sAMAccountName",
                                           "sAMAccountType",
-                                          "member");
+                                          "groupType",
+                                          "primaryGroupToken");
     }
 
 

@@ -11,8 +11,9 @@
 
 package com.untangle.uvm.engine;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.naming.AuthenticationException;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
@@ -22,13 +23,13 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 
-import com.untangle.node.util.SimpleExec;
+import org.apache.log4j.Logger;
+
+import com.untangle.uvm.addrbook.GroupEntry;
 import com.untangle.uvm.addrbook.NoSuchEmailException;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
-import com.untangle.uvm.addrbook.GroupEntry;
-import org.apache.log4j.Logger;
 
 /**
  * LDAP adapter "hardcoded" for our local OpenLDAP repository.  Unlike the
@@ -86,6 +87,12 @@ class LocalLdapAdapter extends LdapAdapter {
     protected String getMailAttributeName() {
         return "mail";
     }
+    
+    @Override
+    protected String getPrimaryGroupIDAttribute()
+    {
+        return "gid";
+    }
 
     @Override
     protected String getFullNameAttributeName() {
@@ -133,30 +140,6 @@ class LocalLdapAdapter extends LdapAdapter {
             throw new ServiceUnavailableException(ex.toString());
         }
     }
-
-    @Override
-    public void joinDomain(String smbWorkgroup)
-        throws ServiceUnavailableException
-    {
-        try {
-            String auth = m_settings.getSuperuser() + "%" + m_settings.getSuperuserPass();
-            SimpleExec.SimpleExecResult result = SimpleExec.exec(
-                "/usr/bin/smbpasswd",
-                new String [] { "-w", m_settings.getSuperuserPass() },
-                null,//env
-                null,//rootDir
-                true,//stdout
-                true,//stderr
-                1000*60);
-            if(result.exitCode != 0) {
-                m_logger.warn("Unable to join domain: " + result.stdOut + result.stdErr);
-            }
-        } catch (IOException ioe) {
-            m_logger.warn("Exception joining domain", ioe);
-            throw new ServiceUnavailableException(ioe.toString());
-        }
-    }
-
 
     /**
      * Change the given user's password
@@ -328,6 +311,35 @@ class LocalLdapAdapter extends LdapAdapter {
 
         newEntry.setStoredIn(getRepositoryType());
         return newEntry;
+    }
+    
+    /**
+     * Get all of the groups that are available for this adapter.
+     * @return
+     */
+    public List<GroupEntry> listAllGroups() throws ServiceUnavailableException
+    {
+        return new ArrayList<GroupEntry>(0);
+    }
+    
+    /**
+     * Get all of the groups that a user belongs to.
+     * @param user The username to query.
+     * @return A List of all of the groups that a user belongs to.
+     */
+    public List<GroupEntry> listUserGroups( String user ) throws ServiceUnavailableException
+    {
+        return new ArrayList<GroupEntry>(0);
+    }
+    
+    /**
+     * Get all of the users that belong to a group.
+     * @param group Name of the group to query.
+     * @return A list of all of the users that belong to a group.
+     */
+    public List<UserEntry> listGroupMembers( String group ) throws ServiceUnavailableException
+    {
+        return new ArrayList<UserEntry>(0);
     }
 
     private String replaceNull(String str, String replacement) {

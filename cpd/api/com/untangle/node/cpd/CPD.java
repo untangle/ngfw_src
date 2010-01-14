@@ -67,5 +67,10 @@ public interface CPD extends Node
     
     public EventManager<ADLoginEvent> getLoginEventManager();
     public EventManager<BlockEvent> getBlockEventManager();
+    
+    public enum BlingerType { BLOCK, AUTHORIZE };
+    
+    public void incrementCount(BlingerType blingerType );
+    
 
 }

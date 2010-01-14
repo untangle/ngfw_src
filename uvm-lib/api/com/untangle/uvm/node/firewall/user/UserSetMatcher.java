@@ -41,6 +41,7 @@ import java.util.Set;
 
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
+import com.untangle.uvm.node.firewall.ParsingConstants;
 
 public final class UserSetMatcher extends UserDBMatcher
 {
@@ -73,7 +74,17 @@ public final class UserSetMatcher extends UserDBMatcher
 
     public List<String> toDatabaseList()
     {
-        return Collections.unmodifiableList( new ArrayList<String>( userSet ));
+        ArrayList<String> arrayList = new ArrayList<String>(userSet);
+        if ( this.matchUnauthenticated ) {
+            arrayList.add(UserMatcherConstants.MARKER_UNAUTHENTICATED);
+        }
+        return Collections.unmodifiableList( arrayList);
+    }
+    
+    @Override
+    public String toDatabaseString()
+    {
+        return this.string;
     }
     
     public String toString()
@@ -107,8 +118,7 @@ public final class UserSetMatcher extends UserDBMatcher
         StringBuilder value = new StringBuilder();
         int i = 0;
         for ( String user  : userSet ) {
-            if ( user.equals( UserMatcherConstants.MARKER_AUTHENTICATED ))
-            if ( i > 0 )
+            if ( i > 0 )    
                 value.append(" ").append(UserMatcherConstants.MARKER_SEPERATOR).append(" ");
             value.append(user);
             i++;

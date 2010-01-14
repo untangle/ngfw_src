@@ -398,15 +398,6 @@ public interface RemoteAddressBook extends LicensedProduct
      */
     List<GroupEntry> getGroupEntries(RepositoryType searchIn)
         throws ServiceUnavailableException;
-
-
-    /**
-     * Join a domain.  Creates a computer account for the Untangle server in the ADs
-     * domain, or the equivalent in the local LDAP directory.
-     *
-     * @param smbWorkgroup The Netbios Domain name (usually first word of realm) to join
-     */
-    void joinDomain(String smbWorkgroup);
 }
 
 

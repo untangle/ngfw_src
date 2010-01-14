@@ -60,7 +60,12 @@ public final class UserSingleMatcher extends UserDBMatcher
     {
         return Collections.nCopies( 1, toString());
     }
-        
+    
+    public String toDatabaseString()
+    {
+        return this.user;
+    }
+    
     public String toString()
     {
         return this.user;

@@ -4214,43 +4214,71 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
 
                 sortInfo : this.sortField ? {
                     field: this.sortField,
-                    direction : 'ASC'
+                    direction : "ASC"
                 }: null,
                 remoteSort : false,
                 reader : new Ext.data.JsonReader({
                     totalProperty : "totalRecords",
-                    root : 'list',
+                    root : "list",
                     fields : [{
-                        name : 'lastName',
-                        type : 'string',
+                        name : "lastName",
+                        type : "string",
                         sortType : Ung.SortTypes.asLastName
                     },{
-                        name : 'firstName',
-                        type : 'string'
+                        name : "firstName",
+                        type : "string"
                     },{
                         name: "UID",
-                        type : 'string',
+                        type : "string",
                         sortType : Ung.SortTypes.asUID
-                    }, {
+                    },{
+                        name : "javaClass"
+                    },{
+                        name : "CN"
+                    },{
                         name: "name",
-                        type : 'string',
+                        type : "string",
                         mapping: "UID",
                         convert : function(val, rec) {
                             var name=val;
+
                             var repository=null;
                             if(rec.storedIn) {
                                 if(rec.storedIn=="MS_ACTIVE_DIRECTORY") {
-                                    repository=i18n._('Active Directory');
+                                    repository=i18n._("Active Directory");
                                 } else if(rec.storedIn=="LOCAL_DIRECTORY") {
-                                    repository=i18n._('Local');
+                                    repository=i18n._("Local");
                                 } else {
-                                    repository=i18n._('UNKNOWN');
+                                    repository=i18n._("UNKNOWN");
+                                }
+
+                                if ( rec.javaClass == "com.untangle.uvm.addrbook.UserEntry" ) {
+                                    repository = repository + i18n._( " User" );
+                                } else if ( rec.javaClass == "com.untangle.uvm.addrbook.GroupEntry" ) {
+                                    repository = repository + i18n._( " Group" );
+                                    name = rec.CN;
                                 }
                             }
+                            
                             if(repository) {
                                 name+=" ("+repository+")";
                             }
                             return name;
+                        }
+                    },{
+                        name : "displayName",
+                        mapping : "javaClass",
+                        convert : function(val, rec) {
+                            if ( rec.javaClass == "com.untangle.uvm.addrbook.UserEntry" ) {
+                                var displayName = ( rec.firstName == null )  ? "" : rec.firstName;
+                                displayName = displayName + " " + 
+                                    (( rec.lastName == null )  ? "" : rec.lastName);
+                                return displayName;
+                            } else if ( rec.javaClass == "com.untangle.uvm.addrbook.GroupEntry" ) {
+                                return rec.CN;
+                            } else {
+                                return "";
+                            }
                         }
                     }]
                 })
@@ -4260,16 +4288,13 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 width : 250,
                 fixed :true,
                 sortable : true,
-                dataIndex : 'name'
+                dataIndex : "name"
             },{
                 header : i18n._("Name"),
                 width: 250,
                 fixed: true,
                 sortable : false,
-                dataIndex:'lastName',
-                renderer : function(value,metadata,record){
-                    return record.data.firstName +" "+ value;
-                }
+                dataIndex: "displayName"
             }],
             selModel : selModel
         });
@@ -4297,7 +4322,18 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     title : this.singleSelectUser ? i18n._('Select an existing user') : i18n._('Select an existing user or users'),
                     autoHeight : true,
                     items: [this.usersGrid]
-                }, {
+                },{
+                    xtype : "fieldset",
+                    title : i18n._("Additional Users"),
+                    autoHeight : true,
+                    hidden : this.singleSelectUser,
+                    items:[{
+                        xtype : "textfield",
+                        width : 420,
+                        fieldLabel : i18n._( "Other Users" ),
+                        name : "otherUsers"
+                    }]
+                },{
                     xtype : 'fieldset',
                     title : i18n._('Add a new user'),
                     autoHeight : true,
@@ -4342,6 +4378,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     },
     initSubComponents : function(container, position) {
     },
+
     // populate is called whent a record is edited, tot populate the edit window
     populate : function(record,fnCallback) {
         this.fnCallback=fnCallback;
@@ -4355,14 +4392,16 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 start : 0
             }
         });
-        this.populateSemaphore=2;
+        this.populateSemaphore=3;
         this.userEntries = [];
         if ( !this.singleSelectUser ) {
             this.userEntries.push({ firstName : "", lastName : "", UID: "[any]"});
             this.userEntries.push({ firstName : "", lastName : "", UID: "[authenticated]"});
             this.userEntries.push({ firstName : "", lastName : "", UID: "[unauthenticated]"});
-        } 
-        if (this.loadActiveDirectoryUsers && main.isNodeRunning('untangle-node-adconnector')){
+        }
+
+        var loadActiveDirectory = this.loadActiveDirectoryUsers && main.isNodeRunning("untangle-node-adconnector");
+        if (loadActiveDirectory){
             main.getAppAddressBook().getUserEntries(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {
                     Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
@@ -4371,10 +4410,26 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 }.createDelegate(this),"noAlert")) return;
                 this.userEntries=this.userEntries.concat(result.list);
                 this.populateCallback();
-            }.createDelegate(this),'MS_ACTIVE_DIRECTORY')
+            }.createDelegate(this),"MS_ACTIVE_DIRECTORY")
         } else {
             this.populateSemaphore--;
         }
+
+        if (loadActiveDirectory && !this.singleSelectUser){
+            main.getAppAddressBook().getGroupEntries(function(result, exception) {
+                if( Ung.Util.handleException(exception, function() {
+                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory groups.  Please check your Active Directory settings and then try again."), function(){
+                        this.populateCallback();
+                    }.createDelegate(this));
+                }.createDelegate(this),"noAlert")) return;
+                
+                this.userEntries=this.userEntries.concat(result.list);
+                this.populateCallback();
+            }.createDelegate(this),"MS_ACTIVE_DIRECTORY")
+        } else {
+            this.populateSemaphore--;
+        }
+        
         if (this.loadLocalDirectoryUsers) {
             main.getAppAddressBook().getUserEntries(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {
@@ -4384,7 +4439,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 }.createDelegate(this),"noAlert")) return;
                 this.userEntries=this.userEntries.concat(result.list);
                 this.populateCallback();
-            }.createDelegate(this),'LOCAL_DIRECTORY')
+            }.createDelegate(this),"LOCAL_DIRECTORY")
         } else {
             this.populateCallback();
         }
@@ -4402,15 +4457,35 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         start : 0
                     }
                 });
-                var users=this.record.get(this.userDataIndex);
-                if(users!=null) {
+
+                var users = this.record.get(this.userDataIndex),user,group,index;
+
+                if(users ==null) {
+                    users = "";
+                } else {
                     users=users.split(";");
                 }
+
+                var freeForm = [];
+
                 for(var i=0;i<users.length;i++) {
-                    var index=store.find("UID",users[i]);
-                    if(index>=0) {
-                       sm.selectRow(index,true);
+                    user = users[i].trim();
+                    group = user.replace( "group::", "" );
+                    index = -1;
+
+                    if ( user == group ) {
+                        index=store.find("UID",user);
+                    } else {
+                        index=store.find("CN",group);
                     }
+
+                    if(index>=0) {
+                        sm.selectRow(index,true);
+                    } else {
+                        freeForm.push( user );
+                    }
+
+                    this.find( "name", "otherUsers" )[0].setValue( freeForm.join( " ;" ));
                 }
             }
             Ext.MessageBox.hide();
@@ -4431,17 +4506,35 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.isFormValid()) {
             if (this.record !== null) {
                 var sm=this.usersGrid.getSelectionModel();
-                var users=[];
+                var users = [];
                 var selRecs=sm.getSelections();
-                for(var i=0;i<selRecs.length;i++) {
-                    var uid=selRecs[i].get("UID");
-                    if(uid=="[any]") {
-                        users=[uid];
-                        break;
-                    } else {
-                      users.push(uid);
+                var value, record, i;
+                
+                /* First throw in the free form values */
+                record = this.find( "name", "otherUsers" )[0].getValue().split( ";" );
+                for ( i = 0 ; i < record.length ; i++ ) {
+                    value = record[i].trim();
+                    if ( value.length > 0 ) {
+                        users.push( value );
                     }
                 }
+                
+                for( i=0;i<selRecs.length;i++) {
+                    record = selRecs[i];
+                    if ( record.get("javaClass") == "com.untangle.uvm.addrbook.GroupEntry" ) {
+                        value =  "group::" + record.get("CN");
+                    } else {
+                        value = record.get("UID");
+                    }
+
+                    if(value=="[any]") {
+                        users=[value];
+                        break;
+                    } else {
+                      users.push(value);
+                    }
+                }
+
                 /* If no users are selected, pick the any user. */
                 if ( users.length == 0 ) {
                     users = ["[any]"];
@@ -4460,7 +4553,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             }
             return true;
         } else {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Please choose a user id/login or press Cancel!"));
+            Ext.MessageBox.alert(i18n._("Warning"), i18n._("Please choose a user id/login or press Cancel!"));
             return false;
         }
     },
@@ -4472,261 +4565,6 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         }
     },
 
-    closeWindow : function() {
-        this.hide();
-    }
-});
-
-
-
-// Row editor window used by editor grid
-Ung.GroupsWindow = Ext.extend(Ung.UpdateWindow, {
-    // the record currently edit
-    record : null,
-    sizeToRack : true,
-    // size to grid on show
-    sizeToGrid : false,
-    singleSelectUser : false,
-    loadActiveDirectoryUsers : true,
-    loadLocalDirectoryUsers : true,
-    userDataIndex : null,
-    usersGrid:null,
-    populateSemaphore: null,
-    userEntries: null,
-    fnCallback: null,
-    initComponent : function() {
-        if (!this.height && !this.width) {
-            this.sizeToGrid = true;
-        }
-        if (this.title == null) {
-            this.title = i18n._('Portal Question');
-        }
-        var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectGroup});
-        this.groupsGrid=new Ext.grid.GridPanel({
-           // title: i18n._('Groups'),
-           height: 210,
-           width: 290,
-           enableHdMenu : false,
-           enableColumnMove: false,
-           store: new Ext.data.Store({
-                proxy : new Ung.MemoryProxy({
-                    root : 'list'
-                }),
-                sortInfo : this.sortField ? {
-                    field : this.sortField,
-                    direction : "ASC"
-                } : null,
-                remoteSort : false,
-                reader : new Ext.data.JsonReader({
-                    totalProperty : "totalRecords",
-                    root : 'list',
-                    fields : [{
-                        name: "CN"
-                    }, {
-                        name: "name",
-                        mapping: "CN",
-                        convert : function(val, rec) {
-                            var name=val;
-                            var repository=null;
-                            if(rec.storedIn) {
-                                if(rec.storedIn=="MS_ACTIVE_DIRECTORY") {
-                                    repository=i18n._('Active Directory');
-                                } else if(rec.storedIn=="LOCAL_DIRECTORY") {
-                                    repository=i18n._('Local');
-                                } else {
-                                    repository=i18n._('UNKNOWN');
-                                }
-                            }
-                            if(repository) {
-                                name+=" ("+repository+")";
-                            }
-                            return name;
-                        }
-                    }]
-                })
-            }),
-            columns: [selModel, {
-                header : i18n._("group"),
-                width : 250,
-                fixed :true,
-                sortable : false,
-                dataIndex : 'name'
-            }],
-            selModel : selModel
-        });
-        this.items = new Ext.FormPanel({
-            labelWidth : 75,
-            buttonAlign : 'right',
-            border : false,
-            bodyStyle : 'padding:10px 10px 0px 10px;',
-            autoScroll: true,
-            defaults : {
-                selectOnFocus : true,
-                msgTarget : 'side'
-            },
-            items : [{
-                xtype : 'fieldset',
-                title : this.singleSelectGroup ? i18n._('Select Group') : i18n._('Select Groups'),
-                autoHeight : true,
-                items: [{
-                    border : false,
-                    cls: 'description',
-                    html: this.singleSelectGroup ? i18n._("You may choose group ID/Login that exists in the Group Directory (either local or remote Active Directory), or you can add a new group to the Group Directory, and then choose that group.")
-                                : i18n._("You may choose group IDs/Logins that exist in the Group Directory (either local or remote Active Directory), or you can add a new group to the Group Directory, and then choose that group.")
-                }, {
-                    xtype : 'fieldset',
-                    title : this.singleSelectGroup ? i18n._('Select an existing group') : i18n._('Select an existing group or groups'),
-                    autoHeight : true,
-                    items: [this.groupsGrid]
-                }, {
-                    xtype : 'fieldset',
-                    title : i18n._('Add a new group'),
-                    autoHeight : true,
-                    buttonAlign : 'left',
-                    buttons:[{
-                        xtype: "button",
-                        name : 'Open Local Directory',
-                        text : i18n._("Open Local Directory"),
-                        hidden : !this.loadLocalDirectoryGroups,
-                        handler : function() {
-                            Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
-                            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), function() {
-                                main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
-                                    this.populate(this.record,this.fnCallback)
-                                }.createDelegate(this)});
-                                main.localDirectoryWin.show();
-                                Ext.MessageBox.hide();
-                            }.createDelegate(this)]);
-                        }.createDelegate(this)
-                    }, {
-                        xtype: "button",
-                        name : 'Open Active Directory',
-                        text : i18n._("Open Active Directory"),
-                        hidden : !this.loadActiveDirectoryGroups,
-                        disabled : !main.isNodeRunning('untangle-node-adconnector'),
-                        handler : function() {
-                            var node = main.getNode('untangle-node-adconnector');
-                            if (node != null) {
-                                var nodeCmp = Ung.Node.getCmp(node.tid);
-                                if (nodeCmp != null) {
-                                    nodeCmp.onSettingsAction(function() {
-                                        this.populate(this.record,this.fnCallback)
-                                    }.createDelegate(this));
-                                }
-                            }
-                        }.createDelegate(this)
-                    }]
-                }]
-            }]
-        });
-        Ung.GroupsWindow.superclass.initComponent.call(this);
-    },
-    initSubComponents : function(container, position) {
-    },
-    // populate is called whent a record is edited, tot populate the edit window
-    populate : function(record,fnCallback) {
-        this.fnCallback=fnCallback;
-        this.record = record;
-        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-        this.groupsGrid.getSelectionModel().clearSelections();
-        var store=this.groupsGrid.getStore();
-        store.proxy.data = {list:[]};
-        store.load({
-            params : {
-                start : 0
-            }
-        });
-        this.populateSemaphore=2;
-        this.groupEntries=this.singleSelectGroup ? [] : [{CN: "[any]"}];
-        if (this.loadActiveDirectoryGroups && main.isNodeRunning('untangle-node-adconnector')){
-            main.getAppAddressBook().getGroupEntries(function(result, exception) {
-                if(Ung.Util.handleException(exception, function() {
-                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory groups.  Please check your Active Directory settings and then try again."), function(){
-                        this.populateCallback();
-                    }.createDelegate(this));
-                }.createDelegate(this),"noAlert")) return;
-                this.groupEntries=this.groupEntries.concat(result.list);
-                this.populateCallback();
-            }.createDelegate(this),'MS_ACTIVE_DIRECTORY')
-        } else {
-            this.populateSemaphore--;
-        }
-        if (this.loadLocalDirectoryGroups) {
-            main.getAppAddressBook().getGroupEntries(function(result, exception) {
-                if(Ung.Util.handleException(exception, function() {
-                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Local Directory groups.  Please check your Local Directory settings and try again."), function(){
-                        this.populateCallback();
-                    }.createDelegate(this));
-                }.createDelegate(this),"noAlert")) return;
-                this.groupEntries=this.groupEntries.concat(result.list);
-                this.populateCallback();
-            }.createDelegate(this),'LOCAL_DIRECTORY')
-        } else {
-            this.populateCallback();
-        }
-    },
-    populateCallback : function () {
-        this.populateSemaphore--;
-        if (this.populateSemaphore == 0) {
-            if (this.settingsCmp !== null) {
-                var sm=this.groupsGrid.getSelectionModel();
-                sm.clearSelections()
-                var store=this.groupsGrid.getStore();
-                store.proxy.data = {list:this.groupEntries};
-                store.load({
-                    params : {
-                        start : 0
-                    }
-                });
-                var groups=this.record.get(this.groupDataIndex);
-                if(groups!=null) {
-                  groups=groups.split(";");
-                  for(var i=0;i<groups.length;i++) {
-                    var index=store.find("CN",groups[i]);
-                    if(index>=0) {
-                      sm.selectRow(index,true);
-                    }
-                  }
-                }
-            }
-            Ext.MessageBox.hide();
-        }
-    },
-    // check if the form is valid;
-    // this is the default functionality which can be overwritten
-    isFormValid : function() {
-        if (this.singleSelectGroup) {
-            // one group must be selected
-            return (this.groupsGrid.getSelectionModel().getSelections().length == 1);
-        }
-        return true;
-    },
-    // updateAction is called to update the record after the edit
-    updateAction : function() {
-        if (this.isFormValid()) {
-            if (this.record !== null) {
-                var sm=this.groupsGrid.getSelectionModel();
-                var groups=[];
-                var selRecs=sm.getSelections();
-                for(var i=0;i<selRecs.length;i++) {
-                    var uid=selRecs[i].get("CN");
-                    if(uid=="[any]") {
-                        groups=[uid];
-                        break;
-                    } else {
-                      groups.push(selRecs[i].get("CN"));
-                    }
-                }
-                this.record.set(this.groupDataIndex,groups.join(";"));
-                if(this.fnCallback) {
-                  this.fnCallback.call();
-                }
-            }
-            this.hide();
-        } else {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Please choose a group id/login or press Cancel!"));
-        }
-    },
     closeWindow : function() {
         this.hide();
     }

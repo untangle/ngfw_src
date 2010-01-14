@@ -36,26 +36,31 @@ package com.untangle.uvm.addrbook;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 
 /**
  * Lightweight class to encapsulate an entry (user)
  * in the Address Book service.
  *
  */
-public final class UserEntry implements Serializable {
+public final class UserEntry implements Serializable, DirectoryEntry {
 
     public static final String UNCHANGED_PASSWORD = "***UNCHANGED***";
 
     private String m_firstName;
     private String m_lastName;
     private String m_uid;
+    
+    private String m_primaryGroupID;
+    private String m_dn;
     private String m_email;
     private RepositoryType m_storedIn;
     private String m_password;
     private String m_comment;
 
     public UserEntry() {
-        this(null, null, null, null, RepositoryType.NONE);
+        this(null, null, null, null, null, null, RepositoryType.NONE);
     }
 
     public UserEntry(String uid,
@@ -63,17 +68,15 @@ public final class UserEntry implements Serializable {
                      String lastName,
                      String email) {
 
-        m_firstName = firstName;
-        m_lastName = lastName;
-        m_uid = uid;
-        m_email = email;
-        m_storedIn = RepositoryType.NONE;
+        this(uid,firstName,lastName,email,null,null, RepositoryType.NONE);
     }
 
     public UserEntry(String uid,
                      String firstName,
                      String lastName,
                      String email,
+                     String primaryGroupID,
+                     String dn,
                      RepositoryType storedIn) {
 
         m_firstName = firstName;
@@ -81,6 +84,8 @@ public final class UserEntry implements Serializable {
         m_uid = uid;
         m_email = email;
         m_storedIn = storedIn;
+        m_dn = dn;
+        m_primaryGroupID = primaryGroupID;
     }
 
     /**
@@ -182,7 +187,24 @@ public final class UserEntry implements Serializable {
     public void setStoredIn(RepositoryType type) {
         m_storedIn = type;
     }
-
+    
+    public String getPrimaryGroupID() {
+        return this.m_primaryGroupID;
+    }
+    
+    public void setPrimaryGroupID( String newValue )
+    {
+        this.m_primaryGroupID = newValue;
+    }
+    
+    public String getDN() {
+        return this.m_dn;
+    }
+    
+    public void setDN( String newValue )
+    {
+        this.m_dn = newValue;
+    }
 
     /**
      * Equality test based on uid (case sensitive - although I'm not sure
@@ -193,6 +215,7 @@ public final class UserEntry implements Serializable {
         return makeNotNull(other.getUID()).equals(makeNotNull(m_uid)) &&
             makeNotNull(other.getStoredIn()).equals(makeNotNull(m_storedIn));
     }
+    
 
 
     /**
@@ -201,6 +224,27 @@ public final class UserEntry implements Serializable {
     public int hashCode() {
         return new String(makeNotNull(m_uid).toString() + makeNotNull(m_storedIn).toString()).hashCode();
     }
+    
+    @Transient
+    @Override
+    public DirectoryEntry.Type getType()
+    {
+        return DirectoryEntry.Type.USER;
+    }
+
+    @Transient
+    @Override
+    public UserEntry getUserEntry()
+    {
+        return this;
+    }
+    @Transient
+    @Override
+    public GroupEntry getGroupEntry()
+    {
+        return null;
+    }
+
 
 
     /**

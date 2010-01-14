@@ -36,6 +36,9 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
@@ -43,6 +46,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.user.ADLoginEvent;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -60,6 +64,9 @@ public class CPDImpl extends AbstractNode implements CPD {
     private final EventLogger<BlockEvent> blockEventLogger;
     
     private final CPDManager manager = new CPDManager(this);
+    
+    private final BlingBlinger blockBlinger;
+    private final BlingBlinger authorizeBlinger;
 
     private CPDSettings settings;
 
@@ -73,6 +80,12 @@ public class CPDImpl extends AbstractNode implements CPD {
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
         this.phoneBookAssistant = new PhoneBookAssistant();
+        
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        Counters c = lmm.getCounters(getTid());
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Blocked Sessions"), null, I18nUtil.marktr("BLOCK"));
+        authorizeBlinger = c.addActivity("authorize", I18nUtil.marktr("Authorized Clients"), null, I18nUtil.marktr("AUTHORIZE"));
+        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, authorizeBlinger);
     }
 
     public void initializeSettings() {
@@ -235,6 +248,7 @@ public class CPDImpl extends AbstractNode implements CPD {
         reconfigure();
     }
     
+    @Override
     public void setAll( final CPDBaseSettings baseSettings, 
             final List<CaptureRule> captureRules,
             final List<PassedClient> passedClients, 
@@ -303,6 +317,20 @@ public class CPDImpl extends AbstractNode implements CPD {
     public EventManager<BlockEvent> getBlockEventManager()
     {
         return this.blockEventLogger;
+    }
+    
+    @Override
+    public void incrementCount(BlingerType blingerType )
+    {
+        switch ( blingerType ) {
+        case BLOCK:
+            this.blockBlinger.increment();
+            break;
+            
+        case AUTHORIZE:
+            this.authorizeBlinger.increment();
+            break;
+        }
     }
 
 
