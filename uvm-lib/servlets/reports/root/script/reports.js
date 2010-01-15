@@ -706,7 +706,12 @@ Ung.Reports = Ext.extend(Object,{
         rpc.reportingManager[fnName](function (result, exception)
                                      {
                                          if (exception) {
-                                             if (!handleTimeout(exception)) {
+                                             var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.');
+                                             if(exception.message){
+                                                 if (!handleTimeout(exception)) {
+                                                     Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
+                                                 }
+                                             }else{
                                                  Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
                                              }
                                          }
@@ -1296,9 +1301,17 @@ Ung.ReportDetails = Ext.extend(Object, {
                         reports.progressBar.wait(i18n._("Please Wait"));
                         var store = panel.store;
                         rpc.reportingManager.getDetailData(function(result, exception) {
-                            if (exception) {
-                                if (!handleTimeout(exception)) {
-                                    Ext.MessageBox.alert("Failed", exception.message);
+                            if (exception || result == null) {
+                                if (!handleTimeout(exception) || result == null) {
+                                    var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.');
+                                    if(exception){
+                                        if(exception.message){
+                                            message = exception.message;
+                                        }
+                                    }else if(result==null){
+                                        message = i18n._('Dynamic report generation failed. Unable to contact report server');
+                                    } 
+                                    Ext.MessageBox.alert("Failed", message);
                                 }
                                 return;
                             }
@@ -1315,7 +1328,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                             //store.loadData(data);
                             store.initialData.loaded = true;
                             reports.progressBar.hide();
-                        }.createDelegate(this), store.initialData.reportsDate, 1, store.initialData.selectedApplication, store.initialData.name, store.initialData.drilldownType, store.initialData.drilldownValue);
+                        }.createDelegate(this), store.initialData.reportsDate, reports.numDays, store.initialData.selectedApplication, store.initialData.name, store.initialData.drilldownType, store.initialData.drilldownValue);
                     }
                 }.createDelegate(this)
             }
@@ -1324,9 +1337,17 @@ Ung.ReportDetails = Ext.extend(Object, {
         if(section.name=='Summary Report'){
             store.initialData.loaded = true;
             rpc.reportingManager.getDetailData(function(result, exception) {
-                if (exception) {
-                    if (!handleTimeout(exception)) {
-                        Ext.MessageBox.alert("Failed", exception.message);
+                if (exception || result == null) {
+                    if (!handleTimeout(exception) || result == null) {
+                        var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.');
+                        if(exception){
+                            if(exception.message){
+                                message = exception.message;
+                            }
+                        }else if(result==null){
+                            message = i18n._('Dynamic report generation failed. Unable to contact report server');
+                        } 
+                        Ext.MessageBox.alert("Failed", message);
                     }
                     return;
                 }
@@ -1338,7 +1359,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 }
 
                 store.loadData(data);
-            }.createDelegate(this), reports.reportsDate, 1, reports.selectedApplication, section.name, rpc.drilldownType, rpc.drilldownValue);
+            }.createDelegate(this), reports.reportsDate, reports.numDays, reports.selectedApplication, section.name, rpc.drilldownType, rpc.drilldownValue);
         }else{
             store.initialData.loaded = false;
             store.initialData.reportsDate = reports.reportsDate;
