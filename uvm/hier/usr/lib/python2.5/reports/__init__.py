@@ -156,7 +156,7 @@ class Report:
 
             report_file = "%s/%s/report.xml" % (report_base, node_base)
 
-            logger.info('writing in .../%s' % node_base)
+            logger.info('writing %s' % (report_file,))
             tree.write(report_file, encoding='utf-8', pretty_print=True,
                        xml_declaration=True)
 
