@@ -1,6 +1,6 @@
 diff -Naur jabsorb-1.2.2/build.xml jabsorb-1.2.2.patched/build.xml
 --- jabsorb-1.2.2/build.xml	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.patched/build.xml	2008-10-03 14:37:10.000000000 -0700
++++ jabsorb-1.2.2.patched/build.xml	2010-01-15 00:35:11.000000000 -0800
 @@ -53,13 +53,14 @@
    </target>
  
@@ -37,7 +37,7 @@ diff -Naur jabsorb-1.2.2/build.xml jabsorb-1.2.2.patched/build.xml
      <delete file="${webapp}/Test.java.txt" />
 diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2.patched/src/org/jabsorb/JSONRPCBridge.java
 --- jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/JSONRPCBridge.java	2008-10-13 19:17:22.000000000 -0700
++++ jabsorb-1.2.2.patched/src/org/jabsorb/JSONRPCBridge.java	2010-01-15 00:35:11.000000000 -0800
 @@ -108,8 +108,18 @@
   * <code>JSONRPCBridge.getGlobalBridge().registerClass("MyClass",
   * com.example.MyClass.class);</code>
@@ -132,7 +132,7 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2.patche
  
 diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/JSONSerializer.java
 --- jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/JSONSerializer.java	2008-10-03 14:37:10.000000000 -0700
++++ jabsorb-1.2.2.patched/src/org/jabsorb/JSONSerializer.java	2010-01-15 00:35:11.000000000 -0800
 @@ -718,7 +718,7 @@
        try
        {
@@ -156,7 +156,7 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2.patch
        {
 diff -Naur jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2.patched/src/org/jabsorb/reflect/ClassAnalyzer.java
 --- jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2008-01-16 17:47:52.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/reflect/ClassAnalyzer.java	2008-10-03 14:37:10.000000000 -0700
++++ jabsorb-1.2.2.patched/src/org/jabsorb/reflect/ClassAnalyzer.java	2010-01-15 00:35:11.000000000 -0800
 @@ -30,8 +30,11 @@
  import java.lang.reflect.Modifier;
  import java.util.ArrayList;
@@ -237,9 +237,24 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.
 +        return s;
 +    }
  }
+diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/BooleanSerializer.java
+--- jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2010-01-15 00:35:40.000000000 -0800
+@@ -97,6 +97,11 @@
+     {
+       returnValue = (Boolean) jso;
+     }
++    else if (clazz == Boolean.class)
++    {
++      returnValue = (Boolean)jso;
++    }
++
+ 
+     state.setSerialized(jso, returnValue);
+     return returnValue;
 diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java
 --- jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java	1969-12-31 16:00:00.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java	2008-10-03 14:37:10.000000000 -0700
++++ jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java	2010-01-15 00:35:11.000000000 -0800
 @@ -0,0 +1,461 @@
 +/*
 + * jabsorb - a Java to JavaScript Advanced Object Request Broker
@@ -704,7 +719,7 @@ diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java
 +}
 diff -Naur jabsorb-1.2.2/src/org/json/JSONBean.java jabsorb-1.2.2.patched/src/org/json/JSONBean.java
 --- jabsorb-1.2.2/src/org/json/JSONBean.java	1969-12-31 16:00:00.000000000 -0800
-+++ jabsorb-1.2.2.patched/src/org/json/JSONBean.java	2008-10-03 14:37:10.000000000 -0700
++++ jabsorb-1.2.2.patched/src/org/json/JSONBean.java	2010-01-15 00:35:11.000000000 -0800
 @@ -0,0 +1,59 @@
 +/*
 +Copyright (c) 2008
