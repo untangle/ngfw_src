@@ -146,9 +146,9 @@ class ProtocolsHighlight(Highlight):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT COALESCE(SUM(new_sessions),0) AS sessions,
-       COALESCE(sum(CASE WHEN NULLIF(pf_protocol,'') IS NULL THEN 0 ELSE 1 END), 0) AS protocols,
-       COALESCE(sum(pf_blocks), 0) AS blocks
+SELECT COALESCE(SUM(new_sessions),0)::int AS sessions,
+       COALESCE(sum(CASE WHEN NULLIF(pf_protocol,'') IS NULL THEN 0 ELSE 1 END), 0)::int AS protocols,
+       COALESCE(sum(pf_blocks), 0)::int AS blocks
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
