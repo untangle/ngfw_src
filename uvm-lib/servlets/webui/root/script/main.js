@@ -603,6 +603,17 @@ Ung.Main=Ext.extend(Object, {
         return rpc.appAddressBook;
     },
 
+    getRadiusSettings : function(forceReload) {
+        if (forceReload || rpc.radiusSettings === undefined) {
+            try {
+                rpc.radiusSettings = rpc.jsonrpc.RemoteUvmContext.getRadiusSettings();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return rpc.radiusSettings;
+    },
+
     getMailSender : function(forceReload) {
         if (forceReload || rpc.mailSender === undefined) {
             try {

@@ -15,3 +15,17 @@
 --
 
 ALTER SCHEMA events OWNER TO postgres;
+
+-- com.untangle.uvm.RadiusServerSettings -- 7.2
+CREATE TABLE settings.u_radius_server_settings (
+    settings_id       INT8 NOT NULL,
+    server	      TEXT NOT NULL,
+    port	      INT4 NOT NULL,
+    shared_secret     TEXT NOT NULL,
+    PRIMARY KEY      (settings_id));
+
+-- com.untangle.uvm.RadiusSettings -- 7.2
+CREATE TABLE settings.u_radius_settings (
+    id                        INT8 NOT NULL,
+    radius_server_settings_id INT8 NOT NULL,
+    PRIMARY KEY (id));

@@ -1,5 +1,8 @@
 <?php
 
+include ("ad.php");
+include ("radius.php");
+
 $uvm_db = null;
 
 function open_db_connection()
@@ -59,6 +62,46 @@ END_OF_QUERY;
     $row['page_parameters'] = json_decode($row['page_parameters'], true);;
 
     return $row;    
+}
+
+function ad_authenticate($username, $password, $base_dn, 
+                         $account_suffix, $domain_controller)
+{
+  try {
+    $adldap = new adLDAP(array('base_dn'=>$base_dn,
+                               'account_suffix'=>$account_suffix,
+                               'domain_controllers'=>array($domain_controller)));
+    return ($adldap -> authenticate($username,$password));
+  }
+  catch (adLDAPException $e) {
+    echo $e; // FIXME ?
+    return false;
+  }
+}
+
+function radius_authenticate($username, $password, $server, $port,
+                             $shared_secret, $method)
+{
+  try {
+    radius_connect($server, $port, $shared_secret);
+    radius_set_username($username);
+
+    switch($method) {
+    case "pap":
+      radius_set_password_pap($password);
+    case "chap":
+      radius_set_password_chap($password);
+    case "mschapv1":
+      radius_set_password_mschapv1($password);
+    case "mschapv2":
+      radius_set_password_mschapv2($password);
+    }
+
+    return radius_send_auth_request();
+  } catch (RadiusException $e) {
+    echo $e; // FIXME ?
+    return false;
+  }
 }
 
 function run_command($postdata)
