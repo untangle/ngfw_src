@@ -745,7 +745,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             xtype : "textfield",
                             allowBlank : false,
                             name : "basicMessageFooter",
-                            fieldLabel : this.i18n._("Page Title"),
+                            fieldLabel : this.i18n._("Lower Text"),
                             pageType : "BASIC_MESSAGE",
                             value : this.pageParameters.basicMessageFooter,
                             listeners : {
