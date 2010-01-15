@@ -273,6 +273,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
         title = trial_report_node.display_title + " " + _('trial report')
     else:
         title = '%s %s %s' % (_('Report for'), report_days, days)
+    logger.debug('PDF Title: "%s"' % (title,))
 
     doc = ReportDocTemplate(file, title=title)
 
@@ -285,6 +286,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
     story.append(Paragraph(title, STYLESHEET['MainTitle']))
 
     if trial_report_node:
+        logger.info('End-of-trial mode')
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
         start_date_str = start_date.strftime("%d %B %Y")
         story.append(Paragraph(start_date_str + " -> " + date_str, STYLESHEET['SubTitle']))
@@ -294,10 +296,9 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
         story.append(Paragraph(_("The trial period has now expired. To continue using") + " " + trial_report_node.display_title + ", " + _('click on "Buy Now" in the administrator interface and follow directions.'),
                                STYLESHEET['SubTitle']))
     else:
+        logger.info('Regular mode')
         story.append(Paragraph(date_str, STYLESHEET['SubTitle']))
         story.append(Paragraph(platform.node(), STYLESHEET['SubTitle']))
-
-    if not trial_report_node:
         story.append(NextPageTemplate('TOC'))
         
     story.append(PageBreak())
@@ -320,6 +321,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
     mail_reports.sort(__node_cmp)
 
     # higlights summary
+    logger.info('Building highlights summary')
     story += [SectionHeader(_("Highlights Summary")), Spacer(1, 0.25 * inch)]
     hs = [ [Paragraph(_('Highlights'), STYLESHEET['TableTitle']),], ]
     for r in mail_reports:
@@ -340,6 +342,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
     story.append(PageBreak())
     
     # apps reports
+    logger.info('Building applications reports')
     for r in mail_reports:
         story += r.get_flowables(report_base, date_base, end_date, report_days)
 

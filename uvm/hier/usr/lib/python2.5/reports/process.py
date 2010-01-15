@@ -328,26 +328,30 @@ if not no_migration:
      
 mail_reports = []
 
-for report_days in report_lengths:
-     if not no_data_gen:
-          logger.info("Generating reports for %s days" % (report_days,))
-          mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
-                                                         end_date, report_days)
+try:
+    for report_days in report_lengths:
+         if not no_data_gen:
+              logger.info("Generating reports for %s days" % (report_days,))
+              mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
+                                                             end_date, report_days)
 
-     if not no_plot_gen:
-          logger.info("Generating plots for %s days" % (report_days,))          
-          reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date,
-                                        report_days)
+         if not no_plot_gen:
+              logger.info("Generating plots for %s days" % (report_days,))          
+              reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date,
+                                            report_days)
 
-     if not no_mail:
-          logger.info("About to email reports for %s days" % (report_days,))          
-          f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date,
-                                       report_days, mail_reports,
-                                       trial_report)
-          reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
-                                      attach_csv=attach_csv,
-                                      attachment_size_limit=attachment_size_limit)
-          os.remove(f)
+         if not no_mail:
+              logger.info("About to email reports for %s days" % (report_days,))          
+              f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date,
+                                           report_days, mail_reports,
+                                           trial_report)
+              reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
+                                          attach_csv=attach_csv,
+                                          attachment_size_limit=attachment_size_limit)
+              os.remove(f)
+except Exception, e:
+     logger.critical("Exception while building report: %s" % (e,),
+                     exc_info=True)
 
 if not no_cleanup:
      events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_retention)

@@ -112,7 +112,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                             try {
                                 l.add(new DateItem(d, new Integer(num)));
                             } catch (NumberFormatException exn) {
-                                logger.warn("skipping non-day directory" + ds);
+                                logger.debug("skipping non-day directory: '" + ds + "'");
                             }
                         }
                     }
@@ -296,10 +296,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 	logger.info("doGetDetailData for '" + appName + "' (detail='" +
 		    detailName + "', type='" + type + 
 		    "', limitResultSet='" + limitResultSet + "')");
-
-	Date cutoff = getReportsCutoff();
-	if (cutoff == null)
-	    return null;
 
 	if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff()))
 	    return null;
