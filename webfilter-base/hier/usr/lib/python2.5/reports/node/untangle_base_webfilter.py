@@ -725,7 +725,7 @@ GROUP BY uid ORDER BY hits_sum DESC"""
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('hits'),
-                                  link_type=reports.HNAME_LINK)
+                                  link_type=reports.USER_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 
@@ -773,7 +773,7 @@ GROUP BY uid ORDER BY size_sum DESC"""
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
                 ks = KeyStatistic(r[0], r[1], _('bytes'),
-                                  link_type=reports.HNAME_LINK)
+                                  link_type=reports.USER_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 
