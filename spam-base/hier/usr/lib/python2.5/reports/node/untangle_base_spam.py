@@ -200,7 +200,7 @@ class SpamHighlight(Highlight):
         query = """\
 SELECT coalesce(sum(msgs), 0)::int AS messages,
        coalesce(sum(%s_spam_msgs), 0)::int AS spam
-FROM reports.n_mail_msg_totals
+FROM reports.n_mail_addr_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__short_name,)
         if email:
             query += """
@@ -253,7 +253,7 @@ WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
             query = """\
 SELECT coalesce(sum(msgs), 0)::int,
        coalesce(sum(%s_spam_msgs), 0)::int
-FROM reports.n_mail_msg_totals
+FROM reports.n_mail_addr_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
 
         conn = sql_helper.get_connection()
@@ -326,7 +326,7 @@ WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
                 ks_query = """\
 SELECT COALESCE(sum(msgs), 0)::float / (%%s * 24) AS email_rate,
        COALESCE(sum(%s_spam_msgs), 0)::float / (%%s * 24) AS spam_rate
-FROM reports.n_mail_msg_totals
+FROM reports.n_mail_addr_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
 
