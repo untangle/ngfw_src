@@ -28,10 +28,39 @@ import com.untangle.uvm.user.ADPhoneBookAssistant;
 public class LocalADPhoneBookAssistantImpl implements ADPhoneBookAssistant
 {
     private int PRIORITY=2000000000;
-    public void addOrUpdate(InetAddress inetAddress, String username, String domain, String hostname) {}
+    
+    public void addOrUpdate(InetAddress inetAddress, String username, String domain, String hostname){
+    }
 
-    public String toString() { return new String(); }
-    public void lookup( UserInfo info ) {}
+    public String toString() {
+        return "";
+    }
+    
+    public void lookup( UserInfo info ){
+    }
+    
+    @Override
+    public boolean isMemberOf(String user, String group) {
+        return false;
+    }
+    
+    @Override
+    public void start()
+    {
+    }
+    
+    @Override
+    public void stop()
+    {
+    }
+    
+    @Override
+    public void refreshGroupCache() {
+    }
+    
+    
+    
+    
 
     /* retrieve the priority of this assistant, higher numbers are lower priority */
     public int priority() {

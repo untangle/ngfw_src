@@ -36,13 +36,16 @@ package com.untangle.uvm.engine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.io.IOException;
+import java.util.Set;
+
 import javax.naming.AuthenticationException;
 import javax.naming.CommunicationException;
 import javax.naming.Context;
+import javax.naming.InvalidNameException;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -54,15 +57,17 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.util.Pair;
+import com.untangle.uvm.addrbook.GroupEntry;
 import com.untangle.uvm.addrbook.NoSuchEmailException;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
-import com.untangle.uvm.addrbook.GroupEntry;
-import org.apache.log4j.Logger;
-import com.untangle.node.util.SimpleExec;
 /**
  * Abstract base class for "Adapters" which call LDAP
  * to perform various operations.
@@ -72,7 +77,6 @@ abstract class LdapAdapter {
 
     private final Logger m_logger =
         Logger.getLogger(LdapAdapter.class);
-
 
     /**
      * For subclasses to define the type of repository
@@ -207,9 +211,14 @@ abstract class LdapAdapter {
 
     /**
      * Get all of the groups that are available for this adapter.
+     * 
+     * @param fetchMembersOf
+     *            Set to true to indicate that the entries should include the
+     *            list of groups that the group is a member of.
      * @return
      */
-    public abstract List<GroupEntry> listAllGroups() throws ServiceUnavailableException;
+    public abstract List<GroupEntry> listAllGroups(boolean fetchMembersOf)
+            throws ServiceUnavailableException;
     
     /**
      * Get all of the groups that a user belongs to.
@@ -223,7 +232,7 @@ abstract class LdapAdapter {
      * @param group Name of the group to query.
      * @return A list of all of the users that belong to a group.
      */
-    public abstract List<UserEntry> listGroupMembers( String group ) throws ServiceUnavailableException;
+    public abstract List<UserEntry> listGroupUsers( String group ) throws ServiceUnavailableException;
 
     /**
      * Tests if the given userid exists in this repository
@@ -491,9 +500,6 @@ abstract class LdapAdapter {
         searchCtls.setReturningAttributes(filter);
         return searchCtls;
     }
-
-
-
 
     /**
      * Name says it all.  Will never throw an
@@ -786,14 +792,26 @@ abstract class LdapAdapter {
      * the GroupEntry.
      */
     protected GroupEntry toGroupEntry(Map<String, String[]> map) {
-        return new GroupEntry(
+        String[] memberOf = map.get("memberOf");
+        Set<String> memberOfSet = null;
+        if ( memberOf != null ) {
+            memberOfSet = new HashSet<String>(memberOf.length);
+            for ( String groupName : memberOf ) {
+                memberOfSet.add(groupName);
+            }
+        }
+        GroupEntry entry= new GroupEntry(
                               getFirstEntryOrNull(map.get(getCNName())),
                               0, //TODO fix this later
                               getFirstEntryOrNull(map.get(getGroupName())),
                               getFirstEntryOrNull(map.get(getGroupTypeName())),
                               getFirstEntryOrNull(map.get(getGroupDescriptionName())),
                               getFirstEntryOrNull(map.get("dn=")),
+                              memberOfSet,
                               getRepositoryType());
+        
+        entry.setPrimaryGroupToken(getFirstEntryOrNull(map.get("primaryGroupToken")));
+        return entry;
     }
 
     protected String getCNName() {
@@ -801,7 +819,7 @@ abstract class LdapAdapter {
     }
 
     protected String getGroupName() {
-        return "samaccountname";
+        return "sAMAccountName";
     }
 
     protected String getGroupTypeName() {
@@ -830,7 +848,7 @@ abstract class LdapAdapter {
      * Helper to create the search controls used when fetching a UserEntry
      */
     protected SearchControls getUserEntrySearchControls() {
-         return createSimpleSearchControls(
+        return createSimpleSearchControls(
                                           getUIDAttributeName(),
                                           getMailAttributeName(),
                                           getPrimaryGroupIDAttribute(),
@@ -841,17 +859,28 @@ abstract class LdapAdapter {
     /**
      * Helper to create the search controls used when fetching a GroupEntry
      */
-    protected SearchControls getGroupEntrySearchControls() {
+    protected SearchControls getGroupEntrySearchControls(boolean fetchMembersOf) {
+        if ( fetchMembersOf ) {
+            return createSimpleSearchControls(
+                    "cn",
+                    "description",
+                    getGroupName(),
+                    "sAMAccountType",
+                    "groupType",
+                    "memberOf",
+            "primaryGroupToken");
+        }
+        
         return createSimpleSearchControls(
-                                          "cn",
-                                          "description",
-                                          "sAMAccountName",
-                                          "sAMAccountType",
-                                          "groupType",
-                                          "primaryGroupToken");
+                    "cn",
+                    "description",
+                    getGroupName(),
+                    "sAMAccountType",
+                    "groupType",
+            "primaryGroupToken");
     }
-
-
+    
+ 
     /**
      * If input is null, members of pair are null.  If no space,
      * then only firrst name is returned (e.g. "Bono" or "Sting")

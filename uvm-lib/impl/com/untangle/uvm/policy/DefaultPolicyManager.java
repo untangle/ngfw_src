@@ -28,6 +28,7 @@ import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
@@ -43,6 +44,8 @@ import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
 import com.untangle.uvm.node.firewall.user.UserMatcher;
 import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.vnet.PipelineFoundry;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -382,7 +385,15 @@ class DefaultPolicyManager implements LocalPolicyManager
     
     void updateEngines()
     {
-        LocalUvmContextFactory.context().nodeManager().flushNodeStateCache();
-        LocalUvmContextFactory.context().pipelineFoundry().clearChains();
+        /* At startup, these can be null */
+        LocalNodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
+        if ( nodeManager != null ) {
+            nodeManager.flushNodeStateCache();
+        }
+        
+        PipelineFoundry pipelineFoundry = LocalUvmContextFactory.context().pipelineFoundry();
+        if ( pipelineFoundry != null ) {
+            pipelineFoundry.clearChains();
+        }
     }
 }

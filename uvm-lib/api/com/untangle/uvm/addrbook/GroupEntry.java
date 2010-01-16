@@ -35,8 +35,11 @@ package com.untangle.uvm.addrbook;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Transient;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 
 /**
@@ -44,7 +47,7 @@ import javax.persistence.Transient;
  * in the Address Book service.
  *
  */
-public final class GroupEntry implements Serializable, DirectoryEntry {
+public final class GroupEntry implements Serializable {
 
     private String m_cn;
     private int m_gid;
@@ -52,10 +55,17 @@ public final class GroupEntry implements Serializable, DirectoryEntry {
     private String m_samaccountname;
     private String m_samaccounttype;
     private String m_description;
+    
+    /**
+     * Get the set of groups that this group is a member of.  These
+     * are the fully qualified names, not the sAMAccountName
+     */
+    private Set<String> m_memberOf;
+    private String primaryGroupToken;
     private RepositoryType m_storedIn;
 
     public GroupEntry() {
-        this(null, 0, null, null, null, null, RepositoryType.NONE);
+        this(null, 0, null, null, null, null, null,RepositoryType.NONE);
     }
 
     public GroupEntry(String cn,
@@ -63,7 +73,7 @@ public final class GroupEntry implements Serializable, DirectoryEntry {
                      String samaccountname,
                      String samaccounttype,
                      String description) {
-        this(cn,gid,samaccountname,samaccounttype,description,null,RepositoryType.NONE);
+        this(cn,gid,samaccountname,samaccounttype,description,null,null,RepositoryType.NONE);
     }
 
     public GroupEntry(String cn,
@@ -72,15 +82,21 @@ public final class GroupEntry implements Serializable, DirectoryEntry {
                      String samaccounttype,
                      String description,
                      String dn,
+                     Set<String> memberOf,
                      RepositoryType storedIn) {
 
         m_cn = cn;
         m_gid = gid;
-        m_samaccountname = samaccountname;
+        setSAMAccountName(samaccountname);        
         m_samaccounttype = samaccounttype;
         m_description = description;
         m_dn = dn;
         m_storedIn = storedIn;
+        
+        if ( memberOf == null ) {
+            memberOf = Collections.emptySet();
+        }
+        setMemberOf(memberOf);
     }
 
     public String getCN() {
@@ -116,7 +132,10 @@ public final class GroupEntry implements Serializable, DirectoryEntry {
     }
 
     public void setSAMAccountName(String samaccountname) {
-        m_samaccountname = samaccountname;
+        if ( samaccountname == null ) {
+            samaccountname = "";
+        }
+        m_samaccountname = samaccountname.toLowerCase();
     }
 
     public String getSAMAccountType() {
@@ -154,33 +173,29 @@ public final class GroupEntry implements Serializable, DirectoryEntry {
         return makeNotNull(other.getCN()).equals(makeNotNull(m_cn)) &&
             makeNotNull(other.getStoredIn()).equals(makeNotNull(m_storedIn));
     }
+    
+    
+    public void setMemberOf(Set<String> m_memberOf) {
+        this.m_memberOf = m_memberOf;
+    }
 
+    public Set<String> getMemberOf() {
+        return m_memberOf;
+    }
+
+    public void setPrimaryGroupToken(String primaryGroupToken) {
+        this.primaryGroupToken = primaryGroupToken;
+    }
+
+    public String getPrimaryGroupToken() {
+        return primaryGroupToken;
+    }
 
     /**
      * hashcode for use in hashing
      */
     public int hashCode() {
         return new String(makeNotNull(m_cn).toString() + makeNotNull(m_storedIn).toString()).hashCode();
-    }
- 
-    @Transient
-    @Override
-    public DirectoryEntry.Type getType()
-    {
-        return DirectoryEntry.Type.GROUP;
-    }
-
-    @Transient
-    @Override
-    public UserEntry getUserEntry()
-    {
-        return null;
-    }
-    @Transient
-    @Override
-    public GroupEntry getGroupEntry()
-    {
-        return this;
     }
     
     /**
@@ -202,5 +217,4 @@ public final class GroupEntry implements Serializable, DirectoryEntry {
     private Object makeNotNull(Object obj) {
         return obj==null?"":obj;
     }
-
 }

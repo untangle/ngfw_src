@@ -313,12 +313,13 @@ class LocalLdapAdapter extends LdapAdapter {
         return newEntry;
     }
     
-    /**
-     * Get all of the groups that are available for this adapter.
-     * @return
+
+    /* (non-Javadoc)
+     * @see com.untangle.uvm.engine.LdapAdapter#listAllGroups(boolean)
      */
-    public List<GroupEntry> listAllGroups() throws ServiceUnavailableException
-    {
+    @Override
+    public List<GroupEntry> listAllGroups(boolean fetchMemberOf)
+            throws ServiceUnavailableException    {
         return new ArrayList<GroupEntry>(0);
     }
     
@@ -337,10 +338,10 @@ class LocalLdapAdapter extends LdapAdapter {
      * @param group Name of the group to query.
      * @return A list of all of the users that belong to a group.
      */
-    public List<UserEntry> listGroupMembers( String group ) throws ServiceUnavailableException
+    public List<UserEntry> listGroupUsers( String group ) throws ServiceUnavailableException
     {
         return new ArrayList<UserEntry>(0);
-    }
+    } 
 
     private String replaceNull(String str, String replacement) {
         return (str==null || "".equals(str.trim()))?
@@ -444,6 +445,7 @@ class LocalLdapAdapter extends LdapAdapter {
 
     }
 
+    
     public GroupEntry createGroupEntry(GroupEntry newEntry)
         throws NameAlreadyBoundException,
                ServiceUnavailableException,

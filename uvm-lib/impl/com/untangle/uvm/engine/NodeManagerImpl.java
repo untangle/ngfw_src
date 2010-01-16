@@ -381,9 +381,12 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     @Override
     public Set<String> getEnabledNodes(Policy policy)
     {
+        if ( policy == null ) {
+            return Collections.emptySet();
+        }
+        
         Set<String> policyNodes = null;
         String policyName = policy.getName();
-        boolean isNew = false;
         long enabledNodesCleared = 0;
         
         /* With the lock, check if there is an entry and return it if exists.

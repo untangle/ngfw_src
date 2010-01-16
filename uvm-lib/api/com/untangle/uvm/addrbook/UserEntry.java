@@ -44,7 +44,7 @@ import javax.persistence.Transient;
  * in the Address Book service.
  *
  */
-public final class UserEntry implements Serializable, DirectoryEntry {
+public final class UserEntry implements Serializable {
 
     public static final String UNCHANGED_PASSWORD = "***UNCHANGED***";
 
@@ -81,7 +81,7 @@ public final class UserEntry implements Serializable, DirectoryEntry {
 
         m_firstName = firstName;
         m_lastName = lastName;
-        m_uid = uid;
+        setUID(uid);
         m_email = email;
         m_storedIn = storedIn;
         m_dn = dn;
@@ -99,7 +99,11 @@ public final class UserEntry implements Serializable, DirectoryEntry {
     }
 
     public void setUID(String uid) {
-        m_uid = uid;
+        if ( uid == null ) {
+            uid = "";
+        }
+        
+        m_uid = uid.toLowerCase();
     }
 
     /**
@@ -225,28 +229,6 @@ public final class UserEntry implements Serializable, DirectoryEntry {
         return new String(makeNotNull(m_uid).toString() + makeNotNull(m_storedIn).toString()).hashCode();
     }
     
-    @Transient
-    @Override
-    public DirectoryEntry.Type getType()
-    {
-        return DirectoryEntry.Type.USER;
-    }
-
-    @Transient
-    @Override
-    public UserEntry getUserEntry()
-    {
-        return this;
-    }
-    @Transient
-    @Override
-    public GroupEntry getGroupEntry()
-    {
-        return null;
-    }
-
-
-
     /**
      * For debugging
      */

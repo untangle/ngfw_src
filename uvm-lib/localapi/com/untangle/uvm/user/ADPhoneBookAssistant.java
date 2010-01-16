@@ -19,14 +19,26 @@ package com.untangle.uvm.user;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.user.Assistant;
-import com.untangle.uvm.user.UserInfo;
-import com.untangle.uvm.user.Username;
-
 public interface ADPhoneBookAssistant extends Assistant
 {
     public void addOrUpdate(InetAddress inetAddress, String username, String domain, String hostname);
+    
+    /**
+     * Return true iff user is a member of group.
+     * @param user The user to test
+     * @param group The group to see if users is a member.
+     * @return True if the user is a member of the group.
+     */
+    public boolean isMemberOf( String user, String group );
+    
+    public void start();
+    
+    public void stop();
+    
+    /**
+     * Refresh the group cache, normally this is done every x minutes.
+     */
+    public void refreshGroupCache();
 
     public String toString();
 }

@@ -476,13 +476,13 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
-    public List<GroupEntry> getGroupEntries()
+    public List<GroupEntry> getGroupEntries(boolean fetchMemberOf)
         throws ServiceUnavailableException {
         m_logger.info("getGroupEntries");
         
         return isNotConfigured()?
             new ArrayList<GroupEntry>():
-            m_localAdapter.listAllGroups();
+            m_localAdapter.listAllGroups(fetchMemberOf);
     }
 
 
@@ -499,7 +499,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
         case LOCAL_DIRECTORY:
             return isNotConfigured()?
                 new ArrayList<GroupEntry>():
-                m_localAdapter.listAllGroups();
+                m_localAdapter.listAllGroups(false);
 
             //---------------------------------------
         case MS_ACTIVE_DIRECTORY:
@@ -511,5 +511,21 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
         }
 
         return new ArrayList<GroupEntry>();
+    }
+    
+    /* (non-Javadoc)
+     * @see com.untangle.uvm.addrbook.RemoteAddressBook#getGroupUsers(java.lang.String)
+     */
+    @Override
+    public List<UserEntry> getGroupUsers(String groupName)
+    throws ServiceUnavailableException
+    {
+        return m_localAdapter.listGroupUsers(groupName);
+    }
+    
+    @Override
+    public boolean isMemberOf( String user, String group )
+    {
+        return false;
     }
 }

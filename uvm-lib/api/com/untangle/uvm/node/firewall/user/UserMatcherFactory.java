@@ -47,7 +47,7 @@ public class UserMatcherFactory
     {
         this.parser = new ParsingFactory<UserDBMatcher>( "user matcher" );
         this.parser.registerParsers( UserSimpleMatcher.PARSER, UserSingleMatcher.PARSER,
-                                     UserSetMatcher.PARSER );
+                                     UserSetMatcher.PARSER, UserGroupMatcher.PARSER );
     }
 
     public UserDBMatcher getAllMatcher()

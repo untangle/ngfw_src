@@ -38,6 +38,7 @@ public class ADPhoneBookAssistantManager
     private static final String PREMIUM_WEBAPP = "adpb";
 
     private static ADPhoneBookAssistant assistant = null;
+    private static ADPhoneBookAssistant standard = new LocalADPhoneBookAssistantImpl();
     private static ADPhoneBookAssistant premium = null;
 
     private static UtLogger logger = null;
@@ -48,24 +49,24 @@ public class ADPhoneBookAssistantManager
 
     public static ADPhoneBookAssistant getADPhoneBookAssistant()
     {
-	if (logger == null) {
-	    logger = new UtLogger( ADPhoneBookAssistantManager.class );
-	}
-	logger.debug("getADPhoneBookAssistant called");
-	refresh();
-	logger.debug("getADPhoneBookAssistant refresh done");
-	if (premium != null) {
-	    return premium;
-	}
-	if (assistant == null) {
-	    assistant = new LocalADPhoneBookAssistantImpl();
-	}
-	return assistant;
+        if (logger == null) {
+            logger = new UtLogger( ADPhoneBookAssistantManager.class );
+        }
+        logger.debug("getADPhoneBookAssistant called");
+        refresh();
+        logger.debug("getADPhoneBookAssistant refresh done");
+        if (premium != null) {
+            return premium;
+        }
+        if (assistant == null) {
+            return standard;
+        }
+        return assistant;
     }
 
     public static void refresh()
     {
-	logger.debug("getADPhoneBookAssistant refresh started");
+        logger.debug("getADPhoneBookAssistant refresh started");
         if ( premium != null ) {
             return;
         }
@@ -77,15 +78,15 @@ public class ADPhoneBookAssistantManager
         try {
             premium = (ADPhoneBookAssistant)Class.forName( className ).newInstance();
             logger.debug("getADPhoneBookAssistant loaded premium");
-	    logger.debug("getADPhoneBookAssistant loading the webapp");
-	    UvmContextImpl.getInstance().tomcatManager().loadInsecureApp("/"+PREMIUM_WEBAPP, PREMIUM_WEBAPP);
-	    logger.debug("getADPhoneBookAssistant done loading the webapp");
-	    /* register the assistant with the phonebook */
-	    LocalUvmContextFactory.context().localPhoneBook().registerAssistant( premium );
-	    logger.debug("getADPhoneBookAssistant registering assistant");
+            logger.debug("getADPhoneBookAssistant loading the webapp");
+            UvmContextImpl.getInstance().tomcatManager().loadInsecureApp("/"+PREMIUM_WEBAPP, PREMIUM_WEBAPP);
+            logger.debug("getADPhoneBookAssistant done loading the webapp");
+            /* register the assistant with the phonebook */
+            LocalUvmContextFactory.context().localPhoneBook().registerAssistant( premium );
+            logger.debug("getADPhoneBookAssistant registering assistant");
         } catch ( Exception e ) {
             premium = null;
-	    logger.info("getADPhoneBookAssistant " + e.toString());
+            logger.info("getADPhoneBookAssistant " + e.toString());
         }
     }
 
@@ -95,7 +96,7 @@ public class ADPhoneBookAssistantManager
 
     public static void destroy()
     {
-	premium = null;
-	assistant = null;
+        premium = null;
+        assistant = null;
     }
 }

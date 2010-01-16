@@ -7,6 +7,7 @@ import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.uvm.node.firewall.user.UserDBMatcher;
+import com.untangle.uvm.node.firewall.user.UserGroupMatcher;
 import com.untangle.uvm.node.firewall.user.UserMatcher;
 import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 import com.untangle.uvm.node.firewall.user.UserSetMatcher;
@@ -23,13 +24,14 @@ public class UserMatcherSerializer extends AbstractSerializer {
 	 * Classes that this can serialize.
 	 */
 	private static Class[] _serializableClasses = 
-            new Class[] { UserMatcher.class, UserDBMatcher.class, UserSetMatcher.class, 
-                          UserSingleMatcher.class, 
-                          UserSimpleMatcher.class, UserSimpleMatcher.getAllMatcher().getClass(), 
-                          UserSimpleMatcher.getNilMatcher().getClass(),
-                          UserSimpleMatcher.getAuthenticatedMatcher().getClass(),
-                          UserSimpleMatcher.getUnauthenticatedMatcher().getClass()
-        };
+	    new Class[] { UserMatcher.class, UserDBMatcher.class, UserSetMatcher.class,
+	    UserGroupMatcher.class,
+	    UserSingleMatcher.class, 
+	    UserSimpleMatcher.class, UserSimpleMatcher.getAllMatcher().getClass(), 
+	    UserSimpleMatcher.getNilMatcher().getClass(),
+	    UserSimpleMatcher.getAuthenticatedMatcher().getClass(),
+	    UserSimpleMatcher.getUnauthenticatedMatcher().getClass()
+	};
 
 	/*
 	 * (non-Javadoc)

@@ -241,9 +241,9 @@ class RemoteAddressBookAdaptor implements RemoteAddressBook {
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
-    public List<GroupEntry> getGroupEntries()
+    public List<GroupEntry> getGroupEntries(boolean fetchMembersOf)
         throws ServiceUnavailableException {
-        return this.addressBook.getGroupEntries();
+        return this.addressBook.getGroupEntries(fetchMembersOf);
     }
 
 
@@ -255,6 +255,23 @@ class RemoteAddressBookAdaptor implements RemoteAddressBook {
         throws ServiceUnavailableException {
         return this.addressBook.getGroupEntries(searchIn);
     }
+    
+    /* (non-Javadoc)
+     * @see com.untangle.uvm.addrbook.RemoteAddressBook#getGroupUsers(java.lang.String)
+     */
+    @Override
+    public List<UserEntry> getGroupUsers(String groupName)
+    throws ServiceUnavailableException
+    {
+        return this.addressBook.getGroupUsers(groupName);
+    }
+    
+    @Override
+    public boolean isMemberOf( String user, String group )
+    {
+        return this.addressBook.isMemberOf(user, group);
+    }
+
 }
 
 

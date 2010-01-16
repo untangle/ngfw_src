@@ -663,7 +663,10 @@ Ung.SortTypes = {
      * @reutrn the comparison value
      */
     asUID : function (value){
-        return value == "[any]" ? "" : value;
+        if ( value == "[any]" || value == "[authenticated]" || value == "[unauthenticated]" ) {
+            return "";
+        }
+        return value;
     },
     /**
      * @param value of the last name field - if no value is given it is pushed to the last.
@@ -673,7 +676,8 @@ Ung.SortTypes = {
             return null;
         }
         return value;
-    }};
+    }
+};
 
 
 // resources map
@@ -4221,9 +4225,24 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     totalProperty : "totalRecords",
                     root : "list",
                     fields : [{
-                        name : "lastName",
+                        name : "lastName"
+                    },{
+                        name : "sortColumn",
                         type : "string",
-                        sortType : Ung.SortTypes.asLastName
+                        sortType : Ung.SortTypes.asLastName,
+                        convert : function( val,rec) {
+                            if ( rec.javaClass == "com.untangle.uvm.addrbook.GroupEntry" ) {
+                                /* This is filth, it is designed so
+                                the groups sort after the special
+                                matchers (like [all]), but before all
+                                of the users. */
+                                return "___";
+                            } else if ( rec.javaClass == "com.untangle.uvm.addrbook.UserEntry" ) {
+                                return "_" + rec.lastName;
+                            }
+
+                            return null;
+                        },
                     },{
                         name : "firstName",
                         type : "string"
@@ -4234,7 +4253,11 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     },{
                         name : "javaClass"
                     },{
+                        /* Common name for a group, this is used as the display name */
                         name : "CN"
+                    },{
+                        /* sAMAccountName is the unique identifier for a group. */
+                        name : "SAMAccountName"
                     },{
                         name: "name",
                         type : "string",
@@ -4284,15 +4307,13 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 })
             }),
             columns: [selModel,{
-                header : i18n._("user"),
+                header : this.singleSelectUser ? i18n._( "user" ) :  i18n._( "users and groups" ),
                 width : 250,
-                fixed :true,
                 sortable : true,
                 dataIndex : "name"
             },{
                 header : i18n._("Name"),
                 width: 250,
-                fixed: true,
                 sortable : false,
                 dataIndex: "displayName"
             }],
@@ -4395,9 +4416,9 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.populateSemaphore=3;
         this.userEntries = [];
         if ( !this.singleSelectUser ) {
-            this.userEntries.push({ firstName : "", lastName : "", UID: "[any]"});
-            this.userEntries.push({ firstName : "", lastName : "", UID: "[authenticated]"});
-            this.userEntries.push({ firstName : "", lastName : "", UID: "[unauthenticated]"});
+            this.userEntries.push({ firstName : "", lastName : null, UID: "[any]"});
+            this.userEntries.push({ firstName : "", lastName : null, UID: "[authenticated]"});
+            this.userEntries.push({ firstName : "", lastName : null, UID: "[unauthenticated]"});
         }
 
         var loadActiveDirectory = this.loadActiveDirectoryUsers && main.isNodeRunning("untangle-node-adconnector");
@@ -4476,7 +4497,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     if ( user == group ) {
                         index=store.find("UID",user);
                     } else {
-                        index=store.find("CN",group);
+                        index=store.find("SAMAccountName",group);
                     }
 
                     if(index>=0) {
@@ -4522,7 +4543,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 for( i=0;i<selRecs.length;i++) {
                     record = selRecs[i];
                     if ( record.get("javaClass") == "com.untangle.uvm.addrbook.GroupEntry" ) {
-                        value =  "group::" + record.get("CN");
+                        value =  "group::" + record.get("SAMAccountName");
                     } else {
                         value = record.get("UID");
                     }

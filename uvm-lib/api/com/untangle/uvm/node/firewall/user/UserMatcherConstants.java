@@ -45,4 +45,6 @@ public class UserMatcherConstants
     public static final String MARKER_UNAUTHENTICATED = "[unauthenticated]";
 
     public static final String MARKER_AUTHENTICATED = "[authenticated]";
+
+    public static final String MARKER_GROUP = "group::";
 }

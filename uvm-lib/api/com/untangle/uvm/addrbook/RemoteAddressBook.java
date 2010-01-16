@@ -373,6 +373,8 @@ public interface RemoteAddressBook extends LicensedProduct
      * Get all GroupEntries from all configured repositories.  Note
      * that a GroupEntry is unique in its uid/repository key so there
      * is a chance to see the same "uid" twice in the returned list
+     * 
+     * @param fetchMemberOf Set to true to load the list of groups that each group is in.
      *
      * @return the list of all entries (may be of zero length, but not
      * null).
@@ -381,7 +383,7 @@ public interface RemoteAddressBook extends LicensedProduct
      * is in a bad state.  There are no corrective actions the caller
      * can take based on the given input
      */
-    List<GroupEntry> getGroupEntries()
+    List<GroupEntry> getGroupEntries(boolean fetchMemberOf)
         throws ServiceUnavailableException;
 
     /**
@@ -398,6 +400,16 @@ public interface RemoteAddressBook extends LicensedProduct
      */
     List<GroupEntry> getGroupEntries(RepositoryType searchIn)
         throws ServiceUnavailableException;
+
+    /**
+     * Get all of the users that are in a group.
+     * @param groupName The name of the group to fetch.
+     * @return
+     */
+    public List<UserEntry> getGroupUsers(String groupName) throws ServiceUnavailableException;
+
+    
+    public boolean isMemberOf(String user, String group);
 }
 
 

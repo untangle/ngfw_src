@@ -52,7 +52,6 @@ public final class UserSingleMatcher extends UserDBMatcher
 
     public boolean isMatch( String user )
     {
-        /* ignore case ??? */
         return ( this.user.equalsIgnoreCase( user ));
     }
 
@@ -81,7 +80,7 @@ public final class UserSingleMatcher extends UserDBMatcher
     {
         public int priority()
         {
-            return 10;
+            return 12;
         }
         
         public boolean isParseable( String value )
