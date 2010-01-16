@@ -272,6 +272,11 @@ class RemoteAddressBookAdaptor implements RemoteAddressBook {
         return this.addressBook.isMemberOf(user, group);
     }
 
+    @Override
+    public void refreshGroupCache() {
+        this.addressBook.refreshGroupCache();
+    }
+
 }
 
 

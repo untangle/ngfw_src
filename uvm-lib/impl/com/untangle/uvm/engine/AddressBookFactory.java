@@ -34,7 +34,7 @@ class AddressBookFactory
     private final DefaultAddressBookImpl limited = new DefaultAddressBookImpl();
 
     /** The premium address book */
-    private RemoteAddressBook premium = null;
+    private PremiumAddressBook premium = null;
 
     /** remote address book */
     private RemoteAddressBook remote = new RemoteAddressBookAdaptor(limited);
@@ -69,6 +69,7 @@ class AddressBookFactory
                 getDeclaredConstructor(DefaultAddressBookImpl.class);
 
             this.premium = constructor.newInstance( this.limited );
+            this.premium.init();
             this.remote = new RemoteAddressBookAdaptor(this.premium);
         } catch ( Exception e ) {
             logger.debug( "Could not load premium AddressBook: " + className);
@@ -100,5 +101,6 @@ class AddressBookFactory
      */
     static interface PremiumAddressBook extends RemoteAddressBook
     {
+        public void init();
     }
 }

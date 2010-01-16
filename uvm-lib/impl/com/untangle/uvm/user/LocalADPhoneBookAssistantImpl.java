@@ -39,28 +39,6 @@ public class LocalADPhoneBookAssistantImpl implements ADPhoneBookAssistant
     public void lookup( UserInfo info ){
     }
     
-    @Override
-    public boolean isMemberOf(String user, String group) {
-        return false;
-    }
-    
-    @Override
-    public void start()
-    {
-    }
-    
-    @Override
-    public void stop()
-    {
-    }
-    
-    @Override
-    public void refreshGroupCache() {
-    }
-    
-    
-    
-    
 
     /* retrieve the priority of this assistant, higher numbers are lower priority */
     public int priority() {

@@ -528,4 +528,9 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     {
         return false;
     }
+    
+    @Override
+    public void refreshGroupCache() {
+    }
+
 }

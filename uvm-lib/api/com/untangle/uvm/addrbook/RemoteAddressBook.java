@@ -408,8 +408,19 @@ public interface RemoteAddressBook extends LicensedProduct
      */
     public List<UserEntry> getGroupUsers(String groupName) throws ServiceUnavailableException;
 
-    
+    /**
+     * Return true iff user is a member of group.
+     * @param user The user to test
+     * @param group The group to see if users is a member.
+     * @return True if the user is a member of the group.
+     */
     public boolean isMemberOf(String user, String group);
+        
+    /**
+     * Refresh the group cache, normally this is done every x minutes.
+     */
+    public void refreshGroupCache();
+
 }
 
 
