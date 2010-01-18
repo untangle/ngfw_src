@@ -12,19 +12,6 @@
     <![CDATA[
              BlockDetails blockDetails = (BlockDetails)request.getAttribute( "bd" );
              StringBuilder urlParams = new StringBuilder();
-             Object tempObject;
-             urlParams.append( "h=" );
-             tempObject = blockDetails.getHost();
-             if ( tempObject == null ) tempObject = "";
-             urlParams.append( URLEncoder.encode( tempObject.toString(), "UTF-8" ));
-             urlParams.append( "&u=" );
-             tempObject = blockDetails.getUrl();
-             if ( tempObject == null ) tempObject = "";
-             urlParams.append( URLEncoder.encode( tempObject.toString(), "UTF-8" ));
-             urlParams.append( "&r=" );
-             tempObject = request.getAttribute( "reason" );
-             if ( tempObject == null ) tempObject = "";
-             urlParams.append( URLEncoder.encode( tempObject.toString(), "UTF-8" ));
              urlParams.append( "&c=" );
              urlParams.append( URLEncoder.encode( String.valueOf( new Random().nextInt(Integer.MAX_VALUE)), "UTF-8" ));
              request.setAttribute( "urlParams", urlParams.toString());
