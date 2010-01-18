@@ -21,8 +21,8 @@ package com.untangle.node.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import org.apache.log4j.Logger;
 
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
@@ -33,7 +33,7 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.untangle.uvm.LocalUvmContextFactory;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.util.Pulse;
 
 public class HostCache
 {
@@ -42,16 +42,11 @@ public class HostCache
     private Database db;
 
     private final Logger logger = Logger.getLogger(getClass());
-    private final Timer timer = new Timer("HostCacheCleaner", true);
+    private final Pulse cacheCleaner = new Pulse("HostCacheCleaner", true, new HostCacheCleaner());
 
     public HostCache()
     {
-        timer.scheduleAtFixedRate(new TimerTask() {
-                public void run()
-                {
-                    cleanCache();
-                }
-            }, 3600000L, 3600000L);
+        cacheCleaner.start(3600000L);
     }
 
     public void open()
@@ -83,6 +78,8 @@ public class HostCache
 
     public String getCachedCategories(String domain, String uri)
     {
+        Database db = this.db;
+        
         if (null == db) {
             return null;
         }
@@ -230,7 +227,12 @@ public class HostCache
         return sb.toString();
     }
 
-    private void cleanCache()
+    public void cleanCache()
+    {
+        this.cleanCache(false);
+    }
+    
+    public void cleanCache(boolean expireAll)
     {
         Database cache = this.db;
         if (null == cache) {
@@ -238,9 +240,15 @@ public class HostCache
         }
 
         long cutoff = System.currentTimeMillis() - CACHE_TTL;
+        
+        /* When expire all is true, just delete all of the records. */
+        if ( expireAll ) {
+            cutoff = Long.MAX_VALUE;
+        }
 
         Cursor c = null;
         try {
+            
             DatabaseEntry k = new DatabaseEntry();
             DatabaseEntry v = new DatabaseEntry();
 
@@ -293,6 +301,14 @@ public class HostCache
             }
 
             return host.substring(i + 1);
+        }
+    }
+    
+    private class HostCacheCleaner implements Runnable
+    {
+        public void run()
+        {
+            HostCache.this.cleanCache(false);
         }
     }
 
