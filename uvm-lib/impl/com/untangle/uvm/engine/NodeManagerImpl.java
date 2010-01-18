@@ -1104,8 +1104,9 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             PolicyRule pr = foundry.selectPolicy(clientSide); // XXX?
             Policy sp = pr.getPolicy();
 
-            if (policy == null) {
-                return false;
+            /** If either policy is null, just check if they are equal */
+            if (policy == null || sp == null ) {
+                return sp !=  policy;   
             } else if (policy == sp) {
                 return false;
             } else if (policy.equals(sp)) {

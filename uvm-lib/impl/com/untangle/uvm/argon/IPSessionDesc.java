@@ -18,8 +18,6 @@
 
 package com.untangle.uvm.argon;
 
-import java.net.InetAddress;
-
 import com.untangle.jnetcap.Netcap;
 
 public interface IPSessionDesc extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
