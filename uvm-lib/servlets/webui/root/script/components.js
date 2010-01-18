@@ -1690,8 +1690,8 @@ Ung.MessageManager = {
                                             duration: 30000,
                                             fn: function() {
                                                 Ext.MessageBox.alert(
-                                                   i18n._("Upgrade Successful"),
-                                                   i18n._("The Upgrade succeeded. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                                   i18n._("Applying Upgrade"),
+                                                   i18n._("The upgrades have been downloaded and are now being applied.  <strong>DO NOT REBOOT AT THIS TIME.</strong>  Please be patient this process will take a few minutes. After the upgrade is complete you will be able to log in again."),
                                                    Ung.Util.goToStartPage);
                                             }
                                         });
