@@ -863,6 +863,9 @@ public class UvmContextImpl extends UvmContextBase
             state = UvmState.RUNNING;
             startupWaitLock.notifyAll();
         }
+        
+        /* Reload Apache */
+        tomcatManager.setRootWelcome(tomcatManager.getRootWelcome());
 
         //Inform the AppServer manager that everything
         //else is started.

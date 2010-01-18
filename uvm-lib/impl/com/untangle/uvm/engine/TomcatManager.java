@@ -361,7 +361,6 @@ class TomcatManager
     void resetRootWelcome()
     {
         setRootWelcome(STANDARD_WELCOME);
-        apacheReload();
     }
 
     synchronized void setRootWelcome(String welcomeFile)
