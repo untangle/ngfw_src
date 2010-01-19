@@ -4204,7 +4204,12 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     },'-'
             ];         
         }
-        var selModel = new Ext.grid.CheckboxSelectionModel({singleSelect : this.singleSelectUser});
+        var selModel = new Ext.grid.CheckboxSelectionModel({
+            singleSelect : this.singleSelectUser,
+            listeners : {
+                rowselect : this.onSelectRow.createDelegate( this )
+            }
+        });
         this.usersGrid=new Ext.grid.GridPanel({
            // title: i18n._('Users'),
            height: 210,
@@ -4588,5 +4593,15 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
 
     closeWindow : function() {
         this.hide();
+    },
+    
+    onSelectRow : function( selectionModel, rowIndex, record )
+    {
+        /* Uncheck any if they select another user. */
+        if ( !this.singleSelectUser && record.get("UID") != "[any]" ) {
+            selectionModel.suspendEvents();
+            selectionModel.deselectRow(0);
+            selectionModel.resumeEvents();
+        }
     }
 });
