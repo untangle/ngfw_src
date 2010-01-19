@@ -70,6 +70,10 @@ public class TimeSeriesChart extends Plot
     private static final DateFormat DF = 
 	new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+    // duplicated from com.uvm.engine.ReportingManagerImpl
+    private static final DateFormat DATE_FORMAT =
+        new SimpleDateFormat("yyyy-MM-dd");
+
     private final String xLabel;
     private final String yLabel;
     private final String majorFormatter;
@@ -96,6 +100,11 @@ public class TimeSeriesChart extends Plot
 	return date;
     }
 
+    /*
+     * Format the X-axis according to the data present on it.
+     *
+     * Unused.
+     */
     private void formatDateAxis(DateAxis da) {
 	Date min = da.getMinimumDate();
 	Date max = da.getMaximumDate();
@@ -124,6 +133,58 @@ public class TimeSeriesChart extends Plot
         da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
 // 	da.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1));
     }
+
+    /*
+     * Format the X-axis according to given min & max dates
+     */
+    private void formatDateAxis(DateAxis da, File csvPath) {
+        File dir = csvPath.getParentFile().getParentFile();
+        logger.debug("About to format date axis for: " + dir);
+
+        String maxString = dir.getParentFile().getName();
+	Date max = null;
+	try {
+	    max = DATE_FORMAT.parse(maxString);
+	} catch (java.text.ParseException exn) {
+	    logger.warn("Couldn't parse time for: " + maxString, exn);
+            return;
+	}
+
+        String length = dir.getName();
+        String[] split = length.split("-");
+        int numDays = Integer.parseInt(split[0]);
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(max);
+        c.add(Calendar.DATE, -numDays);
+        Date min = c.getTime();
+
+	// range in seconds
+	long range = (max.getTime() - min.getTime()) / 1000;
+
+	int trunc; // where to truncate the boundaries
+	String dateFormatStr; // the format for X-axix ticks
+	logger.debug(min + " -> " + max + " (" + range + ")");
+	if (range < 45 * 60) { // less than 45min
+	    trunc = Calendar.MINUTE;
+	    dateFormatStr = "mm:ss";
+	} else if (range < 18 * 60 * 60) { // less than 18h
+	    trunc = Calendar.HOUR;
+	    dateFormatStr = "HH:mm";
+	} else {
+	    trunc = Calendar.DATE;
+	    dateFormatStr = "MM-dd";
+	}
+	min = DateTruncator.truncateDate(min, trunc, true);
+	max = DateTruncator.truncateDate(max, trunc, true);
+	logger.debug("... adapted to: " + min + " -> " + max);
+	da.setMinimumDate(min);
+	da.setMaximumDate(max);
+
+        da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
+// 	da.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1));
+    }
+
 
     public void generate(String reportBase, String csvUrl, String imageUrl)
         throws IOException
@@ -183,7 +244,7 @@ public class TimeSeriesChart extends Plot
         DateAxis da = (DateAxis)p.getDomainAxis();
         da.setLabelFont(AXIS_FONT);
 
-	formatDateAxis(da);
+	formatDateAxis(da, f);
 
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
                                       jfChart, CHART_WIDTH, CHART_HEIGHT,
