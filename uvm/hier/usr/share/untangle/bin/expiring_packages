@@ -1,0 +1,37 @@
+#!/bin/dash
+
+get_expiring_nodes() {
+    local t_date=$1
+    local t_file
+
+    shift
+    for t_file in $* ; do
+        if [ ! -f ${t_file} ]; then
+            continue
+        fi
+
+        awk -v "filter_date=${t_date}" '/com.untangle.uvm.license.mackage=/ { sub( "com.untangle.uvm.license.mackage=", "" ) ; mackage=$0 } ; /com.untangle.uvm.license.end=/{ sub( "com.untangle.uvm.license.end=", "" ) ; end_time=strftime( "%y-%m-%d", $0 / 1000 ) } ; END { if ( end_time ==  filter_date ) print mackage }' \
+            ${t_file}
+    done
+}
+
+## Start of script
+if [ "$#" -eq 0 ]; then
+    echo "USAGE: $0 <yy-mm-dd (date to look for expiration)> [<license-file>]*"
+    echo "\tlicense-file: if not specified, this will check all of the files /usr/share/untangle/conf/license/*-trial.ulf"
+    exit -1
+fi
+
+EXPIRATION_DATE=$1
+shift
+
+if [ "$#" -eq 0 ]; then
+    FILE_LIST=/usr/share/untangle/conf/licenses/*-trial.ulf
+else
+    FILE_LIST=$*
+fi
+
+get_expiring_nodes ${EXPIRATION_DATE} ${FILE_LIST} | sort | uniq
+
+
+
