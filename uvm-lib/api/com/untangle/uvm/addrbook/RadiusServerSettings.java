@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/addrbook/RepositorySettings.java $
+ * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/RadiusServerSettings.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -31,39 +31,41 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm;
+package com.untangle.uvm.addrbook;
 
 import java.io.Serializable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
  * Settings for Radius
  */
 @Entity
-@Table(name="u_radius_settings")
-public class RadiusSettings implements Serializable
+@Table(name="u_radius_server_settings")
+public class RadiusServerSettings implements Serializable
 {
     private static final long serialVersionUID = 1856246303246961115L;
 
     private Long id;
-    private RadiusServerSettings radiusServerSettings;
+    private String server;
+    private int port;
+    private String sharedSecret;
 
-    public RadiusSettings() { }
+    public RadiusServerSettings() { }
 
-    public RadiusSettings(RadiusServerSettings radiusServerSettings) {
-	this.radiusServerSettings = radiusServerSettings;
+    public RadiusServerSettings(String server,
+                                int port,
+                                String sharedSecret) {
+	this.server = server;
+	this.port = port;
+	this.sharedSecret = sharedSecret;
     }
 
     @Id
-    @Column(name="id")
+    @Column(name="settings_id")
     @GeneratedValue
     private Long getId() {
         return id;
@@ -73,13 +75,30 @@ public class RadiusSettings implements Serializable
         this.id = id;
     }
 
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="radius_server_settings_id", nullable=false)
-    public RadiusServerSettings getRadiusServerSettings() {
-        return radiusServerSettings;
+    @Column(name="server")
+    public String getServer() {
+        return server;
     }
 
-    public void setRadiusServerSettings(RadiusServerSettings radiusServerSettings) {
-        this.radiusServerSettings = radiusServerSettings;
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    @Column(name="port", nullable=false)
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    @Column(name="shared_secret")
+    public String getSharedSecret() {
+        return sharedSecret;
+    }
+
+    public void setSharedSecret(String sharedSecret) {
+        this.sharedSecret = sharedSecret;
     }
 }

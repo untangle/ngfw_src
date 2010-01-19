@@ -34,6 +34,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.AddressBookConfiguration;
 import com.untangle.uvm.addrbook.AddressBookSettings;
 import com.untangle.uvm.addrbook.NoSuchEmailException;
+import com.untangle.uvm.addrbook.RadiusServerSettings;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
@@ -78,6 +79,10 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
                                                                             "mydomain.int",
                                                                             "ad_server.mydomain.int",
                                                                             389));
+                    settings.setRadiusServerSettings(new RadiusServerSettings("1.2.3.4",
+                                                                              1812,
+                                                                              "mysharedsecret"));
+                    settings.setRadiusEnabled(false);
                     s.save(settings);
                 }
                 return true;
@@ -144,6 +149,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
 
         public boolean isLocalWorking() { return this.isLocalWorking; }
         public boolean isADWorking() { return false; }
+        public boolean isRadiusWorking() { return false; }
         public String localDetail() { return localDetail; }
         public String adDetail() { return "unconfigured"; }
     }

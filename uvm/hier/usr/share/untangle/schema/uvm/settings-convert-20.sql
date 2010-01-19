@@ -24,8 +24,12 @@ CREATE TABLE settings.u_radius_server_settings (
     shared_secret     TEXT NOT NULL,
     PRIMARY KEY      (settings_id));
 
--- com.untangle.uvm.RadiusSettings -- 7.2
-CREATE TABLE settings.u_radius_settings (
-    id                        INT8 NOT NULL,
-    radius_server_settings_id INT8 NOT NULL,
-    PRIMARY KEY (id));
+ALTER TABLE settings.u_ab_settings
+  ADD COLUMN radius_server_settings INT8;
+ALTER TABLE settings.u_ab_settings
+  ADD COLUMN radius_enabled BOOL;
+
+-- ALTER TABLE settings.u_ab_settings
+--   ADD CONSTRAINT radius_server_settings_id NOT NULL;
+-- ALTER TABLE settings.u_ab_settings
+--   ADD CONSTRAINT radius_settings NOT NULL;

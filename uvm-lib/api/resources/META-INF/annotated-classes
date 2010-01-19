@@ -3,10 +3,9 @@ com.untangle.uvm.BrandingSettings
 com.untangle.uvm.LanguageSettings
 com.untangle.uvm.MailSettings
 com.untangle.uvm.Period
-com.untangle.uvm.RadiusServerSettings
-com.untangle.uvm.RadiusSettings
 com.untangle.uvm.SkinSettings
 com.untangle.uvm.addrbook.AddressBookSettings
+com.untangle.uvm.addrbook.RadiusServerSettings
 com.untangle.uvm.addrbook.RepositorySettings
 com.untangle.uvm.message.ActiveStat
 com.untangle.uvm.logging.LoggingSettings

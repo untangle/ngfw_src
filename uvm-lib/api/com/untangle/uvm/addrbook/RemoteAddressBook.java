@@ -105,6 +105,8 @@ public interface RemoteAddressBook extends LicensedProduct
 
         boolean isADWorking();
 
+        boolean isRadiusWorking();
+
         String localDetail();
 
         String adDetail();
