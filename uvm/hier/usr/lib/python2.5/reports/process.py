@@ -317,7 +317,7 @@ reports.engine.fix_hierarchy(REPORTS_OUTPUT_BASE)
 reports.engine.init_engine(NODE_MODULE_DIR)
 
 if trial_report:
-     trial_report = reports.engine.__get_node(trial_report)
+     trial_report = reports.engine.get_node(trial_report)
      reports.engine.limit_nodes(trial_report)
 
 if not no_migration:

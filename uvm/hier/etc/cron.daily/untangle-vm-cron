@@ -14,6 +14,11 @@ if [ -f "@UVM_HOME@/activation.key" ]; then
 
     /usr/lib/python2.5/reports/process.py 2>&1
 
+    yesterday=$(date --date="1 day ago" "+%y-%m-%d")
+    for trial in $(/usr/share/untangle/bin/expiring_packages --date=$yesterday) ; do
+      /usr/lib/python2.5/reports/process.py -t $trial 2>&1      
+    done
+
     @UVM_HOME@/bin/utregister
 
     ## Ignore errors here.
