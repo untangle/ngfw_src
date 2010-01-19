@@ -29,6 +29,15 @@ ALTER TABLE settings.u_ab_settings
 ALTER TABLE settings.u_ab_settings
   ADD COLUMN radius_enabled BOOL;
 
+UPDATE settings.u_ab_settings
+  SET radius_server_settings = 1,
+      radius_enabled = false;
+
+ALTER TABLE settings.u_ab_settings
+  ALTER COLUMN radius_server_settings SET NOT NULL;
+ALTER TABLE settings.u_ab_settings
+  ALTER COLUMN radius_enabled SET NOT NULL;
+
 -- ALTER TABLE settings.u_ab_settings
 --   ADD CONSTRAINT radius_server_settings_id NOT NULL;
 -- ALTER TABLE settings.u_ab_settings
