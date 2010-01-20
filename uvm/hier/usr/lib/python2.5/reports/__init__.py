@@ -345,9 +345,9 @@ class Highlight:
             self.__values = self.get_highlights(end_date, report_days,
                                                 host, user, email)
         except:
-            logger.warn("could not generate highlight: %s" \
-                             % (self.name,), exc_info=True)
-            self.__values = None
+            logger.error("could not generate highlight: %s" \
+                         % (self.name,), exc_info=True)
+            self.__values = ()
 
         if not self.__values:
             return None
