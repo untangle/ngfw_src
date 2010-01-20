@@ -34,7 +34,7 @@
     <param name="Threshold" value="ALL"/>
     <layout class="com.untangle.uvm.logging.UtPatternlayout">
       <!-- This is actually the default conversion, so we could leave it out... -->
-      <param name="ConversionPattern" value="%D %-5p [%c{1}] %m%n"/>
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] %-5p %m%n"/>
     </layout>
   </appender>
 
