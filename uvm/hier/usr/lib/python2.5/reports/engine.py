@@ -310,6 +310,8 @@ def generate_sub_report(report_base, node_name, end_date, report_days=1,
     dir = get_node_base(node_name, date_base, report_days=report_days,
                         host=host, user=user, email=email)
 
+    logger.info("** sub-report generation done: report_base='%s', dir=%s'" % (report_base, dir))
+
     __generate_plots(report_base, dir)
 
     return 'DONE'
@@ -453,6 +455,8 @@ def __generate_plots(report_base, dir):
     for f in os.listdir(UVM_JAR_DIR):
         if f.endswith('.jar'):
             path.append('%s/%s' % (UVM_JAR_DIR, f))
+
+    logger.debug("About to call GraphGenerator with report_base='%s', dir='%s'" % (report_base, dir))
 
     os.system("java -Dlog4j.configuration=log4j-reporter.xml -Djava.awt.headless=true -cp %s com.untangle.uvm.reports.GraphGenerator '%s' '%s'"
               % (string.join(path, ':'), report_base, dir))

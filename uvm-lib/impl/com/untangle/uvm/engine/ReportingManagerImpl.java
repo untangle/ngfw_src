@@ -294,8 +294,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                                        String value, boolean limitResultSet)
     {
 	logger.info("doGetDetailData for '" + appName + "' (detail='" +
-		    detailName + "', type='" + type + 
-		    "', limitResultSet='" + limitResultSet + "')");
+		    detailName + "', type='" + type + "', value='" + 
+                    value + "', limitResultSet='" + limitResultSet + "')");
 
 	if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff()))
 	    return null;
@@ -312,7 +312,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                 DetailSection sds = (DetailSection)section;
                 if (sds.getName().equals(detailName)) {
                     String sql = sds.getSql();
-		    logger.info("** '" + sql + "'");
+		    logger.info("** sql='" + sql + "'");
                     Connection conn = null;
                     try {
                         conn = DataSourceFactory.factory().getConnection();
@@ -356,11 +356,15 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         File f = new File(getAppDir(d, numDays, appName, type, value)
                           + "/report.xml");
 
+        logger.debug("Trying to XML file '" + f + "'");
+
         if (!f.exists() && type != null) {
+            logger.debug("** ... does not exist, trying to generate");
             generateReport(d, numDays, appName, type, value);
         }
 
         if (!f.exists()) {
+            logger.debug("** ... still does not exist, giving up (generation must have failed)");
             return null;
         }
 
