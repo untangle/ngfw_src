@@ -1,4 +1,4 @@
-import logging
+import logging, sys
 
 MODULE_NAME = 'reports'
 LOGFILE = "/var/log/uvm/reporter.log"
@@ -15,7 +15,7 @@ f.setFormatter(formatter)
 logging.getLogger('').addHandler(f)
 
 # stdout logging
-console = logging.StreamHandler()
+console = logging.StreamHandler(sys.stdout)
 console.setLevel(logging.INFO)
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
