@@ -59,6 +59,7 @@ import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LogMailerImpl;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.LocalMessageManager;
@@ -121,7 +122,7 @@ public class UvmContextImpl extends UvmContextBase
     private RemoteIntfManagerImpl remoteIntfManager;
     private RemoteLoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
-    private EventLogger eventLogger;
+    private EventLogger<LogEvent> eventLogger;
     private PolicyManagerFactory policyManagerFactory;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
@@ -388,7 +389,7 @@ public class UvmContextImpl extends UvmContextBase
                         } catch (DatabaseException exn) {
                             logger.warn("couldn't load environment, try: " + tries, exn);
                             for (File f : dbHome.listFiles()) {
-                                boolean deleted = f.delete();
+                                f.delete();
                             }
                         }
                     }
@@ -503,8 +504,10 @@ public class UvmContextImpl extends UvmContextBase
                 public void run()
                 {
                     try {
-                        Thread.currentThread().sleep(200);
-                    } catch (InterruptedException exn) { }
+                        Thread.sleep(200);
+                    } catch (InterruptedException exn) {
+                        
+                    }
                     logger.info("thank you for choosing bunnicula");
                     System.exit(0);
                 }
@@ -704,7 +707,7 @@ public class UvmContextImpl extends UvmContextBase
         System.gc();
     }
 
-    public EventLogger eventLogger()
+    public EventLogger<LogEvent> eventLogger()
     {
         return eventLogger;
     }
@@ -738,6 +741,8 @@ public class UvmContextImpl extends UvmContextBase
     protected void init()
     {
         uploadManager = new UploadManagerImpl();
+        
+        uploadManager.registerHandler(new RestoreUploadHandler());
 
         cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
@@ -1103,9 +1108,9 @@ public class UvmContextImpl extends UvmContextBase
             }
 
             return true;
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
     private void startCliServer()
@@ -1247,7 +1252,7 @@ public class UvmContextImpl extends UvmContextBase
 
     private boolean testHibernateConnection()
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Void> tw = new TransactionWork<Void>()
             {
                 public boolean doWork(Session s)
                 {
@@ -1261,7 +1266,7 @@ public class UvmContextImpl extends UvmContextBase
                 }
             };
 
-        return this.context().runTransaction(tw);
+        return context().runTransaction(tw);
     }
     
     private class RestoreUploadHandler implements UploadHandler
@@ -1276,7 +1281,6 @@ public class UvmContextImpl extends UvmContextBase
         public String handleFile(FileItem fileItem) throws Exception {
             byte[] backupFileBytes=fileItem.get();
             restoreBackup(backupFileBytes);
-
             return "restored backup file.";
         }
         

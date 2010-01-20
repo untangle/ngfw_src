@@ -14,7 +14,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     this.cancelAction();
                 }.createDelegate(this)
             }, {
-                title : i18n._('System')
+                title : i18n._("System")
             }];
             this.companyName=main.getBrandingBaseSettings().companyName;
             this.buildSupport();
@@ -159,21 +159,21 @@ if (!Ung.hasResource["Ung.System"]) {
             
             this.panelSupport = new Ext.Panel({
                 // private fields
-                name : 'Support',
-                helpSource : 'support',
+                name : "Support",
+                helpSource : "support",
                 parentId : this.getId(),
-                title : this.i18n._('Support'),
+                title : this.i18n._("Support"),
                 layout : "form",
-                cls: 'ung-panel',
+                cls: "ung-panel",
                 autoScroll : true,
                 items : [{
-                    xtype : 'fieldset',
+                    xtype : "fieldset",
                     autoHeight : true,
-                    title : this.i18n._('Support'),
+                    title : this.i18n._("Support"),
                     items : [{
-                        xtype : 'checkbox',
-                        name : 'Allow secure access to your server for support purposes',
-                        boxLabel : String.format(this.i18n._('{0}Allow{1} secure access to your server for support purposes.'), '<b>', '</b>'),
+                        xtype : "checkbox",
+                        name : "Allow secure access to your server for support purposes",
+                        boxLabel : String.format(this.i18n._("{0}Allow{1} secure access to your server for support purposes."), "<b>", "</b>"),
                         hideLabel : true,
                         checked : this.getAccessSettings().isSupportEnabled,
                         listeners : {
@@ -184,11 +184,11 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     }, {
-                        xtype : 'checkbox',
-                        name : 'Send data about your server for support purposes',
+                        xtype : "checkbox",
+                        name : "Send data about your server for support purposes",
                         boxLabel : String.format(this.i18n
-                                ._('{0}Send{1} data about your server for support purposes. This will send status updates and an email if any unexpected problems occur, but will not allow support secure access to your server. No personal information about the network will be transmitted.'),
-                                '<b>', '</b>'),
+                                ._("{0}Send{1} data about your server for support purposes. This will send status updates and an email if any unexpected problems occur, but will not allow support secure access to your server. No personal information about the network will be transmitted."),
+                                "<b>", "</b>"),
                         hideLabel : true,
                         height: 100,
                         checked : this.getMiscSettings().isExceptionReportingEnabled,
@@ -201,25 +201,25 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }]
                 },{
-                    xtype : 'fieldset',
+                    xtype : "fieldset",
                     autoHeight : true,
-                    title : this.i18n._('Manual Reboot'),
+                    title : this.i18n._("Manual Reboot"),
                     buttonAlign: "left",
                     items : [{
                         border: false,
-                        cls: 'description',
+                        cls: "description",
                         html: String.format(this.i18n._("{0}Warning:{1} Clicking this button will reboot the {2} Server, temporarily interrupting network activity."),"<b>","</b>",this.companyName)                      
                     }],
                     buttons: [{
-                        xtype : 'button',
-                        text : this.i18n._('Reboot'),
-                        name : 'Manual Reboot',
-                        iconCls : 'reboot-icon',
+                        xtype : "button",
+                        text : this.i18n._("Reboot"),
+                        name : "Manual Reboot",
+                        iconCls : "reboot-icon",
                         handler : function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Reboot Warning"),
                                 String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ), 
                                 function(btn) {
-                                if (btn == 'yes') {
+                                if (btn == "yes") {
                                     rpc.jsonrpc.RemoteUvmContext.rebootBox(function (result, exception) {
                                         if(exception) {
                                             Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),String.format(this.i18n._("Error: Unable to reboot {0} Server"),this.companyName)); 
@@ -232,25 +232,25 @@ if (!Ung.hasResource["Ung.System"]) {
                         }.createDelegate(this)
                     }]
                 },{
-                    xtype : 'fieldset',
+                    xtype : "fieldset",
                     autoHeight : true,
-                    title : this.i18n._('Manual Shutdown'),
+                    title : this.i18n._("Manual Shutdown"),
                     buttonAlign: "left",
                     items : [{
                         border: false,
-                        cls: 'description',
+                        cls: "description",
                         html: String.format(this.i18n._("{0}Warning:{1} Clicking this button will shutdown the {2} Server, stopping all network activity."),"<b>","</b>",this.companyName)                      
                     }],
                     buttons: [{
-                        xtype : 'button',
-                        text : this.i18n._('Shutdown'),
-                        name : 'Manual Shutdown',
-                        iconCls : 'reboot-icon',
+                        xtype : "button",
+                        text : this.i18n._("Shutdown"),
+                        name : "Manual Shutdown",
+                        iconCls : "reboot-icon",
                         handler : function() {
                             Ext.MessageBox.confirm(this.i18n._("Manual Shutdown Warning"),
                                 String.format(this.i18n._("You are about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ), 
                                 function(btn) {
-                                if (btn == 'yes') {
+                                if (btn == "yes") {
                                     rpc.jsonrpc.RemoteUvmContext.shutdownBox(function (result, exception) {
                                         if(exception) {
                                             Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),String.format(this.i18n._("Error: Unable to shutdown {0} Server"),this.companyName)); 
@@ -269,32 +269,32 @@ if (!Ung.hasResource["Ung.System"]) {
         buildBackup : function() {
             this.panelBackup = new Ext.Panel({
                 // private fields
-                name : 'Backup',
-                helpSource : 'backup',
+                name : "Backup",
+                helpSource : "backup",
                 parentId : this.getId(),
-                title : this.i18n._('Backup'),
+                title : this.i18n._("Backup"),
                 layout : "form",
-                cls: 'ung-panel',
+                cls: "ung-panel",
                 autoScroll : true,
                 onBackupToFile: function() {
                 	// A two step process: first asks the server for permission to download the file (the outer ajax request) 
                 	// and then if successful opens the iframe which initiates the download.
                     Ext.Ajax.request({
-                        url: 'backup',
-                        params: {action:'requestBackup'},
+                        url: "backup",
+                        params: {action:"requestBackup"},
                         success: function(response) {
                             try {
-                                Ext.destroy(Ext.get('downloadIframe'));
+                                Ext.destroy(Ext.get("downloadIframe"));
                             }
                             catch(e) {}
                             Ext.DomHelper.append(document.body, {
-                                tag: 'iframe',
-                                id:'downloadIframe',
+                                tag: "iframe",
+                                id:"downloadIframe",
                                 frameBorder: 0,
                                 width: 0,
                                 height: 0,
-                                css: 'display:none;visibility:hidden;height:0px;',
-                                src: 'backup?action=initiateDownload'
+                                css: "display:none;visibility:hidden;height:0px;",
+                                src: "backup?action=initiateDownload"
                             });
                         },
                         failure: function() {
@@ -314,15 +314,15 @@ if (!Ung.hasResource["Ung.System"]) {
                     }.createDelegate(cmp));
                 },
                 defaults : {
-                    xtype : 'fieldset',
+                    xtype : "fieldset",
                     autoHeight : true,
-                    buttonAlign : 'left'
+                    buttonAlign : "left"
                 },
                 items : [{
-                    title : this.i18n._('Backup to File'),
+                    title : this.i18n._("Backup to File"),
                     items : [{
                         border : false,
-                    	cls: 'description',
+                    	cls: "description",
                     	html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"") +
                     			"<br> <br> " +
                     			this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
@@ -335,13 +335,13 @@ if (!Ung.hasResource["Ung.System"]) {
                         }.createDelegate(this)
                     }]
                 },{
-                    title : this.i18n._('Backup to Hard Disk'),
+                    title : this.i18n._("Backup to Hard Disk"),
                     items : [{
                         border : false,
-                    	cls: 'description',
+                    	cls: "description",
                         html: this.i18n._("You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.") +
                         		"<br>\n<br>\n" +
-                        		String.format(this.i18n._("After backing up your current system configuration to Hard Disk, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."),'<b>','</b>')
+                        		String.format(this.i18n._("After backing up your current system configuration to Hard Disk, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."),"<b>","</b>")
                     }],
                     buttons : [{
                         text : this.i18n._("Backup to Hard Disk"),
@@ -357,25 +357,25 @@ if (!Ung.hasResource["Ung.System"]) {
         buildRestore : function() {
             this.panelRestore = new Ext.Panel({
                 // private fields
-                name : 'Restore',
-                helpSource : 'restore',
+                name : "Restore",
+                helpSource : "restore",
                 parentId : this.getId(),
-                title : this.i18n._('Restore'),
+                title : this.i18n._("Restore"),
                 layout : "form",
-                cls: 'ung-panel',
+                cls: "ung-panel",
                 autoScroll : true,
                 onRestoreFromFileFile: function() {
-                	var prova = Ext.getCmp('upload_restore_file_form');
+                	var prova = Ext.getCmp("upload_restore_file_form");
                     var cmp = Ext.getCmp(this.parentId);
                     var fileText = prova.items.get(0);
                     if (fileText.getValue().length == 0) {
-                        Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._('Please select a file to upload.'));
+                        Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Please select a file to upload."));
                         return false;
                     }
                     var form = prova.getForm();
                     form.submit({
                         parentId : cmp.getId(),
-                        waitMsg : cmp.i18n._('Please wait while Restoring...'),
+                        waitMsg : cmp.i18n._("Please wait while Restoring..."),
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
                             Ung.MessageManager.stop();
@@ -388,16 +388,16 @@ if (!Ung.hasResource["Ung.System"]) {
                             var errorMsg = cmp.i18n._("The Local File restore procedure failed.");
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
-                                    case 'File does not seem to be valid Untangle backup' : 
+                                    case "File does not seem to be valid Untangle backup" : 
                                         errorMsg = String.format(cmp.i18n._("File does not seem to be valid {0} backup"), main.getBrandingBaseSettings().companyName);
                                     break;
-                                    case 'Error in processing restore itself (yet file seems valid)' : 
+                                    case "Error in processing restore itself (yet file seems valid)" : 
                                         errorMsg = cmp.i18n._("Error in processing restore itself (yet file seems valid)");
                                     break;
-                                    case 'File is from an older version of Untangle and cannot be used' : 
+                                    case "File is from an older version of Untangle and cannot be used" : 
                                         errorMsg = String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), main.getBrandingBaseSettings().companyName);
                                     break;
-                                    case 'Unknown error in local processing' : 
+                                    case "Unknown error in local processing" : 
                                         errorMsg = cmp.i18n._("Unknown error in local processing");
                                     break;
                                     default :
@@ -409,50 +409,50 @@ if (!Ung.hasResource["Ung.System"]) {
                     });
                 },
                 defaults : {
-                    xtype : 'fieldset',
+                    xtype : "fieldset",
                     autoHeight : true,
-                    buttonAlign : 'left'
+                    buttonAlign : "left"
                 },
                 items : [{
-                    title : this.i18n._('From File'),
+                    title : this.i18n._("From File"),
                     items : [{
                     	border : false,
-                        cls: 'description',
+                        cls: "description",
                         html: this.i18n._("You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\"")
                     },{
                         fileUpload : true,
-                        xtype : 'form',
-                        id : 'upload_restore_file_form',
-                        url : 'upload',
+                        xtype : "form",
+                        id : "upload_restore_file_form",
+                        url : "upload",
                         border : false,
                         items : [{
-                            fieldLabel : this.i18n._('File'),
-                            name : 'file',
-                            id : 'upload_restore_file_textfield',
-                            inputType : 'file',
-                            xtype : 'textfield',
+                            fieldLabel : this.i18n._("File"),
+                            name : "file",
+                            id : "upload_restore_file_textfield",
+                            inputType : "file",
+                            xtype : "textfield",
                             allowBlank : false
                         }, {
-                            xtype : 'button',
+                            xtype : "button",
                             text : this.i18n._("Restore from File"),
                             name: "Restore from File",
                             handler : function() {
                                 this.panelRestore.onRestoreFromFileFile();
                             }.createDelegate(this)
                         }, {
-                            xtype : 'hidden',
-                            name : 'type',
-                            value : 'restore'
+                            xtype : "hidden",
+                            name : "type",
+                            value : "restore"
                         }]
                     }]
                 },{
-                    title : this.i18n._('From Hard Disk'),
+                    title : this.i18n._("From Hard Disk"),
                     items : [{
                         border : false,
-                        cls: 'description',
-                        html: String.format(this.i18n._("After backing up your system configuration, you can restore that configuration through the {0}Recovery Utilities{1} on your server once it is done booting."),'<b>','</b>') +
+                        cls: "description",
+                        html: String.format(this.i18n._("After backing up your system configuration, you can restore that configuration through the {0}Recovery Utilities{1} on your server once it is done booting."),"<b>","</b>") +
                         		"\n<br>\n<br>" +
-                        		String.format(this.i18n._("To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting."),'<b>','</b>')
+                        		String.format(this.i18n._("To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting."),"<b>","</b>")
                     }]
                 }]
             });
@@ -464,8 +464,8 @@ if (!Ung.hasResource["Ung.System"]) {
             protocolSettingsItems.push({
                 autoHeight : true,
                 border: false,
-                cls: 'description',
-                html: this.i18n._('Warning: These settings should not be changed unless instructed to do so by support.')
+                cls: "description",
+                html: this.i18n._("Warning: These settings should not be changed unless instructed to do so by support.")
             });
             
             if (this.isHttpLoaded()) {
@@ -473,22 +473,22 @@ if (!Ung.hasResource["Ung.System"]) {
                 this.initialHttpSettings = Ung.Util.clone(this.getHttpSettings());
             	
             	protocolSettingsItems.push({
-            		xtype : 'fieldset',
+            		xtype : "fieldset",
                     collapsible: true,
                     collapsed: true,
-                    title: this.i18n._('HTTP'),
+                    title: this.i18n._("HTTP"),
                     autoHeight : true,
                     defaults : {
-                        xtype : 'fieldset',
+                        xtype : "fieldset",
                         autoHeight : true
                     },
                     items : [{
-                        title: this.i18n._('Web Override'),
+                        title: this.i18n._("Web Override"),
                         items : [{
-                            xtype : 'radio',
-                            boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of web traffic.  (This is the default setting)'), '<b>', '</b>'), 
+                            xtype : "radio",
+                            boxLabel : String.format(this.i18n._("{0}Enable Processing{1} of web traffic.  (This is the default setting)"), "<b>", "</b>"), 
                             hideLabel : true,
-                            name : 'Web Override',
+                            name : "Web Override",
                             checked : this.getHttpSettings().enabled,
                             listeners : {
                                 "check" : {
@@ -498,10 +498,10 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }
                             }
                         },{
-                            xtype : 'radio',
-                            boxLabel : String.format(this.i18n._('{0}Disable Processing{1} of web traffic.'), '<b>', '</b>'), 
+                            xtype : "radio",
+                            boxLabel : String.format(this.i18n._("{0}Disable Processing{1} of web traffic."), "<b>", "</b>"), 
                             hideLabel : true,
-                            name : 'Web Override',
+                            name : "Web Override",
                             checked : !this.getHttpSettings().enabled,
                             listeners : {
                                 "check" : {
@@ -512,13 +512,13 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }]
                     },{
-                        title: this.i18n._('Long URIs'),
+                        title: this.i18n._("Long URIs"),
                         labelWidth: 250,                      
                         items : [{
-                            xtype : 'radio',
-                            boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
+                            xtype : "radio",
+                            boxLabel : String.format(this.i18n._("{0}Enable Processing{1} of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"), 
                             hideLabel : true,
-                            name : 'Long URIs',
+                            name : "Long URIs",
                             checked : !this.getHttpSettings().blockLongUris,
                             listeners : {
                                 "check" : {
@@ -528,10 +528,10 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }
                             }
                         },{
-                            xtype : 'radio',
-                            boxLabel : String.format(this.i18n._('{0}Disable Processing{1} of long URIs.'), '<b>', '</b>'), 
+                            xtype : "radio",
+                            boxLabel : String.format(this.i18n._("{0}Disable Processing{1} of long URIs."), "<b>", "</b>"), 
                             hideLabel : true,
-                            name : 'Long URIs',
+                            name : "Long URIs",
                             checked : this.getHttpSettings().blockLongUris,
                             listeners : {
                                 "check" : {
@@ -541,10 +541,10 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }
                             }
                         },{
-                            xtype : 'numberfield',
-                            fieldLabel : this.i18n._('Max URI Length (characters)'),
-                            name : 'Max URI Length',
-                            id: 'system_protocolSettings_maxUriLength',
+                            xtype : "numberfield",
+                            fieldLabel : this.i18n._("Max URI Length (characters)"),
+                            name : "Max URI Length",
+                            id: "system_protocolSettings_maxUriLength",
                             value : this.getHttpSettings().maxUriLength,
                             width: 50,
                             allowDecimals: false,
@@ -560,13 +560,13 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }]
                     },{
-                        title: this.i18n._('Long Headers'),
+                        title: this.i18n._("Long Headers"),
                         labelWidth: 250,                      
                         items : [{
-                            xtype : 'radio',
-                            boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)'), '<b>', '</b>'), 
+                            xtype : "radio",
+                            boxLabel : String.format(this.i18n._("{0}Enable Processing{1} of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)"), "<b>", "</b>"), 
                             hideLabel : true,
-                            name : 'Long Headers',
+                            name : "Long Headers",
                             checked : !this.getHttpSettings().blockLongHeaders,
                             listeners : {
                                 "check" : {
@@ -576,10 +576,10 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }
                             }
                         },{
-                            xtype : 'radio',
-                            boxLabel : String.format(this.i18n._('{0}Disable Processing{1} of long headers.'), '<b>', '</b>'), 
+                            xtype : "radio",
+                            boxLabel : String.format(this.i18n._("{0}Disable Processing{1} of long headers."), "<b>", "</b>"), 
                             hideLabel : true,
-                            name : 'Long Headers',
+                            name : "Long Headers",
                             checked : this.getHttpSettings().blockLongHeaders,
                             listeners : {
                                 "check" : {
@@ -589,10 +589,10 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }
                             }
                         },{
-                            xtype : 'numberfield',
-                            fieldLabel : this.i18n._('Max Header Length (characters)'),
-                            name : 'Max Header Length',
-                            id: 'system_protocolSettings_maxHeaderLength',
+                            xtype : "numberfield",
+                            fieldLabel : this.i18n._("Max Header Length (characters)"),
+                            name : "Max Header Length",
+                            id: "system_protocolSettings_maxHeaderLength",
                             value : this.getHttpSettings().maxHeaderLength,
                             width: 50,
                             allowDecimals: false,
@@ -608,12 +608,12 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }]
                     },{
-                        title: this.i18n._('Non-Http Blocking'),
+                        title: this.i18n._("Non-Http Blocking"),
                         items : [{
-                            xtype : 'radio',
-                            boxLabel : String.format(this.i18n._('{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)'), '<b>', '</b>'), 
+                            xtype : "radio",
+                            boxLabel : String.format(this.i18n._("{0}Allow{1} non-Http traffic to travel over port 80.  (This is the default setting)"), "<b>", "</b>"), 
                             hideLabel : true,
-                            name : 'Non-Http Blocking',
+                            name : "Non-Http Blocking",
                             checked : !this.getHttpSettings().nonHttpBlocked,
                             listeners : {
                                 "check" : {
@@ -623,10 +623,10 @@ if (!Ung.hasResource["Ung.System"]) {
                                 }
                             }
                         },{
-                            xtype : 'radio',
-                            boxLabel : String.format(this.i18n._('{0}Stop{1} non-Http traffic to travel over port 80.'), '<b>', '</b>'), 
+                            xtype : "radio",
+                            boxLabel : String.format(this.i18n._("{0}Stop{1} non-Http traffic to travel over port 80."), "<b>", "</b>"), 
                             hideLabel : true,
-                            name : 'Non-Http Blocking',
+                            name : "Non-Http Blocking",
                             checked : this.getHttpSettings().nonHttpBlocked,
                             listeners : {
                                 "check" : {
@@ -647,13 +647,13 @@ if (!Ung.hasResource["Ung.System"]) {
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
-                    title: this.i18n._('FTP'),
+                    title: this.i18n._("FTP"),
                     autoHeight : true,
                     items : [{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Enable Processing{1} of File Transfer traffic.  (This is the default setting)"), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'FTP',
+                        name : "FTP",
                         checked : this.getFtpSettings().enabled,
                         listeners : {
                             "check" : {
@@ -663,10 +663,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     },{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Disable Processing{1} of File Transfer traffic.'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Disable Processing{1} of File Transfer traffic."), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'FTP',
+                        name : "FTP",
                         checked : !this.getFtpSettings().enabled,
                         listeners : {
                             "check" : {
@@ -686,14 +686,14 @@ if (!Ung.hasResource["Ung.System"]) {
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
-                    title: this.i18n._('SMTP'),
+                    title: this.i18n._("SMTP"),
                     autoHeight : true,
                     labelWidth: 200,                      
                     items : [{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Enable SMTP{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Enable SMTP{1} email processing.  (This is the default setting)"), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'SMTP',
+                        name : "SMTP",
                         checked : this.getMailNodeSettings().smtpEnabled,
                         listeners : {
                             "check" : {
@@ -703,10 +703,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     },{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Disable SMTP{1} email processing.'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Disable SMTP{1} email processing."), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'SMTP',
+                        name : "SMTP",
                         checked : !this.getMailNodeSettings().smtpEnabled,
                         listeners : {
                             "check" : {
@@ -716,10 +716,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('SMTP timeout (seconds)'),
-                        name : 'SMTP timeout',
-                        id: 'system_protocolSettings_smtpTimeout',
+                        xtype : "numberfield",
+                        fieldLabel : this.i18n._("SMTP timeout (seconds)"),
+                        name : "SMTP timeout",
+                        id: "system_protocolSettings_smtpTimeout",
                         value : this.getMailNodeSettings().smtpTimeout/1000,
                         width: 50,
                         allowDecimals: false,
@@ -734,10 +734,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     },{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Allow TLS{1} encryption over SMTP.'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Allow TLS{1} encryption over SMTP."), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'AllowTLS',
+                        name : "AllowTLS",
                         checked : this.getMailNodeSettings().smtpAllowTLS,
                         listeners : {
                             "check" : {
@@ -747,10 +747,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     },{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Stop TLS{1} encryption over SMTP.  (This is the default setting)"), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'AllowTLS',
+                        name : "AllowTLS",
                         checked : !this.getMailNodeSettings().smtpAllowTLS,
                         listeners : {
                             "check" : {
@@ -764,15 +764,15 @@ if (!Ung.hasResource["Ung.System"]) {
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
-                	xtype : 'fieldset',
-                    title: this.i18n._('POP3'),
+                	xtype : "fieldset",
+                    title: this.i18n._("POP3"),
                     autoHeight : true,
                     labelWidth: 200,                      
                     items : [{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Enable POP3{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Enable POP3{1} email processing.  (This is the default setting)"), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'POP3',
+                        name : "POP3",
                         checked : this.getMailNodeSettings().popEnabled,
                         listeners : {
                             "check" : {
@@ -782,10 +782,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     },{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Disable POP3{1} email processing.'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Disable POP3{1} email processing."), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'POP3',
+                        name : "POP3",
                         checked : !this.getMailNodeSettings().popEnabled,
                         listeners : {
                             "check" : {
@@ -795,10 +795,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('POP3 timeout (seconds)'),
-                        name : 'POP3 timeout',
-                        id: 'system_protocolSettings_popTimeout',
+                        xtype : "numberfield",
+                        fieldLabel : this.i18n._("POP3 timeout (seconds)"),
+                        name : "POP3 timeout",
+                        id: "system_protocolSettings_popTimeout",
                         value : this.getMailNodeSettings().popTimeout/1000,
                         width: 50,
                         allowDecimals: false,
@@ -817,14 +817,14 @@ if (!Ung.hasResource["Ung.System"]) {
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
-                    title: this.i18n._('IMAP'),
+                    title: this.i18n._("IMAP"),
                     autoHeight : true,
                     labelWidth: 200,                      
                     items : [{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Enable IMAP{1} email processing.  (This is the default setting)'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Enable IMAP{1} email processing.  (This is the default setting)"), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'IMAP',
+                        name : "IMAP",
                         checked : this.getMailNodeSettings().imapEnabled,
                         listeners : {
                             "check" : {
@@ -834,10 +834,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     },{
-                        xtype : 'radio',
-                        boxLabel : String.format(this.i18n._('{0}Disable IMAP{1} email processing.'), '<b>', '</b>'), 
+                        xtype : "radio",
+                        boxLabel : String.format(this.i18n._("{0}Disable IMAP{1} email processing."), "<b>", "</b>"), 
                         hideLabel : true,
-                        name : 'IMAP',
+                        name : "IMAP",
                         checked : !this.getMailNodeSettings().imapEnabled,
                         listeners : {
                             "check" : {
@@ -847,10 +847,10 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }
                     },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('IMAP timeout (seconds)'),
-                        name : 'IMAP timeout',
-                        id: 'system_protocolSettings_imapTimeout',
+                        xtype : "numberfield",
+                        fieldLabel : this.i18n._("IMAP timeout (seconds)"),
+                        name : "IMAP timeout",
+                        id: "system_protocolSettings_imapTimeout",
                         value : this.getMailNodeSettings().imapTimeout/1000,
                         width: 50,
                         allowDecimals: false,
@@ -869,17 +869,17 @@ if (!Ung.hasResource["Ung.System"]) {
             }            	
             
             this.panelProtocolSettings = new Ext.Panel({
-                name : 'Protocol Settings',
-                helpSource : 'protocol_settings',
+                name : "Protocol Settings",
+                helpSource : "protocol_settings",
                 // private fields
                 parentId : this.getId(),
 
-                title : this.i18n._('Protocol Settings'),
+                title : this.i18n._("Protocol Settings"),
                 layout : "form",
-                cls: 'ung-panel',
+                cls: "ung-panel",
                 autoScroll : true,
                 defaults : {
-                    xtype : 'fieldset',
+                    xtype : "fieldset",
                     autoHeight : true
                 },
                 items: protocolSettingsItems.length != 0 ? protocolSettingsItems : null
@@ -893,8 +893,8 @@ if (!Ung.hasResource["Ung.System"]) {
             var languagesStore = new Ext.data.Store({
                 proxy : new Ung.RpcProxy(rpc.languageManager.getLanguagesList, null, false),
                 reader : new Ext.data.JsonReader({
-                    root : 'list',
-                    fields : ['code', 'name']
+                    root : "list",
+                    fields : ["code", "name"]
                 })
             });
 
@@ -904,42 +904,42 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             this.panelRegionalSettings = new Ext.Panel({
                 // private fields
-                name : 'Regional Settings',
-                helpSource : 'regional_settings',
+                name : "Regional Settings",
+                helpSource : "regional_settings",
                 parentId : this.getId(),
-                title : this.i18n._('Regional Settings'),
+                title : this.i18n._("Regional Settings"),
                 layout : "form",
-                cls: 'ung-panel',
+                cls: "ung-panel",
                 autoScroll : true,
                 defaults : {
-                    xtype : 'fieldset',
+                    xtype : "fieldset",
                     autoHeight : true,
-                    buttonAlign : 'left'
+                    buttonAlign : "left"
                 },
                 items : [{
-                    title : this.i18n._('Current Time'),
+                    title : this.i18n._("Current Time"),
                     defaults : {
                         border : false,
-                        cls: 'description'
+                        cls: "description"
                     },
                     items : [{
-                        html : this.i18n._('time is automatically synced via NTP')
+                        html : this.i18n._("time is automatically synced via NTP")
                     }, {
                         html : this.i18n.timestampFormat(rpc.adminManager.getDate())
                     }]
                 }, {
-                    title : this.i18n._('Timezone'),
+                    title : this.i18n._("Timezone"),
                     items : [{
-                        xtype : 'combo',
-                        name : 'Timezone',
-                        id : 'system_timezone',
+                        xtype : "combo",
+                        name : "Timezone",
+                        id : "system_timezone",
                         editable : false,
                         store : timeZones,
                         width : 350,
                         hideLabel : true,
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
+                        mode : "local",
+                        triggerAction : "all",
+                        listClass : "x-combo-list-small",
                         value : this.getTimeZone(),
                         listeners : {
                             "change" : {
@@ -950,19 +950,19 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }]
                 }, {
-                    title : this.i18n._('Language'),
+                    title : this.i18n._("Language"),
                     items : [{
-                        id : 'system_language_combo',
-                        xtype : 'combo',
+                        id : "system_language_combo",
+                        xtype : "combo",
                         name : "Language",
                         store : languagesStore,
                         forceSelection : true,
-                        displayField : 'name',
-                        valueField : 'code',
+                        displayField : "name",
+                        valueField : "code",
                         typeAhead : true,
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
+                        mode : "local",
+                        triggerAction : "all",
+                        listClass : "x-combo-list-small",
                         selectOnFocus : true,
                         hideLabel : true,
                         listeners : {
@@ -988,42 +988,42 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }]
                 }, {
-                    title : this.i18n._('Upload New Language Pack'),
+                    title : this.i18n._("Upload New Language Pack"),
                     items : {
                         fileUpload : true,
-                        xtype : 'form',
-                        id : 'upload_language_form',
-                        url : 'upload',
+                        xtype : "form",
+                        id : "upload_language_form",
+                        url : "upload",
                         border : false,
                         items : [{
-                            fieldLabel : this.i18n._('File'),
-                            name : 'file',
-                            id : 'upload_language_file_textfield',
-                            inputType : 'file',
-                            xtype : 'textfield',
+                            fieldLabel : this.i18n._("File"),
+                            name : "file",
+                            id : "upload_language_file_textfield",
+                            inputType : "file",
+                            xtype : "textfield",
                             allowBlank : false
                         }, {
-                            xtype : 'button',
+                            xtype : "button",
                             text : this.i18n._("Upload"),
                             name : "Upload",
                             handler : function() {
                                 this.panelRegionalSettings.onUpload();
                             }.createDelegate(this)
                         }, {
-                            xtype : 'hidden',
-                            name : 'type',
-                            value : 'language'
+                            xtype : "hidden",
+                            name : "type",
+                            value : "language"
                         }]
                     }
                 }],
                 onUpload : function() {
-                    var prova = Ext.getCmp('upload_language_form');
+                    var prova = Ext.getCmp("upload_language_form");
                     var cmp = Ext.getCmp(this.parentId);
 
                     var form = prova.getForm();
                     form.submit({
                         parentId : cmp.getId(),
-                        waitMsg : cmp.i18n._('Please wait while your language pack is uploaded...'),
+                        waitMsg : cmp.i18n._("Please wait while your language pack is uploaded..."),
                         success : function(form, action) {
                             languagesStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
@@ -1032,7 +1032,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             } else {
                                 Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"), 
                                     function() {
-                                    	Ext.getCmp('upload_language_file_textfield').reset();
+                                    	Ext.getCmp("upload_language_file_textfield").reset();
                                     } 
                                 );
                             }
@@ -1042,7 +1042,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             var errorMsg = cmp.i18n._("Upload language pack failed");
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
-                                    case 'Invalid Language Pack' : 
+                                    case "Invalid Language Pack" : 
                                         errorMsg = cmp.i18n._("Invalid language pack; not a zip file");
                                     break;
                                     default :
@@ -1065,11 +1065,11 @@ if (!Ung.hasResource["Ung.System"]) {
         
         //validate Max URI Length
         validateMaxUriLength : function() {
-            var maxUriLengthCmp = Ext.getCmp('system_protocolSettings_maxUriLength');
+            var maxUriLengthCmp = Ext.getCmp("system_protocolSettings_maxUriLength");
             if (maxUriLengthCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Max URI Length should be between 1024 and 4096!"),
+                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Max URI Length should be between 1024 and 4096!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         maxUriLengthCmp.focus(true);
@@ -1080,11 +1080,11 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         //validate Max Header Length
         validateMaxHeaderLength : function() {
-            var maxHeaderLengthCmp = Ext.getCmp('system_protocolSettings_maxHeaderLength');
+            var maxHeaderLengthCmp = Ext.getCmp("system_protocolSettings_maxHeaderLength");
             if (maxHeaderLengthCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Max Header Length should be between 1024 and 8192!"),
+                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("Max Header Length should be between 1024 and 8192!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         maxHeaderLengthCmp.focus(true);
@@ -1095,11 +1095,11 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         //validate SMTP timeout
         validateSMTP : function() {
-            var smtpTimeoutCmp = Ext.getCmp('system_protocolSettings_smtpTimeout');
+            var smtpTimeoutCmp = Ext.getCmp("system_protocolSettings_smtpTimeout");
             if (smtpTimeoutCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("SMTP timeout should be between 0 and 86400!"),
+                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("SMTP timeout should be between 0 and 86400!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         smtpTimeoutCmp.focus(true);
@@ -1110,11 +1110,11 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         //validate POP timeout
         validatePOP : function() {
-            var popTimeoutCmp = Ext.getCmp('system_protocolSettings_popTimeout');
+            var popTimeoutCmp = Ext.getCmp("system_protocolSettings_popTimeout");
             if (popTimeoutCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("POP timeout should be between 0 and 86400!"),
+                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("POP timeout should be between 0 and 86400!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         popTimeoutCmp.focus(true);
@@ -1125,11 +1125,11 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         //validate IMAP timeout
         validateIMAP : function() {
-            var imapTimeoutCmp = Ext.getCmp('system_protocolSettings_imapTimeout');
+            var imapTimeoutCmp = Ext.getCmp("system_protocolSettings_imapTimeout");
             if (imapTimeoutCmp.isValid()) {
                 return true;
             } else {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("IMAP timeout should be between 0 and 86400!"),
+                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("IMAP timeout should be between 0 and 86400!"),
                     function () {
                         this.tabs.activate(this.panelProtocolSettings);
                         imapTimeoutCmp.focus(true);
