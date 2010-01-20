@@ -301,9 +301,9 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
                     "sum(wf_%s_blocks)" % (self.__vendor_name,)]
 
             if host:
-                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
+                extra_where = [("AND hname = %(host)s", { 'host' : host }),]
             elif user:
-                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
+                extra_where = [("AND uid = %(user)s" , { 'user' : user }),]
             else:
                 extra_where = []
 
