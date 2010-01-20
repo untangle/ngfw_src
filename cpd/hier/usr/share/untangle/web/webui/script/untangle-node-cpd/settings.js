@@ -899,13 +899,23 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     name : "timeStamp",
                     sortType : Ung.SortTypes.asTimestamp
                 },{
+                    name : "clientAddress"
+                },{
+                    name : "clientPort"
+                },{
+                    name : "serverAddress"
+                },{
+                    name : "serverPort"
+                },,{
                     name : "client",
-                    mapping : "pipelineEndpoints",
-                    sortType : Ung.SortTypes.asClient
+                    convert : function(value, record) {
+                        return record.clientAddress + ":" + record.clientPort;
+                    }
                 }, {
                     name : "server",
-                    mapping : "pipelineEndpoints",
-                    sortType : Ung.SortTypes.asServer
+                    convert : function(value, record) {
+                        return record.serverAddress + ":" + record.serverPort;
+                    }
                 }],
                 
                 columns : [{
@@ -918,17 +928,16 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }
                 },{
                     header : this.i18n._("action"),
-                    width : 100,
+                    width : 80,
                     sortable : false,
                     renderer : function(value) {
                         return this.i18n._( "block" );
                     }.createDelegate( this )
                 },{
                     header : this.i18n._("client"),
-                    width : 100,
+                    width : 130,
                     sortable : true,
-                    dataIndex : "clientAddr",
-                    renderer : Ung.SortTypes.asServer
+                    dataIndex : "client"
                 },{
                     header : this.i18n._("reason"),
                     id : "reason",
@@ -939,10 +948,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }.createDelegate( this )
                 },{
                     header : this.i18n._("server"),
-                    width : 100,
+                    width : 130,
                     sortable : true,
-                    dataIndex : "server",
-                    renderer : Ung.SortTypes.asServer
+                    dataIndex : "server"
                 }]
             });
         },

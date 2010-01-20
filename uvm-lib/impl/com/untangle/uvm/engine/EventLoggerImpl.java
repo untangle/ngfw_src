@@ -100,7 +100,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     public EventRepository<E> addSimpleEventFilter(SimpleEventFilter<E> simpleFilter)
     {
-        ListEventFilter lef = new SimpleEventFilterAdaptor(simpleFilter);
+        ListEventFilter<E> lef = new SimpleEventFilterAdaptor<E>(simpleFilter);
         EventCache<E> ec = new SimpleEventCache<E>(lef);
         ec.setEventLogger(this);
         caches.add(ec);
@@ -116,7 +116,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
     }
 
     public EventRepository<E> addEventRepository(EventRepository<E> er) {
-        EventCache<E> ec = new EventRepositoryCache(er);
+        EventCache<E> ec = new EventRepositoryCache<E>(er);
         caches.add(ec);
         return ec;
     }
@@ -134,10 +134,10 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     // package private methods ------------------------------------------------
 
-    void doLog(LogEvent e)
+    void doLog(E e)
     {
         for (EventCache<E> ec : caches) {
-            ec.log((E)e);
+            ec.log(e);
         }
     }
 
@@ -151,9 +151,9 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
     private static class EventRepositoryCache<E extends LogEvent>
         extends EventCache<E>
     {
-        private final EventRepository eventRepository;
+        private final EventRepository<E> eventRepository;
 
-        EventRepositoryCache(EventRepository eventRepository)
+        EventRepositoryCache(EventRepository<E> eventRepository)
         {
             this.eventRepository = eventRepository;
         }

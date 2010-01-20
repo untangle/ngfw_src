@@ -119,7 +119,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
             if (cache.size() < CACHE_SIZE) {
                 final NodeContext tctx = eventLogger.getNodeContext();
 
-                TransactionWork tw = new TransactionWork()
+                TransactionWork<Void> tw = new TransactionWork<Void>()
                     {
                         public boolean doWork(Session s) throws SQLException
                         {

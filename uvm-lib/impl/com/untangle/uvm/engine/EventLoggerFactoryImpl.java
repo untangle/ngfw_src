@@ -41,13 +41,13 @@ public class EventLoggerFactoryImpl extends EventLoggerFactory
 
     public <E extends LogEvent> EventLogger<E> getEventLogger()
     {
-        EventLoggerImpl el = new EventLoggerImpl<E>();
+        EventLoggerImpl<E> el = new EventLoggerImpl<E>();
         return el;
     }
 
     public <E extends LogEvent> EventLogger<E> getEventLogger(NodeContext tctx)
     {
-        EventLoggerImpl el = new EventLoggerImpl<E>(tctx);
+        EventLoggerImpl<E> el = new EventLoggerImpl<E>(tctx);
         return el;
     }
 }

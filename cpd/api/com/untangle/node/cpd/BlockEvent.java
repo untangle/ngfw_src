@@ -96,7 +96,7 @@ public class BlockEvent extends LogEvent implements Serializable
      */
     @Column(name="client_address")
     @Type(type="com.untangle.uvm.type.InetAddressUserType")
-    public InetAddress geClientAddress()
+    public InetAddress getClientAddress()
     {
         return clientAddress;
     }

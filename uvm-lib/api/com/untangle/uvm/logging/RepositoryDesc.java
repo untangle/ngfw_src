@@ -43,6 +43,8 @@ import java.io.Serializable;
  */
 public class RepositoryDesc implements Serializable
 {
+    private static final long serialVersionUID = -3774041827738394272L;
+    
     private final String name;
 
     public RepositoryDesc(String name)
