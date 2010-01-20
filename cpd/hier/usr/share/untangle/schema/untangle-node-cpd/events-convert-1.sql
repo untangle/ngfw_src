@@ -22,10 +22,16 @@
 
 -- com.untangle.node.cpd.BlockEvent
 CREATE TABLE events.n_cpd_block_evt (
-    event_id int8 NOT NULL,
-    pl_endp_id int8,
-    time_stamp timestamp,
+    event_id INT8 NOT NULL,
+    time_stamp TIMESTAMP,
+    proto INT2,
+    client_intf INT2,
+    client_address INET,
+    client_port INT4,
+    server_address INET,
+    server_port INT4,
     PRIMARY KEY (event_id));
+
 
 ----------------
 -- constraints |

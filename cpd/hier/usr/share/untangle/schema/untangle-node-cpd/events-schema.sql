@@ -22,9 +22,14 @@
 
 -- com.untangle.node.cpd.BlockEvent
 CREATE TABLE events.n_cpd_block_evt (
-    event_id int8 NOT NULL,
-    pl_endp_id int8,
-    time_stamp timestamp,
+    event_id INT8 NOT NULL,
+    time_stamp TIMESTAMP,
+    proto INT2,
+    client_intf INT2,
+    client_address INET,
+    client_port INT4,
+    server_address INET,
+    server_port INT4,
     PRIMARY KEY (event_id));
 
 ----------------
@@ -32,6 +37,5 @@ CREATE TABLE events.n_cpd_block_evt (
 ----------------
 
 -- indices for reporting
-CREATE INDEX n_cpd_evt_plepid_idx ON events.n_cpd_evt (pl_endp_id);
-CREATE INDEX n_cpd_evt_ts_idx ON events.n_cpd_evt (time_stamp);
+CREATE INDEX n_cpd_evt_ts_idx ON events.n_cpd_block_evt (time_stamp);
 

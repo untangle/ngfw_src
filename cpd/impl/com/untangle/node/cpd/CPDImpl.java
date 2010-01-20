@@ -320,15 +320,15 @@ public class CPDImpl extends AbstractNode implements CPD {
     }
     
     @Override
-    public void incrementCount(BlingerType blingerType )
+    public void incrementCount(BlingerType blingerType, long delta )
     {
         switch ( blingerType ) {
         case BLOCK:
-            this.blockBlinger.increment();
+            this.blockBlinger.increment(delta);
             break;
             
         case AUTHORIZE:
-            this.authorizeBlinger.increment();
+            this.authorizeBlinger.increment(delta);
             break;
         }
     }
