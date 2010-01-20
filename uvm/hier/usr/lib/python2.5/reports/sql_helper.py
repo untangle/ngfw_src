@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 # Aaron Read <amread@untangle.com>
+# Sébastien Delafond Read <seb@untangle.com>
 
 import inspect
 import logging
