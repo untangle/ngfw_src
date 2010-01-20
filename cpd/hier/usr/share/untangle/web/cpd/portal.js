@@ -1,6 +1,19 @@
 // Copyright (c) 2003-2009 Untangle, Inc.
 // All rights reserved.
-
+function acceptAgreement(){
+    var agree = document.getElementById('agree'),agreeValue; 
+    if(agree){
+        agreeValue = agree.type == 'hidden' ? true : agree.checked 
+        if(agreeValue === true){
+                        
+            window.location.href = "http://www.untangle.com";
+            return;
+                                    
+        }else{
+            document.getElementById("agree-error").style.display = 'block';
+        }
+    }
+}
 function authenticateUser()
 {
     var e = document.getElementById("authenticateUser");
@@ -9,7 +22,7 @@ function authenticateUser()
     }
 
     var req = false;
-
+    document.getElementById("login-error").style.display = 'none';
     if (window.XMLHttpRequest) {
         req = new XMLHttpRequest();
         if (req.overrideMimeType) {
@@ -29,7 +42,7 @@ function authenticateUser()
     {
         if (req.readyState == 4) {
             if ( req.responseText.indexOf( "<success/>" ) >= 0 ) {
-                alert( "You have been authenticated." );
+                //alert( "You have been authenticated." );
                 window.location.href = "http://www.untangle.com";
                 return;
             }
@@ -40,8 +53,8 @@ function authenticateUser()
             if (e) {
                 e.disabled = false;
             }
-
-            alert( "Unable to authenticate you, please try again." );
+            document.getElementById("login-error").style.display = 'block';
+            //alert( "Unable to authenticate you, please try again." );
         }
     };
 

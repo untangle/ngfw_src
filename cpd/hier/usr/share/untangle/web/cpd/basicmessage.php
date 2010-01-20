@@ -25,33 +25,35 @@
         <p class="description">
           <span>
             <b>
-              Welcome to the <?= trim( $branding_settings["company_name"] ) ?> Captive Portal.
+              To Continue, please agree to the terms and conditions. 
             </b>
           </span>
         </p>
-        <div id="basic-message-text">
+        <p id="agree-error" class="error">In order to continue, you must check the box below.</p>        
+        <div class="info-list-captive-portal">
+        <div id="basic-message-text" class="message-text">
           <?= trim( $cpd_settings["page_parameters"]["basicMessageMessageText"] ) ?>
         </div>
-        <div class="info-list">
+
      <?php if ( $cpd_settings["page_parameters"]["basicMessageAgree"] == true ) { ?>
-          <div class="u-form-item">
-            <label class="u-form-item-label">
-              <?= trim( $cpd_settings["page_parameters"]["basicMessageAgreeText"] ) ?>
-            </label>
-            <input class="u-form-text u-form-field" type="checkbox" id="agree"/>
+          <div class="agree-checkbox">
+                <input class="u-form-text u-form-field" type="checkbox"  id="agree"/>
+              <label for="agree"> <?= trim( $cpd_settings["page_parameters"]["basicMessageAgreeText"] ) ?></label>
           </div>
+          
      <?php } else { ?>
+     
           <div class="u-form-item">
-            <input class="u-form-text u-form-field" type="hidden" id="agree" value="true"/>
+            <input class="u-form-text u-form-field" type="hidden" id="agree" value="on"/>
           </div>     
      <?php } ?>
           <div id="agree-message" style="display: none">
             You must accept the conditions before continuing.
           </div>
-          <div class="u-form-item">
-            <button onclick="acceptAgreement()" type="button" id="accept-agreement">
-              Continue
-            </button>
+          <div class="u-form-item continue-message">
+            <a href="#" onclick="return acceptAgreement(false)" class="img-background" id="authenticateUser">
+            Continue
+            </a>
           </div>
         </div>
         <p class="contact">
