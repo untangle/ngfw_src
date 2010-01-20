@@ -861,6 +861,7 @@ public class UvmContextImpl extends UvmContextBase
 
         logger.debug("restarting nodes");
         nodeManager.init();
+        pipelineFoundry.clearChains();
 
         startCliServer();
         logger.debug("postInit complete");

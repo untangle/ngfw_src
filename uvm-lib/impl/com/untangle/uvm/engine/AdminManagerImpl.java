@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.TransactionRolledbackException;
@@ -89,7 +90,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
         this.uvmContext = uvmContext;
         this.threadRequest = threadRequest;
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Void> tw = new TransactionWork<Void>()
             {
                 public boolean doWork(Session s)
                 {
@@ -156,7 +157,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
         updateUserPasswords(as);
 
         // Do something with summaryPeriod? XXX
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Void> tw = new TransactionWork<Void>()
             {
                 public boolean doWork(Session s)
                 {
@@ -206,7 +207,8 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
             return null;
         }
     }
-
+    
+    @Override
     public TimeZone getTimeZone()
     {
         try {

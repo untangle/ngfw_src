@@ -37,6 +37,7 @@ import com.untangle.uvm.argon.PipelineDesc;
 import com.untangle.uvm.argon.SessionEndpoints;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.LocalNodeManager;
@@ -63,7 +64,7 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 public class PipelineFoundryImpl implements PipelineFoundry {
     private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL = new PipelineFoundryImpl();
 
-    private static final EventLogger eventLogger = UvmContextImpl.context()
+    private static final EventLogger<LogEvent> eventLogger = UvmContextImpl.context()
             .eventLogger();
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -144,8 +145,6 @@ public class PipelineFoundryImpl implements PipelineFoundry {
         List<MPipeFitting> ml = new ArrayList<MPipeFitting>(chain.size());
 
         MPipe end = null;
-
-        UvmContextImpl upi = UvmContextImpl.getInstance();
                        
         for (Iterator<MPipeFitting> i = chain.iterator(); i.hasNext();) {
             MPipeFitting mpf = i.next();

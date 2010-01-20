@@ -1,5 +1,6 @@
 package com.untangle.uvm.webui.jabsorb.serializer;
 
+import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import org.jabsorb.serializer.AbstractSerializer;
@@ -12,7 +13,7 @@ public class TimeZoneSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.
 	 */
-	private static Class[] _serializableClasses = new Class[] { TimeZone.class };
+	private static Class[] _serializableClasses = new Class[] { TimeZone.class, SimpleTimeZone.class };
 
 	/**
 	 * Classes that this can serialise to.
@@ -66,7 +67,7 @@ public class TimeZoneSerializer extends AbstractSerializer {
 	 */
 	public Object unmarshall(SerializerState state, Class clazz, Object json)
 			throws UnmarshallException {
-		Object returnValue = null;
+		TimeZone returnValue = null;
 		String val = json instanceof String ? (String) json : json.toString();
 		try {
 			returnValue = TimeZone.getTimeZone(val);
@@ -80,7 +81,6 @@ public class TimeZoneSerializer extends AbstractSerializer {
 		}
 		state.setSerialized(json, returnValue);
 		return returnValue;
-		
 	}
 
 }

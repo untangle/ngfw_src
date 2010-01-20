@@ -144,7 +144,13 @@ if (!Ung.hasResource["Ung.System"]) {
         getTimeZone : function(forceReload) {
             if (forceReload || this.rpc.timeZone === undefined) {
             	try {
-                    this.rpc.timeZone = rpc.adminManager.getTimeZone();
+                    /* Handle the serialization mess of java with ZoneInfo. */
+                    var tz = rpc.adminManager.getTimeZone();
+                    if ( tz != null && typeof ( tz ) != "string" ) {
+                        tz = tz.ID;
+                    }
+                    
+                    this.rpc.timeZone = tz;
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }

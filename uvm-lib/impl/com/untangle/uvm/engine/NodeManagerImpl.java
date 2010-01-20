@@ -437,6 +437,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
     void init()
     {
         restartUnloaded();
+        
+        clearEnabledNodes();
 
         cleanerPulse.start(60000);
     }
@@ -610,6 +612,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                 }
             }
         }
+        
+        clearEnabledNodes();
     }
 
     // private methods --------------------------------------------------------
@@ -651,6 +655,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         logger.info("time to restart nodes: " + (t1 - t0));
 
         startAutoStart(null);
+        
+        clearEnabledNodes();
     }
 
     private static int startThreadNum = 0;
@@ -717,6 +723,8 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         } catch (InterruptedException exn) {
             logger.error("Interrupted while starting transforms"); // Give up
         }
+        
+        clearEnabledNodes();
     }
 
     private int getRunnableCount(Set<Thread> threads) {
@@ -815,7 +823,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         final List<NodePersistentState> unloaded
             = new LinkedList<NodePersistentState>();
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Void> tw = new TransactionWork<Void>()
             {
                 public boolean doWork(Session s)
                 {
@@ -830,7 +838,9 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
                     return true;
                 }
 
-                public Object getResult() { return null; }
+                public Void getResult() {
+                    return null;
+                }
             };
         LocalUvmContextFactory.context().runTransaction(tw);
 
