@@ -288,10 +288,8 @@ def generate_sub_report(report_base, node_name, end_date, report_days=1,
 
     node = __nodes.get(node_name, None)
 
-    logger.info("About to generate sub-report for %s: host='%s', user='%s', email='%s'" % (node_name,
-                                                                                           host,
-                                                                                           user,
-                                                                                           email))
+    logger.info("About to generate sub-report for %s: days='%s', host='%s', user='%s', email='%s'"
+                % (node_name, report_days, host, user, email))
 
     if not node:
         msg = 'UNKNOWN_NODE: %s' % node_name
@@ -301,11 +299,11 @@ def generate_sub_report(report_base, node_name, end_date, report_days=1,
     report = node.get_report()
 
     if user:
-        report.generate(report_base, date_base, end_date, user=user)
+        report.generate(report_base, date_base, end_date, user=user, report_days=report_days)
     if host:
-        report.generate(report_base, date_base, end_date, host=host)
+        report.generate(report_base, date_base, end_date, host=host, report_days=report_days)
     if email:
-        report.generate(report_base, date_base, end_date, email=email)
+        report.generate(report_base, date_base, end_date, email=email, report_days=report_days)
 
     dir = get_node_base(node_name, date_base, report_days=report_days,
                         host=host, user=user, email=email)

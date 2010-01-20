@@ -287,14 +287,17 @@ FROM (SELECT date_trunc('hour', trunc_time) AS time,
       COALESCE(sum(sw_blacklisted), 0) AS sw_blacklisted,
       COALESCE(sum(sw_cookies), 0) AS sw_cookies
       FROM reports.n_http_totals
-      WHERE trunc_time >= %s AND trunc_time < %s
+      WHERE trunc_time >= %%s AND trunc_time < %%s
+      %s
       GROUP BY time) AS foo"""
 
         if host:
-            url_query += " WHERE hname = %s"
+            url_query = url_query % ("AND hname = %s",)
         elif user:
-            url_query += " WHERE uid = %s"
-
+            url_query = url_query % ("AND uid = %s",)
+        else:
+            url_query = url_query % ("",)
+            
         conn = sql_helper.get_connection()
         try:
             curs = conn.cursor()
@@ -334,13 +337,16 @@ SELECT COALESCE(sum(sw_accesses), 0) AS total_accesses,
 FROM (SELECT date_trunc('hour', trunc_time) AS time,
       COALESCE(sum(sw_accesses), 0) AS sw_accesses
       FROM reports.session_totals
-      WHERE trunc_time >= %s AND trunc_time < %s
+      WHERE trunc_time >= %%s AND trunc_time < %%s
+      %s
       GROUP BY time) AS foo"""
 
             if host:
-                sessions_query = sessions_query + " AND hname = %s"
+                sessions_query = sessions_query % ("AND hname = %s",)
             elif user:
-                sessions_query = sessions_query + " AND uid = %s"
+                sessions_query = sessions_query % ("AND uid = %s",)
+            else:
+                sessions_query = sessions_query % ("",)
 
 
             curs = conn.cursor()
@@ -409,7 +415,7 @@ FROM (SELECT date_trunc('hour', trunc_time) AS time,
 
             plot = Chart(type=TIME_SERIES_CHART,
                          title=self.title,
-                         xlabel=_('Hour of Day'),
+                         xlabel=_('Time'),
                          ylabel=_('Hits per Minute'),
                          major_formatter=TIMESTAMP_FORMATTER)
 
@@ -462,19 +468,22 @@ class SpywareUrlsBlocked(Graph):
         one_week = DateFromMx(start_date)
 
         query = """\
-SELECT COALESCE(sum(sw_blacklisted), 0) / %s AS avg_blocked,
+SELECT COALESCE(sum(sw_blacklisted), 0) / %%s AS avg_blocked,
        max(sw_blacklisted)::int AS max_blocked
 FROM (SELECT date_trunc('day', trunc_time) AS time,
              COALESCE(sum(sw_blacklisted), 0) AS sw_blacklisted,
              COALESCE(sum(sw_cookies), 0) AS sw_cookies
       FROM reports.n_http_totals
-      WHERE trunc_time >= %s AND trunc_time < %s
+      WHERE trunc_time >= %%s AND trunc_time < %%s
+      %s
       GROUP BY time) AS foo"""
 
         if host:
-            query += " WHERE hname = %s"
+            query = query % ("AND hname = %s",)
         elif user:
-            query += " WHERE uid = %s"
+            query = query % ("AND uid = %s",)
+        else:
+            query = query % ("",)
 
         conn = sql_helper.get_connection()
         try:

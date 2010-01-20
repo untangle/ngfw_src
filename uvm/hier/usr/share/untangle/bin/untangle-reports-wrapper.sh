@@ -1,15 +1,15 @@
 #! /bin/sh
 
-RESTART_FILE=/etc/untangle/reports-to-restart
-DAEMON=/usr/lib/python2.5/reports/server.py
-LOGFILE=/var/log/uvm/reporter.log
+RESTART_FILE=@PREFIX@/etc/untangle/reports-to-restart
+DAEMON=@PREFIX@/usr/lib/python2.5/reports/server.py
+LOGFILE=@PREFIX@/var/log/uvm/reporter.log
 
 pid=foo
 
 while true ; do
 
   if ! ps -p $pid > /dev/null ; then
-    $DAEMON >> $LOGFILE 2>&1 &
+    $DAEMON 2>> $LOGFILE &
     pid=$!
   fi
 

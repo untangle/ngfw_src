@@ -138,16 +138,22 @@ public class TimeSeriesChart extends Plot
      * Format the X-axis according to given min & max dates
      */
     private void formatDateAxis(DateAxis da, File csvPath) {
+        //        logger.debug("About to format date axis for: " + csvPath);
         File dir = csvPath.getParentFile().getParentFile();
-        logger.debug("About to format date axis for: " + dir);
 
         String maxString = dir.getParentFile().getName();
 	Date max = null;
-	try {
+	try { // 1st, assume this is a generic report
 	    max = DATE_FORMAT.parse(maxString);
 	} catch (java.text.ParseException exn) {
-	    logger.warn("Couldn't parse time for: " + maxString, exn);
-            return;
+            try { // try to see if it's a per-{user,host,email} report
+                dir = dir.getParentFile().getParentFile();
+                maxString = dir.getParentFile().getName();
+                max = DATE_FORMAT.parse(maxString);
+            } catch (java.text.ParseException e) {
+                logger.warn("Couldn't parse time for: " + maxString, e);
+                return;
+            }
 	}
 
         String length = dir.getName();

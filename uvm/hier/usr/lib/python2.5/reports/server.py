@@ -97,9 +97,9 @@ class Worker(Thread):
 
     def __process_line(self, line):
         try:
+            logger.info('Got line: %s' % (line,))
             (cmd, node_name, end_date, report_days, host, user,
              email) = line.split(',')
-            logger.info('Got line: %s' % (line,))
         except:
             if line == 'PING':
                 return "PONG"
@@ -119,8 +119,8 @@ class Worker(Thread):
              try:
                   reports.engine.generate_sub_report(REPORTS_OUTPUT_BASE,
                                                      node_name, end_date,
-                                                     report_days, host,
-                                                     user, email)
+                                                     int(report_days),
+                                                     host, user, email)
              except:
                   logger.error("could not process request line: %s" % line,
                                 exc_info=True);
