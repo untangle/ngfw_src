@@ -33,7 +33,6 @@
     <param name="Append" value="true"/>
     <param name="Threshold" value="ALL"/>
     <layout class="com.untangle.uvm.logging.UtPatternlayout">
-      <!-- This is actually the default conversion, so we could leave it out... -->
       <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] %-5p %m%n"/>
     </layout>
   </appender>
@@ -43,10 +42,8 @@
     <param name="Target" value="System.out"/>
     <param name="Threshold" value="INFO"/>
 
-    <layout class="org.apache.log4j.PatternLayout">
-      <!-- The default pattern: Date Priority [Category] Message\n -->
-      <param name="ConversionPattern"
-             value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+    <layout class="com.untangle.uvm.logging.UtPatternlayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] %-5p %m%n"/>
     </layout>
   </appender>
 
