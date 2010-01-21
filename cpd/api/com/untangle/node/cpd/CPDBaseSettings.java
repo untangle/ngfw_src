@@ -3,6 +3,7 @@ package com.untangle.node.cpd;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -21,7 +22,8 @@ public class CPDBaseSettings implements Serializable {
     private String pageParameters = "{}";
     private String redirectUrl = "";
     private boolean useHttpsPage= false;
-    private boolean isRedirectHttpsEnabled = false; 
+    private boolean isRedirectHttpsEnabled = false;
+    private boolean isDirectoryConnectorEnabled = false;
 
     public CPDBaseSettings()
     {
@@ -164,4 +166,14 @@ public class CPDBaseSettings implements Serializable {
     {
         this.isRedirectHttpsEnabled = newValue;
     }
+
+    @Transient
+    public boolean isDirectoryConnectorEnabled() {
+        return isDirectoryConnectorEnabled;
+    }
+
+    public void setDirectoryConnectorEnabled(boolean newValue) {
+        this.isDirectoryConnectorEnabled = newValue;
+    }
+
 }

@@ -482,10 +482,16 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             "render" : onRenderRadioButton
                         }
                     },{
+                        xtype: "button",
+                        name : "configureLocalDirectory",
+                        text : i18n._("Configure Local Directory"),
+                        handler : this.configureLocalDirectory.createDelegate( this )
+                    },{
                         xtype : "radio",
                         boxLabel : String.format( this.i18n._("RADIUS {0}(requires Directory Connector){1}"),
                                                   "<i>", "</i>" ),
                         hideLabel : true,
+                        disabled : !this.getBaseSettings().directoryConnectorEnabled,
                         name : "authenticationType",
                         inputValue : "RADIUS",
                         listeners : {
@@ -493,16 +499,29 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             "render" : onRenderRadioButton
                         }
                     },{
+                        xtype: "button",
+                        disabled : !this.getBaseSettings().directoryConnectorEnabled,
+                        name : "configureRadiusServer",
+                        text : i18n._("Configure RADIUS"),
+                        handler : this.configureRadius.createDelegate( this )
+                    },{
                         xtype : "radio",
                         boxLabel : String.format( this.i18n._("Active Directory {0}(requires Directory Connector){1}"),
                                                   "<i>", "</i>" ),
                         hideLabel : true,
+                        disabled : !this.getBaseSettings().directoryConnectorEnabled,
                         name : "authenticationType",
                         inputValue : "ACTIVE_DIRECTORY",
                         listeners : {
                             "check" : onUpdateRadioButton,
                             "render" : onRenderRadioButton
                         }
+                    },{
+                        xtype: "button",
+                        disabled : !this.getBaseSettings().directoryConnectorEnabled,
+                        name : "configureActiveDirectory",
+                        text : i18n._("Configure Active Directory"),
+                        handler : this.configureActiveDirectory.createDelegate( this )
                     }]
                 },{
                     xtype : "fieldset",
@@ -821,7 +840,17 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     },{
                         xtype: "button",
                         name : "viewPage",
-                        text : i18n._("View Page")
+                        text : i18n._("View Page"),
+                        handler : function()
+                        {
+                            if ( this.isDirty()) {
+                                Ext.MessageBox.alert(this.i18n._("Unsaved Changes"), 
+                                                     this.i18n._("You must save your settings before previewing the page." ));
+                                return;
+                            }
+
+                            window.open("/cpd/portal.php", "_blank");
+                        }.createDelegate(this)
                     }],
                 },{
                     xtype : "fieldset",
@@ -1089,6 +1118,44 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 || this.gridCaptureRules.isDirty() 
                 || this.gridPassedClients.isDirty()
                 || this.gridPassedServers.isDirty();
+        },
+
+        configureLocalDirectory : function()
+        {
+            Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+            
+            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), function() {
+
+                main.localDirectoryWin=new Ung.LocalDirectory({
+                    "name":"localDirectory"
+                });
+
+                main.localDirectoryWin.show();
+                Ext.MessageBox.hide();
+            }.createDelegate(this)]);
+        },
+
+        /* There is no way to select the radius tab because we don't get a callback once the settings are loaded. */
+        configureRadius : function()
+        {
+            var node = main.getNode("untangle-node-adconnector");
+            if (node != null) {
+                var nodeCmp = Ung.Node.getCmp(node.tid);
+                if (nodeCmp != null) {
+                    nodeCmp.onSettingsAction();
+                }
+            }
+        },
+
+        configureActiveDirectory : function()
+        {
+            var node = main.getNode("untangle-node-adconnector");
+            if (node != null) {
+                var nodeCmp = Ung.Node.getCmp(node.tid);
+                if (nodeCmp != null) {
+                    nodeCmp.onSettingsAction();
+                }
+            }
         }
     });
 

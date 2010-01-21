@@ -33,6 +33,9 @@ import org.hibernate.Session;
 import org.json.JSONException;
 
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmException;
+import com.untangle.uvm.license.LicenseStatus;
+import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -40,6 +43,7 @@ import com.untangle.uvm.logging.UncachedEventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
@@ -139,6 +143,8 @@ public class CPDImpl extends AbstractNode implements CPD {
         if ( baseSettings == null ) {
             baseSettings = new CPDBaseSettings();
         }
+        
+        updateDirectoryConnectorStatus(baseSettings);
         
         return baseSettings;        
     }
@@ -443,6 +449,31 @@ public class CPDImpl extends AbstractNode implements CPD {
             this.manager.stop();
             LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant(this.phoneBookAssistant);
         }
+    }
+    
+    private void updateDirectoryConnectorStatus(CPDBaseSettings baseSettings) {
+        /* Update the base settings to indicate whether or not Directory Connector is running */
+        boolean isDirectoryConnectorEnabled = false;
+        
+        Node node = LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        
+        if ( node != null ) {
+            isDirectoryConnectorEnabled = node.getRunState() == NodeState.RUNNING;
+            try {
+                if ( isDirectoryConnectorEnabled ) {
+                LicenseStatus ls = 
+                    LocalUvmContextFactory.context().localLicenseManager().getLicenseStatus(ProductIdentifier.ADDRESS_BOOK);
+                isDirectoryConnectorEnabled = !ls.isExpired();
+                
+                
+                }
+            } catch (UvmException e) {
+                logger.warn( "Unable to determine the license status for ad connector.");
+                e.printStackTrace();
+            }
+
+        }
+        baseSettings.setDirectoryConnectorEnabled(isDirectoryConnectorEnabled);
     }
 
     PhoneBookAssistant getPhoneBookAssistant() {
