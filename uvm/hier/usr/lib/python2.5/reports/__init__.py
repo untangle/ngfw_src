@@ -15,7 +15,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 # Aaron Read <amread@untangle.com>
+# Sebastien Delafond <seb@untangle.com>
 
+import codecs
+import cStringIO
 import csv
 import gettext
 import logging
@@ -73,6 +76,67 @@ def __timestamp_formatter(x, pos):
 
 def __identity_formatter(x, pos):
     return x
+
+class UTF8Recoder:
+    """
+    Iterator that reads an encoded stream and reencodes the input to UTF-8
+    """
+    def __init__(self, f, encoding):
+        self.reader = codecs.getreader(encoding)(f)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return self.reader.next().encode("utf-8")
+
+class UnicodeReader:
+    """
+    A CSV reader which will iterate over lines in the CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        f = UTF8Recoder(f, encoding)
+        self.reader = csv.reader(f, dialect=dialect, **kwds)
+
+    def next(self):
+        row = self.reader.next()
+        return [unicode(s, "utf-8") for s in row]
+
+    def __iter__(self):
+        return self
+
+class UnicodeWriter:
+    """
+    A CSV writer which will write rows to CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        # Redirect output to a queue
+        self.queue = cStringIO.StringIO()
+        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
+        self.stream = f
+        self.encoder = codecs.getincrementalencoder(encoding)()
+
+    def writerow(self, row):
+        # only do strings (and not mx.Date for instance)
+        self.writer.writerow([s.encode("utf-8") for s in row if type(s) == 'unicode'])
+        # Fetch UTF-8 output from the queue ...
+        data = self.queue.getvalue()
+        data = data.decode("utf-8")
+        # ... and reencode it into the target encoding
+        data = self.encoder.encode(data)
+        # write to the target stream
+        self.stream.write(data)
+        # empty queue
+        self.queue.truncate(0)
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
+
 
 class Formatter:
     def __init__(self, name, function):
@@ -177,6 +241,8 @@ class Section:
     def __init__(self, name, title):
         self.__name = name
         self.__title = title
+        if self.__title: # FIXME: why ???
+            self.__title = self.__title.decode('utf-8')
 
     @property
     def name(self):
@@ -282,8 +348,8 @@ class DetailSection(Section):
 
         sql = self.get_sql(start_date, end_date, host=None, user=None,
                            email=None)
-        f = open(filename, 'w')
-        w = csv.writer(f)
+        f = codecs.open(filename, 'w', 'utf-8')
+        w = UnicodeWriter(f)
         conn = sql_helper.get_connection()
 
         try:
@@ -301,7 +367,7 @@ class DetailSection(Section):
                     break
                 w.writerow(r)
         except Exception:
-            logger.warn('error adding details, query: %s' % sql, exc_info=True)
+            logger.warn("error adding details, query: '%s'" % sql, exc_info=True)
         finally:
             f.close()
             conn.commit()
@@ -309,7 +375,11 @@ class DetailSection(Section):
 class ColumnDesc():
     def __init__(self, name, title, type=None):
         self.__name = name
+
         self.__title = title
+        if self.__title: # FIXME: why ???
+            self.__title = self.__title.decode('utf-8')
+
         self.__type = type
 
     @property
@@ -319,7 +389,6 @@ class ColumnDesc():
     def get_dom(self):
         element = Element('column')
         element.set('name', self.__name)
-#        logger.critical("title: '%s'" % (self.__title,))
         element.set('title', self.__title or '')
         if self.__type:
             element.set('type', self.__type)
@@ -524,9 +593,17 @@ class Chart:
                  ylabel=None, major_formatter=IDENTITY_FORMATTER,
                  required_points=[]):
         self.__type = type
+
         self.__title = title
+        if self.__title: # FIXME: why ???
+            self.__title = self.__title.decode('utf-8')
         self.__xlabel = xlabel
+        if self.__xlabel: # FIXME: why ???
+            self.__xlabel = self.__xlabel.decode('utf-8')
         self.__ylabel = ylabel
+#         if self.__ylabel: # FIXME: why ???
+#             self.__ylabel = self.__ylabel.decode('utf-8')
+            
         self.__major_formatter = major_formatter
 
         self.__datasets = []
@@ -620,7 +697,7 @@ class Chart:
 
         for t, c in self.__colors.iteritems():
             ce = Element('color')
-            ce.set('title', str(t))
+            ce.set('title', str(t).decode('utf-8'))
             ce.set('value', "%02x%02x%02x" % c.bitmap_rgb())
             element.append(ce)
 
