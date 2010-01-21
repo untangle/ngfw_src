@@ -25,7 +25,7 @@
         <p class="description">
           <span>
             <b>
-              To Continue, please agree to the terms and conditions. 
+              <?= trim( $cpd_settings["page_parameters"]["basicMessagePageWelcome"] ) ?>
             </b>
           </span>
         </p>

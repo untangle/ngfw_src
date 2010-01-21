@@ -56,7 +56,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 name : "panelCaptiveHosts",
                 helpSource : "",
                 // private fields
-                gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._("Captive Hosts"),
                 autoScroll : true,
@@ -111,7 +110,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     "live" : true,
                     "capture" : true,
                     "log" : false,
-                    "clientInterface" : "internal",
+                    "clientInterface" : "Internal",
                     "clientAddress" : "any",
                     "serverAddress" : "any",
                     "days" : "mon,tue,wed,thu,fri,sat,sun",
@@ -359,7 +358,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 name : "panelPassedHosts",
                 helpSource : "",
                 // private fields
-                gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._("Passed Hosts"),
                 layout : "form",
@@ -454,7 +452,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 name : "panelUserAuthentication",
                 helpSource : "",
                 // private fields
-                gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._("User Authentication"),
                 autoScroll : true,
@@ -599,7 +596,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 name : "panelCaptivePage",
                 helpSource : "",
                 // private fields
-                gridRulesList : null,
                 parentId : this.getId(),
                 title : this.i18n._("Captive Page"),
                 autoScroll : true,
@@ -641,7 +637,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     },{
                         xtype : "fieldset",
-                        height : 400,
+                        height : 300,
+                        autoScroll : true,
                         title : this.i18n._( "Captive Portal Page Configuration" ),
                         items : [{
                             xtype : "textfield",
@@ -653,6 +650,19 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             listeners : {
                                 "change" : function( elem, newValue ){
                                     this.pageParameters.basicLoginPageTitle = newValue;
+                                }.createDelegate(this)
+                            }
+                        },{
+                            xtype : "textfield",
+                            allowBlank : false,
+                            name : "basicLoginPageWelcome",
+                            fieldLabel : this.i18n._("Welcome Text"),
+                            width : 400,
+                            pageType : "BASIC_LOGIN",
+                            value : this.pageParameters.basicLoginPageWelcome,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicLoginPageWelcome = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -680,10 +690,25 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                 }.createDelegate(this)
                             }
                         },{
+                            xtype : "textarea",
+                            allowBlank : false,
+                            name : "basicLoginMessageText",
+                            width : 400,
+                            height : 250,
+                            fieldLabel : this.i18n._("Message Text"),
+                            pageType : "BASIC_LOGIN",
+                            value : this.pageParameters.basicLoginMessageText,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicLoginMessageText = newValue;
+                                }.createDelegate(this)
+                            }
+                        },{
                             xtype : "textfield",
                             allowBlank : false,
                             name : "basicLoginFooter",
                             fieldLabel : this.i18n._("Lower Text"),
+                            width : 400,
                             pageType : "BASIC_LOGIN",
                             value : this.pageParameters.basicLoginFooter,
                             listeners : {
@@ -697,10 +722,24 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             name : "basicMessagePageTitle",
                             fieldLabel : this.i18n._("Page Title"),
                             pageType : "BASIC_MESSAGE",
+                            width : 400,
                             value : this.pageParameters.basicMessagePageTitle,
                             listeners : {
                                 "change" : function( elem, newValue ){
                                     this.pageParameters.basicMessagePageTitle = newValue;
+                                }.createDelegate(this)
+                            }
+                        },{
+                            xtype : "textfield",
+                            allowBlank : false,
+                            name : "basicMessagePageWelcome",
+                            fieldLabel : this.i18n._("Welcome Text"),
+                            width : 400,
+                            pageType : "BASIC_MESSAGE",
+                            value : this.pageParameters.basicMessagePageWelcome,
+                            listeners : {
+                                "change" : function( elem, newValue ){
+                                    this.pageParameters.basicMessagePageWelcome = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -734,6 +773,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             allowBlank : false,
                             name : "basicMessageAgreeText",
                             fieldLabel : this.i18n._("Agree Text"),
+                            width : 400,
                             pageType : "BASIC_MESSAGE",
                             value : this.pageParameters.basicMessageAgreeText,
                             listeners : {
