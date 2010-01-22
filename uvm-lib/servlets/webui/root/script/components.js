@@ -4341,34 +4341,39 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 items: [{
                     border : false,
                     cls: 'description',
-                    html: this.singleSelectUser ? i18n._("You may choose user ID/Login that exists in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")
-                                : i18n._("You may choose user IDs/Logins that exist in the User Directory (either local or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.")
+                    html: this.singleSelectUser ? i18n._("Select a User.") : i18n._("Choose Active Directory users and/or groups.")
                 }, {
                     xtype : 'fieldset',
-                    title : this.singleSelectUser ? i18n._('Select an existing user') : i18n._('Select an existing user or users'),
+                    title : this.singleSelectUser ? i18n._('Select an existing user') : i18n._('Select existing user(s) or group(s)'),
                     autoHeight : true,
                     items: [this.usersGrid]
-                },{
+                }, {
+                    border : false,
+                    cls: 'description',
+                    hidden : this.singleSelectUser,
+                    html: i18n._("Or manually specify username using a semicolon separated list. (Example: &quot;alice;bob&quot;)") 
+                }, {
                     xtype : "fieldset",
-                    title : i18n._("Additional Users"),
+                    title : i18n._("Manually specify username(s)"),
                     autoHeight : true,
                     hidden : this.singleSelectUser,
                     items:[{
                         xtype : "textfield",
                         width : 420,
-                        fieldLabel : i18n._( "Other Users" ),
+                        fieldLabel : i18n._( "Username(s)" ),
                         name : "otherUsers"
                     }]
                 },{
                     xtype : 'fieldset',
                     title : i18n._('Add a new user'),
                     autoHeight : true,
+                    hidden : !this.singleSelectUser,
                     buttonAlign : 'left',
                     buttons:[{
                         xtype: "button",
                         name : 'Open Local Directory',
                         text : i18n._("Open Local Directory"),
-                        hidden : !this.loadLocalDirectoryUsers,
+                        hidden : (!this.loadLocalDirectoryUsers || !this.singleSelectUser),
                         handler : function() {
                             Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
                             Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), function() {
@@ -4383,7 +4388,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         xtype: "button",
                         name : 'Open Active Directory',
                         text : i18n._("Open Active Directory"),
-                        hidden : !this.loadActiveDirectoryUsers,
+                        hidden : (!this.loadActiveDirectoryUsers || !this.singleSelectUser),
                         disabled : !main.isNodeRunning('untangle-node-adconnector'),
                         handler : function() {
                             var node = main.getNode('untangle-node-adconnector');
