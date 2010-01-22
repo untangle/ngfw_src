@@ -280,7 +280,6 @@ CREATE TABLE settings.u_ab_settings (
     ad_repo_settings int8 NOT NULL,
     ab_configuration char(1) NOT NULL,
     radius_server_settings INT8 NOT NULL,
-    radius_enabled BOOL NOT NULL,
     PRIMARY KEY (settings_id));
 
 -- com.untangle.uvm.networking.DynamicDNSSettings -- 3.2
@@ -544,17 +543,13 @@ CREATE TABLE settings.u_active_stat (
 
 -- com.untangle.uvm.RadiusServerSettings -- 7.2
 CREATE TABLE settings.u_radius_server_settings (
+    enabled           BOOL NOT NULL,
     settings_id       INT8 NOT NULL,
     server	      TEXT NOT NULL,
     port	      INT4 NOT NULL,
     shared_secret     TEXT NOT NULL,
+    auth_method       TEXT NOT NULL,
     PRIMARY KEY      (settings_id));
-
--- com.untangle.uvm.RadiusSettings -- 7.2
-CREATE TABLE settings.u_radius_settings (
-    id                        INT8 NOT NULL,
-    radius_server_settings_id INT8 NOT NULL,
-    PRIMARY KEY (id));
 
 ----------------
 -- constraints |

@@ -47,21 +47,29 @@ import javax.persistence.Table;
 @Table(name="u_radius_server_settings")
 public class RadiusServerSettings implements Serializable
 {
-    private static final long serialVersionUID = 1856246303246961115L;
+    public enum AuthenticationMethod { CLEARTEXT, PAP, CHAP, MSCHAPV1, MSCHAPV2};
 
+    private static final long serialVersionUID = -502936040588817385L;
+
+    private boolean isEnabled = false;
     private Long id;
     private String server;
     private int port;
     private String sharedSecret;
+    private AuthenticationMethod authenticationMethod;
 
     public RadiusServerSettings() { }
 
-    public RadiusServerSettings(String server,
-                                int port,
-                                String sharedSecret) {
-	this.server = server;
-	this.port = port;
-	this.sharedSecret = sharedSecret;
+    public RadiusServerSettings(boolean isEnabled,
+            String server,
+            int port,
+            String sharedSecret,
+            AuthenticationMethod authenticationMethod) {
+        this.setEnabled(isEnabled);
+        this.server = server;
+        this.port = port;
+        this.sharedSecret = sharedSecret;
+        this.authenticationMethod = authenticationMethod;
     }
 
     @Id
@@ -73,6 +81,15 @@ public class RadiusServerSettings implements Serializable
 
     private void setId(Long id) {
         this.id = id;
+    }
+    
+    @Column(name="enabled")
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     @Column(name="server")
@@ -100,5 +117,15 @@ public class RadiusServerSettings implements Serializable
 
     public void setSharedSecret(String sharedSecret) {
         this.sharedSecret = sharedSecret;
+    }
+    
+    @Column(name="auth_method")
+    public AuthenticationMethod getAuthenticationMethod()
+    {
+        return this.authenticationMethod;
+    }
+    
+    public void setAuthenticationMethod(AuthenticationMethod newValue ) {
+        this.authenticationMethod = newValue;
     }
 }

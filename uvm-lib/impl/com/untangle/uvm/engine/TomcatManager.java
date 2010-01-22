@@ -24,14 +24,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.BindException;
 import java.net.InetAddress;
 import java.util.Properties;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import com.untangle.uvm.util.AdministrationOutsideAccessValve;
-import com.untangle.uvm.util.ReportingOutsideAccessValve;
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
 import org.apache.catalina.LifecycleException;
@@ -46,6 +44,9 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.util.AdministrationOutsideAccessValve;
+import com.untangle.uvm.util.ReportingOutsideAccessValve;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
@@ -84,8 +85,6 @@ class TomcatManager
                   InheritableThreadLocal<HttpServletRequest> threadRequest,
                   String catalinaHome, String webAppRoot, String logDir)
     {
-        InetAddress l;
-
         this.uvmContext = uvmContext;
         this.webAppRoot = webAppRoot;
         this.logDir = logDir;

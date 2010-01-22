@@ -58,7 +58,6 @@ public class AddressBookSettings implements Serializable {
     private RepositorySettings m_aDSettings;
     private AddressBookConfiguration m_configuration;
     private RadiusServerSettings radiusServerSettings;
-    private boolean radiusEnabled;
 
     public AddressBookSettings() { }
 
@@ -101,14 +100,4 @@ public class AddressBookSettings implements Serializable {
     public void setAddressBookConfiguration(AddressBookConfiguration c) {
         m_configuration = c;
     }
-
-    @Column(name="radius_enabled")
-    public boolean getRadiusEnabled() {
-        return radiusEnabled;
-    }
-
-    public void setRadiusEnabled(boolean b) {
-        radiusEnabled = b;
-    }
-
 }

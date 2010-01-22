@@ -45,7 +45,8 @@ $res = radius_auth_open();
 
 function radius_connect($server, $port, $shared_secret)
 {
-  if (!radius_add_server($res, $radserver, $port, $shared_secret, 3, 3) ||
+  global $res;
+  if (!radius_add_server($res, $server, $port, $shared_secret, 3, 3) ||
       !radius_create_request($res, RADIUS_ACCESS_REQUEST) ||
       !radius_put_string($res, RADIUS_NAS_IDENTIFIER, isset($HTTP_HOST) ? $HTTP_HOST : 'localhost') ||
       !radius_put_int($res, RADIUS_SERVICE_TYPE, RADIUS_FRAMED) ||
@@ -56,12 +57,16 @@ function radius_connect($server, $port, $shared_secret)
 }
 
 function radius_set_username($username) {
+  global $res;
+
   if (!radius_put_string($res, RADIUS_USER_NAME, $username)) {
     throw new RadiusException('RadiusError:' . radius_strerror($res). "\n");
   }
 }
 
 function radius_set_password_chap($password) {
+  global $res;
+
   /* generate Challenge */
   mt_srand(time());
   $chall = mt_rand();
@@ -71,6 +76,7 @@ function radius_set_password_chap($password) {
 
   // Radius wants the CHAP Ident in the first byte of the CHAP-Password
   $pass = pack('C', 1) . $chapval;
+
 
   if (!radius_put_attr($res, RADIUS_CHAP_PASSWORD, $pass)) {
     throw new RadiusException('RadiusError: RADIUS_CHAP_PASSWORD:' . radius_strerror($res). "<br>");
@@ -82,6 +88,8 @@ function radius_set_password_chap($password) {
 
 function radius_set_password_mschapv1($password) {
   include_once('mschap.php'); // FIXME
+
+  global $res;
 
   $challenge = GenerateChallenge();
 
@@ -103,6 +111,8 @@ function radius_set_password_mschapv1($password) {
 function radius_set_password_mschapv2($password) {
   include_once('mschap.php');
 
+  global $res;
+
   $authChallenge = GenerateChallenge(16);
 
   if (!radius_put_vendor_attr($res, RADIUS_VENDOR_MICROSOFT, RADIUS_MICROSOFT_MS_CHAP_CHALLENGE, $authChallenge)) {
@@ -123,12 +133,16 @@ function radius_set_password_mschapv2($password) {
 }
 
 function radius_set_password_pap($password) {
+  global $res;
+
   if (!radius_put_string($res, RADIUS_USER_PASSWORD, $password)) {
     throw new RadiusException('RadiusError:' . radius_strerror($res). "<br>");
   }
 }
 
 function radius_send_auth_request() {
+  global $res;
+
   if (!radius_put_int($res, RADIUS_SERVICE_TYPE, RADIUS_FRAMED) ||
       !radius_put_int($res, RADIUS_FRAMED_PROTOCOL, RADIUS_PPP)) {
     throw new RadiusException('RadiusError:' . radius_strerror($res). "\n");
@@ -150,6 +164,8 @@ function radius_send_auth_request() {
 }
 
 function radius_disconnect() {
+  global $res;
+
   radius_close($res);
 }
 

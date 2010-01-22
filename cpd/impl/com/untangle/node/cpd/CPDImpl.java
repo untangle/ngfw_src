@@ -26,12 +26,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.catalina.Valve;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.json.JSONException;
 
+import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.license.LicenseStatus;
@@ -43,6 +46,7 @@ import com.untangle.uvm.logging.UncachedEventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
@@ -52,11 +56,14 @@ import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.user.ADLoginEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
 public class CPDImpl extends AbstractNode implements CPD {
+    private static int deployCount = 0;
+    
     private final CustomUploadHandler uploadHandler = new CustomUploadHandler(); 
     private final Logger logger = Logger.getLogger(CPDImpl.class);
 
@@ -340,6 +347,12 @@ public class CPDImpl extends AbstractNode implements CPD {
             break;
         }
     }
+    
+    @Override
+    public boolean authenticate( String username, String password, String credentials )
+    {
+        return false;
+    }
 
 
     // AbstractNode methods ----------------------------------------------
@@ -395,12 +408,16 @@ public class CPDImpl extends AbstractNode implements CPD {
         getNodeContext().runTransaction(tw);
         
         LocalUvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
+        
+        deployWebAppIfRequired(this.logger);
     }
     
     @Override
     protected void preDestroy() throws NodeException
     {
         LocalUvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
+        
+        unDeployWebAppIfRequired(this.logger);
 
         super.preDestroy();
     }
@@ -496,5 +513,50 @@ public class CPDImpl extends AbstractNode implements CPD {
             
         }
         
+    }
+    
+    protected static synchronized void deployWebAppIfRequired(Logger logger)
+    {
+        if (0 != deployCount++) {
+            return;
+        }
+
+        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        LocalAppServerManager asm = mctx.appServerManager();
+
+        Valve v = new OutsideValve()
+            {
+                protected boolean isInsecureAccessAllowed()
+                {
+                    return true;
+                }
+
+                /* Unified way to determine which parameter to check */
+                protected boolean isOutsideAccessAllowed()
+                {
+                    return false;
+                }
+            };
+
+        if (null != asm.loadInsecureApp("/users", "users", v)) {
+            logger.debug("Deployed authentication WebApp");
+        } else {
+            logger.error("Unable to deploy authentication WebApp");
+        }
+    }
+
+    protected static synchronized void unDeployWebAppIfRequired(Logger logger) {
+        if (0 != --deployCount) {
+            return;
+        }
+
+        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        LocalAppServerManager asm = mctx.appServerManager();
+
+        if (asm.unloadWebApp("/users")) {
+            logger.debug("Unloaded authentication webapp");
+        } else {
+            logger.warn("Uanble to unload authentication WebApp");
+        }
     }
 }

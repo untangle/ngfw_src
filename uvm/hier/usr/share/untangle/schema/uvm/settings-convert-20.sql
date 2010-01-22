@@ -18,27 +18,16 @@ ALTER SCHEMA events OWNER TO postgres;
 
 -- com.untangle.uvm.RadiusServerSettings -- 7.2
 CREATE TABLE settings.u_radius_server_settings (
+    enabled           BOOL NOT NULL,
     settings_id       INT8 NOT NULL,
     server	      TEXT NOT NULL,
     port	      INT4 NOT NULL,
     shared_secret     TEXT NOT NULL,
+    auth_method       TEXT NOT NULL,
     PRIMARY KEY      (settings_id));
 
 ALTER TABLE settings.u_ab_settings
   ADD COLUMN radius_server_settings INT8;
-ALTER TABLE settings.u_ab_settings
-  ADD COLUMN radius_enabled BOOL;
-
-UPDATE settings.u_ab_settings
-  SET radius_server_settings = 1,
-      radius_enabled = false;
 
 ALTER TABLE settings.u_ab_settings
   ALTER COLUMN radius_server_settings SET NOT NULL;
-ALTER TABLE settings.u_ab_settings
-  ALTER COLUMN radius_enabled SET NOT NULL;
-
--- ALTER TABLE settings.u_ab_settings
---   ADD CONSTRAINT radius_server_settings_id NOT NULL;
--- ALTER TABLE settings.u_ab_settings
---   ADD CONSTRAINT radius_settings NOT NULL;

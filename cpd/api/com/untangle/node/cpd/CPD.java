@@ -65,6 +65,15 @@ public interface CPD extends Node
     public Map<String,String> getUserMap();
     public String removeUser( String address ) throws UnknownHostException;
     
+    /**
+     * Return true iff the username and password can be authenticated in the current parameters.
+     * @param username Username
+     * @param password Password
+     * @param credentials  unused.  Could be used for alternative schemes in the future.
+     * @return True if the user is authenticated.
+     */
+    public boolean authenticate( String username, String password, String credentials );
+    
     public EventManager<ADLoginEvent> getLoginEventManager();
     public EventManager<BlockEvent> getBlockEventManager();
     

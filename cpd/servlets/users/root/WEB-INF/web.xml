@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * $HeadURL$
+ * Copyright (c) 2003-2007 Untangle, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+-->
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+
+  <display-name>Captive Portal User Authentication</display-name>
+
+  <servlet>
+    <servlet-name>AuthenticationServlet</servlet-name>
+    <servlet-class>com.untangle.node.cpd.AuthenticationServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+ </servlet>
+
+  @JSP_PRE_COMPILED_SERVLETS@
+
+  <servlet-mapping>
+    <servlet-name>com.untangle.node.cpd.jsp.authenticate_jsp</servlet-name>
+    <url-pattern>/authenticate</url-pattern>
+  </servlet-mapping>
+</web-app>

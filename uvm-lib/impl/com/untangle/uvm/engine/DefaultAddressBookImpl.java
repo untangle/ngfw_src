@@ -40,6 +40,7 @@ import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.uvm.addrbook.GroupEntry;
+import com.untangle.uvm.addrbook.RadiusServerSettings.AuthenticationMethod;
 
 import com.untangle.uvm.license.ProductIdentifier;
 
@@ -79,10 +80,11 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
                                                                             "mydomain.int",
                                                                             "ad_server.mydomain.int",
                                                                             389));
-                    settings.setRadiusServerSettings(new RadiusServerSettings("1.2.3.4",
-                                                                              1812,
-                                                                              "mysharedsecret"));
-                    settings.setRadiusEnabled(false);
+                    settings.setRadiusServerSettings(new RadiusServerSettings(false,
+                            "1.2.3.4",
+                            1812,
+                            "mysharedsecret",
+                            AuthenticationMethod.CLEARTEXT));
                     s.save(settings);
                 }
                 return true;
