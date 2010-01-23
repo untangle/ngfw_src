@@ -77,23 +77,23 @@ public class Schedule implements Serializable
         weeklySched = new LinkedList<WeeklyScheduleRule>();
         WeeklyScheduleRule weeklySR = new WeeklyScheduleRule(SUNDAY);
         weeklySched.add(weeklySR);
-        weeklySR = new WeeklyScheduleRule(MONDAY);
-        weeklySched.add(weeklySR);
-        weeklySR = new WeeklyScheduleRule(TUESDAY);
-        weeklySched.add(weeklySR);
-        weeklySR = new WeeklyScheduleRule(WEDNESDAY);
-        weeklySched.add(weeklySR);
-        weeklySR = new WeeklyScheduleRule(THURSDAY);
-        weeklySched.add(weeklySR);
-        weeklySR = new WeeklyScheduleRule(FRIDAY);
-        weeklySched.add(weeklySR);
-        weeklySR = new WeeklyScheduleRule(SATURDAY);
-        weeklySched.add(weeklySR);
+        //weeklySR = new WeeklyScheduleRule(MONDAY);
+        //weeklySched.add(weeklySR);
+        //weeklySR = new WeeklyScheduleRule(TUESDAY);
+        //weeklySched.add(weeklySR);
+        //weeklySR = new WeeklyScheduleRule(WEDNESDAY);
+        //weeklySched.add(weeklySR);
+        //weeklySR = new WeeklyScheduleRule(THURSDAY);
+        //weeklySched.add(weeklySR);
+        //weeklySR = new WeeklyScheduleRule(FRIDAY);
+        //weeklySched.add(weeklySR);
+        //weeklySR = new WeeklyScheduleRule(SATURDAY);
+        //weeklySched.add(weeklySR);
 
         // create monthly reports only on 1st of month
         monthlyNDaily = false;
         monthlyNDayOfWk = NONE;
-        monthlyNFirst = true;
+        monthlyNFirst = false;
     }
 
     @Id
