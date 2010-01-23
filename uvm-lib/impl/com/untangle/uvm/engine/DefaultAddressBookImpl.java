@@ -41,6 +41,7 @@ import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.uvm.addrbook.GroupEntry;
 import com.untangle.uvm.addrbook.RadiusServerSettings.AuthenticationMethod;
+import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
 
 import com.untangle.uvm.license.ProductIdentifier;
 
@@ -138,6 +139,24 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
 
         return isNotConfigured() ? false : m_localAdapter.authenticate(uid, pwd);
     }
+    
+    public boolean authenticate( String uid, String password, Backend backend )
+    throws ServiceUnavailableException
+    {
+        switch ( backend ) {
+        case ACTIVE_DIRECTORY:
+                return false;
+                
+        case LOCAL_DIRECTORY:
+            return isNotConfigured() ? false : m_localAdapter.authenticate(uid, password);
+            
+        case RADIUS:
+            return false;
+        }
+        
+        return false;
+    }
+
 
     public static class ABStatus implements RemoteAddressBook.Status, Serializable {
         private final boolean isLocalWorking;

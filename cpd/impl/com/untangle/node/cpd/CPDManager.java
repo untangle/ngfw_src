@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.naming.ServiceUnavailableException;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -13,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.firewall.ParsingConstants;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
@@ -79,6 +82,47 @@ class CPDManager {
     void loadCustomPage( String fileName ) throws NodeException
     {
         ScriptRunner.getInstance().exec( LOAD_CUSTOM_SCRIPT, fileName );
+    }
+    
+    boolean authenticate( String username, String password, String credentials )
+    {
+        boolean isAuthenticated = false;
+        CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
+        
+        switch( baseSettings.getAuthenticationType()) {
+        case NONE:
+            isAuthenticated = true;
+            break;
+            
+        case ACTIVE_DIRECTORY:
+            try {
+                isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(username, password, Backend.ACTIVE_DIRECTORY);
+            } catch (ServiceUnavailableException e) {
+                logger.warn( "Unable to authenticate users.", e );
+                isAuthenticated = false;
+            }
+            break;
+            
+        case LOCAL_DIRECTORY:
+            try {
+                isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(username, password, Backend.LOCAL_DIRECTORY);
+            } catch (ServiceUnavailableException e) {
+                logger.warn( "Unable to authenticate users.", e );
+                isAuthenticated = false;
+            }
+            break;
+            
+        case RADIUS:
+            try {
+                isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(username, password, Backend.RADIUS);
+            } catch (ServiceUnavailableException e) {
+                logger.warn( "Unable to authenticate users.", e );
+                isAuthenticated = false;
+            }
+            break;
+        }
+        
+        return isAuthenticated;
     }
 
     private JSONObject serializeCPDSettings( CPDSettings settings, boolean isEnabled ) throws JSONException

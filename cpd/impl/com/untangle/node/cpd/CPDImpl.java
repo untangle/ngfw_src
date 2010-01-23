@@ -351,7 +351,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     @Override
     public boolean authenticate( String username, String password, String credentials )
     {
-        return false;
+        return this.manager.authenticate( username, password, credentials );
     }
 
 
@@ -534,7 +534,7 @@ public class CPDImpl extends AbstractNode implements CPD {
                 /* Unified way to determine which parameter to check */
                 protected boolean isOutsideAccessAllowed()
                 {
-                    return false;
+                    return true;
                 }
             };
 

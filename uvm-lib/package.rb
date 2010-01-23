@@ -35,7 +35,7 @@ jts << JarTarget.build_target(uvm_lib, Jars::Base + [uvm_lib['api']], 'localapi'
 
 ## Implementation
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
-  Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::JFreeChart +
+  Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::JFreeChart + 
   [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['localapi'], jnetcap['impl'], jvector['impl']]
 
 jts << JarTarget.build_target(uvm_lib, deps, 'impl', "./uvm-lib/impl")
@@ -93,6 +93,8 @@ thirdparty = BuildEnv::SRC['untangle-libuvmthirdparty']
 BuildEnv::SRC.installTarget.install_jars(Jars::Base, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::ProperJavaRDP, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::YUICompressor, "#{thirdparty.distDirectory}/usr/share/java/uvm")
+BuildEnv::SRC.installTarget.install_jars(Jars::JRadius, "#{thirdparty.distDirectory}/usr/share/java/uvm")
+
 
 BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/toolbox")
 

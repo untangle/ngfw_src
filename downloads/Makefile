@@ -23,8 +23,9 @@ tarballs_gz=apache-ant-1.6.5.tar.gz commons-beanutils-1.7.0.tar.gz \
 	jcifs_1.2.9.tar.gz commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \
 	commons-httpclient-3.0.tar.gz AjaxTK-3.1.1_GA_394-src.tar.gz \
 	commons-codec-1.3.tar.gz tightvnc-1.2.9_javabin.tar.gz \
-    je-3.2.74.tar.gz xmlrpc-current-bin.tar.gz slf4j-1.4.3.tar.gz \
-	python-jsonrpc-r19.tar.gz dnsjava-2.0.6.tar.gz
+	je-3.2.74.tar.gz xmlrpc-current-bin.tar.gz slf4j-1.4.3.tar.gz \
+	python-jsonrpc-r19.tar.gz dnsjava-2.0.6.tar.gz \
+	jradius-1.1.0-client.tar.gz
 
 tarballs_bz2=ant-contrib-1.0b2.tar.bz2 jaf-1.0.2.tar.bz2 \
 	junit3.8.1.tar.bz2 junit4.1.tar.bz2  \

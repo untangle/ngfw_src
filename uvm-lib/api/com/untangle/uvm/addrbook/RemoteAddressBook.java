@@ -53,6 +53,7 @@ import com.untangle.uvm.license.LicensedProduct;
  */
 public interface RemoteAddressBook extends LicensedProduct
 {
+    public enum Backend { ACTIVE_DIRECTORY, LOCAL_DIRECTORY, RADIUS };
     /**
      * Get the AddressBookSettings of this address book.
      */
@@ -88,7 +89,9 @@ public interface RemoteAddressBook extends LicensedProduct
      */
     boolean authenticate(String uid, /*char[]*/String pwd)
         throws ServiceUnavailableException;
-
+    
+    public boolean authenticate( String uid, String password, Backend backend )
+    throws ServiceUnavailableException;
 
     /**
      * Connectivity tester for AD

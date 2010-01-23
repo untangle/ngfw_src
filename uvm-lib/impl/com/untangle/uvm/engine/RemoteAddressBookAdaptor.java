@@ -64,6 +64,12 @@ class RemoteAddressBookAdaptor implements RemoteAddressBook {
         throws ServiceUnavailableException {
         return this.addressBook.authenticate(uid,pwd);
     }
+    
+    @Override
+    public boolean authenticate(String uid, String pwd, Backend backend)
+    throws ServiceUnavailableException{
+        return this.addressBook.authenticate(uid, pwd, backend);
+    }
 
     public Status getStatus() {
         return this.addressBook.getStatus();

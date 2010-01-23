@@ -126,6 +126,12 @@ class Jars
   XStream    = [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xstream-1.3.jar'),
                  Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xpp3_min-1.1.4c.jar')]
 
+  JRadius    = [ Jars.downloadTarget('jradius-1.1.0-client/lib/commons-configuration-1.5.jar'),
+                 Jars.downloadTarget('jradius-1.1.0-client/lib/commons-pool-1.5.4.jar'),
+                 Jars.downloadTarget('jradius-1.1.0-client/lib/gnu-crypto-2.0.1.jar'),
+                 Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-core-1.1.0.jar'),
+                 Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-dictionary-1.1.0.jar')]
+
   # Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
   Jnlp       = [ Jars.downloadTarget('jnlp/jnlp.jar') ]
 
@@ -169,4 +175,6 @@ class Jars
   # A jar used to build one of the buildutil classes
   Becl        = downloadTarget('bcel-5.2/bcel-5.2.jar')
   JDKTools    = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/lib/tools.jar") ]
+
+  
 end

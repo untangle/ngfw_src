@@ -2,7 +2,6 @@
 <%@page import="com.untangle.uvm.LocalUvmContext"%>
 <%@page import="com.untangle.uvm.LocalUvmContextFactory"%>
 <%@page import="com.untangle.node.cpd.CPD"%>
-
 <%--
  * $HeadURL: svn://chef/work/src/cpd/servlets/users/root/authenticate.jsp $
  * Copyright (c) 2003-2007 Untangle, Inc. 
@@ -25,9 +24,15 @@ LocalUvmContext uvm = LocalUvmContextFactory.context();
 CPD cpd = (CPD)uvm.nodeManager().node("untangle-node-cpd");
 
 boolean isAuthenticated = false;
+
 if ( cpd != null ) {
-    isAuthenticated = cpd.authenticate( "username", "password", null );
+    String username = request.getParameter("username");
+    String password = request.getParameter("password");
+    if ( username != null && password != null ) {
+        username = username.trim();
+        password = password.trim();
+        isAuthenticated = cpd.authenticate( username, password, null );
+    }
 }
 %>
-What the hell is going on here.
-<%= isAuthenticated %>
+<%= s %>

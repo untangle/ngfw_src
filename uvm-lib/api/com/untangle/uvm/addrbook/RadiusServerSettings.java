@@ -39,6 +39,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Settings for Radius
@@ -56,8 +57,9 @@ public class RadiusServerSettings implements Serializable
     private String server;
     private int port;
     private String sharedSecret;
-    private AuthenticationMethod authenticationMethod;
-
+    
+    private String authenticationMethodValue = AuthenticationMethod.CLEARTEXT.toString();
+    
     public RadiusServerSettings() { }
 
     public RadiusServerSettings(boolean isEnabled,
@@ -69,9 +71,10 @@ public class RadiusServerSettings implements Serializable
         this.server = server;
         this.port = port;
         this.sharedSecret = sharedSecret;
-        this.authenticationMethod = authenticationMethod;
+        setAuthenticationMethod(authenticationMethod);
     }
 
+    @SuppressWarnings("unused")
     @Id
     @Column(name="settings_id")
     @GeneratedValue
@@ -79,6 +82,7 @@ public class RadiusServerSettings implements Serializable
         return id;
     }
 
+    @SuppressWarnings("unused")
     private void setId(Long id) {
         this.id = id;
     }
@@ -118,14 +122,26 @@ public class RadiusServerSettings implements Serializable
     public void setSharedSecret(String sharedSecret) {
         this.sharedSecret = sharedSecret;
     }
-    
+
+    @SuppressWarnings("unused")
     @Column(name="auth_method")
+    private String getAuthenticationMethodValue()
+    {
+        return this.authenticationMethodValue;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setAuthenticationMethodValue(String newValue ) {
+        this.authenticationMethodValue = newValue;
+    }
+    
+    @Transient
     public AuthenticationMethod getAuthenticationMethod()
     {
-        return this.authenticationMethod;
+        return AuthenticationMethod.valueOf(this.authenticationMethodValue);
     }
     
     public void setAuthenticationMethod(AuthenticationMethod newValue ) {
-        this.authenticationMethod = newValue;
+        this.authenticationMethodValue = newValue.toString();
     }
 }
