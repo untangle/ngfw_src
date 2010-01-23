@@ -445,11 +445,11 @@ Ung.Reports = Ext.extend(Object,{
                     }
                 },{
                     id : "_dynamic",
-                    header : i18n._( "Dynamic Reports Available" ),
+                    header : i18n._( "Per Host/User/Email Reports" ),
                     width : 168,
                     dataIndex : "dt",                    
                     renderer : function (value,meta,record){
-                        return this.isDynamicDataAvailable(record.data) === true ? i18n._("Yes") : i18n._("No")                           
+                        return this.isDynamicDataAvailable(record.data) === true ? i18n._("Available") : i18n._("Unavailable")                           
                     }.createDelegate(this)
                 }]               
             });
