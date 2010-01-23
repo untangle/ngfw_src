@@ -1280,7 +1280,7 @@ WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
 
 class WebFilterDetailDomains(DetailSection):
     def __init__(self, vendor_name):
-        DetailSection.__init__(self, 'domains', _('Domain Events'))
+        DetailSection.__init__(self, 'domains', _('Site Events'))
 
         self.__vendor_name = vendor_name
 
