@@ -242,16 +242,9 @@ class CPDManager {
         addressList.add("any");
 
         if ( ( matcher instanceof IPSingleMatcher) || ( matcher instanceof IPSubnetMatcher) ||
-                ( matcher instanceof IPRangeMatcher )) {
+                ( matcher instanceof IPRangeMatcher ) || ( matcher instanceof IPSetMatcher)) {
             addressList = new ArrayList<String>(1);
             addressList.add(matcher.toDatabaseString());
-        } else if ( matcher instanceof IPSetMatcher ) {
-            String[] i = matcher.toDatabaseString().split(ParsingConstants.MARKER_SEPERATOR);
-            addressList = new ArrayList<String>(i.length);
-            
-            for ( String intf : i ) {
-                addressList.add(intf);
-            }
         } else if ( matcher == IPSimpleMatcher.getNilMatcher()) {
             logger.info( "Capture rule with nil address matcher, returning.");
             return null;
