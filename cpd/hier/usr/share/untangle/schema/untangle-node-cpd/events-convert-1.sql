@@ -33,11 +33,20 @@ CREATE TABLE events.n_cpd_block_evt (
     PRIMARY KEY (event_id));
 
 
+-- CPDLoginEvent
+CREATE TABLE events.n_cpd_login_evt (
+    event_id    INT8 NOT NULL,
+    login_name  TEXT,
+    event	TEXT,
+    auth_method TEXT,
+    time_stamp  TIMESTAMP,
+    client_addr inet,
+    PRIMARY KEY (event_id));
+
 ----------------
 -- constraints |
 ----------------
 
 -- indices for reporting
-CREATE INDEX n_cpd_evt_plepid_idx ON events.n_cpd_evt (pl_endp_id);
 CREATE INDEX n_cpd_evt_ts_idx ON events.n_cpd_evt (time_stamp);
-
+CREATE INDEX n_cpd_login_evt_ts_idx ON events.n_cpd_login_evt(time_stamp);

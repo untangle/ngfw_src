@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm-lib/impl/com/untangle/uvm/user/ADLoginEvent.java $
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.uvm.user;
+package com.untangle.node.cpd;
 
 import java.net.InetAddress;
 
@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
+import com.untangle.uvm.addrbook.RadiusServerSettings.AuthenticationMethod;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
@@ -34,35 +35,33 @@ import com.untangle.uvm.logging.SyslogPriority;
 /**
  * Log event for a login/login-attempt.
  *
- * @author <a href="mailto:seb@untangle.com">Sébastien Delafond</a>
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_login_evt", schema="events")
-public class ADLoginEvent extends LogEvent
+public class CPDLoginEvent extends LogEvent
 {
-    private static final long serialVersionUID = -1453486832767493983L;
+    private static final long serialVersionUID = 1716114286650532644L;
 
-    public static String EVENT_LOGIN = "I";
-    public static String EVENT_UPDATE = "U";
-    public static String EVENT_LOGOUT = "O";
+    public enum EventType { LOGIN, UPDATE, FAILED, LOGOUT };
 
     private InetAddress clientAddr;
     private String loginName;
-    private String domain;
-    private String event;
+    private String methodValue;
+    private String eventValue;
 
     // constructors --------------------------------------------------------
 
-    public ADLoginEvent() { }
+    public CPDLoginEvent() { }
 
-    public ADLoginEvent(InetAddress clientAddr, String loginName, String domain, String event)
+    public CPDLoginEvent(InetAddress clientAddr, String loginName, AuthenticationMethod method, EventType event)
     {
         this.clientAddr = clientAddr;
         this.loginName = loginName;
-        this.domain = domain;
-        this.event = event;
+        setMethod(method);
+        setEvent(event);
     }
 
     // accessors -----------------------------------------------------------
@@ -101,32 +100,14 @@ public class ADLoginEvent extends LogEvent
     }
 
     /**
-     * Get the <code>Domain</code> value.
-     *
-     * @return a <code>String</code> value
-     */
-    @Column(name="domain")
-    public String getDomain() {
-        return domain;
-    }
-
-    /**
-     * Set the <code>Domain</code> value.
-     *
-     * @param newDomain The new Domain value.
-     */
-    public void setDomain(String newDomain) {
-        this.domain = newDomain;
-    }
-
-    /**
      * Get the <code>Event</code> value.
      *
      * @return a <code>String</code> value
      */
-    @Column(name="type")
-    public String getEvent() {
-        return event;
+    @SuppressWarnings("unused")
+    @Column(name="event")
+    private String getEventValue() {
+        return eventValue;
     }
 
     /**
@@ -134,10 +115,52 @@ public class ADLoginEvent extends LogEvent
      *
      * @param newEvent The new Event value.
      */
-    public void setEvent(String newEvent) {
-        this.event = newEvent;
+    @SuppressWarnings("unused")
+    private void setEventValue(String newEvent) {
+        this.eventValue = newEvent;
+    }
+    
+
+    @Transient
+    public EventType getEvent() {
+        return EventType.valueOf(this.eventValue);
     }
 
+    public void setEvent(EventType newEvent) {
+        this.eventValue = newEvent.toString();
+    }
+    
+    /**
+     * Get the <code>Method</code> value.
+     *
+     * @return a <code>String</code> value
+     */
+    @SuppressWarnings("unused")
+    @Column(name="auth_method")
+    private String getMethodValue() {
+        return methodValue;
+    }
+
+    /**
+     * Set the <code>Event</code> value.
+     *
+     * @param newEvent The new Event value.
+     */
+    @SuppressWarnings("unused")
+    private void setMethodValue(String newValue) {
+        this.methodValue = newValue;
+    }
+    
+
+    @Transient
+    public AuthenticationMethod getMethod() {
+        return AuthenticationMethod.valueOf(this.methodValue);
+    }
+
+    public void setMethod(AuthenticationMethod newValue) {
+        this.methodValue = newValue.toString();
+    }
+    
     // Syslog methods ------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
@@ -145,6 +168,8 @@ public class ADLoginEvent extends LogEvent
         sb.startSection("info");
         sb.addField("client-addr", clientAddr);
         sb.addField("login-name", loginName);
+        sb.addField("method", methodValue);
+        sb.addField("type", eventValue);
     }
 
     @Transient
@@ -163,6 +188,7 @@ public class ADLoginEvent extends LogEvent
 
     public String toString()
     {
-        return "ADLoginEvent id: " + getId() + " login-name: " + loginName + " domain: " + domain;
+        return "CPDLoginEvent id: " + getId() + " login-name: " + loginName + " method: " + methodValue +
+        " event: " + eventValue;
     }
 }

@@ -308,39 +308,73 @@ Ung.Util= {
     todo: function() {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
     },
-    interfaceStore : null,
-    getInterfaceStore : function() {
-        if(this.interfaceStore==null) {
+    interfaceEnumeration : null,
+    getInterfaceStore : function(simpleMatchers) {
+        if(this.interfaceEnumeration==null) {
             var intfManager = main.getIntfManager();
-            var enumeration = intfManager.getIntfMatcherEnumeration();
-            var data = [];
-            for ( var c = 0 ; c < enumeration.length ; c++ ) {
-                var key =enumeration[c];
-                var name = key;
-                switch ( key ) {
-                case "any": name = i18n._("any") ; break;
-                case "0": name = i18n._("External") ; break;
-                case "1": name = i18n._("Internal") ; break;
-                case "2": name = i18n._("DMZ") ; break;
-                case "7": name = i18n._("VPN") ; break;
-                case "more_trusted": name = i18n._("More Trusted") ; break;
-                case "less_trusted": name = i18n._("Less Trusted") ; break;
-                case "wan": name = i18n._("Any WAN Interface") ; break;
-                case "non_wan": name = i18n._("Any non-WAN Interface") ; break;
-                default :
-                    /* XXX need to do something here? for interfaces like External | Internal XXX */
+            this.interfaceEnumeration = intfManager.getIntfMatcherEnumeration();
+        }
+        
+        var data = [];
+        
+        for ( var c = 0 ; c < this.interfaceEnumeration.length ; c++ ) {
+            var key =this.interfaceEnumeration[c];
+            var name = key;
+            switch ( key ) {
+            case "any": name = i18n._("any") ; break;
+            case "0": name = i18n._("External") ; break;
+            case "1": name = i18n._("Internal") ; break;
+            case "2": name = i18n._("DMZ") ; break;
+            case "3": 
+            case "4": 
+            case "5": 
+            case "6": name = String.format( i18n._("Interface {0}"), key ); break;
+            case "7": name = i18n._("VPN") ; break;
+            case "more_trusted": 
+                if ( simpleMatchers === true ) {
+                    key = null;
+                    break;
                 }
+                name = i18n._("More Trusted");
+                break;
+            case "less_trusted": 
+                if ( simpleMatchers === true ) {
+                    key = null;
+                    break;
+                }
+                name = i18n._("Less Trusted") ; 
+                break;
+            case "wan": 
+                if ( simpleMatchers === true ) {
+                    key = null;
+                    break;
+                }
+                name = i18n._("Any WAN Interface") ; 
+                break;
 
+            case "non_wan": 
+                if ( simpleMatchers === true ) {
+                    key = null;
+                    break;
+                }
+                name = i18n._("Any non-WAN Interface") ;
+                break;
+
+            default :
+                /* XXX need to do something here? for interfaces like External | Internal XXX */
+            }
+            
+            if ( key != null ) {
                 data[c] = [ key,name ];
             }
-
-            this.interfaceStore=new Ext.data.SimpleStore({
-                fields : ['key', 'name'],
-                data : data
-            });
         }
+        
+        var interfaceStore=new Ext.data.SimpleStore({
+            fields : ['key', 'name'],
+            data : data
+        });
 
-        return this.interfaceStore;
+        return interfaceStore;
     },
     clearInterfaceStore : function()
     {
@@ -604,7 +638,12 @@ Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
         if (( this.width == null ) && ( this.listWidth == null )) {
           this.listWidth = 200;
         }
-        this.store = Ung.Util.getInterfaceStore();
+
+        if ( this.simpleMatchers === null ) {
+            this.simpleMatchers = false;
+        }
+        this.store = Ung.Util.getInterfaceStore( this.simpleMatchers );
+
         Ung.Util.InterfaceCombo.superclass.initComponent.call(this);
     },
     displayField : 'name',

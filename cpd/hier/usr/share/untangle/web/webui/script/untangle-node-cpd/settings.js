@@ -110,7 +110,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     "live" : true,
                     "capture" : true,
                     "log" : false,
-                    "clientInterface" : "Internal",
+                    "clientInterface" : "1",
                     "clientAddress" : "any",
                     "serverAddress" : "any",
                     "days" : "mon,tue,wed,thu,fri,sat,sun",
@@ -207,7 +207,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     },new Ung.Util.InterfaceCombo({
                         name : "Client",
                         dataIndex : "clientInterface",
-                        fieldLabel : this.i18n._("Client")
+                        fieldLabel : this.i18n._("Client"),
+                        /* Exclude the UVM specific matchers like More Trusted and Less Trusted. */
+                        simpleMatchers : true
                     })]
                 },{
                     xtype : "fieldset",
