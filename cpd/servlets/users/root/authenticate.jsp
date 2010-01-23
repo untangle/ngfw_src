@@ -35,4 +35,4 @@ if ( cpd != null ) {
     }
 }
 %>
-<%= s %>
+<%= isAuthenticated %>
