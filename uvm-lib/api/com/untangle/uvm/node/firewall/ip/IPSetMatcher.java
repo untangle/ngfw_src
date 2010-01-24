@@ -54,6 +54,8 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  */
 public final class IPSetMatcher extends IPDBMatcher
 {
+    private static final long serialVersionUID = 2142806285574662136L;
+
     /* The set of addresses that match */
     private final Set<InetAddress> addressSet;
 
@@ -114,14 +116,7 @@ public final class IPSetMatcher extends IPDBMatcher
      * <param>addressArray</param>.
      */
     public static IPDBMatcher makeInstance( Set<InetAddress> addressSet ) 
-    {
-        IPMatcherUtil imu = IPMatcherUtil.getInstance();
-        
-        if ( addressSet == null ) {
-            
-        }
-        
-        
+    {        
         String user = "";
 
         for ( InetAddress address : addressSet ) {

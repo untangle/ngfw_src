@@ -26,7 +26,6 @@ import java.util.Map;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.user.ADLoginEvent;
 
 public interface CPD extends Node
 {
@@ -72,9 +71,9 @@ public interface CPD extends Node
      * @param credentials  unused.  Could be used for alternative schemes in the future.
      * @return True if the user is authenticated.
      */
-    public boolean authenticate( String username, String password, String credentials );
+    public boolean authenticate( String address, String username, String password, String credentials );
     
-    public EventManager<ADLoginEvent> getLoginEventManager();
+    public EventManager<CPDLoginEvent> getLoginEventManager();
     public EventManager<BlockEvent> getBlockEventManager();
     
     public enum BlingerType { BLOCK, AUTHORIZE };

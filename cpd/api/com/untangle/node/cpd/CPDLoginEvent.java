@@ -27,7 +27,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.addrbook.RadiusServerSettings.AuthenticationMethod;
+import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
@@ -40,7 +40,7 @@ import com.untangle.uvm.logging.SyslogPriority;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_login_evt", schema="events")
+@Table(name="n_cpd_login_evt", schema="events")
 public class CPDLoginEvent extends LogEvent
 {
     private static final long serialVersionUID = 1716114286650532644L;
@@ -49,18 +49,18 @@ public class CPDLoginEvent extends LogEvent
 
     private InetAddress clientAddr;
     private String loginName;
-    private String methodValue;
+    private String authenticationTypeValue;
     private String eventValue;
 
     // constructors --------------------------------------------------------
 
     public CPDLoginEvent() { }
 
-    public CPDLoginEvent(InetAddress clientAddr, String loginName, AuthenticationMethod method, EventType event)
+    public CPDLoginEvent(InetAddress clientAddr, String loginName, AuthenticationType type, EventType event)
     {
         this.clientAddr = clientAddr;
         this.loginName = loginName;
-        setMethod(method);
+        setAuthenticationType(type);
         setEvent(event);
     }
 
@@ -136,9 +136,9 @@ public class CPDLoginEvent extends LogEvent
      * @return a <code>String</code> value
      */
     @SuppressWarnings("unused")
-    @Column(name="auth_method")
-    private String getMethodValue() {
-        return methodValue;
+    @Column(name="auth_type")
+    private String getAuthenticationTypeValue() {
+        return authenticationTypeValue;
     }
 
     /**
@@ -147,18 +147,18 @@ public class CPDLoginEvent extends LogEvent
      * @param newEvent The new Event value.
      */
     @SuppressWarnings("unused")
-    private void setMethodValue(String newValue) {
-        this.methodValue = newValue;
+    private void setAuthenticationTypeValue(String newValue) {
+        this.authenticationTypeValue = newValue;
     }
     
 
     @Transient
-    public AuthenticationMethod getMethod() {
-        return AuthenticationMethod.valueOf(this.methodValue);
+    public AuthenticationType getAuthenticationType() {
+        return AuthenticationType.valueOf(this.authenticationTypeValue);
     }
 
-    public void setMethod(AuthenticationMethod newValue) {
-        this.methodValue = newValue.toString();
+    public void setAuthenticationType(AuthenticationType newValue) {
+        this.authenticationTypeValue = newValue.toString();
     }
     
     // Syslog methods ------------------------------------------------------
@@ -168,14 +168,14 @@ public class CPDLoginEvent extends LogEvent
         sb.startSection("info");
         sb.addField("client-addr", clientAddr);
         sb.addField("login-name", loginName);
-        sb.addField("method", methodValue);
+        sb.addField("auth-type", authenticationTypeValue);
         sb.addField("type", eventValue);
     }
 
     @Transient
     public String getSyslogId()
     {
-        return "AD login";
+        return "CPD Login";
     }
 
     @Transient
@@ -188,7 +188,7 @@ public class CPDLoginEvent extends LogEvent
 
     public String toString()
     {
-        return "CPDLoginEvent id: " + getId() + " login-name: " + loginName + " method: " + methodValue +
+        return "CPDLoginEvent id: " + getId() + " login-name: " + loginName + " authenticationType: " + authenticationTypeValue +
         " event: " + eventValue;
     }
 }

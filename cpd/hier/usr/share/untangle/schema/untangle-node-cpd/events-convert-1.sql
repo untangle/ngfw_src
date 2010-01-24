@@ -38,7 +38,7 @@ CREATE TABLE events.n_cpd_login_evt (
     event_id    INT8 NOT NULL,
     login_name  TEXT,
     event	TEXT,
-    auth_method TEXT,
+    auth_type   TEXT,
     time_stamp  TIMESTAMP,
     client_addr inet,
     PRIMARY KEY (event_id));

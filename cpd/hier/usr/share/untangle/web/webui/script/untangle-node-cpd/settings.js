@@ -932,6 +932,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     name : "clientAddr"
                 },{
                     name : "loginName"
+                },{
+                    name : "authenticationType"
+                },{
+                    name : "event"
                 }],
                 
                 columns : [{
@@ -952,8 +956,45 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     id : "username",
                     width : 165,
                     sortable : true,
-                    dataIndex : "loginName",
-                    renderer : Ung.SortTypes.asClient
+                    dataIndex : "loginName"
+                },{
+                    header : this.i18n._("action"),
+                    width : 165,
+                    sortable : true,
+                    dataIndex : "event",
+                    render : function( value ) {
+                        switch ( value ) {
+                        case "LOGIN":
+                            return this.i18n._( "authenticated" );
+                        case "FAILED":
+                            return this.i18n._( "access denied" );
+                        case "UPDATE":
+                            return this.i18n._( "re-authenticated" );
+                            
+                        case "LOGOUT":
+                            return this.i18n._( "logout" );
+                        }
+                        return "";
+                    }.createDelegate( this )
+                },{
+                    header : this.i18n._("Authentication"),
+                    width : 165,
+                    sortable : true,
+                    dataIndex : "authenticationType",
+                    render : function( value ) {
+                        switch ( value ) {
+                        case "NONE":
+                            return this.i18n._( "None" );
+                        case "LOCAL_DIRECTORY":
+                            return this.i18n._( "Local Directory" );
+                        case "ACTIVE_DIRECTORY":
+                            return this.i18n._( "Active Directory" );
+                        case "RADIUS":
+                            return this.i18n._( "RADIUS" );                            
+                        }
+
+                        return "";
+                    }.createDelegate( this )
                 }]
             });
         },

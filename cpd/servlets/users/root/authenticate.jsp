@@ -31,7 +31,7 @@ if ( cpd != null ) {
     if ( username != null && password != null ) {
         username = username.trim();
         password = password.trim();
-        isAuthenticated = cpd.authenticate( username, password, null );
+        isAuthenticated = cpd.authenticate( request.getRemoteAddr(), username, password, null );
     }
 }
 %>

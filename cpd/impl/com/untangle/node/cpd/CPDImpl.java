@@ -46,7 +46,6 @@ import com.untangle.uvm.logging.UncachedEventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
-import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
@@ -54,7 +53,6 @@ import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.uvm.user.ADLoginEvent;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -72,7 +70,7 @@ public class CPDImpl extends AbstractNode implements CPD {
 
     private final PhoneBookAssistant phoneBookAssistant;
     
-    private final EventLogger<ADLoginEvent> loginEventLogger;
+    private final EventLogger<CPDLoginEvent> loginEventLogger;
     private final UncachedEventManager<BlockEvent> blockEventLogger;
     
     private final CPDManager manager = new CPDManager(this);
@@ -87,6 +85,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     public CPDImpl() {
         NodeContext nodeContext = getNodeContext();
         this.loginEventLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
+        this.loginEventLogger.addSimpleEventFilter(new LoginEventFilter());
         this.blockEventLogger = new UncachedEventManager<BlockEvent>();
         this.blockEventLogger.makeRepository(new BlockEventFilter(this));
         
@@ -323,7 +322,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     }
     
     @Override
-    public EventManager<ADLoginEvent> getLoginEventManager()
+    public EventManager<CPDLoginEvent> getLoginEventManager()
     {
         return this.loginEventLogger;
     }
@@ -349,9 +348,11 @@ public class CPDImpl extends AbstractNode implements CPD {
     }
     
     @Override
-    public boolean authenticate( String username, String password, String credentials )
+    public boolean authenticate( String address, String username, String password, String credentials )
     {
-        return this.manager.authenticate( username, password, credentials );
+        /* This is split out for debugging */
+        boolean isAuthenticated = this.manager.authenticate(address, username, password, credentials);
+        return isAuthenticated;
     }
 
 

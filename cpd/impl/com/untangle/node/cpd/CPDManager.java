@@ -2,18 +2,20 @@ package com.untangle.node.cpd;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.naming.ServiceUnavailableException;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.untangle.node.cpd.CPD.BlingerType;
+import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
 import com.untangle.uvm.node.NodeException;
@@ -84,12 +86,14 @@ class CPDManager {
         ScriptRunner.getInstance().exec( LOAD_CUSTOM_SCRIPT, fileName );
     }
     
-    boolean authenticate( String username, String password, String credentials )
+    boolean authenticate( String addressString, String username, String password, String credentials )
     {
         boolean isAuthenticated = false;
         CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
         
-        switch( baseSettings.getAuthenticationType()) {
+        AuthenticationType method = baseSettings.getAuthenticationType(); 
+        
+        switch( method ) {
         case NONE:
             isAuthenticated = true;
             break;
@@ -120,6 +124,21 @@ class CPDManager {
                 isAuthenticated = false;
             }
             break;
+        }
+        
+        try {
+            InetAddress address = InetAddress.getByName( addressString );
+            CPDLoginEvent.EventType eventType = isAuthenticated ? 
+                    CPDLoginEvent.EventType.LOGIN : CPDLoginEvent.EventType.FAILED; 
+            CPDLoginEvent event = new CPDLoginEvent( address, username, method, eventType );
+
+            this.cpd.getLoginEventManager().log(event);
+        } catch ( UnknownHostException e ) {
+            logger.info( "Unable to resolve the host:" + addressString );
+        }
+        
+        if ( isAuthenticated ) {
+            this.cpd.incrementCount(BlingerType.AUTHORIZE, 1);
         }
         
         return isAuthenticated;
