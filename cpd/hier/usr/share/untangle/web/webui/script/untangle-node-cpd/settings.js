@@ -712,7 +712,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             }
                         },{
                             xtype : "textarea",
-                            allowBlank : false,
+                            allowBlank : true,
                             name : "basicLoginMessageText",
                             width : 400,
                             height : 250,
@@ -807,6 +807,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             allowBlank : false,
                             name : "basicMessageFooter",
                             fieldLabel : this.i18n._("Lower Text"),
+                            width : 400,
                             pageType : "BASIC_MESSAGE",
                             value : this.pageParameters.basicMessageFooter,
                             listeners : {
@@ -861,6 +862,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     items : [{
                         xtype : "textfield",
                         name : "redirectUrl",
+                        width : 200,
                         fieldLabel : this.i18n._("Redirect URL"),
                         value : this.getBaseSettings().redirectUrl,
                         listeners : {

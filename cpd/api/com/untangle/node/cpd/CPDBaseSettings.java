@@ -15,11 +15,11 @@ public class CPDBaseSettings implements Serializable {
     private boolean captureBypassedTraffic = true;
     private AuthenticationType authenticationType = AuthenticationType.NONE;
     private int idleTimeout = 0;
-    private int timeout = 0;
+    private int timeout = 3600;
     private boolean isLogoutButtonEnabled = false;
     private boolean areConcurrentLoginsEnabled = true;
     private PageType pageType = PageType.BASIC_MESSAGE;
-    private String pageParameters = "{}";
+    private String pageParameters = "";
     private String redirectUrl = "";
     private boolean useHttpsPage= false;
     private boolean isRedirectHttpsEnabled = false;

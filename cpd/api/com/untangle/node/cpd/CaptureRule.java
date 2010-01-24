@@ -35,6 +35,20 @@ import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 public class CaptureRule extends Rule
 {
     private static final long serialVersionUID = 4602132207988197210L;
+    
+    public static final String START_OF_DAY = "00:00";
+    public static final String END_OF_DAY = "23:59";
+    public static final String ALL_DAYS = "mon,tue,wed,thu,fri,sat,sun";
+    
+    private boolean capture = true;
+    private IntfDBMatcher clientInterface = IntfSimpleMatcher.getAllMatcher();
+    private IPDBMatcher clientAddress = IPSimpleMatcher.getAllMatcher();
+    private IPDBMatcher serverAddress = IPSimpleMatcher.getAllMatcher();
+    
+    String startTime = START_OF_DAY;
+    String endTime = END_OF_DAY;
+    
+    String days = ALL_DAYS;
 
     public CaptureRule()
     {
@@ -55,16 +69,6 @@ public class CaptureRule extends Rule
 	    this.endTime = endTime;
 	    this.days = days;
 	}
-
-    private boolean capture = true;
-    private IntfDBMatcher clientInterface = IntfSimpleMatcher.getAllMatcher();
-    private IPDBMatcher clientAddress = IPSimpleMatcher.getAllMatcher();
-    private IPDBMatcher serverAddress = IPSimpleMatcher.getAllMatcher();
-    
-    String startTime = "00:00";
-    String endTime = "11:59";
-    
-    String days = "mon,tue,wed,thu,fri,sat,sun";
    
     @Column(name="capture_enabled", nullable=false)
     public boolean getCapture()

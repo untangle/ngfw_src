@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
@@ -52,6 +53,9 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.node.firewall.intf.IntfSimpleMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfSingleMatcher;
+import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
@@ -101,8 +105,25 @@ public class CPDImpl extends AbstractNode implements CPD {
     }
 
     public void initializeSettings() {
-        CPDSettings settings = new CPDSettings(this.getTid());
         logger.info("Initializing Settings...");
+        
+        CPDSettings settings = new CPDSettings(this.getTid());
+        /* Create a set of default capture rules */
+        List<CaptureRule> rules = new LinkedList<CaptureRule>();
+        rules.add(new CaptureRule(false, true,
+                "Require a login for traffic on the internal interface", 
+                IntfSingleMatcher.getInternalMatcher(), 
+                IPSimpleMatcher.getAllMatcher(), IPSimpleMatcher.getAllMatcher(),
+                CaptureRule.START_OF_DAY, CaptureRule.END_OF_DAY, CaptureRule.ALL_DAYS));
+        
+        rules.add(new CaptureRule(false, true,
+                "Require a login between 8:00 AM and 5 PM on the internal interface.", 
+                IntfSingleMatcher.getInternalMatcher(), 
+                IPSimpleMatcher.getAllMatcher(), IPSimpleMatcher.getAllMatcher(),
+                "8:00", "17:00", CaptureRule.ALL_DAYS));
+        
+        settings.setCaptureRules(rules);
+        settings.getBaseSettings().setPageParameters(getDefaultPageParameters());
 
         try {
             setCPDSettings(settings);
@@ -112,7 +133,7 @@ public class CPDImpl extends AbstractNode implements CPD {
         }
     }
 
-    // TestNode methods --------------------------------------------------
+    // CPDNode methods --------------------------------------------------
 
     @Override
     public void setCPDSettings(final CPDSettings settings) throws NodeException {
@@ -493,6 +514,30 @@ public class CPDImpl extends AbstractNode implements CPD {
         }
         baseSettings.setDirectoryConnectorEnabled(isDirectoryConnectorEnabled);
     }
+    
+    private String getDefaultPageParameters() {
+
+        try {
+            JSONObject parameters = new JSONObject();
+            parameters.put( "basicLoginPageTitle", "Captive Portal");
+            parameters.put( "basicLoginPageWelcome", "Welcome to the Untangle&reg; Captive Portal");
+            parameters.put( "basicLoginUsername", "Username:");
+            parameters.put( "basicLoginPassword", "Password:");
+            parameters.put( "basicLoginMessageText", "Please enter your username and password to connect to the Internet.");
+            parameters.put( "basicLoginFooter", "If you have any questions, Please contact your network administrator.");
+            parameters.put( "basicMessagePageTitle", "Captive Portal");
+            parameters.put( "basicMessagePageWelcome", "Welcome to the Untangle&reg; Captive Portal");
+            parameters.put( "basicMessageMessageText", "Click Continue to connect to the Internet.");
+            parameters.put( "basicMessageAgreeText", "Clicking here means you agree to the terms above.");
+            parameters.put( "basicMessageFooter", "If you have any questions, Please contact your network administrator.");
+            return parameters.toString();
+        } catch ( JSONException e ) {
+            logger.warn( "Unable to create default page parameters" );
+        }
+
+        return "{}";
+    }
+
 
     PhoneBookAssistant getPhoneBookAssistant() {
         return this.phoneBookAssistant;
@@ -535,7 +580,7 @@ public class CPDImpl extends AbstractNode implements CPD {
                 /* Unified way to determine which parameter to check */
                 protected boolean isOutsideAccessAllowed()
                 {
-                    return true;
+                    return false;
                 }
             };
 
