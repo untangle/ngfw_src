@@ -228,7 +228,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class LoadUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'load-usage', _('Load Usage'))
+        Graph.__init__(self, 'load-usage', _('CPU Load'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
