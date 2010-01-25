@@ -40,22 +40,23 @@ import java.util.List;
 import javax.persistence.Transient;
 
 public class PolicyConfiguration implements Serializable
-{
-    private static final long serialVersionUID = 6510855335595564613L;
+{    
+    private static final long serialVersionUID = -6831866305511842546L;
 
-    private List policies;
+    private List<Policy> policies;
 
     private List<UserPolicyRule> userPolicyRules;
 
     private boolean hasRackManagement = false;
+    private boolean hasUserManagement = false;
 
     public PolicyConfiguration()
     {
     }
 
-    public PolicyConfiguration(List policies, UserPolicyRule[] userRules)
+    public PolicyConfiguration(List<Policy> policies, UserPolicyRule[] userRules)
     {
-        this.policies = new ArrayList(policies);
+        this.policies = new ArrayList<Policy>(policies);
         userPolicyRules = new ArrayList<UserPolicyRule>(userRules.length);
         for (int i = 0; i < userRules.length; i++) {
             userPolicyRules.add(userRules[i]);
@@ -96,6 +97,21 @@ public class PolicyConfiguration implements Serializable
     {
         this.hasRackManagement = newValue;
     }
+    
+    /**
+     * True if the user has directory connector and it is enabled.
+     */
+    @Transient
+    public boolean getHasUserManagement()
+    {
+        return this.hasUserManagement;
+    }
+
+    public void setHasUserManagement(boolean newValue)
+    {
+        this.hasUserManagement = newValue;
+    }
+
 
 }
 

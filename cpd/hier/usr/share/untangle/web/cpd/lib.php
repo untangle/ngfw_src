@@ -180,5 +180,33 @@ function remove_host()
                            ));
 }
 
+function get_redirect_url()
+{
+    global $cpd_settings;
+    $redirect_url = $cpd_settings["redirect_url"];
+    if ( $redirect_url == NULL ) { 
+        $redirect_url = "";
+    }
+    
+    /* If the user provides a redirect URL, always send them to the redirect url */
+    $redirect_url = trim( $redirect_url );
+
+    if ( strlen( $redirect_url ) != 0 ) {
+        return $redirect_url;
+    }
+
+    /* If they have a next destination, send them there */
+    $server_name = $_SESSION["server_name"];
+    $path = $_SESSION["path"];
+    $ssl = $_SESSION["ssl"];
+    
+    if (( $server_name != null ) && ( $path != null )  && ( $server_name != $_SERVER["SERVER_ADDR"] )) {
+        return (( $ssl ) ? "https" : "http" ) . "://" . $server_name . $path;
+    }
+
+    /* Otherwise send them to untangle.com */
+    return "http://guide.untangle.com/captive-portal";
+}
+
 
 ?>

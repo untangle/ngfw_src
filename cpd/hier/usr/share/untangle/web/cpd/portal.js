@@ -5,16 +5,15 @@ function acceptAgreement(){
     if(agree){
         agreeValue = agree.type == 'hidden' ? true : agree.checked 
         if(agreeValue === true){
-                        
-            window.location.href = "http://www.untangle.com";
+            authenticateUser("agree-error");
             return;
-                                    
         }else{
             document.getElementById("agree-error").style.display = 'block';
         }
     }
 }
-function authenticateUser()
+
+function authenticateUser( errorField )
 {
     var e = document.getElementById("authenticateUser");
     if (e) {
@@ -22,7 +21,7 @@ function authenticateUser()
     }
 
     var req = false;
-    document.getElementById("login-error").style.display = 'none';
+    document.getElementById(errorField).style.display = 'none';
     if (window.XMLHttpRequest) {
         req = new XMLHttpRequest();
         if (req.overrideMimeType) {
@@ -41,19 +40,18 @@ function authenticateUser()
     req.onreadystatechange = function()
     {
         if (req.readyState == 4) {
-            if ( req.responseText.indexOf( "<success/>" ) >= 0 ) {
-                //alert( "You have been authenticated." );
-                window.location.href = "http://www.untangle.com";
+            var v = JSON.parse( req.responseText );
+            if ( v["authenticate"] == true ) {
+                redirectUser();
                 return;
             }
-            
-            
+
             var e = document.getElementById("authenticateUser");
 
             if (e) {
                 e.disabled = false;
             }
-            document.getElementById("login-error").style.display = 'block';
+            document.getElementById(errorField).style.display = 'block';
             //alert( "Unable to authenticate you, please try again." );
         }
     };
@@ -66,17 +64,29 @@ function authenticateUser()
         username = username.value;
     }
     if ( username == null ) {
-        username = "";
+        username = "<basic>";
     }
 
     if ( password != null ) {
         password = password.value;
     }
     if ( password == null ) {
-        password = "";
+        password = "<empty>";
     }
     
-    req.open("POST", "authenticate.php", true);
+    req.open("POST", "/users/authenticate", true);
+    req.overrideMimeType("application/json");
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.send("username=" + escape( username ) + "&password=" + escape( password ));
 };
+
+function redirectUser()
+{
+    var t = redirectUrl;
+    //alert( "You have been authenticated." );
+    if ( t == null ) {
+        t = "http://guide.untangle.com/captive-portal";
+    }
+    
+    window.location.href = t;
+}

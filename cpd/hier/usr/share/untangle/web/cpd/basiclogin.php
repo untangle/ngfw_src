@@ -2,7 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
   <meta http-equiv="X-UA-Compatible" content="IE=7.0000"/>
-  <link href="/images/favicon-captive-portal.png" type="image/png" rel="icon"/>
+  <link href="/images/favicon-captive-portal.png" type="image/png" rel="icon"></link>
+  <script type="text/javascript">
+     var redirectUrl = "<?= get_redirect_url() ?>";
+  </script>
+  <script src="json2-min.js" type="text/javascript"></script>
   <script src="portal.js" type="text/javascript"></script>
   <title>
     <?= trim( $branding_settings["company_name"] ) ?> | Captive Portal
@@ -50,7 +54,7 @@
             <input class="u-form-text u-form-field" type="password" id="password"/>          
           </div>          
           <div class="u-form-item">
-            <a href="#" onclick="return authenticateUser(false)" class="img-background" id="authenticateUser">
+              <a href="#" onclick="return authenticateUser('login-error')" class="img-background" id="authenticateUser">
               Login
             </a>
           </div>

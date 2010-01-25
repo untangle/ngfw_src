@@ -139,7 +139,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         },
         buildInfo : function() {
             var items = null;
-
+            
             if ( this.getPolicyManagerLicenseStatus().expired ) {
                 items = [{
                     cls: 'description',
@@ -374,6 +374,26 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             });
             var policiesList = this.getPolicyConfiguration().policies.list;
             
+            var userHandler = null;
+            if (this.getPolicyConfiguration(false).hasUserManagement) {
+                userHandler = function(record) {
+                    // populate usersWindow
+                    this.grid.usersWindow.show();
+                    this.grid.usersWindow.populate(record);
+                };
+            } else {
+                userHandler = function(record) {
+                    Ext.MessageBox.show({
+                        title: this.i18n._("Directory Connector Feature"),
+                        msg: this.i18n._("Creating policies based on Username requires Directory Connector."),
+                        buttons: { 
+                            ok : true
+                        },
+                        icon: Ext.MessageBox.INFO
+                    });
+                }.createDelegate( this );
+            }
+                
             for (var i = 0; i < this.getPolicyConfiguration().policies.list.length; i++) {
                 this.policyStoreData.push({
                     key : policiesList[i].name,
@@ -396,11 +416,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 width: 80,
                 header: this.i18n._("user"),
                 dataIndex : 'user',
-                handle : function(record) {
-                    // populate usersWindow
-                    this.grid.usersWindow.show();
-                    this.grid.usersWindow.populate(record);
-                }
+                handle : userHandler
             });
             this.gridRules = new Ung.EditorGrid({
                 settingsCmp : this,

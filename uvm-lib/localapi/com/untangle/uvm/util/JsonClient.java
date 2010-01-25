@@ -68,8 +68,12 @@ public class JsonClient
 
     /* Timeout to read data from the client */
     private static final int DEFAULT_SO_TIMEOUT_MS = 90000;
+    
+    public static final String RESPONSE_STATUS = "status";
+    public static final String RESPONSE_MESSAGE = "message";
+    public static final int STATUS_SUCCESS = 104;
 
-    public static final JsonClient INSTANCE = new JsonClient();
+    private static final JsonClient INSTANCE = new JsonClient();
 
     private final MultiThreadedHttpConnectionManager connectionManager =
         new MultiThreadedHttpConnectionManager();

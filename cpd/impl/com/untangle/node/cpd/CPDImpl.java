@@ -53,6 +53,7 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.node.UnconfiguredException;
 import com.untangle.uvm.node.firewall.intf.IntfSimpleMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
@@ -371,8 +372,11 @@ public class CPDImpl extends AbstractNode implements CPD {
     @Override
     public boolean authenticate( String address, String username, String password, String credentials )
     {
-        /* This is split out for debugging */
-        boolean isAuthenticated = this.manager.authenticate(address, username, password, credentials);
+        boolean isAuthenticated = false;
+        if ( this.getRunState() ==  NodeState.RUNNING ) {
+            /* This is split out for debugging */
+            isAuthenticated = this.manager.authenticate(address, username, password, credentials);
+        }
         return isAuthenticated;
     }
 
@@ -389,6 +393,20 @@ public class CPDImpl extends AbstractNode implements CPD {
     @Override
     protected void preStart() throws NodeStartException
     {
+        /* Check if there is at least one enabled capture rule */
+        boolean hasCaptureRule = false;
+        for ( CaptureRule rule : this.settings.getCaptureRules()) {
+            if ( rule.isLive() && rule.getCapture()) {
+                hasCaptureRule = true;
+                break;
+            }
+        }
+        
+        if ( !hasCaptureRule ) {
+            Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-cpd");
+            I18nUtil i18nUtil = new I18nUtil(i18nMap);
+            throw new UnconfiguredException( i18nUtil.tr( "You must create and enable at least one Capture Rule before turning on the Captive Portal" ));
+        }
         reconfigure(true);
            
         LocalUvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);

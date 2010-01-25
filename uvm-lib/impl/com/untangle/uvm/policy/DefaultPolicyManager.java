@@ -26,6 +26,8 @@ import java.util.List;
 
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmException;
+import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.node.LocalNodeManager;
@@ -43,6 +45,7 @@ import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
 import com.untangle.uvm.node.firewall.user.UserMatcher;
 import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
+import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
@@ -214,6 +217,22 @@ class DefaultPolicyManager implements LocalPolicyManager
 
         PolicyConfiguration result = new PolicyConfiguration(pl, cUserRules);
         result.setHasRackManagement(false);
+        
+        LocalNodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
+        List<Tid> l = nodeManager.nodeInstances( "untangle-node-adconnector" );
+        result.setHasUserManagement(false);
+        
+        if ( l.size() > 0 ) {
+            try {
+            LicenseStatus ls = LocalUvmContextFactory.context().localLicenseManager().getLicenseStatus(ProductIdentifier.ADDRESS_BOOK);
+            if ( !ls.isExpired()) {
+                result.setHasUserManagement(true);
+            }
+            } catch ( UvmException e ) {
+                logger.warn( "Unable to update adconnector status.");
+            }
+        }
+
         return result;
     }
 

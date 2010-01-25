@@ -31,8 +31,10 @@ import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSubnetMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.Worker;
 import com.untangle.uvm.util.WorkerRunner;
+import com.untangle.uvm.util.JsonClient.ConnectionException;
 
 class CPDManager {
     private final Logger logger = Logger.getLogger(CPDManager.class);
@@ -44,6 +46,8 @@ class CPDManager {
     private static final String STOP_SCRIPT = System.getProperty( "bunnicula.home" ) + "/cpd/stop";
 
     private static final String LOAD_CUSTOM_SCRIPT = System.getProperty( "bunnicula.home" ) + "/cpd/load_custom";
+
+    private static final String CPD_URL = System.getProperty( "uvm.node.cpd.url", "http://localhost:3005");
         
     private final WorkerRunner worker;
 
@@ -88,6 +92,13 @@ class CPDManager {
     
     boolean authenticate( String addressString, String username, String password, String credentials )
     {
+        InetAddress address = null;
+        try {
+            address = InetAddress.getByName( addressString );
+        } catch ( UnknownHostException e ) {
+            logger.info( "Unable to resolve the host:" + addressString );
+        }
+        
         boolean isAuthenticated = false;
         CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
         
@@ -126,16 +137,20 @@ class CPDManager {
             break;
         }
         
+        /* Try to tell the Captive Portal daemon about the new success */
         try {
-            InetAddress address = InetAddress.getByName( addressString );
-            CPDLoginEvent.EventType eventType = isAuthenticated ? 
-                    CPDLoginEvent.EventType.LOGIN : CPDLoginEvent.EventType.FAILED; 
-            CPDLoginEvent event = new CPDLoginEvent( address, username, method, eventType );
-
-            this.cpd.getLoginEventManager().log(event);
-        } catch ( UnknownHostException e ) {
-            logger.info( "Unable to resolve the host:" + addressString );
+            if ( !replaceHost(address, username)) {
+                return false;
+            }
+        } catch ( Exception e ) {
+            logger.info( "Unable to replace host", e );
         }
+        
+        CPDLoginEvent.EventType eventType = isAuthenticated ? 
+                CPDLoginEvent.EventType.LOGIN : CPDLoginEvent.EventType.FAILED; 
+        CPDLoginEvent event = new CPDLoginEvent( address, username, method, eventType );
+
+        this.cpd.getLoginEventManager().log(event);        
         
         if ( isAuthenticated ) {
             this.cpd.incrementCount(BlingerType.AUTHORIZE, 1);
@@ -284,6 +299,30 @@ class CPDManager {
                 "passed client", IntfSimpleMatcher.getAllMatcher(), client,
                     server, "00:00", "23:59",
                 "mon,tue,wed,thu,fri,sat,sun"));
+    }
+    
+    private boolean replaceHost( InetAddress clientAddress, String username ) throws JSONException, ConnectionException
+    {
+        JSONObject jsonObject = new JSONObject();
+        
+        jsonObject.put( "function", "replace_host" );
+        jsonObject.put( "username", username );
+        jsonObject.put( "ipv4_addr", clientAddress.getHostAddress());
+        
+        JSONObject response = JsonClient.getInstance().call(CPD_URL, jsonObject);
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Server Returned: " + response.toString());
+        }
+        
+        int status = response.getInt( JsonClient.RESPONSE_STATUS);
+        String message = response.getString( JsonClient.RESPONSE_MESSAGE);
+        
+        if (  status != JsonClient.STATUS_SUCCESS ) {
+            logger.info( "CPD could not replace host. [" + message + "]");
+            return false;
+        }
+        
+        return true;   
     }
     
     private class CacheMonitor implements Worker

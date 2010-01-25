@@ -13,6 +13,7 @@ if ( $_SESSION["init"] == true ) {
 $server_name=urlencode( $_SERVER["SERVER_NAME"] );
 $method=urlencode( $_SERVER["REQUEST_METHOD"] );
 $path=urlencode( $_SERVER["SCRIPT_URL"] );
+$ssl=urlencode( $_SERVER["HTTPS"] );
 
-header( "Location: http://" . $_SERVER["SERVER_ADDR"] . "/cpd/portal.php?server_name=$server_name&method=$method&path=$path");
+header( "Location: http://" . $_SERVER["SERVER_ADDR"] . "/cpd/portal.php?server_name=$server_name&method=$method&path=$path&ssl=$ssl");
 ?>

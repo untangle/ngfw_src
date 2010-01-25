@@ -534,6 +534,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         allowNegative : false,
                         allowBlank : false,
                         name : "idleTimeout",
+                        maxValue : 24 * 60,
+                        minValue : 0,
+                        invalidText : this.i18n._( "The Idle Timeout must be between 0 minutes and 24 hours." ),
                         fieldLabel : this.i18n._( "Idle Timeout" ),
                         boxLabel : this.i18n._( "minutes" ),
                         value : this.getBaseSettings().idleTimeout / 60,
@@ -547,8 +550,11 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         allowNegative : false,
                         allowBlank : false,
                         name : "timeout",
+                        maxValue : 24 * 60,
+                        minValue : 5,
                         fieldLabel : this.i18n._( "Timeout" ),
                         boxLabel : this.i18n._( "minutes" ),
+                        invalidText : this.i18n._( "The Timeout must be between 5 minutes and 24 hours." ),
                         value : this.getBaseSettings().timeout / 60,
                         listeners : {
                             "change" : function( elem, newValue ){

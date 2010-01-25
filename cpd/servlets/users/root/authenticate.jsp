@@ -2,6 +2,7 @@
 <%@page import="com.untangle.uvm.LocalUvmContext"%>
 <%@page import="com.untangle.uvm.LocalUvmContextFactory"%>
 <%@page import="com.untangle.node.cpd.CPD"%>
+<%@page import="org.json.JSONObject" %>
 <%--
  * $HeadURL: svn://chef/work/src/cpd/servlets/users/root/authenticate.jsp $
  * Copyright (c) 2003-2007 Untangle, Inc. 
@@ -20,6 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --%>
 <%
+response.setContentType( "application/json" );
 LocalUvmContext uvm = LocalUvmContextFactory.context();
 CPD cpd = (CPD)uvm.nodeManager().node("untangle-node-cpd");
 
@@ -34,5 +36,11 @@ if ( cpd != null ) {
         isAuthenticated = cpd.authenticate( request.getRemoteAddr(), username, password, null );
     }
 }
+
+JSONObject js = new JSONObject();
+js.put( "status", "success" );
+js.put( "authenticate", isAuthenticated );
+
 %>
-<%= isAuthenticated %>
+
+<%= js.toString() %>
