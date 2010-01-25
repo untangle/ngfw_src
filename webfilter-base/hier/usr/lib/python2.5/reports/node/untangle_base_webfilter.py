@@ -1288,9 +1288,9 @@ class WebFilterDetailDomains(DetailSection):
         if email:
             return None
 
-        rv = [ColumnDesc('domain', _('Domain')),
+        rv = [ColumnDesc('domain', _('Site')),
               ColumnDesc('hits', _('Hits')),
-              ColumnDesc('size', _('Size'))]
+              ColumnDesc('size', _('Size (MB)'))]
 
         if host:
             rv.append(ColumnDesc('hname', _('Client')))
