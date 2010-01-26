@@ -35,7 +35,7 @@ package com.untangle.uvm.user;
 
 import com.untangle.uvm.node.ParseException;
 
-public final class Username
+public class Username
 {
     private final String username;
 
@@ -68,7 +68,7 @@ public final class Username
 
     public static Username parse( String value ) throws ParseException
     {
-        /* XXX Look for valid characters */
+        /* TODO Look for valid characters */
         value = value.trim();
 
         return new Username( value );

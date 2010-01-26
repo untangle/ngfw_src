@@ -40,3 +40,4 @@ com.untangle.uvm.security.User
 com.untangle.uvm.snmp.SnmpSettings
 com.untangle.uvm.toolbox.UpgradeSettings
 com.untangle.uvm.user.ADLoginEvent
+

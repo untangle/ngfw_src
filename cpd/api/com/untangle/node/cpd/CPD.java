@@ -52,17 +52,6 @@ public interface CPD extends Node
     public void setAll( CPDBaseSettings baseSettings, List<CaptureRule> captureRules,
             List<PassedClient> passedClients, List<PassedServer> passedServers ) throws NodeException;
     
-    /**
-     * 
-     * @param address The IP Address of the username to register
-     * @param username The username associated with this IP Address.
-     * @param expirationDate When this IP -> Username association is no longer valid.
-     * @return
-     * The current username at this address, or null if there isn't anything logged in there.
-     */
-    public String registerUser( String address, String username, Date expirationDate ) throws UnknownHostException;
-    public Map<String,String> getUserMap();
-    public String removeUser( String address ) throws UnknownHostException;
     
     /**
      * Return true iff the username and password can be authenticated in the current parameters.

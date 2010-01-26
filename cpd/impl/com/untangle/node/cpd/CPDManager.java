@@ -32,8 +32,6 @@ import com.untangle.uvm.node.firewall.ip.IPSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSubnetMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.JsonClient;
-import com.untangle.uvm.util.Worker;
-import com.untangle.uvm.util.WorkerRunner;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 
 class CPDManager {
@@ -49,14 +47,11 @@ class CPDManager {
 
     private static final String CPD_URL = System.getProperty( "uvm.node.cpd.url", "http://localhost:3005");
         
-    private final WorkerRunner worker;
-
     private final CPDImpl cpd;
 
     CPDManager(CPDImpl cpd)
     {
         this.cpd = cpd;
-        this.worker = new WorkerRunner(new CacheMonitor(), LocalUvmContextFactory.context());
     }
         
     void setConfig(CPDSettings settings, boolean isEnabled ) throws JSONException, IOException
@@ -76,13 +71,15 @@ class CPDManager {
     void start() throws NodeException
     {
         ScriptRunner.getInstance().exec( START_SCRIPT );
-        
-        worker.start();
     }
     
     void stop()
     {
-        worker.stop();
+        try {
+            ScriptRunner.getInstance().exec( STOP_SCRIPT );
+        } catch (NodeException e) {
+            logger.debug( "Unable to stop untangle-cpd.", e);
+        }
     }
     
     void loadCustomPage( String fileName ) throws NodeException
@@ -323,28 +320,5 @@ class CPDManager {
         }
         
         return true;   
-    }
-    
-    private class CacheMonitor implements Worker
-    {
-        @Override
-        public void start() {
-        }
-
-        @Override
-        public void stop() {
-            try {
-            ScriptRunner.getInstance().exec( STOP_SCRIPT );
-            } catch ( NodeException e ){
-                throw new IllegalStateException("Unable to stop Captive Portal Daemon", e);
-            }
-        }
-
-        @Override
-        public void work() throws InterruptedException {
-            Thread.sleep( CACHE_DELAY_MS );
-            
-            CPDManager.this.cpd.getPhoneBookAssistant().clearExpiredData();
-        }
     }
 }

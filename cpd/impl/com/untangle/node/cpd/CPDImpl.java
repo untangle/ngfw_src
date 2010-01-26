@@ -19,9 +19,6 @@ package com.untangle.node.cpd;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +51,6 @@ import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.node.UnconfiguredException;
-import com.untangle.uvm.node.firewall.intf.IntfSimpleMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 import com.untangle.uvm.servlet.UploadHandler;
@@ -72,8 +68,6 @@ public class CPDImpl extends AbstractNode implements CPD {
 
 
     private final PipeSpec[] pipeSpecs;
-
-    private final PhoneBookAssistant phoneBookAssistant;
     
     private final EventLogger<CPDLoginEvent> loginEventLogger;
     private final UncachedEventManager<BlockEvent> blockEventLogger;
@@ -96,7 +90,6 @@ public class CPDImpl extends AbstractNode implements CPD {
         
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
-        this.phoneBookAssistant = new PhoneBookAssistant();
         
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
@@ -322,27 +315,6 @@ public class CPDImpl extends AbstractNode implements CPD {
         reconfigure();
     }
 
-    
-    @Override
-    public Map<String, String> getUserMap() {
-        return this.phoneBookAssistant.getUserMap();
-    }
-
-    @Override
-    public String registerUser(String addressString, String username,
-            Date expirationDate) throws UnknownHostException {
-        InetAddress address = InetAddress.getByName(addressString);
-
-        return this.phoneBookAssistant.addOrUpdate(address, username,
-                expirationDate);
-    }
-
-    @Override
-    public String removeUser(String addressString) throws UnknownHostException {
-        InetAddress address = InetAddress.getByName(addressString);
-        return this.phoneBookAssistant.removeEntry(address);
-    }
-    
     @Override
     public EventManager<CPDLoginEvent> getLoginEventManager()
     {
@@ -425,7 +397,6 @@ public class CPDImpl extends AbstractNode implements CPD {
             logger.warn( "Unable to write settings, continuing.", e);
         }
         this.manager.stop();
-        LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant(this.phoneBookAssistant);
     }
     
     
@@ -486,9 +457,7 @@ public class CPDImpl extends AbstractNode implements CPD {
             } catch (IOException e) {
                 throw new NodeStartException( "Unable to write settings.", e);
             }
-            
-            LocalUvmContextFactory.context().localPhoneBook().registerAssistant(this.phoneBookAssistant);
-            
+                        
             try {
                 this.manager.start();
             } catch ( NodeException e ) {
@@ -504,7 +473,6 @@ public class CPDImpl extends AbstractNode implements CPD {
             }
 
             this.manager.stop();
-            LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant(this.phoneBookAssistant);
         }
     }
     
@@ -554,11 +522,6 @@ public class CPDImpl extends AbstractNode implements CPD {
         }
 
         return "{}";
-    }
-
-
-    PhoneBookAssistant getPhoneBookAssistant() {
-        return this.phoneBookAssistant;
     }
     
     private class CustomUploadHandler implements UploadHandler
