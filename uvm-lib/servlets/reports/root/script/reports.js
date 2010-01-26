@@ -1003,15 +1003,20 @@ Ung.ReportDetails = Ext.extend(Object, {
         }
         return sectionPanel;
     },
-    buildHighlightSection : function (highlights){
+    buildHighlightSection : function (highlights,tabName){
         var items = [],i,str;
+        items.push({
+            html : '<div class="summary-header"><img height="50" border="0" src="/images/BrandingLogo.gif"/><strong>'+i18n._('Reports Summary')+'</strong></div>',
+            colspan : 2
+            
+        });
         for(i=0;i<highlights.list.length;i++){
-            str = this.getHighlightHTML(highlights.list[i]);
+            str = this.getHighlightHTML(highlights.list[i],true);
             if( i != 0 ){
                 str = str.replace('first','');
             }
             if(i % 2){
-                str = str.replace('highlight', 'highlight odd');
+                str = str.replace('highlight-2', 'highlight-2 odd');
             }
             items.push({html:str,colspan:2});                    
         }
@@ -1029,15 +1034,21 @@ Ung.ReportDetails = Ext.extend(Object, {
         })        
         
     },
-    getHighlightHTML: function(summaryItem) {
-	    stringTemplate = summaryItem.stringTemplate;
+    getHighlightHTML: function(summaryItem,smallIcons) {
+	    var stringTemplate = summaryItem.stringTemplate,
+            key,hvm,
+            imagePath = smallIcons === true ?  '/reports/node-icons/' : '/reports/image?name=' ,
+            imageSuffix = smallIcons === true ? '.png' : '',
+            highlightClass = smallIcons === true  ? 'highlight-2'  : 'highlight',
+            url;
 	    stringTemplate = stringTemplate.replace(summaryItem.name,'<strong>'+summaryItem.title+'</strong>');
 	    hvm = summaryItem.highlightValues.map;
-	    for (var key in hvm) {
+	    for (key in hvm) {
 		stringTemplate = stringTemplate.replace('%(' + key + ')s',
 							'<strong>' + hvm[key] + '</strong>');
 	    }
-	    return '<div class="highlight first"><p style="background-image:url(/reports/image?name='+summaryItem.name+')">'+stringTemplate+'</p></div>';
+	    url = imagePath + summaryItem.name + imageSuffix;
+	    return '<div class="'+highlightClass+' first"><p style="background-image:url('+url+')">'+stringTemplate+'</p></div>';
 	},
 
     buildSummarySection: function (appName, section) {
@@ -1047,7 +1058,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             var summaryItem = section.summaryItems.list[i];
 
 	    if (summaryItem.stringTemplate) {
-    		str = this.getHighlightHTML(summaryItem)
+    		str = this.getHighlightHTML(summaryItem,false)
     		columns = [];
     		items.push({html:str,colspan:2});
 	    } else {
