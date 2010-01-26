@@ -782,10 +782,10 @@ ORDER BY day
 
         lks = []
 
-        ks = KeyStatistic(_('avg cookies blocked'), total / report_days,
+        ks = KeyStatistic(_('Avg Cookies Blocked'), total / report_days,
                           _('blocks/day'))
         lks.append(ks)
-        ks = KeyStatistic(_('max cookies blocked'), max, _('blocks/day'))
+        ks = KeyStatistic(_('Max Cookies Blocked'), max, _('blocks/day'))
         lks.append(ks)
 
         rp = sql_helper.get_required_points(start_date, end_date,
@@ -979,10 +979,10 @@ GROUP BY day ORDER BY day ASC"""
 
         lks = []
 
-        ks = KeyStatistic(_('avg suspicious detected'), total / report_days,
+        ks = KeyStatistic(_('Avg Suspicious Detected'), total / report_days,
                           _('/day'))
         lks.append(ks)
-        ks = KeyStatistic(_('max suspicious detected'), round(max), _('/day'))
+        ks = KeyStatistic(_('Max Suspicious Detected'), round(max), _('/day'))
         lks.append(ks)
 
         rp = sql_helper.get_required_points(start_date, end_date,
