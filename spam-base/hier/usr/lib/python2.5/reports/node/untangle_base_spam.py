@@ -272,7 +272,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
             spam = r[1]
             ham = total - spam
 
-            ks = KeyStatistic(_('total'), total, _('messages'))
+            ks = KeyStatistic(_('Total'), total, _('messages'))
             lks.append(ks)
             ks = KeyStatistic(self.__spam_label, spam, _('messages'))
             lks.append(ks)
@@ -341,7 +341,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             spam_rate = r[1]
             ham_rate = email_rate - spam_rate
 
-            ks = KeyStatistic(_('mail rate'), email_rate, _('messages/hour'))
+            ks = KeyStatistic(_('Mail Rate'), email_rate, _('messages/hour'))
             lks.append(ks)
             ks = KeyStatistic(_('%s rate') % self.__spam_label, spam_rate,
                               _('messages/hour'))
@@ -444,7 +444,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             spam_rate = r[1]
             ham_rate = email_rate - spam_rate
 
-            ks = KeyStatistic(_('mail rate'), email_rate, _('messages/day'))
+            ks = KeyStatistic(_('Mail Rate'), email_rate, _('messages/day'))
             lks.append(ks)
             ks = KeyStatistic(_('%s rate') % self.__spam_label, spam_rate,
                               _('messages/day'))
