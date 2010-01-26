@@ -4286,7 +4286,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                             }
 
                             return null;
-                        },
+                        }
                     },{
                         name : "firstName",
                         type : "string"
