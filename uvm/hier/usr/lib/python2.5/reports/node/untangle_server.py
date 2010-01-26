@@ -182,13 +182,13 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             curs.execute(ks_query, (one_week, ed))
             r = curs.fetchone()
 
-            ks = KeyStatistic(_('Avg free memory'), r[0] / 10**6,
+            ks = KeyStatistic(_('Avg Free Memory'), r[0] / 10**6,
                               N_('MB'))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg cached memory'), r[1] / 10**6,
+            ks = KeyStatistic(_('Avg Cached Memory'), r[1] / 10**6,
                               N_('MB'))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg buffered memory'), r[2] / 10**6,
+            ks = KeyStatistic(_('Avg Buffered Memory'), r[2] / 10**6,
                               N_('MB'))
             lks.append(ks)
 
@@ -253,13 +253,13 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             curs.execute(ks_query, (one_week, ed))
             r = curs.fetchone()
 
-            ks = KeyStatistic(_('Avg 1-min load'), r[0],
+            ks = KeyStatistic(_('Avg 1-min Load'), r[0],
                               N_(''))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg 5-min load'), r[1],
+            ks = KeyStatistic(_('Avg 5-min Load'), r[1],
                               N_(''))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg 15-min load'), r[2],
+            ks = KeyStatistic(_('Avg 15-min Load'), r[2],
                               N_(''))
             lks.append(ks)
 
@@ -324,10 +324,10 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             curs.execute(ks_query, (one_week, ed))
             r = curs.fetchone()
 
-            ks = KeyStatistic(_('Avg CPU user'), r[0],
+            ks = KeyStatistic(_('Avg CPU User'), r[0],
                               N_('%'))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg CPU system'), r[1],
+            ks = KeyStatistic(_('Avg CPU System'), r[1],
                               N_('%'))
             lks.append(ks)
 
@@ -387,10 +387,10 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             curs.execute(ks_query, (one_week, ed))
             r = curs.fetchone()
 
-            ks = KeyStatistic(_('Avg disk free'), r[0] / 10**9,
+            ks = KeyStatistic(_('Avg Disk Free'), r[0] / 10**9,
                               N_('GB'))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg disk free'), r[0] * 100 / r[1],
+            ks = KeyStatistic(_('Avg Disk Free'), r[0] * 100 / r[1],
                               N_('%'))
             lks.append(ks)
 
