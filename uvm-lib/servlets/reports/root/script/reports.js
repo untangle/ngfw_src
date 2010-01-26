@@ -632,7 +632,7 @@ Ung.Reports = Ext.extend(Object,{
     getDateRangeText : function(selectedDate){
         var oneDay = 24*3600*1000,
         toDate =new Date(selectedDate.dt.time - oneDay),
-        fromDate = new Date(selectedDate.dt.time - ((selectedDate.numDays+1)*oneDay)),
+        fromDate = new Date(selectedDate.dt.time - ((selectedDate.numDays)*oneDay)),
         formatString = 'l, F j Y';
         return i18n.dateLongFormat(fromDate,formatString) + " - "  +   i18n.dateLongFormat(toDate,formatString);
     },
