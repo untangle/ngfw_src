@@ -25,26 +25,24 @@ response.setContentType( "application/json" );
 LocalUvmContext uvm = LocalUvmContextFactory.context();
 CPD cpd = (CPD)uvm.nodeManager().node("untangle-node-cpd");
 
-boolean isAuthenticated = false;
+boolean isLoggedOut = false;
 
+/* Do not allow people to log out other people */
 if ( cpd != null ) {
-    String username = request.getParameter("username");
-    String password = request.getParameter("password");
-    if ( username != null && password != null ) {
-        username = username.trim();
-        password = password.trim();
-        isAuthenticated = cpd.authenticate( request.getRemoteAddr(), username, password, null );
+    String address = (String)(( session == null ) ? null : session.getAttribute("logout-ip"));
+
+    if ( address != null && request.getRemoteAddr().equals( address )) {
+        isLoggedOut = cpd.logout( request.getRemoteAddr());
+    }
+
+    if ( session != null ) {
+        session.invalidate();
     }
 }
 
 JSONObject js = new JSONObject();
 js.put( "status", "success" );
-js.put( "authenticate", isAuthenticated );
-
-if ( isAuthenticated ) {
-    /* This is the IP Address that is authorized to logout of this session */
-    session.setAttribute( "logout-ip",  request.getRemoteAddr());
-}
+js.put( "loggedOut", isLoggedOut );
 
 %>
 

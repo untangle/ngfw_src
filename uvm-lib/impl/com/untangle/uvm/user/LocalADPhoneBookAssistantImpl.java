@@ -19,12 +19,6 @@ package com.untangle.uvm.user;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.user.Assistant;
-import com.untangle.uvm.user.UserInfo;
-import com.untangle.uvm.user.Username;
-import com.untangle.uvm.user.ADPhoneBookAssistant;
-
 public class LocalADPhoneBookAssistantImpl implements ADPhoneBookAssistant
 {
     private int PRIORITY=2000000000;

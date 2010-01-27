@@ -31,6 +31,7 @@ import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSubnetMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 
@@ -94,6 +95,7 @@ class CPDManager {
             address = InetAddress.getByName( addressString );
         } catch ( UnknownHostException e ) {
             logger.info( "Unable to resolve the host:" + addressString );
+            return false;
         }
         
         boolean isAuthenticated = false;
@@ -134,13 +136,26 @@ class CPDManager {
             break;
         }
         
-        /* Try to tell the Captive Portal daemon about the new success */
+        /* Tell the Captive Portal daemon about the new success */
         try {
             if ( !replaceHost(address, username)) {
                 return false;
             }
         } catch ( Exception e ) {
             logger.info( "Unable to replace host", e );
+            return false;
+        }
+        
+        /* Expire the cache on the phonebook */
+        UserInfo info = LocalUvmContextFactory.context().localPhoneBook().lookup(address,false);
+
+        /*
+         * This could check if it is the current user and only expire the the
+         * entry if it matches, but the added complexity is just not worth it.
+         * Plus, this will update the expirationDate when it does the lookup.
+         */
+        if ( info != null ) {
+            info.setExpirationDate(0);
         }
         
         CPDLoginEvent.EventType eventType = isAuthenticated ? 
@@ -154,6 +169,50 @@ class CPDManager {
         }
         
         return isAuthenticated;
+    }
+    
+    boolean logout( String addressString )
+    {
+        InetAddress address = null;
+        try {
+            address = InetAddress.getByName( addressString );
+        } catch ( UnknownHostException e ) {
+            logger.info( "Unable to resolve the host:" + addressString );
+            return false;
+        }
+        
+        try {
+            if ( !removeHost(address)) {
+                return false;
+            }
+        } catch (JSONException e) {
+            logger.warn( "Unable to remove host", e);
+            return false;
+        } catch (ConnectionException e) {
+            logger.warn( "Unable to remove host", e);
+            return false;
+        }
+        
+        /* Expire the cache on the phonebook */
+        UserInfo info = LocalUvmContextFactory.context().localPhoneBook().lookup(address,false);
+
+        /*
+         * This could check if it is the current user and only expire the the
+         * entry if it matches, but the added complexity is just not worth it.
+         * Plus, this will update the expirationDate when it does the lookup.
+         */
+        if ( info != null ) {
+            info.setExpirationDate(0);
+        }
+        
+        CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
+        
+        AuthenticationType method = baseSettings.getAuthenticationType(); 
+
+        CPDLoginEvent event = new CPDLoginEvent( address, "", method, CPDLoginEvent.EventType.LOGOUT );
+        this.cpd.getLoginEventManager().log(event);
+        
+        return true;
     }
 
     private JSONObject serializeCPDSettings( CPDSettings settings, boolean isEnabled ) throws JSONException
@@ -316,6 +375,29 @@ class CPDManager {
         
         if (  status != JsonClient.STATUS_SUCCESS ) {
             logger.info( "CPD could not replace host. [" + message + "]");
+            return false;
+        }
+        
+        return true;   
+    }
+    
+    private boolean removeHost( InetAddress clientAddress ) throws JSONException, ConnectionException
+    {
+        JSONObject jsonObject = new JSONObject();
+        
+        jsonObject.put( "function", "remove_ipv4_addr" );
+        jsonObject.put( "ipv4_addr", clientAddress.getHostAddress());
+        
+        JSONObject response = JsonClient.getInstance().call(CPD_URL, jsonObject);
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Server Returned: " + response.toString());
+        }
+        
+        int status = response.getInt( JsonClient.RESPONSE_STATUS);
+        String message = response.getString( JsonClient.RESPONSE_MESSAGE);
+        
+        if (  status != JsonClient.STATUS_SUCCESS ) {
+            logger.info( "CPD could not remove host. [" + message + "]");
             return false;
         }
         

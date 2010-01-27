@@ -388,7 +388,7 @@ public class NetworkSpace extends Rule
      */
     public void setIsDmzHostLoggingEnabled( boolean newValue )
     {
-        this.isDmzHostLoggingEnabled = isDmzHostLoggingEnabled;
+        this.isDmzHostLoggingEnabled = newValue;
     }
 
     /**

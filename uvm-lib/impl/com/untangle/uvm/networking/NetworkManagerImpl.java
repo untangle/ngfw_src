@@ -757,21 +757,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.addressManager.unregisterListener( addressListener );
     }
 
-    /* Intf enum settings */
-    private void callIntfEnumListeners()
-    {
-        logger.error( "interface enum listeners are unsupported.", new Exception());
-        if ( true || !true ) return;
-
-        for ( IntfEnumListener listener : this.intfEnumListeners ) {
-            try {
-                listener.event( null );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
-    }
-
     // Interface enums listener are presently unsupported
     public void registerListener( IntfEnumListener intfEnumListener )
     {

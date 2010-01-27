@@ -18,10 +18,7 @@
 
 package com.untangle.node.cpd;
 
-import java.net.UnknownHostException;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
@@ -61,6 +58,13 @@ public interface CPD extends Node
      * @return True if the user is authenticated.
      */
     public boolean authenticate( String address, String username, String password, String credentials );
+    
+    /**
+     * Return truee iff the user was logged out.
+     * @param address Address to remove from the cache.
+     * @return
+     */
+    public boolean logout( String address );
     
     public EventManager<CPDLoginEvent> getLoginEventManager();
     public EventManager<BlockEvent> getBlockEventManager();

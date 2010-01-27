@@ -39,6 +39,15 @@ public interface LocalPhoneBook extends RemotePhoneBook
 {
     /* Lookup the corresponding user user information object user the address */
     public UserInfo lookup( InetAddress address );
+    
+    /**
+     * Lookup the corresponding user information object for an address.  If checkAssistants
+     * is true, this will check the assistants if an entry doesn't exist.
+     * @param address The address to lookup.
+     * @param checkAssistants Set to true to check the assistants if the entry is not cached.
+     * @return
+     */
+    public UserInfo lookup( InetAddress address, boolean checkAssistants );
 
     /* Push an update to the phonebook, use this if an assistant gains new information
      * about an active entry outside out of band */

@@ -1096,22 +1096,20 @@ public class UvmContextImpl extends UvmContextBase
 
     private boolean loadRup(boolean refreshManagers)
     {
-        if (main.loadRup() || true) {
-            refreshSessionFactory();
+        main.loadRup();
 
-            if (refreshManagers) {
-                // Do these in same order as boot time.
-                policyManagerFactory.refresh();
-                addressBookFactory.refresh();
-                brandingManagerFactory.refresh();
-                phoneBookFactory.refresh();
-                adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
-            }
+        refreshSessionFactory();
 
-            return true;
+        if ( refreshManagers) {
+            // Do these in same order as boot time.
+            policyManagerFactory.refresh();
+            addressBookFactory.refresh();
+            brandingManagerFactory.refresh();
+            phoneBookFactory.refresh();
+            adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
         }
-        
-        return false;
+
+        return true;
     }
 
     private void startCliServer()

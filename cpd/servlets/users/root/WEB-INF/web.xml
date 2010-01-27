@@ -36,5 +36,8 @@
     <url-pattern>/authenticate</url-pattern>
   </servlet-mapping>
 
-
+  <servlet-mapping>
+    <servlet-name>com.untangle.node.cpd.jsp.logout_jsp</servlet-name>
+    <url-pattern>/logout</url-pattern>
+  </servlet-mapping>
 </web-app>

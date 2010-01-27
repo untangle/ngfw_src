@@ -185,7 +185,7 @@ public class Interface extends Rule
      */
     public void setIsPingable( boolean newValue )
     {
-        this.isPingable = isPingable;
+        this.isPingable = newValue;
     }
 
     /** The following are not stored in the database ***/

@@ -22,7 +22,6 @@ import java.net.InetAddress;
 
 import com.untangle.node.util.UtLogger;
 import com.untangle.uvm.license.ProductIdentifier;
-import com.untangle.uvm.node.ValidateException;
 
 class DefaultPhoneBookImpl implements LocalPhoneBook
 {
@@ -37,6 +36,11 @@ class DefaultPhoneBookImpl implements LocalPhoneBook
     /* Lookup the corresponding user user information object user the address */
     public UserInfo lookup( InetAddress address )
     {
+        return lookup( address, true );
+    }
+    
+    public UserInfo lookup( InetAddress address, boolean checkAssistants )
+    {
         logger.debug( "ignoring lookup." );
 
         /* Always returns null */
@@ -48,7 +52,7 @@ class DefaultPhoneBookImpl implements LocalPhoneBook
         logger.debug( "ignoring update entry." );
     }
 
-    /* Register a phone book assistant which is used to help with addres lookups */
+    /* Register a phone book assistant which is used to help with address lookups */
     public void registerAssistant( Assistant newAssistant )
     {
         logger.debug( "ignoring register assistant." );

@@ -351,6 +351,17 @@ public class CPDImpl extends AbstractNode implements CPD {
         }
         return isAuthenticated;
     }
+    
+    @Override
+    public boolean logout( String address )
+    {
+        boolean isLoggedOut = false;
+        if ( this.getRunState() == NodeState.RUNNING ) {
+            isLoggedOut = this.manager.logout( address );
+        }
+        
+        return isLoggedOut;
+    }
 
 
     // AbstractNode methods ----------------------------------------------

@@ -33,10 +33,7 @@
 
 package com.untangle.uvm.user;
 
-import java.net.InetAddress;
-
 import com.untangle.uvm.license.LicensedProduct;
-import com.untangle.uvm.node.ValidateException;
 
 public interface RemotePhoneBook extends LicensedProduct
 {
