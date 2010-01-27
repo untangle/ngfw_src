@@ -130,7 +130,7 @@ public class LicenseManagerImpl implements LicenseManager {
      */
     private Map<String, License> licenseMap = new HashMap<String, License>();
 
-    /** list of all licenses, both valid and expired. */
+    /** list of all licenses. */
     private LicenseSettings licenseSettings;
 
     /** configuration */
