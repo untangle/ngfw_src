@@ -315,7 +315,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         // Block Categories
         buildBlacklistCategories : function() {
             var liveColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("block"),
+                header : this.i18n._("Block"),
                 dataIndex : 'block',
                 fixed : true,
                 changeRecord : function(record) {
@@ -327,9 +327,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }
             });
             var logColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("log"),
+                header : this.i18n._("Flag"),
                 dataIndex : 'log',
-                fixed : true
+                fixed : true,
+                tooltip : this.i18n._("Flag as Violation")
             });
 
             this.gridBlacklistCategories = new Ung.EditorGrid({
@@ -404,9 +405,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         }
                     }
                 }), new Ext.form.Checkbox({
-                    name : "Log",
+                    name : "Flag",
                     dataIndex : "log",
-                    fieldLabel : this.i18n._("Log")
+                    fieldLabel : this.i18n._("Flag"),
+                    tooltip : this.i18n._("Flag as Violation")
                 }), new Ext.form.TextArea({
                     name : "Description",
                     dataIndex : "description",
@@ -437,14 +439,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 return true;
             }.createDelegate(this);
             var liveColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("block"),
+                header : this.i18n._("Block"),
                 dataIndex : 'live',
                 fixed : true
             });
             var logColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("log"),
+                header : this.i18n._("Flag"),
                 dataIndex : 'log',
-                fixed : true
+                fixed : true,
+                tooltip : this.i18n._("Flag as Violation")
             });
 
             this.gridBlockedUrls = new Ung.EditorGrid({
@@ -509,9 +512,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : "live",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
-                    name : "Log",
+                    name : "Flag",
                     dataIndex : "log",
-                    fieldLabel : this.i18n._("Log")
+                    fieldLabel : this.i18n._("Flag"),
+                    tooltip : this.i18n._("Flag as Violation")
                 }), new Ext.form.TextArea({
                     name : "Description",
                     dataIndex : "description",
@@ -524,14 +528,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         // Block File Types
         buildBlockedExtensions : function() {
             var liveColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("block"),
+                header : this.i18n._("Block"),
                 dataIndex : 'live',
                 fixed : true
             });
             var logColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("log"),
+                header : this.i18n._("Flag"),
                 dataIndex : 'log',
-                fixed : true
+                fixed : true,
+                tooltip : this.i18n._("Flag as Violation")
             });
 
             this.gridBlockedExtensions = new Ung.EditorGrid({
@@ -592,9 +597,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : "live",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
-                    name : "Log",
+                    name : "Flag",
                     dataIndex : "log",
-                    fieldLabel : this.i18n._("Log")
+                    fieldLabel : this.i18n._("Flag"),
+                    tooltip : this.i18n._("Flag as Violation")
                 }), new Ext.form.TextArea({
                     name : "Description",
                     dataIndex : "name",
@@ -607,14 +613,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         // Block MIME Types
         buildBlockedMimeTypes : function() {
             var liveColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("block"),
+                header : this.i18n._("Block"),
                 dataIndex : 'live',
                 fixed : true
             });
             var logColumn = new Ext.grid.CheckColumn({
-                header : this.i18n._("log"),
+                header : this.i18n._("Flag"),
                 dataIndex : 'log',
-                fixed : true
+                fixed : true,
+                tooltip : this.i18n._("Flag as Violation")
             });
 
             this.gridBlockedMimeTypes = new Ung.EditorGrid({
@@ -675,9 +682,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : "live",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
-                    name : "Log",
+                    name : "Flag",
                     dataIndex : "log",
-                    fieldLabel : this.i18n._("Log")
+                    fieldLabel : this.i18n._("Flag"),
+                    tooltip : this.i18n._("Flag as Violation")
                 }), new Ext.form.TextArea({
                     name : "Description",
                     dataIndex : "name",
