@@ -64,7 +64,7 @@ public class BlockPageUtil
         if ( request.getAttribute( "untangle_plus") == null ) {
             boolean untanglePlus = false;
             try {
-                untanglePlus = uvm.localLicenseManager().getUntanglePlus();
+                untanglePlus = uvm.localLicenseManager().hasPremiumLicense();
             } catch ( UvmException e ) {
                 logger.debug( "Unable to load license manager.", e );
                 untanglePlus = false;
