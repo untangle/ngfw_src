@@ -42,7 +42,8 @@ function authenticateUser( errorField )
         if (req.readyState == 4) {
             var v = JSON.parse( req.responseText );
             if ( v["authenticate"] == true ) {
-                redirectUser();
+                /* Wait a little bit to redirect, this way it guarantees the ipset is updated. */
+                setTimeout( redirectUser, 2000 );
                 return;
             }
 
