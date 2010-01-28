@@ -241,7 +241,7 @@ FROM (select date_trunc('day', time_stamp) AS day,
         try:
             q = """\
 SELECT date_trunc('day', time_stamp) AS time,
-      count(CASE WHEN firewall_rule_index IS NOT NULL THEN 1 ELSE null END) AS sessions_logged,
+      count(CASE WHEN firewall_rule_index IS NOT NULL AND firewall_was_blocked IS NULL THEN 1 ELSE null END) AS sessions_logged,
       count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END) AS sessions_blocked
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s"""
@@ -286,8 +286,8 @@ ORDER BY time asc"""
                              major_formatter=reports.DATE_FORMATTER,
                              required_points=rp)
 
-        plot.add_dataset(dates, logs, label=_('logged'))
         plot.add_dataset(dates, blocks, label=_('blocked'))
+        plot.add_dataset(dates, logs, label=_('logged'))
 
         return plot
 
