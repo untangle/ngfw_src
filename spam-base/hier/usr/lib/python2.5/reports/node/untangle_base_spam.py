@@ -620,7 +620,7 @@ AND m1.msg_id = m2.msg_id
        DateFromMx(start_date), DateFromMx(end_date),
        self.__short_name)
 
-        if host:
-            sql += " AND hname = %s" % QuotedString(host)
+        if email:
+            sql += " AND m1.addr = %s" % QuotedString(email)
 
         return sql + " ORDER BY time_stamp DESC"
