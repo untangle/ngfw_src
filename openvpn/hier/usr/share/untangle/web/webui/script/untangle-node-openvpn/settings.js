@@ -1795,8 +1795,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 Ext.getCmp( "openvpn_advanced_siteName" ).setValue( this.rpc.vpnSettings.siteName );
                 
                 /* Assuming radio box is intact */
-                Ext.getCmp("openvpn_advanced_dns1").setValue( this.rpc.dns1 );
-                Ext.getCmp("openvpn_advanced_dns2").setValue( this.rpc.dns2 );
+                Ext.getCmp("openvpn_advanced_dns1").setValue( this.rpc.vpnSettings.dns1 );
+                Ext.getCmp("openvpn_advanced_dns2").setValue( this.rpc.vpnSettings.dns2 );
             } else {
                 /* do nothing */
             }
