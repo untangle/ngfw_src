@@ -406,10 +406,12 @@ Ung.Main=Ext.extend(Object, {
         this.openWindow( query, storeWindowName, title );
     },
 
-    openWindow : function( query, windowName, title )
+    openWindow : function( query, windowName, title ,url)
     {
-        var url = "../library/launcher?" + query;
-
+        if(url==null){
+            url =   '../library/launcher?' + query;
+        }
+        
         /* browser specific code ... we has it. */
         if ( !Ext.isIE) {
             this.openIFrame( url, title );
@@ -1185,12 +1187,15 @@ Ung.Main=Ext.extend(Object, {
             size = main.viewport.getSize(),
             centerSize = Ext.getCmp('center').getSize(),
             centerPosition = Ext.getCmp('center').getPosition();
-        if(result===true){
-            this.showWelcomeScreen();
+        if(isRegistered===true){
+            if(result===true){
+                this.showWelcomeScreen();
+            }else{
+                this.showFailureScreen();        
+            }        
         }else{
-            this.showFailureScreen();        
-        }            
-           
+            this.showRunSetupScreen();
+        }
         ifr.initialConfig.sizeToRack = false;
         ifr.setSize({width:centerSize.width*0.75,height:centerSize.height*0.75});        
         position[0] = centerPosition[0]+Math.round(centerSize.width/8);
@@ -1199,6 +1204,12 @@ Ung.Main=Ext.extend(Object, {
         Ext.MessageBox.hide();
         Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});            
     },
+    /**
+     *  Displays the run setup first screen
+     **/         
+    showRunSetupScreen : function(){
+        this.openWindow( "", "runsetup", i18n._("Congratulations"), "/webui/runsetup.jsp");
+    },     
     /**
      *  Displays the offline welcome screen
      **/             
