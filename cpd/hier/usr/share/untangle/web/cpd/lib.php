@@ -208,5 +208,21 @@ function get_redirect_url()
     return "http://guide.untangle.com/captive-portal";
 }
 
+function get_time_remaining()
+{
+    global $uvm_db;
+    global $cpd_settings;
+
+    /* Do not use the expiration date, because that is assuming the user is idle the entire time */
+    $query = "SELECT  extract( epoch from ( now() - session_start )) FROM events.n_adconnector_host_database_entry WHERE ipv4_addr='" . $_SERVER['REMOTE_ADDR'] . "'";
+    $result = pg_query($uvm_db, $query);
+    $row = pg_fetch_array($result);
+    pg_free_result($result);
+    if ( $row == false ) {
+        return 0;
+    }
+
+    return $cpd_settings["timeout"] - $row[0];
+}
 
 ?>

@@ -83,7 +83,14 @@ function authenticateUser( errorField )
 function redirectUser()
 {
     var t = redirectUrl;
-    //alert( "You have been authenticated." );
+
+    if ( displayLogoutButton ) {
+        var _top  = 5,_left = screen.width-315,
+	
+	x = window.open("logout.php","cpd_logout", "height=90,width=300,status=no,toolbar=no,address=no,menubar=no,location=no,top="+_top+",left="+_left);
+	x.focus()        
+    }
+
     if ( t == null ) {
         t = "http://guide.untangle.com/captive-portal";
     }
