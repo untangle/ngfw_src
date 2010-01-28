@@ -283,15 +283,15 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     this.closeWindow();
                 }else{
                 //refresh the settings
-                        Ext.MessageBox.hide();
-                        //refresh the settings
-                        this.getRpcNode().getBaseSettings(function(result2,exception2){
-                            Ext.MessageBox.hide();                            
-                            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());                                      
-                            this.gridExceptions.setTotalRecords(result2.shieldNodeRulesLength);
-                            this.gridExceptions.reloadGrid();
-                        }.createDelegate(this));                        
-                        //this.gridEventLog.reloadGrid();                            
+                    Ext.MessageBox.hide();
+                    //refresh the settings
+                    this.getRpcNode().getBaseSettings(function(result2,exception2) {
+                        Ext.MessageBox.hide();                            
+                        this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
+                        this.gridExceptions.setTotalRecords(result2.shieldNodeRulesLength);
+                        this.gridExceptions.reloadGrid();
+                    }.createDelegate(this));                        
+                    //this.gridEventLog.reloadGrid();                            
                 }
                 
             }.createDelegate(this), this.gridExceptions.getSaveList());

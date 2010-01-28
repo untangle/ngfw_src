@@ -255,7 +255,6 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
         updateRules(getShieldSettings().getShieldNodeRules(), added, deleted,
                 modified);
-
     }
 
     /*
@@ -265,6 +264,15 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
     public void updateAll(List[] shieldNodeRulesChanges) {
         if (shieldNodeRulesChanges != null && shieldNodeRulesChanges.length >= 3) {
             updateShieldNodeRules(shieldNodeRulesChanges[0], shieldNodeRulesChanges[1], shieldNodeRulesChanges[2]);
+        }
+
+        if ( getRunState() == NodeState.RUNNING ) {
+            try {
+                this.shieldManager.start();
+                this.shieldManager.blessUsers( this.settings );
+            } catch ( Exception e ) {
+                logger.error( "Error setting shield node rules", e );
+            }
         }
     }
 
