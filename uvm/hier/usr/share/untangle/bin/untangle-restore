@@ -18,6 +18,11 @@ restore_db()
     createuser -U postgres -dSR untangle 2>/dev/null
     createdb -O postgres -U postgres uvm >/dev/null 2>&1
 
+    ## If the database is open, just drop all of the schemas inside of it.
+    psql -U postgres uvm -c "DROP SCHEMA settings CASCADE"
+    psql -U postgres uvm -c "DROP SCHEMA events CASCADE"
+    psql -U postgres uvm -c "DROP SCHEMA reports CASCADE"
+
     # if confirm "Restore settings?"; then
     zcat $infile | psql -X -U postgres uvm >/dev/null 2>&1
     
@@ -70,6 +75,14 @@ instfile=$3
 /etc/init.d/untangle-vm stop
 if [ -x /etc/init.d/untangle-reports ]; then
     /etc/init.d/untangle-reports stop
+fi
+
+if [ -x /etc/init.d/untangle-cpd ]; then
+    /etc/init.d/untangle-cpd stop
+fi
+
+if [ -x /etc/init.d/apache2 ]; then
+    /etc/init.d/apache2 stop
 fi
 
 # restore the database
