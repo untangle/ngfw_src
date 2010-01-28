@@ -18,16 +18,16 @@
 
 package com.untangle.uvm.argon;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
-import org.apache.log4j.Logger;
 
 public class Argon
 {

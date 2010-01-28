@@ -578,9 +578,9 @@ public class UvmContextImpl extends UvmContextBase
     public void syncConfigFiles()
     {
         // Here it would be nice if we had a list of managers.  Then we could
-	// just go through the list, testing 'instanceof HasConfigFiles'. XXX 
-	adminManager.syncConfigFiles();
-	mailSender.syncConfigFiles();
+        // just go through the list, testing 'instanceof HasConfigFiles'. XXX 
+        adminManager.syncConfigFiles();
+        mailSender.syncConfigFiles();
     }
 
     public byte[] createBackup() throws IOException {
@@ -588,12 +588,12 @@ public class UvmContextImpl extends UvmContextBase
     }
 
     public void restoreBackup(byte[] backupBytes)
-        throws IOException, IllegalArgumentException {
+    throws IOException, IllegalArgumentException {
         backupManager.restoreBackup(backupBytes);
     }
 
     public void restoreBackup(String fileName)
-        throws IOException, IllegalArgumentException {
+    throws IOException, IllegalArgumentException {
         backupManager.restoreBackup(fileName);
     }
 
@@ -654,31 +654,31 @@ public class UvmContextImpl extends UvmContextBase
     }
 
     public boolean activate(String key, RegistrationInfo regInfo) {
-    if (key != null) {
-        // Be nice to the poor user:
-        if (key.length() == 16)
-        key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
-            key.substring(8, 12) + "-" + key.substring(12,16);
-        // Fix for bug 1310: Make sure all the hex chars are lower cased.
-        key = key.toLowerCase();
-        if (key.length() != 19) {
-        // Don't even bother if the key isn't the right length.
-        // Could do other sanity checking here as well. XX
-        logger.error("Unable to activate with wrong length key: " + key);
-        return false;
+        if (key != null) {
+            // Be nice to the poor user:
+            if (key.length() == 16)
+                key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
+                key.substring(8, 12) + "-" + key.substring(12,16);
+            // Fix for bug 1310: Make sure all the hex chars are lower cased.
+            key = key.toLowerCase();
+            if (key.length() != 19) {
+                // Don't even bother if the key isn't the right length.
+                // Could do other sanity checking here as well. XX
+                logger.error("Unable to activate with wrong length key: " + key);
+                return false;
+            }
         }
-    }
         try {
             Process p;
-        if (key == null)
-        p = exec(new String[] { ACTIVATE_SCRIPT });
-        else
-        p = exec(new String[] { ACTIVATE_SCRIPT, key });
+            if (key == null)
+                p = exec(new String[] { ACTIVATE_SCRIPT });
+            else
+                p = exec(new String[] { ACTIVATE_SCRIPT, key });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
                 logger.error("Unable to activate (" + exitValue
-                             + ") with key: " + key);
+                        + ") with key: " + key);
                 return false;
             } else {
                 logger.info("Product activated with key: " + key);
@@ -691,14 +691,16 @@ public class UvmContextImpl extends UvmContextBase
             return false;
         }
 
-    // Only register if activation succeeded
-    try {
-        adminManager.setRegistrationInfo(regInfo);
-    } catch (Exception x) {
-        // Shouldn't happen
-        logger.error("unable to set reg info", x);
-    }
-    return true;
+        // Only register if activation succeeded
+        try {
+            /* If possible, update the admin email */
+            adminManager.setAdminEmail(regInfo);
+            adminManager.setRegistrationInfo(regInfo);
+        } catch (Exception x) {
+            // Shouldn't happen
+            logger.error("unable to set reg info", x);
+        }
+        return true;
     }
 
     public void doFullGC()

@@ -411,4 +411,33 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
 
         return new SystemInfo(activationKey, fullVersion, javaVersion);
     }
+
+    void setAdminEmail(final RegistrationInfo regInfo) {
+        TransactionWork<Void> tw = new TransactionWork<Void>()
+        {
+            public boolean doWork(Session s)
+            {
+                boolean updateSettings = false;
+                for ( User user : adminSettings.getUsers()) {
+                    if (     user.getLogin() == "admin" ) {
+                        String email = user.getEmail();
+                        if ( email == null || email == "[no email]") {
+                            user.setEmail(regInfo.getEmailAddr());
+                            updateSettings = true;
+                        }
+
+                        break;
+                    }
+                }
+
+                if ( updateSettings ) {
+                    adminSettings = (AdminSettings)s.merge(adminSettings);
+                }
+                
+                return true;
+            }
+        };
+        
+        uvmContext.runTransaction(tw);
+    }
 }
