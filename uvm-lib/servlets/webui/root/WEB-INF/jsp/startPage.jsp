@@ -75,6 +75,7 @@
 </c:if>
     <script type="text/javascript">
         var storeWindowName='store_window_${storeWindowId}';
+        var isRegistered = ${isRegistered};
         function init() {
             main=new Ung.Main({debugMode:${isDebug}});
             main.buildStamp='${buildStamp}';

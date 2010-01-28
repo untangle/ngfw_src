@@ -48,6 +48,8 @@ public class StartPageServlet extends HttpServlet
         RequestDispatcher rd = sc.getRequestDispatcher(url);
         BrandingBaseSettings bbs = LocalUvmContextFactory.context().remoteContext().
             brandingManager().getBaseSettings();
+        boolean isRegistered = LocalUvmContextFactory.context().isRegistered();
+        req.setAttribute( "isRegistered", isRegistered ? "true" : "false" );
         req.setAttribute( "bbs", bbs );
         req.setAttribute( "storeWindowId", STORE_WINDOW_ID );
         req.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
