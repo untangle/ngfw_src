@@ -397,6 +397,7 @@ class ColumnDesc():
 
 class Highlight:
     def __init__(self, node_name, string_template):
+        logger.debug("About to generate highlight for %s" % (node_name,))
         self.__name = node_name
         self.__title = get_node(node_name).display_title
         self.__string_template = string_template.replace(self.__name,
