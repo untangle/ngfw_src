@@ -1292,16 +1292,6 @@ class WebFilterDetailDomains(DetailSection):
               ColumnDesc('hits', _('Hits')),
               ColumnDesc('size', _('Size (MB)'))]
 
-        if host:
-            rv.append(ColumnDesc('hname', _('Client')))
-        else:
-            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
-
-        if user:
-            rv.append(ColumnDesc('uid', _('User')))
-        else:
-            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
-
         return rv
 
     def get_sql(self, start_date, end_date, host=None, user=None, email=None):
