@@ -23,12 +23,6 @@
 
   <display-name>Captive Portal User Authentication</display-name>
 
-  <servlet>
-    <servlet-name>AuthenticationServlet</servlet-name>
-    <servlet-class>com.untangle.node.cpd.AuthenticationServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
- </servlet>
-
   @JSP_PRE_COMPILED_SERVLETS@
 
   <servlet-mapping>
