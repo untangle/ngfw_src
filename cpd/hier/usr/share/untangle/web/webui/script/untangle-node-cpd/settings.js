@@ -820,7 +820,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                 "change" : function( elem, newValue ){
                                     this.pageParameters.basicMessageFooter = newValue;
                                 }.createDelegate(this)
-                            },
+                            }
                         },{
                             fileUpload : true,
                             xtype : "form",
@@ -860,7 +860,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
                             window.open("/cpd/portal.php", "_blank");
                         }.createDelegate(this)
-                    }],
+                    }]
                 },{
                     xtype : "fieldset",
                     autoHeight : true,
@@ -1026,7 +1026,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     name : "serverAddress"
                 },{
                     name : "serverPort"
-                },,{
+                },{
                     name : "client",
                     convert : function(value, record) {
                         return record.clientAddress + ":" + record.clientPort;

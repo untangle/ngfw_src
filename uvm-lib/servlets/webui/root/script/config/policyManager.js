@@ -505,7 +505,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     sortable : true,
                     dataIndex : 'policyName',
                     renderer : function(value, metadata, record) {
-                        var result = ""
+                        var result = "";
                         var store = this.policyStore;
                         if (store) {
                             var index = store.findBy(function(record, id) {
