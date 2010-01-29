@@ -1,5 +1,6 @@
 package com.untangle.node.cpd;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -40,6 +41,7 @@ class CPDManager {
 
     public static final long CACHE_DELAY_MS = 10l * 60l * 1000l;
     private static String CPD_CONFIG_FILE = "/etc/untangle-cpd/config.js";
+    private static String CPD_CONFIG_DIR = "/etc/untangle-cpd";
     
     private static final String START_SCRIPT =  System.getProperty( "bunnicula.home" ) + "/cpd/start";
     private static final String STOP_SCRIPT = System.getProperty( "bunnicula.home" ) + "/cpd/stop";
@@ -59,6 +61,8 @@ class CPDManager {
     {
         /* Convert the settings to JSON */
         JSONObject json = serializeCPDSettings(settings, isEnabled );
+        
+        (new File( CPD_CONFIG_DIR)).mkdir();
         
         /* Save the configuration into the captive portal */
         FileWriter fw = new FileWriter(CPD_CONFIG_FILE);
