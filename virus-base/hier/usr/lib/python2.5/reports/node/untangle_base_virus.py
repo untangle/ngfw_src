@@ -909,5 +909,7 @@ AND NOT virus_%s_clean
             sql = sql + (" AND hname = %s" % QuotedString(host))
         if user:
             sql = sql + (" AND uid = %s" % QuotedString(user))
-
+        if email:
+            sql = sql + (" AND addr = %s" % QuotedString(email))
+            
         return sql + " ORDER BY time_stamp DESC"
