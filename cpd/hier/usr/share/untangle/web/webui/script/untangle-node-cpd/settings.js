@@ -1125,6 +1125,32 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
             Ext.MessageBox.hide();
         },
+        validateClient : function()
+        {
+            if ( this.getBaseSettings().pageType == "BASIC_MESSAGE" ) {
+                if (this.getBaseSettings().authenticationType != "NONE" ) {
+                    Ext.MessageBox.alert(this.i18n._("Warning"), 
+                                         this.i18n._("When using 'Basic Message', 'Authentication' must be set to 'None'."),
+                                         function () {
+                                             this.tabs.activate(this.panelUserAuthentication);
+                                         }.createDelegate(this));
+                    return false;
+                }
+            }
+
+            if ( this.getBaseSettings().pageType == "BASIC_LOGIN" ) {
+                if (this.getBaseSettings().authenticationType == "NONE" ) {
+                    Ext.MessageBox.alert(this.i18n._("Warning"), 
+                                         this.i18n._("When using 'Basic Login', 'Authentication' cannot be set to 'None'."),
+                                         function () {
+                                             this.tabs.activate(this.panelUserAuthentication);
+                                         }.createDelegate(this));
+                    return false;
+                }
+            }
+
+            return true;
+        },
         // commit function
         commitSettings : function(callback)
         {
