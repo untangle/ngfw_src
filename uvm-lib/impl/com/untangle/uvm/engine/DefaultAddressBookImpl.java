@@ -87,6 +87,14 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
                             "mysharedsecret",
                             AuthenticationMethod.CLEARTEXT));
                     s.save(settings);
+                } else if ( settings.getRadiusServerSettings() == null ) {                   
+                    settings.setRadiusServerSettings(new RadiusServerSettings(false,
+                            "1.2.3.4",
+                            1812,
+                            "mysharedsecret",
+                            AuthenticationMethod.CLEARTEXT));
+                    
+                    settings = (AddressBookSettings)s.merge( settings );
                 }
                 return true;
             }
@@ -496,6 +504,8 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     }
 
     private boolean isNotConfigured() {
+        if ( m_settings == null ) return false;
+        
         return m_settings.getAddressBookConfiguration() ==
             AddressBookConfiguration.NOT_CONFIGURED;
     }
