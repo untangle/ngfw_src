@@ -78,6 +78,9 @@ class WebFilterBaseNode(Node):
         ft.dimensions.append(Column('wf_%s_action' % self.__vendor_name,
                                     'text'))
 
+        ft.dimensions.append(Column('wf_%s_reason' % self.__vendor_name,
+                                    'text'))
+
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
@@ -183,11 +186,11 @@ class WebHighlight(Highlight):
 
         query = """\
 SELECT COALESCE(sum(hits), 0)::int AS hits,
-       COALESCE(sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL THEN 0 ELSE hits END), 0)::int AS violations,
+       COALESCE(sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END), 0)::int AS violations,
        COALESCE(sum(wf_%s_blocks), 0)::int AS blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (self.__vendor_name, self.__vendor_name)
+""" % (self.__vendor_name, self.__vendor_name, self.__vendor_name)
 
         if host:
             query = query + " AND hname = %s"
@@ -234,11 +237,11 @@ SELECT max(hits) AS max_hits,
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
-            hits_query = hits_query + " AND hname = %s"
+            hits_query += " AND hname = %s"
         elif user:
-            hits_query = hits_query + " AND uid = %s"
+            hits_query += " AND uid = %s"
 
-        violations_query = """\
+        blocks_query = """\
 SELECT COALESCE(sum(wf_%s_blocks), 0)::float / %s,
        max(wf_%s_blocks)
 FROM (SELECT date_trunc('hour', trunc_time) AS hour,
@@ -249,11 +252,30 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
        self.__vendor_name)
 
         if host:
-            violations_query = violations_query + " AND hname = %s"
+            blocks_query += " AND hname = %s"
         elif user:
-            violations_query = violations_query + " AND uid = %s"
+            blocks_query ++ " AND uid = %s"
 
-        violations_query = violations_query + " GROUP BY hour) AS foo"
+        blocks_query += " GROUP BY hour) AS foo"
+
+        violations_query = """\
+SELECT COALESCE(sum(wf_%s_violations), 0)::float / %s,
+       max(wf_%s_violations)
+FROM (SELECT date_trunc('hour', trunc_time) AS hour,
+      sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)::int as wf_%s_violations
+      FROM reports.n_http_totals
+      WHERE trunc_time >= %%s AND trunc_time < %%s
+""" % (self.__vendor_name, report_days,
+       self.__vendor_name,
+       self.__vendor_name, self.__vendor_name,
+       self.__vendor_name)
+
+        if host:
+            violations_query += " AND hname = %s"
+        elif user:
+            violations_query += " AND uid = %s"
+
+        violations_query += " GROUP BY hour) AS foo"
 
         conn = sql_helper.get_connection()
         try:
@@ -286,6 +308,21 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             ks = KeyStatistic(_('Max Violations'), r[1],
                               _('violations/hour'))
             lks.append(ks)
+
+            curs = conn.cursor()
+            if host:
+                curs.execute(blocks_query, (one_week, ed, host))
+            elif user:
+                curs.execute(blocks_query, (one_week, ed, user))
+            else:
+                curs.execute(blocks_query, (one_week, ed))
+            r = curs.fetchone()
+            ks = KeyStatistic(_('Avg Blocked Violations'), r[0],
+                              _('violations/hour'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Blocked Violations'), r[1],
+                              _('violations/hour'))
+            lks.append(ks)
         finally:
             conn.commit()
 
@@ -301,7 +338,8 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
         try:
             # per minute
             sums = ["sum(hits)",
-                    "sum(wf_%s_blocks)" % (self.__vendor_name,)]
+                    "sum(wf_%s_blocks)" % (self.__vendor_name,),
+                    "sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)" % (self.__vendor_name, self.__vendor_name)]
 
             if host:
                 extra_where = [("AND hname = %(host)s", { 'host' : host }),]
@@ -320,6 +358,7 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
             dates = []
             hits = []
             blocks = []
+            violations = []
 
             while 1:
                 r = curs.fetchone()
@@ -328,6 +367,7 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
                 dates.append(r[0])
                 hits.append(r[1])
                 blocks.append(r[2])
+                violations.append(r[3])                
         finally:
             conn.commit()
 
@@ -340,7 +380,9 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
 
         plot.add_dataset(dates, hits, label=_('hits'),
                          color=colors.goodness)
-        plot.add_dataset(dates, blocks, label=_('violations'),
+        plot.add_dataset(dates, violations, label=_('violations'),
+                         color=colors.detected)
+        plot.add_dataset(dates, blocks, label=_('blocked violations'),
                          color=colors.badness)
 
         return plot
@@ -363,13 +405,21 @@ class DailyWebUsage(Graph):
 
         query = """\
 SELECT max(hits), COALESCE(sum(hits), 0) / %s, max(wf_%s_blocks),
-       COALESCE(sum(wf_%s_blocks), 0) / %s
+       COALESCE(sum(wf_%s_blocks), 0) / %s,
+       max(wf_%s_violations),
+       COALESCE(sum(wf_%s_violations), 0) / %s
 FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
-             sum(wf_%s_blocks)::int as wf_%s_blocks
+             sum(wf_%s_blocks)::int as wf_%s_blocks,
+             sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)::int as wf_%s_violations
       FROM reports.n_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (report_days, self.__vendor_name, self.__vendor_name, report_days,
-       self.__vendor_name, self.__vendor_name)
+""" % (report_days, self.__vendor_name,
+       self.__vendor_name, report_days,
+       self.__vendor_name,
+       self.__vendor_name, report_days,
+       self.__vendor_name, self.__vendor_name,
+       self.__vendor_name, self.__vendor_name,
+       self.__vendor_name)
         if host:
             query = query + " AND hname = %s"
         elif user:
@@ -393,11 +443,17 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
             lks.append(ks)
             ks = KeyStatistic(_('avg hits'), r[1], _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('max violations'), r[2],
+            ks = KeyStatistic(_('max violations'), r[4],
                               _('violations/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg violations'), r[3],
+            ks = KeyStatistic(_('avg violations'), r[5],
                               _('violations/day'))
+            ks = KeyStatistic(_('max blocked violations'), r[2],
+                              _('violations/day'))
+            lks.append(ks)
+            ks = KeyStatistic(_('avg blocked violations'), r[3],
+                              _('violations/day'))
+            lks.append(ks)
             lks.append(ks)
         finally:
             conn.commit()
@@ -418,9 +474,10 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
             q = """\
 SELECT date_trunc('day', trunc_time) AS day,
        coalesce(sum(hits), 0)::int AS hits,
-       coalesce(sum(wf_%s_blocks), 0)::int AS wf_%s_blocks
+       coalesce(sum(wf_%s_blocks), 0)::int AS wf_%s_blocks,
+COALESCE(sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END), 0)::int AS wf_%s_violations
 FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (5 * (self.__vendor_name,))
             if host:
                 q = q + " AND hname = %s"
             elif user:
@@ -441,14 +498,16 @@ ORDER BY day asc"""
             dates = []
             hits = []
             blocks = []
+            violations = []
 
             while 1:
                 r = curs.fetchone()
                 if not r:
                     break
                 dates.append(r[0])
-                hits.append(r[1])
+                hits.append(r[1]-r[2]-r[3])
                 blocks.append(r[2])
+                violations.append(r[3])
 
         finally:
             conn.commit()
@@ -463,8 +522,10 @@ ORDER BY day asc"""
                      major_formatter=DATE_FORMATTER,
                      required_points=rp)
 
-        plot.add_dataset(dates, hits, label=_('hits'), color=colors.goodness)
-        plot.add_dataset(dates, blocks, label=_('violations'),
+        plot.add_dataset(dates, hits, label=_('clean hits'), color=colors.goodness)
+        plot.add_dataset(dates, violations, label=_('violations'),
+                         color=colors.detected)
+        plot.add_dataset(dates, blocks, label=_('blocks'),
                          color=colors.badness)
 
         return plot
@@ -485,9 +546,13 @@ class TotalWebUsage(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT COALESCE(sum(hits)::int, 0), coalesce(sum(wf_%s_blocks)::int, 0)
+SELECT COALESCE(sum(hits)::int, 0),
+       COALESCE(sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END), 0)::int AS violations,
+       COALESCE(sum(wf_%s_blocks)::int, 0)
 FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
+WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,
+                                                   self.__vendor_name,
+                                                   self.__vendor_name)
         if host:
             query = query + " AND hname = %s"
         elif user:
@@ -509,10 +574,13 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
 
             hits = r[0]
             violations = r[1]
-
-            ks = KeyStatistic(_('Total Hits'), hits, 'hits')
+            blocks = r[2]
+            
+            ks = KeyStatistic(_('Total Clean Hits'), hits-violations-blocks, 'hits')
             lks.append(ks)
             ks = KeyStatistic(_('Total Violations'), violations, 'violations')
+            lks.append(ks)
+            ks = KeyStatistic(_('Total Blocked Violations'), blocks, 'blocks')
             lks.append(ks)
         finally:
             conn.commit()
@@ -520,10 +588,12 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,)
         plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Date'),
                      ylabel=_('Hits per Day'))
 
-        plot.add_pie_dataset({_('total hits'): hits,
-                              _('total violations'): violations},
-                             colors={_('total hits'): colors.goodness,
-                                     _('total violations'): colors.badness})
+        plot.add_pie_dataset({_('Total Clean Hits'): hits-violations-blocks,
+                              _('Total Violations'): violations,
+                              _('Total Blocked Violations'): blocks},
+                             colors={_('Total Clean Hits'): colors.goodness,
+                                     _('Total Violations'): colors.detected,
+                                     _('Total Blocked Violations'): colors.badness})
 
         return (lks, plot)
 
@@ -544,9 +614,12 @@ class TopTenWebPolicyViolationsByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT wf_%s_category, sum(wf_%s_blocks)::int AS blocks_sum
+SELECT wf_%s_category, count(*)::int AS blocks_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
+WHERE trunc_time >= %%s AND trunc_time < %%s
+AND NOT wf_%s_category IS NULL
+AND NOT wf_%s_reason = 'I'
+""" % (3 * (self.__vendor_name,))
         if host:
             query = query + " AND hname = %s"
         elif user:
@@ -1076,7 +1149,8 @@ class TopTenPolicyViolations(Graph):
 SELECT host, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-      AND NOT wf_%s_category IS NULL""" % self.__vendor_name
+AND NOT wf_%s_category IS NULL
+AND NOT wf_%s_reason = 'I'""" % (self.__vendor_name, self.__vendor_name)
         if host:
             query += " AND hname = %s"
         elif user:
@@ -1214,10 +1288,11 @@ SELECT time_stamp, hname, uid, wf_%s_category,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
-      AND NOT wf_%s_action ISNULL
+AND NOT wf_%s_action IS NULL
+AND NOT wf_%s_reason = 'I'
 """ % (self.__vendor_name, self.__vendor_name,
        DateFromMx(start_date), DateFromMx(end_date),
-       self.__vendor_name)
+       self.__vendor_name, self.__vendor_name)
 
         if host:
             sql += " AND hname = %s" % QuotedString(host)
