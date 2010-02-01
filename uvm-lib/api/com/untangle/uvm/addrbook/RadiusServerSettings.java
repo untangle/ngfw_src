@@ -58,7 +58,7 @@ public class RadiusServerSettings implements Serializable
     private int port;
     private String sharedSecret;
     
-    private String authenticationMethodValue = AuthenticationMethod.CLEARTEXT.toString();
+    private String authenticationMethodValue = AuthenticationMethod.PAP.toString();
     
     public RadiusServerSettings() { }
 
