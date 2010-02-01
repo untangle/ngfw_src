@@ -18,6 +18,7 @@
 
 package com.untangle.uvm.networking;
 
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -116,9 +117,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     /** The current services settings */
     private ServicesInternalSettings servicesSettings = null;
-
-    /* the netcap  */
-    private final Netcap netcap = Netcap.getInstance();
 
     /* the address of the internal interface, used for the web address */
     private InetAddress internalAddress;
@@ -471,7 +469,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 return IPNetwork.parse( "172.16.0.1/24" );
             }
 
-            IPMatcher matcher = IPMatcherFactory.getInstance().parse( "192.0.0.0/8" );
+            IPMatcher matcher = IPMatcherFactory.parse( "192.0.0.0/8" );
             
             if ( matcher.isMatch( externalAddress.getAddr())) {
                 return IPNetwork.parse( "172.16.0.1/24" );
@@ -558,9 +556,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     public void updateAddress()
     {
-        /* Get the new address for any dhcp spaces */
-        NetworkSpacesInternalSettings previous = this.networkSettings;
-
         synchronized( this ) {
             try {
                 LocalUvmContextFactory.context().localIntfManager().loadInterfaceConfig();
@@ -570,7 +565,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
             try {
                 /* Update the address database in netcap */
-                Netcap.getInstance().updateAddress();
+                Netcap.updateAddress();
             } catch ( Exception e ) {
                 logger.error( "Exception updating address.", e );
             }
@@ -788,8 +783,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         loadAllSettings();
 
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-
         /* Done before so these get called on the first update */
         registerListener(new IPMatcherListener());
         registerListener(new IntfMatcherListener());
@@ -856,10 +849,26 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 return null;
             } catch ( JsonClient.ConnectionException e ) {
                 Throwable cause = e.getCause();
-                if (( cause != null ) && ( cause instanceof ConnectTimeoutException )) {
-                    logger.warn( "unable to communicate with the alpaca." );
+                
+                if ( cause == null ) {
+                    return e;
+                }
+                
+                if ( cause instanceof ConnectTimeoutException ) {
+                    logger.warn( "timeout communicating with the alpaca, trying again." );
                     continue;
                 }
+                
+                if ( cause instanceof ConnectException ) {
+                    logger.warn( "unable to connect to alpaca, sleeping and trying again.");
+                    try {
+                        Thread.sleep(1000);
+                    } catch ( InterruptedException ie ) {
+                        logger.warn( "Interrupted while retrying, continuing");
+                    }
+                    continue;
+                }
+                
                 return e;
             } catch(Exception e) {
                 return e;
