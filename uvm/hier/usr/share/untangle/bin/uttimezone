@@ -18,8 +18,9 @@ ln -s "/usr/share/zoneinfo/$ZONE" /etc/localtime
 [ -x /etc/init.d/ntpdate ] && /etc/init.d/ntpdate restart > /dev/null 2>&1 &
 [ -x /etc/init.d/rsyslog ] && /etc/init.d/rsyslog restart
 [ -x /etc/init.d/sysklogd ] && /etc/init.d/sysklogd restart
+
 # Must restart spamd whenever syslogd restarts, bug in perl...
-[ -x /etc/init.d/spamassassin ] && /etc/init.d/spamassassin restart
+[ -x /etc/init.d/spamassassin ] && /etc/init.d/spamassassin restart || true
 
 /etc/init.d/cron restart
 
