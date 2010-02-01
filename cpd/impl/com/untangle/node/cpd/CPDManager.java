@@ -367,6 +367,7 @@ class CPDManager {
         
         jsonObject.put( "function", "replace_host" );
         jsonObject.put( "username", username );
+        jsonObject.put( "update_session_start", true);
         jsonObject.put( "ipv4_addr", clientAddress.getHostAddress());
         
         JSONObject response = JsonClient.getInstance().call(CPD_URL, jsonObject);
