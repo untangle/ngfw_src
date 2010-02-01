@@ -88,6 +88,12 @@ class ServerNode(Node):
         ft.measures.append(Column('disk_free',
                                   'int8',
                                   "avg(disk_free)"))
+        ft.measures.append(Column('swap_total',
+                                  'int8',
+                                  "avg(swap_total)"))
+        ft.measures.append(Column('swap_free',
+                                  'int8',
+                                  "avg(swap_free)"))
         reports.engine.register_fact_table(ft)
 
     @print_timing
@@ -102,7 +108,8 @@ DELETE FROM events.n_server_events WHERE time_stamp < %s""", (cutoff,))
         sections = []
         s = SummarySection('summary', _('Summary Report'),
                            [LoadUsage(), CpuUsage(),
-                            MemoryUsage(),DiskUsage()])
+                            MemoryUsage(), SwapUsage(),
+                            DiskUsage()])
         sections.append(s)
         return Report(self, sections)
 
@@ -120,7 +127,9 @@ CREATE TABLE reports.n_server_events (
     cpu_user 	DECIMAL(6, 3),
     cpu_system 	DECIMAL(6, 3),
     disk_total 	INT8,
-    disk_free 	INT8)""", 'time_stamp', start_date, end_date)
+    disk_free 	INT8,
+    swap_total 	INT8,
+    swap_free 	INT8)""", 'time_stamp', start_date, end_date)
 
         sd = DateFromMx(sql_helper.get_update_info('reports.n_server_events',
                                                    start_date))
@@ -134,12 +143,14 @@ INSERT INTO reports.n_server_events
       mem_cache, mem_buffers,
       load_1, load_5, load_15,
       cpu_user, cpu_system,
-      disk_total, disk_free)
+      disk_total, disk_free,
+      swap_total, swap_free)
 SELECT time_stamp, mem_free,
       mem_cache, mem_buffers,
       load_1, load_5, load_15,
       cpu_user, cpu_system,
-      disk_total, disk_free
+      disk_total, disk_free,
+      swap_total, swap_free
 FROM events.n_server_evt
 WHERE time_stamp >= %s AND time_stamp < %s""",
                                (sd, ed), connection=conn, auto_commit=False)
@@ -174,7 +185,7 @@ class MemoryUsage(Graph):
             lks = []
 
             ks_query = """\
-SELECT avg(mem_free), avg(mem_cache), avg(mem_buffers)
+SELECT avg(mem_free), avg(mem_cache)
 FROM reports.n_server_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -188,14 +199,10 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             ks = KeyStatistic(_('Avg Cached Memory'), r[1] / 10**6,
                               N_('MB'))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg Buffered Memory'), r[2] / 10**6,
-                              N_('MB'))
-            lks.append(ks)
 
             # MB
             sums = ["COALESCE(AVG(mem_free),0) / 1000000",
-                    "COALESCE(AVG(mem_cache), 0) / 1000000",
-                    "COALESCE(AVG(mem_buffers), 0) / 1000000"]
+                    "COALESCE(AVG(mem_cache), 0) / 1000000"]
 
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -206,13 +213,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             dates = []
             free = []
             cached = []
-            buffered = []
 
             for r in curs.fetchall():
                 dates.append(r[0])
                 free.append(r[1])
                 cached.append(r[2])
-                buffered.append(r[3])
         finally:
             conn.commit()
 
@@ -221,7 +226,6 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, free, _('Free memory'))
-        plot.add_dataset(dates, buffered, _('Buffered memory'))
         plot.add_dataset(dates, cached, _('Cached memory'))
 
         return (lks, plot)
@@ -418,6 +422,67 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, diskFree, _('Free disk'))
+
+        return (lks, plot)
+
+class SwapUsage(Graph):
+    def __init__(self):
+        Graph.__init__(self, 'swap-usage', _('Swap Usage'))
+
+    @print_timing
+    def get_graph(self, end_date, report_days, host=None, user=None,
+                  email=None):
+        if email or host or user:
+            return None
+
+        ed = DateFromMx(end_date)
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
+        one_week = DateFromMx(start_date)
+
+        conn = sql_helper.get_connection()
+        try:
+            lks = []
+
+            ks_query = """\
+SELECT avg(swap_total-swap_free), avg(swap_total)
+FROM reports.n_server_totals
+WHERE trunc_time >= %s AND trunc_time < %s"""
+
+            curs = conn.cursor()
+            curs.execute(ks_query, (one_week, ed))
+            r = curs.fetchone()
+
+            ks = KeyStatistic(_('Avg Swap Used'), r[0] / 10**6,
+                              N_('MB'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg Swap Used'), r[0] * 100 / r[1],
+                              N_('%'))
+            lks.append(ks)
+
+            # MB
+            sums = ["COALESCE(AVG(swap_total-swap_free),0) / 1000000"]
+                                                 
+            q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
+                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 end_date,
+                                                 avgs=sums)
+
+            curs.execute(q, h)
+
+            dates = []
+            swapFree = []
+
+            for r in curs.fetchall():
+                dates.append(r[0])
+                swapFree.append(r[1])
+        finally:
+            conn.commit()
+
+        plot = Chart(type=TIME_SERIES_CHART, title=self.title,
+                     xlabel=_('Time'), ylabel=_('Swap (MB)'),
+                     major_formatter=TIMESTAMP_FORMATTER)
+
+        plot.add_dataset(dates, swapFree, _('Swap Used'))
 
         return (lks, plot)
 

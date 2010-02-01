@@ -55,6 +55,9 @@ import org.hibernate.annotations.Type;
 	private long diskTotal;
 	private long diskFree;
 
+        private long swapFree;
+        private long swapTotal;
+
         // constructors --------------------------------------------------------
         public SystemStatEvent() { }
 
@@ -248,6 +251,45 @@ import org.hibernate.annotations.Type;
 	public void setDiskFree(long newDiskFree) {
 	    this.diskFree = newDiskFree;
 	}
+
+        /**
+         * Get the <code>SwapFree</code> value.
+         *
+         * @return a <code>long</code> value
+         */
+        @Column(name="swap_free")
+        public final long getSwapFree() {
+            return swapFree;
+        }
+
+        /**
+         * Set the <code>SwapFree</code> value.
+         *
+         * @param newSwapFree The new SwapFree value.
+         */
+        public final void setSwapFree(final long newSwapFree) {
+            this.swapFree = newSwapFree;
+        }
+
+        /**
+         * Get the <code>SwapTotal</code> value.
+         *
+         * @return a <code>long</code> value
+         */
+        @Column(name="swap_total")
+        public final long getSwapTotal() {
+            return swapTotal;
+        }
+
+        /**
+         * Set the <code>SwapTotal</code> value.
+         *
+         * @param newSwapTotal The new SwapTotal value.
+         */
+        public final void setSwapTotal(final long newSwapTotal) {
+            this.swapTotal = newSwapTotal;
+        }
+
         // Syslog methods ------------------------------------------------------
 
         public void appendSyslog(SyslogBuilder sb)

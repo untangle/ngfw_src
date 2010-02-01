@@ -478,6 +478,8 @@ class MessageManagerImpl implements LocalMessageManager
 		sse.setCpuSystem(Float.parseFloat(m.get("systemCpuUtilization").toString()));
 		sse.setDiskTotal(Long.parseLong(m.get("totalDiskSpace").toString()));
 		sse.setDiskFree(Long.parseLong(m.get("freeDiskSpace").toString()));
+                sse.setSwapFree(Long.parseLong(m.get("SwapFree").toString()));
+                sse.setSwapTotal(Long.parseLong(m.get("SwapTotal").toString()));
 		logger.debug("Logging SystemStatEvent");
 		eventLogger.log(sse);
 		timeStamp = time;

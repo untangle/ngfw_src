@@ -138,6 +138,8 @@ CREATE TABLE events.n_server_evt (
     cpu_system 	DECIMAL(6, 3),
     disk_total 	INT8,
     disk_free 	INT8,
+    swap_total 	INT8,
+    swap_free 	INT8,
     PRIMARY KEY (event_id));
 
 CREATE TABLE events.event_data_days (
