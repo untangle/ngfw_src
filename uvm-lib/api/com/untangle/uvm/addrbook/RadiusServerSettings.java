@@ -55,7 +55,7 @@ public class RadiusServerSettings implements Serializable
     private boolean isEnabled = false;
     private Long id;
     private String server;
-    private int port;
+    private int port = 1812;
     private String sharedSecret;
     
     private String authenticationMethodValue = AuthenticationMethod.PAP.toString();
