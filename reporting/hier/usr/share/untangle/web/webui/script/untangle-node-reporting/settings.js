@@ -707,6 +707,24 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     this.tabs.activate(activeTab);
                 }
 
+                // set weekly schedule
+                var weeklySched = [];
+                if (Ext.getCmp('reporting_weeklySunday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:1});
+                if (Ext.getCmp('reporting_weeklyMonday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:2});
+                if (Ext.getCmp('reporting_weeklyTuesday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:3});
+                if (Ext.getCmp('reporting_weeklyWednesday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:4});
+                if (Ext.getCmp('reporting_weeklyThursday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:5});
+                if (Ext.getCmp('reporting_weeklyFriday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:6});
+                if (Ext.getCmp('reporting_weeklySaturday').getValue())  weeklySched.push({javaClass:"com.untangle.node.reporting.WeeklyScheduleRule", day:7});
+                this.getReportingSettings().schedule.weeklySched.list = weeklySched;
+                
+                // set monthly schedule
+                var schedule = this.getReportingSettings().schedule;
+                schedule.monthlyNFirst = Ext.getCmp('reporting_monthlyFirst').getValue();
+                schedule.monthlyNDaily = Ext.getCmp('reporting_monthlyEveryday').getValue();
+                var monthlyOnce = Ext.getCmp('reporting_monthlyOnce').getValue();
+                schedule.monthlyNDayOfWk = monthlyOnce ? Ext.getCmp('reporting_monthlyOnceCombo').getValue() : -1 //NONE ;
+                
                 // set Ip Map list
                 this.getReportingSettings().networkDirectory.entries.list = this.gridIpMap.getFullSaveList();
 
