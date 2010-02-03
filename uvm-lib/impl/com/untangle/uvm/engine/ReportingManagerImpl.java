@@ -550,6 +550,11 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
             if (f.exists()) {
                 ApplicationData ad = readXml(f);
                 if (null != ad) {
+                    if (m.containsKey(pos)) {
+                        logger.error("View-Position '" + pos + "' is already used by '" +
+                                     ((Application)m.get(pos)).getName() + "', so '" + 
+                                     ad.getName() + "' will not show up in your reports");
+                    }
                     m.put(pos, new Application(ad.getName(), ad.getTitle()));
                 }
             }
