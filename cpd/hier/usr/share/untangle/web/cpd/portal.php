@@ -1,7 +1,7 @@
 <?php
 
 include "lib.php";
-
+session_cache_limiter('nocache');
 session_start();
 
 $_SESSION["init"] = true;
@@ -15,7 +15,10 @@ if ( $_REQUEST["method"] != null ) {
         $_SESSION["path"] = null;
     }
 }
-
+$logout_success = false;
+if ($_REQUEST["logout"]=='Y'){
+    $logout_success = true;
+}
 session_write_close();
 
 open_db_connection();

@@ -55,9 +55,12 @@
             <input class="u-form-text u-form-field" type="password" id="password"/>          
           </div>          
           <div class="u-form-item">
-              <a href="#" onclick="return authenticateUser('login-error')" class="img-background" id="authenticateUser">
+              <a href="#" onclick="return authenticateUserWrapper('login-error')" class="img-background" id="authenticateUser">
               Login
             </a>
+            <span id="please-wait" style="display:none">
+                Please Wait ...            
+            </span>             
           </div>
           <div class="message-text">
               <p>

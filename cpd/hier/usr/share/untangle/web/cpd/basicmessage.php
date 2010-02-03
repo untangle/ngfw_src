@@ -27,6 +27,7 @@
         <p class="icon-captive-portal">
           <br/>
         </p>
+        <p id="logout-success" class="success" <?php if($logout_success===true){echo 'style="display:block"';}?>>You have successfully logged out.</p>        
         <p class="description">
           <span>
             <b>
@@ -59,6 +60,9 @@
             <a href="#" onclick="return acceptAgreement(false)" class="img-background" id="authenticateUser">
             Continue
             </a>
+            <span id="please-wait" style="display:none">
+                Please Wait ...            
+            </span>           
           </div>
         </div>
         <p class="contact">
