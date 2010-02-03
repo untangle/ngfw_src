@@ -209,7 +209,8 @@ WHERE target_state = 'running' OR target_state = 'initialized'
           conn.commit()
      except Exception, e:
           conn.rollback()
-          logger.warn("could not get db_retention", exc_info=True)
+          logger.critical("Could not get report settings", exc_info=True)
+          sys.exit(3)
 
      logger.info("db_settings: %s" % (settings,))
      return settings
