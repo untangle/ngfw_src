@@ -254,7 +254,7 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
         if host:
             blocks_query += " AND hname = %s"
         elif user:
-            blocks_query ++ " AND uid = %s"
+            blocks_query += " AND uid = %s"
 
         blocks_query += " GROUP BY hour) AS foo"
 
