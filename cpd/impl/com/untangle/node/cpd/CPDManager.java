@@ -73,6 +73,28 @@ class CPDManager {
         fw.close();        
     }
     
+    boolean clearHostDatabase() throws JSONException, ConnectionException
+    {
+        JSONObject jsonObject = new JSONObject();
+        
+        jsonObject.put( "function", "clear_host_database" );
+        
+        JSONObject response = JsonClient.getInstance().call(CPD_URL, jsonObject);
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Server Returned: " + response.toString());
+        }
+        
+        int status = response.getInt( JsonClient.RESPONSE_STATUS);
+        String message = response.getString( JsonClient.RESPONSE_MESSAGE);
+        
+        if (  status != JsonClient.STATUS_SUCCESS ) {
+            logger.info( "CPD could clear host database. [" + message + "]");
+            return false;
+        }
+        
+        return true;
+    }
+    
     void start() throws NodeException
     {
         ScriptRunner.getInstance().exec( START_SCRIPT );
@@ -408,4 +430,5 @@ class CPDManager {
         
         return true;   
     }
+    
 }

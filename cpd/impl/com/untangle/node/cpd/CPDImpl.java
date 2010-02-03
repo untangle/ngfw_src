@@ -35,6 +35,7 @@ import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
+import com.untangle.uvm.UvmState;
 import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.logging.EventLogger;
@@ -57,6 +58,7 @@ import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.util.JsonClient.ConnectionException;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
@@ -393,6 +395,9 @@ public class CPDImpl extends AbstractNode implements CPD {
         reconfigure(true);
            
         LocalUvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
+        
+        /* Flush all of the entries that are in the phonebook */
+        LocalUvmContextFactory.context().localPhoneBook().flushEntries();
 
         super.preStart();
      }
@@ -400,6 +405,20 @@ public class CPDImpl extends AbstractNode implements CPD {
     @Override
     protected void preStop() throws NodeStopException
     {
+        try {
+            /* Only stop if requested by the user (not during shutdown). */
+            if ( LocalUvmContextFactory.context().state() != UvmState.DESTROYED ) {
+                this.manager.clearHostDatabase();
+                
+                /* Flush all of the entries that are in the phonebook */
+                LocalUvmContextFactory.context().localPhoneBook().flushEntries();
+            }
+        } catch (JSONException e) {
+            logger.warn( "Unable to convert the JSON while clearing the host database, continuing.", e);
+        } catch (ConnectionException e) {
+            logger.warn( "Unable to clear host database settings, continuing.", e);
+        }
+        
         try {
             this.manager.setConfig(this.settings, false);
         } catch (JSONException e) {
@@ -438,7 +457,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     protected void preDestroy() throws NodeException
     {
         LocalUvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
-        
+                
         unDeployWebAppIfRequired(this.logger);
 
         super.preDestroy();

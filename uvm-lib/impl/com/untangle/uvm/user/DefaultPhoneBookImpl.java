@@ -78,6 +78,11 @@ class DefaultPhoneBookImpl implements LocalPhoneBook
     {
         return ProductIdentifier.PHONE_BOOK;
     }
+    
+    public void flushEntries()
+    {
+        logger.debug( "ignoring flush entries.");
+    }
 
     /* ----------------- Package ----------------- */
 

@@ -58,4 +58,7 @@ public interface LocalPhoneBook extends RemotePhoneBook
 
     /* Unregister a phone book assistant */
     public void unregisterAssistant( Assistant assistant );
+    
+    /* Expire all of the entries in the address book */
+    public void flushEntries();
 }
