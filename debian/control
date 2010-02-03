@@ -1099,7 +1099,7 @@ Architecture: all
 Depends: untangle-vm, untangle-cpd, php5-pgsql, php5-curl
 XB-Display-Name: Captive Portal
 XB-Untangle-Type: node
-XB-View-Position: 30
+XB-View-Position: 31
 XB-Is-Core: true
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAMAAADyHTlpAAAAGXRFWHRTb2Z0d2Fy
