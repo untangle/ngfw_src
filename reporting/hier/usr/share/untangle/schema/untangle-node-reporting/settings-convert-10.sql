@@ -15,11 +15,16 @@
 --
 
 ALTER TABLE settings.n_reporting_settings
-   ADD COLUMN attachment_size_limit int8;
+   ADD COLUMN attachment_size_limit INT8;
 UPDATE settings.n_reporting_settings SET attachment_size_limit = 10;
 ALTER TABLE settings.n_reporting_settings 
    ALTER COLUMN attachment_size_limit SET NOT NULL;
 
+ALTER TABLE settings.n_reporting_settings ADD COLUMN db_retention INT4;
+
 UPDATE settings.n_reporting_settings
    SET db_retention = 7
-   WHERE db_retention = 14;
+   WHERE db_retention = 14 OR db_retention IS NULL;
+
+ALTER TABLE settings.n_reporting_settings 
+      ALTER COLUMN db_retention SET NOT NULL;
