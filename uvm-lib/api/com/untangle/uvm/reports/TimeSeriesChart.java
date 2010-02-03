@@ -187,7 +187,7 @@ public class TimeSeriesChart extends Plot
 	da.setMinimumDate(min);
 	da.setMaximumDate(max);
 
-        da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
+//      da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
 // 	da.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1));
     }
 
