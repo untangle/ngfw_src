@@ -69,8 +69,8 @@ if (!reportsAvailable || !reportingEnabled) {
 %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <title>Reports</title>
-
     <style type="text/css">
         @import "/ext/resources/css/ext-all.css";
     </style>
