@@ -258,7 +258,7 @@ import org.hibernate.annotations.Type;
          * @return a <code>long</code> value
          */
         @Column(name="swap_free")
-        public final long getSwapFree() {
+        public long getSwapFree() {
             return swapFree;
         }
 
@@ -267,7 +267,7 @@ import org.hibernate.annotations.Type;
          *
          * @param newSwapFree The new SwapFree value.
          */
-        public final void setSwapFree(final long newSwapFree) {
+        public void setSwapFree(final long newSwapFree) {
             this.swapFree = newSwapFree;
         }
 
@@ -277,7 +277,7 @@ import org.hibernate.annotations.Type;
          * @return a <code>long</code> value
          */
         @Column(name="swap_total")
-        public final long getSwapTotal() {
+        public long getSwapTotal() {
             return swapTotal;
         }
 
@@ -286,7 +286,7 @@ import org.hibernate.annotations.Type;
          *
          * @param newSwapTotal The new SwapTotal value.
          */
-        public final void setSwapTotal(final long newSwapTotal) {
+        public void setSwapTotal(final long newSwapTotal) {
             this.swapTotal = newSwapTotal;
         }
 
