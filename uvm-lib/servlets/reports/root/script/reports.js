@@ -225,7 +225,7 @@ Ung.Reports = Ext.extend(Object,{
                 numDays :rpc.dates.list[i].numDays,
                 handler : function()
                 {
-                    reports.changeDate(this.dt);
+                    reports.changeDate(this.dt,this.numDays);
                 }
             });
         }
@@ -346,9 +346,9 @@ Ung.Reports = Ext.extend(Object,{
                                 reports.changeDate({
                                     javaClass: 'java.util.Date',
                                     ime: d.getTime()
-                                });
+                                },1);
                             } else if (rpc.dates && rpc.dates.list.length > 0) {
-                                reports.changeDate(rpc.dates.list[0].date);
+                                reports.changeDate(rpc.dates.list[0].date,rpc.dates.list[0].numDays);
                             }
                         }
                     }
@@ -387,7 +387,7 @@ Ung.Reports = Ext.extend(Object,{
             if(this.isDynamicDataAvailable(this.reportDatesItems[found])===false){
                 alert(i18n._("The data used to calculate the selected report is older than the \"Retention Time\" setting and has been removed from the server. So you may not see any dynamic data for this report.")); //this has to be an alert - inorder to be blocking.
             } 
-            this.changeDate(this.reportDatesItems[found].dt);            
+            this.changeDate(this.reportDatesItems[found].dt, this.reportDatesItems[found].numDays);            
         }
     },
     showAvailableReports : function(){
@@ -593,7 +593,7 @@ Ung.Reports = Ext.extend(Object,{
             selModel.fireEvent('selectionchange',selModel,node);
         }
     },
-    changeDate : function(date)
+    changeDate : function(date,numDays)
     {
         this.reportsDate=date;
         var item, found = false;
@@ -601,7 +601,7 @@ Ung.Reports = Ext.extend(Object,{
             item = this.reportDatesItems[i];
             found = false;
 
-            if (item.dt.time == date.time) {
+            if (item.dt.time == date.time && item.numDays == numDays) {
                 //Ext.getCmp('report-day-menu').setText(item.text);
                 Ext.getCmp('report-date-range').setText(reports.getDateRangeText(item));
                 found = true;
