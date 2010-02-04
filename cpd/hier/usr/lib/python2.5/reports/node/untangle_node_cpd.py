@@ -91,7 +91,8 @@ class Cpd(Node):
                             TopBlockedClients()])
         sections.append(s)
 
-        sections.append(CpdDetail())
+        sections.append(LoginDetail())
+        sections.append(BlockDetail())
         
         return Report(self, sections)
 
@@ -276,7 +277,6 @@ GROUP BY day
         
         dates = []
         logins = []
-        updates = []
         logouts = []
         failures = []
         events = []
@@ -288,7 +288,6 @@ GROUP BY day
             for r in curs.fetchall():
                 dates.append(r[0])
                 logins.append(r[1])
-                updates.append(r[2])
                 logouts.append(r[3])
                 failures.append(r[4])
                 events.append(r[5])
@@ -306,10 +305,8 @@ GROUP BY day
                      required_points=rp)
         plot.add_dataset(dates, logins, label=_('logins'),
                          color=colors.goodness)
-        plot.add_dataset(dates, updates, label=_('updates'),
-                         color=colors.detected)
         plot.add_dataset(dates, logouts, label=_('logouts'),
-                         color=colors.badness)
+                         color=colors.detected)
         plot.add_dataset(dates, logouts, label=_('failures'),
                          color=colors.badness)
 
@@ -409,9 +406,9 @@ LIMIT 10"""
         return (lks, plot)
 
 
-class CpdDetail(DetailSection):
+class LoginDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'cpd-events', _('CPD Events'))
+        DetailSection.__init__(self, 'cpd-login-events', _('CPD Login Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email or user or host:
@@ -430,16 +427,45 @@ class CpdDetail(DetailSection):
         sql = """
 SELECT time_stamp, login_name,
 CASE WHEN event = 'LOGIN' THEN '%s'
-     WHEN event = 'UPDATE' THEN '%s'
-     WHEN event = 'LOGOUT' THEN '%s'
      WHEN event = 'FAILED' THEN '%s' END
 FROM reports.n_cpd_login_events
 WHERE time_stamp >= %s AND time_stamp < %s
 ORDER BY time_stamp DESC
-""" % (LOGIN, UPDATE, LOGOUT, FAILED,
+""" % (LOGIN, FAILED,
        DateFromMx(start_date),
        DateFromMx(end_date))
 
         return sql
-    
+
+class BlockDetail(DetailSection):
+    def __init__(self):
+        DetailSection.__init__(self, 'cpd-block-events', _('CPD Blocked Events'))
+
+    def get_columns(self, host=None, user=None, email=None):
+        if email or user or host:
+            return None
+
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date'),
+              ColumnDesc('client_address', _('Client Address')),
+              ColumnDesc('client_port', _('Client Port')),
+              ColumnDesc('server_address', _('Server Address')),
+              ColumnDesc('server_port', _('Server Port'))]
+
+        return rv
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        if email or host or user:
+            return None
+
+        sql = """
+SELECT time_stamp, client_address, client_port,
+       server_address, server_port
+FROM reports.n_cpd_block_events
+WHERE time_stamp >= %s AND time_stamp < %s
+ORDER BY time_stamp DESC
+""" % (DateFromMx(start_date),
+       DateFromMx(end_date))
+
+        return sql
+
 reports.engine.register_node(Cpd())
