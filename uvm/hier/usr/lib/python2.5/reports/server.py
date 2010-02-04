@@ -129,13 +129,14 @@ class Worker(Thread):
         else:
             return 'BAD_CMD: %s' % cmd
 
-reports.engine.init_engine(NODE_MODULE_DIR)
+if __name__ == '__main__':
+    reports.engine.init_engine(NODE_MODULE_DIR)
 
-serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversocket.bind(('localhost', 55204))
-serversocket.listen(5)
+    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket.bind(('localhost', 55204))
+    serversocket.listen(5)
 
-while 1:
-    (clientsocket, address) = serversocket.accept()
-    ct = Worker(clientsocket)
-    ct.start()
+    while 1:
+        (clientsocket, address) = serversocket.accept()
+        ct = Worker(clientsocket)
+        ct.start()
