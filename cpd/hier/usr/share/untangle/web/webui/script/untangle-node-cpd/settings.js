@@ -662,8 +662,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     },{
                         xtype : "fieldset",
-                        height : 300,
-                        autoScroll : true,
+                        autoHeight : true,
+                        autoScroll : false,
                         title : this.i18n._( "Captive Portal Page Configuration" ),
                         items : [{
                             xtype : "textfield",
