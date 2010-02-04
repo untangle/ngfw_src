@@ -106,13 +106,14 @@ def mail(file, zip_file, sender, receiver, date, company_name,
     else:
         msg_plain = msg_html = BODY_TEMPLATE_SIMPLE % h
 
-    attachment_size = os.path.getsize(zip_file) / float(10**6)
-    attachment_too_big = attachment_size > attachment_size_limit
-    if attachment_too_big:
-        note = ATTACHMENT_TOO_BIG_TEMPLATE % (attachment_size,
-                                              attachment_size_limit)
-        msg_plain += note
-        msg_html += note
+    if zip_file:
+      attachment_size = os.path.getsize(zip_file) / float(10**6)
+      attachment_too_big = attachment_size > attachment_size_limit
+      if attachment_too_big:
+          note = ATTACHMENT_TOO_BIG_TEMPLATE % (attachment_size,
+                                                attachment_size_limit)
+          msg_plain += note
+          msg_html += note
 
     msgRoot.attach(MIMEText(msg_plain, 'plain'))
     msgRoot.attach(MIMEText("<HTML>" + msg_html + "</HTML>", 'html'))
