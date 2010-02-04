@@ -1136,6 +1136,15 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                          }.createDelegate(this));
                     return false;
                 }
+
+                if ( !this.getBaseSettings().concurrentLoginsEnabled ) {
+                    Ext.MessageBox.alert(this.i18n._("Warning"), 
+                                         this.i18n._("When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."),
+                                         function () {
+                                             this.tabs.activate(this.panelUserAuthentication);
+                                         }.createDelegate(this));
+                    return false;
+                }
             }
 
             if ( this.getBaseSettings().pageType == "BASIC_LOGIN" ) {
