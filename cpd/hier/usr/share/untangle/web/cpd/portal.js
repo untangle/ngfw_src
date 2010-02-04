@@ -115,14 +115,14 @@ function authenticateUser( errorField )
         username = username.value;
     }
     if ( username == null ) {
-        username = "<basic>";
+        username = "captive portal user";
     }
 
     if ( password != null ) {
         password = password.value;
     }
     if ( password == null ) {
-        password = "<empty>";
+        password = "empty";
     }
     
     req.open("POST", "/users/authenticate", true);

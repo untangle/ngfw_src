@@ -7,11 +7,15 @@ logger -t untangle-node-cpd "Stopping CPD Daemon"
 
 /etc/init.d/untangle-cpd stop
 
-rm -f /etc/apache2/sites-enabled/cpd.conf
 
-logger -t untangle-node-cpd "Reloading apache"
+if [ -h /etc/apache2/sites-enabled/cpd.conf ]; then
+    rm -f /etc/apache2/sites-enabled/cpd.conf
+    
+    logger -t untangle-node-cpd "Reloading apache"
+    
+    # Reload apache
+    /etc/init.d/apache2 reload
+    
+    logger -t untangle-node-cpd "Reload Apache complete"
+fi
 
-# Reload apache
-/etc/init.d/apache2 reload
-
-logger -t untangle-node-cpd "Reload Apache complete"

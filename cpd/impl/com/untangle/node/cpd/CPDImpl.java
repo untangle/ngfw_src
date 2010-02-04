@@ -31,6 +31,7 @@ import org.hibernate.Session;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -348,6 +349,10 @@ public class CPDImpl extends AbstractNode implements CPD {
     {
         boolean isAuthenticated = false;
         if ( this.getRunState() ==  NodeState.RUNNING ) {
+            /* Enforcing this here so the user can't pick another username at login. */
+            if ( this.settings.getBaseSettings().getAuthenticationType() == AuthenticationType.NONE) {
+                username = "captive portal user";
+            }
             /* This is split out for debugging */
             isAuthenticated = this.manager.authenticate(address, username, password, credentials);
         }
