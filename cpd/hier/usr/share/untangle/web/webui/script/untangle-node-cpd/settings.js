@@ -850,6 +850,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         text : i18n._("View Page"),
                         handler : function()
                         {
+                            if ( this.node.state != "on" ) {
+                                Ext.MessageBox.alert(this.i18n._("Captive Portal is Disabled"), 
+                                                     this.i18n._("You must turn on the Captive Portal to preview the Captive Page." ));
+                                return;
+                            }
+
                             if ( this.isDirty()) {
                                 Ext.MessageBox.alert(this.i18n._("Unsaved Changes"), 
                                                      this.i18n._("You must save your settings before previewing the page." ));
