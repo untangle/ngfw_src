@@ -14,8 +14,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
         gridBlockEventLog : null,
         pageParameters : null,
 
-        
-
         initComponent : function()
         {
             Ung.Util.clearInterfaceStore();
@@ -1127,6 +1125,17 @@ if (!Ung.hasResource["Ung.CPD"]) {
         },
         validateClient : function()
         {
+            /* Iterate all of the fields checking if they are valid */
+            if ( !this.find( "name", "idleTimeout" )[0].isValid() ||
+                 !this.find( "name", "timeout" )[0].isValid()) {
+                Ext.MessageBox.alert(this.i18n._("Warning"), 
+                                     this.i18n._("Please correct any highlighted fields."),
+                                     function () {
+                                         this.tabs.activate(this.panelUserAuthentication);
+                                     }.createDelegate(this));
+                return false;
+            }
+            
             if ( this.getBaseSettings().pageType == "BASIC_MESSAGE" ) {
                 if (this.getBaseSettings().authenticationType != "NONE" ) {
                     Ext.MessageBox.alert(this.i18n._("Warning"), 
