@@ -102,7 +102,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.gridCaptureRules = new Ung.EditorGrid({
                 name : "gridCaptureRules",
                 settingsCmp : this,
-                height : 500,
+                height : 300,
                 hasReorder : true,
                 emptyRow : {
                     "live" : true,
@@ -635,19 +635,19 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     title : this.i18n._( "Captive Portal Page" ),
                     items : [{
                         xtype : "radio",
-                        boxLabel : this.i18n._("Basic Login"),
+                        boxLabel : this.i18n._("Basic Message"),
                         hideLabel : true,
                         name : "pageType",
-                        inputValue : "BASIC_LOGIN",
+                        inputValue : "BASIC_MESSAGE",
                         listeners : {
                             "check" : onUpdateRadioButton
                         }
                     },{
                         xtype : "radio",
-                        boxLabel : this.i18n._("Basic Message"),
+                        boxLabel : this.i18n._("Basic Login"),
                         hideLabel : true,
                         name : "pageType",
-                        inputValue : "BASIC_MESSAGE",
+                        inputValue : "BASIC_LOGIN",
                         listeners : {
                             "check" : onUpdateRadioButton
                         }

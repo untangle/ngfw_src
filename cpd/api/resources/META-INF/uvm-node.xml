@@ -18,5 +18,5 @@
 -->
 
 <uvm-node>
-  <node-desc classname="com.untangle.node.cpd.CPDImpl" single-instance="true"/>
+  <node-desc classname="com.untangle.node.cpd.CPDImpl" single-instance="true" no-start="true"/>
 </uvm-node>
