@@ -8,6 +8,7 @@ $cpd_settings = get_cpd_settings();
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>                  
+    <meta http-equiv="X-UA-Compatible" content="IE=7.0000"/>
     <style type="text/css">
         body{
             font-family:Arial,sans-serif;
@@ -82,10 +83,10 @@ function logout()
     <title>Logout of Captive Portal</title>
   </head>
 
-    <body onload="updateTimeout();">
+    <body onload="updatePopup();updateTimeout();">
     <div style="margin-top:25px;">
       Time remaining in session: <span id="timeout"></span>
-    <a href="/cpd/portal.php?logout=Y" target="_logout" onclick="updatePopup();logout()" style="display:block;margin-top:10px;">Logout</button>
+    <a href="/cpd/portal.php?logout=Y" target="_logout" onclick="logout()" style="display:block;margin-top:10px;">Logout</button>
     </div>
   </body>
 </html>
