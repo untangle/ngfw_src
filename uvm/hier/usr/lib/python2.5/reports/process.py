@@ -126,7 +126,7 @@ def get_report_lengths(date):
     lengths = []
 
     day_of_week = ((date.day_of_week + 1) % 7) + 1
-
+    logger.debug("day_of_week: %s" % (day_of_week,))
     conn = sql_helper.get_connection()
 
     try:
@@ -158,19 +158,22 @@ WHERE target_state = 'running' OR target_state = 'initialized'
             conn.commit()
 
             curs = conn.cursor()
+            logger.warn("settings_id: %s" % (setting_id,))
             curs.execute("""
 SELECT day
 FROM settings.n_reporting_wk_sched_rule rule
 JOIN settings.n_reporting_wk_sched sched ON (sched.rule_id = rule.id)
 WHERE sched.setting_id = %s AND day = %s
 """, (setting_id, day_of_week))
+            r = curs.fetchone()
             if r:
                 lengths.append(7)
             conn.commit()
     except Exception, e:
         conn.rollback()
         raise e
-    
+
+    logger.info("Generating reports for the following lengths: %s" % (lengths,))
     return lengths
 
 def get_locale():
