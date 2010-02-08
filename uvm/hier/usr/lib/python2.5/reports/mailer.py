@@ -277,7 +277,7 @@ def __make_zip_file(end_date, report_days, mail_reports):
 
     os.system("""\
 pushd %s;
-zip -r reports.zip ./reports > /dev/null;
+zip -r reports.zip ./reports > /dev/null 2>&1;
 popd""" % tmp_dir)
 
     return tmp_dir

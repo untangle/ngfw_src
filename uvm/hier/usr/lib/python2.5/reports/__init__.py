@@ -118,16 +118,15 @@ class UnicodeWriter:
         self.queue = cStringIO.StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
-        self.encoder = codecs.getincrementalencoder(encoding)()
+        self.encoding = encoding
 
     def writerow(self, row):
-        # only do strings (and not mx.Date for instance)
-        self.writer.writerow([s.encode("utf-8") for s in row if type(s) == 'unicode'])
+        self.writer.writerow([unicode(s).encode("utf-8") for s in row])        
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")
-        # ... and reencode it into the target encoding
-        data = self.encoder.encode(data)
+#         # ... and reencode it into the target encoding
+#         data = data.encode(self.encoding)
         # write to the target stream
         self.stream.write(data)
         # empty queue
@@ -367,7 +366,7 @@ class DetailSection(Section):
                     break
                 w.writerow(r)
         except Exception:
-            logger.warn("error adding details, query: '%s'" % sql, exc_info=True)
+            logger.error("error adding details for '%s'" % self.name, exc_info=True)
         finally:
             f.close()
             conn.commit()
