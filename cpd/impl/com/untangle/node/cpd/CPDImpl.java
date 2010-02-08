@@ -545,12 +545,12 @@ public class CPDImpl extends AbstractNode implements CPD {
             parameters.put( "basicLoginUsername", "Username:");
             parameters.put( "basicLoginPassword", "Password:");
             parameters.put( "basicLoginMessageText", "Please enter your username and password to connect to the Internet.");
-            parameters.put( "basicLoginFooter", "If you have any questions, Please contact your network administrator.");
+            parameters.put( "basicLoginFooter", "If you have any questions, please contact your network administrator.");
             parameters.put( "basicMessagePageTitle", "Captive Portal");
             parameters.put( "basicMessagePageWelcome", "Welcome to the Untangle&reg; Captive Portal");
             parameters.put( "basicMessageMessageText", "Click Continue to connect to the Internet.");
             parameters.put( "basicMessageAgreeText", "Clicking here means you agree to the terms above.");
-            parameters.put( "basicMessageFooter", "If you have any questions, Please contact your network administrator.");
+            parameters.put( "basicMessageFooter", "If you have any questions, please contact your network administrator.");
             return parameters.toString();
         } catch ( JSONException e ) {
             logger.warn( "Unable to create default page parameters" );

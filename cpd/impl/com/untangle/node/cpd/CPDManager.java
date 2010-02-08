@@ -259,7 +259,7 @@ class CPDManager {
         json.put("page_parameters", new JSONObject(baseSettings.getPageParameters()));
         json.put("redirect_https_enabled", baseSettings.getRedirectHttpsEnabled());
         json.put("redirect_url", baseSettings.getRedirectUrl());
-        json.put("use_http_page", baseSettings.getUseHttpsPage());
+        json.put("use_https_page", baseSettings.getUseHttpsPage());
         
         /* This setting is not configurable through the UI */
         json.put("expiration_frequency_s", 60);
