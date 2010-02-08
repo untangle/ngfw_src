@@ -135,8 +135,8 @@ def mail(file, zip_file, sender, receiver, date, company_name,
     part = MIMEBase('application', "pdf")
     part.set_payload(open(file, 'rb').read())
     Encoders.encode_base64(part)
-    part.add_header('Content-Disposition', 'attachment; filename="reports-%s.pdf"'
-                    % (date.strftime(locale.nl_langinfo(locale.D_FMT)),))
+    part.add_header('Content-Disposition', 'attachment; filename="reports-%s-%s.pdf"'
+                    % (date.strftime(locale.nl_langinfo(locale.D_FMT)),a))
     msgRoot.attach(part)
 
     if zip_file and not attachment_too_big:
