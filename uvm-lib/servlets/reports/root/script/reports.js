@@ -926,7 +926,10 @@ Ung.ReportDetails = Ext.extend(Object, {
         //TODO rpc.applicationData should never be null
         if (rpc.applicationData != null) {
             if(reports.selectedApplication =='untangle-pnode-summary'){
-                itemsArray.push(this.buildHighlightSection(rpc.applicationData, 'Summary'));                     
+                if(typeof(rpc.applicationData.list)=='object'){
+                    //add highlights only if there is a highlights section
+                    itemsArray.push(this.buildHighlightSection(rpc.applicationData, 'Summary'));
+                }               
             }else{
                 if(rpc.applicationData.sections != null){
                     for(i=0;i<rpc.applicationData.sections.list.length ;i++) {
