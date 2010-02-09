@@ -1277,7 +1277,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         },
         removeRackFromDatabase : function( rackDatabase, id )
         {
-            var rack = rackDatabase[id];
+            var rack = rackDatabase[id],
+                isRackDeleted = false;
 
             if ( rack == null ) {
                 return;
@@ -1286,8 +1287,11 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             /* Change it to a policy that is marked as deleted.  This
              * is so the user has a change to update the parent policy
              * but still see the names. */
+            if(rack.name.match("^Deleted \(.*?\)")){
+                isRackDeleted = true;
+            }            
             rackDatabase[id] = {
-                name : String.format( this.i18n._( "Deleted ({0})"), rack.name ),
+                name : isRackDeleted == true ? rack.name : String.format( this.i18n._( "Deleted ({0})"), rack.name ),
                 deleted : true,
                 rack : rack
             };
