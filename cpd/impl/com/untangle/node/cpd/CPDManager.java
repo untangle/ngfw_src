@@ -46,6 +46,8 @@ class CPDManager {
     private static final String START_SCRIPT =  System.getProperty( "bunnicula.home" ) + "/cpd/start";
     private static final String STOP_SCRIPT = System.getProperty( "bunnicula.home" ) + "/cpd/stop";
 
+    private static final String CPD_WEB_CONFIG = System.getProperty( "bunnicula.home" ) + "/web/cpd/config.php";
+
     private static final String LOAD_CUSTOM_SCRIPT = System.getProperty( "bunnicula.home" ) + "/cpd/load_custom";
 
     private static final String CPD_URL = System.getProperty( "uvm.node.cpd.url", "http://localhost:3005");
@@ -70,7 +72,11 @@ class CPDManager {
         /* Write out the configuration */
         fw.write( json.toString());
         fw.write("\n");
-        fw.close();        
+        fw.close();
+
+        fw = new FileWriter(CPD_WEB_CONFIG);
+        fw.write(String.format( "<?php $https_redirect = %s;?>", settings.getBaseSettings().getUseHttpsPage() ? "TRUE" : "FALSE" ));
+        fw.close();
     }
     
     boolean clearHostDatabase() throws JSONException, ConnectionException

@@ -1,5 +1,7 @@
 <?php
 
+include "config.php";
+
 session_start();
 
 /* Clear the username variable, the user should only go here if they got redirected */
@@ -15,5 +17,11 @@ $method=urlencode( $_SERVER["REQUEST_METHOD"] );
 $path=urlencode( $_SERVER["SCRIPT_URL"] );
 $ssl=urlencode( $_SERVER["HTTPS"] );
 
-header( "Location: http://" . $_SERVER["SERVER_ADDR"] . "/cpd/portal.php?server_name=$server_name&method=$method&path=$path&ssl=$ssl");
+$protocol = "http";
+if (( $ssl == "on" ) || ( $https_redirect )) {
+    $protocol = "https";
+}
+
+
+header( "Location: $protocol://" . $_SERVER["SERVER_ADDR"] . "/cpd/portal.php?server_name=$server_name&method=$method&path=$path&ssl=$ssl");
 ?>
