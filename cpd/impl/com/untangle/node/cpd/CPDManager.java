@@ -20,6 +20,7 @@ import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
 import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.ParsingConstants;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfSetMatcher;
@@ -33,6 +34,7 @@ import com.untangle.uvm.node.firewall.ip.IPSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSubnetMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.user.UserInfo;
+import com.untangle.uvm.user.Username;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 
@@ -130,6 +132,14 @@ class CPDManager {
             return false;
         }
         
+        /* Just verify that username is a valid string */
+        try {
+            Username.parse(username);
+        } catch (ParseException e1) {
+            logger.info( "Invalid username: '" + username + "'");
+            return false;
+        }
+            
         boolean isAuthenticated = false;
         CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
         
