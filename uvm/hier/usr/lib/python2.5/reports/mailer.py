@@ -171,17 +171,27 @@ SELECT from_address FROM settings.u_mail_settings
             report_email = row[0]
 
         curs.execute("""\
-SELECT reporting_users FROM settings.n_reporting_settings
+SELECT count(*) FROM settings.n_reporting_settings
 JOIN u_node_persistent_state USING (tid)
 WHERE target_state = 'running' OR target_state = 'initialized'
 """)
         row = curs.fetchone()
         if row:
-            receiver_str = row[0]
+            count = row[0]
+            if count == 0:
+                # reports is not installed
+                receivers = []
+
+            curs.execute("SELECT report_email FROM settings.u_mail_settings")
+            row = curs.fetchone()
+            if row:
+                receiver_str = row[0]
+
             if not receiver_str or receiver_str.strip() == '':
                 receivers = []
             else:
                 receivers = receiver_str.split(',')
+
         conn.commit()
     except:
         conn.rollback();
