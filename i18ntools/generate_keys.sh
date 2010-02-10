@@ -3,8 +3,9 @@
 ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-net-alpaca
     untangle-casing-mail untangle-base-virus untangle-base-webfilter
     untangle-node-phish untangle-node-spyware untangle-node-spamassassin untangle-node-shield
-    untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting untangle-node-openvpn
-    untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote untangle-node-adblocker
+    untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting 
+    untangle-node-openvpn untangle-node-adconnector untangle-node-boxbackup untangle-node-portal 
+    untangle-node-pcremote untangle-node-adblocker untangle-node-cpd
     untangle-node-faild untangle-node-splitd untangle-node-sitefilter'
 OFFICIAL_LANGUAGES='es zh pt_BR'
 
@@ -118,7 +119,7 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting"|untangle-node-adblocker)
+"untangle-node-shield"|"untangle-node-protofilter"|"untangle-node-ips"|"untangle-node-firewall"|"untangle-node-reporting"|untangle-node-adblocker|untangle-node-cpd)
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../${moduleName}/po/
     echo 'get new keys'
