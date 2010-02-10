@@ -154,11 +154,11 @@ msgstr ""
 msgid "sender"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:435
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:460
 msgid "Saving..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:435
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:460
 msgid "Please wait"
 msgstr ""
 
@@ -186,7 +186,7 @@ msgid ""
 "result in identity theft or other abuse. "
 msgstr ""
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:69
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:87
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr ""
@@ -269,11 +269,11 @@ msgid "Passed Phish HTTP Traffic"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
-msgid "phish"
+msgid "Phish"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
-msgid "clean"
+msgid "Clean"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
@@ -288,22 +288,22 @@ msgstr ""
 msgid "Top Ten Phishing Victims"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Host:"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:75
 msgid "URL:"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:53
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:77
 msgid "Reason:"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:59
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:87
 msgid "Unblock For Now"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:65
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:93
 msgid "Unblock Permanently"
 msgstr ""

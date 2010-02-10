@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-29 17:50-0700\n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
 "PO-Revision-Date: 2008-11-24 17:58-0800\n"
 "Last-Translator: Claudia\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
@@ -180,11 +180,11 @@ msgstr "destinatário"
 msgid "sender"
 msgstr "remetente"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:435
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:460
 msgid "Saving..."
 msgstr "Salvando..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:435
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:460
 msgid "Please wait"
 msgstr "Aguarde"
 
@@ -212,7 +212,7 @@ msgid ""
 "result in identity theft or other abuse. "
 msgstr ""
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:69
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:87
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "Se tiver perguntas, queira entrar em contato {0}."
@@ -297,12 +297,12 @@ msgid "Passed Phish HTTP Traffic"
 msgstr "Permitido tráfego HTTP de Phish"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
-msgid "phish"
+msgid "Phish"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
 #, fuzzy
-msgid "clean"
+msgid "Clean"
 msgstr "cliente"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
@@ -317,23 +317,23 @@ msgstr ""
 msgid "Top Ten Phishing Victims"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:75
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:53
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:77
 msgid "Reason:"
 msgstr "Motivo:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:59
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:87
 msgid "Unblock For Now"
 msgstr "Desbloquear por agora"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:65
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:93
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-26 09:42-0700\n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
 "PO-Revision-Date: 2009-02-06 06:24-0800\n"
 "Last-Translator: Juan Machado <juan@itos.uga.edu>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
@@ -61,657 +61,793 @@ msgid "Permanent and Global"
 msgstr "Permanente y global"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:143
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:340
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:342
 #, fuzzy
 msgid "Categories"
 msgstr "Categoría"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:147
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:187
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:236
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:285
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:754
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:803
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1260
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:237
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:286
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:763
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:836
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1293
 msgid "Saving..."
 msgstr "Guardando..."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:147
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:187
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:236
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:285
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:754
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:803
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1260
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:237
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:286
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:763
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:836
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1293
 msgid "Please wait"
 msgstr "Espere"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:183
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:459
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:709
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:750
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:868
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:463
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:718
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:759
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:898
 #, fuzzy
 msgid "Sites"
 msgstr "Sitio"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:232
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:546
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:233
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:552
 msgid "File Types"
 msgstr "Tipos de archivo"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:281
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:629
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:282
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:637
 msgid "MIME Types"
 msgstr "Tipos MIME"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:317
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:439
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:526
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:609
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1024
-msgid "block"
-msgstr "bloquear"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:329
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:444
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:318
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:396
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:442
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:513
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:531
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:614
-msgid "log"
-msgstr "log"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:367
-msgid "category"
-msgstr "categoría"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:372
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:487
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:572
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:655
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:894
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:967
-msgid "description"
-msgstr "descripción"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:386
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1069
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1122
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1208
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1269
-msgid "Category"
-msgstr "Categoría"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:394
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:509
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:592
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:675
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:598
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:616
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:683
 msgid "Block"
 msgstr "Bloquear"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:408
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:513
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:596
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:679
-msgid "Log"
-msgstr "Log"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:412
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:330
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:410
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:447
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:517
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:600
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:683
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:920
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:991
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:536
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:602
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:621
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:687
+msgid "Flag"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:333
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:411
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:450
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:518
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:539
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:603
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:624
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:688
+#, fuzzy
+msgid "Flag as Violation"
+msgstr "medida"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:369
+msgid "category"
+msgstr "categoría"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:374
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:491
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:578
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:663
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:924
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:997
+msgid "description"
+msgstr "descripción"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:388
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1272
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1326
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1450
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1511
+msgid "Category"
+msgstr "Categoría"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:415
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:522
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:607
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:692
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:950
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1021
 msgid "Description"
 msgstr "Descripción"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:422
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:425
 msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
 msgstr ""
 "Imposible bloquear la \"URL\" especificada porque usa un servidor seguro "
 "(https)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:434
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:483
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:505
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:848
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:890
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:912
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:437
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:487
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:509
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:878
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:920
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:942
 msgid "Invalid \"URL\" specified"
 msgstr "Se ha especificado una \"URL\" no válida."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:454
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:864
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:458
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:894
 msgid "[no site]"
 msgstr "[sin sitio]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:457
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:544
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:627
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:866
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:942
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:461
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:550
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:635
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:896
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:972
 msgid "[no description]"
 msgstr "[sin descripción]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:477
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:884
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:481
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:914
 msgid "site"
 msgstr "sitio"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:501
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:908
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:505
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:938
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1366
 msgid "Site"
 msgstr "Sitio"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:564
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:570
 msgid "file type"
 msgstr "tipo de archivo"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:586
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:592
 msgid "File Type"
 msgstr "Tipo de archivo"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:624
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:632
 msgid "[no mime type]"
 msgstr "[ sin tipo MIME]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:647
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:655
 msgid "MIME type"
 msgstr "Tipo MIME"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:669
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:677
 msgid "MIME Type"
 msgstr "Tipo MIME"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:700
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:709
 msgid "Pass Lists"
 msgstr "Listas permitidas"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:712
 #: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:721
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:730
 msgid "manage list"
 msgstr "Administrar lista"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:718
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:799
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:944
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:727
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:809
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:974
 msgid "Client IP addresses"
 msgstr "Direcciones del cliente IP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:836
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:866
 msgid "\"URL\" specified cannot be passed because it uses secure http (https)"
 msgstr ""
 "Imposible permitir la \"URL\" especificada porque usa un servidor seguro "
 "(https)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:854
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:930
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1021
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:884
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:960
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1051
 msgid "pass"
 msgstr "permitir"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:916
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:987
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:946
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1017
 msgid "Pass"
 msgstr "Permitir"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:959
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:981
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:989
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1011
 msgid "IP address/range"
 msgstr "Dirección/rango IP:"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1045
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1054
+msgid "block"
+msgstr "bloquear"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1075
 #, fuzzy
 msgid "in Categories Block list"
 msgstr "en la lista de bloqueo URL"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1047
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1077
 msgid "in URLs Block list"
 msgstr "en la lista de bloqueo URL"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1049
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1079
 msgid "in File Extensions Block list"
 msgstr "en la lista de bloqueo Extensiones de archivo"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1051
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1081
 msgid "in MIME Types Block list"
 msgstr "en la lista de bloqueo Tipos MIME"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1053
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1083
 msgid "blocking all traffic"
 msgstr "bloqueando todo el tráfico"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1055
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1085
 msgid "hostname is an IP address"
 msgstr "El nombre del host es una dirección IP:"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1057
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1087
 msgid "in URLs Pass list"
 msgstr "en la lista URL permitidas"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1059
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1089
 msgid "in Clients Pass list"
 msgstr "en la lista de clientes permitidos"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1061
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1091
 #, fuzzy
 msgid "Client Bypass"
 msgstr "Ignorado por usuario"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1064
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1094
 msgid "no rule applied"
 msgstr "no se aplicó ninguna regla"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1071
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1138
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1101
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1168
 msgid "timestamp"
 msgstr "fecha y hora"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1079
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1109
 #, fuzzy
 msgid "action"
 msgstr "medida"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1084
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1151
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1114
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1181
 #, fuzzy
 msgid "client"
 msgstr "cliente"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1091
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1157
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1121
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1187
 msgid "request"
 msgstr "solicitud"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1097
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1127
 msgid "reason for action"
 msgstr "motivo de la medida tomada"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1102
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1132
 #, fuzzy
 msgid "server"
 msgstr "servidor"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1116
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1146
 #, fuzzy
 msgid "Unblock Log"
 msgstr "Desbloquear por ahora"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1127
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1146
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1157
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1176
 msgid "permanent"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1127
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1157
 #, fuzzy
 msgid "temporary"
 msgstr "Temporal"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1229
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1248
 msgid "Invalid subnet specified"
 msgstr "Ha especificado una subred no válida"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1237
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1256
 msgid "Validation failed"
 msgstr "Error de validación"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1243
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1262
 #, fuzzy
 msgid "Please Try Again"
 msgstr "Espere"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1246
+#: ../hier/usr/share/untangle/web/webui/script/untangle-base-webfilter/settings.js:1265
 msgid "Failed"
 msgstr "Falló"
 
-#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:57
-#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:67
+#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:56
+#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:66
 msgid "Feature is not installed."
 msgstr "La función no está instalada."
 
-#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:76
+#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:75
 msgid "This request has expired."
 msgstr "Esta solicitud ha vencido."
 
-#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:114
+#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:113
 #, java-format
 msgid "{0} | {1} Warning"
 msgstr "Advertencia {0} | {1}"
 
-#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:142
+#: ../api/com/untangle/node/webfilter/BlockPageServlet.java:141
 #, java-format
 msgid "{0}This web page was blocked{1} because it is considered inappropriate."
 msgstr "{0}Esta página web fue bloqueada{1} porque se considera inapropiada."
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:69
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:87
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "Si tiene preguntas comuníquese con {0}."
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:82
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:90
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:158
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:172
+#, fuzzy
+msgid "scanned"
+msgstr "Páginas analizadas"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:173
+msgid "web hits and detected"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:174
+#, fuzzy
+msgid "violations of which"
+msgstr "medida"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:175
+#, fuzzy
+msgid "were blocked"
+msgstr "Páginas bloqueadas"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:221
 msgid "Hourly Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:208
-#, fuzzy
-msgid "max hits (1-day)"
-msgstr "medida"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:292
+msgid "Avg Hits"
+msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:208
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:210
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:221
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:223
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:292
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:294
 msgid "hits/minute"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:210
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:294
+msgid "Max Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:305
 #, fuzzy
-msgid "avg hits (1-day)"
+msgid "Avg Violations"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:221
-#, fuzzy
-msgid "max hits (7-day)"
-msgstr "medida"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:223
-#, fuzzy
-msgid "avg hits (7-day)"
-msgstr "medida"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:234
-#, fuzzy
-msgid "avg violations (1-day)"
-msgstr "medida"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:235
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:247
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:306
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:309
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:321
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:324
 msgid "violations/hour"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:246
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:308
 #, fuzzy
-msgid "avg violations (7-day)"
+msgid "Max Violations"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:305
-msgid "Hour of Day"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:320
+#, fuzzy
+msgid "Avg Blocked Violations"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:323
+#, fuzzy
+msgid "Max Blocked Violations"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:376
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1260
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1314
+msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:306
-msgid "Hits per Minute"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:377
+msgid "Hits per minute"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:310
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:434
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:545
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:606
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:651
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:700
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:752
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:857
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:972
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1032
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1200
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1261
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:381
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:649
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:710
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:755
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:803
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:901
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:954
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1059
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1175
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1235
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1442
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1503
 #, fuzzy
 msgid "hits"
 msgstr "Sitios"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:311
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:435
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:383
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:526
 #, fuzzy
 msgid "violations"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:318
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:385
+#, fuzzy
+msgid "blocked violations"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:392
 msgid "Daily Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:360
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:442
 #, fuzzy
-msgid "max hits (7-days)"
+msgid "max hits"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:360
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:362
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:442
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:444
 #, fuzzy
 msgid "hits/day"
 msgstr "Sitios"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:362
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:444
 #, fuzzy
-msgid "avg hits (7-days)"
+msgid "avg hits"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:364
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:446
 #, fuzzy
-msgid "max violations (7-days)"
+msgid "max violations"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:365
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:368
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:447
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:450
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:452
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:455
 #, fuzzy
 msgid "violations/day"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:367
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:449
 #, fuzzy
-msgid "avg violations (7-days)"
+msgid "avg violations"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:429
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:489
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:451
+#, fuzzy
+msgid "max blocked violations"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:454
+#, fuzzy
+msgid "avg blocked violations"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:520
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:588
 msgid "Date"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:430
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:490
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:554
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:662
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:711
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:762
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:866
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:981
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1041
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1209
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1270
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:521
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:589
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:658
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:766
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:814
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:912
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:964
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1068
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1184
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1244
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1451
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1512
 msgid "Hits per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:442
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:525
+#, fuzzy
+msgid "clean hits"
+msgstr "cliente"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:528
+#, fuzzy
+msgid "blocks"
+msgstr "bloquear"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:535
 msgid "Total Web Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:481
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:492
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:494
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:579
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:591
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:594
+msgid "Total Clean Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:581
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:592
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:595
 #, fuzzy
-msgid "total hits (7-days)"
+msgid "Total Violations"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:483
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:493
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:495
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:583
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:593
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:596
 #, fuzzy
-msgid "total violations (7-days)"
-msgstr "medida"
+msgid "Total Blocked Violations"
+msgstr "en la lista de bloqueo Categorías"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:502
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:603
 #, fuzzy
 msgid "Top Ten Categories of Violations (by hits)"
 msgstr "en la lista de bloqueo Categorías"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:544
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1199
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1260
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:648
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1441
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1502
 #, fuzzy
 msgid "Uncategorized"
 msgstr "Categorías"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:553
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:614
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:657
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:718
 msgid "Policy"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:563
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:667
 #, fuzzy
 msgid "Top Ten Categories of Blocked Violations (by hits)"
 msgstr "en la lista de bloqueo Categorías"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:615
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:719
 msgid "Blocks per Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:623
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:727
 #, fuzzy
-msgid "Top Ten Web Users (by hits)"
+msgid "Top Ten Web Browsing Hosts (by hits)"
 msgstr "en la lista de bloqueo Categorías"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:661
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:710
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:809
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:765
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:911
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1011
 #, fuzzy
 msgid "Host"
 msgstr "Host:"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:671
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:775
 #, fuzzy
-msgid "Top Ten Host Violators (by hits)"
+msgid "Top Ten Web Browsing Users (by hits)"
 msgstr "en la lista de bloqueo Categorías"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:720
-#, fuzzy
-msgid "Top Ten User Violators (by hits)"
-msgstr "en la lista de bloqueo Categorías"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:761
-msgid "UID"
-msgstr ""
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:771
-#, fuzzy
-msgid "Top Ten Web Users (by size)"
-msgstr "en la lista de bloqueo Categorías"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:810
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:924
-msgid "bytes/day"
-msgstr ""
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:819
-#, fuzzy
-msgid "Top Ten Websites (by hits)"
-msgstr "en la lista de bloqueo Categorías"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:865
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:923
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:980
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1040
-#, fuzzy
-msgid "Hosts"
-msgstr "Host:"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:875
-#, fuzzy
-msgid "Top Ten Websites (by size)"
-msgstr "en la lista de bloqueo Categorías"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:933
-#, fuzzy
-msgid "Top Ten Violations"
-msgstr "medida"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:990
-#, fuzzy
-msgid "Top Ten Blocked Violations"
-msgstr "en la lista de bloqueo Categorías"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1049
-#, fuzzy
-msgid "Violation Events"
-msgstr "medida"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1057
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1110
-msgid "Time"
-msgstr ""
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1060
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1062
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1113
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1115
-#, fuzzy
-msgid "Client"
-msgstr "cliente"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1065
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1067
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1118
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1120
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:813
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:861
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1268
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1270
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1322
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1324
 #, fuzzy
 msgid "User"
 msgstr "servidor"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1070
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1123
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:823
+#, fuzzy
+msgid "Top Ten Web Browsing Users (by size)"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:851
+#, fuzzy
+msgid "bytes"
+msgstr "Sitio"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:862
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1012
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1126
+msgid "bytes/day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:871
+#, fuzzy
+msgid "Top Ten Host Violators (by hits)"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:921
+#, fuzzy
+msgid "Top Ten User Violators (by hits)"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:963
+msgid "UID"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:973
+#, fuzzy
+msgid "Top Ten Web Browsing Hosts (by size)"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1021
+#, fuzzy
+msgid "Top Ten Websites (by hits)"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1067
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1125
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1183
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1243
+#, fuzzy
+msgid "Hosts"
+msgstr "Host:"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1077
+#, fuzzy
+msgid "Top Ten Websites (by size)"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1135
+#, fuzzy
+msgid "Top Ten Violations"
+msgstr "medida"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1193
+#, fuzzy
+msgid "Top Ten Blocked Violations"
+msgstr "en la lista de bloqueo Categorías"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1252
+#, fuzzy
+msgid "Violation Events"
+msgstr "medida"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1263
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1265
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1317
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1319
+#, fuzzy
+msgid "Client"
+msgstr "cliente"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1273
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1327
 #, fuzzy
 msgid "Blocked"
 msgstr "Bloquear"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1071
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1124
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1274
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1328
 #, fuzzy
 msgid "URL"
 msgstr "URL:"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1072
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1125
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1275
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1329
 #, fuzzy
 msgid "Server IP"
 msgstr "servidor"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1073
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1126
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1276
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1330
 #, fuzzy
 msgid "Client IP"
 msgstr "cliente"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1102
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1306
 #, fuzzy
 msgid "All Events"
 msgstr "medida"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1157
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1358
+#, fuzzy
+msgid "Site Events"
+msgstr "medida"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1367
+#, fuzzy
+msgid "Hits"
+msgstr "Sitios"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1368
+msgid "Size (MB)"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1399
 msgid "Web Usage By Category"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1217
+#: ../hier/usr/lib/python2.5/reports/node/untangle_base_webfilter.py:1459
 msgid "Violations By Category"
 msgstr ""
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:50
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:75
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:53
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:77
 msgid "Reason:"
 msgstr "Razón:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:59
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:87
 msgid "Unblock For Now"
 msgstr "Desbloquear por ahora"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:65
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:93
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
+
+#~ msgid "log"
+#~ msgstr "log"
+
+#~ msgid "Log"
+#~ msgstr "Log"
+
+#, fuzzy
+#~ msgid "max hits (7-day)"
+#~ msgstr "medida"
+
+#, fuzzy
+#~ msgid "avg hits (7-day)"
+#~ msgstr "medida"
+
+#, fuzzy
+#~ msgid "avg violations (1-day)"
+#~ msgstr "medida"
+
+#, fuzzy
+#~ msgid "avg violations (7-day)"
+#~ msgstr "medida"
+
+#, fuzzy
+#~ msgid "max hits (7-days)"
+#~ msgstr "medida"
+
+#, fuzzy
+#~ msgid "avg hits (7-days)"
+#~ msgstr "medida"
+
+#, fuzzy
+#~ msgid "max violations (7-days)"
+#~ msgstr "medida"
+
+#, fuzzy
+#~ msgid "avg violations (7-days)"
+#~ msgstr "medida"
+
+#, fuzzy
+#~ msgid "total hits (7-days)"
+#~ msgstr "medida"
+
+#, fuzzy
+#~ msgid "total violations (7-days)"
+#~ msgstr "medida"
 
 #~ msgid "Scan HTTPS"
 #~ msgstr "Analizar HTTPS"
@@ -719,14 +855,8 @@ msgstr "Desbloquear permanentemente"
 #~ msgid "All HTTP Traffic"
 #~ msgstr "Todo el tráfico HTTP"
 
-#~ msgid "Pages scanned"
-#~ msgstr "Páginas analizadas"
-
 #~ msgid "SCAN"
 #~ msgstr "ANALIZAR"
-
-#~ msgid "Pages blocked"
-#~ msgstr "Páginas bloqueadas"
 
 #~ msgid "BLOCK"
 #~ msgstr "BLOQUEAR"

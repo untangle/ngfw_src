@@ -26,7 +26,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
             } catch ( e ) {
                 /* User should never see this. */
                 /* XXX Currently this doesn't work because execution continues. */
-                Ext.MessageBox.alert(this.i18n._("Warning"), this.i18n._("The current settings have an error, previous values may be lost."));
+                Ext.MessageBox.alert(
+                    this.i18n._("Warning"),
+                    this.i18n._("The current settings have an error, previous values may be lost."));
+
                 this.pageParameters = {};
             }
             this.initialPageParameters = Ung.Util.clone(this.pageParameters);
@@ -1223,12 +1226,13 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         configureLocalDirectory : function()
         {
-            Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Loading Config..."),
+                                i18n._("Please wait"));
             
             Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), function() {
 
                 main.localDirectoryWin=new Ung.LocalDirectory({
-                    "name":"localDirectory"
+                    "name" : "localDirectory"
                 });
 
                 main.localDirectoryWin.show();
@@ -1236,7 +1240,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
             }.createDelegate(this)]);
         },
 
-        /* There is no way to select the radius tab because we don't get a callback once the settings are loaded. */
+        /* There is no way to select the radius tab because we don't
+        get a callback once the settings are loaded. */
         configureRadius : function()
         {
             var node = main.getNode("untangle-node-adconnector");

@@ -365,11 +365,11 @@ msgid "Identity Theft Events"
 msgstr "Eventos de robo de identidad"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
-msgid "spam"
+msgid "Spam"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
-msgid "ham"
+msgid "Clean"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
