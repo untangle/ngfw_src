@@ -26,14 +26,8 @@ class TestLanguages(UvmSetup):
         language_list = language_manager.getLanguagesList()["list"]
 
         ## This actually creates 4 different test cases.
-        for x in ( "en", "de", "fl", "pt_BR" ):
+        for x in ( "en", "de", "zh", "pt_BR", "fr", "es", "zh_CN", "ga", "nl" ):
             yield self.check_language, language_list, x
-
-    def test_missing_api( self ):
-        language_manager = self.remote_uvm_context.languageManager()
-
-        ## This function is missing, test is designed to show what a failure looks like
-        language_list = language_manager.getLanguageList()
 
             
         
