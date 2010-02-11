@@ -55,7 +55,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
             this.panelCaptiveHosts = new Ext.Panel({
                 name : "panelCaptiveHosts",
-                helpSource : "",
+                helpSource : "captive_hosts",
                 // private fields
                 parentId : this.getId(),
                 title : this.i18n._("Captive Hosts"),
@@ -363,7 +363,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             
             this.panelPassedHosts = new Ext.Panel({
                 name : "panelPassedHosts",
-                helpSource : "",
+                helpSource : "passed_hosts",
                 // private fields
                 parentId : this.getId(),
                 title : this.i18n._("Passed Hosts"),
@@ -458,7 +458,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
             this.panelUserAuthentication = new Ext.Panel({
                 name : "panelUserAuthentication",
-                helpSource : "",
+                helpSource : "user_authentication",
                 // private fields
                 parentId : this.getId(),
                 title : this.i18n._("User Authentication"),
@@ -631,7 +631,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             
             this.panelCaptivePage = new Ext.Panel({
                 name : "panelCaptivePage",
-                helpSource : "",
+                helpSource : "captive_page",
                 // private fields
                 parentId : this.getId(),
                 title : this.i18n._("Captive Page"),
@@ -947,6 +947,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
         buildLoginEventLog : function() {
             this.gridLoginEventLog = new Ung.GridEventLog({
                 title : this.i18n._( "Login Event Log" ),
+                helpSource : "login_event_log",
                 eventManagerFn : this.getRpcNode().getLoginEventManager(),
                 settingsCmp : this,
                 autoExpandColumn: "username",
@@ -1029,6 +1030,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
         buildBlockEventLog : function() {
             this.gridBlockEventLog = new Ung.GridEventLog({
                 title : this.i18n._( "Block Event Log" ),
+                helpSource : "block_event_log",
                 eventManagerFn : this.getRpcNode().getBlockEventManager(),
                 settingsCmp : this,
                 autoExpandColumn: "reason",
