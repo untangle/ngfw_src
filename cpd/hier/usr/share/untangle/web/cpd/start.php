@@ -23,5 +23,5 @@ if (( $ssl == "on" ) || ( $https_redirect )) {
 }
 
 
-header( "Location: $protocol://" . $_SERVER["SERVER_ADDR"] . "/cpd/portal.php?server_name=$server_name&method=$method&path=$path&ssl=$ssl");
+header( "Location: $protocol://" . $_SERVER["SERVER_ADDR"] . "/cpd/index.php?server_name=$server_name&method=$method&path=$path&ssl=$ssl");
 ?>
