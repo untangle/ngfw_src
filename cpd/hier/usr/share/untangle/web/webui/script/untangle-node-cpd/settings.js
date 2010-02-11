@@ -73,6 +73,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     items : [{
                         xtype : "checkbox",
                         boxLabel : this.i18n._("Capture Bypassed Traffic"),
+                        tooltip : this.i18n._("If enabled, traffic that is bypassed in Bypass Rules will also captured until the host is authenticated."),
                         hideLabel : true,
                         checked : this.getBaseSettings().captureBypassedTraffic,
                         listeners : {
@@ -123,6 +124,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     "javaClass" : "com.untangle.node.cpd.CaptureRule"
                 },
                 title : this.i18n._("Capture Rules"),
+                tooltip : this.i18n._("The Capture Rules are a set of rules to define which hosts and traffic are subject to the Captive Portal. All enabled rules are evaluated in order."),
                 recordJavaClass : "com.untangle.node.cpd.CaptureRule",
                 paginated : false,
                 proxyRpcFn : this.getRpcNode().getCaptureRules,
@@ -349,13 +351,15 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 this.buildGridPassedList( "gridPassedClients", 
                                           this.i18n._( "Pass Listed Client Addresses"), 
                                           "com.untangle.node.cpd.PassedClient", 
-                                          this.getRpcNode().getPassedClients);
+                                          this.getRpcNode().getPassedClients,
+                                          "Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal.");
 
             this.gridPassedServers = 
                 this.buildGridPassedList( "gridPassedServers", 
                                           this.i18n._( "Pass Listed Server Addresses"), 
                                           "com.untangle.node.cpd.PassedServer", 
-                                          this.getRpcNode().getPassedServers);
+                                          this.getRpcNode().getPassedServers,
+                                          "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.");
             
             this.panelPassedHosts = new Ext.Panel({
                 name : "panelPassedHosts",
@@ -371,7 +375,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             });
         },
 
-        buildGridPassedList : function( name, title, javaClass, rpcFn )
+        buildGridPassedList : function( name, title, javaClass, rpcFn , tooltip)
         {
             var liveColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Enable"),
@@ -381,6 +385,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             
             return new Ung.EditorGrid({
                 name : name,
+                tooltip : tooltip,
                 settingsCmp : this,
                 hasEdit : false,
                 anchor : "100% 49%",
@@ -540,6 +545,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         invalidText : this.i18n._( "The Idle Timeout must be between 0 minutes and 24 hours." ),
                         fieldLabel : this.i18n._( "Idle Timeout" ),
                         boxLabel : this.i18n._( "minutes" ),
+                        tooltip : this.i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately." ),
                         value : this.getBaseSettings().idleTimeout / 60,
                         listeners : {
                             "change" : function( elem, newValue ){
@@ -556,6 +562,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         fieldLabel : this.i18n._( "Timeout" ),
                         boxLabel : this.i18n._( "minutes" ),
                         invalidText : this.i18n._( "The Timeout must be between 5 minutes and 24 hours." ),
+                        tooltip : this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
                         value : this.getBaseSettings().timeout / 60,
                         listeners : {
                             "change" : function( elem, newValue ){
@@ -565,6 +572,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     },{
                         xtype : "checkbox",
                         boxLabel : this.i18n._("Logout Button Popup"),
+                        tooltip : this.i18n._("Clients will have a logout button pop-up after authentication to provide a way to instantly logout."),
                         hideLabel : true,
                         checked : this.getBaseSettings().logoutButtonEnabled,
                         listeners : {
@@ -575,6 +583,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     },{
                         xtype : "checkbox",
                         boxLabel : this.i18n._("Allow Concurrent Logins"),
+                        tooltip : this.i18n._("This will allow multiple hosts to use the same username & password concurrently."),
                         hideLabel : true,
                         checked : this.getBaseSettings().concurrentLoginsEnabled,
                         listeners : {
@@ -877,6 +886,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         name : "redirectUrl",
                         width : 200,
                         fieldLabel : this.i18n._("Redirect URL"),
+                        tooltip : this.i18n._("Users will be redirected to this page immediately after authentication. Blank sends the user to their original destination."),
                         value : this.getBaseSettings().redirectUrl,
                         listeners : {
                             "change" : function( elem, newValue ){
@@ -886,6 +896,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     },{
                         xtype : "checkbox",
                         boxLabel : this.i18n._("Redirect HTTP traffic to HTTPS captive page"),
+                        tooltip : this.i18n._("If unchecked, HTTP traffic to unauthenticated hosts will be redirect to the HTTP Captive page. If checked, users will be redirected to an HTTPS captive page."),
                         hideLabel : true,
                         checked : this.getBaseSettings().useHttpsPage,
                         listeners : {
@@ -896,6 +907,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     },{
                         xtype : "checkbox",
                         boxLabel : this.i18n._("Redirect HTTPS traffic to HTTPS captive page"),
+                        tooltip : this.i18n._("If unchecked, HTTPS traffic for unauthenticated users is blocked. If checked HTTPS traffic will be redirected to the HTTPS captive page. Warning: This will cause certificate warning errors in the browser."),
                         hideLabel : true,
                         checked : this.getBaseSettings().redirectHttpsEnabled,
                         listeners : {
