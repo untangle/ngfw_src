@@ -20,6 +20,32 @@ Ext.override(Ext.Button, {
         }
     }
 });
+Ext.override(Ext.form.Field, { 
+    afterRender : Ext.form.Field.prototype.afterRender.createSequence(function(){
+        Ext.QuickTips.init();    
+        var qt = this.tooltip,
+            target = null;
+        try{
+            if(this.xtype=='checkbox'){
+                target = this.labelEl;
+            }else{        
+                target = this.container.dom.parentNode.childNodes[0];        
+            }
+        }catch(exn){
+            //don't bother if there's nothing to target
+        }
+
+        if (qt && target){ 
+            Ext.QuickTips.register({
+                target: target,
+                title: '',
+                text: qt,
+                enabled: true,
+                showDelay: 20
+            });
+        }
+    })
+});
 Ext.override(Ext.Panel, {
     listeners : {
         "render" : {
@@ -2604,6 +2630,7 @@ Ung.Window = Ext.extend(Ext.Window, {
                 elements : this.breadcrumbs
             }));
         }
+        Ext.QuickTips.init();      
     },
 
     beforeDestroy : function() {
@@ -3871,6 +3898,17 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }
             return "";
         }
+        var qt = this.tooltip,
+            target = this.header.dom;
+        if (qt){ 
+            Ext.QuickTips.register({
+                target: target,
+                title: '',
+                text: qt,
+                enabled: true,
+                showDelay: 20
+            });
+        }        
         this.initialLoad.defer(1, this);
     },
     // load first page initialy

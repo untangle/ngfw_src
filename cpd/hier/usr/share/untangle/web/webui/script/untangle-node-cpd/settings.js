@@ -124,7 +124,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     "javaClass" : "com.untangle.node.cpd.CaptureRule"
                 },
                 title : this.i18n._("Capture Rules"),
-                tooltip : this.i18n._("The Capture Rules are a set of rules to define which hosts and traffic are subject to the Captive Portal. All enabled rules are evaluated in order."),
+                qtip : this.i18n._("The Capture Rules are a set of rules to define which hosts and traffic are subject to the Captive Portal. All enabled rules are evaluated in order."),
                 recordJavaClass : "com.untangle.node.cpd.CaptureRule",
                 paginated : false,
                 proxyRpcFn : this.getRpcNode().getCaptureRules,
@@ -385,7 +385,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             
             return new Ung.EditorGrid({
                 name : name,
-                tooltip : tooltip,
+                tooltip  : tooltip,
                 settingsCmp : this,
                 hasEdit : false,
                 anchor : "100% 49%",
