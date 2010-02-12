@@ -170,6 +170,8 @@ public class TimeSeriesChart extends Plot
 
 	int trunc; // where to truncate the boundaries
 	String dateFormatStr; // the format for X-axix ticks
+	DateTickUnitType tickUnit = null;
+        int tickFrequency = -1;
 	logger.debug(min + " -> " + max + " (" + range + ")");
 	if (range < 45 * 60) { // less than 45min
 	    trunc = Calendar.MINUTE;
@@ -177,18 +179,30 @@ public class TimeSeriesChart extends Plot
 	} else if (range < 18 * 60 * 60) { // less than 18h
 	    trunc = Calendar.HOUR;
 	    dateFormatStr = "HH:mm";
+	} else if (range <= 24 * 60 * 60) { // less than 24h
+	    trunc = Calendar.DATE;
+	    dateFormatStr = "HH:mm";
+//             tickUnit = DateTickUnitType.HOUR;
+//             tickFrequency = 4;
+        } else if (range <= 7 * 24 * 60 * 60 ) { // less than 7 days
+	    trunc = Calendar.DATE;
+	    dateFormatStr = "MMM-d";
+            tickUnit = DateTickUnitType.DAY;
+            tickFrequency = 2;
 	} else {
 	    trunc = Calendar.DATE;
-	    dateFormatStr = "MM-dd";
-	}
+	    dateFormatStr = "MMM-d";
+        }
+
 	min = DateTruncator.truncateDate(min, trunc, true);
 	max = DateTruncator.truncateDate(max, trunc, true);
-	logger.debug("... adapted to: " + min + " -> " + max);
+	logger.debug("... adapted to: " + min + " -> " + max + " (tickUnit=" + tickUnit + ", tickFrequency=" + tickFrequency);
 	da.setMinimumDate(min);
 	da.setMaximumDate(max);
 
-//      da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
-// 	da.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1));
+        da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
+        if (tickUnit != null) 
+            da.setTickUnit(new DateTickUnit(tickUnit, tickFrequency));
     }
 
 
