@@ -100,5 +100,8 @@
         <span/>
       </div>
     </div>
+    <script type="text/javascript">
+        document.getElementsByTagName('body')[0].onkeyup = submitOnEnter;
+    </script>    
   </body>
 </html>

@@ -21,6 +21,15 @@ function acceptAgreement(){
         }
     }
 }
+function submitOnEnter(e){
+    try{
+        e = e || event;
+        if(e.keyCode==13){
+            authenticateUserWrapper('login-error');   
+        }    
+    }catch(exn){    
+    }
+}
 function hideLogoutSuccess(){
     var ls = document.getElementById('logout-success');
     if(ls){
