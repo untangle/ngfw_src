@@ -329,6 +329,7 @@ class TomcatManager
                                         logger.info("Tomcat successfully started");
                                         break;
                                     } catch (InterruptedException x) {
+                                        logger.warn( "Interrupted while trying to start tomcat, returning. BUG 7337");
                                         return;
                                     } catch (LifecycleException x) {
                                         boolean isAddressInUse = isAIUExn(x);
