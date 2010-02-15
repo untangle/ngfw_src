@@ -505,7 +505,7 @@ ORDER BY day asc"""
                 if not r:
                     break
                 dates.append(r[0])
-                hits.append(r[1]-r[2]-r[3])
+                hits.append(r[1]-r[2])
                 blocks.append(r[2])
                 violations.append(r[3])
 
