@@ -192,6 +192,8 @@ public class TimeSeriesChart extends Plot
 	} else {
 	    trunc = Calendar.DATE;
 	    dateFormatStr = "MMM-d";
+            tickUnit = DateTickUnitType.DAY;
+            tickFrequency = 7;
         }
 
 	min = DateTruncator.truncateDate(min, trunc, true);
