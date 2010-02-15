@@ -439,21 +439,21 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
             else:
                 curs.execute(query, (one_week, ed))
             r = curs.fetchone()
-            ks = KeyStatistic(_('max hits'), r[0], _('hits/day'))
+            ks = KeyStatistic(_('Avg Hits'), r[1], _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg hits'), r[1], _('hits/day'))
+            ks = KeyStatistic(_('Max Hits'), r[0], _('hits/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('max violations'), r[4],
+            ks = KeyStatistic(_('Avg Violations'), r[5],
                               _('violations/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg violations'), r[5],
-                              _('violations/day'))
-            ks = KeyStatistic(_('max blocked violations'), r[2],
+            ks = KeyStatistic(_('Max Violations'), r[4],
                               _('violations/day'))
             lks.append(ks)
-            ks = KeyStatistic(_('avg blocked violations'), r[3],
+            ks = KeyStatistic(_('Avg Blocked Violations'), r[3],
                               _('violations/day'))
             lks.append(ks)
+            ks = KeyStatistic(_('Max Blocked Violations'), r[2],
+                              _('violations/day'))
             lks.append(ks)
         finally:
             conn.commit()
