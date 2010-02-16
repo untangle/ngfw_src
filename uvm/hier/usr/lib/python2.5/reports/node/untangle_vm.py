@@ -627,7 +627,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             lks.append(ks)
             ks = KeyStatistic(_('Peak Data Rate'), max / 60.0, N_('bytes/s'))
             lks.append(ks)
-            ks = KeyStatistic(_('Data Transfered'), total, N_('bytes'))
+            ks = KeyStatistic(_('Data Transferred'), total, N_('bytes'))
             lks.append(ks)
 
             curs = conn.cursor()
