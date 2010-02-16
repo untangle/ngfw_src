@@ -51,17 +51,17 @@
   </head>
   
   <body id="simple" class="blockpage">
-    <div id="content" style="width:728px !important;padding:0px 0px 0px !important;margin-bottom:0px !important">
+    <div id="content" style="width:738px !important;padding:0px 0px 0px !important;margin-bottom:0px !important">
       <div id="header" style="margin:3px !important;">
         <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
         <div class="title"><c:out value="${title}" escapeXml="false"/></div>
       </div>
       
-      <div id="main" style="top: auto !important;height:auto !important;position:relative !important;">
-        <p class="icon-block">
+      <div id="main" style="top: auto !important;height:auto !important;position:relative !important;margin-top:30px !important;">
+        <p class="icon-block" style="float:left;width:170px;">
             <br/>
         </p>
-        <p class="description" style="text-align:left;">
+        <p class="description" style="text-align:left;margin-bottom:0px;font-size:14px;">
           <span>${description}</span>
           <br/>
           
@@ -70,18 +70,18 @@
         <p class="contact" style="bottom:110px !important;left:70px;">
 
         </p>        
-        <div class="info-list">
-          <div><b><uvm:i18n>Host:</uvm:i18n></b> <c:out value="${bd.formattedHost}"/></div>
-          <div><b><uvm:i18n>URL:</uvm:i18n></b> <c:out value="${bd.formattedUrl}"/></div>
+        <div class="info-list" style="float:left;background-color:#EFEFEF !important;margin-bottom:10px !important;">
+          <div><b style="margin-right:5px;"><uvm:i18n>Host:</uvm:i18n> </b><c:out value="${bd.formattedHost}"/></div>
+          <div><b style="margin-right:5px;"><uvm:i18n>URL:</uvm:i18n> </b><c:out value="${bd.formattedUrl}"/></div>
           <c:if test="${!empty reason}">
-            <div><b><uvm:i18n>Reason:</uvm:i18n></b> <c:out value="${reason}"/></div>
+            <div><b style="margin-right:5px;"><uvm:i18n>Reason:</uvm:i18n></b> <c:out value="${reason}"/></div>
           </c:if>
         </div>
         
         <c:if test="${!empty additional_fields}">
           ${additional_fields}
         </c:if>
-        <div class="u-form-item">
+        <div class="u-form-item" style="margin-left:170px; !important;">
             <c:if test="${showUnblockNow}">
               <button id="unblockNowButton" type="button" onclick="unblockSite(false)">
                 <uvm:i18n>Unblock For Now</uvm:i18n>
@@ -107,9 +107,10 @@
       <div id="extra-div-4"><span></span></div>
       <div id="extra-div-5"><span></span></div>
       <div id="extra-div-6"><span></span></div>
-    </div>
       <c:if test="${!untangle_plus}">
-        <script type="text/javascript" src="http://guide.untangle.com/bp/get-status-2.php?${urlParams}"><!-- --></script>
-      </c:if>    
+        <script type="text/javascript" src="http://guide.untangle.com/bp/get-status-3.php?${urlParams}"><!-- --></script>
+      </c:if>         
+    </div>
+
   </body>
 </html>
