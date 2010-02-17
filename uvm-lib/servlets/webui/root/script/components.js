@@ -3,7 +3,7 @@ Ext.namespace('Ung.form');
 // The location of the blank pixel image
 Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 // the main internationalization object
-var i18n=new Ung.I18N({"map":null});;
+var i18n=new Ung.I18N({"map":null});
 // the main json rpc object
 var rpc=null;
 
