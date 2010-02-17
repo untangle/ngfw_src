@@ -722,7 +722,7 @@ Ung.Reports = Ext.extend(Object,{
                                          });
                                          this.reportDetails.buildReportDetails(); // XXX take to correct page
                                          reports.progressBar.hide();
-                                     }.createDelegate(this), reports.reportsDate, 1, value);
+                                     }.createDelegate(this), reports.reportsDate, reports.numDays, value);
     },
 
     getTableOfContentsForUser: function(user)
@@ -764,7 +764,7 @@ Ung.Reports = Ext.extend(Object,{
                                                                   });
                                          this.reportDetails.buildReportDetails(); // XXX take to correct page
                                          reports.progressBar.hide();
-                                     }.createDelegate(this), reports.reportsDate, 1, app, value);
+                                     }.createDelegate(this), reports.reportsDate, reports.numDays, app, value);
     },
 
     getApplicationDataForUser: function(app, user)
