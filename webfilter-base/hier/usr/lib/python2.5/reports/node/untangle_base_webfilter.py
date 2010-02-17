@@ -1375,7 +1375,7 @@ class WebFilterDetailDomains(DetailSection):
 
         sql = """\
 SELECT regexp_replace(host, E'.*?([^.]+\.[^.]+)(:[0-9]+)?$', E'\\\\1') AS domain,
-       count(*) AS count, round(COALESCE(sum(s2c_content_length) / 10^6, 0)::numeric, 2)
+       count(*) AS count, round(COALESCE(sum(s2c_content_length) / 10^6, 0)::numeric, 2)::float
 FROM reports.n_http_events
 WHERE regexp_replace(host, E'[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?', '') != ''
 AND time_stamp >= %s AND time_stamp < %s
