@@ -14,16 +14,18 @@ package com.untangle.uvm.rup;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Random;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
+
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 public class NonceServlet extends HttpServlet
 {

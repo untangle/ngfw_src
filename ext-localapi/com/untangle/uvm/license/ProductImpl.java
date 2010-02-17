@@ -11,8 +11,9 @@
 
 package com.untangle.uvm.license;
 
-import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.LocalUvmContextFactory;
 
 public class ProductImpl implements LicenseManager.Product
 {

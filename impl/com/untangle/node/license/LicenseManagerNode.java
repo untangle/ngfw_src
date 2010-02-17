@@ -11,14 +11,14 @@
 
 package com.untangle.node.license;
 
-import com.untangle.uvm.LocalUvmContext;
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
-import org.apache.log4j.Logger;
 
 public class LicenseManagerNode extends AbstractNode
 {
