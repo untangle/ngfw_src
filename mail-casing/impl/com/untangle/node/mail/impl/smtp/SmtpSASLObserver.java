@@ -28,8 +28,9 @@ import com.untangle.node.mail.papi.smtp.Response;
 import com.untangle.node.mail.papi.smtp.ResponseParser;
 import com.untangle.node.sasl.SASLObserver;
 import com.untangle.node.util.ByteBufferBuilder;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import sun.misc.BASE64Decoder;
 
 /**
  * Class which acts to watch a SASL interaction,
@@ -344,7 +345,7 @@ class SmtpSASLObserver {
             return null;
         }
         try {
-            return new BASE64Decoder().decodeBuffer(s);
+            return Base64.decodeBase64(s.getBytes());
         }
         catch(Exception ex) {
             m_logger.warn("Exception base 64 decoding \"" + s + "\" for SASL mechanism \"" +

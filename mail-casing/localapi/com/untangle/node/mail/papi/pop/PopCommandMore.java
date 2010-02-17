@@ -38,8 +38,9 @@ import java.nio.ByteBuffer;
 
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import sun.misc.BASE64Decoder;
 
 public class PopCommandMore implements Token
 {
@@ -74,9 +75,9 @@ public class PopCommandMore implements Token
         String zUser;
 
         try {
-            byte azDecodedBuf[] = (new BASE64Decoder()).decodeBuffer(zTmp);
+            byte azDecodedBuf[] = Base64.decodeBase64(zTmp.getBytes());
             zUser = new String(azDecodedBuf);
-        } catch (IOException exn) {
+        } catch (Exception exn) {
             logger.warn("cannot decode encoded auth login user name: " + zTmp + ", " + exn);
             zUser = null;
             /* fall through */

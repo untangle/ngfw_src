@@ -24,9 +24,9 @@ import java.nio.ByteBuffer;
 
 import com.untangle.node.mail.papi.imap.IMAPTokenizer;
 import com.untangle.node.sasl.SASLObserver;
-import org.apache.log4j.Logger;
-import sun.misc.BASE64Decoder;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 /**
  * Class which understands the semantics of Imap's SASL
@@ -187,7 +187,7 @@ class SASLExchangeTokMon
             return null;
         }
         try {
-            return new BASE64Decoder().decodeBuffer(sb.toString());
+            return Base64.decodeBase64(sb.toString().getBytes());
         }
         catch(Exception ex) {
             m_logger.warn("Exception base 64 decoding \"" + sb.toString() + "\"", ex);

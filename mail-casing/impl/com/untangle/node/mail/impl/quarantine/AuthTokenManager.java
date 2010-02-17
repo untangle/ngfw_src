@@ -22,9 +22,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.untangle.node.util.Pair;
+
+import org.apache.commons.codec.binary.Base64;
+
 import org.apache.log4j.Logger;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 
 //===============================================
@@ -98,7 +99,7 @@ class AuthTokenManager {
             System.arraycopy(OUTER_MAGIC, 0, toEncode, 0, OUTER_MAGIC.length);
             System.arraycopy(encrypted, 0, toEncode, OUTER_MAGIC.length, encrypted.length);
 
-            return new BASE64Encoder().encode(toEncode);
+            return Base64.encodeBase64(toEncode).toString();
         }
         catch(Exception ex) {
             m_logger.warn("Unable to create token", ex);
@@ -118,7 +119,7 @@ class AuthTokenManager {
     Pair<DecryptOutcome, String> decryptAuthToken(String token) {
         try {
             //Decode
-            byte[] decodedBytes = new BASE64Decoder().decodeBuffer(token);
+            byte[] decodedBytes = Base64.decodeBase64(token.getBytes());
 
             //Check for outer magic
             if(!matches(OUTER_MAGIC, decodedBytes, 0, OUTER_MAGIC.length)) {
