@@ -21,11 +21,12 @@ package com.untangle.node.mail.impl;
 import java.io.File;
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.Casing;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 
 public abstract class AbstractMailCasing implements Casing

@@ -33,16 +33,26 @@
 
 package com.untangle.node.mail.papi.smtp.sapi;
 
-import java.io.*;
-import java.nio.*;
-import java.nio.channels.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
 
-import com.untangle.node.mail.papi.*;
-import com.untangle.node.mail.papi.smtp.*;
-import com.untangle.node.mime.*;
-import com.untangle.node.token.Token;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.mail.papi.BeginMIMEToken;
+import com.untangle.node.mail.papi.CompleteMIMEToken;
+import com.untangle.node.mail.papi.ContinuedMIMEToken;
+import com.untangle.node.mail.papi.MIMEAccumulator;
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.MessageTransmissionTimeoutStrategy;
+import com.untangle.node.mail.papi.smtp.Command;
+import com.untangle.node.mail.papi.smtp.MAILCommand;
+import com.untangle.node.mail.papi.smtp.RCPTCommand;
+import com.untangle.node.mail.papi.smtp.Response;
+import com.untangle.node.mail.papi.smtp.SmtpTransaction;
+import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.token.Token;
 
 /**
  * Subclass of SessionHandler which yet-again simplifies consumption
@@ -383,7 +393,7 @@ public abstract class BufferingSessionHandler
      * some problem we can send this log to the real log file.
      */
     private class TxLog extends ArrayList<String> {
-
+        private static final long serialVersionUID = 3663276209386820867L;
 
         void receivedToken(Token token) {
             add("----Received Token " + token + "--------");
@@ -394,20 +404,12 @@ public abstract class BufferingSessionHandler
         void recordStateChange(BufTxState old, BufTxState newState) {
             add("----Change State " + old + "->" + newState + "-----------");
         }
-        void dumpToError(Logger logger) {
-            logger.error("=======BEGIN Transaction Log=============");
+        void dumpToLogger(Logger logger,Level level) {
+            logger.log(level,"=======BEGIN Transaction Log=============");
             for(String s : this) {
-                logger.error(s);
+                logger.log(level,s);
             }
-            logger.error("=======ENDOF Transaction Log=============");
-            clear();
-        }
-        void dumpToDebug(Logger logger) {
-            logger.debug("=======BEGIN Transaction Log=============");
-            for(String s : this) {
-                logger.debug(s);
-            }
-            logger.debug("=======ENDOF Transaction Log=============");
+            logger.log(level,"=======ENDOF Transaction Log=============");
             clear();
         }
 
@@ -481,7 +483,7 @@ public abstract class BufferingSessionHandler
             }
             else {//State/command misalignment
                 m_txLog.add("Impossible command now: \"" + command + "\"");
-                m_txLog.dumpToError(m_logger);
+                m_txLog.dumpToLogger(m_logger,Level.ERROR);
                 actions.transactionEnded(this);
                 actions.sendCommandToServer(command, new PassthruResponseCompletion());
                 changeState(BufTxState.DONE);
@@ -508,7 +510,7 @@ public abstract class BufferingSessionHandler
             }
             else {
                 m_txLog.add("Impossible command now: \"" + command + "\"");
-                m_txLog.dumpToError(m_logger);
+                m_txLog.dumpToLogger(m_logger,Level.ERROR);
                 actions.sendCommandToServer(command, new PassthruResponseCompletion());
                 actions.transactionEnded(this);
                 changeState(BufTxState.DONE);
@@ -532,7 +534,7 @@ public abstract class BufferingSessionHandler
             }
             else {
                 m_txLog.add("Impossible command now: \"" + command + "\"");
-                m_txLog.dumpToError(m_logger);
+                m_txLog.dumpToLogger(m_logger,Level.ERROR);
                 actions.sendCommandToServer(command, new PassthruResponseCompletion());
                 actions.transactionEnded(this);
                 changeState(BufTxState.DONE);
@@ -624,7 +626,7 @@ public abstract class BufferingSessionHandler
                 //     declare passthru
                 m_txLog.add("Impossible command now: MIME chunk (first? " + isFirst +
                             ", isLast? " + isLast);
-                m_txLog.dumpToError(m_logger);
+                m_txLog.dumpToLogger(m_logger,Level.ERROR);
                 appendChunk(continuedToken);
                 changeState(BufTxState.DONE);
                 break;

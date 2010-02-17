@@ -33,9 +33,6 @@
 
 package com.untangle.uvm.node.firewall.intf;
 
-import java.net.InetAddress;
-
-import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
@@ -50,6 +47,8 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  */
 public final class IntfRelativeMatcher extends IntfDBMatcher
 {
+    private static final long serialVersionUID = -2785397340515158166L;
+    
     private static final IntfDBMatcher LESS_TRUSTED_MATCHER
         = new IntfRelativeMatcher(false);
     private static final IntfDBMatcher MORE_TRUSTED_MATCHER

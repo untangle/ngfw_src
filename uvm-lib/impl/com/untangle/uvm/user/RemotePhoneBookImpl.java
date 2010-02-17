@@ -18,7 +18,6 @@
 
 package com.untangle.uvm.user;
 
-import com.untangle.uvm.node.ValidateException;
 
 public class RemotePhoneBookImpl implements RemotePhoneBook
 {

@@ -33,10 +33,10 @@
 
 package com.untangle.uvm.node.firewall.time;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.io.Serializable;
 
 public abstract class DayOfWeekDBMatcher implements DayOfWeekMatcher, Serializable
 {

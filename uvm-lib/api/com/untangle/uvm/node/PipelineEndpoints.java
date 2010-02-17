@@ -34,6 +34,7 @@
 package com.untangle.uvm.node;
 
 import java.net.InetAddress;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,10 +43,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.policy.Policy;
-import org.hibernate.annotations.Type;
 
 /**
  * Used to record the Session endpoints at session end time.

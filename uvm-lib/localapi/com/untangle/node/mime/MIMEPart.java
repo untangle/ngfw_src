@@ -33,13 +33,25 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.DASH;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
-import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.util.BASE64InputStream;
+import com.untangle.node.util.FileFactory;
+import com.untangle.node.util.QPInputStream;
+import com.untangle.node.util.TruncatedInputStream;
 
 
 /**

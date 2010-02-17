@@ -33,17 +33,20 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.ASCIIUtil.*;
+import static com.untangle.node.util.ASCIIUtil.isEOL;
+import static com.untangle.node.util.Ascii.CR;
+import static com.untangle.node.util.Ascii.CRLF_BA;
+import static com.untangle.node.util.Ascii.DASH;
+import static com.untangle.node.util.Ascii.LF;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
-import java.nio.*;
-import java.util.*;
+import java.nio.ByteBuffer;
 
-import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.util.ByteBufferBuilder;
+import com.untangle.node.util.DynPushbackInputStream;
 
 /**
  * Specialized Stream with methods useful for

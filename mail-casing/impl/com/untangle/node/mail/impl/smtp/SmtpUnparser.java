@@ -18,9 +18,10 @@
 
 package com.untangle.node.mail.impl.smtp;
 
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.node.mail.impl.AbstractMailUnparser;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.mail.impl.AbstractMailUnparser;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Base class for the SmtpClient/ServerUnparser

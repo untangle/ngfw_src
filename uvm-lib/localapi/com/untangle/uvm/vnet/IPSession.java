@@ -34,8 +34,6 @@
 package com.untangle.uvm.vnet;
 
 import com.untangle.uvm.node.PipelineEndpoints;
-import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
 /**
  * The IP Session interface

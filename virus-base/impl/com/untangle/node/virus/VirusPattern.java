@@ -17,7 +17,7 @@
  */
 package com.untangle.node.virus;
 
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 public class VirusPattern {
 

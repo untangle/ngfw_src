@@ -20,7 +20,7 @@ package com.untangle.uvm.engine;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,10 +31,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.message.ActiveStat;
-import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
+
+import com.untangle.uvm.message.ActiveStat;
+import com.untangle.uvm.security.Tid;
 
 @Entity
 @Table(name="u_stat_settings", schema="settings")

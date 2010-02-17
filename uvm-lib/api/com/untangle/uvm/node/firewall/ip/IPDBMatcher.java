@@ -33,9 +33,8 @@
 
 package com.untangle.uvm.node.firewall.ip;
 
-import java.net.InetAddress;
-
 import java.io.Serializable;
+import java.net.InetAddress;
 
 /**
  * An IPMatcher that is capable of being saved to and loaded from

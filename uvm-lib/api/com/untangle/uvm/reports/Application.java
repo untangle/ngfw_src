@@ -37,6 +37,8 @@ import java.io.Serializable;
 
 public class Application implements Serializable
 {
+    private static final long serialVersionUID = 8055217439176980801L;
+    
     private final String name;
     private final String title;
 

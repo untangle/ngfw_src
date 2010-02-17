@@ -37,7 +37,6 @@ import java.net.InetAddress;
 import java.util.Date;
 
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.user.Username;
 
 public class UserInfo
 {

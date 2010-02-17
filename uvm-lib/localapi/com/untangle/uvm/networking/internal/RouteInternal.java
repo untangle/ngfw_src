@@ -33,13 +33,9 @@
 
 package com.untangle.uvm.networking.internal;
 
-import java.util.List;
-
-import com.untangle.uvm.node.IPaddr;
-
 import com.untangle.uvm.networking.IPNetwork;
-
 import com.untangle.uvm.networking.Route;
+import com.untangle.uvm.node.IPaddr;
 
 /** An immutable routing entry */
 public class RouteInternal

@@ -35,9 +35,10 @@ package com.untangle.uvm;
 
 import javax.servlet.ServletContext;
 
+import org.apache.catalina.Valve;
+
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
-import org.apache.catalina.Valve;
 
 /**
  * Abstraction to the application server used for external web

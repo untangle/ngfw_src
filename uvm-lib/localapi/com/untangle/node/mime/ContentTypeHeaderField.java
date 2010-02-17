@@ -33,8 +33,9 @@
 
 package com.untangle.node.mime;
 
+import static com.untangle.node.util.Ascii.FWD_SLASH;
+
 import org.apache.log4j.Logger;
-import static com.untangle.node.util.Ascii.*;
 
 
 /**

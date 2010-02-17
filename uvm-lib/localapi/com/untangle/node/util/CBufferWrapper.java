@@ -32,8 +32,7 @@
  */
 package com.untangle.node.util;
 
-import java.lang.*;
-import java.nio.*;
+import java.nio.ByteBuffer;
 
 /* !!!IMPORTANT!!! (portability issues)
  * CBufferWrapper implements CharSequence

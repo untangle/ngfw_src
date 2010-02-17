@@ -32,8 +32,11 @@
  */
 
 package com.untangle.node.util;
-import java.io.*;
 import static com.untangle.node.util.Ascii.LF;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 //Uses Exit code 1 if there is a problem.
 

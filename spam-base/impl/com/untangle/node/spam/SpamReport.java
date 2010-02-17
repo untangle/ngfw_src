@@ -18,18 +18,18 @@
 
 package com.untangle.node.spam;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.CRLF;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.mime.HeaderParseException;
 import com.untangle.node.mime.LCString;
 import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEMessageHeaders;
-import com.untangle.node.token.header.IllegalFieldException;
 import com.untangle.uvm.node.TemplateValues;
-import org.apache.log4j.Logger;
 
 /**
  * Class to encapsulate a SPAM report.

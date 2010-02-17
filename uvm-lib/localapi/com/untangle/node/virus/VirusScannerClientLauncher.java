@@ -34,8 +34,6 @@ package com.untangle.node.virus;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
-
 abstract public class VirusScannerClientLauncher {
     protected File msgFile;
 

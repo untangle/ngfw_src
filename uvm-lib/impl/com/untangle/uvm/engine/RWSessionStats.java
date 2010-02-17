@@ -20,8 +20,8 @@ package com.untangle.uvm.engine;
 
 import java.util.Date;
 
-import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.util.MetaEnv;
+import com.untangle.uvm.vnet.SessionStats;
 
 /**
  * <code>RWSessionStats</code> is the writable subclass of SessionStats used

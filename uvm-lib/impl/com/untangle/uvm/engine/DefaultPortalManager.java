@@ -20,7 +20,6 @@ package com.untangle.uvm.engine;
 
 import java.security.Principal;
 
-import com.untangle.uvm.portal.Application;
 import com.untangle.uvm.portal.BasePortalManager;
 
 /**
@@ -28,8 +27,6 @@ import com.untangle.uvm.portal.BasePortalManager;
  */
 class DefaultPortalManager implements BasePortalManager
 {
-    private static final Application[] protoArr = new Application[] { };
-
     private final PortalApplicationManagerImpl appManager;
 
     DefaultPortalManager()

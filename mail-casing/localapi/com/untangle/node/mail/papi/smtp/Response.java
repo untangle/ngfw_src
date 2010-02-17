@@ -32,12 +32,11 @@
  */
 package com.untangle.node.mail.papi.smtp;
 
-import static com.untangle.node.util.BufferUtil.*;
-import static com.untangle.node.util.ASCIIUtil.*;
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.CRLF_BA;
+import static com.untangle.node.util.Ascii.DASH;
+import static com.untangle.node.util.Ascii.SP;
 
 import java.nio.ByteBuffer;
-import java.util.*;
 
 import com.untangle.node.token.Token;
 

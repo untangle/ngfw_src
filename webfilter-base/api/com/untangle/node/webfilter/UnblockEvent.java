@@ -18,7 +18,8 @@
 
 package com.untangle.node.webfilter;
 
-import javax.persistence.CascadeType;
+import java.net.InetAddress;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,15 +28,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import java.net.InetAddress;
+import org.hibernate.annotations.Type;
 
-import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.policy.Policy;
-
-import org.hibernate.annotations.Type;
 
 /**
  * Log event for a blocked request.

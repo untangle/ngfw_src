@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.toolbox.DownloadComplete;
@@ -35,7 +37,6 @@ import com.untangle.uvm.toolbox.DownloadSummary;
 import com.untangle.uvm.toolbox.InstallComplete;
 import com.untangle.uvm.toolbox.InstallTimeout;
 import com.untangle.uvm.toolbox.MackageDesc;
-import org.apache.log4j.Logger;
 
 /**
  * Tails apt output to produce progress messages for the Swing GUI.
@@ -60,7 +61,6 @@ class AptLogTail implements Runnable
     }
 
     private final long key;
-    private final boolean upgrade;
     private final MackageDesc requestingMackage;
 
     private final RandomAccessFile raf;
@@ -76,7 +76,6 @@ class AptLogTail implements Runnable
 
         this.key = key;
         this.requestingMackage = requestingMackage;
-        this.upgrade = null == requestingMackage;
 
         File f = new File(APT_LOG);
         if (!f.exists()) {
@@ -177,7 +176,6 @@ class AptLogTail implements Runnable
                     break;
                 } else if (m.matches()) {
                     int bytesDownloaded = Integer.parseInt(m.group(1)) * 1000;
-                    int percent = Integer.parseInt(m.group(2));
                     String speed = m.group(3);
 
                     // enqueue event
@@ -231,7 +229,7 @@ class AptLogTail implements Runnable
                             throw new RuntimeException("timing out: "
                                                        + (t - lastActivity));
                         } else {
-                            Thread.currentThread().sleep(100);
+                            Thread.sleep(100);
                         }
                     } catch (InterruptedException exn) { }
                 } else if ('\n' == c) {

@@ -34,6 +34,7 @@
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,12 +42,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
-import org.hibernate.annotations.Type;
 
 /**
  * These are settings related to the hostname and the adddress that is
@@ -59,6 +61,8 @@ import org.hibernate.annotations.Type;
 @Table(name="u_address_settings", schema="settings")
 public class AddressSettings implements Serializable, Validatable
 {
+    private static final long serialVersionUID = 3601871262225042475L;
+
     private static final String PUBLIC_ADDRESS_EXCEPTION =
         "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
 

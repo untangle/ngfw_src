@@ -44,6 +44,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.LocalNodeManager;
@@ -58,17 +64,11 @@ import com.untangle.uvm.reports.Host;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.reports.ReportXmlHandler;
 import com.untangle.uvm.reports.Section;
-import com.untangle.uvm.reports.SummaryItem;
 import com.untangle.uvm.reports.SummarySection;
 import com.untangle.uvm.reports.TableOfContents;
 import com.untangle.uvm.reports.User;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.MackageDesc;
-import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 class RemoteReportingManagerImpl implements RemoteReportingManager
 {

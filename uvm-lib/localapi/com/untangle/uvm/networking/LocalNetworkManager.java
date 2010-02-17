@@ -42,7 +42,6 @@ import com.untangle.uvm.networking.internal.MiscSettingsInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.IPSessionDesc;
-import com.untangle.uvm.node.ValidateException;
 
 public interface LocalNetworkManager extends RemoteNetworkManager
 {

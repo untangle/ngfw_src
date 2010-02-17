@@ -34,7 +34,6 @@
 package com.untangle.node.mail.papi.quarantine;
 
 import java.io.Serializable;
-import java.lang.StringBuffer;
 
 /**
  * Summary of a mail within the Quarantine.

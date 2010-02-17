@@ -34,7 +34,7 @@ package com.untangle.uvm.util;
 
 public class AdministrationOutsideAccessValve extends OutsideValve
 {
-    public void AdministrationOutsideAccessValve()
+    public AdministrationOutsideAccessValve()
     {
     }
 

@@ -32,8 +32,13 @@
  */
 
 package com.untangle.node.mail.papi;
-import java.io.*;
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.CR;
+import static com.untangle.node.util.Ascii.DOT;
+import static com.untangle.node.util.Ascii.LF;
+
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Output stream which performs "byte stuffing", the

@@ -36,7 +36,7 @@ package com.untangle.node.mime;
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.node.util.*;
+import com.untangle.node.util.FileFactory;
 
 /**
  * This interface is a strange beast.  It is intended as an

@@ -33,13 +33,14 @@
 
 package com.untangle.node.mail.papi.imap;
 
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.CompleteMIMEToken;
 import com.untangle.node.mail.papi.MIMETCPStreamer;
 import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mime.MIMEMessage;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 
 /**

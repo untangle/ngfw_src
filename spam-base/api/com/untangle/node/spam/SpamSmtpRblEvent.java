@@ -34,10 +34,13 @@
 package com.untangle.node.spam;
 
 import java.net.InetAddress;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.logging.PipelineEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
@@ -46,7 +49,6 @@ import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PipelineEndpoints;
-import org.hibernate.annotations.Type;
 
 /**
  * Log for Spam SMTP RBL events.

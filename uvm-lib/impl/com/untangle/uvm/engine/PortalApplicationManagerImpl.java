@@ -23,9 +23,10 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.portal.Application;
 import com.untangle.uvm.portal.LocalApplicationManager;
-import org.apache.log4j.Logger;
 
 /**
  * A registry of Portal applications registered with the system.

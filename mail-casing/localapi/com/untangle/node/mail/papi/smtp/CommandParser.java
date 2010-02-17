@@ -33,8 +33,9 @@
 
 package com.untangle.node.mail.papi.smtp;
 
-import static com.untangle.node.util.Rfc822Util.*;
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Rfc822Util.consumeLine;
+import static com.untangle.node.util.Rfc822Util.consumeToken;
+import static com.untangle.node.util.Rfc822Util.eatSpace;
 
 import java.nio.ByteBuffer;
 

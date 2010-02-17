@@ -33,17 +33,17 @@
 
 package com.untangle.uvm.node.firewall.protocol;
 
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_PING;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP_AND_UDP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
-
-import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
-import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
-import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_PING;
-import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP_AND_UDP;
+import com.untangle.uvm.vnet.Protocol;
 
 /**
  * The class <code>ProtocolMatcher</code> represents a class for

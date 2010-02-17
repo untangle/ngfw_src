@@ -33,9 +33,6 @@
 
 package com.untangle.uvm.security;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Reason for a login failure.
@@ -62,6 +59,11 @@ public enum LoginFailureReason
     public char getKey()
     {
         return key;
+    }
+    
+    public String getReason()
+    {
+        return reason;
     }
 
     public static LoginFailureReason getInstance(char key)

@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.untangle.uvm.logging.SyslogPriority;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 

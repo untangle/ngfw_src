@@ -22,11 +22,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.node.mail.impl.imap.ImapCasingFactory;
 import com.untangle.node.mail.impl.quarantine.Quarantine;
 import com.untangle.node.mail.impl.safelist.SafelistManager;
 import com.untangle.node.mail.impl.smtp.SmtpCasingFactory;
-import com.untangle.node.mail.papi.*;
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailExportFactory;
+import com.untangle.node.mail.papi.MailNode;
+import com.untangle.node.mail.papi.MailNodeSettings;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.Inbox;
 import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
@@ -61,9 +68,6 @@ import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class MailNodeImpl extends AbstractNode
     implements MailNode, MailExport

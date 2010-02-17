@@ -32,7 +32,9 @@
  */
 package com.untangle.uvm.util;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;

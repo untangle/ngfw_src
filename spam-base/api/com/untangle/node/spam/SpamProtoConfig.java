@@ -34,13 +34,12 @@
 package com.untangle.node.spam;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
-
-import com.untangle.node.mail.papi.WrappedMessageGenerator;
 
 /**
  * Hibernate mappings for this class are in the UVM resource

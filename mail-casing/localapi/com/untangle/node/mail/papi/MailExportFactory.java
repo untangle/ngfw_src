@@ -34,8 +34,9 @@
 package com.untangle.node.mail.papi;
 
 
-import com.untangle.uvm.vnet.ProxyGenerator;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.vnet.ProxyGenerator;
 
 /**
  * Factory for the exported MailNode interface.

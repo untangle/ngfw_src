@@ -32,9 +32,14 @@
  */
 package com.untangle.node.util;
 
-import java.io.*;
+import static com.untangle.node.util.Ascii.CR;
+import static com.untangle.node.util.Ascii.EQ;
+import static com.untangle.node.util.Ascii.LF;
 import static com.untangle.node.util.BASE64InputStream.BASE64_ALPHABET;
-import static com.untangle.node.util.Ascii.*;
+
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * TODO bscott This class needs to be examined

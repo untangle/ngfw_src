@@ -35,6 +35,7 @@ package com.untangle.uvm.node;
 
 import java.awt.Color;
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,9 +45,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
+
+import com.untangle.uvm.security.Tid;
 
 /**
  * Runtime Node settings.
@@ -63,7 +65,6 @@ public class NodePreferences implements Serializable
     private Long id;
     private Tid tid;
     private Color guiBackgroundColor = Color.PINK;
-    private String notes;
 
     // constructors -----------------------------------------------------------
 
@@ -76,6 +77,7 @@ public class NodePreferences implements Serializable
 
     // bean methods -----------------------------------------------------------
 
+    @SuppressWarnings("unused")
     @Id
     @Column(name="id")
     @GeneratedValue
@@ -84,6 +86,7 @@ public class NodePreferences implements Serializable
         return id;
     }
 
+    @SuppressWarnings("unused")
     private void setId(Long id)
     {
         this.id = id;
@@ -101,6 +104,7 @@ public class NodePreferences implements Serializable
         return tid;
     }
 
+    @SuppressWarnings("unused")
     private void setTid(Tid tid)
     {
         this.tid = tid;

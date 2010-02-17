@@ -37,7 +37,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.logging.PipelineEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 

@@ -21,6 +21,8 @@ package com.untangle.node.spam;
 import java.io.File;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.WrappedMessageGenerator;
 import com.untangle.node.mail.papi.imap.BufferingImapTokenStreamHandler;
@@ -31,7 +33,6 @@ import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 public class SpamImapHandler extends BufferingImapTokenStreamHandler
 {

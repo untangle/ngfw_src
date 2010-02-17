@@ -54,43 +54,43 @@ class OpenVpnManager
     private static final String PACKET_FILTER_RULES_FILE = System.getProperty( "bunnicula.conf.dir" ) + "/openvpn/packet-filter-rules";
 
     /* Most likely want to bind to the outside address when using NAT */
-    private static final String FLAG_LOCAL       = "local";
+    static final String FLAG_LOCAL       = "local";
 
     /* XXX Have to expose this in the GUI */
-    private static final String FLAG_PORT        = "port";
+    static final String FLAG_PORT        = "port";
 
-    private static final String FLAG_PROTOCOL    = "proto";
-    private static final String DEFAULT_PROTOCOL = "udp";
-    private static final String FLAG_DEVICE      = "dev";
-    private static final String DEVICE_BRIDGE    = "tap0";
-    private static final String DEVICE_ROUTING   = "tun0";
+    static final String FLAG_PROTOCOL    = "proto";
+    static final String DEFAULT_PROTOCOL = "udp";
+    static final String FLAG_DEVICE      = "dev";
+    static final String DEVICE_BRIDGE    = "tap0";
+    static final String DEVICE_ROUTING   = "tun0";
 
-    private static final String FLAG_ROUTE        = "route";
-    private static final String FLAG_IFCONFIG     = "ifconfig";
-    private static final String FLAG_CLI_IFCONFIG = "ifconfig-push";
-    private static final String FLAG_CLI_ROUTE    = "iroute";
-    private static final String FLAG_BRIDGE_GROUP = "server-bridge";
+    static final String FLAG_ROUTE        = "route";
+    static final String FLAG_IFCONFIG     = "ifconfig";
+    static final String FLAG_CLI_IFCONFIG = "ifconfig-push";
+    static final String FLAG_CLI_ROUTE    = "iroute";
+    static final String FLAG_BRIDGE_GROUP = "server-bridge";
 
-    private static final String FLAG_PUSH         = "push";
-    private static final String FLAG_EXPOSE_CLI   = "client-to-client";
+    static final String FLAG_PUSH         = "push";
+    static final String FLAG_EXPOSE_CLI   = "client-to-client";
 
-    private static final String FLAG_MAX_CLI      = "max-clients";
+    static final String FLAG_MAX_CLI      = "max-clients";
 
     static final String FLAG_REMOTE               = "remote";
-    private static final String DEFAULT_CIPHER    = "AES-128-CBC";
+    static final String DEFAULT_CIPHER    = "AES-128-CBC";
 
-    private static final String FLAG_CERT         = "cert";
-    private static final String FLAG_KEY          = "key";
-    private static final String FLAG_CA           = "ca";
+    static final String FLAG_CERT         = "cert";
+    static final String FLAG_KEY          = "key";
+    static final String FLAG_CA           = "ca";
 
     /* The directory where the key material ends up for a client */
-    private static final String CLI_KEY_DIR       = "untangle-vpn";
+    static final String CLI_KEY_DIR       = "untangle-vpn";
 
     /* Ping every x seconds */
-    private static final int DEFAULT_PING_TIME      = 10;
+    static final int DEFAULT_PING_TIME      = 10;
 
     /* If a ping response isn't received in this amount time, assume the connection is dead */
-    private static final int DEFAULT_PING_TIMEOUT   = 120;
+    static final int DEFAULT_PING_TIMEOUT   = 120;
 
     /* Default verbosity in the log messages(0-9) *
      * 0 -- No output except fatal errors.
@@ -181,22 +181,7 @@ class OpenVpnManager
         ScriptRunner.getInstance().exec( VPN_START_SCRIPT );
 
         try {
-            boolean isBridgeMode = settings.isBridgeMode();
-
-
-            // XXX ALPACA_INTEGRATION
-            /* ** XXXXXXX Bridge mode is unsupported */
-//             LocalUvmContextFactory.context().localIntfManager().
-//                 registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
-
-            /* ** XXXXXXX Bridge mode is unsupported */
-
-            // if ( isBridgeMode ) {
-            // am.enableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get(), intf );
-            // }
             LocalUvmContextFactory.context().networkManager().updateAddress();
-//         } catch ( ArgonException e ) {
-//             throw new NodeException( e );
         } catch ( Exception e ) {
             throw new NodeException( e );
         }
@@ -492,11 +477,6 @@ class OpenVpnManager
         }
 
         writePushRoute( sw, address.getAddr(), ( netmask == null ) ? null : netmask.getAddr());
-    }
-
-    private void writePushRoute( ScriptWriter sw, InetAddress address )
-    {
-        writePushRoute( sw, address, null );
     }
 
     private void writePushRoute( ScriptWriter sw, InetAddress address, InetAddress netmask )

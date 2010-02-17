@@ -18,8 +18,8 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**
  * <code>ReleasedEventHandler</code> is a plain vanilla event handler used for released

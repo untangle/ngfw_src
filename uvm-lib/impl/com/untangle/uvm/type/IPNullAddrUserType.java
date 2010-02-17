@@ -20,10 +20,10 @@ package com.untangle.uvm.type;
 
 import com.untangle.uvm.node.IPNullAddr;
 
-import java.net.UnknownHostException;
-
 public class IPNullAddrUserType extends StringBasedUserType
 {
+    private static final long serialVersionUID = -1344468981718594547L;
+
     public Class returnedClass()
     {
         return IPNullAddr.class;

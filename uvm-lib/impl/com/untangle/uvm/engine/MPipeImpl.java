@@ -18,6 +18,8 @@
 
 package com.untangle.uvm.engine;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonAgentImpl;
 import com.untangle.uvm.node.Node;
@@ -31,7 +33,6 @@ import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
-import org.apache.log4j.Logger;
 
 /**
  * MPipeImpl is the implementation of a single MetaPipe.
@@ -42,10 +43,6 @@ import org.apache.log4j.Logger;
  * @version 1.0
  */
 class MPipeImpl implements MPipe {
-
-    // Set to true to get lots of debugging output to stdout
-    private static final boolean DEBUG = false;
-
     protected ArgonAgent argon;
 
     // Our owner/manager/factory
@@ -193,25 +190,11 @@ class MPipeImpl implements MPipe {
     {
         return (lastSessionWriteFailed);
     }
-
-    /*
-      public SessionFactory sessionFactory()
-      {
-
-      return sessFact;
-      }
-    */
-
-    /**
-     * A utiliity function to make sure the state is ok for issueing
-     * new requests, etc.
-     */
-    private void checkOk() throws MPipeException
+    
+    public long lastSessionWriteTime()
     {
-        if (!isRunning())
-            throw new MPipeException(this, "Attempt to use a MPipe that is not running");
+        return lastSessionWriteTime;
     }
-
 
     private void start()
         throws MPipeException

@@ -18,9 +18,8 @@
 
 package com.untangle.uvm.type.firewall;
 
-import com.untangle.uvm.type.StringBasedUserType;
-
 import com.untangle.uvm.node.firewall.MACAddress;
+import com.untangle.uvm.type.StringBasedUserType;
 
 public class MACAddressUserType extends StringBasedUserType
 {

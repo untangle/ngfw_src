@@ -18,31 +18,23 @@
 
 package com.untangle.node.openvpn;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
-import org.hibernate.annotations.Type;
 
 /**
  * the configuration for a vpn client.

@@ -33,9 +33,9 @@
 
 package com.untangle.uvm.node.firewall.port;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;

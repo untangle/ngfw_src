@@ -42,7 +42,6 @@ import com.untangle.node.token.TokenResult;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * State machine for FTP traffic.
@@ -54,8 +53,6 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
 {
     private final Fitting clientFitting;
     private final Fitting serverFitting;
-
-    private final Logger logger = Logger.getLogger(FtpStateMachine.class);
 
     // constructors -----------------------------------------------------------
 

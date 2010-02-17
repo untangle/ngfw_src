@@ -40,6 +40,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.bind.ValidationException;
+
 import com.untangle.uvm.node.AddressRange;
 import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.HostName;
@@ -147,11 +149,6 @@ public class NetworkUtil
     /* ports 9500 -> 9650 are redirect ports, 10000 -> 60000 are reserved for NAT */
     public static final int INTERNAL_OPEN_HTTPS_PORT = 64157;
 
-    /* Exception message triggered when the user enters and invalid
-     * public address string. */
-    private static final String PUBLIC_ADDRESS_EXCEPTION =
-        "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
-
     /* XXX This should be final, but there is a bug in javac that won't let it be. */
     
     /* A list of matchers that can be uesd to determine if an address
@@ -161,11 +158,10 @@ public class NetworkUtil
     NetworkUtil()
     {
         List<IPMatcher> matchers = new LinkedList<IPMatcher>();
-        IPMatcherFactory imf = IPMatcherFactory.getInstance();
 
         for ( String matcherString : PRIVATE_NETWORK_STRINGS ) {
             try {
-                matchers.add( imf.parse( matcherString ));
+                matchers.add( IPMatcherFactory.parse( matcherString ));
             } catch ( Exception e ) {
                 System.err.println( "Unable to parse: " + matcherString );
             }

@@ -22,7 +22,6 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import com.untangle.jvector.Crumb;
-import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.ICMPPacketCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
@@ -35,9 +34,16 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.IPPacketHeader;
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.client.UDPSessionDescImpl;
-import com.untangle.uvm.vnet.event.*;
+import com.untangle.uvm.vnet.event.IPStreamer;
+import com.untangle.uvm.vnet.event.UDPErrorEvent;
+import com.untangle.uvm.vnet.event.UDPPacketEvent;
+import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 /**
  * This is the primary implementation class for UDP live sessions.

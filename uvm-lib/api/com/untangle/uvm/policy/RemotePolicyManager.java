@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.policy;
 
-import  java.util.List;
+import java.util.List;
 
 import com.untangle.uvm.license.LicensedProduct;
 import com.untangle.uvm.node.Validator;

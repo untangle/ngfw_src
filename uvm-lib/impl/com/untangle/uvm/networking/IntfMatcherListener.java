@@ -18,29 +18,16 @@
 
 package com.untangle.uvm.networking;
 
-import java.net.InetAddress;
-
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
 
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
-
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-
-import com.untangle.uvm.IntfConstants;
-
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 
 class IntfMatcherListener implements NetworkSettingsListener
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     IntfMatcherListener()
     {
     }

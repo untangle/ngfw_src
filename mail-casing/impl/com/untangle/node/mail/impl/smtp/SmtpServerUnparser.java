@@ -19,7 +19,10 @@
 package com.untangle.node.mail.impl.smtp;
 
 import static com.untangle.node.util.ASCIIUtil.bbToString;
+
 import java.nio.ByteBuffer;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.mail.papi.BeginMIMEToken;
 import com.untangle.node.mail.papi.ByteBufferByteStuffer;
@@ -35,7 +38,6 @@ import com.untangle.node.token.MetadataToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 
 /**

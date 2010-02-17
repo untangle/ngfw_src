@@ -31,7 +31,8 @@
  * to do so, delete this exception statement from your version.
  */
 package com.untangle.node.sasl;
-import static com.untangle.node.util.ASCIIUtil.*;
+import static com.untangle.node.util.ASCIIUtil.bbToString;
+
 import java.nio.ByteBuffer;
 
 

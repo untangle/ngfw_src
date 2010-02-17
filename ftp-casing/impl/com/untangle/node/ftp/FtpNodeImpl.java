@@ -17,14 +17,14 @@
  */
 package com.untangle.node.ftp;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * FTP node implementation.
@@ -45,7 +45,6 @@ public class FtpNodeImpl extends AbstractNode
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { ctlPipeSpec, dataPipeSpec };
-    private final Logger logger = Logger.getLogger(getClass());
 
     private FtpSettings settings;
 

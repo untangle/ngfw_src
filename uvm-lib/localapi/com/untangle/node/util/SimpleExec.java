@@ -38,8 +38,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.LocalUvmContextFactory;
 
 /**
  * Wrapper around a simple exec (short-lived) which takes care of

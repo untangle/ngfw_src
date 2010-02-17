@@ -33,12 +33,25 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.AT_B;
+import static com.untangle.node.util.Ascii.CLOSE_PAREN_B;
+import static com.untangle.node.util.Ascii.COLON;
+import static com.untangle.node.util.Ascii.COMMA;
+import static com.untangle.node.util.Ascii.COMMA_B;
+import static com.untangle.node.util.Ascii.GT;
+import static com.untangle.node.util.Ascii.GT_B;
+import static com.untangle.node.util.Ascii.HT;
+import static com.untangle.node.util.Ascii.LT_B;
+import static com.untangle.node.util.Ascii.QUOTE;
+import static com.untangle.node.util.Ascii.SEMI_B;
+import static com.untangle.node.util.Ascii.SP;
 
-import java.io.*;
-import java.util.*;
-import javax.mail.*;
-import javax.mail.internet.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 

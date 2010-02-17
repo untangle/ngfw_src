@@ -18,7 +18,7 @@
 
 package com.untangle.node.mail.impl.quarantine.store;
 
-import java.io.*;
+import java.io.File;
 
 
 /**

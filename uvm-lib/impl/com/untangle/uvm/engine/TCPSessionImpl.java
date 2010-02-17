@@ -32,9 +32,18 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.TCPSessionDesc;
 import com.untangle.uvm.vnet.client.TCPSessionDescImpl;
-import com.untangle.uvm.vnet.event.*;
+import com.untangle.uvm.vnet.event.IPDataResult;
+import com.untangle.uvm.vnet.event.IPStreamer;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.event.TCPChunkResult;
+import com.untangle.uvm.vnet.event.TCPSessionEvent;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
  * This is the primary implementation class for TCP live sessions.

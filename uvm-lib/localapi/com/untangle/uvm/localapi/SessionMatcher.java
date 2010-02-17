@@ -34,7 +34,6 @@
 package com.untangle.uvm.localapi;
 
 import com.untangle.uvm.node.IPSessionDesc;
-
 import com.untangle.uvm.policy.Policy;
 
 public interface SessionMatcher

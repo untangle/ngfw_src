@@ -33,14 +33,13 @@
 
 package com.untangle.node.mail.papi.pop;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import com.untangle.node.token.Token;
-import com.untangle.node.util.AsciiCharBuffer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.token.Token;
+import com.untangle.node.util.AsciiCharBuffer;
 
 public class PopCommandMore implements Token
 {

@@ -18,17 +18,10 @@
 
 package com.untangle.uvm.logging;
 
-import java.net.InetAddress;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.uvm.security.LoginFailureReason;
-import org.hibernate.annotations.Type;
 
 /**
  * Log event for system stats.
@@ -41,7 +34,9 @@ import org.hibernate.annotations.Type;
     @Table(name="n_server_evt", schema="events")
     public class SystemStatEvent extends LogEvent
     {
-	private long memFree;
+    private static final long serialVersionUID = 5830826385437144410L;
+    
+    private long memFree;
 	private long memCache;
 	private long memBuffers;
 

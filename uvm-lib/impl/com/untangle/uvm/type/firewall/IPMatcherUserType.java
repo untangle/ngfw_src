@@ -18,10 +18,9 @@
 
 package com.untangle.uvm.type.firewall;
 
-import com.untangle.uvm.type.StringBasedUserType;
-
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.type.StringBasedUserType;
 
 public class IPMatcherUserType extends StringBasedUserType
 {

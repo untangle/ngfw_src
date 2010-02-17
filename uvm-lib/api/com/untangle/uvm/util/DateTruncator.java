@@ -36,8 +36,6 @@ package com.untangle.uvm.util;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
-
 /**
  * Truncate a date.
  *
@@ -47,8 +45,6 @@ import org.apache.log4j.Logger;
  * @version 1.0
  */
 public class DateTruncator {
-
-    private static final Logger logger = Logger.getLogger(DateTruncator.class);
 
     public static Date truncateDate(Date date, int where, boolean down) {
 	Calendar cal = Calendar.getInstance();

@@ -34,7 +34,6 @@
 package com.untangle.uvm.node.firewall.time;
 
 import com.untangle.uvm.node.ParseException;
-
 import com.untangle.uvm.node.firewall.ParsingFactory;
 
 public class DayOfWeekMatcherFactory

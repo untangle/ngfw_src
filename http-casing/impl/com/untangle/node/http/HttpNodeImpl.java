@@ -18,17 +18,17 @@
 
 package com.untangle.node.http;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * An HTTP casing node.
@@ -39,8 +39,6 @@ import org.hibernate.Session;
 public class HttpNodeImpl extends AbstractNode
     implements HttpNode
 {
-    private final Logger logger = Logger.getLogger(HttpNodeImpl.class);
-
     private final CasingPipeSpec pipeSpec = new CasingPipeSpec
         ("http", this, new HttpCasingFactory(this),
          Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);

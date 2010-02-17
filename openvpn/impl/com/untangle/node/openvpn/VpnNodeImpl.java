@@ -17,13 +17,11 @@
  */
 package com.untangle.node.openvpn;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.xnap.commons.i18n.I18nManager;
 
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContext;
@@ -42,7 +39,6 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
-import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -55,8 +51,8 @@ import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.JsonClient;
+import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;

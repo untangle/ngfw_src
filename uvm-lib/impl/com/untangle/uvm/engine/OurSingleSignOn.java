@@ -20,11 +20,11 @@ package com.untangle.uvm.engine;
 
 
 import java.io.IOException;
-import java.security.Principal;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 
-import org.apache.catalina.authenticator.*;
+import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;

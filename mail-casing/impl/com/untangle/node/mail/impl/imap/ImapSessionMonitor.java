@@ -20,10 +20,11 @@ package com.untangle.node.mail.impl.imap;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.imap.IMAPTokenizer;
 import com.untangle.node.sasl.SASLObserver;
 import com.untangle.node.sasl.SASLObserverFactory;
-import org.apache.log4j.Logger;
 
 /**
  * Receives ByteBuffers to/from server.  A subtle point
@@ -56,23 +57,6 @@ class ImapSessionMonitor {
     private IntHolder m_literalFromClientCount;
 
     private TokMon[] m_tokMons;
-
-    private static final String LOGIN_SASL_MECH_NAME = "LOGIN";//Undocumented, I assume no encryption
-    private static final String PLAIN_SASL_MECH_NAME = "PLAIN";//Cannot be encrypted (or, more to the
-    //point, should already be over an
-    //encrypted channel).  RFC 2595
-    private static final String GSSAPI_SASL_MECH_NAME = "GSSAPI";//May be encrypted, RFC 2222
-    private static final String ANONYMOUS_SASL_MECH_NAME = "ANONYMOUS";//Auth only, RFC 2245
-    private static final String CRAM_MD5_SASL_MECH_NAME = "CRAM-MD5";//Auth only, RFC 2195
-    private static final String DIGEST_MD5_SASL_MECH_NAME = "DIGEST-MD5";//May be encrypted, RFC 2831
-    private static final String KERBEROS_V4_SASL_MECH_NAME = "KERBEROS_V4";//May be encrypted, RFC 2222
-    private static final String SKEY_SASL_MECH_NAME = "SKEY";//No security, RFC 2222
-    private static final String EXTERNAL_SASL_MECH_NAME = "EXTERNAL";//Assume can be encrypted, RFC 2222
-    private static final String SECURID_SASL_MECH_NAME = "SECURID";//Auth only,  RFC 2808
-    private static final String SRP_SASL_MECH_NAME = "SRP";//May be encrypted
-    private static final String SCRAM_MD5_SASL_MECH_NAME = "SCRAM-MD5";//Don't know, assume encrypted
-    private static final String NTLM_SASL_MECH_NAME = "NTLM";//Undocumented, assume encrypted
-
 
     ImapSessionMonitor() {
         m_fromServerTokenizer = new IMAPTokenizer();

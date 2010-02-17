@@ -35,7 +35,6 @@ package com.untangle.node.mail.papi.quarantine;
 
 import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.Map;
 
 /* Class acts as a helper for sorting InboxRecords */
 public final class InboxRecordComparator {

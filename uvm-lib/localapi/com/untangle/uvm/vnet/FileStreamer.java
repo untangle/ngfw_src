@@ -37,8 +37,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.uvm.vnet.event.TCPStreamer;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 /**
  * Streams a File out as a TCP stream.

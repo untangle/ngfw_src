@@ -36,7 +36,7 @@ package com.untangle.node.spam;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -51,10 +51,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.node.util.UvmUtil;
-import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
+
+import com.untangle.node.util.UvmUtil;
+import com.untangle.uvm.security.Tid;
 
 /**
  * Settings for the SpamNode.

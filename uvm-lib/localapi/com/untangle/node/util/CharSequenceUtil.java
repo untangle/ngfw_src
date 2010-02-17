@@ -35,6 +35,7 @@ package com.untangle.node.util;
 
 import static com.untangle.node.util.Ascii.CR;
 import static com.untangle.node.util.Ascii.LF;
+
 import java.util.Comparator;
 
 public class CharSequenceUtil

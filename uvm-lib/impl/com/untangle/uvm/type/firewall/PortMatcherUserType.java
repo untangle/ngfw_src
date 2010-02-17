@@ -18,10 +18,9 @@
 
 package com.untangle.uvm.type.firewall;
 
-import com.untangle.uvm.type.StringBasedUserType;
-
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.type.StringBasedUserType;
 
 public class PortMatcherUserType extends StringBasedUserType
 {

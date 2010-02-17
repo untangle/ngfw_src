@@ -36,7 +36,6 @@ package com.untangle.uvm.vnet;
 import java.net.InetSocketAddress;
 
 import com.untangle.uvm.node.IPSessionDesc;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.node.PipelineEndpoints;
 
 /**

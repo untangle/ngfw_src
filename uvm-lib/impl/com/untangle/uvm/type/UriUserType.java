@@ -31,9 +31,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.untangle.node.util.UriUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
+
+import com.untangle.node.util.UriUtil;
 
 /**
  * Hibernate <code>UserType</code> for persisting

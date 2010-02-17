@@ -42,10 +42,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.node.http.RequestLine;
-import com.untangle.uvm.node.PipelineEndpoints;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
+
+import com.untangle.node.http.RequestLine;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
  * Log for HTTP Virus events.

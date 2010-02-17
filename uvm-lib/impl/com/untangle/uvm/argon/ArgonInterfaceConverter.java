@@ -26,10 +26,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.localapi.ArgonInterface;
-import org.apache.log4j.Logger;
 
 
 /**

@@ -22,14 +22,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Hibernate;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.util.I18nUtil;
-
-import org.hibernate.Hibernate;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Filter for passed HTTP traffic.

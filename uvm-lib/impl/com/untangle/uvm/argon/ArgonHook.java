@@ -18,12 +18,13 @@
 
 package com.untangle.uvm.argon;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jvector.IncomingSocketQueue;
@@ -36,14 +37,12 @@ import com.untangle.jvector.Vector;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
-import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.networking.LocalNetworkManager;
+import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.user.Username;
-import com.untangle.uvm.vnet.PipelineFoundry;
-import org.apache.log4j.Logger;
 
 /**
  * Helper class for the IP session hooks.
@@ -358,7 +357,6 @@ abstract class ArgonHook implements Runnable
     private boolean connectClient()
     {
         boolean clientActionCompleted = true;
-        boolean createPipelineInfo = true;
 
         switch ( state ) {
         case IPNewSessionRequest.REQUESTED:
@@ -595,15 +593,6 @@ abstract class ArgonHook implements Runnable
         logger.debug( "vectorReset: isEndpointed - " + isEndpointed );
 
         return !isEndpointed;
-    }
-
-
-    /** Helper function determine if a session is going to and from a
-     * VPN interface */
-    private boolean isVpnToVpn( byte netcapClientIntf, byte netcapServerIntf )
-    {
-        return (( netcapClientIntf == IntfConstants.NETCAP_VPN ) &&
-                ( netcapServerIntf == IntfConstants.NETCAP_VPN ));
     }
 
     protected boolean alive()

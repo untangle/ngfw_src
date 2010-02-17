@@ -32,14 +32,11 @@
  */
 package com.untangle.uvm.toolbox;
 
-import java.io.IOException;
-
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-
-import  org.apache.commons.codec.binary.Base64;
 
 
 /**

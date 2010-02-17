@@ -34,6 +34,7 @@
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,10 +42,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
-import org.hibernate.annotations.Type;
 
 /**
  * These are settings related to limitting and granting remote access
@@ -57,6 +59,8 @@ import org.hibernate.annotations.Type;
 @Table(name="u_access_settings", schema="settings")
 public class AccessSettings implements Serializable, Validatable
 {
+    private static final long serialVersionUID = -199625455843428399L;
+
     /* boolean which can be used by the untangle to determine if the
      * object returned by a user interface has been modified. */
     private boolean isClean = false;

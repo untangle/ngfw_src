@@ -32,8 +32,15 @@
  */
 package com.untangle.node.util;
 
-import java.io.*;
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.CR;
+import static com.untangle.node.util.Ascii.EQ;
+import static com.untangle.node.util.Ascii.LF;
+import static com.untangle.node.util.Ascii.SP;
+
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 
 /**
  *

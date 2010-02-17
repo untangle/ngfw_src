@@ -33,7 +33,6 @@
 
 package com.untangle.node.spam;
 
-import java.util.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;

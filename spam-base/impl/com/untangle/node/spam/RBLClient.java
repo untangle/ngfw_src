@@ -18,14 +18,9 @@
 
 package com.untangle.node.spam;
 
-import java.io.IOException;
-import java.lang.SecurityException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
 
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.node.PipelineEndpoints;
 import org.apache.log4j.Logger;
 
 public final class RBLClient implements Runnable {
@@ -125,9 +120,6 @@ public final class RBLClient implements Runnable {
             // IOException is thrown as UnknownHostException and
             // UnknownHostException will catch both so
             // we will not be able to differentiate between them
-        } catch(IOException e) {
-            // assume ipAddr is not on this blacklist
-            logger.warn(dbgName + ", DNSBL checker i/o exception: ", e);
         } catch(SecurityException e) {
             // assume ipAddr is not on this blacklist
             logger.warn(dbgName + ", not allowed to query host: ", e);
@@ -140,8 +132,6 @@ public final class RBLClient implements Runnable {
             synchronized(this) {
                 this.notifyAll(); // notify waiting thread and finish run()
             }
-
-            return;
         }
     }
 }

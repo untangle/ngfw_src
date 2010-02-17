@@ -10,7 +10,6 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.varia.LevelRangeFilter;
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.jabsorb.JSONSerializer;
 
 import com.untangle.uvm.servlet.ServletUtils;

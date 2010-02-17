@@ -19,6 +19,7 @@
 package com.untangle.node.openvpn;
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;

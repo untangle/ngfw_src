@@ -32,8 +32,6 @@
  */
 package com.untangle.node.util;
 
-import java.util.*;
-
 import com.untangle.uvm.node.IPMaddr;
 
 public class IPSetTest {
@@ -50,7 +48,6 @@ public class IPSetTest {
         IPMaddr c         = new IPMaddr("192.168.0.1");
         IPMaddr d         = new IPMaddr("192.168.0.2");
         IPMaddr gator      = new IPMaddr("66.35.248.0","255.255.254.0");
-        IPMaddr slashdot   = new IPMaddr("66.35.250.150");
 
         Integer uno = new Integer(1);
         Integer dos = new Integer(2);

@@ -33,9 +33,11 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.ASCIIUtil.*;
-import java.io.*;
+import static com.untangle.node.util.ASCIIUtil.isEOL;
+import static com.untangle.node.util.Ascii.COLON;
+import static com.untangle.node.util.Ascii.SP;
+
+import java.io.IOException;
 
 /**
  * Class representing an entry in a set of Headers.  A HeaderField

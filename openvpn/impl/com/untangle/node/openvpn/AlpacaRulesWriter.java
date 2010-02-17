@@ -20,15 +20,9 @@ package com.untangle.node.openvpn;
 import java.util.List;
 
 import com.untangle.uvm.node.script.ScriptWriter;
-import org.apache.log4j.Logger;
-
-import static com.untangle.uvm.node.script.ScriptWriter.COMMENT;
-import static com.untangle.uvm.node.script.ScriptWriter.UNTANGLE_HEADER;
 
 class AlpacaRulesWriter extends ScriptWriter
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     private static final String RULES_HEADER =
         COMMENT + UNTANGLE_HEADER + "\n" +
         COMMENT + " VPN Access Packet Filter Rules\n\n";

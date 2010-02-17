@@ -18,9 +18,6 @@
 
 package com.untangle.node.mail.impl.quarantine.store;
 
-import java.io.*;
-
-
 /**
  * Name of a file, relative to some other root.
  * <br><br>

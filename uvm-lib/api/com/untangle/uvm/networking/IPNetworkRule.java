@@ -36,16 +36,18 @@ package com.untangle.uvm.networking;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.firewall.ParsingConstants;
-import org.hibernate.annotations.Type;
 
 
 

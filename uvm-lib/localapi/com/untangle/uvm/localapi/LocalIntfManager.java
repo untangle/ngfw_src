@@ -37,9 +37,7 @@ import java.util.List;
 
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfEnum;
-import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.node.InterfaceComparator;
-
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 
 public interface LocalIntfManager

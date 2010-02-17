@@ -36,6 +36,7 @@ package com.untangle.uvm.user;
 import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -43,11 +44,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.HostName;
-import org.hibernate.annotations.Type;
 
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)

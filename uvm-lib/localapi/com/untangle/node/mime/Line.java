@@ -33,11 +33,17 @@
 
 package com.untangle.node.mime;
 
-import java.nio.*;
+import static com.untangle.node.util.ASCIIUtil.bbToString;
+import static com.untangle.node.util.ASCIIUtil.isEOL;
+import static com.untangle.node.util.ASCIIUtil.isLWS;
+import static com.untangle.node.util.Ascii.CR;
+import static com.untangle.node.util.Ascii.HTAB;
+import static com.untangle.node.util.Ascii.LF;
+import static com.untangle.node.util.Ascii.SP;
+import static com.untangle.node.util.BufferUtil.endsWith;
+import static com.untangle.node.util.BufferUtil.startsWith;
 
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.BufferUtil.*;
-import static com.untangle.node.util.ASCIIUtil.*;
+import java.nio.ByteBuffer;
 
 /**
  * Class representing a raw line.  Maintains the terminator

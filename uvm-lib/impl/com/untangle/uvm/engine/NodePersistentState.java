@@ -20,6 +20,7 @@ package com.untangle.uvm.engine;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,11 +32,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
+
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.security.Tid;
 
 /**
  * Internal node state.

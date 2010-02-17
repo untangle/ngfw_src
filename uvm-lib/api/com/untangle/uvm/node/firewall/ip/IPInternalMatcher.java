@@ -34,13 +34,10 @@
 package com.untangle.uvm.node.firewall.ip;
 
 import java.net.InetAddress;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.untangle.uvm.networking.IPNetwork;
-
-import com.untangle.uvm.node.IPaddr;
 
 /**
  * An IPMatcher that matches all of the addresses assigned to the
@@ -124,7 +121,7 @@ public final class IPInternalMatcher implements IPMatcher
     {
         switch ( networkList.size()) {
         case 0:
-            this.matcher = IPSimpleMatcher.getNilMatcher();
+            IPInternalMatcher.matcher = IPSimpleMatcher.getNilMatcher();
             break;
 
         case 1: {
@@ -142,7 +139,7 @@ public final class IPInternalMatcher implements IPMatcher
                 matcherList.add( IPSubnetMatcher.makeInstance( network.getNetwork(), network.getNetmask()));
             }
             
-            this.matcher = new IPMatcher() {
+            IPInternalMatcher.matcher = new IPMatcher() {
                     public boolean isMatch( InetAddress address ) {
                         /* iterate all of the matchers and check if any of them match */
                         for ( IPMatcher matcher : matcherList ) {

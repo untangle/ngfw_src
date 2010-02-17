@@ -22,6 +22,10 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -32,7 +36,6 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
@@ -41,11 +44,6 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
-import static com.untangle.node.util.Ascii.CRLF;
 
 public class SpamNodeImpl extends AbstractNode implements SpamNode
 {

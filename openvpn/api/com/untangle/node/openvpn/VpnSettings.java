@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,15 +36,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
+
 import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.security.Tid;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.Type;
 
 /**
  * Settings for the open vpn node.

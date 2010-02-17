@@ -59,6 +59,11 @@ public enum LogoutReason
     {
         return key;
     }
+    
+    public String getReason()
+    {
+        return reason;
+    }
 
     public static LogoutReason getInstance(char key){
         LogoutReason[] values = values();

@@ -19,6 +19,8 @@
 package com.untangle.node.virus;
 
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.mail.papi.imap.ImapTokenStream;
@@ -26,7 +28,6 @@ import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * Factory to create the protocol handler for IMAP

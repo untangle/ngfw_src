@@ -35,13 +35,14 @@ package com.untangle.uvm.node.firewall;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.IPSessionDesc;
-import com.untangle.uvm.vnet.Protocol;
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.Protocol;
 
 /**
  * A class for matching Traffic

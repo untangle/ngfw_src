@@ -33,10 +33,11 @@
 
 package com.untangle.node.mail.papi;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.CR;
+import static com.untangle.node.util.Ascii.DOT;
+import static com.untangle.node.util.Ascii.LF;
 
-import java.nio.*;
-import java.util.*;
+import java.nio.ByteBuffer;
 
 /**
  * Comical name.  Stateful class which
@@ -302,7 +303,9 @@ public class ByteBufferByteStuffer {
             }
             m_buf[m_pos++] = b;
         }
-        //Added for my tests
+        
+        @SuppressWarnings("unused")
+        /* Added for my tests */
         void put(byte[] bytes, int start, int len) {
             for(int i = 0; i<len; i++) {
                 put(bytes[start+i]);

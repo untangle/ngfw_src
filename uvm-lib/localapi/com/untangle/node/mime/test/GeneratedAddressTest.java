@@ -32,9 +32,13 @@
  */
 package com.untangle.node.mime.test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
-import com.untangle.node.mime.*;
+import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.mime.EmailAddressHeaderField;
 
 /**
  * Little test which creates MIME address lines
@@ -79,7 +83,6 @@ public class GeneratedAddressTest {
     private int m_failureCount = 0;
     private int m_numTests;
     private int m_sampleAt = 100000;
-    private long m_timestamp = 0;
     private TestProgress m_testProgress;
 
 
@@ -213,41 +216,6 @@ public class GeneratedAddressTest {
         }
     }
 
-    private boolean contains(EmailAddressHeaderField field,
-                             AddrBitPair pair) {
-        Iterator<EmailAddress> it = field.iterator();
-        while(it.hasNext()) {
-            EmailAddress addr = it.next();
-            if(pair.address == null ||
-               "".equals(pair.address.trim())) {
-                return true;//Cannot contain, so this is OK
-            }
-            if(personalMatches(addr, pair.personal) &&
-               addressMatches(addr, pair.address)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean personalMatches(EmailAddress addr,
-                                    String comp) {
-        if(comp == null || "".equals(comp.trim())) {
-            return addr.getPersonal() == null ||
-                "".equals(addr.getPersonal().trim());
-        }
-        return comp.trim().equalsIgnoreCase(addr.getPersonal());
-    }
-    private boolean addressMatches(EmailAddress addr,
-                                   String comp) {
-        if(comp == null || "".equals(comp.trim())) {
-            return addr.isNullAddress() ||
-                addr.getAddress() == null ||
-                "".equals(addr.getAddress().trim());
-        }
-        return comp.trim().equalsIgnoreCase(addr.getPersonal());
-    }
-
     private boolean isQuoted(String str) {
         str = str.trim();
         return str.startsWith("\"") && str.endsWith("\"");
@@ -335,8 +303,7 @@ public class GeneratedAddressTest {
                 long now = System.currentTimeMillis();
                 long diff = now - m_timestamp;
                 m_timestamp = now;
-
-                double numPeriods = (double) (m_numTests/m_notifyEvery);
+                
                 double periodsRemaining = ((double) m_numTests- (double) m_testNum) / m_notifyEvery;
 
                 long millisRemaining = (long) (((double) diff) * periodsRemaining);

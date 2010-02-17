@@ -33,10 +33,10 @@
 
 package com.untangle.uvm.node.firewall;
 
-import com.untangle.uvm.node.ParseException;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+
+import com.untangle.uvm.node.ParseException;
 
 /**
  * A ParsingFactory combines a number of parsers into a single unified

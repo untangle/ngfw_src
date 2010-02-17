@@ -17,11 +17,18 @@
  */
 
 package com.untangle.node.mail.impl.smtp;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.untangle.node.mail.papi.smtp.*;
-import com.untangle.node.mime.*;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.mail.papi.smtp.Command;
+import com.untangle.node.mail.papi.smtp.MAILCommand;
+import com.untangle.node.mail.papi.smtp.RCPTCommand;
+import com.untangle.node.mail.papi.smtp.Response;
+import com.untangle.node.mail.papi.smtp.SmtpTransaction;
+import com.untangle.node.mail.papi.smtp.UnparsableCommand;
+import com.untangle.node.mime.EmailAddress;
 
 
 /**
@@ -256,8 +263,6 @@ class CasingSessionTracker {
     private class SimpleResponseAction
         extends ChainedResponseAction {
 
-        private ResponseAction m_chained;
-
         SimpleResponseAction() {
             super();
         }
@@ -276,9 +281,6 @@ class CasingSessionTracker {
 
         private final EmailAddress m_addr;
 
-        MAILResponseAction(EmailAddress addr) {
-            this(addr, null);
-        }
         MAILResponseAction(EmailAddress addr,
                            ResponseAction chained) {
             super(chained);
@@ -298,9 +300,6 @@ class CasingSessionTracker {
 
         private final EmailAddress m_addr;
 
-        RCPTResponseAction(EmailAddress addr) {
-            this(addr, null);
-        }
         RCPTResponseAction(EmailAddress addr,
                            ResponseAction chained) {
             super(chained);
@@ -317,9 +316,6 @@ class CasingSessionTracker {
     private class DATAResponseAction
         extends ChainedResponseAction {
 
-        DATAResponseAction() {
-            super();
-        }
         DATAResponseAction(ResponseAction chained) {
             super(chained);
         }
@@ -335,9 +331,6 @@ class CasingSessionTracker {
     private class TransmissionResponseAction
         extends ChainedResponseAction {
 
-        TransmissionResponseAction() {
-            super();
-        }
         TransmissionResponseAction(ResponseAction chained) {
             super(chained);
         }

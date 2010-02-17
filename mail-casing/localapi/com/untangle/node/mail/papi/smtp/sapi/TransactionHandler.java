@@ -36,7 +36,10 @@ package com.untangle.node.mail.papi.smtp.sapi;
 import com.untangle.node.mail.papi.BeginMIMEToken;
 import com.untangle.node.mail.papi.CompleteMIMEToken;
 import com.untangle.node.mail.papi.ContinuedMIMEToken;
-import com.untangle.node.mail.papi.smtp.*;
+import com.untangle.node.mail.papi.smtp.Command;
+import com.untangle.node.mail.papi.smtp.MAILCommand;
+import com.untangle.node.mail.papi.smtp.RCPTCommand;
+import com.untangle.node.mail.papi.smtp.SmtpTransaction;
 
 
 /**

@@ -26,9 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.logging.UvmRepositorySelector;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.logging.UvmRepositorySelector;
 
 /**
  * Bootstraps the UVM. Access to the Main object should be protected.
@@ -63,7 +64,6 @@ public class Main
     private final Logger logger = Logger.getLogger(getClass());
 
     private UvmClassLoader mcl;
-    private Class uvmPrivClass;
     private UvmContextBase uvmContext;
 
     // constructor -------------------------------------------------------------

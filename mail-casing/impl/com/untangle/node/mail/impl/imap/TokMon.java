@@ -17,10 +17,12 @@
  */
 
 package com.untangle.node.mail.impl.imap;
+import static com.untangle.node.util.Ascii.PLUS_B;
+import static com.untangle.node.util.Ascii.STAR_B;
+
 import java.nio.ByteBuffer;
 
 import com.untangle.node.mail.papi.imap.IMAPTokenizer;
-import static com.untangle.node.util.Ascii.*;
 
 /**
  * Abstract class for a <b>Tok</b>en <b>Mon</b>itor.  A TokMon

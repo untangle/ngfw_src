@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.MPipeException;
 
 /**
  * The listener interface for receiving Vnet events.

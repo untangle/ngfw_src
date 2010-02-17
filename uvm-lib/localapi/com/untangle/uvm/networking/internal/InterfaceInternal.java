@@ -33,15 +33,13 @@
 
 package com.untangle.uvm.networking.internal;
 
-import com.untangle.uvm.node.ValidateException;
-
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
-
-import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.networking.EthernetMedia;
+import com.untangle.uvm.networking.Interface;
+import com.untangle.uvm.node.ValidateException;
 
 public class InterfaceInternal
 {

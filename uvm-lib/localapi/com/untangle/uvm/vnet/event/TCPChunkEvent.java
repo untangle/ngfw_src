@@ -33,9 +33,10 @@
 
 package com.untangle.uvm.vnet.event;
 
+import java.nio.ByteBuffer;
+
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.TCPSession;
-import java.nio.ByteBuffer;
 
 /**
  * TCP data event -- chunk of bytes received.

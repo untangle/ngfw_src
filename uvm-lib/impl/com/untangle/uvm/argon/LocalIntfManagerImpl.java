@@ -20,14 +20,14 @@ package com.untangle.uvm.argon;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.JNetcapException;
 import com.untangle.jnetcap.Netcap;
@@ -40,8 +40,6 @@ import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
-import com.untangle.uvm.policy.LocalPolicyManager;
-import org.apache.log4j.Logger;
 
 /* Manager for controlling argon -> netcap interface matching */
 class LocalIntfManagerImpl implements LocalIntfManager

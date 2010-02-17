@@ -18,11 +18,16 @@
 
 package com.untangle.node.spam;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import org.apache.log4j.Logger;
 
 /**
  * A class that checks if an SMTP server is listed on a Realtime Blackhole List (RBL).

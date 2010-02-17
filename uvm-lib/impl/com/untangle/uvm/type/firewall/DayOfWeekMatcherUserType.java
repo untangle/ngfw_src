@@ -18,10 +18,9 @@
 
 package com.untangle.uvm.type.firewall;
 
-import com.untangle.uvm.type.StringBasedUserType;
-
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
+import com.untangle.uvm.type.StringBasedUserType;
 
 public class DayOfWeekMatcherUserType extends StringBasedUserType
 {

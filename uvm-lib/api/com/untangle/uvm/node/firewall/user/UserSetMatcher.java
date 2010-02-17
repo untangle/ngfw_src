@@ -38,13 +38,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
-import com.untangle.uvm.node.firewall.ParsingConstants;
 
 public final class UserSetMatcher extends UserDBMatcher
 {

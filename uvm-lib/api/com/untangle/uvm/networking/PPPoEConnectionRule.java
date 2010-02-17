@@ -37,13 +37,11 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.xml.bind.ValidationException;
 
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.node.Rule;
-
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 

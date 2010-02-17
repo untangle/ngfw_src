@@ -33,8 +33,9 @@
 
 package com.untangle.uvm.vnet.event;
 
+import java.net.InetAddress;
+
 import com.untangle.uvm.vnet.MPipe;
-import java.net.*;
 
 /**
  * The class <code>ICMPEvent</code> is for events from incoming ICMP messages that are

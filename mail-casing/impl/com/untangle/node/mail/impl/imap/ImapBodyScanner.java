@@ -18,12 +18,16 @@
 
 package com.untangle.node.mail.impl.imap;
 
+import static com.untangle.node.util.Ascii.CLOSE_BRACKET_B;
+import static com.untangle.node.util.Ascii.LT_B;
+import static com.untangle.node.util.Ascii.OPEN_BRACKET_B;
+import static com.untangle.node.util.Ascii.OPEN_PAREN_B;
+import static com.untangle.node.util.Ascii.PERIOD_B;
+
 import java.nio.ByteBuffer;
 
 import com.untangle.node.mail.papi.imap.IMAPTokenizer;
-import com.untangle.node.token.Token;
 import com.untangle.node.util.UtLogger;
-import static com.untangle.node.util.Ascii.*;
 
 /**
  * Logicaly part of the "ImapServerParser", but broken out so we

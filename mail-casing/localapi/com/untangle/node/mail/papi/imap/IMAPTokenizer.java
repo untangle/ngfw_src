@@ -31,8 +31,31 @@
  * to do so, delete this exception statement from your version.
  */
 package com.untangle.node.mail.papi.imap;
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.ASCIIUtil.*;
+import static com.untangle.node.util.ASCIIUtil.asciiByteToString;
+import static com.untangle.node.util.ASCIIUtil.bbToString;
+import static com.untangle.node.util.ASCIIUtil.eatWhitespace;
+import static com.untangle.node.util.ASCIIUtil.equalsIgnoreCase;
+import static com.untangle.node.util.ASCIIUtil.isLWS;
+import static com.untangle.node.util.ASCIIUtil.isNumber;
+import static com.untangle.node.util.Ascii.BACK_SLASH_B;
+import static com.untangle.node.util.Ascii.CLOSE_BRACE;
+import static com.untangle.node.util.Ascii.CLOSE_BRACE_B;
+import static com.untangle.node.util.Ascii.CLOSE_BRACKET_B;
+import static com.untangle.node.util.Ascii.CLOSE_PAREN_B;
+import static com.untangle.node.util.Ascii.CR_B;
+import static com.untangle.node.util.Ascii.GT_B;
+import static com.untangle.node.util.Ascii.HT_B;
+import static com.untangle.node.util.Ascii.LF_B;
+import static com.untangle.node.util.Ascii.LT_B;
+import static com.untangle.node.util.Ascii.OPEN_BRACE_B;
+import static com.untangle.node.util.Ascii.OPEN_BRACKET_B;
+import static com.untangle.node.util.Ascii.OPEN_PAREN_B;
+import static com.untangle.node.util.Ascii.PERIOD_B;
+import static com.untangle.node.util.Ascii.PLUS_B;
+import static com.untangle.node.util.Ascii.QUOTE_B;
+import static com.untangle.node.util.Ascii.SP_B;
+import static com.untangle.node.util.Ascii.STAR_B;
+
 import java.nio.ByteBuffer;
 
 import com.untangle.node.util.BBTokenizer;
@@ -100,9 +123,7 @@ public class IMAPTokenizer {
 
     private static final int DEF_LONGEST_WORD = 1024*8;
 
-    private static final byte[] BLANK_BYTES = new byte[0];
-
-    private static final byte[] DELIMS = new byte[] {
+    static final byte[] DELIMS = new byte[] {
         HT_B,
         SP_B,
         CR_B,
@@ -122,12 +143,12 @@ public class IMAPTokenizer {
         STAR_B
     };
 
-    private static final byte[] EXCLUDE_DELIMS = new byte[] {
+    static final byte[] EXCLUDE_DELIMS = new byte[] {
         HT_B,
         SP_B,
     };
 
-    private static final byte[] QUOTE_DELIMS = new byte[] {
+    static final byte[] QUOTE_DELIMS = new byte[] {
         QUOTE_B,
         BACK_SLASH_B
     };

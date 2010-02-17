@@ -24,7 +24,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -56,11 +55,6 @@ class TomcatManager
     private static final int NUM_TOMCAT_RETRIES = 15; //  5 minutes total
     private static final long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
 
-    // Connector threadpool parameters.  Set down from default to save
-    // memory since we aren't primarily a web server.
-    private static final String MIN_SPARE_THREADS = "1";
-    private static final String MAX_SPARE_THREADS = "3";
-    private static final String MAX_THREADS = "100";
 
     private static final String STANDARD_WELCOME = "/setup/welcome.do";
 
@@ -68,10 +62,7 @@ class TomcatManager
 
     private final Embedded emb;
     private final StandardHost baseHost;
-    private final Object modifyExternalSynch = new Object();
     private final String webAppRoot;
-    private final String logDir;
-    private final UvmContextImpl uvmContext;
 
     private String keystoreFile = "conf/keystore";
     private String keystorePass = "changeit";
@@ -85,9 +76,7 @@ class TomcatManager
                   InheritableThreadLocal<HttpServletRequest> threadRequest,
                   String catalinaHome, String webAppRoot, String logDir)
     {
-        this.uvmContext = uvmContext;
         this.webAppRoot = webAppRoot;
-        this.logDir = logDir;
 
         ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
         ClassLoader tomcatParent = uvmCl;
@@ -308,7 +297,6 @@ class TomcatManager
             try {
                 emb.start();
             } catch (LifecycleException exn) {
-                Throwable wrapped = exn.getThrowable();
                 // Note -- right now wrapped is always null!  Thus the
                 // following horror:
                 boolean isAddressInUse = isAIUExn(exn);
@@ -397,10 +385,6 @@ class TomcatManager
 
         WebAppOptions(Valve valve) {
             this(false, valve);
-        }
-
-        WebAppOptions(boolean allowLinking) {
-            this(allowLinking, DEFAULT_SESSION_TIMEOUT);
         }
 
         WebAppOptions(boolean allowLinking, Valve valve) {

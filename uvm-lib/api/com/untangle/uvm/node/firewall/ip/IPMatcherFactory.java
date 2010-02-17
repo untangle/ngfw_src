@@ -34,14 +34,11 @@
 package com.untangle.uvm.node.firewall.ip;
 
 import java.net.InetAddress;
-
 import java.util.List;
 
 import com.untangle.uvm.networking.IPNetwork;
-
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
-
 import com.untangle.uvm.node.firewall.ParsingFactory;
 
 /**

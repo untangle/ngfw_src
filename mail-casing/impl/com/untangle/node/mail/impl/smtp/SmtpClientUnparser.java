@@ -20,13 +20,14 @@ package com.untangle.node.mail.impl.smtp;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.TCPSession;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.smtp.Response;
 import com.untangle.node.mail.papi.smtp.SASLExchangeToken;
 import com.untangle.node.token.MetadataToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * ...name says it all...

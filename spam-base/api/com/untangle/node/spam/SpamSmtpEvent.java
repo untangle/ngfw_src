@@ -42,9 +42,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.node.mail.papi.AddressKind;
 import com.untangle.node.mail.papi.MessageInfo;
-import org.hibernate.annotations.Type;
 
 /**
  * Log for SMTP Spam events.

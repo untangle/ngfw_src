@@ -38,13 +38,13 @@ import java.util.List;
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.networking.MiscSettings;
 import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkSpacesSettingsImpl;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.node.ValidateException;
 
 public interface RemoteNetworkManager

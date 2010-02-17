@@ -33,12 +33,22 @@
 
 package com.untangle.node.mail.papi.imap.test;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.CLOSE_BRACE_B;
+import static com.untangle.node.util.Ascii.CLOSE_BRACKET_B;
+import static com.untangle.node.util.Ascii.CLOSE_PAREN_B;
+import static com.untangle.node.util.Ascii.CR_B;
+import static com.untangle.node.util.Ascii.LF_B;
+import static com.untangle.node.util.Ascii.OPEN_BRACE_B;
+import static com.untangle.node.util.Ascii.OPEN_BRACKET_B;
+import static com.untangle.node.util.Ascii.OPEN_PAREN_B;
+import static com.untangle.node.util.Ascii.PERIOD_B;
+import static com.untangle.node.util.Ascii.STAR_B;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.mail.papi.imap.*;
-import com.untangle.node.util.*;
+import com.untangle.node.mail.papi.imap.IMAPTokenizer;
+import com.untangle.node.util.ASCIIUtil;
+import com.untangle.node.util.ArrayTester;
 
 public class IMAPTokenizerTest {
 

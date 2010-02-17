@@ -42,8 +42,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.node.Rule;
 import org.hibernate.annotations.Type;
+
+import com.untangle.uvm.node.Rule;
 
 /**
  * A description of an interface.

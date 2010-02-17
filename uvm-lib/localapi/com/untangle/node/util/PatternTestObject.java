@@ -32,9 +32,6 @@
  */
 package com.untangle.node.util;
 
-import java.util.*;
-
-import com.untangle.uvm.util.*;
 
 public interface PatternTestObject
 {

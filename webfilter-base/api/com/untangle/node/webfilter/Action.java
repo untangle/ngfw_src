@@ -18,7 +18,6 @@
 
 package com.untangle.node.webfilter;
 
-import java.io.Serializable;
 
 /**
  * Action that was taken.

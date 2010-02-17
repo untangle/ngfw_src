@@ -33,15 +33,20 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.CRLF;
 
-import java.io.*;
-import java.nio.*;
-import java.util.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Set;
 
-import com.untangle.node.util.*;
+import com.untangle.node.util.FileFactory;
 import com.untangle.uvm.node.TemplateValues;
-import org.apache.log4j.Logger;
 
 
 /**
@@ -95,8 +100,6 @@ public class MIMEMessage extends MIMEPart implements TemplateValues
     private static final String RECIP_TV = "RECIPIENTS".toLowerCase();
     private static final String FROM_TV = "FROM".toLowerCase();
     private static final String SUBJECT_TV = "SUBJECT".toLowerCase();
-
-    private final Logger m_logger = Logger.getLogger(MIMEPart.class);
 
     public MIMEMessage ()
     {

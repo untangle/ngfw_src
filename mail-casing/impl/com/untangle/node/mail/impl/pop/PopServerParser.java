@@ -18,8 +18,7 @@
 
 package com.untangle.node.mail.impl.pop;
 
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.BufferUtil.*;
+import static com.untangle.node.util.BufferUtil.findCrLf;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,9 +28,8 @@ import java.nio.channels.FileChannel;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.PopCasing;
 import com.untangle.node.mail.papi.AddressKind;
 import com.untangle.node.mail.papi.DoNotCareChunkT;
@@ -45,7 +43,6 @@ import com.untangle.node.mail.papi.pop.PopReply;
 import com.untangle.node.mail.papi.pop.PopReplyMore;
 import com.untangle.node.mime.HeaderParseException;
 import com.untangle.node.mime.InvalidHeaderDataException;
-import com.untangle.node.mime.LineTooLongException;
 import com.untangle.node.mime.MIMEMessageHeaders;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
@@ -54,7 +51,9 @@ import com.untangle.node.token.ParseException;
 import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
 
 public class PopServerParser extends AbstractParser
 {

@@ -23,8 +23,9 @@ import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.uvm.vnet.event.TCPStreamer;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 
 /**

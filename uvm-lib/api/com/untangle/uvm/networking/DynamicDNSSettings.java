@@ -34,19 +34,13 @@
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import com.untangle.uvm.node.IPaddr;
 
 /**
  * Dynamic DNS Configuration for the box.
@@ -57,8 +51,8 @@ import com.untangle.uvm.node.IPaddr;
 @Table(name="u_ddns_settings", schema="settings")
 public class DynamicDNSSettings implements Serializable
 {
-    // XXXXXXXX put serializable stuff in here
-
+    private static final long serialVersionUID = -5336231956279732103L;
+    
     private static final String PROVIDER_DYNDNS = "www.dyndns.com";
     private static final String PROVIDER_DYNDNS_OLD = "www.dyndns.org";
     private static final String PROVIDER_EASYDNS = "www.easydns.com";
@@ -90,6 +84,7 @@ public class DynamicDNSSettings implements Serializable
         return id;
     }
 
+    @SuppressWarnings("unused")
     private void setId( Long id )
     {
         this.id = id;

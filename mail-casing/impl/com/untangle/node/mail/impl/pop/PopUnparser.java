@@ -29,9 +29,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.event.TCPStreamer;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.PopCasing;
 import com.untangle.node.mail.papi.ByteBufferByteStuffer;
 import com.untangle.node.mail.papi.DoNotCareChunkT;
@@ -51,7 +50,9 @@ import com.untangle.node.token.UnparseException;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.TempFileFactory;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 public class PopUnparser extends AbstractUnparser
 {

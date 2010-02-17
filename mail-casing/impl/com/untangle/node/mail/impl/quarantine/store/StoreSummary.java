@@ -17,7 +17,9 @@
  */
 
 package com.untangle.node.mail.impl.quarantine.store;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 

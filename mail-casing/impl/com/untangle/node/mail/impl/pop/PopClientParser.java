@@ -18,16 +18,14 @@
 
 package com.untangle.node.mail.impl.pop;
 
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.BufferUtil.*;
+import static com.untangle.node.util.BufferUtil.findCrLf;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.PopCasing;
 import com.untangle.node.mail.papi.pop.PopCommand;
 import com.untangle.node.mail.papi.pop.PopCommandMore;
@@ -37,7 +35,9 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Release;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
 
 public class PopClientParser extends AbstractParser
 {

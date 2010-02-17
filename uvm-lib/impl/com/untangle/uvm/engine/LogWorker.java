@@ -25,12 +25,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 /**
  * Worker that batches and flushes events to the database.

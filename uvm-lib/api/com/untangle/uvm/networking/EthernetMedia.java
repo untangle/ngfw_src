@@ -34,9 +34,8 @@
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.untangle.uvm.node.ParseException;
 

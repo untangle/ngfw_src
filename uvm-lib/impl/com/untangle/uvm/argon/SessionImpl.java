@@ -18,13 +18,14 @@
 
 package com.untangle.uvm.argon;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.SocketQueueListener;
 import com.untangle.jvector.Vector;
-import org.apache.log4j.Logger;
 
 public abstract class SessionImpl implements Session
 {

@@ -18,9 +18,9 @@
 
 package com.untangle.node.mail;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.CasingFactory;
+import com.untangle.uvm.vnet.TCPSession;
 
 public class PopCasingFactory implements CasingFactory
 {

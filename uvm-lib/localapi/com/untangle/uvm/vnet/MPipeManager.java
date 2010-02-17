@@ -33,8 +33,6 @@
 
 package com.untangle.uvm.vnet;
 
-import java.net.*;
-
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 

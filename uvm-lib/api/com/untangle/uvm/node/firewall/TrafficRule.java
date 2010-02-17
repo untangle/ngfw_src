@@ -36,6 +36,8 @@ package com.untangle.uvm.node.firewall;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
@@ -43,7 +45,6 @@ import com.untangle.uvm.node.firewall.port.PortDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
-import org.hibernate.annotations.Type;
 
 /**
  * Rule for matching sessions based on session protocol, address and

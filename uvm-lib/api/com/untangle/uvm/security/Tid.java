@@ -35,6 +35,7 @@ package com.untangle.uvm.security;
 
 import java.io.Serializable;
 import java.security.Principal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

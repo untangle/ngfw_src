@@ -18,6 +18,7 @@
 package com.untangle.node.webfilter;
 
 import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

@@ -33,11 +33,11 @@
 
 package com.untangle.node.token;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import com.untangle.uvm.vnet.Pipeline;
-import java.util.ArrayList;
 
 /**
  * Class to assemble a TokenResult incrementally.  Handles the

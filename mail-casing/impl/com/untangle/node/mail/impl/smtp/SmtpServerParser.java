@@ -22,7 +22,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.uvm.vnet.TCPSession;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.smtp.Response;
 import com.untangle.node.mail.papi.smtp.ResponseParser;
 import com.untangle.node.mail.papi.smtp.SASLExchangeToken;
@@ -30,7 +31,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 
 /**

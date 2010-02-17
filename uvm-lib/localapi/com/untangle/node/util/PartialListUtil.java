@@ -37,6 +37,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
@@ -44,8 +47,6 @@ import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class PartialListUtil
 {

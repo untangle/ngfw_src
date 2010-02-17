@@ -32,11 +32,12 @@
  */
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.StatisticEvent;
-import org.apache.log4j.Logger;
 
 public abstract class StatisticManager implements Runnable
 {

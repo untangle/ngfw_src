@@ -18,7 +18,6 @@
 
 package com.untangle.uvm.argon;
 
-import com.untangle.jnetcap.*;
 
 public interface UDPNewSessionRequest extends IPNewSessionRequest, UDPSessionDesc
 {

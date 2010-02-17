@@ -36,15 +36,12 @@ package com.untangle.uvm.util;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.log4j.Logger;
-
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;
-
 import org.apache.xmlrpc.client.AsyncCallback;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfig;

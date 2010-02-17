@@ -18,11 +18,12 @@
 
 package com.untangle.node.http;
 
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
@@ -38,7 +39,6 @@ import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.TCPSessionDesc;
-import org.apache.log4j.Logger;
 
 /**
  * An HTTP <code>Parser</code>.
@@ -238,6 +238,9 @@ public class HttpParser extends AbstractParser
                             }
                         }
                     } else {
+                        /* XXX This is a problem because it doesn't actually log anything.
+                         * Ignoring not sure if removing it will have effects */
+                        @SuppressWarnings("unused")
                         HttpRequestEvent evt = new HttpRequestEvent
                             (requestLineToken.getRequestLine(),
                              header.getValue("host"), lengthCounter);
@@ -598,7 +601,8 @@ public class HttpParser extends AbstractParser
     private Object firstLine(ByteBuffer data) throws ParseException
     {
         if (!clientSide) {
-            return statusLine = statusLine(data);
+            statusLine = statusLine(data);
+            return statusLine;
         } else {
             return requestLineToken = requestLine(data);
         }
@@ -1055,22 +1059,22 @@ public class HttpParser extends AbstractParser
 
     // CTL            = <any US-ASCII control character
     //                  (octets 0 - 31) and DEL (127)>
-    private boolean isCtl(byte b)
+    boolean isCtl(byte b)
     {
         return 0 <= b && 31 >= b || 127 == b;
     }
 
-    private boolean isUpAlpha(byte b)
+    boolean isUpAlpha(byte b)
     {
         return 'A' <= b && 'Z' >= b;
     }
 
-    private boolean isLoAlpha(byte b)
+    boolean isLoAlpha(byte b)
     {
         return 'a' <= b && 'z' >= b;
     }
 
-    private boolean isAlpha(byte b)
+    boolean isAlpha(byte b)
     {
         return isUpAlpha(b) || isLoAlpha(b);
     }

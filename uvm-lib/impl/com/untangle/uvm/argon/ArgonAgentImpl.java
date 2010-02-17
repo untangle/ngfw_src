@@ -19,12 +19,12 @@
 package com.untangle.uvm.argon;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.policy.Policy;
-import org.apache.log4j.Logger;
 
 /**
  * The <code>ArgonAgent</code> interface represents an active Node as seen by

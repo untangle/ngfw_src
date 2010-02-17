@@ -23,15 +23,17 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.Version;
-import org.apache.log4j.Logger;
 
 public class LogMailerImpl implements LogMailer, Runnable
 {
@@ -49,8 +51,6 @@ public class LogMailerImpl implements LogMailer, Runnable
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private String from;
-    private String subject;
     private SystemStatus sysstat;
 
     private long lastSendTime = 0;

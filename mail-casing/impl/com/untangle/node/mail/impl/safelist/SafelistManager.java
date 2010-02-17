@@ -27,6 +27,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressMapper;
 import com.untangle.node.mail.impl.quarantine.Quarantine;
@@ -43,9 +47,6 @@ import com.untangle.node.mail.papi.safelist.SafelistSender;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Implementation of the safelist stuff

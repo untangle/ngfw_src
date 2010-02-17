@@ -33,9 +33,12 @@
 
 package com.untangle.node.mime.test;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
-import com.untangle.node.mime.*;
+import com.untangle.node.mime.FileMIMESource;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEPolicy;
 import com.untangle.node.util.FileFactory;
 
 /**

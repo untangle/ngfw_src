@@ -33,10 +33,6 @@
 
 package com.untangle.uvm.node;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Represents the runtime state of a node instance.
  *

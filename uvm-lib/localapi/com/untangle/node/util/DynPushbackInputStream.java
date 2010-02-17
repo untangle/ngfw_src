@@ -33,7 +33,9 @@
 
 package com.untangle.node.util;
 
-import java.io.*;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * A PushbackInputStream which is dynamic (unlike the one from

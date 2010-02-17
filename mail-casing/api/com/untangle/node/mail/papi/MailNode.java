@@ -33,10 +33,10 @@
 
 package com.untangle.node.mail.papi;
 
-import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.node.mail.papi.quarantine.QuarantineMaintenenceView;
-import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
+import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.node.mail.papi.safelist.SafelistAdminView;
+import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 
 public interface MailNode
 {

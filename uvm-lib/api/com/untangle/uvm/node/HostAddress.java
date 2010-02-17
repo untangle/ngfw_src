@@ -35,8 +35,6 @@
 package com.untangle.uvm.node;
 
 import java.io.Serializable;
-
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /** Class to represent the address of a host, this can either be a

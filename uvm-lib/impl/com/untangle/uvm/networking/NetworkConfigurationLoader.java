@@ -18,20 +18,33 @@
 
 package com.untangle.uvm.networking;
 
+import static com.untangle.uvm.networking.ShellFlags.DECL_CUSTOM_RULES;
+import static com.untangle.uvm.networking.ShellFlags.DECL_POST_CONF;
+import static com.untangle.uvm.networking.ShellFlags.FILE_PROPERTIES;
+import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_CUSTOM_RULES;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_OUT;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RES;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTP_IN;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_IS_HOSTNAME_PUBLIC;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_MASK;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_NET;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_POST_FUNC;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_PUBLIC_ADDRESS;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_PUBLIC_ADDRESS_EN;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_TCP_WIN;
+import static com.untangle.uvm.networking.ShellFlags.PROPERTY_HTTPS_PORT;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Properties;
 
-import com.untangle.jnetcap.InterfaceData;
-import com.untangle.jnetcap.Netcap;
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
@@ -39,35 +52,6 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.StringUtil;
-import org.apache.log4j.Logger;
-
-import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
-import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
-
-import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
-import static com.untangle.uvm.networking.ShellFlags.FILE_PROPERTIES;
-
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTP_IN;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_OUT;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RES;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_NET;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_MASK;
-
-import static com.untangle.uvm.networking.ShellFlags.FLAG_TCP_WIN;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_POST_FUNC;
-import static com.untangle.uvm.networking.ShellFlags.POST_FUNC_NAME;
-import static com.untangle.uvm.networking.ShellFlags.DECL_POST_CONF;
-
-import static com.untangle.uvm.networking.ShellFlags.FLAG_CUSTOM_RULES;
-import static com.untangle.uvm.networking.ShellFlags.CUSTOM_RULES_NAME;
-import static com.untangle.uvm.networking.ShellFlags.DECL_CUSTOM_RULES;
-
-import static com.untangle.uvm.networking.ShellFlags.FLAG_IS_HOSTNAME_PUBLIC;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HOSTNAME;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_PUBLIC_ADDRESS_EN;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_PUBLIC_ADDRESS;
-
-import static com.untangle.uvm.networking.ShellFlags.PROPERTY_HTTPS_PORT;
 
 /**
  * NetworkingConfigurationLoader is used to load a network configuration from the system.
@@ -89,8 +73,6 @@ class NetworkConfigurationLoader
     private static final String PROPERTY_OUTSIDE_REPORTING      = "uvm.https.reporting";
 
     private final Logger logger = Logger.getLogger( this.getClass());
-
-    private static final List<InterfaceData> EMPTY_INTF_DATA_LIST = Collections.emptyList();
 
     private NetworkConfigurationLoader()
     {

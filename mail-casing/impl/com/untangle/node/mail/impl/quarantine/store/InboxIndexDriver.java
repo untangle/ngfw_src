@@ -29,12 +29,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.mail.papi.quarantine.InboxRecord;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
-import org.apache.log4j.Logger;
 
 /**
  * Driver for reading/writing Inbox Indecies

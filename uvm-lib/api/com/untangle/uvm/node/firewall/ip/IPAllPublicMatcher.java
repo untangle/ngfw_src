@@ -35,8 +35,6 @@ package com.untangle.uvm.node.firewall.ip;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.IPaddr;
-
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 
@@ -49,6 +47,8 @@ import com.untangle.uvm.node.firewall.Parser;
  */
 public final class IPAllPublicMatcher extends IPDBMatcher
 {
+    private static final long serialVersionUID = -426295830554157791L;
+
     private static final IPAllPublicMatcher INSTANCE = new IPAllPublicMatcher();
 
     /* Possible database and user representations of for this value.

@@ -33,8 +33,10 @@
 
 package com.untangle.node.mail.papi.smtp.sapi;
 
-import com.untangle.node.mail.papi.smtp.*;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.mail.papi.smtp.Command;
+import com.untangle.node.mail.papi.smtp.SmtpTransaction;
 
 /**
  * Implementation of SessionHandler which

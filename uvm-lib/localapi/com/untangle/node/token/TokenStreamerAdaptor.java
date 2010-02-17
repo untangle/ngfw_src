@@ -35,9 +35,10 @@ package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-import org.apache.log4j.Logger;
 
 /**
  * Adapts a TokenStreamer to a TCPStreamer.

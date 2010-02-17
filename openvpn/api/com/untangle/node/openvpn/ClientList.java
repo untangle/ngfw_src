@@ -18,10 +18,10 @@
 package com.untangle.node.openvpn;
 
 import java.io.Serializable;
-import java.util.Set;
 import java.util.HashSet;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;

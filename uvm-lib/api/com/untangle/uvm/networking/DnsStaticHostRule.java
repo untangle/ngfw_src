@@ -37,10 +37,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.HostNameList;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Rule;
-import org.hibernate.annotations.Type;
 
 /**
  * Rule for storing DNS static hosts.

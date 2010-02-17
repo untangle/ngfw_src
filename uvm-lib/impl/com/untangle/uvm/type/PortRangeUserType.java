@@ -24,12 +24,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.untangle.uvm.node.PortRange;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.SessionImplementor;
 import org.hibernate.type.Type;
 import org.hibernate.usertype.CompositeUserType;
+
+import com.untangle.uvm.node.PortRange;
 
 /**
  * Hibernate <code>UserType</code> for persisting

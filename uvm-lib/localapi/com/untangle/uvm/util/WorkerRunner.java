@@ -33,8 +33,9 @@
 
 package com.untangle.uvm.util;
 
-import com.untangle.uvm.LocalUvmContext;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.LocalUvmContext;
 
 public class WorkerRunner
 {

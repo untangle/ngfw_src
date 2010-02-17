@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.untangle.jvector.Vector;
-
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 

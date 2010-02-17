@@ -33,15 +33,10 @@
 
 package com.untangle.uvm.networking.internal;
 
-import java.util.Date;
-
-import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.HostNameList;
-
-import com.untangle.uvm.node.firewall.MACAddress;
-
 import com.untangle.uvm.networking.DnsStaticHostRule;
+import com.untangle.uvm.node.HostNameList;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Rule;
 
 
 /**

@@ -35,6 +35,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.LogLog;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -63,14 +72,6 @@ import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.LogLog;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Implements LocalNodeManager.

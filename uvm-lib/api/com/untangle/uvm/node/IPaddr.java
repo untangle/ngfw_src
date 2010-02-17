@@ -34,13 +34,12 @@
 
 package com.untangle.uvm.node;
 
-import java.util.Map;
-import java.util.HashMap;
-
 import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IPaddr implements Comparable, Serializable
 {

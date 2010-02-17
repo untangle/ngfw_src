@@ -36,10 +36,8 @@ package com.untangle.uvm.node.firewall.intf;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.node.ParseException;
-import org.apache.log4j.Logger;
 
 /**
  * An enumeration of all of the IntfMatchers that should be available
@@ -51,8 +49,6 @@ import org.apache.log4j.Logger;
 final class IntfMatcherEnumeration
 {
     private static IntfMatcherEnumeration INSTANCE = new IntfMatcherEnumeration();
-
-    private final Logger logger = Logger.getLogger(getClass());
 
     /* Just in case it is not initialized */
     private IntfDBMatcher enumeration[] = new IntfDBMatcher[] { IntfSimpleMatcher.getAllMatcher() };

@@ -18,8 +18,8 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.Session;
 
 /**
  * Abstract base class for all live sessions

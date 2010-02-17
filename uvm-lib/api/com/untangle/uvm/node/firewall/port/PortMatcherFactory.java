@@ -34,7 +34,6 @@
 package com.untangle.uvm.node.firewall.port;
 
 import com.untangle.uvm.node.ParseException;
-
 import com.untangle.uvm.node.firewall.ParsingFactory;
 
 /**

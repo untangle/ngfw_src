@@ -33,15 +33,13 @@
 
 package com.untangle.uvm.node.firewall.ip;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.untangle.uvm.node.IPaddr;
-
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;

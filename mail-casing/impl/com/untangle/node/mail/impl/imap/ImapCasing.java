@@ -18,11 +18,12 @@
 
 package com.untangle.node.mail.impl.imap;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.impl.AbstractMailCasing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 
 /**

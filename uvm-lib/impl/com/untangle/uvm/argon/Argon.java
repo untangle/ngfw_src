@@ -37,9 +37,6 @@ public class Argon
     /* Amount of time between subsequent calls to shutdown all of the vectoring machines */
     static final int SHUTDOWN_PAUSE    = 2000;
 
-    /* Maximum number of threads allowed at any time */
-    private static int MAX_THREADS = 10000;
-
     public static final int SCHED_NORMAL = 0;
     public static final int SCHED_SOFTREAL = 4;
 
@@ -48,10 +45,6 @@ public class Argon
 
     /* Singleton */
     private static final Argon INSTANCE = new Argon();
-
-    private int sleepingThreads;
-    private int totalThreads;
-    private int activeThreads;
 
     int netcapDebugLevel    = 1;
     int jnetcapDebugLevel   = 1;
@@ -190,18 +183,12 @@ public class Argon
 
         /* Donate a few threads */
         Netcap.donateThreads( numThreads );
-        sleepingThreads = numThreads;
-        totalThreads    = numThreads;
-        activeThreads   = 0;
         Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );
     }
 
     public void destroy()
     {
         logger.debug( "Shutting down" );
-        ArgonManagerImpl argonManager = ArgonManagerImpl.getInstance();
-
-        argonManager.isShutdown();
         networkManager.isShutdown();
 
         /* Remove both of the hooks to guarantee that no new sessions are created */

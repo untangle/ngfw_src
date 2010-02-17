@@ -18,17 +18,19 @@
 
 package com.untangle.uvm.engine;
 
-import java.nio.channels.Selector;
+import gnu.trove.TIntArrayList;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
-import com.untangle.uvm.argon.NewSessionEventListener;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LoadCounter;
@@ -39,14 +41,11 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.util.SessionUtil;
-import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.SessionStats;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPSessionEvent;
@@ -58,10 +57,6 @@ import com.untangle.uvm.vnet.event.UDPErrorEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
-import gnu.trove.TIntArrayList;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
 
 /**
  * One dispatcher per MPipe.  This where all the new session logic
@@ -83,8 +78,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     // 8 seconds is the longest interval we wait between each attempt
     // to try to connect to MPipe.
     public static final int MAX_CONNECT_BACKOFF_TIME = 8000;
-
-    private static final int COMMAND_DISPATCHER_POLL_TIME = 3000;
 
     // Set to true to disable use of the session and newSession thread
     // pools and run everything in the command/session dispatchers.
@@ -114,23 +107,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      */
     private volatile Thread mainThread;
 
-    /**
-     * <code>comThread</code> is the command master thread started by
-     * the mainThread.  It handles reading from the command socket and
-     * heartbeat.
-     */
-    private volatile Thread comThread;
-
-    /**
-     * <code>sessThread</code> is the session master thread started by
-     * the mainThread.  It handles every session (which isn't in
-     * double-endpoint mode).
-     */
-    private volatile Thread sessThread;
-
     private SessionEventListener sessionEventListener;
-
-    private boolean singleThreadedSessions;
 
     private Logger sessionEventLogger;
 
@@ -142,15 +119,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      * to become a transparent proxy.
      */
     private SessionEventListener releasedHandler;
-
-    // All sessions with active timers.  There aren't many of these,
-    // so we don't worry about keeping them in a priority queue.  Map
-    // from SessionImpl to Date
-    private Map timers;
-
-    // The session with the nearest timeout
-    private IPSessionImpl soonestTimeredSession = null;
-    private long soonestTimerTime; // Ignored if soonestTimeredSession is null
 
     /**
      * SessionHandler & friends let us know to update the selection
@@ -181,31 +149,14 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      */
     private ConcurrentHashMap liveSessions;
 
-    /**
-     * This is the command selector for the node. We handle the
-     * command socket.
-     */
-    private Selector comSelector = null;
-
-    /**
-     * This is the session selector for the node. We handle all
-     * sockets for sessions in the normal mode. (Sessions in
-     * double-endpoint-mode are handled by themselves).
-     */
-    private Selector sesSelector = null;
-
     private String threadNameBase; // Convenience
 
-    // Gives the thread pool thread unique names
-    private int sessThreadNum = 1;
-    private int newsThreadNum = 1;
 
     /**
      * We hold this lock while calling select(), so that only one
      * thread is selecting at a time.
      */
-    // private Object selectLock = new Object();
-
+    // private Object selectLock = new Object();=
     private boolean lastSessionReadFailed = false;
     private long lastSessionReadTime;
 
@@ -226,7 +177,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         this.nodeManager = UvmContextImpl.getInstance().nodeManager();
         lastSessionReadTime = lastCommandReadTime = MetaEnv.currentTimeMillis();
         sessionEventListener = null;
-        timers = new HashMap();
         NodeDesc td = node.getNodeDesc();
         String tidn = td.getTid().getName();
         // dirtySessions = new LinkedQueue(); // FIFO
@@ -653,72 +603,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                 logger.error("Dispatcher didn't die");
         }
     }
-
-    // Note no synchronization here, since we only call this after the new session threads
-    // have stopped.
-    private void killExistingSessions() {
-        boolean annc = false;
-        // Wrap it all up and add it to our session collection
-        for (Iterator iter = liveSessions.keySet().iterator(); iter.hasNext();) {
-            if (!annc) {
-                logger.info("Closing all active sessions:");
-                annc = true;
-            }
-            // WeakReference ssRef = (WeakReference) iter.next();
-            // IPSessionState ss = (IPSessionState) ssRef.get();
-            IPSessionImpl sess = (IPSessionImpl) iter.next();
-            logger.info("   closing " + sess.id());
-            // Right? XXX
-            sess.closeFinal();
-            iter.remove();
-        }
-    }
-
-    /*
-      void cancelTimer(IPSessionImpl session) {
-      assert session != null;
-      synchronized(timers) {
-      timers.remove(session);
-      if (session == soonestTimeredSession) {
-      setSoonestTimer();
-      }
-      }
-      }
-
-      void scheduleTimer(IPSessionImpl session, long delay)
-      {
-      assert session != null;
-      synchronized(timers) {
-      long timerTime = MetaEnv.currentTimeMillis() + delay;
-      timers.put(session, new Date(timerTime));
-      if (soonestTimeredSession == null || timerTime < soonestTimerTime) {
-      soonestTimeredSession = session;
-      soonestTimerTime = timerTime;
-      } else if (session == soonestTimeredSession) {
-      // We may have set the timer so that we're not soonest anymore.
-      setSoonestTimer();
-      }
-      }
-      }
-
-      // Must always be called with timers lock held.
-      private void setSoonestTimer() {
-      IPSessionImpl minSession = null;
-      long minTime = Long.MAX_VALUE;
-      for (Iterator iter = timers.keySet().iterator(); iter.hasNext();) {
-      IPSessionImpl sess = (IPSessionImpl) iter.next();
-      Date sesstd = (Date) timers.get(sess);
-      long sesstt = sesstd.getTime();
-      if (sesstt < minTime) {
-      minSession = sess;
-      minTime = sesstt;
-      }
-      }
-      soonestTimeredSession = minSession;
-      soonestTimerTime = minTime;
-      }
-    */
-
 
     MPipeImpl mPipe()
     {

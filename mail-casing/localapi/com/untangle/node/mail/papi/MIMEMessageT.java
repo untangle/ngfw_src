@@ -33,9 +33,6 @@
 
 package com.untangle.node.mail.papi;
 
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.Rfc822Util.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;

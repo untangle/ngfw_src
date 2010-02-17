@@ -40,19 +40,17 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
-import org.apache.log4j.Logger;
 /**
  * <code>UrlList</code> that holds entries that are encoded as
  * described in:
@@ -65,7 +63,6 @@ public class EncryptedUrlList extends UrlList
 {
     private static final Pattern TUPLE_PATTERN = Pattern.compile("([+-])([0-9A-Fa-f]+)");
     private static final DatabaseEntry EMPTY_ENTRY = new DatabaseEntry(new byte[] { ' ' });
-    private static final List<String> MATCH_ALL_LIST;
     private final Logger logger = Logger.getLogger(getClass());
 
     public EncryptedUrlList(URL databaseUrl, String owner, String dbName)
@@ -168,13 +165,5 @@ public class EncryptedUrlList extends UrlList
                 return null;
             }
         }
-    }
-
-    // static initializer -----------------------------------------------------
-
-    static {
-        List<String> l = new ArrayList<String>(1);
-        l.add("");
-        MATCH_ALL_LIST = Collections.unmodifiableList(l);
     }
 }

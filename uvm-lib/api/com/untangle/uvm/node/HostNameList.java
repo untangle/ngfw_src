@@ -34,13 +34,10 @@
 package com.untangle.uvm.node;
 
 import java.io.Serializable;
-
-
-        
 import java.util.Collections;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /** This list prevents duplicates. */
 public class HostNameList implements Serializable

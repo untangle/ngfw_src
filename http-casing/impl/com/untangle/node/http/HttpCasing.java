@@ -21,11 +21,12 @@ package com.untangle.node.http;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * An HTTP <code>Casing</code>.

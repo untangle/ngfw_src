@@ -33,9 +33,12 @@
 
 package com.untangle.node.mime;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-import com.untangle.node.util.*;
+import com.untangle.node.util.FileFactory;
 
 /**
  * Implementation of MIMESource which has a backing

@@ -33,14 +33,15 @@
 
 package com.untangle.node.token;
 
+import static com.untangle.node.token.CasingAdaptor.TOKEN_SIZE;
+
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.vnet.Session;
-import org.apache.log4j.Logger;
-
-import static com.untangle.node.token.CasingAdaptor.TOKEN_SIZE;
 
 /**
  * Wrapper lets us observe <code>TokenStreamer</code> results.

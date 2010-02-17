@@ -19,16 +19,18 @@
 package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.security.LoginFailureReason;
-import org.hibernate.annotations.Type;
 
 /**
  * Log event for a login/login-attempt.

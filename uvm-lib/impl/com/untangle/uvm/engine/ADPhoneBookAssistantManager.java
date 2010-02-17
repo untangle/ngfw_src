@@ -18,13 +18,10 @@
 
 package com.untangle.uvm.engine;
 
+import com.untangle.node.util.UtLogger;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.user.ADPhoneBookAssistant;
 import com.untangle.uvm.user.LocalADPhoneBookAssistantImpl;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.engine.UvmContextImpl;
-import com.untangle.uvm.LocalUvmContextFactory;
-
-import com.untangle.node.util.UtLogger;
 
 /**
  * Singleton class for ADPhoneBookAssistant, also handles registering the assistant

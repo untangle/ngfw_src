@@ -21,8 +21,8 @@ package com.untangle.uvm.argon;
 import java.net.InetAddress;
 import java.util.Iterator;
 
-import com.untangle.jnetcap.Inet4AddressConverter;
-import com.untangle.jnetcap.Netcap;
+import org.apache.log4j.Logger;
+
 import com.untangle.jnetcap.NetcapHook;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
@@ -31,11 +31,6 @@ import com.untangle.jvector.Source;
 import com.untangle.jvector.TCPSink;
 import com.untangle.jvector.TCPSource;
 import com.untangle.uvm.node.PipelineEndpoints;
-import com.untangle.uvm.policy.PolicyRule;
-import org.apache.log4j.Logger;
-
-
-import java.lang.Math;
 
 public class TCPHook implements NetcapHook
 {

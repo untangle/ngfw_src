@@ -18,46 +18,37 @@
 
 package com.untangle.uvm.networking;
 
-import java.io.FileOutputStream;
-import java.io.File;
+import static com.untangle.uvm.networking.ShellFlags.FILE_PROPERTIES;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_HTTPS_PORT;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_ADDR;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_EN;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_PORT;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_PUBLIC_URL;
+import static com.untangle.uvm.networking.ShellFlags.PROPERTY_HTTPS_PORT;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmState;
-
+import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.script.ScriptWriter;
-import com.untangle.uvm.node.script.ScriptRunner;
-
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
-
-import com.untangle.uvm.networking.internal.AddressSettingsInternal;
-
-import org.json.JSONObject;
-import org.json.JSONException;
-
-import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
-
-import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_ADDR;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_EN;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_PORT;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_HTTPS_PORT;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_PUBLIC_URL;
-
-import static com.untangle.uvm.networking.ShellFlags.FILE_PROPERTIES;
-import static com.untangle.uvm.networking.ShellFlags.PROPERTY_HTTPS_PORT;
 
 class AddressManagerImpl implements LocalAddressManager
 {

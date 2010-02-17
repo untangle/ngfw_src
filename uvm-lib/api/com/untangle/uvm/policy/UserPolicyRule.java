@@ -36,12 +36,15 @@ package com.untangle.uvm.policy;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.InterfaceComparator;
@@ -57,7 +60,6 @@ import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
 import com.untangle.uvm.node.firewall.user.UserMatcher;
 import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
-import org.hibernate.annotations.Type;
 
 /**
  * User Policy Rules.  These are the policy rules that are created by

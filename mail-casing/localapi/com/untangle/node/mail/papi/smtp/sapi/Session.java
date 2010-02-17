@@ -39,15 +39,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.uvm.vnet.TCPSession;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.BeginMIMEToken;
 import com.untangle.node.mail.papi.CompleteMIMEToken;
 import com.untangle.node.mail.papi.ContinuedMIMEToken;
-import com.untangle.node.mail.papi.smtp.*;
+import com.untangle.node.mail.papi.smtp.Command;
+import com.untangle.node.mail.papi.smtp.MAILCommand;
+import com.untangle.node.mail.papi.smtp.RCPTCommand;
+import com.untangle.node.mail.papi.smtp.Response;
+import com.untangle.node.mail.papi.smtp.SmtpTokenStream;
+import com.untangle.node.mail.papi.smtp.SmtpTokenStreamHandler;
+import com.untangle.node.mail.papi.smtp.SmtpTransaction;
+import com.untangle.node.mail.papi.smtp.UnparsableCommand;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.TokenResultBuilder;
-import com.untangle.node.util.*;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 
 /**

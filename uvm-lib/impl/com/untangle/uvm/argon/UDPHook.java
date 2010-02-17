@@ -20,20 +20,18 @@ package com.untangle.uvm.argon;
 
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.jnetcap.IPTraffic;
 import com.untangle.jnetcap.NetcapHook;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapUDPSession;
-import com.untangle.jvector.Sink;
-import com.untangle.jvector.Sink;
 import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.UDPSink;
 import com.untangle.jvector.UDPSource;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.PipelineEndpoints;
-import com.untangle.uvm.policy.PolicyRule;
-import org.apache.log4j.Logger;
 
 
 public class UDPHook implements NetcapHook

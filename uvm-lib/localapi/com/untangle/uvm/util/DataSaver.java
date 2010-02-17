@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.util;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContext;

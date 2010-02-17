@@ -18,13 +18,14 @@
 
 package com.untangle.node.mail.impl.smtp;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.impl.AbstractMailCasing;
 import com.untangle.node.sasl.SASLObserver;
 import com.untangle.node.sasl.SASLObserverFactory;
 import com.untangle.node.token.Parser;
 import com.untangle.node.token.Unparser;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 
 public class SmtpCasing

@@ -20,18 +20,14 @@ package com.untangle.node.mail.impl.imap;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.impl.AbstractMailParser;
-import org.apache.log4j.Logger;
-
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Base class for the ImapClient/ServerParser
  */
 abstract class ImapParser
     extends AbstractMailParser {
-
-    private final Logger m_logger = Logger.getLogger(ImapParser.class);
 
     ImapParser(TCPSession session,
                ImapCasing parent,

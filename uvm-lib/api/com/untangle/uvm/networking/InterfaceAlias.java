@@ -34,12 +34,13 @@
 
 package com.untangle.uvm.networking;
 
+import static com.untangle.uvm.networking.NetworkUtil.EMPTY_IPADDR;
+
 import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
 import com.untangle.uvm.node.IPaddr;
-import static com.untangle.uvm.networking.NetworkUtil.EMPTY_IPADDR;
 
 public class InterfaceAlias implements Serializable
 {

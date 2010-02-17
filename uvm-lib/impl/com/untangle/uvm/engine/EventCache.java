@@ -18,7 +18,6 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.LogEvent;
 

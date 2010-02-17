@@ -32,8 +32,11 @@
  */
 package com.untangle.node.util;
 
-import java.io.*;
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.EQ;
+
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * TODO bscott This class needs to be examined

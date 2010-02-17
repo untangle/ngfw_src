@@ -35,9 +35,6 @@ package com.untangle.uvm.networking.internal;
 
 import com.untangle.uvm.networking.MiscSettings;
 
-import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
-
 /** These are settings related to remote access to the untangle. */
 public class MiscSettingsInternal
 {

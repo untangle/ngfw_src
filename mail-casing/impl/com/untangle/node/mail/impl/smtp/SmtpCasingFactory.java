@@ -18,9 +18,9 @@
 
 package com.untangle.node.mail.impl.smtp;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.Casing;
 import com.untangle.node.token.CasingFactory;
+import com.untangle.uvm.vnet.TCPSession;
 
 public class SmtpCasingFactory implements CasingFactory
 {

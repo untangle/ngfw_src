@@ -19,7 +19,6 @@
 package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.BrandingBaseSettings;

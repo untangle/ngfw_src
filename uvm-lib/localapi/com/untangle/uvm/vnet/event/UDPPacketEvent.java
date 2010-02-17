@@ -33,10 +33,11 @@
 
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.MPipe;
-import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.UDPSession;
 import java.nio.ByteBuffer;
+
+import com.untangle.uvm.vnet.IPPacketHeader;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.UDPSession;
 
 /**
  * UDP packet event -- packet received.

@@ -27,6 +27,8 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.WrappedMessageGenerator;
 import com.untangle.node.mail.papi.quarantine.MailSummary;
@@ -42,12 +44,11 @@ import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEOutputStream;
 import com.untangle.node.mime.MIMEUtil;
 import com.untangle.node.util.TempFileFactory;
+import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.localapi.LocalIntfManager;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Protocol Handler which is called-back as scannable messages are encountered.

@@ -152,14 +152,6 @@ public class Header implements Token
             estimatedSize = key.length();
         }
 
-        Field(String key, String value)
-        {
-            this.key = key;
-            values.add(value);
-
-            estimatedSize = key.length() + value.length();
-        }
-
         void addValue(String value)
         {
             values.add(value);

@@ -33,11 +33,10 @@
 
 package com.untangle.uvm.node.firewall.port;
 
+import static com.untangle.uvm.node.firewall.port.PortMatcherUtil.MARKER_RANGE;
+
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
-import com.untangle.uvm.node.firewall.ParsingConstants;
-
-import static com.untangle.uvm.node.firewall.port.PortMatcherUtil.MARKER_RANGE;
 
 /**
  * A PortMatcher that matches a range of ports.
@@ -47,6 +46,8 @@ import static com.untangle.uvm.node.firewall.port.PortMatcherUtil.MARKER_RANGE;
  */
 public final class PortRangeMatcher extends PortDBMatcher
 {    
+    private static final long serialVersionUID = -5544741394747788626L;
+
     /* Start of the range that should match (inclusive) */
     private final int start;
 

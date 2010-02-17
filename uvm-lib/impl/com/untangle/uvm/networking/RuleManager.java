@@ -18,41 +18,21 @@
 
 package com.untangle.uvm.networking;
 
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.Netcap;
-import com.untangle.jnetcap.JNetcapException;
 import com.untangle.jnetcap.PortRange;
-
-import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
-
-import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
-
-import com.untangle.uvm.networking.internal.InterfaceInternal;
-import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
-
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
-
-import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
-import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
 
 public class RuleManager
 {
     private static final String TCP_REDIRECT_PORT_FLAG       = "TCP_REDIRECT_PORTS";
-    private static final String ANTISUBSCRIBE_LOCAL_IN_FLAG  = "ANTISUBSCRIBE_LOCAL_INSIDE";
-    private static final String ANTISUBSCRIBE_LOCAL_OUT_FLAG = "ANTISUBSCRIBE_LOCAL_OUTSIDE";
-    private static final String DHCP_BLOCK_FORWARD_FLAG      = "DHCP_BLOCK_FORWARDING";
     /* Flags to set the redirect for traffic to the internal admin port */
     private static final String INTERNAL_OPEN_REDIRECT_FLAG  = "HTTPS_INTERNAL_REDIRECT_PORT";
 
@@ -60,8 +40,6 @@ public class RuleManager
     private static final PortRange DEFAULT_TCP_PORT_RANGE = new PortRange( 9500, 9627 );
 
     private static RuleManager INSTANCE = null;
-
-    private final String UVM_TMP_FILE  = BUNNICULA_CONF + "/tmp_params";
 
     private final Logger logger = Logger.getLogger( getClass());
 
@@ -156,6 +134,11 @@ public class RuleManager
             }
 
             if ( this.callback != null ) this.callback.run();
-        }        
+        }
+        
+        public Exception getException()
+        {
+            return this.exception;
+        }
     }
 }

@@ -33,8 +33,12 @@
 
 package com.untangle.node.mime;
 
-import java.util.*;
-import static com.untangle.node.mime.HeaderNames.*;
+import static com.untangle.node.mime.HeaderNames.CC_LC;
+import static com.untangle.node.mime.HeaderNames.FROM_LC;
+import static com.untangle.node.mime.HeaderNames.TO_LC;
+
+import java.util.List;
+import java.util.Map;
 
 //TODO: bscott This class should be renamed "MIMEMessageHeadersFieldFactory".
 

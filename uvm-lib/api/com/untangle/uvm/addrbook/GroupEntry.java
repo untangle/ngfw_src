@@ -34,10 +34,7 @@
 package com.untangle.uvm.addrbook;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
-
-import javax.persistence.Transient;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 

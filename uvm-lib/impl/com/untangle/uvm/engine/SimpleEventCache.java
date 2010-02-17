@@ -26,6 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.ListEventFilter;
@@ -34,8 +37,6 @@ import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 /**
  * Implements a <code>EventCache</code> cache using a

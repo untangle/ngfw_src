@@ -35,12 +35,13 @@ package com.untangle.uvm.message;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Date;
 
 public class Stats implements Serializable
 {
+    private static final long serialVersionUID = -9100328727379754811L;
     private final Map<String, CounterStats> metrics;
     private final Map<String, CounterStats> activities;
 
@@ -85,6 +86,7 @@ public class Stats implements Serializable
 
     public static class FixedCounts implements CounterStats, Serializable
     {
+        private static final long serialVersionUID = -412713821944826107L;
         private final long count;
         private final long countSinceMidnight;
         private final Date lastActivityDate;
@@ -109,35 +111,6 @@ public class Stats implements Serializable
         public Date getLastActivityDate()
         {
             return lastActivityDate;
-        }
-    }
-
-    private static class FixedLoads implements LoadStats, Serializable
-    {
-        private final float avg1;
-        private final float avg5;
-        private final float avg15;
-
-        public FixedLoads(LoadStats ls)
-        {
-            avg1 = ls.get1MinuteAverage();
-            avg5 = ls.get5MinuteAverage();
-            avg15 = ls.get15MinuteAverage();
-        }
-
-        public float get1MinuteAverage()
-        {
-            return avg1;
-        }
-
-        public float get5MinuteAverage()
-        {
-            return avg5;
-        }
-
-        public float get15MinuteAverage()
-        {
-            return avg15;
         }
     }
 }

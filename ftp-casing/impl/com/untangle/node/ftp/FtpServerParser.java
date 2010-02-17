@@ -22,6 +22,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
@@ -34,7 +36,6 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * Parser for the server side of FTP connection.
@@ -48,8 +49,6 @@ public class FtpServerParser extends AbstractParser
     private static final char HYPHEN = '-';
     private static final char CR = '\r';
     private static final char LF = '\n';
-
-    private static final String CRLF = "\r\n";
 
     private final Fitting fitting;
 

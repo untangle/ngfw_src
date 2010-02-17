@@ -34,9 +34,8 @@
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.untangle.uvm.node.IPaddr;
 

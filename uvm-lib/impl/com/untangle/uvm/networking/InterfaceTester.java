@@ -22,11 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptRunner;
-import org.apache.log4j.Logger;
 
 
 class InterfaceTester

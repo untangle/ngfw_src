@@ -18,6 +18,8 @@
 
 package com.untangle.node.webfilter;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
@@ -25,7 +27,6 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * Blocks HTTP traffic that is on an active block list.

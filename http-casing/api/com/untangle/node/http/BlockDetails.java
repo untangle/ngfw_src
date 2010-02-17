@@ -34,7 +34,6 @@
 package com.untangle.node.http;
 
 import java.io.Serializable;
-import java.lang.StringBuffer;
 
 /**
  * Holds information about why a page was blocked.

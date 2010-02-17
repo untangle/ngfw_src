@@ -20,9 +20,8 @@ package com.untangle.node.mail.impl.smtp;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.mail.impl.AbstractMailParser;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 
 /**
@@ -31,9 +30,6 @@ import org.apache.log4j.Logger;
 abstract class SmtpParser
     extends AbstractMailParser {
 
-    private final Logger m_logger =
-        Logger.getLogger(SmtpParser.class);
-    private boolean m_passthru = false;
     private CasingSessionTracker m_tracker;
 
     protected  SmtpParser(TCPSession session,

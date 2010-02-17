@@ -41,6 +41,10 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
@@ -57,13 +61,11 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.script.ScriptRunner;
-
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.MackageDesc.Type;
 import com.untangle.uvm.toolbox.MackageException;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
@@ -76,9 +78,6 @@ import com.untangle.uvm.toolbox.UpgradeStatus;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Implements RemoteToolboxManager.
@@ -989,7 +988,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
                 String name = m.get("package");
 
-                MackageState mState = mackageState.get(name);
                 MackageDesc md = new MackageDesc(m, instList.get(name));
                 if (null == md.getType()) {
                     continue;
@@ -1066,8 +1064,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private synchronized void execMkg(String command, long key)
         throws MackageException
     {
-        Exception exn;
-
         String cmdStr = System.getProperty("bunnicula.bin.dir") + "/mkg "
             + (0 > key ? "" : "-k " + key + " ") + command;
 
@@ -1096,7 +1092,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 throw new MackageException("apt exited with: " + e);
             }
         } catch (IOException e) {
-            exn = new MackageException(e);
+            logger.info( "exception while in mackage: ", e);
         }
 
         refreshLists();

@@ -20,11 +20,12 @@ package com.untangle.node.openvpn;
 
 import javax.persistence.MappedSuperclass;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
-import org.hibernate.annotations.Type;
 
 /**
  * A network that is available at a site.

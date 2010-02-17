@@ -23,6 +23,8 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingSettings;
@@ -31,7 +33,6 @@ import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.NetworkSettingsListener;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-import org.apache.log4j.Logger;
 
 /**
  * Implements SyslogManager.

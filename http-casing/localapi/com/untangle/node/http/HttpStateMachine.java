@@ -39,6 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.ArrayTokenStreamer;
 import com.untangle.node.token.Chunk;
@@ -50,7 +52,6 @@ import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * Adapts a stream of HTTP tokens to methods relating to the protocol

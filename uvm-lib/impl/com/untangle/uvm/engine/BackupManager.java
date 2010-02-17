@@ -20,13 +20,14 @@ package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.SimpleExec;
 import com.untangle.uvm.LocalUvmContextFactory;
-import org.apache.log4j.Logger;
 
 
 /**
@@ -102,12 +103,6 @@ class BackupManager {
         try {
             //Copy the bytes to a temp file
             IOUtil.bytesToFile(backupFileBytes, tempFile);
-
-
-            File restartLog = new File(
-                                       System.getProperty("bunnicula.log.dir") +
-                                       File.separator +
-                                       "restart.log");
 
             //unzip file
             result = SimpleExec.exec(RESTORE_SCRIPT,//cmd

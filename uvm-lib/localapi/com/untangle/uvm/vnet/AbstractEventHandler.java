@@ -34,7 +34,16 @@
 package com.untangle.uvm.vnet;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.vnet.event.*;
+import com.untangle.uvm.vnet.event.IPDataResult;
+import com.untangle.uvm.vnet.event.IPSessionEvent;
+import com.untangle.uvm.vnet.event.SessionEventListener;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.event.TCPSessionEvent;
+import com.untangle.uvm.vnet.event.UDPErrorEvent;
+import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.event.UDPPacketEvent;
+import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 
 /**

@@ -18,16 +18,22 @@
 
 package com.untangle.uvm.networking;
 
+import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
+
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
@@ -50,13 +56,6 @@ import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
-import org.apache.log4j.Logger;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONException;
-
-import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
 
 /* XXX This shouldn't be public */
 public class NetworkManagerImpl implements LocalNetworkManager

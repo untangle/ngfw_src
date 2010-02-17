@@ -35,6 +35,7 @@ package com.untangle.node.mail.papi;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,10 +48,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.IndexColumn;
+
 import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.util.UvmUtil;
-import org.hibernate.annotations.IndexColumn;
 
 /**
  * Mail casing settings.

@@ -34,16 +34,17 @@
 package com.untangle.uvm.networking;
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.IPNullAddr;
-import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.firewall.MACAddress;
-import org.hibernate.annotations.Type;
 
 
 /**
@@ -56,6 +57,8 @@ import org.hibernate.annotations.Type;
 @Table(name="u_dhcp_lease_rule", schema="settings")
 public class DhcpLeaseRule extends Rule
 {
+    private static final long serialVersionUID = 8445780678617691325L;
+
     /* The MAC address associated with this lease */
     private MACAddress macAddress;
 

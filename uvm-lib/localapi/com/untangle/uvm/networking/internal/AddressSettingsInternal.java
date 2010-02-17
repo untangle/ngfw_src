@@ -35,7 +35,6 @@ package com.untangle.uvm.networking.internal;
 
 import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.NetworkUtil;
-
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;

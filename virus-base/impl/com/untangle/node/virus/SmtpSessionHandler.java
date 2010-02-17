@@ -18,17 +18,21 @@
 
 package com.untangle.node.virus;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.*;
-import com.untangle.node.mail.papi.*;
-import com.untangle.node.mail.papi.smtp.*;
-import com.untangle.node.mail.papi.smtp.sapi.*;
-import com.untangle.node.mime.*;
-import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
+import com.untangle.node.mail.papi.smtp.SmtpTransaction;
+import com.untangle.node.mail.papi.smtp.sapi.BufferingSessionHandler;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEPart;
+import com.untangle.node.mime.MIMEUtil;
+import com.untangle.node.util.TempFileFactory;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
 
 
 /**

@@ -23,6 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.ListEventFilter;
@@ -30,7 +32,6 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.NodeContext;
-import org.apache.log4j.Logger;
 
 /**
  * Implementation of EventLogger.

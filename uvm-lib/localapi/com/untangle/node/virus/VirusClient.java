@@ -32,9 +32,6 @@
  */
 package com.untangle.node.virus;
 
-import java.lang.InterruptedException;
-import java.net.SocketException;
-
 import org.apache.log4j.Logger;
 
 abstract public class VirusClient implements Runnable {

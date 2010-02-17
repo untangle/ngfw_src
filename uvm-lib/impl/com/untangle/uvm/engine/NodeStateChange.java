@@ -19,7 +19,6 @@
 package com.untangle.uvm.engine;
 
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,12 +28,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.node.NodeState;
-import org.hibernate.annotations.Type;
+import com.untangle.uvm.security.Tid;
 
 /**
  * Record of node state change.
@@ -46,6 +45,7 @@ import org.hibernate.annotations.Type;
 @Table(name="u_node_state_change", schema="events")
 class NodeStateChange extends LogEvent
 {
+    private static final long serialVersionUID = -7000796578323779009L;
     private Tid tid;
     private NodeState state;
 

@@ -18,8 +18,7 @@
 
 package com.untangle.uvm.argon;
 
-import com.untangle.jnetcap.*;
-import com.untangle.jvector.*;
+import com.untangle.jnetcap.NetcapSession;
 
 public interface NewSessionRequest extends SessionDesc
 {

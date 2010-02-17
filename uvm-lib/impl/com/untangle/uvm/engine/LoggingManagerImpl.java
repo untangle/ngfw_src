@@ -23,14 +23,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Manages event logging.

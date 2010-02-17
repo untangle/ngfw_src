@@ -33,12 +33,13 @@
 
 package com.untangle.node.mail.papi;
 
+import org.apache.log4j.Logger;
+
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEUtil;
 import com.untangle.uvm.node.Template;
 import com.untangle.uvm.node.TemplateValues;
 import com.untangle.uvm.node.TemplateValuesChain;
-import com.untangle.node.mime.*;
-import com.untangle.node.util.*;
-import org.apache.log4j.Logger;
 
 /**
  * Class which wraps a MIMEMessage with another,

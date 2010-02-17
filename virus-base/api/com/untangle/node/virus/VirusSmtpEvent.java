@@ -42,11 +42,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.node.PipelineEndpoints;
-import com.untangle.node.mail.papi.MessageInfo;
-import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
+
+import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
  * Log for SMTP Virus events.

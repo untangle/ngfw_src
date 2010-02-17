@@ -33,12 +33,10 @@
 
 package com.untangle.uvm.node;
 
-import java.util.List;
-import java.util.LinkedList;
-
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.util.regex.PatternSyntaxException;
 
 public class HostName implements Serializable {

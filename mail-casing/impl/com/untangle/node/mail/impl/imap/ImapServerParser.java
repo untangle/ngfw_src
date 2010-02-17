@@ -18,7 +18,7 @@
 
 package com.untangle.node.mail.impl.imap;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.OPEN_BRACE_B;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

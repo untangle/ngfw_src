@@ -40,8 +40,6 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
  */
 class FtpUnparser extends AbstractUnparser
 {
-    private final byte[] CRLF = new byte[] { 13, 10 };
-
     public FtpUnparser(TCPSession session, boolean clientSide)
     {
         super(session, clientSide);

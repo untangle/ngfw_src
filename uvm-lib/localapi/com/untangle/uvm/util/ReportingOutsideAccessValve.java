@@ -32,9 +32,10 @@
  */
 package com.untangle.uvm.util;
 
+import java.util.Map;
+
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import java.util.Map;
 
 public class ReportingOutsideAccessValve extends OutsideValve
 {

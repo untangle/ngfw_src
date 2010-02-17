@@ -33,17 +33,20 @@
 
 package com.untangle.node.mail.papi.smtp;
 
-import java.io.*;
-import java.nio.*;
-import java.util.*;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import com.untangle.node.mail.papi.MessageGenerator;
+import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.util.ByteBufferInputStream;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.node.TemplateValues;
 import com.untangle.uvm.node.TemplateValuesChain;
-import com.untangle.node.mail.papi.*;
-import com.untangle.node.mime.*;
-import com.untangle.node.util.*;
-import org.apache.log4j.Logger;
 
 /**
  * Subclass of MessageGenerator which understands

@@ -18,33 +18,26 @@
 
 package com.untangle.uvm.networking;
 
+import static com.untangle.uvm.networking.ShellFlags.FLAG_BLOCK_PAGE_PORT;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_OUT;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RES;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTP_IN;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_MASK;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_NET;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-
+import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
-
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
-
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
 import com.untangle.uvm.util.DeletingDataSaver;
-
-import com.untangle.uvm.networking.internal.AccessSettingsInternal;
-
-import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
-
-import static com.untangle.uvm.networking.ShellFlags.FLAG_BLOCK_PAGE_PORT;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTP_IN;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_OUT;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RES;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_NET;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_MASK;
 
 class AccessManagerImpl implements LocalAccessManager
 {

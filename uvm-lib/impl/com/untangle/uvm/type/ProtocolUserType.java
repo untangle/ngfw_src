@@ -24,9 +24,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.untangle.uvm.vnet.Protocol;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
+
+import com.untangle.uvm.vnet.Protocol;
 
 /**
  * Hibernate <code>UserType</code> for persisting

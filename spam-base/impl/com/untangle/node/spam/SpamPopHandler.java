@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.MIMEMessageT;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailNodeSettings;
@@ -37,7 +39,6 @@ import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
 {

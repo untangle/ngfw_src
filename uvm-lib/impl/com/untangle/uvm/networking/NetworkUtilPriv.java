@@ -20,42 +20,32 @@ package com.untangle.uvm.networking;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
-
-
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.untangle.jnetcap.InterfaceData;
-import com.untangle.jnetcap.Netcap;
-import com.untangle.uvm.ArgonException;
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.uvm.networking.internal.RedirectInternal;
-import com.untangle.uvm.networking.internal.RouteInternal;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.HostNameList;
-import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.IPNullAddr;
+import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.MACAddress;
-import com.untangle.uvm.util.ConfigFileUtil;
-import org.apache.log4j.Logger;
 
 /* Utilities that are only required inside of this package */
 class NetworkUtilPriv extends NetworkUtil
@@ -65,9 +55,6 @@ class NetworkUtilPriv extends NetworkUtil
     private static final NetworkUtilPriv INSTANCE = new NetworkUtilPriv();
 
     private static final String HOST_NAME_FILE        = "/etc/hostname";
-
-    /* Prefix for the bridge devices */
-    private static final String BRIDGE_PREFIX  = "br";
 
     /* Index of the first network space */
     public static final int SPACE_INDEX_BASE = 0;
@@ -371,31 +358,6 @@ class NetworkUtilPriv extends NetworkUtil
     static NetworkUtilPriv getPrivInstance()
     {
         return INSTANCE;
-    }
-
-    /************* PRIVATE **********/
-    private IPNetwork getPrimaryAddress( NetworkSpace networkSpace, int index )
-    {
-        IPNetwork primaryAddress = IPNetwork.getEmptyNetwork();
-
-        if ( networkSpace.getIsDhcpEnabled()) {
-            DhcpStatus status = networkSpace.getDhcpStatus();
-            primaryAddress = IPNetwork.makeInstance( status.getAddress(), status.getNetmask());
-        } else {
-            for ( IPNetworkRule rule : (List<IPNetworkRule>)networkSpace.getNetworkList()) {
-                if ( rule.isUnicast()) {
-                    primaryAddress = rule.getIPNetwork();
-                    break;
-                }
-            }
-        }
-
-        if ( primaryAddress == null || primaryAddress.equals( IPNetwork.getEmptyNetwork())) {
-            /* XXX This is where it would handle the empty ip network */
-            logger.warn( "Network space " + index + " does not have a primary address" );
-        }
-
-        return ( primaryAddress == null ) ? IPNetwork.getEmptyNetwork() : primaryAddress;
     }
 
     private NetworkSpaceInternal parseConfig( String config )

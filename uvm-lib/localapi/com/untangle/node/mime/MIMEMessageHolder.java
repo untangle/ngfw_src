@@ -33,7 +33,11 @@
 
 package com.untangle.node.mime;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import com.untangle.node.util.FileFactory;

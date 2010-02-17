@@ -18,10 +18,12 @@
 
 package com.untangle.uvm.engine;
 
-import java.net.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.MPipeManager;
+import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**

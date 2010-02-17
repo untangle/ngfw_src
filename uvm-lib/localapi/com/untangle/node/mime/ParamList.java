@@ -33,10 +33,12 @@
 
 package com.untangle.node.mime;
 
+import static com.untangle.node.util.Ascii.CRLF;
+import static com.untangle.node.util.Ascii.HTAB;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import static com.untangle.node.util.Ascii.*;
 
 /**
  * Class to hold the parameters for "standard"

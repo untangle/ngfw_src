@@ -32,9 +32,12 @@
  */
 package com.untangle.node.mime;
 
-import java.util.*;
+import static com.untangle.node.mime.HeaderNames.CONTENT_DISPOSITION_LC;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TRANSFER_ENCODING_LC;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TYPE_LC;
 
-import static com.untangle.node.mime.HeaderNames.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Subclass of HeaderFieldFactory which adds strong typing

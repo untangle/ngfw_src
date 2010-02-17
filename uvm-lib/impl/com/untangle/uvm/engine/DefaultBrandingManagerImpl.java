@@ -19,26 +19,19 @@
 package com.untangle.uvm.engine;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-
-import com.untangle.uvm.BrandingBaseSettings;
-import com.untangle.uvm.BrandingSettings;
-import com.untangle.uvm.LocalBrandingManager;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.RemoteBrandingManager;
-import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.uvm.util.TransactionWork;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+
+import com.untangle.uvm.BrandingBaseSettings;
+import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.LocalBrandingManager;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Implementation of LocalBrandingManager.

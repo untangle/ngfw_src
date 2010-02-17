@@ -99,10 +99,6 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     private static final String MAIL_FROM_PROP = "mail.from";
     private static final String MAIL_TRANSPORT_PROTO_PROP = "mail.transport.protocol";
 
-    private static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
-
-    // exim conf
-    private static final String EXIM_CMD_RESTART  = "/etc/init.d/exim4 restart";
     private static final String EXIM_CMD_UPDATE_CONF  = "/usr/sbin/update-exim4.conf";
     private static final String EXIM_CONF_DIR     = "/etc/exim4";
     private static final String EXIM_CONF_FILE    = "/etc/exim4/update-exim4.conf.conf";

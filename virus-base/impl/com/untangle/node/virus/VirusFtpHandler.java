@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.ftp.FtpCommand;
 import com.untangle.node.ftp.FtpFunction;
 import com.untangle.node.ftp.FtpReply;
@@ -41,7 +43,6 @@ import com.untangle.node.util.TempFileFactory;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-import org.apache.log4j.Logger;
 
 /**
  * Handler for the FTP protocol.

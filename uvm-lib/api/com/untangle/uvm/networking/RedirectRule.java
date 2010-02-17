@@ -34,6 +34,7 @@
 package com.untangle.uvm.networking;
 
 import java.net.UnknownHostException;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -43,12 +44,12 @@ import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.uvm.node.firewall.TrafficIntfRule;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 
 /**
  * Rule for matching based on IP addresses and subnets.

@@ -32,10 +32,7 @@
  */
 package com.untangle.node.util;
 
-import java.util.*;
-import java.util.regex.*;
-
-import com.untangle.uvm.util.*;
+import java.util.regex.Pattern;
 
 public class PatternType
 {

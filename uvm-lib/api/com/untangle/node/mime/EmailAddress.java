@@ -34,8 +34,9 @@
 package com.untangle.node.mime;
 
 import java.io.UnsupportedEncodingException;
-import javax.mail.*;
-import javax.mail.internet.*;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
 

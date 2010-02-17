@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -34,11 +35,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.security.Tid;
-import org.hibernate.annotations.Cascade;
 
 /**
  * WebFilter settings.

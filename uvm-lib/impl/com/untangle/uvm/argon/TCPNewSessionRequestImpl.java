@@ -19,9 +19,6 @@
 package com.untangle.uvm.argon;
 
 import com.untangle.uvm.node.PipelineEndpoints;
-import com.untangle.jnetcap.NetcapTCPSession;
-import com.untangle.jvector.IncomingSocketQueue;
-import com.untangle.jvector.OutgoingSocketQueue;
 
 class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest
 {

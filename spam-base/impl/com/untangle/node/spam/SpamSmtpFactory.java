@@ -18,6 +18,8 @@
 
 package com.untangle.node.spam;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailExportFactory;
 import com.untangle.node.mail.papi.MailNodeSettings;
@@ -29,7 +31,6 @@ import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 public class SpamSmtpFactory implements TokenHandlerFactory
 {

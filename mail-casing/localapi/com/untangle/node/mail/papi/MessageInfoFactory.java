@@ -34,8 +34,11 @@ package com.untangle.node.mail.papi;
 
 import java.util.List;
 
+import com.untangle.node.mime.EmailAddress;
+import com.untangle.node.mime.EmailAddressWithRcptType;
+import com.untangle.node.mime.MIMEMessageHeaders;
+import com.untangle.node.mime.RcptType;
 import com.untangle.uvm.node.PipelineEndpoints;
-import com.untangle.node.mime.*;
 
 public class MessageInfoFactory
 {

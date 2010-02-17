@@ -21,9 +21,10 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.quarantine.InboxRecord;
 import com.untangle.node.util.Pair;
-import org.apache.log4j.Logger;
 
 //========================================================
 // For add/remove operations, we make a copy

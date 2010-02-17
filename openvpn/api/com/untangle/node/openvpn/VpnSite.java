@@ -20,8 +20,7 @@ package com.untangle.node.openvpn;
 
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -29,11 +28,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.IndexColumn;
+
 import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ValidateException;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
 
 /**
  * A site network for a client.  Done this way so the client site

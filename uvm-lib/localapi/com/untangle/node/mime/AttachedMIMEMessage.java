@@ -33,12 +33,18 @@
 
 package com.untangle.node.mime;
 
-import java.io.*;
-import java.util.*;
+import static com.untangle.node.mime.HeaderNames.CONTENT_DISPOSITION;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TRANSFER_ENCODING;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TYPE;
 
-import com.untangle.node.util.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
-import static com.untangle.node.mime.HeaderNames.*;
+
+import com.untangle.node.util.FileFactory;
 
 
 /**

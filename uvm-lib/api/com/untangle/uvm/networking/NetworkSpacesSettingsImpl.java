@@ -37,7 +37,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -48,13 +48,14 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
+
 import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.Type;
 
 /**
  * Settings for the network spaces.

@@ -22,10 +22,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.InterruptedException;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import org.apache.log4j.Logger;
 
 public class SpamAssassinDaemon
 {

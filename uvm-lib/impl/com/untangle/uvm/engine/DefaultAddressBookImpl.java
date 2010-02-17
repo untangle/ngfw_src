@@ -27,26 +27,23 @@ import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import javax.naming.ServiceUnavailableException;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.AddressBookConfiguration;
 import com.untangle.uvm.addrbook.AddressBookSettings;
+import com.untangle.uvm.addrbook.GroupEntry;
 import com.untangle.uvm.addrbook.NoSuchEmailException;
 import com.untangle.uvm.addrbook.RadiusServerSettings;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
-import com.untangle.uvm.addrbook.GroupEntry;
 import com.untangle.uvm.addrbook.RadiusServerSettings.AuthenticationMethod;
-import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
-
 import com.untangle.uvm.license.ProductIdentifier;
-
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
 
 
 /**

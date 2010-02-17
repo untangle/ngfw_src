@@ -33,9 +33,11 @@
 
 package com.untangle.node.util;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.CR;
+import static com.untangle.node.util.Ascii.LF;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 /**

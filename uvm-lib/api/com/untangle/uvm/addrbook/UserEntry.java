@@ -34,9 +34,6 @@
 package com.untangle.uvm.addrbook;
 
 import java.io.Serializable;
-import java.util.List;
-
-import javax.persistence.Transient;
 
 
 /**

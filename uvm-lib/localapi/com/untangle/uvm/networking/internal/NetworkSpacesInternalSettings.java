@@ -33,12 +33,9 @@
 
 package com.untangle.uvm.networking.internal;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Collections;
-
-import com.untangle.uvm.networking.RedirectRule;
-import com.untangle.uvm.networking.SetupState;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.untangle.uvm.node.IPaddr;
 

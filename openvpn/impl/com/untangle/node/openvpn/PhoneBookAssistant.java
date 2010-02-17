@@ -22,12 +22,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.user.Assistant;
 import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.user.Username;
-import org.apache.log4j.Logger;
 
 class PhoneBookAssistant implements Assistant
 {

@@ -33,14 +33,13 @@
 
 package com.untangle.uvm.node.firewall.protocol;
 
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_ANY;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP_AND_UDP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
+
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.ParsingFactory;
-
-import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
-import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
-import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_PING;
-import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP_AND_UDP;
-import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_ANY;
 
 /**
  * A factory for protocol matchers.

@@ -36,12 +36,13 @@ package com.untangle.uvm.node;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.toolbox.MackageDesc;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.MackageDesc;
 
 /**
  * SAX handler for uvm-node.xml files.

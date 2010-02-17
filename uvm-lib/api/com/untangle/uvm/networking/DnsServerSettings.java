@@ -36,7 +36,6 @@ package com.untangle.uvm.networking;
 import java.util.List;
 
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
 
 /**
  * The settings for the DNS server running on the Untangle.

@@ -33,11 +33,15 @@
 
 package com.untangle.node.mime;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.untangle.node.util.*;
+import com.untangle.node.util.FileFactory;
 
 /**
  * MIMESource implementation which wrapps a file.

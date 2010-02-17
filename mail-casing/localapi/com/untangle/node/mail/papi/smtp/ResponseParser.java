@@ -33,12 +33,14 @@
 
 package com.untangle.node.mail.papi.smtp;
 
-import static com.untangle.node.util.BufferUtil.*;
-import static com.untangle.node.util.ASCIIUtil.*;
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.ASCIIUtil.bbToString;
+import static com.untangle.node.util.Ascii.DASH;
+import static com.untangle.node.util.Ascii.SP;
+import static com.untangle.node.util.BufferUtil.findCrLf;
 
-import java.nio.*;
-import java.util.*;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 //TODO bscott unbounded nature of buffering here
 //     concerns me, but who would connect to a

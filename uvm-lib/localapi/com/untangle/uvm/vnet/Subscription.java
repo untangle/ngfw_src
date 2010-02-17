@@ -34,11 +34,12 @@
 package com.untangle.uvm.vnet;
 
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.node.IPMaddr;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.SessionEndpoints;
-import org.apache.log4j.Logger;
 
 /**
  * A traffic subscription. Right now these are internal, the user does

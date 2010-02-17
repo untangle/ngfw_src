@@ -38,7 +38,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,12 +47,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.ValidationException;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.IndexColumn;
 
 import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
 
 /**
  * Settings to hold the configuration for all of the PPPoE

@@ -25,9 +25,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.uvm.vnet.event.TCPStreamer;
-import com.untangle.node.mail.papi.ByteBufferByteStuffer;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.mail.papi.ByteBufferByteStuffer;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 public class PopStreamer implements TCPStreamer
 {

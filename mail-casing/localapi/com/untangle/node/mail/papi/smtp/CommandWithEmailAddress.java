@@ -33,12 +33,9 @@
 
 package com.untangle.node.mail.papi.smtp;
 
-import static com.untangle.node.util.Rfc822Util.*;
-import static com.untangle.node.util.Ascii.*;
-
-
 import com.untangle.node.mail.papi.FatalMailParseException;
-import com.untangle.node.mime.*;
+import com.untangle.node.mime.BadEmailAddressFormatException;
+import com.untangle.node.mime.EmailAddress;
 import com.untangle.node.token.ParseException;
 
 

@@ -67,7 +67,6 @@ public class FileChunkStreamer implements TokenStreamer
 
     private StreamState state;
     private Iterator<Token> iterator = null;
-    private boolean sentEnd = false;
 
     // constructors -----------------------------------------------------------
 
@@ -84,7 +83,7 @@ public class FileChunkStreamer implements TokenStreamer
         if (null == beginTokens) {
             state = StreamState.FILE;
         } else {
-            iterator = beginTokens.iterator();
+            iterator = this.beginTokens.iterator();
             state = StreamState.BEGIN;
         }
     }

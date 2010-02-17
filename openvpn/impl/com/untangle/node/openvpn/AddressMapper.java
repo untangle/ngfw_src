@@ -29,12 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.uvm.node.IPaddr;
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.node.HostAddress;
+import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
-import org.apache.log4j.Logger;
 
 /* Class used to assign addresses to clients */
 class AddressMapper
@@ -96,7 +97,6 @@ class AddressMapper
             VpnGroup group = entry.getKey();
             List<VpnClientBase> clients = entry.getValue();
 
-            List addrs = new LinkedList();
             boolean isServerGroup = group.equals( serverGroup );
 
             /* Create a new ip matcher to validate all of the created addresses */

@@ -34,7 +34,6 @@
 package com.untangle.uvm.networking.internal;
 
 import com.untangle.uvm.networking.PPPoEConnectionRule;
-
 import com.untangle.uvm.node.ImmutableRule;
 import com.untangle.uvm.node.ValidateException;
 

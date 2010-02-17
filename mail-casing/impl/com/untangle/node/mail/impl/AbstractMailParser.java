@@ -20,6 +20,8 @@ package com.untangle.node.mail.impl;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.FatalMailParseException;
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
@@ -29,7 +31,6 @@ import com.untangle.node.token.TokenStreamer;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * Base class for the mail parsers

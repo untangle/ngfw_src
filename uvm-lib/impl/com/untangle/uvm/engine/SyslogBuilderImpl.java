@@ -23,11 +23,12 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.Formatter;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.node.IPaddr;
-import org.apache.log4j.Logger;
 
 /**
  * Builds Syslog packets from <code>LogEvent</code>s.

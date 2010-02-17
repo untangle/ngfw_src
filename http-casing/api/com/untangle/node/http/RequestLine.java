@@ -41,6 +41,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -55,10 +56,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.untangle.node.util.UriUtil;
-import com.untangle.uvm.node.PipelineEndpoints;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
+
+import com.untangle.node.util.UriUtil;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
  * Holds a RFC 2616 request-line.

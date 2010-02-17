@@ -37,12 +37,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.CasingAdaptor;
 import com.untangle.node.token.CasingFactory;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.Node;
-import org.apache.log4j.Logger;
 
 /**
  * <code>PipeSpec</code> for a <code>Casing</code>.

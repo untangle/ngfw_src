@@ -33,9 +33,10 @@
 
 package com.untangle.node.mime;
 
-import java.io.IOException;
-import static com.untangle.node.util.Ascii.SEMI;
 import static com.untangle.node.util.Ascii.COLON;
+import static com.untangle.node.util.Ascii.SEMI;
+
+import java.io.IOException;
 
 /**
  * Object representing a "Content-transfer-Encoding" Header as found in an

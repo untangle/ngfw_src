@@ -18,7 +18,6 @@
 
 package com.untangle.uvm.argon;
 
-import java.nio.ByteBuffer;
 
 public interface TCPSession extends IPSession, TCPSessionDesc {
 }

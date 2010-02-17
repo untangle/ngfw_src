@@ -19,16 +19,17 @@
 package com.untangle.uvm.engine;
 
 import java.util.List;
+
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import javax.naming.ServiceUnavailableException;
 
 import com.untangle.uvm.addrbook.AddressBookSettings;
+import com.untangle.uvm.addrbook.GroupEntry;
 import com.untangle.uvm.addrbook.NoSuchEmailException;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
-import com.untangle.uvm.addrbook.GroupEntry;
 
 /**
  * Concrete implementation of the AddressBook.  Note that this class

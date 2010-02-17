@@ -33,10 +33,10 @@
 
 package com.untangle.node.mail.papi.imap;
 
-import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.node.mail.papi.BeginMIMEToken;
 import com.untangle.node.mail.papi.MIMEAccumulator;
 import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.uvm.vnet.event.TCPStreamer;
 
 
 /**

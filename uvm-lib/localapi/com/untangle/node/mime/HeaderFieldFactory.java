@@ -33,11 +33,13 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.ASCIIUtil.*;
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.ASCIIUtil.eatWhitespace;
+import static com.untangle.node.util.ASCIIUtil.readString;
+import static com.untangle.node.util.Ascii.COLON;
 
-import java.nio.*;
-import java.util.*;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class which creates HeaderFields from raw data (or creates new ones).  This

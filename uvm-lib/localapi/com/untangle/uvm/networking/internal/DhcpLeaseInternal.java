@@ -35,10 +35,9 @@ package com.untangle.uvm.networking.internal;
 
 import java.util.Date;
 
+import com.untangle.uvm.networking.DhcpLeaseRule;
 import com.untangle.uvm.node.IPNullAddr;
 import com.untangle.uvm.node.firewall.MACAddress;
-
-import com.untangle.uvm.networking.DhcpLeaseRule;
 
 
 /**

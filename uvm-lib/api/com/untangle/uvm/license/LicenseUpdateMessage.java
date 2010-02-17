@@ -34,7 +34,6 @@
 package com.untangle.uvm.license;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.untangle.uvm.message.Message;

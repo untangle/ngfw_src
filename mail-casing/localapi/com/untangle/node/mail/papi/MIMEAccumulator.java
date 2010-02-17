@@ -33,6 +33,8 @@
 
 package com.untangle.node.mail.papi;
 
+import static com.untangle.node.util.Ascii.CRLF_BA;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,11 +42,15 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import org.apache.log4j.Logger;
+
+import com.untangle.node.mime.FileMIMESource;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEMessageHeaders;
+import com.untangle.node.mime.MIMEParsingInputStream;
+import com.untangle.node.mime.MIMEPolicy;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-import com.untangle.node.mime.*;
-import org.apache.log4j.Logger;
-import static com.untangle.node.util.Ascii.CRLF_BA;
 
 /**
  * Class used to accumulate MIME bytes.  Usage is tricky
@@ -653,7 +659,6 @@ public class MIMEAccumulator {
         private FileInputStream m_fis;
         private FileChannel m_fileInChannel;
         private final ByteBuffer m_readBuf = ByteBuffer.allocate(CHUNK_SZ);
-        private ByteBufferByteStuffer m_bbbs = new ByteBufferByteStuffer();
         private boolean m_wroteHeaders = false;
         private Logger m_logger = Logger.getLogger(MIMEAccumulator.PartialTCPStreamer.class);
 
@@ -705,7 +710,6 @@ public class MIMEAccumulator {
             }
             try {
                 m_readBuf.clear();
-                ByteBuffer sinkBuf = ByteBuffer.allocate(CHUNK_SZ);
                 int read = m_fileInChannel.read(m_readBuf);
                 if(read > 0) {
                     //TODO bscott the JavaDocs are unclear about "0"

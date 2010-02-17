@@ -33,8 +33,8 @@
 
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.MPipe;
 
 /**
  * Base class for all IP live session events

@@ -20,11 +20,12 @@ package com.untangle.node.mail.impl.imap;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.TCPSession;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * ...name says it all...

@@ -34,8 +34,9 @@ package com.untangle.node.virus;
 
 import java.io.File;
 
-import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.LocalUvmContextFactory;
 
 abstract public class VirusScannerLauncher implements Runnable
 {

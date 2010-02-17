@@ -22,7 +22,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.System;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +32,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.logging.EventLogger;
@@ -52,9 +55,6 @@ import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 class MessageManagerImpl implements LocalMessageManager
 {
@@ -230,9 +230,7 @@ class MessageManagerImpl implements LocalMessageManager
                         s.save(bs);
                     } else {
                         List<ActiveStat> l = bs.getActiveMetrics();
-                        if (null == bs) {
-                            bs.setActiveMetrics(activeMetrics);
-                        } else {
+                        if (null != bs ) {
                             l.clear();
                             l.addAll(activeMetrics);
                         }

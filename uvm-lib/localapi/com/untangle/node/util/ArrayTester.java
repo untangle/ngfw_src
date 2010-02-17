@@ -44,7 +44,6 @@ import java.nio.ByteBuffer;
  * production code.
  */
 public class ArrayTester {
-    private int m_ptr;
     private int[] m_vals;
     private boolean m_hasNext;
     private byte[] m_sourceBytes;

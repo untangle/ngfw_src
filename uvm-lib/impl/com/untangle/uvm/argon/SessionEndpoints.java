@@ -18,7 +18,6 @@
 
 package com.untangle.uvm.argon;
 
-import java.net.InetAddress;
 
 public interface SessionEndpoints extends com.untangle.uvm.node.SessionEndpoints
 {

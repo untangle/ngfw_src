@@ -18,18 +18,13 @@
 
 package com.untangle.node.openvpn;
 
+import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.Validator;
-
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.ValidateException;
-
-import com.untangle.uvm.logging.EventManager;
-
-
-import java.util.List;
+import com.untangle.uvm.node.Validator;
 
 public interface VpnNode extends Node
 {

@@ -18,22 +18,22 @@
 
 package com.untangle.uvm.networking;
 
+import static com.untangle.uvm.networking.ShellFlags.CUSTOM_RULES_NAME;
+import static com.untangle.uvm.networking.ShellFlags.DECL_CUSTOM_RULES;
+import static com.untangle.uvm.networking.ShellFlags.DECL_POST_CONF;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_CUSTOM_RULES;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_POST_FUNC;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_TCP_WIN;
+import static com.untangle.uvm.networking.ShellFlags.POST_FUNC_NAME;
+
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.internal.MiscSettingsInternal;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
 import com.untangle.uvm.util.DeletingDataSaver;
-import org.apache.log4j.Logger;
-
-import static com.untangle.uvm.networking.ShellFlags.FLAG_TCP_WIN;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_POST_FUNC;
-import static com.untangle.uvm.networking.ShellFlags.POST_FUNC_NAME;
-import static com.untangle.uvm.networking.ShellFlags.DECL_POST_CONF;
-
-import static com.untangle.uvm.networking.ShellFlags.FLAG_CUSTOM_RULES;
-import static com.untangle.uvm.networking.ShellFlags.CUSTOM_RULES_NAME;
-import static com.untangle.uvm.networking.ShellFlags.DECL_CUSTOM_RULES;
 
 class MiscManagerImpl implements LocalMiscManager
 {

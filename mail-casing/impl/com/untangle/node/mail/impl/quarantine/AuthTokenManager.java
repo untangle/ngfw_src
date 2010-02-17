@@ -21,11 +21,10 @@ package com.untangle.node.mail.impl.quarantine;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.untangle.node.util.Pair;
-
 import org.apache.commons.codec.binary.Base64;
-
 import org.apache.log4j.Logger;
+
+import com.untangle.node.util.Pair;
 
 
 //===============================================

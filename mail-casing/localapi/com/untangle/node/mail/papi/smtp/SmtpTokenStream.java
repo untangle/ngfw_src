@@ -35,16 +35,24 @@ package com.untangle.node.mail.papi.smtp;
 
 
 import java.net.InetAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.Pipeline;
-import com.untangle.uvm.vnet.TCPSession;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.BeginMIMEToken;
 import com.untangle.node.mail.papi.CompleteMIMEToken;
 import com.untangle.node.mail.papi.ContinuedMIMEToken;
-import com.untangle.node.token.*;
-import org.apache.log4j.Logger;
+import com.untangle.node.token.AbstractTokenHandler;
+import com.untangle.node.token.Chunk;
+import com.untangle.node.token.PassThruToken;
+import com.untangle.node.token.Token;
+import com.untangle.node.token.TokenException;
+import com.untangle.node.token.TokenResult;
+import com.untangle.node.token.TokenResultBuilder;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.vnet.Pipeline;
+import com.untangle.uvm.vnet.TCPSession;
 
 
 

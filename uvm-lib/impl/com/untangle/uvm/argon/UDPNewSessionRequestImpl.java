@@ -18,10 +18,8 @@
 
 package com.untangle.uvm.argon;
 
-import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.jnetcap.NetcapUDPSession;
-import com.untangle.jvector.IncomingSocketQueue;
-import com.untangle.jvector.OutgoingSocketQueue;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNewSessionRequest
 {

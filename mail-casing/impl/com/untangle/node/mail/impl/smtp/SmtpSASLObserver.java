@@ -18,19 +18,19 @@
 
 package com.untangle.node.mail.impl.smtp;
 
-import static com.untangle.node.util.BufferUtil.*;
-import static com.untangle.node.util.ASCIIUtil.*;
+import static com.untangle.node.util.ASCIIUtil.bbToString;
+import static com.untangle.node.util.BufferUtil.findCrLf;
 
 import java.nio.ByteBuffer;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 import com.untangle.node.mail.papi.smtp.NotAnSMTPResponseLineException;
 import com.untangle.node.mail.papi.smtp.Response;
 import com.untangle.node.mail.papi.smtp.ResponseParser;
 import com.untangle.node.sasl.SASLObserver;
 import com.untangle.node.util.ByteBufferBuilder;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
 
 /**
  * Class which acts to watch a SASL interaction,

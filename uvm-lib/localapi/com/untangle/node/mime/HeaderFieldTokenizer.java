@@ -33,8 +33,13 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.ASCIIUtil.*;
+import static com.untangle.node.util.Ascii.BACK_SLASH_B;
+import static com.untangle.node.util.Ascii.CLOSE_PAREN_B;
+import static com.untangle.node.util.Ascii.HT_B;
+import static com.untangle.node.util.Ascii.OPEN_PAREN_B;
+import static com.untangle.node.util.Ascii.QUOTE;
+import static com.untangle.node.util.Ascii.QUOTE_B;
+import static com.untangle.node.util.Ascii.SP_B;
 
 /**
  * Tokenizes MIME header field values

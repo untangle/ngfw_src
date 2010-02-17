@@ -36,6 +36,7 @@ package com.untangle.uvm.networking;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,12 +47,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.node.util.UvmUtil;
-import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.Rule;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
+
+import com.untangle.node.util.UvmUtil;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Rule;
 
 /**
  * The configuration state for one network space.

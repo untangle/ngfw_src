@@ -19,6 +19,7 @@
 package com.untangle.uvm.message;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,6 +32,8 @@ import javax.persistence.Table;
 @Table(name="u_active_stat", schema="settings")
 public class ActiveStat implements Serializable
 {
+    private static final long serialVersionUID = 5207078920254495831L;
+    
     private Long id;
     private String name;
     private StatInterval interval;
@@ -43,6 +46,7 @@ public class ActiveStat implements Serializable
         this.interval = interval;
     }
 
+    @SuppressWarnings("unused")
     @Id
     @Column(name="id")
     @GeneratedValue
@@ -51,6 +55,7 @@ public class ActiveStat implements Serializable
         return id;
     }
 
+    @SuppressWarnings("unused")
     private void setId(Long id)
     {
         this.id = id;

@@ -39,6 +39,8 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
@@ -60,7 +62,6 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
-import org.apache.log4j.Logger;
 
 /**
  * Adapts a Token session's underlying byte-stream a

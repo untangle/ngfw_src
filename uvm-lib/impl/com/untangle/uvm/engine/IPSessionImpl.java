@@ -26,6 +26,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
+
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
@@ -36,11 +40,11 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.vnet.*;
+import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 
 /**
  * Abstract base class for all IP live sessions

@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressList;
 import com.untangle.node.mail.impl.GlobEmailAddressMapper;
@@ -64,7 +66,6 @@ import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.util.I18nUtil;
-import org.apache.log4j.Logger;
 
 /**
  *

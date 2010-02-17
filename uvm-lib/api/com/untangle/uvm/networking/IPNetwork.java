@@ -34,13 +34,11 @@
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
-
-import java.net.InetAddress;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.untangle.uvm.node.IPaddr;
-
 import com.untangle.uvm.node.ParseException;
 
 /**

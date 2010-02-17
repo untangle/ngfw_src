@@ -24,6 +24,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
@@ -48,10 +52,6 @@ import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.PipelineFoundry;
-
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 class DefaultPolicyManager implements LocalPolicyManager
 {

@@ -244,28 +244,6 @@ public class ASCIIStringBuilder {
         }
     }
 
-    /**
-     * Helper method, useful for calling during startup of a system.  Tests
-     * if this class will function properly.  Note that as-per the JavaDoc
-     * of String, the "ISO-8859-1" charset will always be supported.  However,
-     * they may lie and this method will determine if use of this class will
-     * be a problem.
-     *
-     * @return true if use of this class will be fine on the given
-     *         platform for the given instance of the JVM
-     */
-    public static boolean testPlatform() {
-        if(!s_isKnownASCII) {
-            try {
-                String s = new String(new byte[] {'x'}, 0, 1, ISO_LATIN_CHARSET_NAME);
-            }
-            catch(java.io.UnsupportedEncodingException ex) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private void ensure(final int len) {
         if(m_pos + len > m_bytes.length) {
             int newLen = (m_bytes.length + 1)*2;

@@ -18,22 +18,20 @@
 
 package com.untangle.node.webfilter;
 
-import java.lang.Comparable;
-import java.lang.Long;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.Worker;
 import com.untangle.uvm.util.WorkerRunner;
-import org.apache.log4j.Logger;
 
 /**
  * Regularly monitor user-bypassed sites and expire them after a

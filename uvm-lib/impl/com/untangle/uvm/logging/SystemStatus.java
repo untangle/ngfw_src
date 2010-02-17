@@ -18,7 +18,11 @@
 
 package com.untangle.uvm.logging;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkManagerImpl;
@@ -27,7 +31,6 @@ import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.Tid;
-import org.apache.log4j.Logger;
 
 public class SystemStatus
 {

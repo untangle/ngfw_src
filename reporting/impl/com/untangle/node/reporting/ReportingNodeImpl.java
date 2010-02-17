@@ -21,6 +21,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.security.RemoteAdminManager;
@@ -28,9 +32,6 @@ import com.untangle.uvm.security.User;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {

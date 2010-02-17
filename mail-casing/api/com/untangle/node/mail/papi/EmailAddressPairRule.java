@@ -34,6 +34,7 @@
 package com.untangle.node.mail.papi;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -50,7 +51,6 @@ public class EmailAddressPairRule extends Rule implements Serializable {
 
     private String m_addr1;
     private String m_addr2;
-    private Long m_id;
 
     public EmailAddressPairRule() {
         this(null, null);

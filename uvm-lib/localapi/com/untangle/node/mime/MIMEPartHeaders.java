@@ -33,9 +33,13 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.mime.HeaderNames.*;
-import java.io.*;
-import java.util.*;
+import static com.untangle.node.mime.HeaderNames.CONTENT_DISPOSITION_LC;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TRANSFER_ENCODING_LC;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TYPE_LC;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 
 /**

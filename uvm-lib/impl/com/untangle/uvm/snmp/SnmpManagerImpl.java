@@ -21,15 +21,16 @@ package com.untangle.uvm.snmp;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
+import com.untangle.node.util.IOUtil;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.node.util.IOUtil;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 //TODO bscott The template for the snmpd.conf file should
 //            be a Velocity template

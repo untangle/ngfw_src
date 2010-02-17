@@ -34,7 +34,6 @@
 package com.untangle.uvm.license;
 
 import java.io.Serializable;
-
 import java.util.Date;
 
 import org.json.JSONBean;

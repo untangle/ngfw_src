@@ -23,19 +23,20 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.servlet.ServletException;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.portal.BasePortalLogin;
-import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.security.UvmPrincipal;
 import org.apache.catalina.Valve;
 import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
-
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.portal.BasePortalLogin;
+import com.untangle.uvm.portal.BasePortalManager;
+import com.untangle.uvm.security.UvmPrincipal;
 
 class SpecialSingleSignOn extends SingleSignOn
 {

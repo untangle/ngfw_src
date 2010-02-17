@@ -34,7 +34,6 @@
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
-
 import java.net.Inet4Address;
 import java.net.InetAddress;
 

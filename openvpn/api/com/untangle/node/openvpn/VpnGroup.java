@@ -23,11 +23,12 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
-import org.hibernate.annotations.Type;
 
 /**
  * A VPN group of address and clients.

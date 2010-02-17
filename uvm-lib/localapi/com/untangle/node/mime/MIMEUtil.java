@@ -32,8 +32,15 @@
  */
 package com.untangle.node.mime;
 
-import static com.untangle.node.mime.HeaderNames.*;
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.mime.HeaderNames.CONTENT_DISPOSITION_LC;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TRANSFER_ENCODING;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TRANSFER_ENCODING_LC;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TYPE;
+import static com.untangle.node.mime.HeaderNames.CONTENT_TYPE_LC;
+import static com.untangle.node.util.Ascii.BACK_SLASH;
+import static com.untangle.node.util.Ascii.HTAB;
+import static com.untangle.node.util.Ascii.QUOTE;
+import static com.untangle.node.util.Ascii.SP;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;

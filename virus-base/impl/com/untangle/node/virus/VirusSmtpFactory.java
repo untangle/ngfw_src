@@ -17,13 +17,16 @@
  */
 package com.untangle.node.virus;
 
-import com.untangle.node.mail.papi.*;
-import com.untangle.node.mail.papi.smtp.*;
+import org.apache.log4j.Logger;
+
+import com.untangle.node.mail.papi.MailExport;
+import com.untangle.node.mail.papi.MailExportFactory;
+import com.untangle.node.mail.papi.MailNodeSettings;
 import com.untangle.node.mail.papi.smtp.sapi.Session;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
-import com.untangle.uvm.vnet.*;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPSession;
 
 public class VirusSmtpFactory
     implements TokenHandlerFactory {

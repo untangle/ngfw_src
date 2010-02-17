@@ -19,13 +19,11 @@
 package com.untangle.uvm.engine;
 
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;

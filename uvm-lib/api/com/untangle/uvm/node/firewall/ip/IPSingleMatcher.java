@@ -37,7 +37,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.untangle.uvm.node.IPaddr;
-
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;

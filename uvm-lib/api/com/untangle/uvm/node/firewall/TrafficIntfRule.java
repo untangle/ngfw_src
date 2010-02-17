@@ -36,12 +36,13 @@ package com.untangle.uvm.node.firewall;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+import org.hibernate.annotations.Type;
+
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortDBMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
-import org.hibernate.annotations.Type;
 
 /**
  * Rule for matching sessions based on interfaces.

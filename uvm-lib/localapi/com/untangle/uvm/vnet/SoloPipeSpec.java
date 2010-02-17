@@ -35,11 +35,12 @@ package com.untangle.uvm.vnet;
 
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.event.SessionEventListener;
-import org.apache.log4j.Logger;
 
 /**
  * <code>PipeSpec</code> for a regular Node.

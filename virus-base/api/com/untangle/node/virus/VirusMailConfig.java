@@ -34,6 +34,7 @@
 package com.untangle.node.virus;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;

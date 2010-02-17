@@ -42,8 +42,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Type;
-
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 

@@ -33,11 +33,10 @@
 
 package com.untangle.uvm.node.firewall.protocol;
 
-import com.untangle.uvm.vnet.Protocol;
-
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
+import com.untangle.uvm.vnet.Protocol;
 
 /**
  * ProtocolMatcher designed for simple cases (all or nothing).

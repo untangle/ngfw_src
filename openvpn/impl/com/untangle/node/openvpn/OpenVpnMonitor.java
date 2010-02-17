@@ -20,7 +20,6 @@ package com.untangle.node.openvpn;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -38,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
@@ -46,8 +47,6 @@ import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.util.I18nUtil;
-
-import org.apache.log4j.Logger;
 
 
 class OpenVpnMonitor implements Runnable
@@ -80,16 +79,6 @@ class OpenVpnMonitor implements Runnable
     private static final int START_INDEX   = 7;
     private static final int TOTAL_INDEX   = 8;
 
-    private static final int TIMEOUT       = 2 * 60 * 1000;
-
-    private static final String PATH_PROCNET_DEV = "/proc/net/dev";
-    private static final String TUN_DEV_PREFIX = "tun";
-    private static final int PROCNET_STAT_COUNT = 16;
-    private static final int PROCNET_STAT_RX_BYTES   = 0;
-    private static final int PROCNET_STAT_RX_PACKETS = 1;
-    private static final int PROCNET_STAT_TX_BYTES   = 8;
-    private static final int PROCNET_STAT_TX_PACKETS = 9;
-
     private static final String ACTIVE_SESSIONS_REPO_NAME = I18nUtil.marktr("Active Sessions");
     private static final String ALL_SESSIONS_REPO_NAME = I18nUtil.marktr("All Sessions");
 
@@ -101,10 +90,6 @@ class OpenVpnMonitor implements Runnable
     private Map<Key,Stats> statusMap    = new HashMap<Key,Stats>();
     private Map<String,Stats> activeMap = new HashMap<String,Stats>();
     private VpnStatisticEvent statistics = new VpnStatisticEvent();
-
-    private long totalBytesTx = 0;
-    private long totalBytesRx = 0;
-
 
     /* This is a list that contains the contents of the command "status 2" from openvpn */
     private final List<String> clientStatus = new LinkedList<String>();
@@ -129,9 +114,9 @@ class OpenVpnMonitor implements Runnable
         this.vpnStatsDistLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
         this.clientConnectLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
         this.clientDistLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
-        //Add the magical thingies to make UI log reading from cache happen
+        //Add repositories to make UI log reading from cache happen
         clientConnectLogger.addEventRepository(new AllEventsCache(clientConnectLogger));//For "all" events
-        clientConnectLogger.addEventRepository(new ActiveEventCache(clientConnectLogger));//For "open" events
+        clientConnectLogger.addEventRepository(new ActiveEventCache());//For "open" events
         clientConnectLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "closed" events
 
         this.localContext = LocalUvmContextFactory.context();
@@ -300,72 +285,6 @@ class OpenVpnMonitor implements Runnable
         }
     }
 
-    // XXX need counters
-//     Stats updateStats( Stats stats )
-//     {
-//         BufferedReader in = null;
-//         long rxBytes  = stats.getT2sBytes();
-//         long rxChunks = stats.getT2sChunks();
-//         long txBytes  = stats.getS2tBytes();
-//         long txChunks = stats.getS2tChunks();
-
-//         try {
-//             /* Read in the whole file */
-//             in = new BufferedReader( new FileReader( PATH_PROCNET_DEV ));
-
-//             String line;
-//             while(( line = in.readLine()) != null ) {
-//                 line = line.trim();
-
-//                 /* Parse the stats from the file */
-//                 if ( line.startsWith( TUN_DEV_PREFIX )) {
-//                     String args[] = line.split( ":" );
-//                     if ( args.length != 2 ) {
-//                         logger.warn( "Invalid line: " + line );
-//                         continue;
-//                     }
-//                     args = args[1].trim().split( "\\s+" );
-//                     if ( args.length != PROCNET_STAT_COUNT ) {
-//                         logger.warn( "Invalid line: " + line );
-//                         continue;
-//                     }
-
-//                     rxBytes  = ( rxBytes,  Long.parseLong( args[PROCNET_STAT_RX_BYTES] ));
-//                     rxChunks = incrementCount( rxChunks, Long.parseLong( args[PROCNET_STAT_RX_PACKETS] ));
-//                     txBytes  = incrementCount( txBytes,  Long.parseLong( args[PROCNET_STAT_TX_BYTES] ));
-//                     txChunks = incrementCount( txChunks, Long.parseLong( args[PROCNET_STAT_TX_PACKETS] ));
-//                 }
-//             }
-//         } catch ( Exception e ) {
-//             logger.warn( "Exception updating stats" );
-//         } finally {
-//             if ( in != null ) try { in.close(); } catch ( Exception e ) { /* IGNORED */ }
-//         }
-
-//         stats.setT2sBytes(  rxBytes );  stats.setC2tBytes(  rxBytes );
-//         stats.setT2sChunks( rxChunks ); stats.setC2tChunks( rxChunks );
-//         stats.setT2cBytes(  txBytes );  stats.setS2tBytes(  txBytes );
-//         stats.setT2cChunks( txChunks ); stats.setS2tChunks( txChunks );
-
-//         return stats;
-//     }
-
-    private long incrementCount( long previousCount, long kernelCount )
-    {
-        /* If the kernel is counting in 64-bits, just return the kernel count */
-        /* This following doesn't work very well because the tun0 count gets reset to zero often */
-        /* XXX This could overflow, but transmitting 4GB of VPN traffic is difficult */
-        //         if ( kernelCount >= ( 1L << 32 ) ) return kernelCount;
-
-
-        //         long previousKernelCount = previousCount & 0xFFFFFFFFL;
-        //         if ( previousKernelCount > kernelCount ) previousCount += ( 1L << 32 );
-
-        //         return (( previousCount & 0x7FFFFFFF00000000L ) + kernelCount );
-        return kernelCount;
-    }
-
-
     private void updateStatus( boolean killUndef )
         throws UnknownHostException, SocketException, IOException
     {
@@ -491,8 +410,6 @@ class OpenVpnMonitor implements Runnable
 
     private void killDeadConnections( BufferedWriter out, BufferedReader in ) throws IOException
     {
-        Date cutoff = new Date( System.currentTimeMillis() + TIMEOUT );
-
         for ( Iterator<Stats> iter = statusMap.values().iterator() ; iter.hasNext() ; ) {
             Stats stats = iter.next();
 
@@ -662,13 +579,10 @@ class OpenVpnMonitor implements Runnable
     //the behavior of "normal" EventCaches by examining only
     //the actie records and returning them to the client.
     class ActiveEventCache implements EventRepository<ClientConnectEvent> {
-
-        private final EventLogger<ClientConnectEvent> eventLogger;
         private RepositoryDesc rd = new RepositoryDesc(ACTIVE_SESSIONS_REPO_NAME);
 
-        ActiveEventCache(EventLogger<ClientConnectEvent> eventLogger)
+        ActiveEventCache()
         {
-            this.eventLogger = eventLogger;
         }
 
         public RepositoryDesc getRepositoryDesc() {

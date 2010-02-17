@@ -23,8 +23,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import com.untangle.node.util.CharSequenceUtil;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.util.CharSequenceUtil;
 
 
 /**

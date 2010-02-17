@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.vnet.event;
 
-import java.nio.ByteBuffer;
 
 /**
  * Streamer for UDP sessions (not yet implemented)

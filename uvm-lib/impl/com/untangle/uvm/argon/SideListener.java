@@ -18,9 +18,9 @@
 
 package com.untangle.uvm.argon;
 
-import com.untangle.jvector.Source;
 import com.untangle.jvector.Sink;
 import com.untangle.jvector.SinkEndpointListener;
+import com.untangle.jvector.Source;
 import com.untangle.jvector.SourceEndpointListener;
 
 class SideListener implements SinkEndpointListener, SourceEndpointListener

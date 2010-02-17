@@ -21,14 +21,15 @@ package com.untangle.node.mail.impl.imap;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import com.untangle.uvm.vnet.TCPSession;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.imap.IMAPTokenizer;
 import com.untangle.node.mail.papi.imap.ImapChunk;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * 'name says it all...
@@ -40,8 +41,6 @@ class ImapClientParser
         Logger.getLogger(ImapClientParser.class);
 
     private final IMAPTokenizer m_tokenizer;
-
-    private int m_toSkip = 0;
 
     ImapClientParser(TCPSession session,
                      ImapCasing parent) {

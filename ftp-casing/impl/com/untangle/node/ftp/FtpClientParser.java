@@ -22,6 +22,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.AbstractParser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
@@ -33,7 +35,6 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * Parses FTP traffic.

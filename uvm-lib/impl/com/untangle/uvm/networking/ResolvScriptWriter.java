@@ -20,14 +20,12 @@ package com.untangle.uvm.networking;
 
 import java.net.UnknownHostException;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.script.ScriptWriter;
-import org.apache.log4j.Logger;
-
-import static com.untangle.uvm.node.script.ScriptWriter.COMMENT;
-import static com.untangle.uvm.node.script.ScriptWriter.UNTANGLE_HEADER;
 
 class ResolvScriptWriter extends ScriptWriter
 {

@@ -23,16 +23,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.AbstractUnparser;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseResult;
-import com.untangle.node.token.Unparser;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
-import org.apache.log4j.Logger;
 
 /**
  * An HTTP <code>Unparser</code>.
@@ -47,7 +47,6 @@ class HttpUnparser extends AbstractUnparser
     // XXX move to util class/interface
     private static final byte[] LAST_CHUNK = "0\r\n\r\n".getBytes();
     private static final byte[] CRLF = "\r\n".getBytes();
-    private static final byte[] COLON_SPACE = ": ".getBytes();
 
     private static final int CLOSE_ENCODING = 0;
     private static final int CONTENT_LENGTH_ENCODING = 1;

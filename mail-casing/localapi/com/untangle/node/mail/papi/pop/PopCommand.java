@@ -33,17 +33,19 @@
 
 package com.untangle.node.mail.papi.pop;
 
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.Rfc822Util.*;
+import static com.untangle.node.util.Ascii.SP;
+import static com.untangle.node.util.Rfc822Util.consumeToken;
+import static com.untangle.node.util.Rfc822Util.eatSpace;
 
 import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
-import org.apache.log4j.Logger;
 
 /* We handle USER, APOP, and AUTH LOGIN but no other AUTH types.
  * (Other AUTH types, such as AUTH KERBEROS_V4 and AUTH CRAM-MD5,

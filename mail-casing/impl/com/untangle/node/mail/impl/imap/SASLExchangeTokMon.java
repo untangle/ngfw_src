@@ -18,15 +18,15 @@
 
 package com.untangle.node.mail.impl.imap;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.STAR;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.node.mail.papi.imap.IMAPTokenizer;
-import com.untangle.node.sasl.SASLObserver;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.mail.papi.imap.IMAPTokenizer;
+import com.untangle.node.sasl.SASLObserver;
 
 /**
  * Class which understands the semantics of Imap's SASL

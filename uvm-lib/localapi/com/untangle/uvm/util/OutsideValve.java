@@ -36,8 +36,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
+
+import org.apache.catalina.Valve;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
+import org.apache.catalina.valves.ValveBase;
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
@@ -45,11 +52,6 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
-import org.apache.catalina.Valve;
-import org.apache.catalina.connector.Request;
-import org.apache.catalina.connector.Response;
-import org.apache.catalina.valves.ValveBase;
-import org.apache.log4j.Logger;
 
 /* the name outside valve is no longer legit, since this controls access to port 80 on the inside */
 public abstract class OutsideValve extends ValveBase

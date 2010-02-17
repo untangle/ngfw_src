@@ -18,13 +18,14 @@
 
 package com.untangle.node.spam;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
-import org.apache.log4j.Logger;
 
 class RBLEventHandler extends AbstractEventHandler
 {

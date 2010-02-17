@@ -33,13 +33,9 @@
 
 package com.untangle.uvm.node.firewall.intf;
 
-import java.net.InetAddress;
-
 import java.util.BitSet;
 
 import com.untangle.uvm.IntfConstants;
-
-import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
@@ -53,6 +49,8 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  */
 public final class IntfWanMatcher extends IntfDBMatcher
 {
+    private static final long serialVersionUID = 7927692588940660838L;
+
     /* An interface matcher that matches everything */
     private static final IntfDBMatcher WAN_MATCHER = new IntfWanMatcher(true);
 

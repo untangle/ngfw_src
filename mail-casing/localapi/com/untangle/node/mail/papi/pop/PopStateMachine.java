@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.DoNotCareChunkT;
 import com.untangle.node.mail.papi.DoNotCareT;
 import com.untangle.node.mail.papi.MIMEMessageT;
@@ -58,7 +60,6 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 public abstract class PopStateMachine extends AbstractTokenHandler
 {

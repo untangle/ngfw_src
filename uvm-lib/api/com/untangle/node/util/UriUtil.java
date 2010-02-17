@@ -34,6 +34,7 @@
 package com.untangle.node.util;
 
 import java.io.UnsupportedEncodingException;
+
 import org.apache.log4j.Logger;
 
 /**

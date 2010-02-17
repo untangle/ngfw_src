@@ -22,15 +22,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Random;
 
-import com.untangle.uvm.RemoteConnectivityTester;
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.networking.BasicNetworkSettings;
 import com.untangle.uvm.networking.ConnectionStatus;
 import com.untangle.uvm.node.script.ScriptException;
 import com.untangle.uvm.node.script.ScriptRunner;
-import org.apache.log4j.Logger;
 
 class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
 {
@@ -59,11 +59,6 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
 
     /* Give the bridge 30 seconds to come alive */
     private static final int BRIDGE_WAIT_TIMEOUT = 30000;
-
-    /* Exit code for a DNS test that passed */
-    private static final int DNS_TEST_PASS = 0;
-
-    private static final Random RANDOM = new Random();
 
     private static RemoteConnectivityTesterImpl INSTANCE = new RemoteConnectivityTesterImpl();
 
@@ -247,6 +242,7 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
             try {
                 logger.debug( "Trying to connect to " + this.address );
                 Socket socket = new Socket( this.address, TCP_TEST_PORT );
+                socket.close();
                 this.isWorking = true;
                 logger.debug( "Completed TCP Connection test" );
             } catch ( IOException e ) {

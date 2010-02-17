@@ -33,6 +33,8 @@
 
 package com.untangle.node.mail.papi.imap;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.ContinuedMIMEToken;
 import com.untangle.node.mail.papi.MIMEAccumulator;
 import com.untangle.node.mail.papi.MessageInfo;
@@ -40,7 +42,6 @@ import com.untangle.node.mail.papi.MessageTransmissionTimeoutStrategy;
 import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenResult;
-import org.apache.log4j.Logger;
 
 /**
  * Handler which listens on an IMAP Token Stream, and calls
@@ -58,6 +59,7 @@ public abstract class BufferingImapTokenStreamHandler
     public static final class HandleMailResult {
 
         private final MIMEMessage m_msg;
+        
         private static final HandleMailResult PASS_RESULT =
             new HandleMailResult(null);
 
@@ -90,7 +92,7 @@ public abstract class BufferingImapTokenStreamHandler
          * @return the result
          */
         public static HandleMailResult forPassMessage() {
-            return new HandleMailResult(null);
+            return HandleMailResult.PASS_RESULT;
         }
     }
 

@@ -34,13 +34,14 @@
 package com.untangle.uvm.node;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class InterfaceComparator implements Comparator<Byte>, Serializable
 {
+    private static final long serialVersionUID = -5856238863805528918L;
+    
     private final Integer[] positions;
 
     // ordered from external to internal

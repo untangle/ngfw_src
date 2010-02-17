@@ -33,9 +33,13 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.Ascii.*;
-import java.io.*;
-import java.nio.*;
+import static com.untangle.node.util.Ascii.CRLF_BA;
+
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 /**
  * OutputStream which adds some convienences

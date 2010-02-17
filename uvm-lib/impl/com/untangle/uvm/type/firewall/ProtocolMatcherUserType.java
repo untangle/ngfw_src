@@ -18,10 +18,9 @@
 
 package com.untangle.uvm.type.firewall;
 
-import com.untangle.uvm.type.StringBasedUserType;
-
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.type.StringBasedUserType;
 
 public class ProtocolMatcherUserType extends StringBasedUserType
 {

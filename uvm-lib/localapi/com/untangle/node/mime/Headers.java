@@ -33,14 +33,19 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.ASCIIUtil.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
-import java.io.*;
-import java.nio.*;
-import java.util.*;
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.TemplateValues;
-import org.apache.log4j.Logger;
 
 /**
  * Class representing a collection of RFC 822 Headers (also MIME-conformant).

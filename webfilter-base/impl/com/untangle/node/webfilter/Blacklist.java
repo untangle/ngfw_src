@@ -20,10 +20,8 @@ package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,9 +30,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
-import com.untangle.node.util.CharSequenceUtil;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeType;
@@ -42,7 +41,6 @@ import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import org.apache.log4j.Logger;
 
 /**
  * Does blacklist lookups in the database.
@@ -300,7 +298,6 @@ public abstract class Blacklist
         }
 
         String contentType = header.getValue("content-type");
-        URL url = requestLine.getRequestLine().getUrl();
         URI uri = requestLine.getRequestUri().normalize();
         String host = normalizeHostname(requestLine.getRequestLine().getUrl().getHost());
 
@@ -534,8 +531,6 @@ public abstract class Blacklist
 
         String dom = host;
         while (!blockFound && null != dom) {
-            String url = dom + uri;
-
             String sCat = checkBlacklistDatabase(dom, port, uri);
             BlacklistCategory bc;
             if (null != sCat) {

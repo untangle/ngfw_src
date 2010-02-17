@@ -21,20 +21,20 @@ package com.untangle.uvm.engine;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
+
 import javax.servlet.ServletContext;
 
+import org.apache.catalina.Valve;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.util.OpenSSLWrapper;
-import com.untangle.node.util.UtKeyStore;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.networking.AddressSettingsListener;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
-import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.util.QuarantineOutsideAccessValve;
-import org.apache.catalina.Valve;
-import org.apache.log4j.Logger;
 
 /**
  * TODO A work in progress (currently a disorganized mess of crap taken
@@ -43,8 +43,6 @@ import org.apache.log4j.Logger;
 class AppServerManagerImpl implements LocalAppServerManager
 {
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
-
-    private static final String KS_STORE_PASS = "changeit";
 
     private static final int DEFAULT_HTTP_PORT = 80;
     private static final int DEFAULT_HTTPS_PORT = 443;

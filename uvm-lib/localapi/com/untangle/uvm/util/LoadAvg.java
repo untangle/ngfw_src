@@ -32,8 +32,12 @@
  */
 package com.untangle.uvm.util;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 

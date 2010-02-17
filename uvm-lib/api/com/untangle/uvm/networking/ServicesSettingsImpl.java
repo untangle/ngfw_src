@@ -36,7 +36,7 @@ package com.untangle.uvm.networking;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,12 +47,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.node.util.UvmUtil;
-import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
+
+import com.untangle.node.util.UvmUtil;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
 
 /**
  * Combined settings for the DHCP and DNS servers.

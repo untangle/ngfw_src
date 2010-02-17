@@ -32,10 +32,11 @@
  */
 
 package com.untangle.node.util;
-import static com.untangle.node.util.Ascii.HT_B;
-import static com.untangle.node.util.Ascii.SP_B;
 import static com.untangle.node.util.Ascii.CR_B;
+import static com.untangle.node.util.Ascii.HT_B;
 import static com.untangle.node.util.Ascii.LF_B;
+import static com.untangle.node.util.Ascii.SP_B;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -307,10 +308,6 @@ public class BBTokenizer {
             SP_B,
             HT_B
         };
-        String cr = new StringBuilder().append('\r').toString();
-        String lf = new StringBuilder().append('\n').toString();
-        String pipe = "|";
-        String comma = ",";
 
         test("FOO".getBytes(),
              delims,

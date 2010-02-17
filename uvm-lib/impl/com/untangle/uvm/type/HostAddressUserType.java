@@ -18,8 +18,6 @@
 
 package com.untangle.uvm.type;
 
-import java.net.InetAddress;
-
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 

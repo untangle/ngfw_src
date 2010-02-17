@@ -12,11 +12,8 @@
 package com.untangle.uvm.security;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.security.Principal;
 import java.util.Date;
-
-import com.untangle.uvm.node.IPaddr;
 
 import org.apache.log4j.Logger;
 
@@ -28,6 +25,8 @@ import org.apache.log4j.Logger;
  */
 public class GlobalPrincipal implements Principal, Serializable
 {
+    private static final long serialVersionUID = -5067063988261711499L;
+    
     /* Global principals are never readonly because they are intended for servlets */
     private final String user;
     private final Date loginDate;

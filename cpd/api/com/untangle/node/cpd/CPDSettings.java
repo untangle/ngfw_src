@@ -19,7 +19,6 @@
 package com.untangle.node.cpd;
 
 import java.io.Serializable;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,11 +33,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.Tid;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.Type;
+
+import com.untangle.uvm.security.Tid;
 
 /**
  * Settings for the Captive Portal Node.
@@ -50,6 +48,8 @@ import org.hibernate.annotations.Type;
 @Table(name="n_cpd_settings", schema="settings")
 public class CPDSettings implements Serializable
 {
+    private static final long serialVersionUID = 3651891069851356144L;
+
     public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, NONE };    
     public static enum PageType { BASIC_LOGIN, BASIC_MESSAGE, CUSTOM };
 

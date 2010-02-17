@@ -36,11 +36,7 @@ package com.untangle.uvm.vnet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.policy.PolicyRule;
 
 /**
  * Describes the fittings for this pipe.
@@ -50,8 +46,6 @@ import com.untangle.uvm.policy.PolicyRule;
  */
 public abstract class PipeSpec
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     private final String name;
     private final Node node;
 

@@ -33,10 +33,10 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.Ascii.COLON;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Iterator;
 
 
 /**

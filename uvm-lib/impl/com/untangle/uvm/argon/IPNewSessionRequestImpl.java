@@ -20,11 +20,8 @@ package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
-
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 
@@ -49,9 +46,6 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
 
     /* This is used to distinguish between REJECTED and REJECTED with code */
     protected byte code  = REJECTED;
-
-    /* Debugging */
-    private final Logger logger = Logger.getLogger(getClass());
 
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.

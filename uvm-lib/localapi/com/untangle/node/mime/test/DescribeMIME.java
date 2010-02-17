@@ -32,9 +32,11 @@
  */
 package com.untangle.node.mime.test;
 
-import java.io.*;
+import java.io.File;
 
-import com.untangle.node.mime.*;
+import com.untangle.node.mime.FileMIMESource;
+import com.untangle.node.mime.MIMEMessage;
+import com.untangle.node.mime.MIMEPolicy;
 
 /**
  * Little test which parses MIME then describes

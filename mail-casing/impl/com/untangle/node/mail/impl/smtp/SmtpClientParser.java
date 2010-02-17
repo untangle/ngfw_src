@@ -18,12 +18,14 @@
 
 package com.untangle.node.mail.impl.smtp;
 
-import static com.untangle.node.util.BufferUtil.*;
+import static com.untangle.node.util.BufferUtil.findCrLf;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.mail.papi.AddressKind;
 import com.untangle.node.mail.papi.BeginMIMEToken;
@@ -48,7 +50,6 @@ import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.ASCIIUtil;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 
 

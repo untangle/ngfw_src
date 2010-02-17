@@ -31,7 +31,9 @@
  * to do so, delete this exception statement from your version.
  */
 package com.untangle.node.util;
-import java.io.*;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 /**

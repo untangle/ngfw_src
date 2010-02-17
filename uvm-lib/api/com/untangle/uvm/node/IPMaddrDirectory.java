@@ -36,7 +36,7 @@ package com.untangle.uvm.node;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,9 +47,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.node.util.UvmUtil;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
+
+import com.untangle.node.util.UvmUtil;
 
 /**
  * A sorted list of IPMaddrRules, used as a directory

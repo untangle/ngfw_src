@@ -33,9 +33,20 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.mime.HeaderNames.*;
-import java.io.*;
-import java.util.*;
+import static com.untangle.node.mime.HeaderNames.CC_LC;
+import static com.untangle.node.mime.HeaderNames.FROM;
+import static com.untangle.node.mime.HeaderNames.FROM_LC;
+import static com.untangle.node.mime.HeaderNames.SUBJECT;
+import static com.untangle.node.mime.HeaderNames.SUBJECT_LC;
+import static com.untangle.node.mime.HeaderNames.TO_LC;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class representing the Headers of a MIME message.

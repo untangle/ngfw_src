@@ -35,7 +35,6 @@
 package com.untangle.uvm.node;
 
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /* This adds the extension that an empty string is parseable as a null IPaddr.

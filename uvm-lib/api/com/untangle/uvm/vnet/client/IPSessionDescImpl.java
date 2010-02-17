@@ -35,9 +35,10 @@ package com.untangle.uvm.vnet.client;
 
 import java.net.InetAddress;
 
+import org.json.JSONBean;
+
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
-import org.json.JSONBean;
 
 /**
  * Client side IP Session Description.

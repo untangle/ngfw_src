@@ -18,7 +18,6 @@
 
 package com.untangle.uvm.argon;
 
-import java.net.InetSocketAddress;
 
 /**
  * The <code>ArgonAgent</code> interface represents an active Node as seen by

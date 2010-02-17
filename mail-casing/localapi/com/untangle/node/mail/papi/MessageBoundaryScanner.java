@@ -32,12 +32,16 @@
  */
 
 package com.untangle.node.mail.papi;
-import static com.untangle.node.util.Ascii.*;
-import static com.untangle.node.util.BufferUtil.*;
-import static com.untangle.node.util.ASCIIUtil.*;
-import java.nio.*;
+import static com.untangle.node.util.Ascii.COLON;
+import static com.untangle.node.util.Ascii.CR;
+import static com.untangle.node.util.Ascii.CRLF_BA;
+import static com.untangle.node.util.Ascii.DOT;
+import static com.untangle.node.util.Ascii.LF;
+import static com.untangle.node.util.BufferUtil.findCrLf;
+import static com.untangle.node.util.BufferUtil.findPattern;
 
-import com.untangle.node.mime.*;
+import java.nio.ByteBuffer;
+
 import org.apache.log4j.Logger;
 
 
@@ -50,32 +54,31 @@ import org.apache.log4j.Logger;
  * not threadsafe.
  */
 public class MessageBoundaryScanner {
-
     //CR
-    private final byte[] CR_BA = new byte[] {CR};
-    private final byte[] CRLF =CRLF_BA;
-    private final byte[] CRLF_DOT = new byte[] {
+    final byte[] CR_BA = new byte[] {CR};
+    final byte[] CRLF =CRLF_BA;
+    final byte[] CRLF_DOT = new byte[] {
         (byte) CR, (byte) LF, (byte) DOT
     };
-    private final byte[] CRLF_DOT_CR = new byte[] {
+    final byte[] CRLF_DOT_CR = new byte[] {
         (byte) CR, (byte) LF, (byte) DOT, (byte) CR
     };
-    private final byte[] CRLF_DOT_CRLF = new byte[] {
+    final byte[] CRLF_DOT_CRLF = new byte[] {
         (byte) CR, (byte) LF, (byte) DOT, (byte) CR, (byte) LF
     };
-    private final byte[] CRLF_DOT_DOT = new byte[] {
+    final byte[] CRLF_DOT_DOT = new byte[] {
         (byte) CR, (byte) LF, (byte) DOT, (byte) DOT
     };
-    private final byte[] CRLF_DOT_DOT_CR = new byte[] {
+    final byte[] CRLF_DOT_DOT_CR = new byte[] {
         (byte) CR, (byte) LF, (byte) DOT, (byte) DOT, (byte) CR
     };
-    private final byte[] CRLF_DOT_DOT_CRLF = new byte[] {
+    final byte[] CRLF_DOT_DOT_CRLF = new byte[] {
         (byte) CR, (byte) LF, (byte) DOT, (byte) DOT, (byte) CR, (byte) LF
     };
-    private final byte[] CRLF_CR = new byte[] {
+    final byte[] CRLF_CR = new byte[] {
         (byte) CR, (byte) LF, (byte) CR
     };
-    private final byte[] CRLF_CRLF = new byte[] {
+    final byte[] CRLF_CRLF = new byte[] {
         (byte) CR, (byte) LF, (byte) CR, (byte) LF
     };
 
@@ -278,11 +281,7 @@ public class MessageBoundaryScanner {
 
         //Scan for the end of headers
         int headersEnd = findPattern(buf, CRLF_CRLF, 0, CRLF_CRLF.length);
-        int newPosition =
-            headersEnd>0?
-            headersEnd + 4:
-            buf.limit();
-
+        
         if(headersEnd >= 0) {
             //Found the end of the headers
             buf.position(headersEnd + 4);

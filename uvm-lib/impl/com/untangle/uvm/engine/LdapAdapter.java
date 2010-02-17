@@ -45,7 +45,6 @@ import java.util.Set;
 import javax.naming.AuthenticationException;
 import javax.naming.CommunicationException;
 import javax.naming.Context;
-import javax.naming.InvalidNameException;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -57,8 +56,6 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
 
 import org.apache.log4j.Logger;
 

@@ -22,13 +22,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Hibernate;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
-import org.hibernate.Hibernate;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Adapts a SimpleEventFilter to a ListEventFilter.

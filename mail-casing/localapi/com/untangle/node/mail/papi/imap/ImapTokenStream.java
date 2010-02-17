@@ -33,14 +33,15 @@
 
 package com.untangle.node.mail.papi.imap;
 
-import com.untangle.uvm.vnet.TCPSession;
+import org.apache.log4j.Logger;
+
 import com.untangle.node.mail.papi.ContinuedMIMEToken;
 import com.untangle.node.token.AbstractTokenHandler;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.PassThruToken;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenResult;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 
 /**

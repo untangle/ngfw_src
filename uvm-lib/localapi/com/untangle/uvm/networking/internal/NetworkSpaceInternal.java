@@ -39,9 +39,7 @@ import java.util.List;
 
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.IPNetworkRule;
-import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.networking.NetworkSpace;
-import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ValidateException;
 
 public class NetworkSpaceInternal

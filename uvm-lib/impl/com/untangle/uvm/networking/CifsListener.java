@@ -18,16 +18,15 @@
 
 package com.untangle.uvm.networking;
 
-import org.apache.log4j.Logger;
-
 import jcifs.Config;
 import jcifs.netbios.NbtAddress;
 
-import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.node.IPaddr;
+import org.apache.log4j.Logger;
 
+import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.node.IPaddr;
 
 class CifsListener implements NetworkSettingsListener
 {

@@ -36,7 +36,6 @@ package com.untangle.node.token;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 /**
  * Abstract base class for <code>TokenHandler</code>s.
@@ -46,8 +45,6 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractTokenHandler implements TokenHandler
 {
-    private final Logger logger = Logger.getLogger(AbstractTokenHandler.class);
-
     private final TCPSession session;
     private final Pipeline pipeline;
 

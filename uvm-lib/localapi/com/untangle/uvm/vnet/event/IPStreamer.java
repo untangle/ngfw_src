@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.vnet.event;
 
-import java.nio.ByteBuffer;
 
 /**
  * Base interface for IP Streamers

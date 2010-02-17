@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.jnetcap.NetcapSession;
-
 import com.untangle.uvm.localapi.LocalIntfManager;
 
 class NetcapIPSessionDescImpl implements IPSessionDesc

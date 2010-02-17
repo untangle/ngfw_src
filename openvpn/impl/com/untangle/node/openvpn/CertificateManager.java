@@ -18,24 +18,21 @@
 package com.untangle.node.openvpn;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.File;
-
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.NodeException;
-
-import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.node.script.ScriptWriter;
 
 class CertificateManager
 {
@@ -70,8 +67,6 @@ class CertificateManager
         SERVER_NAME_FLAG + "=" + "server.${DOMAIN}",
         CA_NAME_FLAG     + "=" + "ca.${DOMAIN}",
     };
-
-    private static final String EMPTY_ARRAY[] = new String[0];
 
     private static final String GENERATE_BASE_SCRIPT   = Constants.SCRIPT_DIR + "/generate-base";
     private static final String GENERATE_CLIENT_SCRIPT = Constants.SCRIPT_DIR + "/generate-client";

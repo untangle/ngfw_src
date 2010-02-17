@@ -20,7 +20,6 @@ package com.untangle.node.mail.impl.imap;
 import java.nio.ByteBuffer;
 
 import com.untangle.node.mail.papi.imap.IMAPTokenizer;
-import org.apache.log4j.Logger;
 
 /**
  * Abstract class which looks for a given
@@ -60,9 +59,6 @@ abstract class CommandTokMon extends TokMon {
     protected static final byte[] OK_BYTES = "ok".getBytes();
     protected static final byte[] NO_BYTES = "no".getBytes();
     protected static final byte[] BAD_BYTES = "bad".getBytes();
-
-    private final Logger m_logger =
-        Logger.getLogger(CommandTokMon.class);
 
     private CommandState m_cmdState = CommandState.NOT_ACTIVE;
     private byte[] m_cmdTag;

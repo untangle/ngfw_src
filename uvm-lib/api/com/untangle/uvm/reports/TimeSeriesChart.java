@@ -33,8 +33,6 @@
 
 package com.untangle.uvm.reports;
 
-import com.untangle.uvm.util.DateTruncator;
-
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,9 +41,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -61,9 +59,10 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.io.CSV;
 import org.jfree.data.time.Minute;
-import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+
+import com.untangle.uvm.util.DateTruncator;
 
 public class TimeSeriesChart extends Plot
 {

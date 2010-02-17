@@ -22,9 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.IllegalAccessException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,6 +29,10 @@ import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -52,9 +53,6 @@ import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.NodeListener;
 import com.untangle.uvm.vnet.NodeStateChangeEvent;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Implements <code>NodeContext</code>. Contains code to load and set
@@ -66,8 +64,6 @@ import org.hibernate.Session;
 class NodeContextImpl implements NodeContext
 {
     private final Logger logger = Logger.getLogger(getClass());
-
-    private static final URL[] URL_PROTO = new URL[0];
 
     private final NodeDesc nodeDesc;
     private final Tid tid;
@@ -473,25 +469,6 @@ class NodeContextImpl implements NodeContext
             } else if (1 < l.size()) {
                 throw new TooManyInstancesException("too many instances: " + n);
             }
-        }
-    }
-
-    private void addTid(Object o)
-    {
-        try {
-            Method m = o.getClass().getMethod("setTid", Tid.class);
-            m.invoke(o, tid);
-        } catch (NoSuchMethodException exn) {
-            /* no setTid(Tid) method, nothing to do */
-            return;
-        } catch (SecurityException exn) {
-            logger.warn(exn); /* shouldn't happen */
-        } catch (IllegalAccessException exn) {
-            logger.warn(exn); /* shouldn't happen */
-        } catch (IllegalArgumentException exn) {
-            logger.warn(exn); /* shouldn't happen */
-        } catch (InvocationTargetException exn) {
-            logger.warn(exn); /* shouldn't happen */
         }
     }
 

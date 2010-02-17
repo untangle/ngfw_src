@@ -18,10 +18,7 @@
 
 package com.untangle.uvm.engine;
 
-import java.net.*;
-
 import com.untangle.uvm.vnet.MPipeManager;
-
 
 /**
  * Creates this platform's default MPipeManager

@@ -19,21 +19,14 @@
 package com.untangle.uvm.networking;
 
 import java.net.InetAddress;
-
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.IntfConstants;
-
-import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-
-import com.untangle.uvm.IntfConstants;
-
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 
 class IPMatcherListener implements NetworkSettingsListener

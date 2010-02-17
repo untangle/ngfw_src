@@ -33,11 +33,17 @@
 
 package com.untangle.node.mime;
 
-import static com.untangle.node.util.ASCIIUtil.*;
+import static com.untangle.node.util.ASCIIUtil.bbToString;
+import static com.untangle.node.util.ASCIIUtil.eatWhitespace;
+import static com.untangle.node.util.ASCIIUtil.isAllLWS;
+import static com.untangle.node.util.ASCIIUtil.isNextLWS;
 
-import java.io.*;
-import java.nio.*;
-import java.util.*;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 

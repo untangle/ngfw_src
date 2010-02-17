@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.MackageInstallException;
@@ -32,7 +34,6 @@ import com.untangle.uvm.toolbox.MackageUninstallException;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
-import org.apache.log4j.Logger;
 
 /**
  * Implements RemoteUpstreamManager.

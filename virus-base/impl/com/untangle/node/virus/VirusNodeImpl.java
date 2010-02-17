@@ -25,6 +25,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.catalina.Valve;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
@@ -42,7 +47,6 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.policy.Policy;
@@ -58,10 +62,6 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.catalina.Valve;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 /**
  * Virus Node.

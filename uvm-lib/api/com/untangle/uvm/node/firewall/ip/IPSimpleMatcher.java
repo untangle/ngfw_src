@@ -35,8 +35,6 @@ package com.untangle.uvm.node.firewall.ip;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.IPaddr;
-
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
@@ -49,6 +47,8 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  */
 public final class IPSimpleMatcher extends IPDBMatcher
 {
+    private static final long serialVersionUID = 801369888075101264L;
+
     /* An IP Matcher that matches everything */
     private static final IPDBMatcher ALL_MATCHER     = new IPSimpleMatcher( true );
 

@@ -18,8 +18,6 @@
 
 package com.untangle.uvm.argon;
 
-import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
 /**
  * The interface <code>Session</code> here.

@@ -18,12 +18,22 @@
 
 package com.untangle.node.mail.impl.quarantine.store;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
-import org.apache.log4j.Logger;
 
 
 /**
