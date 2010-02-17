@@ -458,8 +458,8 @@ class BlockDetail(DetailSection):
             return None
 
         sql = """
-SELECT time_stamp, client_address, client_port,
-       server_address, server_port
+SELECT time_stamp, host(client_address), client_port,
+       host(server_address), server_port
 FROM reports.n_cpd_block_events
 WHERE time_stamp >= %s AND time_stamp < %s
 ORDER BY time_stamp DESC
