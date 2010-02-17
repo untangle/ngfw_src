@@ -421,13 +421,15 @@ class DailySpamRate(Graph):
 SELECT COALESCE(sum(msgs), 0)::float / %%s AS email_rate,
        COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS spam_rate
 FROM reports.n_mail_addr_totals
-WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
+WHERE addr_kind = 'T'
+AND addr = %%s
+AND trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
             else:
                 ks_query = """\
 SELECT COALESCE(sum(msgs), 0)::float / %%s AS email_rate,
        COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS spam_rate
-FROM reports.n_mail_msg_totals
+FROM reports.n_mail_addr_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 """ % (self.__short_name,)
 
@@ -458,8 +460,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             if email:
                 plot_query = """\
 SELECT date_trunc('day', trunc_time) AS day,
-       COALESCE(sum(msgs), 0)::float AS msgs,
-       COALESCE(sum(%s_spam_msgs), 0)::float AS %s_spam_msgs
+       COALESCE(sum(msgs), 0)::float / %%s AS msgs,
+       COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS %s_spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
 GROUP BY day
@@ -467,9 +469,9 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
             else:
                 plot_query = """\
 SELECT date_trunc('day', trunc_time) AS day,
-       COALESCE(sum(msgs), 0)::float AS msgs,
-       COALESCE(sum(%s_spam_msgs), 0)::float AS %s_spam_msgs
-FROM reports.n_mail_msg_totals
+       COALESCE(sum(msgs), 0)::float / %%s AS msgs,
+       COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS %s_spam_msgs
+FROM reports.n_mail_addr_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
 GROUP BY day
 ORDER BY day asc""" % (2 * (self.__short_name,))
@@ -481,9 +483,9 @@ ORDER BY day asc""" % (2 * (self.__short_name,))
             curs = conn.cursor()
 
             if email:
-                curs.execute(plot_query, (email, one_week, ed))
+                curs.execute(plot_query, (report_days, report_days, email, one_week, ed))
             else:
-                curs.execute(plot_query, (one_week, ed))
+                curs.execute(plot_query, (report_days, report_days, one_week, ed))
 
             for r in curs.fetchall():
                 dates.append(r[0])
