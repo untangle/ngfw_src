@@ -3898,16 +3898,19 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }
             return "";
         }
-        var qt = this.tooltip,
-            target = this.header.dom;
-        if (qt){ 
-            Ext.QuickTips.register({
-                target: target,
-                title: '',
-                text: qt,
-                enabled: true,
-                showDelay: 20
-            });
+        if ( undefined !== this.header ) {
+            var target = this.header.dom;
+            var qt = this.tooltip;
+        
+            if (( undefined !== qt ) && ( undefined !== target )) {
+                Ext.QuickTips.register({
+                    target: target,
+                    title: '',
+                    text: qt,
+                    enabled: true,
+                    showDelay: 20
+                });
+            }
         }        
         this.initialLoad.defer(1, this);
     },
