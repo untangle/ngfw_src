@@ -343,7 +343,7 @@ WHERE %(table_name)s.%(time_field)s >= %%(start_date)s AND %(table_name)s.%(time
 
     for ex in extra_where: # of the form (strTemplate, dictionary)
         template, h = ex
-        query += "\n" + template.replace("%(", "%%(")
+        query += "\nAND " + template.replace("%(", "%%(")
         params_to_quote.update(h)
 
     query += """
