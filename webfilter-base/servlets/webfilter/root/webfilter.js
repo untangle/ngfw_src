@@ -26,7 +26,8 @@ function unblockSite(global)
         } catch (exn) {
             try {
                 req = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch (exn) {}
+            } catch (exn_1) {
+            }
         }
     }
 
@@ -40,4 +41,4 @@ function unblockSite(global)
     req.open('POST', "unblock", true);
     req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     req.send("nonce=" + nonce + "&tid=" + tid + "&global=" + global);
-};
+}
