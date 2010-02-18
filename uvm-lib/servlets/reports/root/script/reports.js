@@ -1317,15 +1317,17 @@ Ung.ReportDetails = Ext.extend(Object, {
                         rpc.reportingManager.getDetailData(function(result, exception) {
                             if (exception || result == null) {
                                 if (!handleTimeout(exception) || result == null) {
-                                    var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.');
+                                    var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.'),
+                                        title = i18n._('Failed');;
                                     if(exception){
                                         if(exception.message){
                                             message = exception.message;
                                         }
                                     }else if(result==null){
-                                        message = i18n._('Dynamic report generation failed. Unable to contact report server');
+                                        title = i18n._('Could not load Dynamic Reports data');
+                                        message = i18n._('The report requested is older than the maximum number of days allowed to store dynamic reports data.');                            
                                     } 
-                                    Ext.MessageBox.alert("Failed", message);
+                                    Ext.MessageBox.alert(title, message);
                                 }
                                 return;
                             }
@@ -1353,15 +1355,18 @@ Ung.ReportDetails = Ext.extend(Object, {
             rpc.reportingManager.getDetailData(function(result, exception) {
                 if (exception || result == null) {
                     if (!handleTimeout(exception) || result == null) {
-                        var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.');
+                        var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.'),
+                            title = i18n._('Failed');
                         if(exception){
                             if(exception.message){
                                 message = exception.message;
-                            }
+                            }                            
                         }else if(result==null){
-                            message = i18n._('Dynamic report generation failed. Unable to contact report server');
+                            title = i18n._('Could not load Dynamic Reports data');
+                            message = i18n._('The report requested is older than the maximum number of days allowed to store dynamic reports data.');                            
                         } 
-                        Ext.MessageBox.alert("Failed", message);
+                        Ext.MessageBox.alert(title, message);                        
+
                     }
                     return;
                 }
