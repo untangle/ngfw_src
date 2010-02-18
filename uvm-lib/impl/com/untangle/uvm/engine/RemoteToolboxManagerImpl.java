@@ -1052,8 +1052,20 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         while (null != (line = br.readLine())) {
             StringTokenizer tok = new StringTokenizer(line);
 
+            /* line is a Blank line */
+            if ( !tok.hasMoreElements()) {
+                continue;
+            }
+            
             String pkg = tok.nextToken();
+            
+            if ( !tok.hasMoreElements()) {
+                logger.warn("Ignoring package with missing version string '" + pkg + "'");
+                continue;
+            }
+            
             String ver = tok.nextToken();
+            
             m.put(pkg, ver);
         }
         is.close();

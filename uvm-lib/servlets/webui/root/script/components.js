@@ -3911,7 +3911,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     showDelay: 20
                 });
             }
-        }        
+        }
         this.initialLoad.defer(1, this);
     },
     // load first page initialy
