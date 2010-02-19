@@ -524,7 +524,7 @@ def __get_node_partial_order(exclude_uninstalled=True):
     while len(available):
         name = available.pop()
         if exclude_uninstalled:
-            if name in installed:
+            if name in installed or name == 'untangle-vm':
                 __add_node(name, list, available)
         else:
             __add_node(name, list, available)
