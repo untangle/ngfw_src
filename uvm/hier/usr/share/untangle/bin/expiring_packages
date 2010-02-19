@@ -9,9 +9,29 @@ get_expiring_nodes() {
         if [ ! -f ${t_file} ]; then
             continue
         fi
+        
+        ## Don't send reports for nodes that have the full version
+        if [ -f "${t_file%%-trial.ulf}-sub.ulf" ]; then
+            continue
+        fi
 
-        awk -v "filter_date=${t_date}" '/com.untangle.uvm.license.mackage=/ { sub( "com.untangle.uvm.license.mackage=", "" ) ; mackage=$0 } ; /com.untangle.uvm.license.end=/{ sub( "com.untangle.uvm.license.end=", "" ) ; end_time=strftime( "%y-%m-%d", $0 / 1000 ) } ; END { if ( end_time ==  filter_date ) print mackage }' \
-            ${t_file}
+        ## All because mawk doesn't have strftime
+        mackage=`awk '/com.untangle.uvm.license.mackage=/ { sub( "com.untangle.uvm.license.mackage=", "" ); print $0 }' ${t_file}` 
+        end_time=`awk '/com.untangle.uvm.license.end=/{ sub( "com.untangle.uvm.license.end=", "" ) ; print $0 }' ${t_file}` 
+
+        if [ -z "${mackage}" ]; then
+            continue
+        fi
+        
+        if [ -z "${end_time}" ]; then
+            continue
+        fi
+
+        end_time=`ruby -e "puts Time.at( ${end_time} / 1000 ).strftime( '%y-%m-%d' )"`
+        
+        if [ "${end_time}" = "${t_date}" ]; then
+            echo $mackage
+        fi
     done
 }
 
