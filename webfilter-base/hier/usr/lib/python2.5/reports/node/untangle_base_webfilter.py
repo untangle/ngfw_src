@@ -406,8 +406,8 @@ class DailyWebUsage(Graph):
         query = """\
 SELECT max(hits), COALESCE(sum(hits), 0) / %s, max(wf_%s_blocks),
        COALESCE(sum(wf_%s_blocks), 0) / %s,
-       max(wf_%s_violations),
-       COALESCE(sum(wf_%s_violations), 0) / %s
+       max(wf_%s_violations-wf_%s_blocks),
+       COALESCE(sum(wf_%s_violations-wf_%s_blocks), 0) / %s
 FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
              sum(wf_%s_blocks)::int as wf_%s_blocks,
              sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)::int as wf_%s_violations
@@ -415,6 +415,8 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
       WHERE trunc_time >= %%s AND trunc_time < %%s
 """ % (report_days, self.__vendor_name,
        self.__vendor_name, report_days,
+       self.__vendor_name,
+       self.__vendor_name,
        self.__vendor_name,
        self.__vendor_name, report_days,
        self.__vendor_name, self.__vendor_name,
@@ -450,10 +452,10 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
                               _('violations/day'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Blocked Violations'), r[3],
-                              _('violations/day'))
+                              _('blocks/day'))
             lks.append(ks)
             ks = KeyStatistic(_('Max Blocked Violations'), r[2],
-                              _('violations/day'))
+                              _('blocks/day'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -472,19 +474,21 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
         conn = sql_helper.get_connection()
         try:
             q = """\
-SELECT date_trunc('day', trunc_time) AS day,
+SELECT day,
        coalesce(sum(hits), 0)::int AS hits,
-       coalesce(sum(wf_%s_blocks), 0)::int AS wf_%s_blocks,
-COALESCE(sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END), 0)::int AS wf_%s_violations
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (5 * (self.__vendor_name,))
+       coalesce(sum(wf_%s_blocks), 0)::int,
+       coalesce(sum(wf_%s_violations-wf_%s_blocks), 0)::int
+FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
+             sum(wf_%s_blocks)::int as wf_%s_blocks,
+             sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)::int as wf_%s_violations
+      FROM reports.n_http_totals
+      WHERE trunc_time >= %%s AND trunc_time < %%s
+      GROUP BY day) as foo GROUP BY day
+""" % (8*(self.__vendor_name,))
             if host:
                 q = q + " AND hname = %s"
             elif user:
                 q = q + " AND uid = %s"
-            q = q + """
-GROUP BY day
-ORDER BY day asc"""
 
             curs = conn.cursor()
 
@@ -505,7 +509,7 @@ ORDER BY day asc"""
                 if not r:
                     break
                 dates.append(r[0])
-                hits.append(r[1]-r[2])
+                hits.append(r[1]-r[2]-r[3])
                 blocks.append(r[2])
                 violations.append(r[3])
 
@@ -573,8 +577,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,
             r = curs.fetchone()
 
             hits = r[0]
-            violations = r[1]
             blocks = r[2]
+            violations = r[1] - blocks
             
             ks = KeyStatistic(_('Total Clean Hits'), hits-violations-blocks, 'hits')
             lks.append(ks)
