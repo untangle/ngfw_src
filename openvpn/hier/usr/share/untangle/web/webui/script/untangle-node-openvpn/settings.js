@@ -324,11 +324,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                 this.i18n._("Please wait"));
 
             var serverAddress = this.panel.find( 'name', 'serverAddress' )[0].getValue();
-            var serverPort = "443";
+            var serverPort = 443;
             var password = this.panel.find( 'name', 'password' )[0].getValue();
 
             var sarr = serverAddress.split( ":" );
-            if ( sarr.length == 2 ) serverPort = sarr[1];
+            if ( sarr.length == 2 ) {
+                serverPort = parseInt( sarr[1], 10 );
+                serverAddress = sarr[0];
+            }
 
             this.node.downloadConfig( this.completeFetchClient.createDelegate( this , [ handler ], true ),
                                       serverAddress, serverPort, password );
