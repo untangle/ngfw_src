@@ -535,10 +535,12 @@ class TopSpammedUsers(Graph):
         conn = sql_helper.get_connection()
         try:
             query = """\
-SELECT addr, COALESCE(sum(%s_spam_msgs), 0)::int AS spam_msgs
-FROM reports.n_mail_addr_totals
-WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
-GROUP BY addr
+SELECT foo.addr, foo.spam_msgs
+FROM (SELECT addr, sum(%s_spam_msgs)::int AS spam_msgs
+      FROM reports.n_mail_addr_totals
+      WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
+      GROUP BY addr) AS foo
+WHERE foo.spam_msgs > 0
 ORDER BY spam_msgs desc""" % (self.__short_name,)
 
             curs = conn.cursor()
