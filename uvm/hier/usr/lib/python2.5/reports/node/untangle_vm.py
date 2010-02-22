@@ -637,9 +637,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             extra_where = []
             if host:
-                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -742,9 +742,9 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             extra_where = []
             if host:
-                extra_where.append(("AND hname = %(host)s", { 'host' : host }))
+                extra_where.append(("hname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("AND uid = %(user)s" , { 'user' : user }))
+                extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.session_counts",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),

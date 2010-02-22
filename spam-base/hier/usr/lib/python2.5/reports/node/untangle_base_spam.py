@@ -355,7 +355,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
                     "coalesce(sum(%s_spam_msgs), 0)::float * 60 * 60 " % (self.__short_name)]
 
             if email:
-                extra_where = (("AND addr_kind = 'T' AND addr = %(email)s", { 'email' : email }),)
+                extra_where = (("AND addr_kind = 'T' addr = %(email)s", { 'email' : email }),)
             else:
                 extra_where = []
                 
