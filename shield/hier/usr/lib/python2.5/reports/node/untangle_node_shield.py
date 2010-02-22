@@ -148,14 +148,15 @@ class DailyRequest(Graph):
             curs = conn.cursor()
 
             query = """\
-SELECT sum(accepted) / 1440 as avg_accepted, max(accepted) as max_accepted,
-       sum(limited) / 1440 as avg_limited, max(limited) as max_limited,
-       sum(dropped + rejected) / 1440 as avg_blocked,
+SELECT sum(accepted) / (60*24*%s) as avg_accepted, max(accepted) as max_accepted,
+       sum(limited) / (60*24*%s) as avg_limited, max(limited) as max_limited,
+       sum(dropped + rejected) / (60*24*%s) as avg_blocked,
        max(dropped + rejected) as max_blocked
 FROM reports.n_shield_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
-            curs.execute(query, (one_week, ed))
+            curs.execute(query, (report_days, report_days, report_days,
+                                 one_week, ed))
 
             r = curs.fetchone()
 
