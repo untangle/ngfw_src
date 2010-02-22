@@ -404,8 +404,15 @@ def fix_hierarchy(output_base):
                 for node_dir in os.listdir('%s/%s' % (base_dir, date_dir)):
                     node_path = '%s/%s/%s' % (base_dir, date_dir, node_dir)
                     if os.path.isdir(node_path) and not re.match('[0-9]+-days?$', node_dir):
-                        os.rename(node_path, '%s/%s' % (one_day_dir, node_dir))
-
+                        newDir = '%s/%s' % (one_day_dir, node_dir)
+                        os.rename(node_path, newDir)
+                        xmlFile = os.path.join(newDir, "report.xml")
+                        f = open(xmlFile)
+                        xml = f.read()
+                        f.close()
+                        f = open(xmlFile, 'w')
+                        f.write(re.sub(r'/(\d\d\d\d-\d\d-\d\d)/', r'/\1/1-day/', xml))
+                        f.close()
 
 def get_node_base(name, date_base, report_days=1, host=None, user=None,
                   email=None):
