@@ -342,9 +342,9 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
                     "sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)" % (self.__vendor_name, self.__vendor_name)]
 
             if host:
-                extra_where = [("AND hname = %(host)s", { 'host' : host }),]
+                extra_where = [("hname = %(host)s", { 'host' : host }),]
             elif user:
-                extra_where = [("AND uid = %(user)s" , { 'user' : user }),]
+                extra_where = [("uid = %(user)s" , { 'user' : user }),]
             else:
                 extra_where = []
 
