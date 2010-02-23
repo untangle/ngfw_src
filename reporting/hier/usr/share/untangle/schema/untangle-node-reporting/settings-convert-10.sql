@@ -20,29 +20,29 @@ UPDATE settings.n_reporting_settings SET attachment_size_limit = 10;
 ALTER TABLE settings.n_reporting_settings 
    ALTER COLUMN attachment_size_limit SET NOT NULL;
 
-ALTER TABLE settings.n_reporting_settings ADD COLUMN db_retention INT4;
+ALTER TABLE settings.n_reporting_settings ADD COLUMN file_retention INT4;
 
 UPDATE settings.n_reporting_settings
-   SET db_retention = 7
-   WHERE db_retention = 14 OR db_retention IS NULL;
+   SET file_retention = 14
+   WHERE file_retention IS NULL;
 
 ALTER TABLE settings.n_reporting_settings 
-      ALTER COLUMN db_retention SET NOT NULL;
+      ALTER COLUMN file_retention SET NOT NULL;
 
 -- This schema had some fail in it.  Essentially someone forgot that 8 comes after
 -- 7 and checked in schema-convert-9.sql into 7.1.  They then checked in
 -- schema-convert-8.sql into 7.2 which will never run.  For safety, this is going
 -- to first try to reuse the days_to_keep column.  If that doesn't work, it will
 -- create a new column.
-ALTER TABLE settings.n_reporting_settings RENAME COLUMN days_to_keep TO file_retention;
+ALTER TABLE settings.n_reporting_settings RENAME COLUMN days_to_keep TO db_retention;
 
-ALTER TABLE settings.n_reporting_settings ALTER COLUMN file_retention SET NOT NULL;
+ALTER TABLE settings.n_reporting_settings ALTER COLUMN db_retention SET NOT NULL;
 
-ALTER TABLE settings.n_reporting_settings ADD COLUMN file_retention INT4;
+ALTER TABLE settings.n_reporting_settings ADD COLUMN db_retention INT4;
 
 UPDATE settings.n_reporting_settings
-   SET file_retention = 30
-   WHERE file_retention IS NULL;
+   SET db_retention = 7
+   WHERE db_retention IS NULL;
 
 ALTER TABLE settings.n_reporting_settings 
-      ALTER COLUMN file_retention SET NOT NULL;
+      ALTER COLUMN db_retention SET NOT NULL;
