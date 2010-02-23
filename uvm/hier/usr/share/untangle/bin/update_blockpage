@@ -3,7 +3,7 @@
 get_available_version()
 {
     ## Use the DNS system to check the current version.
-    host -t txt update-1.untangle.com | awk -v version=unknown '/descriptive text "[0-9]+"$/ { gsub( ".* descriptive text \"", "" ) ; gsub( "\"$", "" ) ; version=$0 } ; END { print version }'
+    host -t txt update-4.untangle.com | awk -v version=unknown '/descriptive text "[0-9]+"$/ { gsub( ".* descriptive text \"", "" ) ; gsub( "\"$", "" ) ; version=$0 } ; END { print version }'
 }
 
 get_current_version()
@@ -51,7 +51,7 @@ download_update()
     local t_output
     t_output=$1
 
-    wget -O ${t_output} http://guide.untangle.com/download/patches/blockpage.tar.gz 2> /dev/null
+    wget -O ${t_output} http://guide.untangle.com/download/patches/v2/blockpage.tar.gz 2> /dev/null
 }
 
 install_update()
