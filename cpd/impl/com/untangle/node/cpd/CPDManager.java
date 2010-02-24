@@ -178,6 +178,10 @@ class CPDManager {
             break;
         }
         
+        if ( !isAuthenticated ) {
+            return false;
+        }
+        
         /* Tell the Captive Portal daemon about the new success */
         try {
             if ( !replaceHost(address, username)) {
