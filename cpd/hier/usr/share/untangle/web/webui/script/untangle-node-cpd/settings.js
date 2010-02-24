@@ -874,7 +874,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                                 return;
                             }
 
-                            window.open("/cpd/portal.php", "_blank");
+                            window.open("/cpd", "_blank");
                         }.createDelegate(this)
                     }]
                 },{
