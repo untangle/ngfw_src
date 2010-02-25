@@ -39,6 +39,15 @@ UPDATE = _('Update')
 LOGOUT = _('Logout')
 FAILED = _('Failed')
 
+def auto_incr(start_value=0, amount = 1):
+    v = [start_value]
+    def f():
+        current = v[0]
+        v[0] += amount
+        return current
+
+    return f
+
 class Cpd(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-cpd')
@@ -224,52 +233,62 @@ class DailyUsage(Graph):
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
         one_week = DateFromMx(start_date)
 
+        # dt = Day Totals.  These are the totals over the entire day.
+        # pd = Per Day.  This is the number of a particular event per day.
         lks = []
         query = """
-SELECT COALESCE(sum(logins), 0) / %s, COALESCE(max(logins), 0),
-       COALESCE(sum(updates), 0) / %s, COALESCE(max(updates), 0),
-       COALESCE(sum(logouts), 0) / %s, COALESCE(max(logouts), 0),
-       COALESCE(sum(failures), 0) / %s, COALESCE(max(failures), 0),
-       COALESCE(sum(logins+updates+logouts+failures), 0) / %s,
-       COALESCE(max(logins+updates+logouts+failures), 0)
-FROM reports.n_cpd_login_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
+       COALESCE(SUM(dt.logouts_pd)/%s,0), COALESCE(MAX(dt.logouts_pd),0),
+       COALESCE(SUM(dt.failures_pd)/%s,0), COALESCE(MAX(dt.failures_pd),0),
+       COALESCE(SUM(dt.logins_pd + dt.logouts_pd + dt.failures_pd)/%s,0),
+       COALESCE(MAX(dt.logins_pd + dt.logouts_pd + dt.failures_pd),0)
+       FROM (
+           SELECT SUM(logins) AS logins_pd,
+                  SUM(logouts) AS logouts_pd,
+                  SUM(failures) AS failures_pd,
+                  DATE_TRUNC('day',trunc_time) AS day
+           FROM reports.n_cpd_login_totals
+           WHERE trunc_time >= %s AND trunc_time < %s
+           GROUP BY day
+       ) AS dt
 """
         conn = sql_helper.get_connection()
         try:
             curs = conn.cursor()
 
-            curs.execute(query, (report_days,)*5 + (one_week, ed))
+            curs.execute(query, (report_days,)*4 + (one_week, ed))
 
             r = curs.fetchone()
 
-            ks = KeyStatistic(_('Average Logins'), r[0], N_('events'))
+            c = auto_incr()
+            
+            ks = KeyStatistic(_('Average Logins'), r[c()], N_('events'))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Logins'), r[1], N_('events'))
+            ks = KeyStatistic(_('Max Logins'), r[c()], N_('events'))
             lks.append(ks)
-            ks = KeyStatistic(_('Average Updates'), r[2], N_('events'))
+            ks = KeyStatistic(_('Average Logouts'), r[c()], N_('events'))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Updates'), r[3], N_('events'))
+            ks = KeyStatistic(_('Max Logouts'), r[c()], N_('events'))
             lks.append(ks)
-            ks = KeyStatistic(_('Average Logouts'), r[4], N_('events'))
+            ks = KeyStatistic(_('Average Failures'), r[c()], N_('events'))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Logouts'), r[5], N_('events'))
+            ks = KeyStatistic(_('Max Failures'), r[c()], N_('events'))
             lks.append(ks)
-            ks = KeyStatistic(_('Average Failures'), r[6], N_('events'))
+            ks = KeyStatistic(_('Average Events'), r[c()], N_('events'))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Failures'), r[7], N_('events'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Average Events'), r[8], N_('events'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Events'), r[9], N_('events'))
+            ks = KeyStatistic(_('Max Events'), r[c()], N_('events'))
             lks.append(ks)
         finally:
             conn.commit()
 
         query = """
-SELECT date_trunc('day', trunc_time) AS day,
-sum(logins), sum(updates), sum(logouts),sum(failures),
-sum(logins+updates+logouts+failures)
+SELECT
+    DATE_TRUNC('day', trunc_time) AS day,
+    SUM(logins),
+    SUM(logouts),
+    SUM(failures),
+    SUM(logins+logouts+failures)
+    
 FROM reports.n_cpd_login_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 GROUP BY day
@@ -288,11 +307,13 @@ GROUP BY day
             for r in curs.fetchall():
                 dates.append(r[0])
                 logins.append(r[1])
-                logouts.append(r[3])
-                failures.append(r[4])
-                events.append(r[5])
+                logouts.append(r[2])
+                failures.append(r[3])
+                events.append(r[4])
         finally:
             conn.commit()
+
+        print "sd: %s ; ed: %s" % (start_date,end_date )
 
         rp = sql_helper.get_required_points(start_date, end_date,
                                             mx.DateTime.DateTimeDelta(1))
@@ -307,7 +328,7 @@ GROUP BY day
                          color=colors.goodness)
         plot.add_dataset(dates, logouts, label=_('logouts'),
                          color=colors.detected)
-        plot.add_dataset(dates, logouts, label=_('failures'),
+        plot.add_dataset(dates, failures, label=_('failures'),
                          color=colors.badness)
 
         return (lks, plot)
