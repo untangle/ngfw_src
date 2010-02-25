@@ -11,6 +11,7 @@
 
 !include "MUI.nsh"
 !include "setpath.nsi"
+!include "GetWindowsVersion.nsi"
 
 !define HOME "openvpn"
 !define MV_FILES "@UVM_CONF@/openvpn"
@@ -19,7 +20,7 @@
 !define BIN "${HOME}\bin"
 
 !define PRODUCT_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.1_RC19"
+!define OPENVPN_VERSION "2.1.1"
 !define GUI_VERSION "1.0.3"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 
@@ -119,10 +120,10 @@
   
 ;--------------------------------
 ;Language Strings
-
+  
   LangString DESC_SecOpenVPNUserSpace ${LANG_ENGLISH} "Install OpenVPN user-space components, including openvpn.exe."
  
- LangString DESC_SecOpenSSLDLLs ${LANG_ENGLISH} "Install OpenSSL DLLs locally (may be omitted if DLLs are already installed globally)."
+  LangString DESC_SecOpenSSLDLLs ${LANG_ENGLISH} "Install OpenSSL DLLs locally (may be omitted if DLLs are already installed globally)."
 
   LangString DESC_SecTAP ${LANG_ENGLISH} "Install/Upgrade the TAP-Win32/Win64 virtual device driver.  Will not interfere with CIPE."
 
@@ -213,6 +214,35 @@ FunctionEnd
 !endif
 
 !define SF_NOT_RO     0xFFFFFFEF
+
+Section "-Check User Rights and System" 
+# Verify that user has admin privs
+  UserInfo::GetName
+  IfErrors ok
+  Pop $R0
+  UserInfo::GetAccountType
+  Pop $R1
+  StrCmp $R1 "Admin" ok
+    Messagebox MB_OK "Administrator privileges required to install ${PRODUCT_NAME} [$R0/$R1]"
+    Abort
+
+ok:
+
+# Check windows version
+  Call GetWindowsVersion
+  Pop $1
+  StrCmp $1 "2000" goodwinver
+  StrCmp $1 "XP" goodwinver
+  StrCmp $1 "2003" goodwinver
+  StrCmp $1 "VISTA" goodwinver
+  StrCmp $1 "7" goodwinver
+
+  Messagebox MB_OK "Sorry, ${PRODUCT_NAME} does not currently support Windows $1"
+  Abort
+
+goodwinver:
+
+SectionEnd
 
 Section "OpenVPN User-Space Components" SecOpenVPNUserSpace
 
