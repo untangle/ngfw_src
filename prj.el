@@ -22,7 +22,7 @@
               "apache-tomcat-5.5.17-embed/lib/jsp-api.jar"
               "apache-tomcat-5.5.17-embed/lib/servlet-api.jar"
               "bcel-5.1/bcel-5.1.jar"
-              "c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar"
+              "c3p0-0.9.1.2/lib/c3p0-0.9.1.2.jar"
               "commons-fileupload-1.1/commons-fileupload-1.1.jar"
               "commons-httpclient-3.0/commons-httpclient-3.0.jar"
               "hibernate-3.2/hibernate3.jar"

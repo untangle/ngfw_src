@@ -19,7 +19,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz commons-beanutils-1.7.0.tar.gz \
 	hibernate-3.2.4.sp1.tar.gz hibernate-annotations-3.3.0.GA.tar.gz \
 	apache-tomcat-5.5.26.tar.gz jfreechart-1.0.13.tar.gz \
 	logging-log4j-1.2.14.tar.gz trove-1.0.2.tar.gz xdoclet-lib-1.2.3.tar.gz \
-	bcel-5.2.tar.gz c3p0-0.9.0.4.bin.tar.gz velocity-1.4.tar.gz \
+	bcel-5.2.tar.gz c3p0-0.9.1.2.tar.gz velocity-1.4.tar.gz \
 	jcifs_1.2.9.tar.gz commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \
 	commons-httpclient-3.0.tar.gz AjaxTK-3.1.1_GA_394-src.tar.gz \
 	commons-codec-1.3.tar.gz tightvnc-1.2.9_javabin.tar.gz \
