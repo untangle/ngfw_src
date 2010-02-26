@@ -260,7 +260,7 @@ public abstract class Blacklist
 
         // Check Extensions
         for (StringRule rule : settings.getBlockedExtensions()) {
-            String exn = rule.getString().toLowerCase();
+            String exn = "."+rule.getString().toLowerCase();
             if (rule.isLive() && path.endsWith(exn)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("blocking extension " + exn);
