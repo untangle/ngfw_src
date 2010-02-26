@@ -122,6 +122,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
             }
         };
         getNodeContext().runTransaction(tw);
+
+        shutdownMatchingSessions();
     }
 
     public List<FirewallRule> getFirewallRuleList()
@@ -143,6 +145,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
             }
         };
         getNodeContext().runTransaction(tw);
+
+        shutdownMatchingSessions();
     }
     
     public void updateAll(final FirewallBaseSettings baseSettings,
@@ -162,6 +166,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
         };
         getNodeContext().runTransaction(tw);
         handler.configure(settings);
+
+        shutdownMatchingSessions();
     }
 
     public Validator getValidator() {
