@@ -8,66 +8,67 @@
     <title>${bbs.companyName}</title>
     <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
-        @import "/ext/resources/css/ext-all.css";
+        @import "/ext/resources/css/ext-all.css?s=${buildStamp}";
     </style>
 <c:if test="${isDebug==false}">
-    <script type="text/javascript" src="/ext/adapter/ext/ext-base.js"></script>
-    <script type="text/javascript" src="/ext/ext-all.js"></script>
+    <script type="text/javascript" src="/ext/adapter/ext/ext-base.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext/ext-all.js?s=${buildStamp}"></script>
 
-    <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js"></script>
-    <script type="text/javascript" src="/script/i18n.js"></script>
-    <script type="text/javascript" src="script/components-min.js"></script>
-    <script type="text/javascript" src="script/main-min.js"></script>
+    <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/components-min.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/main-min.js?s=${buildStamp}"></script>
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
-    <script type="text/javascript" src="/script/timezone.js"></script>
-    <script type="text/javascript" src="/script/country.js"></script>
-    <script type="text/javascript" src="/script/wizard.js"></script>
+    <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
 </c:if>
 <c:if test="${isDebug==true}">
-    <script type="text/javascript" src="/ext/source/core/Ext.js"></script>
-    <script type="text/javascript" src="/ext/source/adapter/ext-base.js"></script>
-    <script type="text/javascript" src="/ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="/ext/source/core/Ext.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext/source/adapter/ext-base.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext/ext-all-debug.js?s=${buildStamp}"></script>
 
 
-    <script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
-    <script type="text/javascript" src="/script/i18n.js"></script>
-    <script type="text/javascript" src="script/components.js"></script>
-    <script type="text/javascript" src="script/main.js"></script>
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
-    <script type="text/javascript" src="/script/timezone.js"></script>
-    <script type="text/javascript" src="/script/country.js"></script>
-    <script type="text/javascript" src="/script/wizard.js"></script>
+    <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
 
 <!-- Just for Test, normaly this resources are Dynamically loaded
 -->
-    <script type="text/javascript" src="script/untangle-node-openvpn/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-spyware/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-shield/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-base-webfilter/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-webfilter/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-phish/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-ips/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-firewall/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-portal/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-reporting/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-pcremote/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-policy/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-adconnector/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-base-virus/settings.js"></script>
-    <script type="text/javascript" src="script/untangle-node-clam/settings.js"></script>
-    <script type="text/javascript" src="script/config/administration.js"></script>
-    <script type="text/javascript" src="script/config/email.js"></script>
-    <script type="text/javascript" src="script/config/system.js"></script>
-    <script type="text/javascript" src="script/config/systemInfo.js"></script>
-    <script type="text/javascript" src="script/config/upgrade.js"></script>
-    <script type="text/javascript" src="script/config/localDirectory.js"></script>
-    <script type="text/javascript" src="script/config/policyManager.js"></script>
+    <script type="text/javascript" src="script/untangle-node-openvpn/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-spyware/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-shield/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-base-webfilter/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-webfilter/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-phish/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-ips/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-firewall/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-portal/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-reporting/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-pcremote/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-policy/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-adconnector/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-base-virus/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-clam/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/administration.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/email.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/system.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/systemInfo.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/upgrade.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/localDirectory.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/policyManager.js?s=${buildStamp}"></script>
 </c:if>
+
 <c:if test="${param['console']==1}">
     <script type="text/javascript">
         Ung.Util.maximize();

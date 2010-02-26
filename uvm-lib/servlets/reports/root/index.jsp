@@ -11,6 +11,8 @@ String companyUrl = bs.getCompanyUrl();
 
 RemoteReportingManager reportingManager = uvm.reportingManager();
 
+String buildStamp = getServletContext().getInitParameter("buildStamp");
+
 boolean reportingEnabled = reportingManager.isReportingEnabled();
 boolean reportsAvailable = reportingManager.isReportsAvailable();
 if (!reportsAvailable || !reportingEnabled) {
@@ -26,7 +28,7 @@ if (!reportsAvailable || !reportingEnabled) {
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <style type="text/css">
 /* <![CDATA[ */
-@import url(/images/base.css);
+    @import url(/images/base.css?s=<%=buildStamp%>);
 /* ]]> */
 </style>
 </head>
@@ -65,25 +67,25 @@ if (!reportsAvailable || !reportingEnabled) {
 </html>
 
 <%
-} else {
+} else {    
 %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <title>Reports</title>
     <style type="text/css">
-        @import "/ext/resources/css/ext-all.css";
+        @import "/ext/resources/css/ext-all.css?s=<%=buildStamp%>";
     </style>
-    <script type="text/javascript" src="/ext/source/core/Ext.js"></script>
-    <script type="text/javascript" src="/ext/source/adapter/ext-base.js"></script>
-    <script type="text/javascript" src="/ext/ext-all-debug.js"></script>
+    <script type="text/javascript" src="/ext/source/core/Ext.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/ext/source/adapter/ext-base.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/ext/ext-all-debug.js?s=<%=buildStamp%>"></script>
 
-    <script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
 
-    <script type="text/javascript" src="/script/i18n.js"></script>
-    <script type="text/javascript" src="script/components.js"></script>
-    <script type="text/javascript" src="script/reports-components.js"></script>
-    <script type="text/javascript" src="script/reports.js"></script>
+    <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/components.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/reports-components.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="script/reports.js?s=<%=buildStamp%>"></script>
 
     <script type="text/javascript">
     </script>
