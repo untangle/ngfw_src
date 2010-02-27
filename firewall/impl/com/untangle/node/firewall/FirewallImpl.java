@@ -90,9 +90,9 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Sessions passed"), null, I18nUtil.marktr("PASS"));
-        loggedBlinger = c.addMetric("log", I18nUtil.marktr("Sessions logged"), null);
+        loggedBlinger = c.addActivity("log", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
         lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger, loggedBlinger);
     }
 

@@ -54,13 +54,13 @@ public class Counters
     private final Tid tid;
 
     private final Map<String, BlingBlinger> metrics
-        = new HashMap<String, BlingBlinger>();
+        = new LinkedHashMap<String, BlingBlinger>();
 
     private final Map<String, BlingBlinger> activities
         = new LinkedHashMap<String, BlingBlinger>();
 
     private final Map<String, LoadMaster> loads
-        = new HashMap<String, LoadMaster>();
+        = new LinkedHashMap<String, LoadMaster>();
 
     public Counters(Tid tid)
     {

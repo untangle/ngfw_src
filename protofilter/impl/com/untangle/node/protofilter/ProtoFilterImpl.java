@@ -88,8 +88,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getTid());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Sessions scanned"), null, I18nUtil.marktr("SCAN"));
+        detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("DETECT"));
         lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, detectBlinger);
     }
 
