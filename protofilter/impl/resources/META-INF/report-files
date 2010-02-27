@@ -1,7 +1,0 @@
-reports/ProtoFilterMaster.jasper:Protocol_Control--Summary:Summary
-reports/ProtoFilterUserMaster.jasper:userSummary:Protocol_Control--UserSummary
-reports/ProtoFilterHNameMaster.jasper:hNameSummary:Protocol_Control--UserSummary
-reports/ProtoFilterDetail.jasper:Protocol_Control--Policy_Violations:Protocol Policy Violations
-com.untangle.node.protofilter.reports.ProtoFilterSummarizer:summarizer:Summarizer
-com.untangle.node.protofilter.reports.SummaryGraph:summaryGraph:Protocol_Control--Summary_Graph
-reportTitlePrefix:parameter:none

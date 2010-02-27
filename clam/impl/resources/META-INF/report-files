@@ -1,9 +1,0 @@
-reports/VirusMaster.jasper:Virus_Blocker--Summary:Summary
-reports/WebVirusDetail.jasper:Virus_Blocker--Web_Incidents:Web Incidents
-reports/FtpVirusDetail.jasper:Virus_Blocker--FTP_Incidents:FTP Incidents
-reports/EmailVirusDetail.jasper:Virus_Blocker--Email_Incidents:Email Incidents
-com.untangle.node.virus.reports.VirusSummarizer:summarizer:Summarizer
-com.untangle.node.virus.reports.SummaryGraph:summaryGraph:Virus_Blocker--Summary_Graph
-com.untangle.node.clam.ClamScanner:scanner:Scanner
-reportTitlePrefix:parameter:Clam
-virusVendor:parameter:Clam

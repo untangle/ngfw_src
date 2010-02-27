@@ -18,25 +18,17 @@
 
 package com.untangle.node.firewall;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.firewall.TrafficIntfRule;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortDBMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
-import com.untangle.uvm.security.Tid;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -48,8 +40,8 @@ import com.untangle.uvm.security.Tid;
 @Table(name="n_firewall_rule", schema="settings")
 public class FirewallRule extends TrafficIntfRule
 {
-    //    private static final long serialVersionUID = -5024800839738084290L;
-
+    private static final long serialVersionUID = -2166185568469242347L;
+    
     private static final String ACTION_BLOCK     = "Block";
     private static final String ACTION_PASS      = "Pass";
 

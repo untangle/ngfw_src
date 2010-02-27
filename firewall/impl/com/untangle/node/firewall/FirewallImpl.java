@@ -25,13 +25,16 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
-import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.message.BlingBlinger;
+import com.untangle.uvm.message.Counters;
+import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.Validator;
@@ -47,11 +50,6 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
 
 public class FirewallImpl extends AbstractNode implements Firewall
 {
@@ -79,8 +77,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
          * next to towards the outside, then there is OpenVpn and then Nat */
         this.pipeSpec = new SoloPipeSpec("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 3);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
-
-        NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         SimpleEventFilter ef = new FirewallAllFilter();
@@ -291,7 +287,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
             tmp = new FirewallRule(false, prmf.getTCPMatcher(),
                                    any, external,
-                                   ipmf.parse("1.2.3.0/255.255.255.0"),
+                                   IPMatcherFactory.parse("1.2.3.0/255.255.255.0"),
                                    ipmf.getAllMatcher(),
                                    pmf.getAllMatcher(), pmf.getAllMatcher(),
                                    true);
@@ -301,7 +297,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             tmp = new FirewallRule(false, prmf.getTCPAndUDPMatcher(),
                                    any, any,
                                    ipmf.getAllMatcher(),
-                                   ipmf.parse("1.2.3.1 - 1.2.3.10"),
+                                   IPMatcherFactory.parse("1.2.3.1 - 1.2.3.10"),
                                    pmf.makeRangeMatcher(1000, 5000),
                                    pmf.getAllMatcher(),
                                    false);

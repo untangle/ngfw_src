@@ -1,7 +1,0 @@
-reports/SpamMaster.jasper:Spam_Blocker--Summary:Summary
-reports/SpamSmtpDetail.jasper:Spam_Blocker--Spam_Incidents_SMTP:Spam Incidents (SMTP)
-reports/SpamDetail.jasper:Spam_Blocker--Spam_Incidents_POP_IMAP:Spam Incidents (POP/IMAP)
-com.untangle.node.spam.reports.SpamSummarizer:summarizer:Summarizer
-com.untangle.node.spam.reports.SummaryGraph:summaryGraph:Spam_Blocker--Summary_Graph
-reportTitlePrefix:parameter:none
-spamVendor:parameter:SpamAssassin

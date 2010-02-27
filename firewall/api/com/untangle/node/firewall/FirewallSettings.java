@@ -21,7 +21,7 @@ package com.untangle.node.firewall;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -33,10 +33,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.node.util.UvmUtil;
-import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
+
+import com.untangle.node.util.UvmUtil;
+import com.untangle.uvm.security.Tid;
 
 /**
  * Settings for the Firewall node.
@@ -58,6 +59,7 @@ public class FirewallSettings implements Serializable
 
     private List<FirewallRule> firewallRuleList = null;
 
+    @SuppressWarnings("unused")
     private FirewallSettings() {}
 
     public FirewallSettings(Tid tid)
@@ -66,6 +68,7 @@ public class FirewallSettings implements Serializable
         this.firewallRuleList = new LinkedList();
     }
 
+    @SuppressWarnings("unused")
     @Id
     @Column(name="settings_id")
     @GeneratedValue
@@ -74,6 +77,7 @@ public class FirewallSettings implements Serializable
         return id;
     }
 
+    @SuppressWarnings("unused")
     private void setId( Long id )
     {
         this.id = id;

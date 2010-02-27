@@ -1,5 +1,0 @@
-reports/IPSMaster.jasper:Intrusion_Prevention--Summary:Summary
-reports/IPSDetail.jasper:Intrusion_Prevention--Events:Intrusion Prevention Events
-com.untangle.node.ips.reports.IpsSummarizer:summarizer:Summarizer
-com.untangle.node.ips.reports.SummaryGraph:summaryGraph:Intrusion_Prevention--Summary_Graph
-reportTitlePrefix:parameter:none

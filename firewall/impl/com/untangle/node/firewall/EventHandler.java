@@ -23,10 +23,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.InterfaceComparator;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.MPipeException;
@@ -37,7 +38,6 @@ import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
-import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
 {
@@ -76,16 +76,13 @@ class EventHandler extends AbstractEventHandler
     private void handleNewSessionRequest(IPNewSessionRequest request,
                                          Protocol protocol)
     {
-    InetAddress origClientAddr = request.clientAddr();
-    InetAddress newClientAddr = request.getNatFromHost();
-    InetAddress origServerAddr = request.serverAddr();
-    InetAddress newServerAddr = request.getNatToHost();
-    int origClientPort = request.clientPort();
-    int newClientPort  = request.getNatFromPort();
-    int origServerPort = request.serverPort();
-    int newServerPort  = request.getNatToPort();
+        InetAddress origClientAddr = request.clientAddr();
+        InetAddress newServerAddr = request.getNatToHost();
 
-    byte clientIntf = request.clientIntf();
+        int origClientPort = request.clientPort();
+        int newServerPort  = request.getNatToPort();
+
+        byte clientIntf = request.clientIntf();
         byte serverIntf = request.serverIntf();
 
         /* By default, do whatever the first rule is */

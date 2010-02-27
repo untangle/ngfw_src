@@ -1,5 +1,0 @@
-reports/ShieldMaster.jasper:Attack_Blocker--Summary:Summary
-reports/ShieldResourceViolationsDetail.jasper:Attack_Blocker--Resource_Violations:Resource Violations
-com.untangle.node.shield.reports.ShieldSummarizer:summarizer:Summarizer
-com.untangle.node.shield.reports.SummaryGraph:summaryGraph:Attack_Blocker--Summary_Graph
-reportTitlePrefix:parameter:none

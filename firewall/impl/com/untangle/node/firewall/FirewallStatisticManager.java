@@ -19,10 +19,10 @@ package com.untangle.node.firewall;
 
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.StatisticEvent;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.StatisticManager;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.node.StatisticManager;
-import com.untangle.uvm.node.NodeContext;
 
 class FirewallStatisticManager extends StatisticManager
 {

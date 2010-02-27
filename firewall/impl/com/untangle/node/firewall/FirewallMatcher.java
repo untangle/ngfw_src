@@ -18,16 +18,11 @@
 
 package com.untangle.node.firewall;
 
-import com.untangle.uvm.node.firewall.DirectionMatcher;
 import com.untangle.uvm.node.firewall.TrafficIntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
-import org.apache.log4j.Logger;
 
 /**
  * A class for matching redirects. This is cannot be squashed into a
@@ -35,8 +30,6 @@ import org.apache.log4j.Logger;
  * property which is not possible in hibernate objects.
  */
 class FirewallMatcher extends TrafficIntfMatcher {
-    private final Logger logger = Logger.getLogger(getClass());
-
     /* Used for logging */
     private final FirewallRule rule;
     private final int ruleIndex;
@@ -85,11 +78,5 @@ class FirewallMatcher extends TrafficIntfMatcher {
     public int ruleIndex()
     {
         return this.ruleIndex;
-    }
-
-    static
-    {
-        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-        PortMatcherFactory pmf = PortMatcherFactory.getInstance();
     }
 }

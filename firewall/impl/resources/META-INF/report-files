@@ -1,5 +1,0 @@
-reports/FirewallMaster.jasper:Firewall--Summary:Summary
-reports/FirewallBlockPassDetail.jasper:Firewall--Block_And_Pass_Events:Block and Pass Events
-com.untangle.node.firewall.reports.FirewallSummarizer:summarizer:Summarizer
-com.untangle.node.firewall.reports.SummaryGraph:summaryGraph:Firewall--Summary_Graph
-reportTitlePrefix:parameter:none

@@ -19,6 +19,7 @@
 package com.untangle.node.firewall;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -37,77 +38,78 @@ import com.untangle.uvm.node.PipelineEndpoints;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="n_firewall_evt", schema="events")
-    public class FirewallEvent extends PipelineEvent implements Serializable
+@Table(name="n_firewall_evt", schema="events")
+public class FirewallEvent extends PipelineEvent implements Serializable
+{
+    private static final long serialVersionUID = -6784469969222582381L;
+    private int     ruleIndex;
+    private boolean wasBlocked;
+
+    // Constructors
+    public FirewallEvent() { }
+
+    public FirewallEvent( PipelineEndpoints pe, boolean wasBlocked, int ruleIndex )
     {
-        private int     ruleIndex;
-        private boolean wasBlocked;
+        super(pe);
 
-        // Constructors
-        public FirewallEvent() { }
-
-        public FirewallEvent( PipelineEndpoints pe, boolean wasBlocked, int ruleIndex )
-        {
-            super(pe);
-
-            this.wasBlocked = wasBlocked;
-            this.ruleIndex  = ruleIndex;
-        }
-
-        /**
-         * Whether or not the session was blocked.
-         *
-         * @return If the session was passed or blocked.
-         */
-        @Column(name="was_blocked", nullable=false)
-        public boolean getWasBlocked()
-        {
-            return wasBlocked;
-        }
-
-        public void setWasBlocked( boolean wasBlocked )
-        {
-            this.wasBlocked = wasBlocked;
-        }
-
-        /**
-         * Rule index, when this event was triggered.
-         *
-         * @return current rule index for the rule that triggered this event.
-         */
-        @Column(name="rule_index", nullable=false)
-        public int getRuleIndex()
-        {
-            return ruleIndex;
-        }
-
-        public void setRuleIndex( int ruleIndex )
-        {
-            this.ruleIndex = ruleIndex;
-        }
-
-        // Syslog methods -----------------------------------------------------
-
-        public void appendSyslog(SyslogBuilder sb)
-        {
-            getPipelineEndpoints().appendSyslog(sb);
-
-            sb.startSection("info");
-            sb.addField("reason-rule#", getRuleIndex());
-            sb.addField("blocked", getWasBlocked());
-        }
-
-        @Transient
-        public String getSyslogId()
-        {
-            return ""; // XXX
-        }
-
-        @Transient
-        public SyslogPriority getSyslogPriority()
-        {
-            // INFORMATIONAL = statistics or normal operation
-            // WARNING = traffic altered
-            return false == getWasBlocked() ? SyslogPriority.INFORMATIONAL : SyslogPriority.WARNING;
-        }
+        this.wasBlocked = wasBlocked;
+        this.ruleIndex  = ruleIndex;
     }
+
+    /**
+     * Whether or not the session was blocked.
+     *
+     * @return If the session was passed or blocked.
+     */
+    @Column(name="was_blocked", nullable=false)
+    public boolean getWasBlocked()
+    {
+        return wasBlocked;
+    }
+
+    public void setWasBlocked( boolean wasBlocked )
+    {
+        this.wasBlocked = wasBlocked;
+    }
+
+    /**
+     * Rule index, when this event was triggered.
+     *
+     * @return current rule index for the rule that triggered this event.
+     */
+    @Column(name="rule_index", nullable=false)
+    public int getRuleIndex()
+    {
+        return ruleIndex;
+    }
+
+    public void setRuleIndex( int ruleIndex )
+    {
+        this.ruleIndex = ruleIndex;
+    }
+
+    // Syslog methods -----------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        getPipelineEndpoints().appendSyslog(sb);
+
+        sb.startSection("info");
+        sb.addField("reason-rule#", getRuleIndex());
+        sb.addField("blocked", getWasBlocked());
+    }
+
+    @Transient
+    public String getSyslogId()
+    {
+        return ""; // XXX
+    }
+
+    @Transient
+    public SyslogPriority getSyslogPriority()
+    {
+        // INFORMATIONAL = statistics or normal operation
+        // WARNING = traffic altered
+        return false == getWasBlocked() ? SyslogPriority.INFORMATIONAL : SyslogPriority.WARNING;
+    }
+}

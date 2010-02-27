@@ -1,8 +1,0 @@
-reports/PhishMaster.jasper:Identity_Theft_Blocker--Summary:Summary
-reports/PhishSmtpDetail.jasper:Identity_Theft_Blocker--Email_Incidents_SMTP:Emails (SMTP)
-reports/PhishDetail.jasper:Identity_Theft_Blocker--Email_Incidents:Emails (POP/IMAP)
-reports/PhishHttpDetail.jasper:Identity_Theft_Blocker--Web_Logged_Violations:Web Logged Violations
-com.untangle.node.phish.reports.PhishSummarizer:summarizer:Summarizer
-com.untangle.node.phish.reports.SummaryGraph:summaryGraph:Identity_Theft_Blocker--Summary_Graph
-spamVendor:parameter:Clam
-reportTitlePrefix:parameter:none
