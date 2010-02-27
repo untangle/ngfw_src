@@ -89,7 +89,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Sessions passed"), null, I18nUtil.marktr("PASS"));
         loggedBlinger = c.addActivity("log", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger, loggedBlinger);
+        lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, loggedBlinger, blockBlinger);
     }
 
     // Firewall methods --------------------------------------------------------
