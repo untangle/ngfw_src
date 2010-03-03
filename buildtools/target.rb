@@ -542,7 +542,7 @@ class JavaMsgFmtTarget < Target
 
     @src = src
     @mo_dest = "#{package.distDirectory()}/usr/share/locale"
-
+    
     super(package, [@po_file], @filename)
   end
 
@@ -575,7 +575,14 @@ class JavaMsgFmtTarget < Target
   def build()
     ensureDirectory @dest
 
+    # ignore output of create_mofiles
+    $stderr2 = $stderr.clone
+    $stderr.reopen('tmp2.dat')
+
     GetText::create_mofiles(false, @src, @mo_dest)
+
+    # reenable stderr
+    $stderr.reopen($stderr2)
 
     info "[msgfmt] => #{@filename}"
 
@@ -589,6 +596,7 @@ CMD
       Kernel.system <<CMD
 msgfmt -o #{@dest}/official/#{@lang}/#{@basename}.mo #{@po_file}
 CMD
+
   end
 end
 
