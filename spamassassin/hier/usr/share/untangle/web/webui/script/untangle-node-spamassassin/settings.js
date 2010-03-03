@@ -783,10 +783,14 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     title : this.i18n._('Note'),
                     autoHeight : true,
                     cls: 'description',
-                    html : this.i18n._('Spam Blocker was last updated')
-                            + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n
-                                    ._("unknown"))
+                    html : this.i18n._('Spam Blocker last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                           + (this.getBaseSettings().lastUpdateCheck != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdateCheck) : i18n._("unknown"))
+                           + '<br\>'
+                           + this.i18n._('Spam Blocker was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                           + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n._("unknown"))
+                    //+ '<br\>'
+                    //+ this.i18n._('Current Version:') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                    //+ (this.getBaseSettings().getSignatureVersion != null ? this.getBaseSettings().getSignatureVersion : i18n._("unknown"))
                 }]
             });
         },

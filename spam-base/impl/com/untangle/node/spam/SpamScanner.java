@@ -53,8 +53,25 @@ public interface SpamScanner
      */
     int getActiveScanCount();
 
+    /**
+     * Returns the date of the last update
+     *
+     * @return an <code>Date</code> value
+     */
     Date getLastSignatureUpdate();
 
+    /**
+     * Returns the date of the last update check
+     *
+     * @return an <code>Date</code> value
+     */
+    Date getLastSignatureUpdateCheck();
+
+    /**
+     * Returns the version string of the latest signature
+     *
+     * @return an <code>Date</code> value
+     */
     String getSignatureVersion();
 
 }

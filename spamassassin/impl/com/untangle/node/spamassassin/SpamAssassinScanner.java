@@ -32,12 +32,13 @@ public class SpamAssassinScanner implements SpamScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final int timeout = 45000; /* XXX should be user configurable */
+    private static final int timeout = 45000; 
 
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
 
     private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "bunnicula.bin.dir" ) + "/spamassassin-get-last-update";
+    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty( "bunnicula.bin.dir" ) + "/spamassassin-get-last-update-check";
 
     public SpamAssassinScanner() { }
 
@@ -87,6 +88,22 @@ public class SpamAssassinScanner implements SpamScanner
             return null;
         } catch ( NumberFormatException e ) {
             logger.warn( "Unable to get last update.", e );
+            return null;
+        }
+    }
+
+    public Date getLastSignatureUpdateCheck()
+    {
+        try {
+            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE_CHECK );
+            long timeSeconds = Long.parseLong( result.trim());
+
+            return new Date( timeSeconds * 1000l );
+        } catch ( NodeException e ) {
+            logger.warn( "Unable to get last update check.", e );
+            return null;
+        } catch ( NumberFormatException e ) {
+            logger.warn( "Unable to get last update check.", e );
             return null;
         }
     }

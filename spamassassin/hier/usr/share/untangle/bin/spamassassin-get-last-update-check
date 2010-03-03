@@ -1,0 +1,5 @@
+#!/bin/dash
+
+@UVM_HOME@/bin/get-last-update /tmp/update-sa-update.ran
+
+exit 0

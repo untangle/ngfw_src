@@ -36,16 +36,14 @@ public class PhishScanner implements SpamScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    // High enough to be a hit.  Should be elsewhere.  XXX
     private static final float HIT_SCORE = 100f;
-    /* XXX should be user configurable */
-    private static final int timeout = 10000;
+    private static final int TIMEOUT = 10000;
 
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
 
     private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "bunnicula.bin.dir" ) + "/phish-get-last-update";
-
+    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty( "bunnicula.bin.dir" ) + "/phish-get-last-update-check";
 
     public PhishScanner() { }
 
@@ -68,7 +66,7 @@ public class PhishScanner implements SpamScanner
             synchronized(activeScanMonitor) {
                 activeScanCount++;
             }
-            VirusScannerResult vsr = scan.doScan(this.timeout);
+            VirusScannerResult vsr = scan.doScan(this.TIMEOUT);
             SpamReport result;
             if (vsr.isClean() || vsr.getVirusName() == null || !vsr.getVirusName().contains("Phish")) {
                 result = SpamReport.EMPTY;
@@ -104,6 +102,22 @@ public class PhishScanner implements SpamScanner
         }
     }
 
+    public Date getLastSignatureUpdateCheck()
+    {
+        try {
+            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE_CHECK );
+            long timeSeconds = Long.parseLong( result.trim());
+
+            return new Date( timeSeconds * 1000l );
+        } catch ( NodeException e ) {
+            logger.warn( "Unable to get last update check.", e );
+            return null;
+        } catch ( NumberFormatException e ) {
+            logger.warn( "Unable to get last update check.", e );
+            return null;
+        }
+    }
+    
     public String getSignatureVersion()
     {
         /* This is currently not displayed in the UI or reports */

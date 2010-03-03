@@ -82,6 +82,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     /* Cached in the node in case the base settings lose the values during a save. */
     private Date lastSignatureUpdate = new Date();
+    private Date lastSignatureUpdateCheck = new Date();
     private String signatureVersion = "";
 
     // constructors -----------------------------------------------------------
@@ -303,11 +304,14 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         if (updateScannerInfo) {
             Date lastSignatureUpdate = scanner.getLastSignatureUpdate();
             if (lastSignatureUpdate != null) this.lastSignatureUpdate = lastSignatureUpdate;
+            Date lastSignatureUpdateCheck = scanner.getLastSignatureUpdateCheck();
+            if (lastSignatureUpdateCheck != null) this.lastSignatureUpdateCheck = lastSignatureUpdateCheck;
             String signatureVersion = scanner.getSignatureVersion();
             if (signatureVersion != null) this.signatureVersion = signatureVersion;
         }
 
         baseSettings.setLastUpdate(this.lastSignatureUpdate);
+        baseSettings.setLastUpdateCheck(this.lastSignatureUpdateCheck);
         baseSettings.setSignatureVersion(this.signatureVersion);
 
         /* XXXX Have to figure out how to calculate the version string. */

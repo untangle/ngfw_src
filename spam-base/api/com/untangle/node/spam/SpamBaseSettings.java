@@ -43,9 +43,12 @@ public class SpamBaseSettings implements Serializable
 
     private int rblListLength;
 
-    /* This is the date when the system last checked for updates, not the date of the virus signatures. */
+    /* This is the date when the system last got updates */
     private Date lastUpdate;
 
+    /* This is the date when the system last checked for updates */
+    private Date lastUpdateCheck;
+    
     /* This is the version string for the signatures, it may or may not include a date */
     private String signatureVersion;
     
@@ -121,6 +124,17 @@ public class SpamBaseSettings implements Serializable
     public void setLastUpdate(Date newValue)
     {
         this.lastUpdate = newValue;
+    }
+
+    @Transient
+    public Date getLastUpdateCheck()
+    {
+        return this.lastUpdateCheck;
+    }
+
+    public void setLastUpdateCheck(Date newValue)
+    {
+        this.lastUpdateCheck = newValue;
     }
 
     @Transient
