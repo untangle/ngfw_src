@@ -892,12 +892,14 @@ Ung.Main=Ext.extend(Object, {
     checkForUpgrades: function (handler) {
         //check for upgrades
         rpc.toolboxManager.getUpgradeStatus(function(result, exception,opt,handler) {
+            main.upgradeLastCheckTime=(new Date()).getTime();
+            main.upgradeStatus=result;            
+                        
             if(handler) {
                 handler.call(this);
             }
-            main.upgradeLastCheckTime=(new Date()).getTime();
+
             if(Ung.Util.handleException(exception)) return;
-            main.upgradeStatus=result;
             if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable) {
                 Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
             }
@@ -1179,6 +1181,34 @@ Ung.Main=Ext.extend(Object, {
       
     },
     /**
+     * Call back after the upgrade check is made
+     */         
+    upgradeCheckCallback : function (){
+        if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null){
+            this.showUpgradeScreen();                
+        }else{
+            this.showWelcomeScreen();
+        }
+        this.postInitialScreen();                   
+    },
+    /**
+     *  cleanup and ensure the window opened is on the right size
+     */         
+    postInitialScreen :function (){
+        var ifr = main.getIframeWin(),
+            position = [],
+            size = main.viewport.getSize(),
+            centerSize = Ext.getCmp('center').getSize(),
+            centerPosition = Ext.getCmp('center').getPosition();
+        ifr.initialConfig.sizeToRack = false;
+        ifr.setSize({width:centerSize.width*0.75,height:centerSize.height*0.75});        
+        position[0] = centerPosition[0]+Math.round(centerSize.width/8);
+        position[1] = centerPosition[1]+Math.round(centerSize.height/8);
+        ifr.setPosition(position[0],position[1]);
+        Ext.MessageBox.hide();
+        Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});                  
+    }, 
+    /**
      *  Displays the appropriate screen after determining connectivity
      **/     
     updateInitialScreen : function(result){
@@ -1189,20 +1219,15 @@ Ung.Main=Ext.extend(Object, {
             centerPosition = Ext.getCmp('center').getPosition();
         if(isRegistered===true){
             if(result===true){
-                this.showWelcomeScreen();
+                main.checkForUpgrades(this.upgradeCheckCallback);
+                return;
             }else{
                 this.showFailureScreen();        
             }        
         }else{
             this.showRunSetupScreen();
         }
-        ifr.initialConfig.sizeToRack = false;
-        ifr.setSize({width:centerSize.width*0.75,height:centerSize.height*0.75});        
-        position[0] = centerPosition[0]+Math.round(centerSize.width/8);
-        position[1] = centerPosition[1]+Math.round(centerSize.height/8);
-        ifr.setPosition(position[0],position[1]);
-        Ext.MessageBox.hide();
-        Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});            
+        this.postInitialScreen();          
     },
     /**
      *  Displays the run setup first screen
@@ -1222,6 +1247,13 @@ Ung.Main=Ext.extend(Object, {
     showWelcomeScreen : function (){
         this.openStore("online-welcome",i18n._("Congratulations"));            
     },
+    /**
+     * Display the upgrade screen
+     */
+     showUpgradeScreen : function(){
+        this.openStore('upgrade',i18n._("Congratulations"));
+     },
+              
     /**
      *  Hides the welcome screen
      */         

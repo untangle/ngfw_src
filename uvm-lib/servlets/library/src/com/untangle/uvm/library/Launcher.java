@@ -51,6 +51,7 @@ public class Launcher extends HttpServlet
     private static final String ACTION_WIZARD = "wizard";
     private static final String ACTION_HELP = "help";
     private static final String ACTION_OFFLINE = "offline";
+    private static final String ACTION_UPGRADE = "upgrade";
 
     private static final String HTTP_USER_AGENT = "User-Agent";
     private static final String HTTP_CONTENT_TYPE = "Content-Type";
@@ -93,7 +94,9 @@ public class Launcher extends HttpServlet
             } else if ( ACTION_WELCOME.equals( action )) {
                 String libitem = request.getParameter( FIELD_LIBITEM );
                 redirect = getWelcomeURL( request, libitem );
-            } else if ( ACTION_OFFLINE.equals( action )) {
+            } else if (ACTION_UPGRADE.equals(action)){
+                redirect = getUpgradeAvailableURL( request);                
+            }else if ( ACTION_OFFLINE.equals( action )) {
                 redirect = getOfflineURL( request );
             } else {
                 redirect = getMyAccountURL( request );
@@ -109,12 +112,19 @@ public class Launcher extends HttpServlet
     {
         return getActionURL( request, "my_account", null );
     }
-    private URL getOfflineURL ( HttpServletRequest request ) throws MalformedURLException 
+    private URL getOfflineURL( HttpServletRequest request) throws MalformedURLException 
     {
         String protocol = request.getParameter( FIELD_PROTOCOL );    
         String host = request.getParameter( FIELD_HOST );
         String path = "/webui/offline.jsp";    
         return new URL(protocol + "://" + host + path);
+    }
+    private URL getUpgradeAvailableURL(HttpServletRequest request) throws MalformedURLException 
+    {
+        String protocol = request.getParameter( FIELD_PROTOCOL );    
+        String host = request.getParameter( FIELD_HOST );
+        String path = "/webui/upgrade.jsp";    
+        return new URL(protocol + "://" + host + path);    
     }
     private URL getWizardURL( HttpServletRequest request ) throws MalformedURLException
 
