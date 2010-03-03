@@ -81,11 +81,14 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 
                 if (null == settings) {
                     settings = initSettings();
+                    s.save(settings.getSchedule());
                     s.merge(settings);
                 }
 
                 if (null == settings.getSchedule()) {
+                    /* You have to save the schedule before continuing */
                     settings.setSchedule(new Schedule());
+                    s.save(settings.getSchedule());
                     s.merge(settings);
                 }
 
