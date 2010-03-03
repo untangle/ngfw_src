@@ -24,6 +24,8 @@ import mx
 import os
 import psycopg
 import sys
+import tempfile
+import shutil
 
 from psycopg import DateFromMx
 
@@ -111,6 +113,8 @@ for opt in opts:
           attach_csv = True
      elif k == '-t' or k == '--trial-report':
           trial_report = v
+          ## Disable cleanup on trial reports
+          no_cleanup = True
      elif k == '-e' or k == '--events-retention':
           events_retention = int(v)
      elif k == '-r' or k == '--report-length':
@@ -310,7 +314,10 @@ if not file_retention:
 attach_csv = attach_csv or settings.get('email_detail')
 attachment_size_limit = settings.get('attachment_size_limit')
 
+reports_output_base=REPORTS_OUTPUT_BASE
+
 if trial_report:
+     reports_output_base=tempfile.mkdtemp(prefix="trial-report-")
      if db_retention >= 14:
           report_lengths = (14,)
      else:
@@ -336,17 +343,17 @@ try:
     for report_days in report_lengths:
          if not no_data_gen:
               logger.info("Generating reports for %s days" % (report_days,))
-              mail_reports = reports.engine.generate_reports(REPORTS_OUTPUT_BASE,
+              mail_reports = reports.engine.generate_reports(reports_output_base,
                                                              end_date, report_days)
 
          if not no_plot_gen:
               logger.info("Generating plots for %s days" % (report_days,))          
-              reports.engine.generate_plots(REPORTS_OUTPUT_BASE, end_date,
+              reports.engine.generate_plots(reports_output_base, end_date,
                                             report_days)
 
          if not no_mail:
               logger.info("About to email reports for %s days" % (report_days,))          
-              f = reports.pdf.generate_pdf(REPORTS_OUTPUT_BASE, end_date,
+              f = reports.pdf.generate_pdf(reports_output_base, end_date,
                                            report_days, mail_reports,
                                            trial_report)
               reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
@@ -368,3 +375,9 @@ if not no_cleanup:
      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
                                        reports_cutoff)
+
+# These are only for end of trial, a reboot will delete these files since they are in /tmp
+# if trial_report and ( reports_output_base != REPORTS_OUTPUT_BASE ):
+#    try:
+#          shutil.rmtree(reports_output_base)
+
