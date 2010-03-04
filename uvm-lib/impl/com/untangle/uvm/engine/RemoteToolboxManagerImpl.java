@@ -70,6 +70,7 @@ import com.untangle.uvm.toolbox.MackageException;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.MackageUninstallException;
+import com.untangle.uvm.toolbox.MackageUninstallRequest;
 import com.untangle.uvm.toolbox.RackView;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
@@ -626,19 +627,15 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             return;
         }
 
-        MackageInstallRequest mir
-            = new MackageInstallRequest(md,isInstalled(mackageName));
-        LocalMessageManager mm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        MackageInstallRequest mir = new MackageInstallRequest(md,isInstalled(mackageName));
+        LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
 
-        // Make sure there isn't an existing outstanding install
-        // request for this mackage.
+        // Make sure there isn't an existing outstanding install request for this mackage.
         for (Message msg : mm.getMessages()) {
             if (msg instanceof MackageInstallRequest) {
                 MackageInstallRequest existingMir = (MackageInstallRequest)msg;
                 if (existingMir.getMackageDesc() == md) {
-                    logger.warn("requestInstall(" + mackageName
-                                + "): ignoring request; install request already pending");
+                    logger.warn("requestInstall(" + mackageName + "): ignoring request; install request already pending");
                     return;
                 }
             }
@@ -648,6 +645,32 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         mm.submitMessage(mir);
     }
 
+    public void requestUninstall(String mackageName)
+    {
+        MackageDesc md = packageMap.get(mackageName);
+        if (null == md) {
+            logger.warn("Could not find package for: " + mackageName);
+            return;
+        }
+
+        MackageUninstallRequest mir = new MackageUninstallRequest(md,isInstalled(mackageName));
+        LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
+
+        // Make sure there isn't an existing outstanding uninstall request for this mackage.
+        for (Message msg : mm.getMessages()) {
+            if (msg instanceof MackageUninstallRequest) {
+                MackageUninstallRequest existingMir = (MackageUninstallRequest)msg;
+                if (existingMir.getMackageDesc() == md) {
+                    logger.warn("requestUninstall(" + mackageName + "): ignoring request; install request already pending");
+                    return;
+                }
+            }
+        }
+
+        logger.info("requestUninstall: " + mackageName);
+        mm.submitMessage(mir);
+    }
+    
     // RemoteToolboxManagerPriv implementation --------------------------------
 
     // registers a mackage and restarts all instances in previous state

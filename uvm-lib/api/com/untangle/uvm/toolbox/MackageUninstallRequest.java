@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/toolbox/MackageUninstallRequest.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -36,17 +36,17 @@ package com.untangle.uvm.toolbox;
 import com.untangle.uvm.message.Message;
 
 /**
- * Signals a request from the GUI to initiate installation of a Debian package.
+ * Signals a request from  GUI to initiate uninstallation of a Debian package.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  * @version 1.0
  */
-public class MackageInstallRequest extends Message
+public class MackageUninstallRequest extends Message
 {
     private final MackageDesc mackageDesc;
     private final boolean installed;
 
-    public MackageInstallRequest(MackageDesc mackageDesc, boolean installed)
+    public MackageUninstallRequest(MackageDesc mackageDesc, boolean installed)
     {
         this.mackageDesc = mackageDesc;
         this.installed = installed;

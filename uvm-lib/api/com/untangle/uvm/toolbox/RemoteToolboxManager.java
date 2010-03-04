@@ -65,8 +65,7 @@ public interface RemoteToolboxManager
      */
     RackView getRackView(Policy p,String installationType);
 
-    UpgradeStatus getUpgradeStatus(boolean doUpdate)
-        throws MackageException, InterruptedException;
+    UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException;
 
     /**
      * Returns true if the box can reach updates.untangle.com
@@ -140,8 +139,7 @@ public interface RemoteToolboxManager
      */
     void install(String name) throws MackageInstallException;
 
-    void installAndInstantiate(String name, Policy p)
-        throws MackageInstallException, DeployException;
+    void installAndInstantiate(String name, Policy p) throws MackageInstallException, DeployException;
 
     /**
      * Remove a Mackage from the toolbox.
@@ -163,6 +161,8 @@ public interface RemoteToolboxManager
     void disable(String mackageName) throws MackageException;
 
     void requestInstall(String mackageName);
+
+    void requestUninstall(String mackageName);
 
     /**
      * Register the deployment of a Mackage at a particular URL.

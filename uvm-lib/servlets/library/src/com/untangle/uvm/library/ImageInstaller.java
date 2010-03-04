@@ -37,6 +37,7 @@ public class ImageInstaller extends HttpServlet
 
     private static final String DOWNLOAD_TYPE = "image/png";
     private static final String PARAMETER_LIBITEM = "libitem";
+    private static final String PARAMETER_ACTION = "action";
     
     private static final Pattern LIBITEM_PATTERN = Pattern.compile( "[a-z][-a-z0-9+.]+" );
 
@@ -47,15 +48,20 @@ public class ImageInstaller extends HttpServlet
 
         /* Get the libitem parameter */
         String libitem = request.getParameter( PARAMETER_LIBITEM );
+        String action = request.getParameter( PARAMETER_ACTION );
         
         if ( libitem == null ) throw new ServletException( "Missing the libitem parameter" );
-
+        if ( action == null || action.equals("")) action = "install";
+        
         /* Validate the name */
         if ( !LIBITEM_PATTERN.matcher( libitem ).matches()) {
             throw new ServletException( "Invalid libitem name '" + libitem + "'" );
         }
 
-        LocalUvmContextFactory.context().toolboxManager().requestInstall( libitem );
+        if (action.equals("install"))
+            LocalUvmContextFactory.context().toolboxManager().requestInstall( libitem );
+        else if (action.equals("uninstall"))
+            LocalUvmContextFactory.context().toolboxManager().requestUninstall( libitem );
  
         String file = System.getProperty( "bunnicula.home" ) + "/web/library/images/blank.png";
 
