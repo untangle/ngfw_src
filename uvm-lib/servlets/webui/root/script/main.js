@@ -1185,7 +1185,11 @@ Ung.Main=Ext.extend(Object, {
      */         
     upgradeCheckCallback : function (){
         if(main.upgradeLastCheckTime!=null && (new Date()).getTime()-main.upgradeLastCheckTime<300000 && main.upgradeStatus!=null){
-            this.showUpgradeScreen();                
+            if(main.upgradeStatus.upgradesAvailable===true){
+                this.showUpgradeScreen();            
+            }else{
+                this.showWelcomeScreen();
+            }                
         }else{
             this.showWelcomeScreen();
         }
