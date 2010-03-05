@@ -2,6 +2,7 @@ package com.untangle.uvm.servlet;
 
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONSerializer;
+import org.jabsorb.serializer.Serializer;
 import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
@@ -36,73 +37,69 @@ public class ServletUtils {
     
     public void registerSerializers(JSONRPCBridge bridge ) throws Exception
     {
-        // general serializers
-        bridge.registerSerializer(new JSONBeanSerializer());
-        bridge.registerSerializer(new EnumSerializer());
-        bridge.registerSerializer(new URLSerializer());
-        bridge.registerSerializer(new InetAddressSerializer());
-        bridge.registerSerializer(new TimeSerializer());
-        
-        // uvm related serializers
-        bridge.registerSerializer(new IPMaddrSerializer());
-        bridge.registerSerializer(new IPaddrSerializer());
-        bridge.registerSerializer(new HostNameSerializer());
-        bridge.registerSerializer(new HostAddressSerializer());
-        bridge.registerSerializer(new TimeZoneSerializer());
-
-        bridge.registerSerializer(new MimeTypeSerializer());
-        bridge.registerSerializer(new RFC2253NameSerializer());
-        
-        // hibernate related serializers
-        bridge.registerSerializer(new LazyInitializerSerializer());
-        bridge.registerSerializer(new ExtendedListSerializer());
-        bridge.registerSerializer(new ExtendedSetSerializer());
-
-        // firewal related serializers
-        bridge.registerSerializer(new ProtocolMatcherSerializer());
-        bridge.registerSerializer(new IntfMatcherSerializer());
-        bridge.registerSerializer(new IPMatcherSerializer());
-        bridge.registerSerializer(new PortMatcherSerializer());
-        bridge.registerSerializer(new TimeMatcherSerializer());
-        bridge.registerSerializer(new UserMatcherSerializer());
+        registerSerializers(JSON_RPC_BRIDGE_REGISTRATOR, bridge);
     }
     
     public void registerSerializers(JSONSerializer serializer) throws Exception
     {
         serializer.registerDefaultSerializers();
-        // general serializers
-        serializer.registerSerializer(new JSONBeanSerializer());
-        serializer.registerSerializer(new EnumSerializer());
-        serializer.registerSerializer(new URLSerializer());
-        serializer.registerSerializer(new InetAddressSerializer());
-        serializer.registerSerializer(new TimeSerializer());
-        
-        // uvm related serializers
-        serializer.registerSerializer(new IPMaddrSerializer());
-        serializer.registerSerializer(new IPaddrSerializer());
-        serializer.registerSerializer(new HostNameSerializer());
-        serializer.registerSerializer(new HostAddressSerializer());
-        serializer.registerSerializer(new TimeZoneSerializer());
-
-        serializer.registerSerializer(new MimeTypeSerializer());
-        serializer.registerSerializer(new RFC2253NameSerializer());
-        
-        // hibernate related serializers
-        serializer.registerSerializer(new LazyInitializerSerializer());
-        serializer.registerSerializer(new ExtendedListSerializer());
-        serializer.registerSerializer(new ExtendedSetSerializer());
-
-        // firewal related serializers
-        serializer.registerSerializer(new ProtocolMatcherSerializer());
-        serializer.registerSerializer(new IntfMatcherSerializer());
-        serializer.registerSerializer(new IPMatcherSerializer());
-        serializer.registerSerializer(new PortMatcherSerializer());
-        serializer.registerSerializer(new TimeMatcherSerializer());
-        serializer.registerSerializer(new UserMatcherSerializer());
+        registerSerializers(JSON_SERIALIZER_REGISTRATOR, serializer);
     }
     
     public static ServletUtils getInstance()
     {
         return INSTANCE;
     }
+    
+    private <T> void registerSerializers(Registrator<T> registrator, T root) throws Exception
+    {
+        // general serializers
+        registrator.registerSerializer(root, new JSONBeanSerializer());
+        registrator.registerSerializer(root, new EnumSerializer());
+        registrator.registerSerializer(root, new URLSerializer());
+        registrator.registerSerializer(root, new InetAddressSerializer());
+        registrator.registerSerializer(root, new TimeSerializer());
+        
+        // uvm related serializers
+        registrator.registerSerializer(root, new IPMaddrSerializer());
+        registrator.registerSerializer(root, new IPaddrSerializer());
+        registrator.registerSerializer(root, new HostNameSerializer());
+        registrator.registerSerializer(root, new HostAddressSerializer());
+        registrator.registerSerializer(root, new TimeZoneSerializer());
+
+        registrator.registerSerializer(root, new MimeTypeSerializer());
+        registrator.registerSerializer(root, new RFC2253NameSerializer());
+        
+        // hibernate related serializers
+        registrator.registerSerializer(root, new LazyInitializerSerializer());
+        registrator.registerSerializer(root, new ExtendedListSerializer());
+        registrator.registerSerializer(root, new ExtendedSetSerializer());
+
+        // firewal related serializers
+        registrator.registerSerializer(root, new ProtocolMatcherSerializer());
+        registrator.registerSerializer(root, new IntfMatcherSerializer());
+        registrator.registerSerializer(root, new IPMatcherSerializer());
+        registrator.registerSerializer(root, new PortMatcherSerializer());
+        registrator.registerSerializer(root, new TimeMatcherSerializer());
+        registrator.registerSerializer(root, new UserMatcherSerializer());
+    }
+    
+    private static interface Registrator<T>
+    {
+        void registerSerializer(T base, Serializer s) throws Exception;
+    }
+    
+    private static Registrator JSON_SERIALIZER_REGISTRATOR = new Registrator<JSONSerializer>(){
+        
+        public void registerSerializer(JSONSerializer serializer, Serializer s ) throws Exception {
+            serializer.registerSerializer(s);
+        }
+    };
+    
+    private static Registrator JSON_RPC_BRIDGE_REGISTRATOR = new Registrator<JSONRPCBridge>(){        
+        public void registerSerializer(JSONRPCBridge bridge, Serializer s ) throws Exception {
+            bridge.registerSerializer(s);
+        }
+    };
+
 }

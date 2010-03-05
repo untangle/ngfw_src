@@ -38,6 +38,7 @@ import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.toolbox.UpgradeSettings;
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
@@ -65,22 +66,7 @@ public class SetupSettingsServlet extends HttpServlet
 
         JSONSerializer js = new JSONSerializer();
         try {
-            js.registerDefaultSerializers();
-
-            // general serializers
-            js.registerSerializer(new EnumSerializer());
-            js.registerSerializer(new URLSerializer());
-            // uvm related serializers
-            js.registerSerializer(new IPMaddrSerializer());
-            js.registerSerializer(new IPaddrSerializer());
-            js.registerSerializer(new HostNameSerializer());
-            js.registerSerializer(new TimeZoneSerializer());
-            js.registerSerializer(new MimeTypeSerializer());
-            js.registerSerializer(new RFC2253NameSerializer());
-            // hibernate related serializers
-            js.registerSerializer(new LazyInitializerSerializer());
-            js.registerSerializer(new ExtendedListSerializer());
-            js.registerSerializer(new ExtendedSetSerializer());
+            ServletUtils.getInstance().registerSerializers(js);
         } catch ( Exception e ) {
             throw new ServletException( "Unable to load the default serializer", e );
         }
