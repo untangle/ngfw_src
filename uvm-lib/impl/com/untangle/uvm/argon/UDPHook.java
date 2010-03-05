@@ -150,7 +150,6 @@ public class UDPHook implements NetcapHook
             /* Setup the marking */
             serverTraffic.isMarkEnabled( true );
             
-            int mark =clientTraffic.mark();
             serverTraffic.mark( lim.toNetcap( clientSide.clientIntf()));
 
             serverTraffic.lock();
