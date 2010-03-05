@@ -40,8 +40,7 @@ public class BlockPageServlet extends HttpServlet
 {
     // HttpServlet methods ----------------------------------------------------
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
@@ -80,17 +79,17 @@ public class BlockPageServlet extends HttpServlet
         }
         whitelistMode = node.getUserWhitelistMode();
 
-        SpywareHandler handler = new SpywareHandler(blockDetails, whitelistMode);
+        SpywareBlockPageParameters params = new SpywareBlockPageParameters(blockDetails, whitelistMode);
 
-        BlockPageUtil.getInstance().handle(request, response, this, handler);
+        BlockPageUtil.getInstance().handle(request, response, this, params);
     }
     
-    private static class SpywareHandler implements BlockPageUtil.Handler
+    private static class SpywareBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
         private final SpywareBlockDetails blockDetails;
         private final UserWhitelistMode userWhitelistMode;
 
-        public SpywareHandler( SpywareBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+        public SpywareBlockPageParameters( SpywareBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
         {
             this.blockDetails = blockDetails;
             this.userWhitelistMode = userWhitelistMode;

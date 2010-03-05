@@ -44,13 +44,13 @@ public class BlockPageUtil
     }
 
     public void handle(HttpServletRequest request, HttpServletResponse response,
-                       HttpServlet servlet, Handler handler)
+                       HttpServlet servlet, BlockPageParameters params)
         throws ServletException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
 
-        String module = handler.getI18n();
+        String module = params.getI18n();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations(module);
         request.setAttribute( "i18n_map", i18n_map );
 
@@ -58,9 +58,9 @@ public class BlockPageUtil
          * the included template cannot see them. */
         request.setAttribute( "ss", uvm.skinManager().getSkinSettings());
         request.setAttribute( "bs", bs );
-        request.setAttribute( "pageTitle", handler.getPageTitle( bs, i18n_map ));
-        request.setAttribute( "title", handler.getTitle( bs, i18n_map ));
-        request.setAttribute( "footer", handler.getFooter( bs, i18n_map ));
+        request.setAttribute( "pageTitle", params.getPageTitle( bs, i18n_map ));
+        request.setAttribute( "title", params.getTitle( bs, i18n_map ));
+        request.setAttribute( "footer", params.getFooter( bs, i18n_map ));
         
         if ( request.getAttribute( "untangle_plus") == null ) {
             boolean untanglePlus = false;
@@ -74,20 +74,20 @@ public class BlockPageUtil
             request.setAttribute( "untangle_plus", untanglePlus );
         }
 
-        String value = handler.getScriptFile();
+        String value = params.getScriptFile();
         if ( value != null ) request.setAttribute( "javascript_file", value );
-        value = handler.getAdditionalFields( i18n_map );
+        value = params.getAdditionalFields( i18n_map );
         if ( value != null ) request.setAttribute( "additional_fields", value );
-        request.setAttribute( "description", handler.getDescription( bs, i18n_map ));
+        request.setAttribute( "description", params.getDescription( bs, i18n_map ));
 
         /* Register the block detail with the page */
-        BlockDetails bd = handler.getBlockDetails();
+        BlockDetails bd = params.getBlockDetails();
         request.setAttribute( "bd", bd );
 
         /* Everything below here can be moved into a parent class, + i18n should go into an interface */
         request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", bs.getContactHtml(), i18n_map));
 
-        UserWhitelistMode mode = handler.getUserWhitelistMode();
+        UserWhitelistMode mode = params.getUserWhitelistMode();
         if (( UserWhitelistMode.NONE != mode ) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
             request.setAttribute( "showUnblockNow", true );
             if (UserWhitelistMode.USER_AND_GLOBAL == mode) {
@@ -105,7 +105,7 @@ public class BlockPageUtil
         }
     }
 
-    public interface Handler
+    public interface BlockPageParameters
     {
         /* An array of modules to load into the i18n array.  For example, it may be
          * webfilter + sitefilter. */

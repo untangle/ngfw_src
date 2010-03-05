@@ -84,17 +84,17 @@ public class BlockPageServlet extends HttpServlet
             return;
         }
         request.setAttribute( "reason", blockDetails.getReason());
-        VirusHandler handler = new VirusHandler( nodeContext.getNodeDesc().getDisplayName(), blockDetails );
+        VirusBlockPageParameters params = new VirusBlockPageParameters( nodeContext.getNodeDesc().getDisplayName(), blockDetails );
                                                          
-        BlockPageUtil.getInstance().handle( request, response, this, handler );        
+        BlockPageUtil.getInstance().handle( request, response, this, params );        
     }
     
-    private static class VirusHandler implements BlockPageUtil.Handler
+    private static class VirusBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
         private final VirusBlockDetails blockDetails;
         private final String nodeTitle;
 
-        public VirusHandler( String nodeTitle, VirusBlockDetails blockDetails )
+        public VirusBlockPageParameters( String nodeTitle, VirusBlockDetails blockDetails )
         {
             this.nodeTitle = nodeTitle;
             this.blockDetails = blockDetails;

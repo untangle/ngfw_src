@@ -40,8 +40,7 @@ public class BlockPageServlet extends HttpServlet
 {
     // HttpServlet methods ----------------------------------------------------
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         LocalNodeManager nm = uvm.nodeManager();
@@ -80,23 +79,22 @@ public class BlockPageServlet extends HttpServlet
         whitelistMode = node.getUserWhitelistMode();
 
         request.setAttribute( "reason", blockDetails.getReason());
-        BlockPageUtil.Handler handler = this.buildHandler(blockDetails, whitelistMode);
+        BlockPageUtil.BlockPageParameters params = this.buildBlockPageParameters(blockDetails, whitelistMode);
 
-        BlockPageUtil.getInstance().handle(request, response, this, handler);
+        BlockPageUtil.getInstance().handle(request, response, this, params);
     }
 
-    protected BlockPageUtil.Handler buildHandler( WebFilterBlockDetails blockDetails, 
-                                                  UserWhitelistMode userWhitelistMode )
+    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters( WebFilterBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
     {
-        return new WebFilterHandler(blockDetails,userWhitelistMode);
+        return new WebFilterBlockPageParameters(blockDetails,userWhitelistMode);
     }
 
-    protected static class WebFilterHandler implements BlockPageUtil.Handler
+    protected static class WebFilterBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
         private final WebFilterBlockDetails blockDetails;
         private final UserWhitelistMode userWhitelistMode;
 
-        public WebFilterHandler( WebFilterBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+        public WebFilterBlockPageParameters( WebFilterBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
         {
             this.blockDetails = blockDetails;
             this.userWhitelistMode = userWhitelistMode;

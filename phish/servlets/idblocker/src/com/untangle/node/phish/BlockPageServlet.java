@@ -19,9 +19,7 @@
 package com.untangle.node.phish;
 
 import java.io.IOException;
-
 import java.util.Map;
-
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -77,17 +75,17 @@ public class BlockPageServlet extends HttpServlet
 
         whitelistMode = node.getUserWhitelistMode();
 
-        PhishHandler handler = new PhishHandler(blockDetails, whitelistMode);
+        PhishBlockPageParameters params = new PhishBlockPageParameters(blockDetails, whitelistMode);
 
-        BlockPageUtil.getInstance().handle(request, response, this, handler);
+        BlockPageUtil.getInstance().handle(request, response, this, params);
     }
     
-    private static class PhishHandler implements BlockPageUtil.Handler
+    private static class PhishBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
         private final PhishBlockDetails blockDetails;
         private final UserWhitelistMode userWhitelistMode;
 
-        public PhishHandler( PhishBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+        public PhishBlockPageParameters( PhishBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
         {
             this.blockDetails = blockDetails;
             this.userWhitelistMode = userWhitelistMode;
