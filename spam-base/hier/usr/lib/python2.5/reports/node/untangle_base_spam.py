@@ -94,7 +94,7 @@ class SpamBaseNode(Node):
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [SpamHighlight(self.name, self.__short_name),
+                           [SpamHighlight(self.name, self.__short_name, self.__spam_label),
                             TotalEmail(self.__short_name, self.__vendor_name,
                                        self.__spam_label, self.__ham_label),
                             HourlySpamRate(self.__short_name,
@@ -178,14 +178,14 @@ WHERE %s.time_stamp >= %%s
             raise e
 
 class SpamHighlight(Highlight):
-    def __init__(self, name, short_name):
+    def __init__(self, name, short_name, spam_label):
         Highlight.__init__(self, name,
                            _(name) + " " +
                            _("scanned") + " " +
                            "%(messages)s" + " " +
                            _("messages and detected and processed") +
                            " " +
-                           "%(spam)s" + " " + _("spam messages"))
+                           "%(spam)s" + " " + _(spam_label.lower()) + _(" messages"))
         self.__short_name = short_name
 
     @print_timing
