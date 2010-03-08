@@ -65,7 +65,7 @@ class PhishReplacementGenerator
     @Override
     protected String getRedirectUrl(String nonce, String host, Tid tid)
     {
-        return "http://" + host + "/idblocker/blockpage?nonce=" + nonce
+        return "http://" + host + "/phish/blockpage?nonce=" + nonce
             + "&tid=" + tid;
     }
 

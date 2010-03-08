@@ -318,10 +318,10 @@ public class PhishNode extends SpamNodeImpl implements Phish
                 }
             };
 
-        if (null != asm.loadInsecureApp("/idblocker", "idblocker", v)) {
-            logger.debug("Deployed idblocker WebApp");
+        if (null != asm.loadInsecureApp("/phish", "phish", v)) {
+            logger.debug("Deployed phish WebApp");
         } else {
-            logger.error("Unable to deploy idblocker WebApp");
+            logger.error("Unable to deploy phish WebApp");
         }
     }
 
@@ -334,10 +334,10 @@ public class PhishNode extends SpamNodeImpl implements Phish
         LocalUvmContext mctx = LocalUvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
-        if (asm.unloadWebApp("/idblocker")) {
-            logger.debug("Unloaded idblocker WebApp");
+        if (asm.unloadWebApp("/phish")) {
+            logger.debug("Unloaded phish WebApp");
         } else {
-            logger.warn("Unable to unload idblocker WebApp");
+            logger.warn("Unable to unload phish WebApp");
         }
     }
 

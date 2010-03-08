@@ -30,7 +30,7 @@ class TestApachePhish(ApacheSetup):
     def test_root_access_outside_admin_enable( self ):
         self.set_access_settings({ "isOutsideAdministrationEnabled" : True })
 
-        base = "http%s://localhost%s/idblocker/blockpage?tid=" + self.router_tid
+        base = "http%s://localhost%s/phish/blockpage?tid=" + self.router_tid
 
         ## This should be run as root, so it should access these
         yield self.check_access, base % ( "", "" ), 406, "Feature is not installed"
@@ -41,7 +41,7 @@ class TestApachePhish(ApacheSetup):
     def test_root_access_outside_admin_disabled( self ):
         self.set_access_settings({ "isOutsideAdministrationEnabled" : False })
 
-        base = "http%s://localhost%s/idblocker/blockpage?tid=" + self.router_tid
+        base = "http%s://localhost%s/phish/blockpage?tid=" + self.router_tid
 
         ## This should be run as root, so it should access these
         yield self.check_access, base % ( "", "" ), 406, "Feature is not installed"
@@ -52,7 +52,7 @@ class TestApachePhish(ApacheSetup):
     def test_nonroot_access_outside_admin_enable( self ):
         self.set_access_settings({ "isOutsideAdministrationEnabled" : True })
 
-        base = "http%s://192.0.2.43%s/idblocker/blockpage?tid=" + self.router_tid
+        base = "http%s://192.0.2.43%s/phish/blockpage?tid=" + self.router_tid
 
         yield self.check_access, base % ( "", "" ), 406, "Feature is not installed"
         yield self.check_access, base % ( "", ":64156" ), 406, "Feature is not installed"
@@ -62,7 +62,7 @@ class TestApachePhish(ApacheSetup):
     def test_nonroot_access_outside_admin_disabled( self ):
         self.set_access_settings({ "isOutsideAdministrationEnabled" : False })
 
-        base = "http%s://192.0.2.43%s/idblocker/blockpage?tid=" + self.router_tid
+        base = "http%s://192.0.2.43%s/phish/blockpage?tid=" + self.router_tid
 
         ## This should be run as root, so it should access these
         yield self.check_access, base % ( "", "" ), 406, "Feature is not installed"

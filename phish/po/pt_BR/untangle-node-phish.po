@@ -188,22 +188,22 @@ msgstr "Salvando..."
 msgid "Please wait"
 msgstr "Aguarde"
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:65
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:74
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:65
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:74
 msgid "Feature is not installed."
 msgstr "O recurso não está instalado."
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:105
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:105
 #, java-format
 msgid "{0} | Phish Blocker Warning"
 msgstr "{0} | Aviso do Phish Blocker"
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:116
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:116
 #, java-format
 msgid "{0}  Phish Blocker"
 msgstr "{0}  Phish Blocker"
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:133
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:133
 #, java-format
 msgid ""
 "{0}Warning - Suspected phishing page.{1} This page may be a forgery or "

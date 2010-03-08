@@ -180,22 +180,22 @@ msgstr "保存..."
 msgid "Please wait"
 msgstr "お待ちください"
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:65
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:74
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:65
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:74
 msgid "Feature is not installed."
 msgstr "フィーチャーがインストールされていません"
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:105
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:105
 #, java-format
 msgid "{0} | Phish Blocker Warning"
 msgstr "{0}Phish Blocker警告"
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:116
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:116
 #, java-format
 msgid "{0}  Phish Blocker"
 msgstr "{0}Phish Blocker"
 
-#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:128
+#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:128
 #, java-format
 msgid ""
 "{0}This web page was blocked{1} because it may be designed to steal personal "
