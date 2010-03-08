@@ -32,7 +32,6 @@ import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.Protocol;
-import org.apache.log4j.Logger;
 
 public class IpsRuleHeader
 {
@@ -52,8 +51,6 @@ public class IpsRuleHeader
 
     private final Set<IPMatcher> serverIpSet;
     private final PortRange serverPortRange;
-
-    private final Logger logger = Logger.getLogger(getClass());
 
     private final boolean clientIPFlag;
     private final boolean clientPortFlag;

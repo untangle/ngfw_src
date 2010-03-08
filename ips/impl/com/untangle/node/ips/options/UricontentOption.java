@@ -18,8 +18,6 @@
 
 package com.untangle.node.ips.options;
 
-import java.util.regex.*;
-
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 import com.untangle.node.ips.IpsSessionInfo;
 

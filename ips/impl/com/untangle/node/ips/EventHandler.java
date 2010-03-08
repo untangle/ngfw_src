@@ -18,8 +18,18 @@
 
 package com.untangle.node.ips;
 
-import com.untangle.uvm.vnet.*;
-import com.untangle.uvm.vnet.event.*;
+import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.MPipeException;
+import com.untangle.uvm.vnet.Protocol;
+import com.untangle.uvm.vnet.event.IPDataResult;
+import com.untangle.uvm.vnet.event.TCPChunkEvent;
+import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.event.TCPSessionEvent;
+import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.event.UDPPacketEvent;
+import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 public class EventHandler extends AbstractEventHandler {
 

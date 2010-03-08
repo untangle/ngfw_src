@@ -22,9 +22,7 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import com.untangle.node.ips.options.*;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.vnet.event.*;
 
 public class IpsRuleSignature
 {

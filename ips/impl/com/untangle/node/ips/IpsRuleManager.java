@@ -28,9 +28,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.SessionEndpoints;
-import org.apache.log4j.Logger;
 
 public class IpsRuleManager
 {
@@ -154,10 +155,8 @@ public class IpsRuleManager
         }
 
         // Take off the action.
-        String action = null;
         int firstSpace = text.indexOf(' ');
         if (firstSpace >= 0 && firstSpace < text.length() - 1) {
-            action = text.substring(0, firstSpace);
             text = text.substring(firstSpace + 1);
         }
 
@@ -303,18 +302,6 @@ public class IpsRuleManager
         s.add(signature);
     }
 
-    private void removeSignature(IpsRuleHeader header,
-                                 IpsRuleSignature signature)
-    {
-        Set<IpsRuleSignature> s = signatures.get(header);
-        if (null != s) {
-            s.remove(signature);
-            if (s.isEmpty()) {
-                signatures.remove(header);
-            }
-        }
-    }
-
     private Set<IpsRuleSignature> getSignatures(IpsRuleHeader header)
     {
         Set<IpsRuleSignature> s = signatures.get(header);
@@ -323,11 +310,5 @@ public class IpsRuleManager
         } else {
             return s;
         }
-    }
-
-    private boolean signatureListIsEmpty(IpsRuleHeader header)
-    {
-        Set<IpsRuleSignature> s = signatures.get(header);
-        return null == s ? true : s.isEmpty();
     }
 }

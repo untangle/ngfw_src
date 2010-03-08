@@ -19,6 +19,7 @@
 package com.untangle.node.ips;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
@@ -32,6 +33,8 @@ import javax.persistence.Transient;
 @Embeddable
 public class IpsBaseSettings implements Serializable
 {
+    private static final long serialVersionUID = -151017414257520595L;
+
     private int maxChunks;
 
     private int rulesLength;

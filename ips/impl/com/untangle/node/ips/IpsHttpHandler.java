@@ -18,17 +18,14 @@
 
 package com.untangle.node.ips;
 
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 class IpsHttpHandler extends HttpStateMachine {
-
-    private final Logger logger = Logger.getLogger(getClass());
 
     private IpsDetectionEngine engine;
 

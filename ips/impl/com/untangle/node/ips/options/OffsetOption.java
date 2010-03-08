@@ -18,9 +18,9 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.node.ParseException;
 
 public class OffsetOption extends IpsOption
 {

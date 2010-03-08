@@ -20,14 +20,13 @@ package com.untangle.node.ips.options;
 
 import java.nio.ByteBuffer;
 import java.text.CharacterIterator;
-import java.util.regex.*;
+
+import org.apache.log4j.Logger;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.AsciiCharBufferCharacterIterator;
-import com.untangle.uvm.vnet.event.*;
-import org.apache.log4j.Logger;
 
 /**
  * This class matches the content option found in snort based rule signatures.

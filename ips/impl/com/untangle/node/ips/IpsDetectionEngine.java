@@ -18,7 +18,6 @@
 
 package com.untangle.node.ips;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,13 +26,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PipelineEndpoints;
-import com.untangle.uvm.vnet.*;
-import com.untangle.uvm.vnet.event.*;
-import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.Protocol;
+import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.event.IPDataEvent;
 
 public class IpsDetectionEngine
 {

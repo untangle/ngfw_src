@@ -19,8 +19,8 @@ package com.untangle.node.ips;
 
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.StatisticEvent;
-import com.untangle.uvm.node.StatisticManager;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.StatisticManager;
 
 class IpsStatisticManager extends StatisticManager {
 

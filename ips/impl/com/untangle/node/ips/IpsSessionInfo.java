@@ -20,8 +20,10 @@ package com.untangle.node.ips;
 
 import java.util.Set;
 
-import com.untangle.uvm.vnet.*;
-import com.untangle.uvm.vnet.event.*;
+import com.untangle.uvm.vnet.IPSession;
+import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.event.IPDataEvent;
 
 public class IpsSessionInfo
 {

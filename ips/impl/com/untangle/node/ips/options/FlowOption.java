@@ -18,10 +18,9 @@
 
 package com.untangle.node.ips.options;
 
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 import com.untangle.node.ips.IpsSessionInfo;
-import com.untangle.uvm.vnet.event.*;
 
 public class FlowOption extends IpsOption
 {

@@ -18,10 +18,10 @@
 
 package com.untangle.node.ips;
 
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.vnet.TCPSession;
 
 public class IpsHttpFactory implements TokenHandlerFactory {
     private final IpsNodeImpl node;

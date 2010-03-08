@@ -18,8 +18,8 @@
 
 package com.untangle.node.ips;
 
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.util.I18nUtil;
 
 public class IpsLogFilter implements SimpleEventFilter<IpsLogEvent>

@@ -25,9 +25,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import com.untangle.node.ips.options.IpsOption;
-import com.untangle.uvm.vnet.*;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.ips.options.IpsOption;
+import com.untangle.uvm.vnet.IPSession;
 
 public class IpsRuleSignatureImpl
 {

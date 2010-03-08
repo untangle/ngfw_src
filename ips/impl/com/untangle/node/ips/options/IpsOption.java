@@ -18,15 +18,16 @@
 
 package com.untangle.node.ips.options;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.regex.PatternSyntaxException;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.ips.IpsDetectionEngine;
 import com.untangle.node.ips.IpsRule;
 import com.untangle.node.ips.IpsRuleSignatureImpl;
 import com.untangle.node.ips.IpsSessionInfo;
-import com.untangle.uvm.vnet.event.*;
-import org.apache.log4j.Logger;
 
 public abstract class IpsOption
 {

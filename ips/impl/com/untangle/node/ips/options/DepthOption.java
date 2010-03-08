@@ -18,8 +18,9 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.uvm.node.ParseException;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.node.ParseException;
 
 public class DepthOption extends IpsOption
 {

@@ -38,7 +38,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_ips_evt", schema="events")
     public class IpsLogEvent extends PipelineEvent {
-
+        private static final long serialVersionUID = 6493976041509079976L;
         private String classification;
         private String message;
         private boolean blocked;

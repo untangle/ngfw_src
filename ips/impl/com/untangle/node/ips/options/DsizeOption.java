@@ -18,9 +18,10 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.node.ips.IpsSessionInfo;
-import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.ips.IpsSessionInfo;
+import com.untangle.uvm.vnet.event.IPDataEvent;
 
 public class DsizeOption extends IpsOption
 {

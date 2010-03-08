@@ -18,9 +18,9 @@
 
 package com.untangle.node.ips.options;
 
-import com.untangle.node.ips.IpsRule;
-import com.untangle.uvm.vnet.event.*;
 import org.apache.log4j.Logger;
+
+import com.untangle.node.ips.IpsRule;
 
 public class SidOption extends IpsOption
 {

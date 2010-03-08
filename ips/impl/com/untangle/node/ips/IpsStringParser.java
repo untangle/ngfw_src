@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.node.ips.options.*;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
@@ -36,7 +35,6 @@ public class IpsStringParser
     public static final String EXTERNAL_IP = "External"+0xBEEF;
 
     private static final Pattern maskPattern = Pattern.compile("\\d\\d");
-    private static final Pattern semicolonMask = Pattern.compile("\\;");
 
     public static String[] parseRuleSplit(String rule)
         throws ParseException
@@ -55,7 +53,6 @@ public class IpsStringParser
     public static IpsRuleHeader parseHeader(String header, int action)
         throws ParseException
     {
-        List<IPMatcher> ipMatcher, portMatcher;
         boolean clientIPFlag = false;
         boolean clientPortFlag = false;
         boolean serverIPFlag = false;

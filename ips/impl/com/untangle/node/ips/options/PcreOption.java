@@ -21,10 +21,11 @@ package com.untangle.node.ips.options;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.node.ips.IpsRule;
 import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
-import org.apache.log4j.Logger;
 
 public class PcreOption extends IpsOption
 {
