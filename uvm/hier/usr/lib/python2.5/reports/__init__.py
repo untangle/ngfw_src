@@ -364,7 +364,13 @@ class DetailSection(Section):
                 r = curs.fetchone()
                 if not r:
                     break
-                w.writerow(r)
+                r1 = []
+                for el in r: # strip off milliseconds
+                    if isinstance(el, mx.DateTime.DateTimeType):
+                        r1.append(el.strftime("%Y-%m-%d %H:%M:%S"))
+                    else:
+                        r1.append(el)
+                w.writerow(r1)
         except Exception:
             logger.error("error adding details for '%s'" % self.name, exc_info=True)
         finally:
