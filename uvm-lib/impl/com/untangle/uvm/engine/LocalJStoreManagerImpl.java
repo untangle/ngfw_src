@@ -326,7 +326,7 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
                 String cmdArray[] = new String[] { "ln", "-sf",
                         output.toString(), link.toString() };
 
-                Process process = Runtime.getRuntime().exec(cmdArray);
+                Process process = UvmContextImpl.context().exec(cmdArray);
                 int exitCode = process.waitFor();
                 String line = null;
                 BufferedReader tmp = new BufferedReader(new InputStreamReader(
