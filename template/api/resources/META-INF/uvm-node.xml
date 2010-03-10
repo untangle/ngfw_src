@@ -18,5 +18,5 @@
 -->
 
 <uvm-node>
-  <node-desc classname="com.untangle.node.example.TemplateImpl" single-instance="false" no-start="false"/>
+  <node-desc classname="com.untangle.node.template.TemplateImpl" single-instance="false" no-start="false"/>
 </uvm-node>
