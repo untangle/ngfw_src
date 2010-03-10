@@ -97,6 +97,7 @@ public class Schedule implements Serializable
         monthlyNFirst = false;
     }
 
+    @SuppressWarnings("unused")
     @Id
     @Column(name="id")
     @GeneratedValue
@@ -105,6 +106,7 @@ public class Schedule implements Serializable
         return id;
     }
 
+    @SuppressWarnings("unused")
     private void setId(Long id)
     {
         this.id = id;

@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -35,8 +34,6 @@ import com.untangle.uvm.vnet.PipeSpec;
 
 public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     private ReportingSettings settings;
 
     public ReportingNodeImpl() {}

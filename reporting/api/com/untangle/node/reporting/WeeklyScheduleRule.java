@@ -48,6 +48,7 @@ public class WeeklyScheduleRule implements Serializable
         this.day = day;
     }
 
+    @SuppressWarnings("unused")
     @Id
     @Column(name="id")
     @GeneratedValue
@@ -56,6 +57,7 @@ public class WeeklyScheduleRule implements Serializable
         return id;
     }
 
+    @SuppressWarnings("unused")
     private void setId(Long id)
     {
         this.id = id;
