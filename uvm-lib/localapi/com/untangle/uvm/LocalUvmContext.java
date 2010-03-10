@@ -433,4 +433,10 @@ public interface LocalUvmContext
     String getPopID();
     
     UploadManager uploadManager();
+    
+    /**
+     * Retrieve the jStore manager. See
+     * http://wiki-private/mediawiki/index.php/JStore for more information.
+     */
+    LocalJStoreManager jStoreManager();
 }

@@ -38,12 +38,14 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.jabsorb.JSONSerializer;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalBrandingManager;
+import com.untangle.uvm.LocalJStoreManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.RemoteBrandingManager;
@@ -74,6 +76,7 @@ import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.user.ADPhoneBookAssistant;
@@ -152,6 +155,7 @@ public class UvmContextImpl extends UvmContextBase
     private TomcatManager tomcatManager;
     private HeapMonitor heapMonitor;
     private UploadManagerImpl uploadManager;
+    private LocalJStoreManagerImpl jStoreManager;
 
     // Will be null if cliServer is not enabled
     private CliServerManager cliServerManager;
@@ -744,6 +748,18 @@ public class UvmContextImpl extends UvmContextBase
     {
         uploadManager = new UploadManagerImpl();
         
+        jStoreManager = new LocalJStoreManagerImpl();
+        
+        JSONSerializer serializer = new JSONSerializer();
+        try {
+            ServletUtils.getInstance().registerSerializers(serializer);
+            jStoreManager.setSerializer(serializer);
+        } catch (Exception e) {
+            throw new IllegalStateException("register serializers should never fail!", e);
+        }
+        String jStorePath = System.getProperty( "bunnicula.conf.dir" ) + "/jStore";
+        jStoreManager.setBasePath(jStorePath);
+        
         uploadManager.registerHandler(new RestoreUploadHandler());
 
         cronManager = new CronManager();
@@ -1092,6 +1108,12 @@ public class UvmContextImpl extends UvmContextBase
     public UploadManager uploadManager()
     {
         return this.uploadManager;
+    }
+    
+    @Override 
+    public LocalJStoreManager jStoreManager()
+    {
+        return this.jStoreManager;
     }
 
     // private methods --------------------------------------------------------
