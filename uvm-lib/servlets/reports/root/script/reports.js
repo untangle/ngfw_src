@@ -1374,7 +1374,6 @@ Ung.ReportDetails = Ext.extend(Object, {
                             message = i18n._('The report requested is older than the maximum number of days allowed to store dynamic reports data.');                            
                         } 
                         Ext.MessageBox.alert(title, message);                        
-
                     }
                     return;
                 }
