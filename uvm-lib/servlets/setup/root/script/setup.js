@@ -386,6 +386,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     fieldLabel : '<span class="required-star">*</span>'+i18n._('Email'),
                     name : 'email',
                     id : 'registration_email',
+                    vtype : 'emailAddressCheck',                    
                     width : 200,
                     allowBlank : false
                 }, new Ung.SetupWizard.TextField({
