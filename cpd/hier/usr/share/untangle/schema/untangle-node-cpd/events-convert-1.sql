@@ -32,7 +32,6 @@ CREATE TABLE events.n_cpd_block_evt (
     server_port INT4,
     PRIMARY KEY (event_id));
 
-
 -- CPDLoginEvent
 CREATE TABLE events.n_cpd_login_evt (
     event_id    INT8 NOT NULL,
@@ -43,10 +42,34 @@ CREATE TABLE events.n_cpd_login_evt (
     client_addr inet,
     PRIMARY KEY (event_id));
 
+-- com.untangle.node.cpd.HostDatabaseEntry
+CREATE TABLE events.n_cpd_host_database_entry (
+    entry_id        INT8 NOT NULL,
+    hw_addr         TEXT,
+    ipv4_addr       INET,
+    username        TEXT,
+    last_session    TIMESTAMP,
+    session_start   TIMESTAMP,
+    expiration_date TIMESTAMP,
+    PRIMARY KEY     (entry_id));
+
 ----------------
 -- constraints |
 ----------------
 
 -- indices for reporting
-CREATE INDEX n_cpd_evt_ts_idx ON events.n_cpd_evt (time_stamp);
+CREATE INDEX n_cpd_evt_ts_idx ON events.n_cpd_block_evt (time_stamp);
 CREATE INDEX n_cpd_login_evt_ts_idx ON events.n_cpd_login_evt(time_stamp);
+
+CREATE INDEX n_cpd_host_database_last_session_idx ON 
+       events.n_cpd_host_database_entry(last_session);
+       
+-- For querying on sessions that are expired
+CREATE INDEX n_cpd_host_database_expiration_date_idx ON
+       events.n_cpd_host_database_entry(expiration_date);
+
+CREATE INDEX n_cpd_host_database_username_idx ON
+       events.n_cpd_host_database_entry(username);
+
+CREATE INDEX n_cpd_host_database_ipv4_addr_idx ON
+       events.n_cpd_host_database_entry(ipv4_addr);

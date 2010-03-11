@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.apache.catalina.Valve;
 import org.apache.commons.fileupload.FileItem;
@@ -69,6 +71,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     private final CustomUploadHandler uploadHandler = new CustomUploadHandler(); 
     private final Logger logger = Logger.getLogger(CPDImpl.class);
 
+    private final CPDPhoneBookAssistant cpdAssistant = new CPDPhoneBookAssistant(this);
 
     private final PipeSpec[] pipeSpecs;
     
@@ -355,6 +358,15 @@ public class CPDImpl extends AbstractNode implements CPD {
             }
             /* This is split out for debugging */
             isAuthenticated = this.manager.authenticate(address, username, password, credentials);
+
+            /* Update the CPD Phone Book cache */
+            if (isAuthenticated) {
+                try {
+                    cpdAssistant.addCache(InetAddress.getByName(address),username);
+                } catch (UnknownHostException e) {
+                    logger.warn("Add Cache failed",e);
+                }
+            }
         }
         return isAuthenticated;
     }
@@ -365,6 +377,15 @@ public class CPDImpl extends AbstractNode implements CPD {
         boolean isLoggedOut = false;
         if ( this.getRunState() == NodeState.RUNNING ) {
             isLoggedOut = this.manager.logout( address );
+        }
+
+        /* Update the CPD Phone Book cache */
+        if (isLoggedOut) {
+            try {
+                cpdAssistant.removeCache(InetAddress.getByName(address));
+            } catch (UnknownHostException e) {
+                logger.warn("Remove Cache failed",e);
+            }
         }
         
         return isLoggedOut;
@@ -404,6 +425,8 @@ public class CPDImpl extends AbstractNode implements CPD {
         /* Flush all of the entries that are in the phonebook */
         LocalUvmContextFactory.context().localPhoneBook().flushEntries();
 
+        LocalUvmContextFactory.context().localPhoneBook().registerAssistant(this.cpdAssistant);
+        
         super.preStart();
      }
     
@@ -434,6 +457,13 @@ public class CPDImpl extends AbstractNode implements CPD {
         this.manager.stop();
     }
     
+    @Override
+    protected void postStop() throws NodeStopException
+    {
+        super.postStop();
+
+        LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant(this.cpdAssistant);
+    }
     
     protected void postInit(final String[] args) {
         TransactionWork<Object> tw = new TransactionWork<Object>() {
@@ -465,6 +495,8 @@ public class CPDImpl extends AbstractNode implements CPD {
                 
         unDeployWebAppIfRequired(this.logger);
 
+        this.cpdAssistant.stopDatabaseReader();
+        
         super.preDestroy();
     }
     
