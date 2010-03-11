@@ -61,11 +61,14 @@ public class ColorUserType implements CompositeUserType
                               SessionImplementor si, Object owner)
         throws HibernateException, SQLException
     {
-        if (rs.wasNull()) { return null; }
         int r = rs.getInt(names[0]);
+        if (rs.wasNull()) { return null; }
         int g = rs.getInt(names[1]);
+        if (rs.wasNull()) { return null; }
         int b = rs.getInt(names[2]);
+        if (rs.wasNull()) { return null; }
         int a = rs.getInt(names[3]);
+        if (rs.wasNull()) { return null; }
 
         return new Color(r, g, b, a);
     }

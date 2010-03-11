@@ -67,10 +67,14 @@ public class VirusScannerResultUserType implements CompositeUserType
                               SessionImplementor si, Object owner)
         throws HibernateException, SQLException
     {
-        if (rs.wasNull()) { return null; }
         boolean clean = rs.getBoolean(names[0]);
+        if (rs.wasNull()) { return null; }
+
         String virusName = rs.getString(names[1]);
+        if (rs.wasNull()) { return null; }
+
         boolean virusCleaned  = rs.getBoolean(names[2]);
+        if (rs.wasNull()) { return null; }
 
         return new VirusScannerResult(clean, virusName, virusCleaned);
     }
