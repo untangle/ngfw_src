@@ -127,10 +127,6 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.node.rsa">
-    <priority value="WARN"/>
-  </category>
-
   <category name="com.untangle.node.spam">
     <priority value="WARN"/>
   </category>
@@ -172,6 +168,10 @@
   </category>
 
   <category name="com.untangle.node.spyware">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.node.cpd">
     <priority value="WARN"/>
   </category>
 

@@ -56,9 +56,10 @@ public class InetAddressUserType implements UserType
     public Object nullSafeGet(ResultSet rs, String[] names, Object owner)
         throws HibernateException, SQLException
     {
+        String name = rs.getString(names[0]);
+
         if (rs.wasNull()) { return null; }
 
-        String name = rs.getString(names[0]);
         try {
             return InetAddress.getByName(name);
         } catch (UnknownHostException exn) {
