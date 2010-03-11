@@ -242,7 +242,7 @@ Ung.Reports = Ext.extend(Object,{
                 region : 'north',
                 layout : 'border',
                 style : 'padding: 7px 5px 7px 7px;',
-                height : 65,
+                height : 70,
                 defaults : {
                     border : false,
                     bodyStyle : 'background-color: transparent;'
@@ -256,15 +256,33 @@ Ung.Reports = Ext.extend(Object,{
                     region : 'center'
                 },{
                     region : 'east',
-                    layout : 'fit',
+
                     width : 500,
+                    height: 60,
+                    style : 'height:60px;',
                     cls   : 'dateRange',
                     items : [{
-                        xtype : "fieldset",
-                        border : false,
-                        cls : 'dateContainer',
-                        id : 'rangeFieldSet',
-                        items : [{
+                            xtype : "fieldset",
+                            border : false,
+                            cls : 'dateContainer',
+                            id : 'rangeFieldSet',
+                            items : [{
+                            xtype : 'label',
+                            id : 'logout-link',
+                            html : i18n._('Logout'),
+                            listeners : {
+                                "render" : {
+                                    fn : function(comp){
+                                        comp.getEl().addListener("click",function(){window.top.location = "/auth/logout?url=/reports&realm=Reports";});
+                                    }.createDelegate(this)
+                                }
+                            }
+                            
+                        },{
+                            xtype : 'label',
+                            id : 'report-date-range',
+                            html : reports.getDateRangeText(this.reportDatesItems[0])
+                        },{
                             xtype : 'label',
                             id : 'report-day-menu',
                             html : i18n._('View Other Reports'),
@@ -275,16 +293,6 @@ Ung.Reports = Ext.extend(Object,{
                                     }.createDelegate(this)
                                 }
                             }                            
-                        },/*{
-                            xtype : 'splitbutton',
-                            id : 'report-day-menu',
-                            text : this.reportDatesItems[0].text,
-                            menu : new Ext.menu.Menu({ items : this.reportDatesItems })
-                        },*/{
-                            xtype : 'label',
-                            id : 'report-date-range',
-                            html : reports.getDateRangeText(this.reportDatesItems[0]),
-                            height:20
                         }]
                     }]
                 }]
