@@ -1158,6 +1158,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 }.createDelegate(this)
             });
             items.push(new Ext.grid.GridPanel({
+                style : 'margin-top:45px;',              
                 store: new Ext.data.SimpleStore({
                     fields: [
                         {name: 'label'},
@@ -1195,7 +1196,8 @@ Ung.ReportDetails = Ext.extend(Object, {
             layout:'table',
             defaults: {
                 border: false,
-                columnWidth: 0.5
+                columnWidth: 0.5 ,
+                ctCls : 'top-align'
             },
             layoutConfig: {
                 columns: 2
