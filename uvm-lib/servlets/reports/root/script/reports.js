@@ -1084,7 +1084,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             var data = [],columnTwoWidth=175;
             for (var j=0; j<summaryItem.keyStatistics.list.length; j++) {
                 var keyStatistic = summaryItem.keyStatistics.list[j];
-                data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType, colors[keyStatistic.label]]);
+                data.push([keyStatistic.label, keyStatistic.value, keyStatistic.unit, keyStatistic.linkType, colors[keyStatistic.label.toLowerCase()]]);
             }
 
             columns = [];
