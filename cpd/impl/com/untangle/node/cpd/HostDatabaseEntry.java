@@ -58,9 +58,6 @@ public class HostDatabaseEntry implements Serializable {
     @Type(type="com.untangle.uvm.type.InetAddressUserType")
     public InetAddress getIpv4Address() {
         return ipv4Address;
-        
-            
-        
     }
     
     public void setIpv4Address(InetAddress ipv4Address) {
