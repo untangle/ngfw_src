@@ -29,6 +29,7 @@ import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
+import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
@@ -159,6 +160,11 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
     public RemoteLicenseManager licenseManager()
     {
         return context.remoteLicenseManager();
+    }
+    
+    public RemoteBenchmarkManager benchmarkManager()
+    {
+        return context.localBenchmarkManager();
     }
 
     public void localBackup() throws IOException

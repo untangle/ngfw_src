@@ -27,6 +27,9 @@ import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.benchmark.Benchmark;
+import com.untangle.uvm.benchmark.Event;
+import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
@@ -72,7 +75,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     private final BlingBlinger c2nBytes;
     private final BlingBlinger n2sBytes;
     private final BlingBlinger n2cBytes;
-
+    
     protected TCPSessionImpl(Dispatcher disp,
                              com.untangle.uvm.argon.TCPSession pSession,
                              PipelineEndpoints pe,
@@ -430,8 +433,10 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         throws MPipeException
     {
         TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
+
         IPDataResult result = side == CLIENT ? dispatcher.dispatchTCPClientWritable(wevent)
             : dispatcher.dispatchTCPServerWritable(wevent);
+        
         if (result == IPDataResult.SEND_NOTHING)
             // Optimization
             return;

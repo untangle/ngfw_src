@@ -36,11 +36,15 @@ import com.untangle.jvector.Source;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.benchmark.Benchmark;
+import com.untangle.uvm.benchmark.Event;
+import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
+import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.user.Username;
 
@@ -79,6 +83,8 @@ abstract class ArgonHook implements Runnable
 
     protected static final PipelineFoundryImpl pipelineFoundry =
         (PipelineFoundryImpl)LocalUvmContextFactory.context().pipelineFoundry();
+    
+    private static final Tid TOTALS = new Tid(0l);
 
     /**
      * State of the session
@@ -91,6 +97,14 @@ abstract class ArgonHook implements Runnable
      */
     public final void run()
     {
+        LocalBenchmarkManager bm = LocalUvmContextFactory.context().localBenchmarkManager();
+        Benchmark benchmark = null;
+        long start = 0;
+
+        if ( bm.isEnabled()) {
+            start = System.nanoTime();
+            benchmark = bm.getBenchmark(TOTALS,"totals", true);
+        }
         PipelineEndpoints endpoints = null;
         try {
             ClassLoader cl = getClass().getClassLoader();
@@ -218,6 +232,10 @@ abstract class ArgonHook implements Runnable
 
                     if ( logger.isDebugEnabled())
                         logger.debug( "Starting vectoring for session " + sessionGlobalState );
+                    
+                    if ( benchmark != null ) {
+                        benchmark.addEvent(Event.SETUP_TIME, ( System.nanoTime() - start ) / 1000l); 
+                    }
 
                     /* Start vectoring */
                     vector.vector();
@@ -230,6 +248,10 @@ abstract class ArgonHook implements Runnable
                 if ( logger.isDebugEnabled())
                     logger.debug( "Finished vectoring for session: " + sessionGlobalState );
             } else {
+                if ( benchmark != null ) {
+                    benchmark.addEvent(Event.SETUP_TIME, ( System.nanoTime() - start ) / 1000l); 
+                }
+
                 logger.info( "Session rejected, skipping vectoring: " + sessionGlobalState );
             }
         } catch ( Exception e ) {

@@ -38,6 +38,7 @@ import java.io.IOException;
 
 import com.sleepycat.je.Environment;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
+import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -439,4 +440,9 @@ public interface LocalUvmContext
      * http://wiki-private/mediawiki/index.php/JStore for more information.
      */
     LocalJStoreManager jStoreManager();
+    
+    /**
+     * Retrieve the benchmark manager.
+     */
+    LocalBenchmarkManager localBenchmarkManager();
 }

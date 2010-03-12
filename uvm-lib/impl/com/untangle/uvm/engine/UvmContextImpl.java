@@ -54,6 +54,7 @@ import com.untangle.uvm.UvmState;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
+import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.LicenseManagerFactory;
 import com.untangle.uvm.license.LocalLicenseManager;
@@ -156,6 +157,7 @@ public class UvmContextImpl extends UvmContextBase
     private HeapMonitor heapMonitor;
     private UploadManagerImpl uploadManager;
     private LocalJStoreManagerImpl jStoreManager;
+    private LocalBenchmarkManagerImpl benchmarkManager;
 
     // Will be null if cliServer is not enabled
     private CliServerManager cliServerManager;
@@ -750,6 +752,8 @@ public class UvmContextImpl extends UvmContextBase
         
         jStoreManager = new LocalJStoreManagerImpl();
         
+        benchmarkManager = new LocalBenchmarkManagerImpl();
+        
         JSONSerializer serializer = new JSONSerializer();
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
@@ -1321,5 +1325,10 @@ public class UvmContextImpl extends UvmContextBase
         POP_ID_FILE = System.getProperty("bunnicula.home")
             + "/popid";
         ARGON_FAKE_KEY = "argon.fake";
+    }
+
+    @Override
+    public LocalBenchmarkManager localBenchmarkManager() {
+        return this.benchmarkManager;
     }
 }

@@ -31,6 +31,9 @@ import org.apache.log4j.MDC;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.benchmark.Benchmark;
+import com.untangle.uvm.benchmark.Event;
+import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LoadCounter;
@@ -98,6 +101,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private final BlingBlinger tcpTotalSessionCounter;
     private final BlingBlinger udpTotalSessionRequestCounter;
     private final BlingBlinger tcpTotalSessionRequestCounter;
+    
+    protected Benchmark benchmark;
 
     /**
      * <code>mainThread</code> is the master thread started by
@@ -220,7 +225,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                        null, false);
         tcpTotalSessionRequestCounter = c
             .addMetric("tcpTotalSessionRequestCounter", I18nUtil.marktr("TCP session requests"),
-                       null, false);
+                       null, false);        
     }
 
     /*
@@ -753,20 +758,45 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         throws MPipeException
     {
         elog(Level.DEBUG, "TCPNewSessionRequest", event.sessionRequest().id());
-        if (sessionEventListener == null)
+        if (sessionEventListener == null) {
             releasedHandler.handleTCPNewSessionRequest(event);
-        else
+        } else {
+            long startTime = 0;
+
+            updateBenchmark();
+            Benchmark b = this.benchmark;
+            if ( b != null ) {
+                startTime = System.nanoTime();
+            }
             sessionEventListener.handleTCPNewSessionRequest(event);
+            
+            if ( b != null ) {
+                /* If enabled, log the amount of time required to get a server / client writable event */
+                b.addEvent(Event.SETUP_TIME, ( System.nanoTime() - startTime ) / 1000l);
+            }
+        }
     }
 
     void dispatchUDPNewSessionRequest(UDPNewSessionRequestEvent event)
         throws MPipeException
     {
         elog(Level.DEBUG, "UDPNewSessionRequest", event.sessionRequest().id());
-        if (sessionEventListener == null)
+        if (sessionEventListener == null) {
             releasedHandler.handleUDPNewSessionRequest(event);
-        else
+        } else {
+            long startTime = 0;
+
+            updateBenchmark();
+            Benchmark b = this.benchmark;
+            if ( b != null ) {
+                startTime = System.nanoTime();
+            }
             sessionEventListener.handleUDPNewSessionRequest(event);
+            if ( b != null ) {
+                /* If enabled, log the amount of time required to get a server / client writable event */
+                b.addEvent(Event.SETUP_TIME, ( System.nanoTime() - startTime ) / 1000l);
+            }
+        }
     }
 
     void dispatchTCPNewSession(TCPSessionEvent event)
@@ -796,10 +826,25 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientChunk", session.id(), event.chunk().remaining());
-        if (sessionEventListener == null || session.released())
+        if (sessionEventListener == null || session.released()) {
             return releasedHandler.handleTCPClientChunk(event);
-        else
-            return sessionEventListener.handleTCPClientChunk(event);
+        } else {
+            long startTime = 0;
+
+            Benchmark b = this.benchmark;
+            if ( b != null ) {
+                startTime = System.nanoTime();
+            }
+
+            IPDataResult result = sessionEventListener.handleTCPClientChunk(event);
+
+            if ( b != null ) {
+                /* If enabled, log the amount of time required to get a server / client writable event */
+                b.addEvent(Event.PACKET_READ, ( System.nanoTime() - startTime )/ 1000l);
+            }
+
+            return result;
+        }
     }
 
     IPDataResult dispatchTCPServerChunk(TCPChunkEvent event)
@@ -807,10 +852,25 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerChunk", session.id(), event.chunk().remaining());
-        if (sessionEventListener == null || session.released())
+        if (sessionEventListener == null || session.released()) {
             return releasedHandler.handleTCPServerChunk(event);
-        else
-            return sessionEventListener.handleTCPServerChunk(event);
+        } else {
+            long startTime = 0;
+
+            Benchmark b = this.benchmark;
+            if ( b != null ) {
+                startTime = System.nanoTime();
+            }
+            
+            IPDataResult result = sessionEventListener.handleTCPServerChunk(event);
+            
+            if ( b != null ) {
+                /* If enabled, log the amount of time required to get a server / client writable event */
+                b.addEvent(Event.PACKET_READ, ( System.nanoTime() - startTime ) / 1000l);
+            }
+            
+            return result;
+        }
     }
 
     IPDataResult dispatchTCPClientWritable(TCPSessionEvent event)
@@ -818,10 +878,23 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientWritable", session.id());
-        if (sessionEventListener == null || session.released())
+        if (sessionEventListener == null || session.released()) {
             return releasedHandler.handleTCPClientWritable(event);
-        else
-            return sessionEventListener.handleTCPClientWritable(event);
+        } else {
+            long startTime = 0;
+            
+            Benchmark b = this.benchmark;
+            if ( b != null ) {
+                startTime = System.nanoTime();
+            }
+            IPDataResult result = sessionEventListener.handleTCPClientWritable(event);
+            if ( b != null ) {
+                /* If enabled, log the amount of time required to get a server / client writable event */
+                b.addEvent(Event.PACKET_WRITE, ( System.nanoTime() - startTime ) / 1000l);
+            }
+            
+            return result;
+        }
     }
 
     IPDataResult dispatchTCPServerWritable(TCPSessionEvent event)
@@ -829,10 +902,22 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerWritable", session.id());
-        if (sessionEventListener == null || session.released())
+        if (sessionEventListener == null || session.released()) {
             return releasedHandler.handleTCPServerWritable(event);
-        else
-            return sessionEventListener.handleTCPServerWritable(event);
+        } else {
+            long startTime = 0;
+            
+            Benchmark b = this.benchmark;
+            if ( b != null ) {
+                startTime = System.nanoTime();
+            }
+            IPDataResult result = sessionEventListener.handleTCPServerWritable(event);
+            if ( b != null ) {
+                /* If enabled, log the amount of time required to get a server / client writable event */
+                b.addEvent(Event.PACKET_WRITE, ( System.nanoTime() - startTime ) / 1000l);
+            }
+            return result;
+        }
     }
 
     void dispatchUDPClientPacket(UDPPacketEvent event)
@@ -840,10 +925,21 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientPacket", session.id(), event.packet().remaining());
-        if (sessionEventListener == null || session.released())
+        if (sessionEventListener == null || session.released()) {
             releasedHandler.handleUDPClientPacket(event);
-        else
+        } else {
+            long startTime = 0;
+            
+            Benchmark b = this.benchmark;
+            if ( b != null ) {
+                startTime = System.nanoTime();
+            }
             sessionEventListener.handleUDPClientPacket(event);
+            if ( b != null ) {
+                /* If enabled, log the amount of time required to get a server / client writable event */
+                b.addEvent(Event.PACKET_READ, ( System.nanoTime() - startTime ) / 1000l);
+            }
+        }
     }
 
     void dispatchUDPServerPacket(UDPPacketEvent event)
@@ -851,10 +947,23 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerPacket", session.id(), event.packet().remaining());
-        if (sessionEventListener == null || session.released())
+        if (sessionEventListener == null || session.released()) {
             releasedHandler.handleUDPServerPacket(event);
-        else
+        } else {
+            long startTime = 0;
+            
+            Benchmark b = this.benchmark;
+            if ( b != null ) {
+                startTime = System.nanoTime();
+            }
+
             sessionEventListener.handleUDPServerPacket(event);
+            
+            if ( b != null ) {
+                /* If enabled, log the amount of time required to get a server / client writable event */
+                b.addEvent(Event.PACKET_READ, ( System.nanoTime() - startTime ) / 1000l);
+            }
+        }
     }
 
     void dispatchUDPClientError(UDPErrorEvent event)
@@ -1071,6 +1180,17 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             message.append(Thread.currentThread().getName());
 
             sessionEventLogger.log(level, message.toString());
+        }
+    }
+    
+    private void updateBenchmark()
+    {
+        LocalBenchmarkManager bm = LocalUvmContextFactory.context().localBenchmarkManager();
+        
+        if ( !bm.isEnabled()) {
+            this.benchmark = null;
+        } else if ( this.benchmark == null ) {
+            benchmark = bm.getBenchmark(mPipe.node().getTid(), mPipe.getPipeSpec().getName(), true);
         }
     }
 }

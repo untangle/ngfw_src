@@ -34,7 +34,10 @@ import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.argon.PipelineListener;
+import com.untangle.uvm.benchmark.Benchmark;
+import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
@@ -710,6 +713,7 @@ abstract class IPSessionImpl
     protected void closeFinal()
     {
         cancelTimer();
+        
         if (RWSessionStats.DoDetailedTimes) {
             long[] times = stats().times();
             times[SessionStats.FINAL_CLOSE] = MetaEnv.currentTimeMillis();

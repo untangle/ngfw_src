@@ -43,6 +43,7 @@ import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
+import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.RemoteMessageManager;
@@ -323,4 +324,6 @@ public interface RemoteUvmContext
     void stopCliServer();
 
     String setProperty(String key, String value);
+    
+    public RemoteBenchmarkManager benchmarkManager();
 }
