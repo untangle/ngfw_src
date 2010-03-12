@@ -140,8 +140,11 @@ INSERT INTO reports.n_mail_addrs
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time
            AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp >= %s AND pe.time_stamp < %s""",
-                               (sd, ed), connection=conn, auto_commit=False)
+    WHERE pe.time_stamp >= %s AND pe.time_stamp < %s
+    AND mi.time_stamp >= %s and mi.time_stamp < %s
+    AND mia.time_stamp >= %s and mia.time_stamp < %s
+    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
+                               (sd, ed, sd, ed, sd, ed, sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.n_mail_addrs', ed,
                                        connection=conn, auto_commit=False)
@@ -245,8 +248,10 @@ INSERT INTO reports.n_mail_msgs
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp >= %s AND pe.time_stamp < %s""",
-                               (sd, ed), connection=conn, auto_commit=False)
+    WHERE pe.time_stamp >= %s AND pe.time_stamp < %s
+    AND mi.time_stamp >= %s and mi.time_stamp < %s
+    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
+                               (sd, ed, sd, ed, sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.n_mail_msgs', ed,
                                        connection=conn, auto_commit=False)
