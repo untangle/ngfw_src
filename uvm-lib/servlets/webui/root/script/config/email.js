@@ -153,7 +153,17 @@ if (!Ung.hasResource["Ung.Email"]) {
             this.userQuarantinesDetailsGrid.loadPage(0);
         },
         
-        
+        sendTestMessage: function(emailAddress){
+            var message = rpc.adminManager.sendTestMessage( function(result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.testEmailResultMessage = (( result == true ) ? this.i18n._( 'Test email sent.  Check your mailbox to for successful delivery.' ) : this.i18n._('Warning!  Test failed.  Check your settings.' ));
+                var color = result === true ? 'green' : 'red';
+                Ext.MessageBox.hide();
+                Ext.getCmp('email-test-success').setText(this.testEmailResultMessage).setVisible(true).getEl().dom.style.color = color;
+                
+                
+            }.createDelegate(this), emailAddress);                
+        },        
         buildOutgoingServer : function() {
             this.panelOutgoingServer = new Ext.Panel({
                 // private fields
@@ -188,58 +198,74 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }
                     }
                 },
-                
+
                 onEmailTest : function(saveBefore) {
                     var emailTestMessage = this.i18n._("Enter an email address to send a test message and then press \"Send\". That email account should receive an email shortly after running the test. If not, the email settings may not be correct.<br/><br/>It is recommended to verify that the email settings work for sending to both internal (your domain) and external email addresses.");
-                    Ext.MessageBox.show({
-                        title : this.i18n._('Email Test'),
-                        buttons : { 
-                            cancel:this.i18n._('Close'), 
-                            ok:this.i18n._('Send') 
-                        },
-                        msg : emailTestMessage,
-                        modal : true,
-                        prompt : true,
-                        fn: function(btn, emailAddress){
-			    if (btn == 'ok'){
-                                Ext.MessageBox.show({
-                                    title : this.i18n._('Email Test'),
-                                    msg : emailTestMessage,
-		                    buttons : { 
-		                        cancel:this.i18n._('Close'), 
-		                        ok:this.i18n._('Send') 
-		                    },
-                                    modal : true,
-                                    prompt : true,
-                                    progress : true,
-                                    wait : true,
-                                    waitConfig: {interval: 100},
-                                    progressText : this.i18n._('Sending...'),
-                                    value : emailAddress
-                                });
-		                var message = rpc.adminManager.sendTestMessage( function(result, exception) {
-		                    if(Ung.Util.handleException(exception)) return;
-		                    this.testEmailResultMessage = (( result == true ) ? this.i18n._( 'Test email sent.  Check your mailbox to for successful delivery.' ) : this.i18n._('Warning!  Test failed.  Check your settings.' ));
-		                    Ext.MessageBox.show({
-		                        title : this.i18n._('Email Test'),
-		                        msg : emailTestMessage,
-                                        buttons : { 
-                                            cancel:this.i18n._('Close'), 
-                                            ok:this.i18n._('Send') 
-                                        },
-		                        modal : true,
-                                        prompt : true,
-		                        progress : true,
-		                        waitConfig: {interval: 100},
-		                        progressText : this.testEmailResultMessage,
-                                        value : emailAddress
-		                    });
-		                }.createDelegate(this), emailAddress);
-			    }
-                        }.createDelegate(this),
-                        progress : true,
-                        progressText : ' '
-                    });
+                    if(!this.emailMessageBox){
+                        this.emailMessageBox = new Ext.Window({
+                            layout : 'fit',
+                            width : 500,
+                            height : 300,
+                            modal : true,
+                            title : this.i18n._('Email Test'),
+                            closeAction :'hide',
+                            plain : false,
+                            items : new Ext.Panel({
+                                header : false,
+                                border : false,
+                                items: [{
+                                
+                                    xtype : 'fieldset',
+                                    height : 300,
+                                    items:[{
+                                        xtype : 'label',
+                                        html : '<strong style="margin-bottom:20px;font-size:11px;display:block;">'+emailTestMessage+'</strong>',
+                                        width: 400,
+                                        height:100
+                                    },
+                                    {
+                                        xtype : 'textfield',
+                                        name : 'Email Address',
+                                        id : 'email-address-test',
+                                        vtype : 'email',
+                                        validateOnBlur : true,
+                                        allowBlank : false,
+                                        fieldLabel : this.i18n._('Email Address'),
+                                        width : 200
+                                    },{
+                                        xtype : 'label',
+                                        style : 'font-weight:bold;color:green;font-size:11px;display:block;',
+                                        width: 300,
+                                        height:100,
+                                        id : 'email-test-success',
+                                        visible : false
+                                    },] 
+                                }]
+                            }),
+            
+                            buttons: [{
+                                text     : 'Send',
+                                disabled : false,
+                                handler: function(){
+                                    var emailAddress = Ext.getCmp('email-address-test');
+                                    if(emailAddress.validate()===true){
+                                        Ext.MessageBox.wait(this.i18n._('Sending Email...'), this.i18n._('Please wait'));
+                                        this.sendTestMessage(emailAddress.getValue());
+                                    }                                    
+                                }.createDelegate(this)
+                            },{
+                                text     : 'Close',
+                                handler  : function(){
+                                    this.emailMessageBox.destroy();
+                                    this.emailMessageBox = null;
+                                }.createDelegate(this)
+                            }]
+                        });
+                    }else{
+                        Ext.getCmp('email-address-test').setValue('').clearInvalid();                    
+                        Ext.getCmp('email-test-success').setVisible(false);
+                    }
+                    this.emailMessageBox.show();
                 }.createDelegate(this),
 
                 defaults : {
