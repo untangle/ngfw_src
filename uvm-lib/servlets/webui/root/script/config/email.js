@@ -1375,7 +1375,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         }
     });
     
-    // email address details window for Safe List and Quarantine
+    //email address details window for Safe List and Quarantine
     Ung.EmailAddressDetails = Ext.extend(Ung.Window, {
     	settingsCmp : null,
         // the certPanel
