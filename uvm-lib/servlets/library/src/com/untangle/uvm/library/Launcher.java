@@ -56,6 +56,8 @@ public class Launcher extends HttpServlet
     private static final String HTTP_USER_AGENT = "User-Agent";
     private static final String HTTP_CONTENT_TYPE = "Content-Type";
 
+    private static final String PROPERTY_HELP_URL = "com.untangle.helpUrl";
+    
     private final Logger logger = Logger.getLogger( this.getClass());
 
     protected void doGet( HttpServletRequest request,  HttpServletResponse response )
@@ -165,7 +167,11 @@ public class Launcher extends HttpServlet
          LocalUvmContext context = LocalUvmContextFactory.context();
          String lang = context.languageManager().getLanguageSettings().getLanguage();
 
-         return new URL("http://www.untangle.com/docs/get.php?"
+         String Url = System.getProperty(PROPERTY_HELP_URL);
+         if (Url == null)
+             Url = "http://www.untangle.com/docs/get.php";
+         
+         return new URL(Url + "?"
                         + "version=" + Version.getVersion()
                         + "&source=" + source
                         + "&lang=" + lang);
