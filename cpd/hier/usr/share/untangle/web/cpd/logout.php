@@ -86,7 +86,7 @@ function logout()
     <body onload="updatePopup();updateTimeout();">
     <div style="margin-top:25px;">
       Time remaining in session: <span id="timeout"></span>
-    <a href="/cpd/portal.php?logout=Y" target="_logout" onclick="logout()" style="display:block;margin-top:10px;">Logout</button>
+    <a href="/cpd/index.php?logout=Y" target="_logout" onclick="logout()" style="display:block;margin-top:10px;">Logout</button>
     </div>
   </body>
 </html>
