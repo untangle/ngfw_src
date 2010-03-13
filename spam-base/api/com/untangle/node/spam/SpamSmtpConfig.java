@@ -58,18 +58,18 @@ public class SpamSmtpConfig extends SpamProtoConfig
     public static final boolean DEFAULT_BLOCK_SUPER_SPAM = true;
     public static final float DEFAULT_LIMIT_LOAD = 7.0f;
     public static final int DEFAULT_LIMIT_SCANS = 15;
-    public static final boolean DEFAULT_SCAN_WAN_MAIL = true;
+    public static final boolean DEFAULT_SCAN_WAN_MAIL = false;
 
     /* settings */
-    private boolean tarpit = this.DEFAULT_TARPIT;
-    private int tarpit_timeout = this.DEFAULT_TARPIT_TIMEOUT;
+    private boolean tarpit = DEFAULT_TARPIT;
+    private int tarpit_timeout = DEFAULT_TARPIT_TIMEOUT;
     private SmtpSpamMessageAction msgAction = SmtpSpamMessageAction.QUARANTINE;
     private int superSpamStrength = DEFAULT_SUPER_STRENGTH;
-    private boolean blockSuperSpam = this.DEFAULT_BLOCK_SUPER_SPAM;
-    private boolean failClosed = this.DEFAULT_FAIL_CLOSED;
-    private float limit_load = this.DEFAULT_LIMIT_LOAD;
-    private int limit_scans = this.DEFAULT_LIMIT_SCANS;
-    private boolean scan_wan_mail = this.DEFAULT_SCAN_WAN_MAIL;
+    private boolean blockSuperSpam = DEFAULT_BLOCK_SUPER_SPAM;
+    private boolean failClosed = DEFAULT_FAIL_CLOSED;
+    private float limit_load = DEFAULT_LIMIT_LOAD;
+    private int limit_scans = DEFAULT_LIMIT_SCANS;
+    private boolean scan_wan_mail = DEFAULT_SCAN_WAN_MAIL;
 
     public SpamSmtpConfig() { }
 

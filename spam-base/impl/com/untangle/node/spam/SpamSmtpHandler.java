@@ -117,7 +117,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
      */
     protected WrappedMessageGenerator getMsgGenerator()
     {
-        return this.msgGenerator;
+        return msgGenerator;
     }
     
     @Override
