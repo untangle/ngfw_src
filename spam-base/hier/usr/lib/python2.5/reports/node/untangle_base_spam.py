@@ -201,11 +201,13 @@ class SpamHighlight(Highlight):
 SELECT coalesce(sum(msgs), 0)::int AS messages,
        coalesce(sum(%s_spam_msgs), 0)::int AS spam
 FROM reports.n_mail_addr_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__short_name,)
+WHERE trunc_time >= %%s AND trunc_time < %%s
+AND addr_kind = 'T'""" % (self.__short_name,)
+
         if email:
-            query += """
-AND addr_kind = 'T'
-AND addr = %s"""
+            query += " AND addr = %s"
+        else:
+            query += " AND addr_pos = '1'"
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -242,19 +244,17 @@ class TotalEmail(Graph):
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
+        query = """
+SELECT coalesce(sum(msgs), 0)::int,
+       coalesce(sum(%s_spam_msgs), 0)::int
+FROM reports.n_mail_addr_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s
+AND addr_kind = 'T'""" % (self.__short_name,)
+
         if email:
-            query = """\
-SELECT coalesce(sum(msgs), 0)::int,
-       coalesce(sum(%s_spam_msgs), 0)::int
-FROM reports.n_mail_addr_totals
-WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
-""" % self.__short_name
+            query += " AND addr = %s"
         else:
-            query = """\
-SELECT coalesce(sum(msgs), 0)::int,
-       coalesce(sum(%s_spam_msgs), 0)::int
-FROM reports.n_mail_addr_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % self.__short_name
+            query += " AND addr_pos = '1'"
 
         conn = sql_helper.get_connection()
         try:
@@ -315,21 +315,18 @@ class HourlySpamRate(Graph):
 
             curs = conn.cursor()
 
-            if email:
-                ks_query = """\
-SELECT COALESCE(sum(msgs), 0)::float / (%%s * 24) AS email_rate,
-       COALESCE(sum(%s_spam_msgs), 0)::float / (%%s * 24) AS spam_rate
-FROM reports.n_mail_addr_totals
-WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
-""" % (self.__short_name,)
-            else:
-                ks_query = """\
+            ks_query = """\
 SELECT COALESCE(sum(msgs), 0)::float / (%%s * 24) AS email_rate,
        COALESCE(sum(%s_spam_msgs), 0)::float / (%%s * 24) AS spam_rate
 FROM reports.n_mail_addr_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (self.__short_name,)
+AND addr_kind = 'T'""" % (self.__short_name,)
 
+            if email:
+                ks_query += " AND addr = %s"
+            else:
+                ks_query += " AND addr_pos = '1'"
+                
             if email:
                 curs.execute(ks_query, (report_days, report_days, email,
                                         one_week, ed))
@@ -355,9 +352,9 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
                     "coalesce(sum(%s_spam_msgs), 0)::float * 60 * 60 " % (self.__short_name)]
 
             if email:
-                extra_where = (("AND addr_kind = 'T' addr = %(email)s", { 'email' : email }),)
+                extra_where = (("addr_kind = 'T' AND addr = %(email)s", { 'email' : email }),)
             else:
-                extra_where = []
+                extra_where = (("addr_kind = 'T' AND addr_pos = '1'", {}),)
                 
             q, h = sql_helper.get_averaged_query(sums, "reports.n_mail_addr_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -416,22 +413,17 @@ class DailySpamRate(Graph):
         try:
             lks = []
 
-            if email:
-                ks_query = """\
-SELECT COALESCE(sum(msgs), 0)::float / %%s AS email_rate,
-       COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS spam_rate
-FROM reports.n_mail_addr_totals
-WHERE addr_kind = 'T'
-AND addr = %%s
-AND trunc_time >= %%s AND trunc_time < %%s
-""" % (self.__short_name,)
-            else:
-                ks_query = """\
+            ks_query = """
 SELECT COALESCE(sum(msgs), 0)::float / %%s AS email_rate,
        COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS spam_rate
 FROM reports.n_mail_addr_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (self.__short_name,)
+AND addr_kind = 'T'""" % (self.__short_name,)
+
+            if email:
+                ks_query += " AND addr = %s"
+            else:
+                ks_query += " AND addr_pos = '1'"
 
             curs = conn.cursor()
             if email:
@@ -458,21 +450,25 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
             curs = conn.cursor()
 
             if email:
-                plot_query = """\
-SELECT date_trunc('day', trunc_time) AS day,
-       COALESCE(sum(msgs), 0)::float / %%s AS msgs,
-       COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS %s_spam_msgs
-FROM reports.n_mail_addr_totals
-WHERE addr_kind = 'T' AND addr = %%s AND trunc_time >= %%s AND trunc_time < %%s
-GROUP BY day
-ORDER BY day asc""" % (2 * (self.__short_name,))
-            else:
-                plot_query = """\
+                plot_query = """
 SELECT date_trunc('day', trunc_time) AS day,
        COALESCE(sum(msgs), 0)::float / %%s AS msgs,
        COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS %s_spam_msgs
 FROM reports.n_mail_addr_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
+AND addr_kind = 'T'
+AND addr = %%s
+GROUP BY day
+ORDER BY day asc""" % (2 * (self.__short_name,))
+            else:
+                plot_query = """
+SELECT date_trunc('day', trunc_time) AS day,
+       COALESCE(sum(msgs), 0)::float / %%s AS msgs,
+       COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS %s_spam_msgs
+FROM reports.n_mail_addr_totals
+WHERE trunc_time >= %%s AND trunc_time < %%s
+AND addr_kind = 'T'
+AND addr_pos = '1'
 GROUP BY day
 ORDER BY day asc""" % (2 * (self.__short_name,))
 
@@ -538,7 +534,9 @@ class TopSpammedUsers(Graph):
 SELECT foo.addr, foo.spam_msgs
 FROM (SELECT addr, sum(%s_spam_msgs)::int AS spam_msgs
       FROM reports.n_mail_addr_totals
-      WHERE addr_kind = 'T' AND trunc_time >= %%s AND trunc_time < %%s
+      WHERE addr_kind = 'T'
+      AND addr_pos = '1'
+      AND trunc_time >= %%s AND trunc_time < %%s
       GROUP BY addr) AS foo
 WHERE foo.spam_msgs > 0
 ORDER BY spam_msgs desc""" % (self.__short_name,)
