@@ -142,8 +142,8 @@ INSERT INTO reports.n_mail_addrs
            AND pe.time_stamp < mam.end_time
     WHERE pe.time_stamp >= %s AND pe.time_stamp < %s
     AND mi.time_stamp >= %s and mi.time_stamp < %s
-    AND mia.time_stamp >= %s and mia.time_stamp < %s
-    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
+--    AND mia.time_stamp >= %s and mia.time_stamp < %s
+--    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
                                (sd, ed, sd, ed, sd, ed, sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.n_mail_addrs', ed,
@@ -250,7 +250,7 @@ INSERT INTO reports.n_mail_msgs
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
     WHERE pe.time_stamp >= %s AND pe.time_stamp < %s
     AND mi.time_stamp >= %s and mi.time_stamp < %s
-    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
+--    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
                                (sd, ed, sd, ed, sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.n_mail_msgs', ed,
