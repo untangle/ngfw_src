@@ -157,13 +157,21 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return d;
     }
 
-    // FIXME: this is ugly; SummarySection should 
     public List<Highlight> getHighlights(Date d, int numDays)
     {
 	List<Highlight> list = new ArrayList<Highlight>();
 
-        for (Application app : getApplications(getDateDir(d, numDays),
-					      "top-level")) {
+        List<Application> l = getApplications(getDateDir(d, numDays),
+                                               "top-level");
+
+        // add untangle-vm's highlights
+        File f = new File(getDateDir(d, numDays) + "/untangle-vm/report.xml");
+        if (f.exists()) {
+            ApplicationData ad = readXml(f);
+            l.add(0, new Application(ad.getName(), ad.getTitle()));
+        }
+
+        for (Application app : l) {
 	    for (Section s : getApplicationData(d, numDays, app.getName()).
 		     getSections()) {
 		if (s instanceof SummarySection) {

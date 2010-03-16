@@ -31,6 +31,7 @@ from reports import ColumnDesc
 from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
+from reports import Highlight
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -78,6 +79,22 @@ class UvmNode(Node):
                         Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
+
+        self.branded_name = self.__get_branded_name()
+
+    @print_timing
+    def __get_branded_name(self):
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+        try:
+            curs.execute("SELECT company_name FROM uvm_branding_settings")
+            while 1:
+                r = curs.fetchone()
+                if not r:
+                    break
+                return r[0]
+        except Exception, e:
+            return self.name
 
     @print_timing
     def __create_n_admin_logins(self, start_date, end_date):
@@ -154,7 +171,9 @@ DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
         sections = []
 
         s = SummarySection('summary', _('Summary Report'),
-                           [BandwidthUsage(), ActiveSessions(),
+                           [VmHighlight(self.name, self.branded_name),
+                            BandwidthUsage(),
+                            ActiveSessions(),
                             DestinationPorts()])
 
         sections.append(s)
@@ -578,6 +597,46 @@ ON min_idx = position""")
                     and lease.end_of_lease > event.start):
                     lease.end_of_lease = event.start
                     return
+
+class VmHighlight(Highlight):
+    def __init__(self, name, branded_name):
+        Highlight.__init__(self, name,
+                           branded_name + " " +
+                           _("scanned") + " " +
+                           "%(traffic)s" + " " +
+                           _("GB") +
+                           " " + _("and") + " " +
+                           "%(sessions)s" + " " + _("sessions"))
+
+    @print_timing
+    def get_highlights(self, end_date, report_days,
+                       host=None, user=None, email=None):
+        if host or user or email:
+            return None
+
+        ed = DateFromMx(end_date)
+        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        query = """
+SELECT round((COALESCE(sum(s2c_bytes + c2s_bytes), 0) / 1000000000)::numeric, 2) AS traffic,
+       COALESCE(sum(num_sessions), 0)::int AS sessions
+FROM reports.session_totals AS st, reports.session_counts AS sc
+WHERE st.trunc_time >= %s AND st.trunc_time < %s
+AND sc.trunc_time >= %s AND sc.trunc_time < %s"""
+
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+
+        h = {}
+        try:
+            curs.execute(query, (one_week, ed, one_week, ed))
+
+            h = sql_helper.get_result_dictionary(curs)
+                
+        finally:
+            conn.commit()
+
+        return h
 
 class BandwidthUsage(Graph):
     def __init__(self):

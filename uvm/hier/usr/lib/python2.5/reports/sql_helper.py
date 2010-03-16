@@ -123,7 +123,7 @@ def run_sql(sql, args=None, connection=get_connection(), auto_commit=True):
 
     except Exception, e:
         show_error = True
-        if not re.search(r'DELETE ', sql) and not re.search(r'already exists', e.message):
+        if not re.search(r'^\s*(DELETE|CREATE|ALTER|DROP) ', sql):
             logger.warn("SQL exception begin", exc_info=True)
             logger.warn("SQL exception end")
             show_error = False
