@@ -18,7 +18,7 @@
 
 CREATE SCHEMA events;
 
-SET search_path TO settings,events,public;
+-- SET search_path TO settings,events,public;
 
 -- com.untangle.mvvm.engine.LoginEvent
 CREATE TABLE events.u_login_evt (
@@ -156,8 +156,8 @@ CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
 CREATE INDEX pl_endp_ts_idx ON events.pl_endp (time_stamp);
 CREATE INDEX pl_stats_plepid_idx ON events.pl_stats (pl_endp_id);
 
-CREATE INDEX u_login_evt_ts_idx ON u_login_evt (time_stamp);
-CREATE INDEX u_lookup_evt_ts_idx ON u_lookup_evt (time_stamp);
+CREATE INDEX u_login_evt_ts_idx ON events.u_login_evt (time_stamp);
+CREATE INDEX u_lookup_evt_ts_idx ON events.u_lookup_evt (time_stamp);
 CREATE INDEX n_shield_rejection_evt_ts_idx ON n_shield_rejection_evt (time_stamp);
 
 

@@ -19,7 +19,7 @@
 
 CREATE SCHEMA settings;
 
-SET search_path TO settings,events,public;
+-- SET search_path TO settings,events,public;
 
 CREATE SEQUENCE settings.hibernate_sequence;
 
@@ -602,18 +602,18 @@ ALTER TABLE settings.u_ipmaddr_dir_entries
     FOREIGN KEY (ipmaddr_dir_id) REFERENCES settings.u_ipmaddr_dir;
 
 -- -- Services settings
-ALTER TABLE u_dhcp_lease_list
+ALTER TABLE settings.u_dhcp_lease_list
       ADD CONSTRAINT fk_uvm_lease_services
       FOREIGN KEY (setting_id) REFERENCES u_network_services;
 
-ALTER TABLE u_dhcp_lease_list
+ALTER TABLE settings.u_dhcp_lease_list
       ADD CONSTRAINT fk_uvm_lease_lease
       FOREIGN KEY (rule_id) REFERENCES u_dhcp_lease_rule;
 
-ALTER TABLE u_dns_host_list
+ALTER TABLE settings.u_dns_host_list
       ADD CONSTRAINT fk_uvm_dns_services
       FOREIGN KEY (setting_id) REFERENCES u_network_services;
 
-ALTER TABLE u_dns_host_list
+ALTER TABLE settings.u_dns_host_list
       ADD CONSTRAINT fk_uvm_dns_dns
       FOREIGN KEY (rule_id) REFERENCES u_dns_static_host_rule;

@@ -179,13 +179,22 @@ def get_column(type)
 end
 
 def get_latest_version(schema_dir, type)
-  Dir.new(schema_dir).map do |f|
-    if /#{type}-convert-([0-9]+)\.(sql|rb)$/ =~ f
-      $1.to_i
-    else
-      nil
-    end
-  end.reject { |e| e.nil? }.max
+  begin
+
+    Dir.entries(schema_dir).map do |f|
+      if /#{type}-convert-([0-9]+)\.(sql|rb)$/ =~ f
+        $1.to_i
+      else
+        nil
+      end
+    end.reject { |e| e.nil? }.max
+
+  rescue Errno::ENOENT 
+
+  rescue
+    raise $!
+
+  end
 end
 
 def get_inst_version(dbh, component, type)
@@ -228,7 +237,7 @@ end
 
 def run_sql_file(file)
   LOG.info "Running SQL file: #{file}"
-  Kernel.system "psql -X -U postgres -e uvm -f #{file}"
+  Kernel.system "psql -X -U postgres uvm -f #{file} 2>&1| grep -v 'ERROR:.*already exists'"
 end
 
 def run_rb_file(dbh, file)
@@ -361,12 +370,7 @@ begin
   latest_version = get_latest_version(SCHEMA_DIR, TYPE)
   inst_version = get_inst_version(dbh, COMPONENT, TYPE)
 
-  LOG.info <<EOF
-Component #{COMPONENT}
-Type: #{TYPE}
-Installed schema: #{inst_version}
-Latest schema version: #{latest_version}
-EOF
+  LOG.info "Component #{COMPONENT} Type: #{TYPE} Installed schema: #{inst_version} Latest schema version: #{latest_version}"
 
   if inst_version.nil?
     LOG.info 'Initializing schema'
