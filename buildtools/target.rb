@@ -577,7 +577,7 @@ class JavaMsgFmtTarget < Target
 
     # ignore output of create_mofiles
     $stderr2 = $stderr.clone
-    $stderr.reopen('tmp2.dat')
+    $stderr.reopen('/dev/null')
 
     GetText::create_mofiles(false, @src, @mo_dest)
 
