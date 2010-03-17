@@ -41,7 +41,6 @@ import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
-import com.untangle.uvm.user.RemotePhoneBook;
 
 /**
  * Adapts UvmContextImpl to RemoteUvmContext.
@@ -125,11 +124,6 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
     public RemoteAppServerManager appServerManager()
     {
         return context.remoteAppServerManager();
-    }
-
-    public RemotePhoneBook phoneBook()
-    {
-        return context.remotePhoneBook();
     }
 
     public RemoteAddressBook appAddressBook()

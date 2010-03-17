@@ -54,7 +54,6 @@ import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
-import com.untangle.uvm.user.RemotePhoneBook;
 
 /**
  * Provides an interface to get major UVM components that are
@@ -145,12 +144,6 @@ public interface RemoteUvmContext
      * @return the singleton
      */
     RemoteAppServerManager appServerManager();
-
-    /**
-     * Get the phonebook singleton
-     * @return the singleton
-     */
-    RemotePhoneBook phoneBook();
 
     /**
      * Get the AddressBook singleton for this instance

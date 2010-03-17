@@ -54,6 +54,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.XMLRPCUtil;
+import com.untangle.uvm.node.ADConnector;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -96,7 +97,7 @@ public class VpnNodeImpl extends AbstractNode
     private final AddressMapper addressMapper = new AddressMapper();
     private final OpenVpnMonitor openVpnMonitor;
     private final OpenVpnCaretaker openVpnCaretaker = new OpenVpnCaretaker();
-    private final PhoneBookAssistant assistant;
+    private final OpenVpnPhoneBookAssistant assistant;
 
     private final EventHandler handler;
 
@@ -120,7 +121,7 @@ public class VpnNodeImpl extends AbstractNode
     {
         this.handler          = new EventHandler( this );
         this.openVpnMonitor   = new OpenVpnMonitor( this );
-        this.assistant        = new PhoneBookAssistant();
+        this.assistant        = new OpenVpnPhoneBookAssistant();
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
@@ -614,7 +615,8 @@ public class VpnNodeImpl extends AbstractNode
         super.postInit( args );
 
         /* register the assistant with the phonebook */
-        LocalUvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
+        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) { adconnector.getPhoneBook().registerAssistant( this.assistant ); }
 
         TransactionWork tw = new TransactionWork()
             {
@@ -723,7 +725,8 @@ public class VpnNodeImpl extends AbstractNode
             logger.warn( "Error stopping openvpn monitor", e );
         }
 
-        LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
+        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) { adconnector.getPhoneBook().unregisterAssistant( this.assistant ); }
 
         unDeployWebApp();
     }

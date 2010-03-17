@@ -26,11 +26,10 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.user.Assistant;
+import com.untangle.uvm.user.PhoneBookAssistant;
 import com.untangle.uvm.user.UserInfo;
-import com.untangle.uvm.user.Username;
 
-class PhoneBookAssistant implements Assistant
+class OpenVpnPhoneBookAssistant implements PhoneBookAssistant
 {
     private final int PRIORITY = 1;
 
@@ -43,7 +42,7 @@ class PhoneBookAssistant implements Assistant
     private final Logger logger = Logger.getLogger( getClass());
 
     /* -------------- Constructors -------------- */
-    PhoneBookAssistant()
+    OpenVpnPhoneBookAssistant()
     {
     }
 
@@ -90,15 +89,10 @@ class PhoneBookAssistant implements Assistant
                 if ( !client.isEnabled()) continue;
 
                 /* Attempt to convert the client name into a hostname */
-                Username u = null;
+                String u = null;
                 HostName h = null;
                 String name = client.getName();
-
-                try {
-                    u = Username.parse( name );
-                } catch ( ParseException e ) {
-                    logger.info( "unable to parse the client name '" + name + "' as a username" );
-                }
+                u = name.trim();
 
                 try {
                     h = HostName.parse( name );
@@ -119,10 +113,10 @@ class PhoneBookAssistant implements Assistant
     private static class Data
     {
 
-        private final Username username;
+        private final String username;
         private final HostName hostname;
 
-        Data( Username u, HostName h )
+        Data( String u, HostName h )
         {
             this.username = u;
             this.hostname = h;

@@ -52,6 +52,7 @@ import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
+import com.untangle.uvm.node.ADConnector;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -69,7 +70,7 @@ public class RouterImpl extends AbstractNode implements Router
     /* Done with an inner class so the GUI doesn't freak out about not
      * having the NetworkSettingsListener class */
     private final SettingsListener listener;
-    private final PhoneBookAssistant assistant;
+    private final RouterPhoneBookAssistant assistant;
 
     /* Indicate whether or not the node is starting */
 
@@ -100,7 +101,7 @@ public class RouterImpl extends AbstractNode implements Router
         this.statisticManager = new RouterStatisticManager(getNodeContext());
         this.dhcpMonitor      = new DhcpMonitor( this, LocalUvmContextFactory.context());
         this.listener         = new SettingsListener();
-        this.assistant        = new PhoneBookAssistant( this.dhcpMonitor );
+        this.assistant        = new RouterPhoneBookAssistant( this.dhcpMonitor );
 
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
@@ -205,7 +206,8 @@ public class RouterImpl extends AbstractNode implements Router
         /* Register a listener, this should hang out until the node is removed dies. */
         getNetworkManager().registerListener( this.listener );
 
-        LocalUvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
+        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) { adconnector.getPhoneBook().registerAssistant( this.assistant ); }
 
         /* Check if the settings have been upgraded yet */
         DataLoader<RouterSettingsImpl> natLoader = 
@@ -302,7 +304,8 @@ public class RouterImpl extends AbstractNode implements Router
         /* Deregister the network settings listener */
         getNetworkManager().unregisterListener( this.listener );
 
-        LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
+        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) { adconnector.getPhoneBook().unregisterAssistant( this.assistant ); }
     }
 
     public void networkSettingsEvent() throws NodeException

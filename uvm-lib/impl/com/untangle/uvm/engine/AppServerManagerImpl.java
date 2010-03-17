@@ -52,13 +52,13 @@ class AppServerManagerImpl implements LocalAppServerManager
     private final Logger logger = Logger.getLogger(getClass());
 
     private final UvmContextImpl mctx;
-    private final TomcatManager tomcatManager;
+    private final TomcatManagerImpl tomcatManager;
 
     AppServerManagerImpl(UvmContextImpl mctx)
     {
         this.mctx = mctx;
         //TODO Clean up stuff ported from "main"
-        this.tomcatManager = mctx.tomcatManager();
+        this.tomcatManager = (TomcatManagerImpl) mctx.tomcatManager();
 
         Properties networkingProperties = new Properties();
 

@@ -46,11 +46,12 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.util.AdministrationOutsideAccessValve;
 import com.untangle.uvm.util.ReportingOutsideAccessValve;
+import com.untangle.uvm.LocalTomcatManager;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
  */
-class TomcatManager
+public class TomcatManagerImpl implements LocalTomcatManager
 {
     private static final int NUM_TOMCAT_RETRIES = 15; //  5 minutes total
     private static final long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
@@ -72,9 +73,9 @@ class TomcatManager
 
     // constructors -----------------------------------------------------------
 
-    TomcatManager(UvmContextImpl uvmContext,
-                  InheritableThreadLocal<HttpServletRequest> threadRequest,
-                  String catalinaHome, String webAppRoot, String logDir)
+    TomcatManagerImpl(UvmContextImpl uvmContext,
+                      InheritableThreadLocal<HttpServletRequest> threadRequest,
+                      String catalinaHome, String webAppRoot, String logDir)
     {
         this.webAppRoot = webAppRoot;
 
@@ -182,7 +183,7 @@ class TomcatManager
         this.keyAlias = ksAlias;
     }
 
-    ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm,
+    public ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm,
                                  AuthenticatorBase auth)
     {
         // Need a large timeout since we handle that ourselves.
@@ -221,12 +222,12 @@ class TomcatManager
         return loadGlobalApp(urlBase, rootDir, new WebAppOptions());
     }
 
-    ServletContext loadInsecureApp(String urlBase, String rootDir)
+    public ServletContext loadInsecureApp(String urlBase, String rootDir)
     {
         return loadWebApp(urlBase, rootDir, null, null);
     }
 
-    ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve)
+    public ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve)
     {
         return loadWebApp(urlBase, rootDir, null, null, valve);
     }

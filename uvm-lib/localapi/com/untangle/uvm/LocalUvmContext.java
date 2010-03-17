@@ -58,12 +58,10 @@ import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.RemoteToolboxManager;
 import com.untangle.uvm.toolbox.RemoteUpstreamManager;
-import com.untangle.uvm.user.ADPhoneBookAssistant;
-import com.untangle.uvm.user.LocalPhoneBook;
-import com.untangle.uvm.user.RemotePhoneBook;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.MPipeManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
+import com.untangle.uvm.LocalTomcatManager;
 
 /**
  * Provides an interface to get all local UVM components from an UVM
@@ -195,18 +193,6 @@ public interface LocalUvmContext
     RemoteMessageManager messageManager();
 
     LocalMessageManager localMessageManager();
-
-    /**
-     * Get the phonebook singleton
-     * @return the singleton
-     */
-    LocalPhoneBook localPhoneBook();
-
-    /**
-     * Get the phonebook singleton
-     * @return the singleton
-     */
-    RemotePhoneBook remotePhoneBook();
 
     /**
      * The license manager.
@@ -351,20 +337,14 @@ public interface LocalUvmContext
 
     void waitForStartup();
 
+    LocalTomcatManager tomcatManager();
+    
     /**
      * Get the remote context.
      *
      * @return the RemoteUvmContext.
      */
     RemoteUvmContext remoteContext();
-
-    /**
-     * Get the ADPhoneBookAssistant singleton for this instance
-     *
-     * @return the singleton
-     */
-    ADPhoneBookAssistant adPhoneBookAssistant();
-
 
     CronJob makeCronJob(Period p, Runnable r);
 

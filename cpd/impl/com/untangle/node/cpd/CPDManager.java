@@ -34,9 +34,12 @@ import com.untangle.uvm.node.firewall.ip.IPSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSubnetMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.user.UserInfo;
-import com.untangle.uvm.user.Username;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.ADConnector;
+import com.untangle.uvm.user.UserInfo;
 
 class CPDManager {
     private final Logger logger = Logger.getLogger(CPDManager.class);
@@ -132,13 +135,13 @@ class CPDManager {
             return false;
         }
         
-        /* Just verify that username is a valid string */
-        try {
-            Username.parse(username);
-        } catch (ParseException e1) {
-            logger.info( "Invalid username: '" + username + "'");
-            return false;
-        }
+        /* Just verify that username is a valid string XXX */
+//         try {
+//             Username.parse(username);
+//         } catch (ParseException e1) {
+//             logger.info( "Invalid username: '" + username + "'");
+//             return false;
+//         }
             
         boolean isAuthenticated = false;
         CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
@@ -193,15 +196,10 @@ class CPDManager {
         }
         
         /* Expire the cache on the phonebook */
-        UserInfo info = LocalUvmContextFactory.context().localPhoneBook().lookup(address,false);
-
-        /*
-         * This could check if it is the current user and only expire the the
-         * entry if it matches, but the added complexity is just not worth it.
-         * Plus, this will update the expirationDate when it does the lookup.
-         */
-        if ( info != null ) {
-            info.setExpirationDate(0);
+        /* This will force adconnector to relookup the address and log any associated events */
+        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) {
+            adconnector.getPhoneBook().expireUser( address );
         }
         
         CPDLoginEvent.EventType eventType = isAuthenticated ? 
@@ -240,17 +238,12 @@ class CPDManager {
         }
         
         /* Expire the cache on the phonebook */
-        UserInfo info = LocalUvmContextFactory.context().localPhoneBook().lookup(address,false);
-
-        /*
-         * This could check if it is the current user and only expire the the
-         * entry if it matches, but the added complexity is just not worth it.
-         * Plus, this will update the expirationDate when it does the lookup.
-         */
-        if ( info != null ) {
-            info.setExpirationDate(0);
+        /* This will force adconnector to relookup the address and log any associated events */
+        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) {
+            adconnector.getPhoneBook().expireUser( address );
         }
-        
+
         CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
         
         AuthenticationType method = baseSettings.getAuthenticationType(); 

@@ -21,9 +21,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.user.Assistant;
+import com.untangle.uvm.user.PhoneBookAssistant;
 import com.untangle.uvm.user.UserInfo;
-import com.untangle.uvm.user.Username;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.node.NodeState;
@@ -33,7 +32,7 @@ import com.untangle.uvm.node.NodeState;
  * @author rbscott
  *
  */
-public class CPDPhoneBookAssistant implements Assistant {
+public class CPDPhoneBookAssistant implements PhoneBookAssistant {
 
     /* how often to refresh internal cache from database */
     private final long DATABASE_READER_INTERVAL = 10000L;
@@ -71,12 +70,8 @@ public class CPDPhoneBookAssistant implements Assistant {
                 logger.debug("CPDPhoneBook lookup IP: " + info.getAddress() + " User: " + cacheEntry.username);
             }
             
-            try {
-                info.setUsername(Username.parse(cacheEntry.username));
-                info.setExpirationDate(cacheEntry.expirationDate.getTime());
-            } catch (ParseException e) {
-                logger.info( "Unable to parse the username: " + cacheEntry.username );
-            }
+            info.setUsername(cacheEntry.username);
+            info.setExpirationDate(cacheEntry.expirationDate.getTime());
         } else {
             if ( logger.isDebugEnabled()) {
                 logger.debug("CPDPhoneBook lookup IP: " + info.getAddress() + " User: None");

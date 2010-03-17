@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/uvm-lib/localapi/com/untangle/uvm/user/Assistant.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
@@ -33,9 +33,14 @@
 
 package com.untangle.uvm.user;
 
-import com.untangle.uvm.license.LicensedProduct;
-
-public interface RemotePhoneBook extends LicensedProduct
+public interface PhoneBookAssistant
 {
+    /* Lookup user information about a session filling in as much of
+     * the user information as possible.
+     */
+    public void lookup( UserInfo info );
+
+    /* retrieve the priority of this assistant, higher numbers are lower priority */
+    public int priority();
 }
 

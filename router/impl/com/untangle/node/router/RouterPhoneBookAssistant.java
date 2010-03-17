@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/router/impl/com/untangle/node/router/PhoneBookAssistant.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,11 +31,11 @@ import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.networking.internal.DnsStaticHostInternal;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 
-import com.untangle.uvm.user.Assistant;
+import com.untangle.uvm.user.PhoneBookAssistant;
 import com.untangle.uvm.user.UserInfo;
 
 
-class PhoneBookAssistant implements Assistant
+class RouterPhoneBookAssistant implements PhoneBookAssistant
 {
     private final int PRIORITY = 0;
 
@@ -51,7 +51,7 @@ class PhoneBookAssistant implements Assistant
     private final DhcpMonitor dhcpMonitor;
     
     /* -------------- Constructors -------------- */
-    PhoneBookAssistant( DhcpMonitor dhcpMonitor )
+    RouterPhoneBookAssistant( DhcpMonitor dhcpMonitor )
     {
         this.dhcpMonitor = dhcpMonitor;
     }

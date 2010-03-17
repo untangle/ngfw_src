@@ -1,6 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL: svn://chef/work/src/spyware/api/com/untangle/node/spyware/Spyware.java $
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -15,13 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 package com.untangle.uvm.user;
 
 import java.net.InetAddress;
 
-public interface ADPhoneBookAssistant extends Assistant
+public interface PhoneBook
 {
-    public void addOrUpdate(InetAddress inetAddress, String username, String domain, String hostname);
+    public String tryLookupUser( InetAddress address );
+
+    public void expireUser ( InetAddress address );
     
-    public String toString();
+    public void registerAssistant( PhoneBookAssistant newAssistant );
+
+    public void unregisterAssistant( PhoneBookAssistant assistant );
 }

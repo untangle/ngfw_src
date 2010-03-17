@@ -38,6 +38,9 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-libuvm)
             d=$work/src/uvm-lib
             ;;
+        untangle-node-adblocker)
+            d=$work/src/adblocker
+            ;;
         untangle-node-adconnector)
             d=$hades/rup/adconnector
             ;;

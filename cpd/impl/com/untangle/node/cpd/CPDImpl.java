@@ -62,6 +62,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
+import com.untangle.uvm.node.ADConnector;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
@@ -71,7 +72,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     private final CustomUploadHandler uploadHandler = new CustomUploadHandler(); 
     private final Logger logger = Logger.getLogger(CPDImpl.class);
 
-    private final CPDPhoneBookAssistant cpdAssistant = new CPDPhoneBookAssistant(this);
+    private final CPDPhoneBookAssistant assistant = new CPDPhoneBookAssistant(this);
 
     private final PipeSpec[] pipeSpecs;
     
@@ -362,7 +363,7 @@ public class CPDImpl extends AbstractNode implements CPD {
             /* Update the CPD Phone Book cache */
             if (isAuthenticated) {
                 try {
-                    cpdAssistant.addCache(InetAddress.getByName(address),username);
+                    assistant.addCache(InetAddress.getByName(address),username);
                 } catch (UnknownHostException e) {
                     logger.warn("Add Cache failed",e);
                 }
@@ -382,7 +383,7 @@ public class CPDImpl extends AbstractNode implements CPD {
         /* Update the CPD Phone Book cache */
         if (isLoggedOut) {
             try {
-                cpdAssistant.removeCache(InetAddress.getByName(address));
+                assistant.removeCache(InetAddress.getByName(address));
             } catch (UnknownHostException e) {
                 logger.warn("Remove Cache failed",e);
             }
@@ -422,10 +423,11 @@ public class CPDImpl extends AbstractNode implements CPD {
            
         LocalUvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
         
-        /* Flush all of the entries that are in the phonebook */
-        LocalUvmContextFactory.context().localPhoneBook().flushEntries();
+        /* Flush all of the entries that are in the phonebook XXX */
+        //LocalUvmContextFactory.context().localPhoneBook().flushEntries();
 
-        LocalUvmContextFactory.context().localPhoneBook().registerAssistant(this.cpdAssistant);
+        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) { adconnector.getPhoneBook().registerAssistant( this.assistant ); }
         
         super.preStart();
      }
@@ -438,8 +440,8 @@ public class CPDImpl extends AbstractNode implements CPD {
             if ( LocalUvmContextFactory.context().state() != UvmState.DESTROYED ) {
                 this.manager.clearHostDatabase();
                 
-                /* Flush all of the entries that are in the phonebook */
-                LocalUvmContextFactory.context().localPhoneBook().flushEntries();
+                /* Flush all of the entries that are in the phonebook XXX */
+                //LocalUvmContextFactory.context().localPhoneBook().flushEntries();
             }
         } catch (JSONException e) {
             logger.warn( "Unable to convert the JSON while clearing the host database, continuing.", e);
@@ -462,7 +464,8 @@ public class CPDImpl extends AbstractNode implements CPD {
     {
         super.postStop();
 
-        LocalUvmContextFactory.context().localPhoneBook().unregisterAssistant(this.cpdAssistant);
+        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) { adconnector.getPhoneBook().unregisterAssistant( this.assistant ); }
     }
     
     protected void postInit(final String[] args) {
@@ -495,7 +498,7 @@ public class CPDImpl extends AbstractNode implements CPD {
                 
         unDeployWebAppIfRequired(this.logger);
 
-        this.cpdAssistant.stopDatabaseReader();
+        this.assistant.stopDatabaseReader();
         
         super.preDestroy();
     }

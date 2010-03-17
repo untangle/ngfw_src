@@ -1,6 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL: svn://chef/work/src/uvm-lib/impl/com/untangle/uvm/engine/TomcatManager.java $
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -15,28 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package com.untangle.uvm.user;
 
-import java.net.InetAddress;
+package com.untangle.uvm;
 
-public class LocalADPhoneBookAssistantImpl implements ADPhoneBookAssistant
+import javax.servlet.ServletContext;
+
+import org.apache.catalina.Realm;
+import org.apache.catalina.authenticator.AuthenticatorBase;
+import org.apache.catalina.Valve;
+
+public interface LocalTomcatManager
 {
-    private int PRIORITY=2000000000;
-    
-    public void addOrUpdate(InetAddress inetAddress, String username, String domain, String hostname){
-    }
+    public ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth);
 
-    public String toString() {
-        return "";
-    }
-    
-    public void lookup( UserInfo info ){
-    }
-    
+    public ServletContext loadInsecureApp(String urlBase, String rootDir);
 
-    /* retrieve the priority of this assistant, higher numbers are lower priority */
-    public int priority() {
-	return PRIORITY;
-    }
-
+    public ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve);
+        
 }

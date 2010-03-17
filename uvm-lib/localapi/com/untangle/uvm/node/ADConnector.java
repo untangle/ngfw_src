@@ -15,21 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+package com.untangle.uvm.node;
 
-package com.untangle.uvm.user;
+import com.untangle.uvm.user.PhoneBook;
 
-
-public class RemotePhoneBookImpl implements RemotePhoneBook
+public interface ADConnector 
 {
-    private final LocalPhoneBook local;
-    
-    public RemotePhoneBookImpl( LocalPhoneBook local )
-    {
-        this.local = local;
-    }
-                         
-    public String productIdentifier()
-    {
-        return local.productIdentifier();
-    }
+    public PhoneBook getPhoneBook();
 }

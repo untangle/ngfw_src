@@ -47,6 +47,7 @@ import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.LocalJStoreManager;
 import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalTomcatManager;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.UvmException;
@@ -80,10 +81,6 @@ import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
-import com.untangle.uvm.user.ADPhoneBookAssistant;
-import com.untangle.uvm.user.LocalPhoneBook;
-import com.untangle.uvm.user.PhoneBookFactory;
-import com.untangle.uvm.user.RemotePhoneBook;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -150,10 +147,9 @@ public class UvmContextImpl extends UvmContextBase
     private MessageManagerImpl localMessageManager;
     private RemoteMessageManager messageManager;
     private RemoteLanguageManagerImpl languageManager;
-    private PhoneBookFactory phoneBookFactory;
     private BasePortalManager portalManager;
     private LicenseManagerFactory licenseManagerFactory;
-    private TomcatManager tomcatManager;
+    private TomcatManagerImpl tomcatManager;
     private HeapMonitor heapMonitor;
     private UploadManagerImpl uploadManager;
     private LocalJStoreManagerImpl jStoreManager;
@@ -161,8 +157,6 @@ public class UvmContextImpl extends UvmContextBase
 
     // Will be null if cliServer is not enabled
     private CliServerManager cliServerManager;
-
-    private ADPhoneBookAssistant adPhoneBookAssistant;
 
     private Environment bdbEnvironment;
 
@@ -232,16 +226,6 @@ public class UvmContextImpl extends UvmContextBase
     public RemoteLanguageManagerImpl languageManager()
     {
         return languageManager;
-    }
-
-    public RemotePhoneBook remotePhoneBook()
-    {
-        return phoneBookFactory.getRemote();
-    }
-
-    public LocalPhoneBook localPhoneBook()
-    {
-        return phoneBookFactory.getLocal();
     }
 
     public BasePortalManager portalManager()
@@ -360,11 +344,6 @@ public class UvmContextImpl extends UvmContextBase
                 }
             }
         }
-    }
-
-    public ADPhoneBookAssistant adPhoneBookAssistant()
-    {
-        return adPhoneBookAssistant;
     }
 
     public Environment getBdbEnvironment()
@@ -783,10 +762,10 @@ public class UvmContextImpl extends UvmContextBase
         InheritableThreadLocal<HttpServletRequest> threadRequest
             = new InheritableThreadLocal<HttpServletRequest>();
 
-        tomcatManager = new TomcatManager(this, threadRequest,
-                                          System.getProperty("bunnicula.home"),
-                                          System.getProperty("bunnicula.web.dir"),
-                                          System.getProperty("bunnicula.log.dir"));
+        tomcatManager = new TomcatManagerImpl(this, threadRequest,
+                                              System.getProperty("bunnicula.home"),
+                                              System.getProperty("bunnicula.web.dir"),
+                                              System.getProperty("bunnicula.log.dir"));
 
         // start services:
         adminManager = new RemoteAdminManagerImpl(this, threadRequest);
@@ -824,8 +803,6 @@ public class UvmContextImpl extends UvmContextBase
         skinManager = new RemoteSkinManagerImpl(this);
         languageManager = new RemoteLanguageManagerImpl(this);
 
-        phoneBookFactory = PhoneBookFactory.makeInstance();
-
         loadPortalManager();
 
         // start nodes:
@@ -855,7 +832,7 @@ public class UvmContextImpl extends UvmContextBase
             Argon.getInstance().run( networkManager );
         }
 
-	// Start statistic gathering
+        // Start statistic gathering
         localMessageManager.start();
 
         this.heapMonitor = new HeapMonitor();
@@ -863,11 +840,6 @@ public class UvmContextImpl extends UvmContextBase
         if (null != useHeapMonitor && Boolean.valueOf(useHeapMonitor)) {
             this.heapMonitor.start();
         }
-
-        adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
-
-        /* initalize everything and start it up */
-        phoneBookFactory.init();
 
         remoteContext = new RemoteUvmContextAdaptor(this);
         state = UvmState.INITIALIZED;
@@ -937,14 +909,6 @@ public class UvmContextImpl extends UvmContextBase
             logger.warn("could not destroy PortalManager", exn);
         }
         portalManager = null;
-
-        // destroy the phonebook:
-        try {
-            if (phoneBookFactory != null)
-                phoneBookFactory.destroy();
-        } catch (Exception exn) {
-            logger.warn("could not destroy LocalPhoneBook", exn);
-        }
 
         // XXX destroy needed
         addressBookFactory = null;
@@ -1065,7 +1029,7 @@ public class UvmContextImpl extends UvmContextBase
         }
     }
 
-    TomcatManager tomcatManager()
+    public LocalTomcatManager tomcatManager()
     {
         return tomcatManager;
     }
@@ -1133,8 +1097,6 @@ public class UvmContextImpl extends UvmContextBase
             policyManagerFactory.refresh();
             addressBookFactory.refresh();
             brandingManagerFactory.refresh();
-            phoneBookFactory.refresh();
-            adPhoneBookAssistant = ADPhoneBookAssistantManager.getADPhoneBookAssistant();
         }
 
         return true;

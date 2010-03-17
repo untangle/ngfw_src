@@ -44,9 +44,13 @@ import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.ADConnector;
+import com.untangle.uvm.user.PhoneBook;
 import com.untangle.uvm.user.UserInfo;
-import com.untangle.uvm.user.Username;
+import com.untangle.uvm.security.Tid;
+
 
 /**
  * Helper class for the IP session hooks.
@@ -136,8 +140,8 @@ abstract class ArgonHook implements Runnable
                 return;
             }
 
-	    //we dont want to watch internal traffic that is redirected back to the internal network
-	    if (serverIntf == clientIntf){
+            //we dont want to watch internal traffic that is redirected back to the internal network
+            if (serverIntf == clientIntf) {
                 liberate();
                 raze();
                 return;
@@ -153,25 +157,20 @@ abstract class ArgonHook implements Runnable
             serverSide = clientSide;
 
             /* lookup the user information */
-
-            UserInfo info = LocalUvmContextFactory.context().localPhoneBook().lookup( clientSide.clientAddr());
-
-            if ( logger.isDebugEnabled()) logger.debug( "user information: " + info );
-
-            Username username;
-
-            /* should cache the lookup key, but no worries for now */
-            if ( info != null && info.getUsernameState().equals( UserInfo.LookupState.COMPLETED ) &&
-                 (( username = info.getUsername()) != null )) {
-                String u = username.toString().trim();
-                if ( u.length() > 0 ) sessionGlobalState.setUser( u );
+            ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+            if (adconnector != null) {
+                String username = adconnector.getPhoneBook().tryLookupUser( clientSide.clientAddr());
+                if (username != null && username.length() > 0 ) { 
+                    logger.debug( "user information: " + username );
+                    sessionGlobalState.setUser( username );
+                }
             }
-
+            
             pipelineDesc = pipelineFoundry.weld( clientSide );
             pipelineAgents = pipelineDesc.getAgents();
 
-            // Create the (fake) endpoints early so they can be
-            // available at request time.
+            /* Create the (fake) endpoints early so they can be
+             * available at request time. */
             endpoints = pipelineFoundry.createInitialEndpoints(clientSide);
 
             /* Initialize all of the nodes, sending the request events
