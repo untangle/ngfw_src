@@ -306,16 +306,6 @@ public interface RemoteUvmContext
      */
     boolean loadRup();
 
-    /**
-     * Restarts Command Line Interface Server
-     */
-    void restartCliServer();
-
-    /**
-     * Stops Command Line Interface Server
-     */
-    void stopCliServer();
-
     String setProperty(String key, String value);
     
     public RemoteBenchmarkManager benchmarkManager();

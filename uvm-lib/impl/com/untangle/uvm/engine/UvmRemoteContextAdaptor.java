@@ -248,16 +248,6 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         return context.loadRup();
     }
 
-    public void restartCliServer()
-    {
-        context.restartCliServer();
-    }
-
-    public void stopCliServer()
-    {
-        context.stopCliServer();
-    }
-
     public String setProperty(String key, String value)
     {
         return context.setProperty(key, value);

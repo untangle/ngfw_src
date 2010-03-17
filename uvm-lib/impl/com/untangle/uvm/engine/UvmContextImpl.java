@@ -155,9 +155,6 @@ public class UvmContextImpl extends UvmContextBase
     private LocalJStoreManagerImpl jStoreManager;
     private LocalBenchmarkManagerImpl benchmarkManager;
 
-    // Will be null if cliServer is not enabled
-    private CliServerManager cliServerManager;
-
     private Environment bdbEnvironment;
 
     private volatile SessionFactory sessionFactory;
@@ -857,7 +854,6 @@ public class UvmContextImpl extends UvmContextBase
         nodeManager.init();
         pipelineFoundry.clearChains();
 
-        startCliServer();
         logger.debug("postInit complete");
         synchronized (startupWaitLock) {
             state = UvmState.RUNNING;
@@ -879,10 +875,6 @@ public class UvmContextImpl extends UvmContextBase
 
         if (localMessageManager != null)
             localMessageManager.stop();
-
-        // stop cli server
-        if (cliServerManager != null)
-            cliServerManager.doDestroy();
 
         // stop vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
@@ -1101,143 +1093,6 @@ public class UvmContextImpl extends UvmContextBase
 
         return true;
     }
-
-    private void startCliServer()
-    {
-        String cliHome = System.getProperty(PROPERTY_CLI_SERVER_HOME);
-        if (cliHome != null) {
-            cliServerManager = new CliServerManager(cliHome);
-            cliServerManager.init();
-        }
-    }
-
-    // Uses reflection to allow easier optionality.
-    private static class CliServerManager implements Runnable {
-        private String cliServerHome;
-        private Thread serverThread;
-        private final Logger logger = Logger.getLogger(CliServerManager.class);
-        private static final String configClassName = "org.jruby.RubyInstanceConfig";
-        private static final String mainClassName = "org.jruby.Main";
-        private volatile boolean keepRunning = true;
-
-        CliServerManager(String cliHome) {
-            this.cliServerHome = cliHome;
-            this.serverThread = new Thread(null, this, "UTCliServerThread", 1000000);
-        }
-
-        // Computes classpath for new classloader to be created to
-        // contain cli server.  Needs jruby stuff, uvm api, and node
-        // apis.
-        private URL[] getClasspath()
-        {
-            List<URL> urls = new ArrayList<URL>();
-            for (URL url : urls) {
-                logger.info("cli cp: " + url);
-            }
-
-            return urls.toArray(new URL[urls.size()]);
-        }
-
-        // Creates a new classloader every time to allow best
-        // potential growth prevention.
-        public void run() {
-            String[] jrubyArgs = new String[] { cliServerHome + "/server.rb" };
-            ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-            URL[] cp = getClasspath();
-            URLClassLoader clicl = new URLClassLoader(cp, oldCl);
-            logger.info("starting cli server");
-                try {
-                    // Entering CLI ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                    Thread.currentThread().setContextClassLoader(clicl);
-
-                    Object main;
-                    Method runner;
-                    try {
-                        Class configClass = clicl.loadClass(configClassName);
-                        Object config = configClass.newInstance();
-                        Method scd = configClass.getMethod("setCurrentDirectory", new Class[] { String.class });
-                        scd.invoke(config, cliServerHome);
-                        Class mainClass = clicl.loadClass(mainClassName);
-                        main = mainClass.getConstructor(new Class[] { configClass }).
-                            newInstance(config);
-                        Class strArrayClass = (new String[] { }).getClass();
-                        runner = mainClass.getMethod("run", new Class[] { String[].class });
-                    } catch (Exception x) {
-                        logger.error("Unable to invoke cli server: ", x);
-                        return;
-                    }
-                    while (keepRunning) {
-                        try {
-                            int result = (Integer) runner.invoke(main, new Object[] { jrubyArgs });
-                            logger.error("cli server unexpectedly exited with status " + result);
-                } catch (InvocationTargetException x) {
-                            Throwable cause = x.getTargetException();
-                            if ((cause != null) && (cause instanceof java.lang.AssertionError) &&
-                cause.getMessage().contains("InterruptedException"))
-                                logger.info("cli server: exiting on interrupt.");
-                else
-                                logger.error("cli server: ", x);
-                        } catch (Exception x) {
-                            logger.error("cli server: ", x);
-                        }
-                        // Sleep a little to let the socket close
-                        try { Thread.sleep(5000); } catch (InterruptedException x) { }
-                    }
-                } finally {
-                    Thread.currentThread().setContextClassLoader(oldCl);
-                    // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                }
-        }
-
-        void init() {
-        keepRunning = true;
-            serverThread.start();
-        }
-
-        // Called when a node is loaded.
-        void doRefresh() {
-            keepRunning = false;
-            if (serverThread != null) {
-                serverThread.interrupt();
-                try {
-                    serverThread.join();
-                } catch (InterruptedException x) { }
-            }
-            serverThread = new Thread(null, this, "UTCliServerThread", 1000000);
-            init();
-        }
-
-        void doStop() {
-            keepRunning = false;
-            if (serverThread != null) {
-                serverThread.interrupt();
-                try {
-                    serverThread.join();
-                } catch (InterruptedException x) { }
-            }
-        }
-
-        void doDestroy() {
-            keepRunning = false;
-            if (serverThread != null) {
-                serverThread.interrupt();
-                serverThread = null;
-            }
-        }
-    }
-
-    public void restartCliServer()
-    {
-        if (cliServerManager != null)
-        cliServerManager.doRefresh();
-    }
-
-    public void stopCliServer()
-    {
-        if (cliServerManager != null)
-        cliServerManager.doStop();
-    }
-
 
     private boolean testHibernateConnection()
     {
