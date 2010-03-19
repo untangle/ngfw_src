@@ -52,7 +52,7 @@ import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
-import com.untangle.uvm.node.ADConnector;
+import com.untangle.uvm.node.LocalADConnector;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -206,7 +206,7 @@ public class RouterImpl extends AbstractNode implements Router
         /* Register a listener, this should hang out until the node is removed dies. */
         getNetworkManager().registerListener( this.listener );
 
-        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) { adconnector.getPhoneBook().registerAssistant( this.assistant ); }
 
         /* Check if the settings have been upgraded yet */
@@ -304,7 +304,7 @@ public class RouterImpl extends AbstractNode implements Router
         /* Deregister the network settings listener */
         getNetworkManager().unregisterListener( this.listener );
 
-        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) { adconnector.getPhoneBook().unregisterAssistant( this.assistant ); }
     }
 

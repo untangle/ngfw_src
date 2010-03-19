@@ -82,13 +82,11 @@
   <!-- #      INFO           shutdown, close, other session events. -->
   <!-- #      WARN           New session, new session request events -->
   <category name="com.untangle.uvm.vnet.SessionEvent">
-    <!-- No logging by default -->
-    <priority value="ERROR"/>
+    <priority value="ERROR"/> <!-- No logging by default -->
   </category>
 
   <!-- # Internal Session messages, -->
-  <!-- #      DEBUG           session read/write state change, read/write -->
-  <!-- #                      statistics -->
+  <!-- #      DEBUG           session r/w state change, r/w statistics -->
   <!-- #      INFO            (currently same as WARN) -->
   <!-- #      WARN            exceptions or unusual conditions  -->
   <category name="com.untangle.uvm.vnet.Session">
@@ -112,6 +110,10 @@
   </category>
 
   <category name="com.untangle.node.token">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.node.adconnector">
     <priority value="WARN"/>
   </category>
 

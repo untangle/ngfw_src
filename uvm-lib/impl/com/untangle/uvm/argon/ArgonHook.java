@@ -46,9 +46,8 @@ import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.ADConnector;
+import com.untangle.uvm.node.LocalADConnector;
 import com.untangle.uvm.user.PhoneBook;
-import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.security.Tid;
 
 
@@ -157,7 +156,7 @@ abstract class ArgonHook implements Runnable
             serverSide = clientSide;
 
             /* lookup the user information */
-            ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+            LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
             if (adconnector != null) {
                 String username = adconnector.getPhoneBook().tryLookupUser( clientSide.clientAddr());
                 if (username != null && username.length() > 0 ) { 

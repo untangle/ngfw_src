@@ -62,7 +62,6 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
-import com.untangle.uvm.node.ADConnector;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
@@ -423,15 +422,9 @@ public class CPDImpl extends AbstractNode implements CPD {
            
         LocalUvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
         
-        /* Flush all of the entries that are in the phonebook XXX */
-        //LocalUvmContextFactory.context().localPhoneBook().flushEntries();
-
-        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-        if (adconnector != null) { adconnector.getPhoneBook().registerAssistant( this.assistant ); }
-        
         super.preStart();
      }
-    
+
     @Override
     protected void preStop() throws NodeStopException
     {
@@ -464,8 +457,7 @@ public class CPDImpl extends AbstractNode implements CPD {
     {
         super.postStop();
 
-        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-        if (adconnector != null) { adconnector.getPhoneBook().unregisterAssistant( this.assistant ); }
+        this.assistant.destroy();
     }
     
     protected void postInit(final String[] args) {

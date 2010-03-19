@@ -33,13 +33,11 @@ import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSubnetMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;
-import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.ADConnector;
-import com.untangle.uvm.user.UserInfo;
+import com.untangle.uvm.node.LocalADConnector;
 
 class CPDManager {
     private final Logger logger = Logger.getLogger(CPDManager.class);
@@ -197,7 +195,7 @@ class CPDManager {
         
         /* Expire the cache on the phonebook */
         /* This will force adconnector to relookup the address and log any associated events */
-        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getPhoneBook().expireUser( address );
         }
@@ -239,7 +237,7 @@ class CPDManager {
         
         /* Expire the cache on the phonebook */
         /* This will force adconnector to relookup the address and log any associated events */
-        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getPhoneBook().expireUser( address );
         }

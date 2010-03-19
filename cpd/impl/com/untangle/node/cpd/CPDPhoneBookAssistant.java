@@ -20,12 +20,14 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.user.PhoneBookAssistant;
-import com.untangle.uvm.user.UserInfo;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.LocalADConnector;
 
 /**
  * Assistant for the Captive Portal.  This fetches the current username for an ip address from a postgres database.
@@ -48,45 +50,66 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
 
     private final Pulse databaseReader;
 
+    private boolean registered = false;
+    
     /* -------------- Constructors -------------- */
     public CPDPhoneBookAssistant(CPDImpl cpd)
     {
-        this.databaseReader = new Pulse("CPDDatabaseReader", true, new CPDDatabaseReader(cpd));
+        this.databaseReader = new Pulse("CPDDatabaseReader", true, new CPDDatabaseReader(cpd,this));
         this.startDatabaseReader();
+        this.registered = false;
     }
 
-    /* ----------------- Public ----------------- */
 
     /**
-     * Lookup user info for an IP
+     * return the username from cache
      */
-    public void lookup(final UserInfo info)
+    public String lookupUsername ( InetAddress addr )
     {
-        final InetAddress address = info.getAddress();
-
-        MapValue cacheEntry = this.cache.get(address);
+        MapValue cacheEntry = this.cache.get(addr);
         if (cacheEntry != null) {
-            if ( logger.isDebugEnabled()) {
-                logger.debug("CPDPhoneBook lookup IP: " + info.getAddress() + " User: " + cacheEntry.username);
-            }
-            
-            info.setUsername(cacheEntry.username);
-            info.setExpirationDate(cacheEntry.expirationDate.getTime());
-        } else {
-            if ( logger.isDebugEnabled()) {
-                logger.debug("CPDPhoneBook lookup IP: " + info.getAddress() + " User: None");
-            }
-        }
+            logger.debug("CPDPhoneBook lookup IP: " + addr + " User: " + cacheEntry.username);
 
-        return;
+            return cacheEntry.username;
+        } else {
+            logger.debug("CPDPhoneBook lookup IP: " + addr + " User: None");
+
+            return null;
+        }
     }
 
     /**
-     * Check to see if the user information has changed, if it has return a new
-     * UserInfo object
+     * return the cache expiration time
      */
-    public UserInfo update(UserInfo info) {
-        throw new IllegalStateException("unimplemented");
+    public Date lookupUsernameExpiration ( InetAddress addr )
+    {
+        MapValue cacheEntry = this.cache.get(addr);
+        if (cacheEntry != null) {
+            return cacheEntry.expirationDate;
+        }
+        else
+            return null;
+    }
+
+    /**
+     * CPD knows nothing about hostnames
+     */
+    public String lookupHostname ( InetAddress addr )
+    {
+        return null;
+    }
+
+    /**
+     * CPD knows nothing about hostnames
+     */
+    public Date lookupHostnameExpiration ( InetAddress addr )
+    {
+        return null;
+    }
+    
+    public String lookupAuthenticationMethod ( InetAddress addr )
+    {
+        return "Captive Portal";
     }
 
     /**
@@ -102,13 +125,18 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
      * This is public because it is useful when a user logins in and must be immediately added to the
      * phone book and the normal Database Reader will take too long
      */
-    public void addCache(InetAddress ipAddr, String username)
+    public void addCache(InetAddress addr, String username)
     {
         MapValue newCacheEntry = new MapValue();
         newCacheEntry.expirationDate = new Date(System.currentTimeMillis() + DATABASE_CACHE_TIME);
         newCacheEntry.username = username;
-        cache.put(ipAddr,newCacheEntry);
-        logger.debug( "Add    Cache Entry: (IP " + ipAddr + ") (Username " + username + ")");
+        cache.put(addr,newCacheEntry);
+        logger.debug( "Add    Cache Entry: (IP " + addr + ") (Username " + username + ")");
+
+        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) {
+            adconnector.getPhoneBook().lookupUser( addr );
+        }
     }
 
     /**
@@ -123,8 +151,24 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
         if (k == null) {
             logger.debug( "Failed Remove Cache Entry: (IP " + addr + ") - Missing key");
         }
+
+        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) {
+            adconnector.getPhoneBook().lookupUser( addr );
+        }
     }
 
+    public void destroy()
+    {
+        this.stopDatabaseReader();
+
+        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        if (adconnector != null) {
+            adconnector.getPhoneBook().unregisterAssistant( this );
+            logger.debug("CPDPhoneBookAssistant unregistered");
+        }
+    }
+    
     void startDatabaseReader()
     {
         this.databaseReader.start(DATABASE_READER_INTERVAL);
@@ -146,10 +190,12 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
     private class CPDDatabaseReader implements Runnable
     {
         private final CPDImpl cpd;
+        private final CPDPhoneBookAssistant assistant;
 
-        public CPDDatabaseReader(CPDImpl cpd)
+        public CPDDatabaseReader(CPDImpl cpd, CPDPhoneBookAssistant assistant)
         {
             this.cpd = cpd;
+            this.assistant = assistant;
         }
         
         public void run()
@@ -161,55 +207,69 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
                 {
                     public boolean doWork(Session s)
                     {
-                        Query q = s.createQuery("from HostDatabaseEntry hde where hde.expirationDate > :now ORDER BY hde.expirationDate DESC");
-                        q.setDate("now", new Date());
-
-                        List<HostDatabaseEntry> list = (List<HostDatabaseEntry>)q.list();
-
-                        Date now = new Date();
-
-                        for ( HostDatabaseEntry entry : list ) {
-                            InetAddress ipAddr = entry.getIpv4Address();
-                            String username = entry.getUsername();
-                            Date expirationDate = entry.getExpirationDate();
-
-                            logger.debug( "Read from DB: (IP " + ipAddr + ") (Username " + username + ") (Expiration Date " + expirationDate + ")");
-
-                            /* lookup in current cache */
-                            MapValue cacheEntry = cache.get(ipAddr);
-
-                            /* if cache miss - add to cache */
-                            if ( cacheEntry == null) { /* cache miss */
-                                addCache(ipAddr,username);
+                        if (!registered) {
+                            LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                            if (adconnector != null) {
+                                adconnector.getPhoneBook().registerAssistant( assistant );
+                                logger.debug("CPDPhoneBookAssistant registered");
+                                registered = true;
                             }
-                            /* if cache hit - update expire time as its still in the database */
                             else {
-                                cacheEntry.expirationDate = new Date(now.getTime() + DATABASE_CACHE_TIME);
+                                logger.debug("CPDPhoneBookAssistant ignoring (adconnector not running)");
                             }
                         }
 
-                        Set<InetAddress> inets = cache.keySet();
+                        if (registered) {
+                            Query q = s.createQuery("from HostDatabaseEntry hde where hde.expirationDate > :now ORDER BY hde.expirationDate DESC");
+                            q.setDate("now", new Date());
 
-                        /**
-                         * Remove expired entries
-                         * Also remove entries far in future (this indicateds clock shift)
-                         */
-                        for ( InetAddress inet : inets ) {
-                            MapValue value = cache.get(inet);
-                            /**
-                             * expiration time has lapsed
-                             */
-                            if (value.expirationDate.before(now)) {
-                                removeCache(inet);
-                            }
-                            /**
-                             * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
-                             */
-                            if (value.expirationDate.after(new Date(now.getTime() + DATABASE_CACHE_TIME*10))) {
-                                logger.warn("cache entry expires too far in the future - removing");
-                                removeCache(inet);
+                            List<HostDatabaseEntry> list = (List<HostDatabaseEntry>)q.list();
+
+                            Date now = new Date();
+
+                            for ( HostDatabaseEntry entry : list ) {
+                                InetAddress addr = entry.getIpv4Address();
+                                String username = entry.getUsername();
+                                Date expirationDate = entry.getExpirationDate();
+
+                                logger.debug( "Read from DB: (IP " + addr + ") (Username " + username + ") (Expiration Date " + expirationDate + ")");
+
+                                /* lookup in current cache */
+                                MapValue cacheEntry = cache.get(addr);
+
+                                /* if cache miss - add to cache */
+                                if ( cacheEntry == null) { /* cache miss */
+                                    addCache(addr,username);
+                                }
+                                /* if cache hit - update expire time as its still in the database */
+                                else {
+                                    cacheEntry.expirationDate = new Date(now.getTime() + DATABASE_CACHE_TIME);
+                                }
                             }
 
+                            Set<InetAddress> inets = cache.keySet();
+
+                            /**
+                             * Remove expired entries
+                             * Also remove entries far in future (this indicateds clock shift)
+                             */
+                            for ( InetAddress inet : inets ) {
+                                MapValue value = cache.get(inet);
+                                /**
+                                 * expiration time has lapsed
+                                 */
+                                if (value.expirationDate.before(now)) {
+                                    removeCache(inet);
+                                }
+                                /**
+                                 * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
+                                 */
+                                if (value.expirationDate.after(new Date(now.getTime() + DATABASE_CACHE_TIME*10))) {
+                                    logger.warn("cache entry expires too far in the future - removing");
+                                    removeCache(inet);
+                                }
+
+                            }
                         }
 
                         return true;

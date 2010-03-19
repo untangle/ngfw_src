@@ -33,13 +33,32 @@
 
 package com.untangle.uvm.user;
 
+import java.net.InetAddress;
+import java.util.Date;
+
 public interface PhoneBookAssistant
 {
-    /* Lookup user information about a session filling in as much of
-     * the user information as possible.
-     */
-    public void lookup( UserInfo info );
+    /* Lookup a corresponding Username for the given addr
+     * returns username or null if entry doesn't exist */
+    public String lookupUsername ( InetAddress addr );
 
+    /* Lookup the expiration time for this address's entry
+     * returns date or null if entry doesn't exist */
+    public Date lookupUsernameExpiration ( InetAddress addr );
+
+    /* Lookup a corresponding Hostname for the given addr
+     * returns username or null if entry doesn't exist */
+    public String lookupHostname ( InetAddress addr );
+
+    /* Lookup the expiration time for this address's entry
+     * returns date or null if entry doesn't exist */
+    public Date lookupHostnameExpiration ( InetAddress addr );
+    
+    /* Returns the authentication method used to indentify this address
+     * returns string or null if entry doesn't exist */
+    public String lookupAuthenticationMethod ( InetAddress addr );
+
+    
     /* retrieve the priority of this assistant, higher numbers are lower priority */
     public int priority();
 }

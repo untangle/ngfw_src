@@ -19,7 +19,7 @@ package com.untangle.uvm.node;
 
 import com.untangle.uvm.user.PhoneBook;
 
-public interface ADConnector 
+public interface LocalADConnector 
 {
     public PhoneBook getPhoneBook();
 }

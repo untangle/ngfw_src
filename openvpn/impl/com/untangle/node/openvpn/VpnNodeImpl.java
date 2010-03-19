@@ -54,7 +54,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.XMLRPCUtil;
-import com.untangle.uvm.node.ADConnector;
+import com.untangle.uvm.node.LocalADConnector;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -615,7 +615,7 @@ public class VpnNodeImpl extends AbstractNode
         super.postInit( args );
 
         /* register the assistant with the phonebook */
-        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) { adconnector.getPhoneBook().registerAssistant( this.assistant ); }
 
         TransactionWork tw = new TransactionWork()
@@ -725,7 +725,7 @@ public class VpnNodeImpl extends AbstractNode
             logger.warn( "Error stopping openvpn monitor", e );
         }
 
-        ADConnector adconnector = (ADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) { adconnector.getPhoneBook().unregisterAssistant( this.assistant ); }
 
         unDeployWebApp();

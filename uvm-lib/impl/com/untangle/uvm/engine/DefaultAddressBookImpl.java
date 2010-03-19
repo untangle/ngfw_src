@@ -82,14 +82,14 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
                             "1.2.3.4",
                             1812,
                             "mysharedsecret",
-                            AuthenticationMethod.CLEARTEXT));
+                            AuthenticationMethod.PAP));
                     s.save(settings);
                 } else if ( settings.getRadiusServerSettings() == null ) {                   
                     settings.setRadiusServerSettings(new RadiusServerSettings(false,
                             "1.2.3.4",
                             1812,
                             "mysharedsecret",
-                            AuthenticationMethod.CLEARTEXT));
+                            AuthenticationMethod.PAP));
                     
                     settings = (AddressBookSettings)s.merge( settings );
                 }

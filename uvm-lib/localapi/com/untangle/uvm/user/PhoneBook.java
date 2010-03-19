@@ -22,6 +22,8 @@ import java.net.InetAddress;
 
 public interface PhoneBook
 {
+    public String lookupUser( InetAddress address );
+
     public String tryLookupUser( InetAddress address );
 
     public void expireUser ( InetAddress address );
@@ -29,4 +31,5 @@ public interface PhoneBook
     public void registerAssistant( PhoneBookAssistant newAssistant );
 
     public void unregisterAssistant( PhoneBookAssistant assistant );
+
 }
