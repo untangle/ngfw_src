@@ -70,7 +70,6 @@ public class RouterImpl extends AbstractNode implements Router
     /* Done with an inner class so the GUI doesn't freak out about not
      * having the NetworkSettingsListener class */
     private final SettingsListener listener;
-    private final RouterPhoneBookAssistant assistant;
 
     /* Indicate whether or not the node is starting */
 
@@ -101,7 +100,6 @@ public class RouterImpl extends AbstractNode implements Router
         this.statisticManager = new RouterStatisticManager(getNodeContext());
         this.dhcpMonitor      = new DhcpMonitor( this, LocalUvmContextFactory.context());
         this.listener         = new SettingsListener();
-        this.assistant        = new RouterPhoneBookAssistant( this.dhcpMonitor );
 
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
@@ -206,9 +204,6 @@ public class RouterImpl extends AbstractNode implements Router
         /* Register a listener, this should hang out until the node is removed dies. */
         getNetworkManager().registerListener( this.listener );
 
-        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-        if (adconnector != null) { adconnector.getPhoneBook().registerAssistant( this.assistant ); }
-
         /* Check if the settings have been upgraded yet */
         DataLoader<RouterSettingsImpl> natLoader = 
             new DataLoader<RouterSettingsImpl>( "RouterSettingsImpl", getNodeContext());
@@ -304,8 +299,6 @@ public class RouterImpl extends AbstractNode implements Router
         /* Deregister the network settings listener */
         getNetworkManager().unregisterListener( this.listener );
 
-        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-        if (adconnector != null) { adconnector.getPhoneBook().unregisterAssistant( this.assistant ); }
     }
 
     public void networkSettingsEvent() throws NodeException
@@ -330,7 +323,6 @@ public class RouterImpl extends AbstractNode implements Router
         if ( isDhcpEnabled ) dhcpMonitor.start();
         else dhcpMonitor.stop();
 
-        this.assistant.configure( servicesSettings );
     }
 
 

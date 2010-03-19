@@ -97,7 +97,6 @@ public class VpnNodeImpl extends AbstractNode
     private final AddressMapper addressMapper = new AddressMapper();
     private final OpenVpnMonitor openVpnMonitor;
     private final OpenVpnCaretaker openVpnCaretaker = new OpenVpnCaretaker();
-    private final OpenVpnPhoneBookAssistant assistant;
 
     private final EventHandler handler;
 
@@ -121,7 +120,6 @@ public class VpnNodeImpl extends AbstractNode
     {
         this.handler          = new EventHandler( this );
         this.openVpnMonitor   = new OpenVpnMonitor( this );
-        this.assistant        = new OpenVpnPhoneBookAssistant();
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
@@ -230,7 +228,6 @@ public class VpnNodeImpl extends AbstractNode
                 LocalUvmContextFactory.context().newThread( new GenerateRules( null )).start();
             }
 
-            this.assistant.configure( this.settings, getRunState() == NodeState.RUNNING );
         } catch ( NodeException exn ) {
             logger.error( "Could not save VPN settings", exn );
         }
@@ -614,10 +611,6 @@ public class VpnNodeImpl extends AbstractNode
     {
         super.postInit( args );
 
-        /* register the assistant with the phonebook */
-        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-        if (adconnector != null) { adconnector.getPhoneBook().registerAssistant( this.assistant ); }
-
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
@@ -665,7 +658,7 @@ public class VpnNodeImpl extends AbstractNode
             this.openVpnManager.configure( settings );
             this.handler.configure( settings );
             this.openVpnManager.restart( settings );
-            this.assistant.configure( settings, true );
+
         } catch( Exception e ) {
             try {
                 this.openVpnManager.stop();
@@ -707,8 +700,6 @@ public class VpnNodeImpl extends AbstractNode
             logger.warn( "Error stopping openvpn manager", e );
         }
 
-        this.assistant.configure( settings, false );
-
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
         LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
@@ -724,9 +715,6 @@ public class VpnNodeImpl extends AbstractNode
         } catch ( Exception e ) {
             logger.warn( "Error stopping openvpn monitor", e );
         }
-
-        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-        if (adconnector != null) { adconnector.getPhoneBook().unregisterAssistant( this.assistant ); }
 
         unDeployWebApp();
     }
