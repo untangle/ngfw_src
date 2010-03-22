@@ -130,7 +130,7 @@ DELETE FROM events.n_http_req_line WHERE time_stamp < %s""", (cutoff,))
 DELETE FROM events.n_http_evt_resp WHERE time_stamp < %s""", (cutoff,))
 
     def reports_cleanup(self, cutoff):
-        pass
-
+        sql_helper.drop_partitioned_table("n_http_events", cutoff)
+        sql_helper.drop_partitioned_table("n_http_totals", cutoff)        
 
 reports.engine.register_node(HttpCasing())

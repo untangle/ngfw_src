@@ -81,6 +81,11 @@ class OpenVpn(Node):
         return Report(self, sections)
 
     @print_timing
+    def reports_cleanup(self, cutoff):
+        sql_helper.drop_partitioned_table("n_openvpn_stats", cutoff)
+        sql_helper.drop_partitioned_table("n_openvpn_connect_totals", cutoff)
+
+    @print_timing
     def __create_n_openvpn_stats(self, start_date, end_date):
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.n_openvpn_stats (

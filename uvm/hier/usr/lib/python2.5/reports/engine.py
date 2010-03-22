@@ -335,12 +335,13 @@ def events_cleanup(cutoff):
 
 @print_timing
 def reports_cleanup(cutoff):
-    co = DateFromMx(cutoff)
+#    co = DateFromMx(cutoff)
+    logger.info("Cleaning-up reports data for all dates < %s" % (cutoff,))
 
     for name in __get_node_partial_order():
         try:
             node = __nodes.get(name, None)
-            node.reports_cleanup(co)
+            node.reports_cleanup(cutoff)
         except:
             logger.warn('count not cleanup reports for: %s' % name,
                          exc_info=True)
@@ -363,7 +364,7 @@ def setup(start_date, end_date):
 
     for name in __get_node_partial_order():
         try:
-            logger.debug('doing setup for: %s' % name)
+            logger.debug('doing setup for: %s (%s -> %s)' % (name, start_date, end_date))
             node = __nodes.get(name, None)
 
             if not node:

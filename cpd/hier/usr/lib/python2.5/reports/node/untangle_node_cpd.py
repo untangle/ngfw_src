@@ -113,12 +113,11 @@ WHERE time_stamp < %s""", (cutoff,))
         except: pass
 
     def reports_cleanup(self, cutoff):
-        try:
-            sql_helper.run_sql("""\
-DELETE FROM reports.n_cpd_login_events
-WHERE time_stamp < %s""", (cutoff,))
-        except: pass
-
+        sql_helper.drop_partitioned_table("n_cpd_login_events", cutoff)
+        sql_helper.drop_partitioned_table("n_cpd_login_totals", cutoff)        
+        sql_helper.drop_partitioned_table("n_cpd_block_events", cutoff)
+        sql_helper.drop_partitioned_table("n_cpd_block_totals", cutoff)        
+        
     @print_timing
     def __create_n_cpd_login_events(self, start_date, end_date):
         sql_helper.create_partitioned_table("""\

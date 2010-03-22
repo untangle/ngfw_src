@@ -165,7 +165,12 @@ WHERE NOT EXISTS
 DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
 
     def reports_cleanup(self, cutoff):
-        pass
+        sql_helper.drop_partitioned_table("n_admin_logins", cutoff)
+        sql_helper.drop_partitioned_table("users", cutoff)
+        sql_helper.drop_partitioned_table("hnames", cutoff)
+        sql_helper.drop_partitioned_table("sessions", cutoff)
+        sql_helper.drop_partitioned_table("session_totals", cutoff)        
+        sql_helper.drop_partitioned_table("session_counts", cutoff)
 
     def get_report(self):
         sections = []

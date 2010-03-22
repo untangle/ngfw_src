@@ -69,7 +69,11 @@ class MailCasing(Node):
         pass
 
     def reports_cleanup(self, cutoff):
-        pass
+        sql_helper.drop_partitioned_table("n_mail_addrs", cutoff)
+        sql_helper.drop_partitioned_table("n_mail_addr_totals", cutoff)        
+        sql_helper.drop_partitioned_table("n_mail_msgs", cutoff)
+        sql_helper.drop_partitioned_table("n_mail_msg_totals", cutoff)        
+        sql_helper.drop_partitioned_table("email", cutoff)        
 
     @print_timing
     def __create_n_mail_addrs(self, start_date, end_date):

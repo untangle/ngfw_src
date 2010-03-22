@@ -145,9 +145,9 @@ DELETE FROM events.n_virus_evt_smtp WHERE time_stamp < %s""", (cutoff,))
         sql_helper.run_sql("""\
 DELETE FROM events.n_virus_evt WHERE time_stamp < %s""", (cutoff,))
 
-
     def reports_cleanup(self, cutoff):
-        pass
+        sql_helper.drop_partitioned_table('n_virus_http_totals', cutoff)
+        sql_helper.drop_partitioned_table('n_virus_mail_totals', cutoff)        
 
     @sql_helper.print_timing
     def __update_n_http_events(self, start_date, end_date):

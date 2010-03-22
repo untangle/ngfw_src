@@ -89,17 +89,6 @@ def create_table_from_query(tablename, query, args=None):
     drop_table(tablename)
     create_table_as_sql(tablename, query, args)
 
-def drop_table(tablename):
-    conn = get_connection()
-
-    try:
-        curs = conn.cursor()
-        curs.execute("DROP TABLE %s" % tablename)
-    except:
-        logger.debug('did not drop table: %s' % tablename)
-    finally:
-        conn.commit()
-
 def create_index(table, columns):
     col_str = string.join(columns, ',')
 
@@ -137,9 +126,13 @@ def add_column(tablename, column, type):
     sql = "ALTER TABLE %s ADD COLUMN %s %s" % (tablename, column, type)
     run_sql(sql)
 
+def drop_partitioned_table(tablename, cutoff_date):
+    for t, date in find_partitioned_tables(tablename):
+        if date < cutoff_date:
+            drop_table(t, schema='reports')
+
 def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
                              clear_tables=False):
-
     (schema, tablename) = __get_tablename(table_ddl)
 
     if schema:
@@ -152,16 +145,11 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
 
     existing_dates = Set()
 
-    for t in get_tables(schema='reports', prefix='%s_' % tablename):
-        m=re.search('%s_(\d+)_(\d+)_(\d+)' % tablename, t)
-        if m:
-            d = mx.DateTime.Date(*map(int, m.groups()))
-            if d >= start_date and d < end_date:
-                existing_dates.add(d)
-            else:
-                drop_table(t, schema='reports')
-        else:
-            logger.warn('ignoring table: %s' % tablename)
+    for t, date in find_partitioned_tables(tablename):
+        if date >= start_date and date < end_date:
+            existing_dates.add(date)
+        elif clear_tables:
+            drop_table(t, schema='reports')
 
     all_dates = Set(get_date_range(start_date, end_date))
 
@@ -176,7 +164,9 @@ CREATE TABLE %s
 (CHECK (%s >= %%s AND %s < %%s))
 INHERITS (%s)""" % (tn, timestamp_column, timestamp_column, full_tablename),
                 (DateFromMx(d), DateFromMx(d + mx.DateTime.DateTimeDelta(1))))
-
+        logger.debug("Created partitioned table for %s (%s -> %s)" % (full_tablename,
+                                                                      DateFromMx(d),
+                                                                      DateFromMx(d + mx.DateTime.DateTimeDelta(1))))
     if clear_tables:
         for d in all_dates:
             drop_table(__tablename_for_date(full_tablename, d))
@@ -243,9 +233,10 @@ def drop_table(table, schema=None):
     conn = get_connection()
     try:
         curs = conn.cursor()
-        curs.execute('DROP TABLE %s' % tn)
+        curs.execute('DROP TABLE %s' % (tn,))
+        logger.debug("dropped table '%s'" % (table,))
     except psycopg.ProgrammingError:
-        logger.debug('cannot drop table: %s' % table)
+        logger.debug('cannot drop table: %s' % (table,))
     finally:
         conn.commit()
 
@@ -287,6 +278,15 @@ WHERE tablename LIKE %s""", '%s%%' % prefix)
 
     return rv
 
+def find_partitioned_tables(tablename):
+    tables = []
+    for t in get_tables(schema='reports', prefix='%s_' % tablename):
+        m = re.search('%s_(\d+)_(\d+)_(\d+)' % tablename, t)
+        if m:
+            d = mx.DateTime.Date(*map(int, m.groups()))
+            tables.append((t, d))
+    return tables
+    
 def get_date_range(start_date, end_date):
     l = int(round((end_date - start_date).days))
     return [end_date - mx.DateTime.DateTimeDelta(i + 1) for i in range(l)]

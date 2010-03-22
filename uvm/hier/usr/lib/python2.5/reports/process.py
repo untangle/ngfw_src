@@ -35,7 +35,6 @@ usage: %s [options]
 Options:
   -h | --help                 help
   -n | --no-migration         skip schema migration
-  -c | --no-cleanup           skip cleanups
   -g | --no-data-gen          skip graph data processing
   -p | --no-plot-gen          skip graph image processing
   -m | --no-mail              skip mailing
@@ -101,8 +100,6 @@ for opt in opts:
           sys.exit(0)
      elif k == '-n' or k == '--no-migration':
           no_migration = True
-     elif k == '-c' or k == '--no-cleanup':
-          no_cleanup = True
      elif k == '-g' or k == '--no-data-gen':
           no_data_gen = True
      elif k == '-p' or k == '--no-plot-gen':
@@ -332,7 +329,7 @@ if trial_report:
      reports.engine.limit_nodes(trial_report)
 
 if not no_migration:
-     init_date = end_date - mx.DateTime.DateTimeDelta(30)
+     init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
      reports.engine.setup(init_date, end_date)
      reports.engine.process_fact_tables(init_date, end_date)
      reports.engine.post_facttable_setup(init_date, end_date)
@@ -369,12 +366,12 @@ if not no_cleanup:
      reports.engine.events_cleanup(events_cutoff)
 
      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
-     reports.engine.reports_cleanup(reports_cutoff)
+     reports.engine.reports_cleanup(reports_cutoff)     
      write_cutoff_date(DateFromMx(reports_cutoff))
 
-     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
+     files_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
-                                       reports_cutoff)
+                                       files_cutoff)
 
 # These are only for end of trial, a reboot will delete these files since they are in /tmp
 # if trial_report and ( reports_output_base != REPORTS_OUTPUT_BASE ):

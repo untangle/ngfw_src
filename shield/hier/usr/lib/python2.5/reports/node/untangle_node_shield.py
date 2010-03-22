@@ -49,8 +49,8 @@ class Shield(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-shield')
 
+    @print_timing
     def setup(self, start_date, end_date):
-
         ft = FactTable('reports.n_shield_rejection_totals',
                        'events.n_shield_rejection_evt',
                        'time_stamp',
@@ -71,6 +71,10 @@ class Shield(Node):
                         Column('dropped', 'integer', 'sum(dropped)'),
                         Column('rejected', 'integer', 'sum(rejected)')])
         reports.engine.register_fact_table(ft)
+
+    def reports_cleanup(self, cutoff):
+        sql_helper.drop_partitioned_table("n_shield_rejection_totals", cutoff)
+        sql_helper.drop_partitioned_table("n_shield_totals", cutoff)        
 
     def get_toc_membership(self):
         return [TOP_LEVEL]
