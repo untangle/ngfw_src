@@ -36,7 +36,7 @@ zips=ant-pack200.zip javamail-1_3_3_01.zip alloylnf-1_4_4-1.zip \
 	jabsorb-1.2.2-src.zip yuicompressor-2.4.2.zip
 
 jars=itext-1.3.jar hibernate-client.jar gettext-commons-0.9.1.jar \
-	jruby-complete.jar properJavaRDP-1.1.jar java-getopt-1.0.12.jar jnlp.jar
+	properJavaRDP-1.1.jar java-getopt-1.0.12.jar jnlp.jar
 
 ###############################################################################
 ###############################################################################

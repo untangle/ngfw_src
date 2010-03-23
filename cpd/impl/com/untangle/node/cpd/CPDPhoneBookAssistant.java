@@ -107,6 +107,9 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
         return null;
     }
     
+    /**
+     * return name
+     */
     public String lookupAuthenticationMethod ( InetAddress addr )
     {
         return "Captive Portal";

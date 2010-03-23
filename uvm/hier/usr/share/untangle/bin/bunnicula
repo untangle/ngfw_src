@@ -95,10 +95,6 @@ done
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
-if [ -d "/usr/share/untangle-cli-server/src" ]; then
-    JAVA_OPTS="-Djruby.shell=/bin/sh -Dcom.untangle.cli.server.home=/usr/share/untangle-cli-server/src $JAVA_OPTS"
-    export RUBYLIB=@PREFIX@/usr/share/untangle/nucli:$RUBYLIB
-fi
 
 if [ -f "$UNTANGLE_HARDWARE" ] ; then
     JAVA_OPTS="-Dcom.untangle.isUntangleAppliance=true $JAVA_OPTS"

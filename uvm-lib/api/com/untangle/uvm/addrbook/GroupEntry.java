@@ -35,9 +35,7 @@ package com.untangle.uvm.addrbook;
 
 import java.io.Serializable;
 import java.util.Set;
-
-import edu.emory.mathcs.backport.java.util.Collections;
-
+import java.util.Collections;
 
 /**
  * Lightweight class to encapsulate an entry (group)

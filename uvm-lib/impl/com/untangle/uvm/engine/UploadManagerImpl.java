@@ -5,11 +5,11 @@ package com.untangle.uvm.engine;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author rbscott

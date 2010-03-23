@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -58,8 +59,6 @@ import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Implementation of RemoteLanguageManagerImpl.
