@@ -39,12 +39,11 @@ disableOpenVPNStartup
 ## 
 
 ## Update legacy clients to use the new configuration
-OPENVPN_CLIENT=/etc/openvpn/client.conf
-if [ -f ${OPENVPN_CLIENT} ]; then
-    sed -i -e 's|^route-up /usr/share/untangle/openvpn/route-up$|route-up "bash /usr/share/untangle/openvpn/route-up"|'  ${OPENVPN_CLIENT} 
+if [ -f ${OPENVPN_CLIENT_CONF} ]; then
+    sed -i -e 's|^route-up /usr/share/untangle/openvpn/route-up$|route-up "bash /usr/share/untangle/openvpn/route-up"|'  ${OPENVPN_CLIENT_CONF} 
 
-    if [ -z "`grep keepalive ${OPENVPN_CLIENT}`" ]; then
-        echo "keepalive 10 120" >> ${OPENVPN_CLIENT}
+    if [ -z "`grep keepalive ${OPENVPN_CLIENT_CONF}`" ]; then
+        echo "keepalive 10 120" >> ${OPENVPN_CLIENT_CONF}
     fi
 
     ## This file shouldn't be left around, it is there if this box was
@@ -66,7 +65,13 @@ sleep .5
 
 echo "[`date`,start-openvpn] Starting the openvpn server"
 
-cp -f @PREFIX@/usr/share/untangle/openvpn/openvpn-monit.conf /etc/untangle/monit.d/untangle-openvpn_all.conf
+if [ -f ${OPENVPN_CLIENT_CONF} ] ; then
+    cp -f @PREFIX@/usr/share/untangle/openvpn/monit-client.conf /etc/untangle/monit.d/untangle-openvpn_all.conf
+fi
+if [ -f ${OPENVPN_SERVER_CONF} ] ; then
+    cp -f @PREFIX@/usr/share/untangle/openvpn/monit-server.conf /etc/untangle/monit.d/untangle-openvpn_all.conf
+fi
+
 
 ## This is required or else openvpn won't restart properly (sometimes the UDP port is still bound)
 for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
