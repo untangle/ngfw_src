@@ -16,7 +16,7 @@ else
 fi
 
 ## stop monitoring
-rm -f /etc/untangle/monit.d/untangle-openvpn_all.conf
+rm -f /etc/untangle/monit.d/untangle-openvpn*.conf
 # send HUP directly, as we can't wait here 30 seconds for the usual
 # /etc/untangle/monit-to-restart to do its thing
 kill -HUP $(cat /var/run/monit.pid)
