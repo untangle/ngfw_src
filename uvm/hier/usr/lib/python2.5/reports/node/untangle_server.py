@@ -99,7 +99,7 @@ class ServerNode(Node):
     @print_timing
     def events_cleanup(self, cutoff):
         sql_helper.run_sql("""\
-DELETE FROM events.n_server_events WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_server_evt WHERE time_stamp < %s""", (cutoff,))
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_partitioned_table("n_server_events", cutoff)
@@ -186,7 +186,7 @@ class MemoryUsage(Graph):
             lks = []
 
             ks_query = """\
-SELECT avg(mem_free), avg(mem_cache)
+SELECT COALESCE(AVG(mem_free), 0), COALESCE(AVG(mem_cache), 0)
 FROM reports.n_server_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -250,7 +250,7 @@ class LoadUsage(Graph):
             lks = []
 
             ks_query = """\
-SELECT avg(load_1), avg(load_5), avg(load_15)
+SELECT COALESCE(AVG(load_1), 0), COALESCE(AVG(load_5), 0), COALESCE(AVG(load_15), 0)
 FROM reports.n_server_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -321,7 +321,7 @@ class CpuUsage(Graph):
             lks = []
 
             ks_query = """\
-SELECT avg(cpu_user), avg(cpu_system)
+SELECT COALESCE(AVG(cpu_user), 0), COALESCE(AVG(cpu_system), 0)
 FROM reports.n_server_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -384,7 +384,7 @@ class DiskUsage(Graph):
             lks = []
 
             ks_query = """\
-SELECT avg(disk_free), avg(disk_total)
+SELECT COALESCE(AVG(disk_free), 0), COALESCE(AVG(disk_total), 0)
 FROM reports.n_server_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
@@ -445,7 +445,7 @@ class SwapUsage(Graph):
             lks = []
 
             ks_query = """\
-SELECT avg(swap_total-swap_free), avg(swap_total)
+SELECT COALESCE(AVG(swap_total-swap_free), 0), COALESCE(AVG(swap_total), 0)
 FROM reports.n_server_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 

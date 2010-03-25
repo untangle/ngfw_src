@@ -108,7 +108,7 @@ class Cpd(Node):
     def events_cleanup(self, cutoff):
         try:
             sql_helper.run_sql("""\
-DELETE FROM events.n_cpd_login_events
+DELETE FROM events.n_cpd_login_evt
 WHERE time_stamp < %s""", (cutoff,))
         except: pass
 
@@ -116,7 +116,7 @@ WHERE time_stamp < %s""", (cutoff,))
         sql_helper.drop_partitioned_table("n_cpd_login_events", cutoff)
         sql_helper.drop_partitioned_table("n_cpd_login_totals", cutoff)        
         sql_helper.drop_partitioned_table("n_cpd_block_events", cutoff)
-        sql_helper.drop_partitioned_table("n_cpd_block_totals", cutoff)        
+        sql_helper.drop_partitioned_table("n_cpd_block_totals0", cutoff)        
         
     @print_timing
     def __create_n_cpd_login_events(self, start_date, end_date):

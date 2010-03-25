@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 # Aaron Read <amread@untangle.com>
-# Sebastien Delafond Read <seb@untangle.com>
+# Sebastien Delafond <seb@untangle.com>
 
 import inspect
 import logging
@@ -99,7 +99,7 @@ def create_index(table, columns):
 def create_table_as_sql(tablename, query, args):
     run_sql("CREATE TABLE %s AS %s" % (tablename, query), args)
 
-def run_sql(sql, args=None, connection=get_connection(), auto_commit=True):
+def run_sql(sql, args=None, connection=get_connection(), auto_commit=True, force_propagate=False):
     try:
         curs = connection.cursor()
         if args:
@@ -111,15 +111,22 @@ def run_sql(sql, args=None, connection=get_connection(), auto_commit=True):
             connection.commit()
 
     except Exception, e:
+        if force_propagate:
+            if auto_commit:
+                connection.rollback()
+            raise e
+        
         show_error = True
-        if not re.search(r'^\s*(DELETE|CREATE|ALTER|DROP) ', sql):
-            logger.warn("SQL exception begin", exc_info=True)
-            logger.warn("SQL exception end")
+        if re.search(r'^\s*(DELETE|DROP) ', sql, re.I):
+            logger.debug("SQL exception begin: %s" % (e.message,))
+            logger.debug("SQL exception end")            
+            show_error = False
+        if re.search(r'^\s*(CREATE|ALTER) ', sql, re.I):
             show_error = False
             
         if auto_commit:
             connection.rollback()
-        elif show_error:
+        if show_error:
             raise e
 
 def add_column(tablename, column, type):

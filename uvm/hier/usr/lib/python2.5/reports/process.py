@@ -220,7 +220,7 @@ WHERE target_state = 'running' OR target_state = 'initialized'
      return settings
 
 def write_cutoff_date(date):
-     sql_helper.run_sql("""\
+     sql_helper.run_sql("""
 CREATE TABLE reports.reports_state (
         last_cutoff timestamp NOT NULL)""")
 

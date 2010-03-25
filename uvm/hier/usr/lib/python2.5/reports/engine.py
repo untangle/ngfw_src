@@ -55,6 +55,9 @@ class Node:
     def setup(self):
         pass
 
+    def alter_fact_tables(self):
+        pass
+
     def post_facttable_setup(self, start_date, end_date):
         pass
 
@@ -323,11 +326,13 @@ def generate_plots(report_base, end_date, report_days=1):
 
 @print_timing
 def events_cleanup(cutoff):
+    logger.info("Cleaning-up events data for all dates < %s" % (cutoff,))
     co = DateFromMx(cutoff)
 
     for name in __get_node_partial_order():
         try:
             node = __nodes.get(name, None)
+            logger.debug("** about to clean events for %s" % (name,))            
             node.events_cleanup(co)
         except:
             logger.warn('count not cleanup events for: %s' % name,
@@ -341,6 +346,7 @@ def reports_cleanup(cutoff):
     for name in __get_node_partial_order():
         try:
             node = __nodes.get(name, None)
+            logger.debug("** about to clean data for %s" % (name,))
             node.reports_cleanup(cutoff)
         except:
             logger.warn('count not cleanup reports for: %s' % name,
@@ -348,6 +354,7 @@ def reports_cleanup(cutoff):
 
 @print_timing
 def delete_old_reports(dir, cutoff):
+    logger.info("Cleaning-up reports files for all dates < %s" % (cutoff,))    
     for f in os.listdir(dir):
         if re.match('^\d+-\d+-\d+$', f):
             d = mx.DateTime.DateFrom(f)
@@ -370,6 +377,10 @@ def setup(start_date, end_date):
             if not node:
                 logger.warn('could not get node %s' % name)
             else:
+                try:
+                    node.alter_fact_tables()
+                except Exception, e: # that table didn't exist
+                    logger.info("Could not alter fact tables for %s: %s" % (name, e.message,))
                 node.setup(start_date, end_date)
         except:
             logger.warn('could not setup for: %s' % name, exc_info=True)
@@ -387,7 +398,7 @@ def post_facttable_setup(start_date, end_date):
             else:
                 node.post_facttable_setup(start_date, end_date)
         except:
-            logger.warn('coud not do post factable setup for: %s' % name,
+            logger.warn('could not do post factable setup for: %s' % name,
                          exc_info=True)
 
 @print_timing
