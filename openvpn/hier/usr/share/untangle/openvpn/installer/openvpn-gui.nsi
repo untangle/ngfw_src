@@ -270,7 +270,7 @@ Section "OpenVPN GUI" SecGUI
   File /oname=${SITE_NAME}-ca.crt "${MV_PKI_DIR}/ca.crt"
 
   SetOutPath "$INSTDIR"
-  File "${HOME}\install-win32\OpenVPN GUI ReadMe.txt"
+  File "${HOME}\install-win32\OpenVPN_GUI_ReadMe.txt"
 
   CreateDirectory "$INSTDIR\log"
   CreateDirectory "$INSTDIR\config"
@@ -418,7 +418,7 @@ Section "Add Shortcuts to Start Menu" SecAddShortcuts
   IntCmp $R0 ${SF_SELECTED} "" nogui nogui
 
   CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN GUI.lnk" "$INSTDIR\bin\openvpn-gui.exe"
-  CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN GUI ReadMe.lnk" "$INSTDIR\OpenVPN GUI ReadMe.txt"
+  CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN GUI ReadMe.lnk" "$INSTDIR\OpenVPN_GUI_ReadMe.txt"
 
 nogui:
 
@@ -791,7 +791,7 @@ Section "Uninstall"
 
   Delete "$INSTDIR\bin\openssl.exe"
 
-  Delete "$INSTDIR\OpenVPN GUI ReadMe.txt"
+  Delete "$INSTDIR\OpenVPN_GUI_ReadMe.txt"
   Delete "$INSTDIR\INSTALL-win32.txt"
   Delete "$INSTDIR\openvpn.ico"
   Delete "$INSTDIR\license.txt"
