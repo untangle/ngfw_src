@@ -34,7 +34,7 @@ public class LicenseManagerImpl implements LicenseManager {
     private static final int SELF_SIGNED_VERSION = 0x1F;
 
     private static final String LICENSE_DIRECTORY = System
-            .getProperty("bunnicula.conf.dir")
+            .getProperty("uvm.conf.dir")
             + "/licenses";
 
     private static final String PROPERTY_BASE = "com.untangle.uvm.license";
