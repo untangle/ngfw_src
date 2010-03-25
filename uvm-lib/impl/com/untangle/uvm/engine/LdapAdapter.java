@@ -201,7 +201,7 @@ abstract class LdapAdapter {
             return ret;
         }
         catch(NamingException ex) {
-            m_logger.warn("Exception listing entries", ex);
+            m_logger.warn("Exception listing entries");
             throw new ServiceUnavailableException(ex.toString());
         }
     }
@@ -434,8 +434,17 @@ abstract class LdapAdapter {
                           "Host: \"" + settings.getLDAPHost() + "\", " +
                           "Port: \"" + settings.getLDAPPort() + "\", " +
                           "Superuser DN: \"" + getSuperuserDN() + "\", " +
-                          "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>"),
-                          ex);
+                          "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
+                          " ; Error is: " + ex.toString());
+            return null;
+        }
+        catch(CommunicationException ex) {
+            m_logger.warn("Unable to create superuser context with settings: " +
+                          "Host: \"" + settings.getLDAPHost() + "\", " +
+                          "Port: \"" + settings.getLDAPPort() + "\", " +
+                          "Superuser DN: \"" + getSuperuserDN() + "\", " +
+                          "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
+                          " ; Error is: " + ex.toString());
             return null;
         }
         catch(Exception ex) {
@@ -443,8 +452,8 @@ abstract class LdapAdapter {
                            "Host: \"" + settings.getLDAPHost() + "\", " +
                            "Port: \"" + settings.getLDAPPort() + "\", " +
                            "Superuser DN: \"" + getSuperuserDN() + "\", " +
-                           "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>"),
-                           ex);
+                           "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
+                           " ; Error is: " + ex);
             return null;
         }
     }
