@@ -63,7 +63,7 @@ public class ImageInstaller extends HttpServlet
         else if (action.equals("uninstall"))
             LocalUvmContextFactory.context().toolboxManager().requestUninstall( libitem );
  
-        String file = System.getProperty( "bunnicula.home" ) + "/web/library/images/blank.png";
+        String file = System.getProperty( "uvm.home" ) + "/web/library/images/blank.png";
 
         /* Always expired */
         response.setDateHeader( "Expires", 0 );

@@ -88,7 +88,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private Map<String, String> allCountries;
 
     static {
-        LANGUAGES_DIR = System.getProperty("bunnicula.lang.dir"); // place for languages resources files
+        LANGUAGES_DIR = System.getProperty("uvm.lang.dir"); // place for languages resources files
         LANGUAGES_COMMUNITY_DIR = LANGUAGES_DIR + File.separator + "community"; // place for community languages resources files
         LANGUAGES_OFFICIAL_DIR = LANGUAGES_DIR + File.separator + "official"; // place for official languages resources files
         LOCALE_DIR = "/usr/share/locale"; // place for .mo files

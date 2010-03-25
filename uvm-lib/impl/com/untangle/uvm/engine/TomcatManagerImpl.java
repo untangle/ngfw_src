@@ -356,7 +356,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
     {
         this.welcomeFile = welcomeFile;
 
-        String bh = System.getProperty("bunnicula.home");
+        String bh = System.getProperty("uvm.home");
         String p = bh + "/apache2/conf.d/homepage.conf";
         writeWelcomeFile(p);
         p = bh + "/apache2/unrestricted-conf.d/homepage.conf";
@@ -497,7 +497,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
 
     private void writeIncludes()
     {
-        String bh = System.getProperty("bunnicula.home");
+        String bh = System.getProperty("uvm.home");
         if (null == bh) {
             bh = "/usr/share/untangle";
         }

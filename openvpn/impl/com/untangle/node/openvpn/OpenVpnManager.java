@@ -51,7 +51,7 @@ class OpenVpnManager
     private static final String VPN_STOP_SCRIPT  = Constants.SCRIPT_DIR + "/stop-openvpn";
     private static final String GENERATE_DISTRO_SCRIPT = Constants.SCRIPT_DIR + "/generate-distro";
 
-    private static final String PACKET_FILTER_RULES_FILE = System.getProperty( "bunnicula.conf.dir" ) + "/openvpn/packet-filter-rules";
+    private static final String PACKET_FILTER_RULES_FILE = System.getProperty( "uvm.conf.dir" ) + "/openvpn/packet-filter-rules";
 
     /* Most likely want to bind to the outside address when using NAT */
     static final String FLAG_LOCAL       = "local";

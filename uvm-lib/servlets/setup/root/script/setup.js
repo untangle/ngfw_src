@@ -10,6 +10,8 @@ var i18n=null;
 // the main json rpc object
 var rpc = {};
 
+var oemName = "Untangle";
+
 Ung.SetupWizard.LabelWidth = 200;
 Ung.SetupWizard.LabelWidth2 = 214;
 Ung.SetupWizard.LabelWidth3 = 120;
@@ -173,11 +175,11 @@ Ung.SetupWizard.Welcome = Ext.extend(Object,
         var panel = new Ext.FormPanel({
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizard-title">'+i18n._( "Thanks for using Untangle" )+'</h2>'
+                html : '<h2 class="wizard-title">' + String.format(i18n._( "Thanks for using {0}" ),oemName) + '</h2>'
             },{
                 xtype : 'label',
                 cls : 'noborder',
-                html : i18n._( 'This wizard will guide you through the initial setup and configuration of your Untangle Server.') +
+                html : String.format(i18n._( 'This wizard will guide you through the initial setup and configuration of your {0} Server '),oemName) +
                     '<br/><br/>'+
                     String.format(i18n._('Click {0}Next{1} to get started.'),'<b>','</b>')
             }]
@@ -185,7 +187,6 @@ Ung.SetupWizard.Welcome = Ext.extend(Object,
         
         this.card = {
             title : i18n._( "Welcome" ),
-            //cardTitle : i18n._( "Thanks for using Untangle" ),
             panel : panel
         };
     }
@@ -344,6 +345,7 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
             rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getRemoteConnectivityTester();
             rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
             rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
+
             Ext.MessageBox.hide();
             this.handler();
         } else {
@@ -402,7 +404,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     allowBlank : false,
                     boxLabel : i18n._("(approximate; include Windows, Linux and Mac)")
                 }),{
-                    fieldLabel : i18n._("Where will you be using Untangle"),
+                    fieldLabel : String.format(i18n._("Where will you be using {0}?"),oemName),
                     name : "environment",
                     xtype : 'radio',
                     inputValue : "my-business",
@@ -626,7 +628,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         var panelText = i18n._( "This step can help you identify your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. You can also drag and drop the interfaces to remap them at this time." );
 
         if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces == false ) {
-            panelText = String.format( i18n._( "{0}Only one network card was detected. Untangle requires two network cards to install as a transparent bridge or network router. However, Untangle can be installed as a Re-Router\u2122 allowing out-of-line filtering of network traffic using a single Network Card. To do so click Next to continue.{1}{2}"), '<div class="wizard-network-rerouter"><span>', '</span></div>', '<img class="wizard-network-image" src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/re-router.png"/>' );
+            panelText = String.format( i18n._( "{0}Only one network card was detected. {1} requires two network cards to install as a transparent bridge or network router. However, {2} can be installed as a Re-Router\u2122 allowing out-of-line filtering of network traffic using a single Network Card. To do so click Next to continue.{3}{4}"), '<div class="wizard-network-rerouter"><span>', oemName, oemName, '</span></div>', '<img class="wizard-network-image" src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/re-router.png"/>' );
         }
         var panel = new Ext.Panel({
             defaults : { cls : 'noborder' },
@@ -1533,7 +1535,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 html : '<h2 class="wizard-title">'+i18n._( "Email Configuration" )+'</h2>'
             },{
                 xtype : 'label',
-                html : i18n._('Your Untangle Server sends email for Quarantine Digests, Reports, etc.')
+                html : String.format(i18n._('The {0} Server sends email for Quarantine Digests, Reports, etc.'),oemName),
             },{
                 xtype : 'label',
                 cls : 'optional-email-tester noborder',
@@ -1567,7 +1569,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     items : [{
                         name : 'from-address-label',
                         xtype : 'label',
-                        html : i18n._( "<b>Please choose a <i>From Address</i> for emails originating from the Untangle Server</b>" )
+                        html : String.format(i18n._( "<b>Please choose a <i>From Address</i> for emails originating from the {0} Server</b>"),oemName),
                     },{
                         xtype : 'textfield',
                         name : 'from-address-textfield',
@@ -1842,10 +1844,10 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
                 xtype : 'label',
                 html : '<h2 class="wizard-title">'+i18n._( "Congrats!" )+'</h2>'
              },{
-                xtype : 'label',
-                        html : i18n._( '<b>Your Untangle Server is now configured.</b><br/><br/>You are now ready to login and download some applications.' ),
-                                cls : 'noborder'
-                        }]
+                 xtype : 'label',
+                 html : String.format(i18n._( '<b>Your {0} Server is now configured.</b><br/><br/>You are now ready to login and download some applications.' ),oemName),
+                 cls : 'noborder'
+             }]
         });
 
         this.card = {
@@ -1894,6 +1896,9 @@ Ung.Setup = {
         ];
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
+        
+        rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
+	oemName = rpc.jsonrpc.RemoteUvmContext.oemManager().getOemName();
 
         i18n = new Ung.I18N( { "map" : Ung.SetupWizard.CurrentValues.languageMap });
 

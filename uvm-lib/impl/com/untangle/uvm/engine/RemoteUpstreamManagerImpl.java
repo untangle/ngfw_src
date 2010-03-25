@@ -197,7 +197,7 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
 
 
     static {
-        String cd = System.getProperty("bunnicula.conf.dir");
+        String cd = System.getProperty("uvm.conf.dir");
         UPSTREAM_SERVICES_FILE = new File(cd, "upstream-services");
     }
 

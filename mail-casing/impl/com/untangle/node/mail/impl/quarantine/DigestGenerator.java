@@ -72,7 +72,7 @@ class DigestGenerator {
         FileOutputStream fOut = null;
         InputStream in = null;
         try {
-            File tempDir = new File(System.getProperty("bunnicula.tmp.dir"));
+            File tempDir = new File(System.getProperty("uvm.tmp.dir"));
             File templateRoot = new File(tempDir, "velocity" + File.separator + "quarantine");
             if(!templateRoot.exists()) {
                 templateRoot.mkdirs();

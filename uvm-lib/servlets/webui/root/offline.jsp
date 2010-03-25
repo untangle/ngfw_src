@@ -66,14 +66,15 @@ String[] messageArguments = {
         <h2><%= I18nUtil.tr("Installation Complete", i18n_map ) %></h2>
       </div>
       <div class="full-width-2 push-05 last">
-        <p><%= I18nUtil.tr("Welcome to Untangle.", i18n_map ) %></p>
-        <p><%= I18nUtil.tr("Untangle Installation is complete and ready for deployment. The next step is installing apps from the Untangle App Store.", i18n_map ) %></p>
-        <p class="red"><%= I18nUtil.tr("Unfortunately, Untangle was unable to contact the Untangle App Store.", i18n_map ) %></p>
+        <p><%= I18nUtil.tr("Welcome!", i18n_map ) %></p>
+        <p><%= I18nUtil.tr("You Installation is complete and ready for deployment. The next step is installing apps from the App Store.", i18n_map ) %></p>
+        <p class="red"><%= I18nUtil.tr("Unfortunately, Your server was unable to contact the App Store.", i18n_map ) %></p>
         <p><%= I18nUtil.tr("Before Installing apps, this must be resolved.", i18n_map ) %></p>
         <span class="bold"><%= I18nUtil.tr("Possible Resolutions", i18n_map ) %></span>
         <ol>
             <li><%= fm.format( messageArguments  ) %></li>
             <li><%= I18nUtil.tr("Verify that there are no upstream firewalls blocking HTTP access to the internet.", i18n_map ) %></li>            
+            <li><%= I18nUtil.tr("Verify the external interface has the correct IP and DNS settings.", i18n_map ) %></li>            
         </ol>
       </div>
       <div class="bottom">

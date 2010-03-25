@@ -130,7 +130,7 @@ exec $JAVA_HOME/bin/java \
     -Djavax.net.ssl.trustStore=@UVM_CONF@/cacerts \
     -Djava.endorsed.dirs=@ENDORSED_LIB@ \
     -Djava.library.path=@SRC_LIB@ \
-    -Dbunnicula.home=@UVM_HOME@ \
+    -Duvm.home=@UVM_HOME@ \
     -Djdbc.drivers=org.postgresql.Driver \
     -Dcom.untangle.isDevel=@IS_DEVEL@ \
     ${JAVA_OPTS} $* \

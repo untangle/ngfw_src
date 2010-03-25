@@ -28,6 +28,7 @@ import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.RemoteSkinManager;
+import com.untangle.uvm.RemoteOemManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.client.RemoteUvmContext;
@@ -161,6 +162,11 @@ class RemoteUvmContextAdaptor implements RemoteUvmContext
         return context.localBenchmarkManager();
     }
 
+    public RemoteOemManager oemManager()
+    {
+        return context.oemManager();
+    }
+    
     public void localBackup() throws IOException
     {
         context.localBackup();

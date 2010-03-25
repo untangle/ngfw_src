@@ -394,13 +394,13 @@ if (!Ung.hasResource["Ung.System"]) {
                             var errorMsg = cmp.i18n._("The Local File restore procedure failed.");
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
-                                    case "File does not seem to be valid Untangle backup" : 
+                                    case "File does not seem to be valid backup" : 
                                         errorMsg = String.format(cmp.i18n._("File does not seem to be valid {0} backup"), main.getBrandingBaseSettings().companyName);
                                     break;
                                     case "Error in processing restore itself (yet file seems valid)" : 
                                         errorMsg = cmp.i18n._("Error in processing restore itself (yet file seems valid)");
                                     break;
-                                    case "File is from an older version of Untangle and cannot be used" : 
+                                    case "File is from an older version and cannot be used" : 
                                         errorMsg = String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), main.getBrandingBaseSettings().companyName);
                                     break;
                                     case "Unknown error in local processing" : 

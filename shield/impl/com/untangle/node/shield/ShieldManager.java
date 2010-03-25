@@ -39,8 +39,8 @@ class ShieldManager
     /* Currently set to 20 minutes */
     private static final int STATISTIC_DELAY_MS = 1200000;
 
-    private static final String START_SCRIPT = System.getProperty( "bunnicula.home" ) + "/shield/start";
-    private static final String STOP_SCRIPT = System.getProperty( "bunnicula.home" ) + "/shield/stop";
+    private static final String START_SCRIPT = System.getProperty( "uvm.home" ) + "/shield/start";
+    private static final String STOP_SCRIPT = System.getProperty( "uvm.home" ) + "/shield/stop";
     private static final String SHIELD_URL =
         System.getProperty( "uvm.shield.url", "http://localhost:3001" );
 

@@ -161,7 +161,7 @@ while getopts "hi:vQ" opt; do
 done
 
 ## Execute these functions in a separate detached process, this way
-## when bunnicula gets killed this process doesn't exit.
+## when uvm gets killed this process doesn't exit.
 if [ $NOHUPPED != "true" ]; then
     ## Just append any arguments, they don't matter
     nohup bash @UVM_HOME@/bin/ut-restore-bundled.sh "$@" -Q > @PREFIX@/var/log/uvm/restore.log 2>&1 &

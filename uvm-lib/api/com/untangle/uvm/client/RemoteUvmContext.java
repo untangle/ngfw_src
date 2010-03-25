@@ -42,6 +42,7 @@ import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.RemoteSkinManager;
+import com.untangle.uvm.RemoteOemManager;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -182,6 +183,13 @@ public interface RemoteUvmContext
      * @return the RemoteLicenseManager
      */
     RemoteLicenseManager licenseManager();
+
+    /**
+     * Get the <code>RemoteOemManager</code> singleton.
+     *
+     * @return the RemoteOemManager.
+     */
+    RemoteOemManager oemManager();
 
     /**
      * Save settings to local hard drive.

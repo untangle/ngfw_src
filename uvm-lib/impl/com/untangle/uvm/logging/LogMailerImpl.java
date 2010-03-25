@@ -212,8 +212,8 @@ public class LogMailerImpl implements LogMailer, Runnable
     private MimeBodyPart getOtherLogPart(String logFileName)
         throws MessagingException
     {
-        String bunniculaLog = System.getProperty("bunnicula.log.dir");
-        String otherLog = bunniculaLog + File.separator + logFileName;
+        String uvmLog = System.getProperty("uvm.log.dir");
+        String otherLog = uvmLog + File.separator + logFileName;
         ArrayList<String> lastLines = new ArrayList<String>(OTHER_LOG_LINES);
         try {
             RandomAccessFile olfile =  new RandomAccessFile(otherLog, "r");

@@ -38,8 +38,8 @@ import com.untangle.uvm.vnet.Pipeline;
  */
 class PipelineImpl implements Pipeline
 {
-    private static final File BUNNICULA_TMP
-        = new File(System.getProperty("bunnicula.tmp.dir"));
+    private static final File UVM_TMP
+        = new File(System.getProperty("uvm.tmp.dir"));
 
     private final int sessionId;
     private final List<MPipeFitting> mPipeFittings;
@@ -144,7 +144,7 @@ class PipelineImpl implements Pipeline
             sb.append(sessionPrefix);
             name = sb.toString();
         }
-        File f = File.createTempFile(name, null, BUNNICULA_TMP);
+        File f = File.createTempFile(name, null, UVM_TMP);
         synchronized (files) {
             files.add(f);
         }

@@ -200,7 +200,7 @@ public class OpenSSLWrapper {
                 }
             }
 
-            String cmd = System.getProperty("bunnicula.bin.dir") + "/inspect_ca";
+            String cmd = System.getProperty("uvm.bin.dir") + "/inspect_ca";
 
             //Now figure out if this is a CA
             result = SimpleExec.exec(

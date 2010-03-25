@@ -58,7 +58,6 @@ public class LocalBenchmarkManagerImpl implements LocalBenchmarkManager
         return benchmark;
     }
     
-    
     @Override
     public Benchmark getBenchmark(Tid tid, String name, boolean create) {
         String key = buildKey(tid,name);
@@ -71,7 +70,6 @@ public class LocalBenchmarkManagerImpl implements LocalBenchmarkManager
         
         return benchmark;
     }
-    
 
     @Override
     public List<Benchmark> getBenchmarks() {

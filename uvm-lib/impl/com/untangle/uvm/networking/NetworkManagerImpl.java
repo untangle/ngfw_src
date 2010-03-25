@@ -69,16 +69,16 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     static final String NAT_NODE_NAME = "untangle-node-router";
 
-    static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
-    static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
+    static final String UVM_BASE = System.getProperty( "uvm.home" );
+    static final String UVM_CONF = System.getProperty( "uvm.conf.dir" );
 
     static final String ALPACA_SCRIPT = "/usr/share/untangle-net-alpaca/scripts/";
 
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
-    private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
+    private static final String AFTER_RECONFIGURE_SCRIPT = UVM_BASE + "/networking/after-reconfigure";
 
     /* Script to run to get a list of physical interfaces */
-    private static final String GET_PHYSICAL_INTF_SCRIPT = BUNNICULA_BASE + "/networking/get-physical-interfaces";
+    private static final String GET_PHYSICAL_INTF_SCRIPT = UVM_BASE + "/networking/get-physical-interfaces";
 
 
     private static final long ALPACA_RETRY_COUNT = 3;
@@ -773,7 +773,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* ----------------- Private ----------------- */
     private void initPriv() throws NetworkException, ValidateException
     {
-        String disableSaveSettings = System.getProperty( "bunnicula.devel.nonetworking" );
+        String disableSaveSettings = System.getProperty( "uvm.devel.nonetworking" );
 
         /* Do not save settings if requested */
         if ( Boolean.valueOf( disableSaveSettings ) == true ) {

@@ -81,22 +81,22 @@ class UvmClassLoader extends URLClassLoader
 
     boolean loadRup()
     {
-        String bunniculaLib = System.getProperty("bunnicula.lib.dir");
+        String uvmLib = System.getProperty("uvm.lib.dir");
 
         boolean r = false;
 
-        r |= addFile(bunniculaLib + "/untangle-professional-core-impl/");
-        r |= addFile(bunniculaLib + "/untangle-professional-core-api/");
-        r |= addFile(bunniculaLib + "/untangle-professional-core-localapi/");
+        r |= addFile(uvmLib + "/untangle-professional-core-impl/");
+        r |= addFile(uvmLib + "/untangle-professional-core-api/");
+        r |= addFile(uvmLib + "/untangle-professional-core-localapi/");
 
         return r;
     }
 
     boolean loadUvmResource(String name)
     {
-        String bunniculaLib = System.getProperty("bunnicula.lib.dir");
+        String uvmLib = System.getProperty("uvm.lib.dir");
 
-        return addFile(bunniculaLib + "/" + name + "/");
+        return addFile(uvmLib + "/" + name + "/");
     }
 
     // private methods --------------------------------------------------------

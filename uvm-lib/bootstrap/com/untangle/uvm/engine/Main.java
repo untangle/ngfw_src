@@ -36,26 +36,25 @@ import com.untangle.uvm.logging.UvmRepositorySelector;
  *
  * Properties defined by this class:
  * <ul>
- * <li>bunnicula.home - home of uvm, usually
+ * <li>uvm.home - home of uvm, usually
  * <code>/usr/share/uvm</code>.</li>
- * <li>bunnicula.lib.dir - uvm libraries.</li>
- * <li>bunnicula.toolbox.dir - node jars.</li>
- * <li>bunnicula.log.dir - log files.</li>
- * <li>bunnicula.data.dir - data files.</li>
- * <li>bunnicula.db.dir - database files.</li>
- * <li>bunnicula.web.dir - servlet directories.</li>
- * <li>bunnicula.conf.dir - configuration files, added to classpath.</li>
- * <li>bunnicula.tmp.dir - temporary files.</li>
- * <li>bunnicula.skins.dir - skins files.</li>
- * <li>bunnicula.lang.dir - languages resources files.</li>
+ * <li>uvm.lib.dir - uvm libraries.</li>
+ * <li>uvm.toolbox.dir - node jars.</li>
+ * <li>uvm.log.dir - log files.</li>
+ * <li>uvm.data.dir - data files.</li>
+ * <li>uvm.db.dir - database files.</li>
+ * <li>uvm.web.dir - servlet directories.</li>
+ * <li>uvm.conf.dir - configuration files, added to classpath.</li>
+ * <li>uvm.tmp.dir - temporary files.</li>
+ * <li>uvm.skins.dir - skins files.</li>
+ * <li>uvm.lang.dir - languages resources files.</li>
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public class Main
 {
-    private static final String UVM_LOCAL_CONTEXT_CLASSNAME
-        = "com.untangle.uvm.engine.UvmContextImpl";
+    private static final String UVM_LOCAL_CONTEXT_CLASSNAME = "com.untangle.uvm.engine.UvmContextImpl";
 
     private static Main MAIN;
 
@@ -200,43 +199,43 @@ public class Main
 
     private void setProperties() throws Exception
     {
-        String bunniculaHome = System.getProperty("bunnicula.home");
+        String uvmHome = System.getProperty("uvm.home");
 
-        String bunniculaLib = bunniculaHome + "/lib";
-        System.setProperty("bunnicula.lib.dir", bunniculaLib);
-        String bunniculaBin = bunniculaHome + "/bin";
-        System.setProperty("bunnicula.bin.dir", bunniculaBin);
-        String bunniculaToolbox = bunniculaHome + "/toolbox";
-        System.setProperty("bunnicula.toolbox.dir", bunniculaToolbox);
-        String bunniculaLog = bunniculaHome + "/log";
-        System.setProperty("bunnicula.log.dir", bunniculaLog);
-        String bunniculaData = bunniculaHome + "/data";
-        System.setProperty("bunnicula.data.dir", bunniculaData);
-        String bunniculaDb = bunniculaHome + "/db";
-        System.setProperty("bunnicula.db.dir", bunniculaDb);
-        String bunniculaWeb = bunniculaHome + "/web";
-        System.setProperty("bunnicula.web.dir", bunniculaWeb);
-        String bunniculaConf = bunniculaHome + "/conf";
-        System.setProperty("bunnicula.conf.dir", bunniculaConf);
-        String bunniculaTmp = bunniculaHome + "/tmp";
-        System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
-        String bunniculaSkins = "/var/www/skins";
-        System.setProperty("bunnicula.skins.dir", bunniculaSkins);
-        String bunniculaLang = bunniculaHome + "/lang";
-        System.setProperty("bunnicula.lang.dir", bunniculaLang);
+        String uvmLib = uvmHome + "/lib";
+        System.setProperty("uvm.lib.dir", uvmLib);
+        String uvmBin = uvmHome + "/bin";
+        System.setProperty("uvm.bin.dir", uvmBin);
+        String uvmToolbox = uvmHome + "/toolbox";
+        System.setProperty("uvm.toolbox.dir", uvmToolbox);
+        String uvmLog = uvmHome + "/log";
+        System.setProperty("uvm.log.dir", uvmLog);
+        String uvmData = uvmHome + "/data";
+        System.setProperty("uvm.data.dir", uvmData);
+        String uvmDb = uvmHome + "/db";
+        System.setProperty("uvm.db.dir", uvmDb);
+        String uvmWeb = uvmHome + "/web";
+        System.setProperty("uvm.web.dir", uvmWeb);
+        String uvmConf = uvmHome + "/conf";
+        System.setProperty("uvm.conf.dir", uvmConf);
+        String uvmTmp = uvmHome + "/tmp";
+        System.setProperty("uvm.tmp.dir", uvmTmp);
+        String uvmSkins = "/var/www/skins";
+        System.setProperty("uvm.skins.dir", uvmSkins);
+        String uvmLang = uvmHome + "/lang";
+        System.setProperty("uvm.lang.dir", uvmLang);
 
-        logger.info("bunnicula.home        " + bunniculaHome);
-        logger.info("bunnicula.lib.dir     " + bunniculaLib);
-        logger.info("bunnicula.toolbox.dir " + bunniculaToolbox);
-        logger.info("bunnicula.log.dir     " + bunniculaLog);
-        logger.info("bunnicula.data.dir    " + bunniculaData);
-        logger.info("bunnicula.db.dir    " + bunniculaData);
-        logger.info("bunnicula.web.dir     " + bunniculaWeb);
-        logger.info("bunnicula.conf.dir    " + bunniculaConf);
-        logger.info("bunnicula.tmp.dir     " + bunniculaTmp);
-        logger.info("bunnicula.skins.dir     " + bunniculaSkins);
+        logger.info("uvm.home        " + uvmHome);
+        logger.info("uvm.lib.dir     " + uvmLib);
+        logger.info("uvm.toolbox.dir " + uvmToolbox);
+        logger.info("uvm.log.dir     " + uvmLog);
+        logger.info("uvm.data.dir    " + uvmData);
+        logger.info("uvm.db.dir    " + uvmData);
+        logger.info("uvm.web.dir     " + uvmWeb);
+        logger.info("uvm.conf.dir    " + uvmConf);
+        logger.info("uvm.tmp.dir     " + uvmTmp);
+        logger.info("uvm.skins.dir     " + uvmSkins);
 
-        File f = new File(bunniculaConf + "/uvm.properties");
+        File f = new File(uvmConf + "/uvm.properties");
         if (f.exists()) {
             logger.info("Loading " + f);
             System.getProperties().load(new FileInputStream(f));
@@ -248,20 +247,20 @@ public class Main
     private void startUvm() throws Exception
     {
         List<URL> urls = new ArrayList();
-        String bunniculaLib = System.getProperty("bunnicula.lib.dir");
-        urls.add(new URL("file://" + bunniculaLib + "/untangle-libuvm-impl/"));
-        urls.add(new URL("file://" + bunniculaLib + "/untangle-libuvm-api/"));
-        urls.add(new URL("file://" + bunniculaLib + "/untangle-libuvm-localapi/"));
-        urls.add(new URL("file://" + bunniculaLib + "/untangle-libuvm-reporting/"));
-        urls.add(new URL("file://" + bunniculaLib + "/jvector-impl/"));
-        urls.add(new URL("file://" + bunniculaLib + "/jnetcap-impl/"));
-        String bunniculaLang = System.getProperty("bunnicula.lang.dir");
-        urls.add(new URL("file://" + bunniculaLang + "/"));
+        String uvmLib = System.getProperty("uvm.lib.dir");
+        urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-impl/"));
+        urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-api/"));
+        urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-localapi/"));
+        urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-reporting/"));
+        urls.add(new URL("file://" + uvmLib + "/jvector-impl/"));
+        urls.add(new URL("file://" + uvmLib + "/jnetcap-impl/"));
+        String uvmLang = System.getProperty("uvm.lang.dir");
+        urls.add(new URL("file://" + uvmLang + "/"));
 
-        String bunniculaToolbox = System.getProperty("bunnicula.toolbox.dir");
+        String uvmToolbox = System.getProperty("uvm.toolbox.dir");
         mcl = new UvmClassLoader(urls.toArray(new URL[urls.size()]),
                                   getClass().getClassLoader(),
-                                  new File(bunniculaToolbox));
+                                  new File(uvmToolbox));
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {

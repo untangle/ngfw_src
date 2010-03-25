@@ -36,9 +36,9 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final String BUNNICULA_BASE  = System.getProperty( "bunnicula.home" );
-    private static final String DNS_TEST_SCRIPT    = BUNNICULA_BASE + "/networking/dns-test";
-    private static final String BRIDGE_WAIT_SCRIPT = BUNNICULA_BASE + "/networking/bridge-wait";
+    private static final String UVM_BASE  = System.getProperty( "uvm.home" );
+    private static final String DNS_TEST_SCRIPT    = UVM_BASE + "/networking/dns-test";
+    private static final String BRIDGE_WAIT_SCRIPT = UVM_BASE + "/networking/bridge-wait";
 
     /* Name of the host to lookup */
     private static final String TEST_HOSTNAME_BASE    = "updates";

@@ -10,7 +10,7 @@ Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-vm
 
 MessageFormat fm = new MessageFormat("");
 
-fm.applyPattern( I18nUtil.tr("To begin the configuration process complete the {0}Setup Wizard{1} or simply close this window and configure Untangle manually.", i18n_map ));
+fm.applyPattern( I18nUtil.tr("To begin the configuration process complete the {0}Setup Wizard{1} or simply close this window and configure manually.", i18n_map ));
 String[] messageArguments = {
 	 "<a href=\"#\" onclick=\"return openNetworkSettings()\">",
 	 "</a>"
@@ -66,8 +66,8 @@ String[] messageArguments = {
         <h2><%= I18nUtil.tr("Installation Complete", i18n_map ) %></h2>
       </div>
       <div class="full-width-2 push-05 last">
-        <p><%= I18nUtil.tr("Welcome to Untangle.", i18n_map ) %></p>
-        <p class="red"><%= I18nUtil.tr("Untangle installation is complete, but it is not yet properly configured for the network.", i18n_map ) %></p>
+        <p><%= I18nUtil.tr("Welcome!", i18n_map ) %></p>
+        <p class="red"><%= I18nUtil.tr("You Installation is complete, but it is not yet properly configured for the network.", i18n_map ) %></p>
         <p><%= fm.format( messageArguments  ) %></p>
       </div>
       <div class="bottom">

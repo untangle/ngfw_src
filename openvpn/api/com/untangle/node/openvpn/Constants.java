@@ -20,15 +20,15 @@ package com.untangle.node.openvpn;
 
 public class Constants
 {
-    static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
-    static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
+    static final String UVM_BASE = System.getProperty( "uvm.home" );
+    static final String UVM_CONF = System.getProperty( "uvm.conf.dir" );
 
-    static final String SCRIPT_DIR     = BUNNICULA_BASE + "/openvpn";
+    static final String SCRIPT_DIR     = UVM_BASE + "/openvpn";
     static final String DATA_DIR       = SCRIPT_DIR;
 
     /* Base configuration directory, all of the files should go into
      * one of the sub directories */
-    static final String CONF_DIR = BUNNICULA_CONF + "/openvpn";
+    static final String CONF_DIR = UVM_CONF + "/openvpn";
 
     /* The directory for all of the client packages, needed by the servlet */
     public static final String PACKAGES_DIR = CONF_DIR + "/client-packages";

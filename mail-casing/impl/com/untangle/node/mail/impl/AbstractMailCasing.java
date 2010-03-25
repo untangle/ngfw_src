@@ -55,7 +55,7 @@ public abstract class AbstractMailCasing implements Casing
 
         if(m_trace) {
             m_tracer = new CasingTracer(
-                                        new File(System.getProperty("bunnicula.tmp.dir"), protocolString),
+                                        new File(System.getProperty("uvm.tmp.dir"), protocolString),
                                         session.id() + "_" + protocolString,
                                         clientSide);
         }

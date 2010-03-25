@@ -102,12 +102,12 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     
     /* Prints out true if the upgrade server is available */
-    private static final String UPGRADE_SERVER_AVAILABLE = System.getProperty( "bunnicula.home" ) + 
+    private static final String UPGRADE_SERVER_AVAILABLE = System.getProperty( "uvm.home" ) + 
         "/bin/upgrade-server-available";
 
     static {
         try {
-            String s = "file://" + System.getProperty("bunnicula.toolbox.dir")
+            String s = "file://" + System.getProperty("uvm.toolbox.dir")
                 + "/";
             TOOLBOX_URL = new URL(s);
         } catch (MalformedURLException exn) { /* should never happen */
@@ -962,7 +962,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         Map<String, MackageDesc> pkgs;
 
         try {
-            String cmd = System.getProperty("bunnicula.bin.dir")
+            String cmd = System.getProperty("uvm.bin.dir")
                 + "/mkg available";
             Process p = LocalUvmContextFactory.context().exec(cmd);
             pkgs = readPkgList(p.getInputStream(), instList);
@@ -1055,7 +1055,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         Map<String, String> instList;
 
         try {
-            String cmd = System.getProperty("bunnicula.bin.dir")
+            String cmd = System.getProperty("uvm.bin.dir")
                 + "/mkg installed";
             Process p = LocalUvmContextFactory.context().exec(cmd);
             instList = readInstalledList(p.getInputStream());
@@ -1099,7 +1099,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private synchronized void execMkg(String command, long key)
         throws MackageException
     {
-        String cmdStr = System.getProperty("bunnicula.bin.dir") + "/mkg "
+        String cmdStr = System.getProperty("uvm.bin.dir") + "/mkg "
             + (0 > key ? "" : "-k " + key + " ") + command;
 
         logger.debug("running: " + cmdStr);
@@ -1142,7 +1142,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     {
         List<String> l = new ArrayList<String>();
 
-        String cmd = System.getProperty("bunnicula.bin.dir")
+        String cmd = System.getProperty("uvm.bin.dir")
             + "/mkg predictInstall " + mkg;
         try {
             Process p = LocalUvmContextFactory.context().exec(cmd);

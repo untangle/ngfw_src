@@ -79,10 +79,10 @@ String[] messageArguments = {
         <h2><%= I18nUtil.tr("Installation Complete", i18n_map ) %></h2>
       </div>
       <div class="full-width-2 push-05 last">
-        <p><%= I18nUtil.tr("Welcome to Untangle.", i18n_map ) %></p>
-        <p><%= I18nUtil.tr("Your Installation is complete and ready for deployment. The next step is installing apps from the Untangle App Store.", i18n_map ) %></p>
-        <p class="red"><%= I18nUtil.tr("Untangle has updates availabe and must be upgraded.", i18n_map ) %></p>
-        <p><%= I18nUtil.tr("In order to download the newest apps Untangle must be fully up-to-date.", i18n_map ) %></p>
+        <p><%= I18nUtil.tr("Welcome!", i18n_map ) %></p>
+        <p><%= I18nUtil.tr("Your Installation is complete and ready for deployment. The next step is installing apps from the App Store.", i18n_map ) %></p>
+        <p class="red"><%= I18nUtil.tr("Updates are available and must be applied before continuing.", i18n_map ) %></p>
+        <p><%= I18nUtil.tr("In order to download the newest apps your server must be fully up-to-date.", i18n_map ) %></p>
         <p>
             <%= fm.format( messageArguments  ) %>                        
         </p>

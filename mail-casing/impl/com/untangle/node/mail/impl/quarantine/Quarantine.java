@@ -99,7 +99,7 @@ public class Quarantine
 
     public Quarantine() {
         m_store = new QuarantineStore(
-                                      new File(new File(System.getProperty("bunnicula.home")), "quarantine")
+                                      new File(new File(System.getProperty("uvm.home")), "quarantine")
                                       );
         m_digestGenerator = new DigestGenerator();
         m_atm = new AuthTokenManager();

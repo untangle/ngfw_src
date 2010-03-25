@@ -62,7 +62,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
         Properties networkingProperties = new Properties();
 
-        File f = new File(System.getProperty("bunnicula.conf.dir")
+        File f = new File(System.getProperty("uvm.conf.dir")
                           + "/uvm.networking.properties");
         if (f.exists()) {
             FileInputStream fis = null;
@@ -109,7 +109,7 @@ class AppServerManagerImpl implements LocalAppServerManager
     {
         //TODO check for expiration and call regenCert if expired
         try {
-            String disableTomcat = System.getProperty("bunnicula.devel.notomcat");
+            String disableTomcat = System.getProperty("uvm.devel.notomcat");
             if (null == disableTomcat || !Boolean.valueOf(disableTomcat)) {
                 tomcatManager.startTomcat(DEFAULT_HTTP_PORT,
                                           DEFAULT_HTTPS_PORT,

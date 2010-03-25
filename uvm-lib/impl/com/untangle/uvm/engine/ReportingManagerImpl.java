@@ -72,10 +72,10 @@ import com.untangle.uvm.toolbox.MackageDesc;
 
 class RemoteReportingManagerImpl implements RemoteReportingManager
 {
-    private static final String BUNNICULA_REPORTS_DATA
-        = System.getProperty("bunnicula.web.dir") + "/reports/data";
+    private static final String UVM_REPORTS_DATA
+        = System.getProperty("uvm.web.dir") + "/reports/data";
 
-    private static final File REPORTS_DIR = new File(BUNNICULA_REPORTS_DATA);
+    private static final File REPORTS_DIR = new File(UVM_REPORTS_DATA);
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -487,7 +487,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     private String getDateDir(Date d, int numDays)
     {
-        StringBuffer sb = new StringBuffer(BUNNICULA_REPORTS_DATA);
+        StringBuffer sb = new StringBuffer(UVM_REPORTS_DATA);
         sb.append("/");
 
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
@@ -507,7 +507,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     private String getAppDir(Date d, int numDays, String appName, String type,
                              String val)
     {
-        StringBuffer sb = new StringBuffer(BUNNICULA_REPORTS_DATA);
+        StringBuffer sb = new StringBuffer(UVM_REPORTS_DATA);
         sb.append("/");
 
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);

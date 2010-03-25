@@ -47,7 +47,7 @@ import com.untangle.uvm.toolbox.MackageDesc;
 class AptLogTail implements Runnable
 {
     private static final String APT_LOG
-        = System.getProperty("bunnicula.log.dir") + "/apt.log";
+        = System.getProperty("uvm.log.dir") + "/apt.log";
     private static final long TIMEOUT = 500000;
 
     private static final Pattern FETCH_PATTERN;

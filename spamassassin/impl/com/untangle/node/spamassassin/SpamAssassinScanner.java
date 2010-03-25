@@ -37,8 +37,8 @@ public class SpamAssassinScanner implements SpamScanner
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
 
-    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "bunnicula.bin.dir" ) + "/spamassassin-get-last-update";
-    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty( "bunnicula.bin.dir" ) + "/spamassassin-get-last-update-check";
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/spamassassin-get-last-update";
+    private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty( "uvm.bin.dir" ) + "/spamassassin-get-last-update-check";
 
     public SpamAssassinScanner() { }
 

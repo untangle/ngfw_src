@@ -46,12 +46,12 @@ class CPDManager {
     private static String CPD_CONFIG_FILE = "/etc/untangle-cpd/config.js";
     private static String CPD_CONFIG_DIR = "/etc/untangle-cpd";
     
-    private static final String START_SCRIPT =  System.getProperty( "bunnicula.home" ) + "/cpd/start";
-    private static final String STOP_SCRIPT = System.getProperty( "bunnicula.home" ) + "/cpd/stop";
+    private static final String START_SCRIPT =  System.getProperty( "uvm.home" ) + "/cpd/start";
+    private static final String STOP_SCRIPT = System.getProperty( "uvm.home" ) + "/cpd/stop";
 
-    private static final String CPD_WEB_CONFIG = System.getProperty( "bunnicula.home" ) + "/web/cpd/config.php";
+    private static final String CPD_WEB_CONFIG = System.getProperty( "uvm.home" ) + "/web/cpd/config.php";
 
-    private static final String LOAD_CUSTOM_SCRIPT = System.getProperty( "bunnicula.home" ) + "/cpd/load_custom";
+    private static final String LOAD_CUSTOM_SCRIPT = System.getProperty( "uvm.home" ) + "/cpd/load_custom";
 
     private static final String CPD_URL = System.getProperty( "uvm.node.cpd.url", "http://localhost:3005");
         

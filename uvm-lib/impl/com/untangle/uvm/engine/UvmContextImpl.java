@@ -96,7 +96,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
     private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
-    private static final String BDB_HOME = System.getProperty("bunnicula.db.dir");
+    private static final String BDB_HOME = System.getProperty("uvm.db.dir");
 
     private static final String ACTIVATE_SCRIPT;
     private static final String ACTIVATION_KEY_FILE;
@@ -151,7 +151,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private UploadManagerImpl uploadManager;
     private LocalJStoreManagerImpl jStoreManager;
     private LocalBenchmarkManagerImpl benchmarkManager;
-
+    private OemManagerImpl oemManager;
+    
     private Environment bdbEnvironment;
 
     private volatile SessionFactory sessionFactory;
@@ -163,7 +164,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     {
         refreshSessionFactory();
 
-        // XXX can we load all node cl's first?
         state = UvmState.LOADED;
         backupManager = new BackupManager();
     }
@@ -487,7 +487,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
                     } catch (InterruptedException exn) {
                         
                     }
-                    logger.info("thank you for choosing bunnicula");
+                    logger.info("thank you for choosing uvm");
                     System.exit(0);
                 }
             });
@@ -721,11 +721,13 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     @Override
     protected void init()
     {
-        uploadManager = new UploadManagerImpl();
+        this.uploadManager = new UploadManagerImpl();
         
-        jStoreManager = new LocalJStoreManagerImpl();
+        this.jStoreManager = new LocalJStoreManagerImpl();
         
-        benchmarkManager = new LocalBenchmarkManagerImpl();
+        this.benchmarkManager = new LocalBenchmarkManagerImpl();
+
+        this.oemManager = new OemManagerImpl();
         
         JSONSerializer serializer = new JSONSerializer();
         try {
@@ -734,7 +736,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         } catch (Exception e) {
             throw new IllegalStateException("register serializers should never fail!", e);
         }
-        String jStorePath = System.getProperty( "bunnicula.conf.dir" ) + "/jStore";
+        String jStorePath = System.getProperty( "uvm.conf.dir" ) + "/jStore";
         jStoreManager.setBasePath(jStorePath);
         
         uploadManager.registerHandler(new RestoreUploadHandler());
@@ -757,9 +759,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             = new InheritableThreadLocal<HttpServletRequest>();
 
         tomcatManager = new TomcatManagerImpl(this, threadRequest,
-                                              System.getProperty("bunnicula.home"),
-                                              System.getProperty("bunnicula.web.dir"),
-                                              System.getProperty("bunnicula.log.dir"));
+                                              System.getProperty("uvm.home"),
+                                              System.getProperty("uvm.web.dir"),
+                                              System.getProperty("uvm.log.dir"));
 
         // start services:
         adminManager = new RemoteAdminManagerImpl(this, threadRequest);
@@ -1130,19 +1132,25 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     // static initializer -----------------------------------------------------
 
     static {
-        ACTIVATE_SCRIPT = System.getProperty("bunnicula.bin.dir")
+        ACTIVATE_SCRIPT = System.getProperty("uvm.bin.dir")
             + "/utactivate";
-        ACTIVATION_KEY_FILE = System.getProperty("bunnicula.home")
+        ACTIVATION_KEY_FILE = System.getProperty("uvm.home")
             + "/activation.key";
-        REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
+        REGISTRATION_INFO_FILE = System.getProperty("uvm.home")
             + "/registration.info";
-        POP_ID_FILE = System.getProperty("bunnicula.home")
+        POP_ID_FILE = System.getProperty("uvm.home")
             + "/popid";
         ARGON_FAKE_KEY = "argon.fake";
     }
 
     @Override
-    public LocalBenchmarkManager localBenchmarkManager() {
+    public LocalBenchmarkManager localBenchmarkManager()
+    {
         return this.benchmarkManager;
+    }
+
+    public OemManagerImpl oemManager()
+    {
+        return this.oemManager;
     }
 }

@@ -49,11 +49,11 @@ class BackupManager {
         Logger.getLogger(BackupManager.class);
 
     static {
-        OLD_BACKUP_SCRIPT = System.getProperty("bunnicula.home")
+        OLD_BACKUP_SCRIPT = System.getProperty("uvm.home")
             + "/../../bin/uvmdb-backup";
-        BACKUP_SCRIPT = System.getProperty("bunnicula.home")
+        BACKUP_SCRIPT = System.getProperty("uvm.home")
             + "/bin/ut-backup-bundled.sh";
-        RESTORE_SCRIPT = System.getProperty("bunnicula.home")
+        RESTORE_SCRIPT = System.getProperty("uvm.home")
             + "/bin/ut-restore-bundled.sh";
     }
 
@@ -147,11 +147,11 @@ class BackupManager {
             case 1:
             case 2:
             case 3:
-                throw new IllegalArgumentException("File does not seem to be valid Untangle backup");
+                throw new IllegalArgumentException("File does not seem to be valid backup");
             case 4:
                 throw new IOException("Error in processing restore itself (yet file seems valid)");
             case 5:
-                throw new IOException("File is from an older version of Untangle and cannot be used");
+                throw new IOException("File is from an older version and cannot be used");
             default:
                 throw new IOException("Unknown error in local processing");
             }

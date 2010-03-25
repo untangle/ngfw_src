@@ -42,7 +42,7 @@ public interface UvmLoggingContext
     /**
      * The name of the log file for this logging context. This file
      * will be created in the directory specified in the system
-     * property: <code>bunnicula.log.dir</code>.
+     * property: <code>uvm.log.dir</code>.
      *
      * @return log filename.
      */

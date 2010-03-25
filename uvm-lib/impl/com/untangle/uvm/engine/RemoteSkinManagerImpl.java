@@ -280,7 +280,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     }
         
     static {
-        SKINS_DIR = System.getProperty("bunnicula.skins.dir");
+        SKINS_DIR = System.getProperty("uvm.skins.dir");
     }
     
     private class SkinUploadHandler implements UploadHandler

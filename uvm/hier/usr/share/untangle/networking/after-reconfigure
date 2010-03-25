@@ -42,7 +42,7 @@ afterReconfigure() {
 }
 
 ## Execute these functions in a separate detached process, this way
-## bunnicula doesn't wait around for us to run.
+## uvm doesn't wait around for us to run.
 if [ $# -eq 0 ]; then
     ## Just append any arguments, they don't matter
     nohup bash @UVM_HOME@/networking/after-reconfigure 1 2 >> @UVM_LOG@/iptables.log 2>&1 &

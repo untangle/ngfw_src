@@ -77,7 +77,7 @@ public class SchemaUtil
         }
 
         try {
-            String bd = System.getProperty("bunnicula.home") + "/bin/";
+            String bd = System.getProperty("uvm.home") + "/bin/";
             String us = bd + "update-schema";
             ProcessBuilder pb = new ProcessBuilder(us, type, component);
             Process p = pb.start();

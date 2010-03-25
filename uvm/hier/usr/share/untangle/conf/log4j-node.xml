@@ -38,7 +38,7 @@
                      debug="false">
 
   <appender name="NodeLog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${bunnicula.home}/log/@NodeLogFileName@.log"/>
+    <param name="File" value="${uvm.home}/log/@NodeLogFileName@.log"/>
     <param name="Append" value="true"/>
     <param name="MaxFileSize" value="5000KB"/>
     <param name="MaxBackupIndex" value="9"/>
