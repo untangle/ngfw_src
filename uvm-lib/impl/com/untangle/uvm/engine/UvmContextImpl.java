@@ -90,8 +90,7 @@ import com.untangle.uvm.util.TransactionWork;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class UvmContextImpl extends UvmContextBase
-    implements LocalUvmContext
+public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 {
     private static final UvmContextImpl CONTEXT = new UvmContextImpl();
 
@@ -110,8 +109,6 @@ public class UvmContextImpl extends UvmContextBase
     private static final String PROPERTY_IS_UNTANGLE_APPLIANCE = "com.untangle.isUntangleAppliance";
     private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM";
     private static final String PROPERTY_INSTALLTION_TYPE = "com.untangle.installationType";
-
-    private static final String PROPERTY_CLI_SERVER_HOME = "com.untangle.cli.server.home";
 
     private final Object startupWaitLock = new Object();
     private final Logger logger = Logger.getLogger(UvmContextImpl.class);
