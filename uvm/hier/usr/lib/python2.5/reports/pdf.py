@@ -338,16 +338,31 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
               ['BACKGROUND', (0, 0), (-1, 0), grey],
               ['BOX', (0, 0), (-1, -1), 1, grey] ]
     story += [Table(hs, style=style),]
-
     story.append(PageBreak())
+    try:
+        doc.multiBuild(story)
+    except Exception, e:
+        logger.error("Exception while building Highlights section of PDF report, not including it: ", exc_info = True)
+        story.pop()
+        story.pop()
     
     # apps reports
-    logger.info('Building applications reports')
+    logger.info('Building PDF applications reports')
     for r in mail_reports:
-        story += r.get_flowables(report_base, date_base, end_date, report_days)
+        try:
+            s = r.get_flowables(report_base, date_base, end_date, report_days)
+        except Exception, e:
+            logger.error("Exception while building PDF report for %s (not including it): " % (r.name,), exc_info = True)
+            continue
 
-    doc.multiBuild(story)
-
+        story += s
+        
+        try:
+            doc.multiBuild(story)            
+        except Exception, e:
+            logger.error("Exception while building PDF report for %s (not including it): " % (r.name,), exc_info = True)
+            story = story[:-len(s)]
+            
     return file
 
 def __node_cmp(x, y):
