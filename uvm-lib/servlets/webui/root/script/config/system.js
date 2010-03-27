@@ -16,7 +16,7 @@ if (!Ung.hasResource["Ung.System"]) {
             }, {
                 title : i18n._("System")
             }];
-            this.companyName=main.getBrandingBaseSettings().companyName;
+            this.companyName=main.getBrandingManager().getCompanyName();
             this.buildSupport();
             this.buildBackup();
             this.buildRestore();
@@ -386,22 +386,22 @@ if (!Ung.hasResource["Ung.System"]) {
                             var cmp = Ext.getCmp(action.options.parentId);
                             Ung.MessageManager.stop();
                             Ext.MessageBox.alert(cmp.i18n._("Restore Succes"),
-                                String.format( cmp.i18n._("Success:  The Local File restore procedure completed. You will be redirected to the start page now. The {0} Server will restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."), main.getBrandingBaseSettings().companyName),
+                            String.format( cmp.i18n._("Success:  The Local File restore procedure completed. You will be redirected to the start page now. The {0} Server will restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."), main.getBrandingManager().getCompanyName()),
                                 Ung.Util.goToStartPage);
-                        },
+                            },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
                             var errorMsg = cmp.i18n._("The Local File restore procedure failed.");
                             if (action.result && action.result.msg) {
                                 switch (action.result.msg) {
                                     case "File does not seem to be valid backup" : 
-                                        errorMsg = String.format(cmp.i18n._("File does not seem to be valid {0} backup"), main.getBrandingBaseSettings().companyName);
+                                        errorMsg = String.format(cmp.i18n._("File does not seem to be valid {0} backup"), main.getBrandingManager().getCompanyName());
                                     break;
                                     case "Error in processing restore itself (yet file seems valid)" : 
                                         errorMsg = cmp.i18n._("Error in processing restore itself (yet file seems valid)");
                                     break;
                                     case "File is from an older version and cannot be used" : 
-                                        errorMsg = String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), main.getBrandingBaseSettings().companyName);
+                                        errorMsg = String.format(cmp.i18n._("File is from an older version of {0} and cannot be used"), main.getBrandingManager().getCompanyName());
                                     break;
                                     case "Unknown error in local processing" : 
                                         errorMsg = cmp.i18n._("Unknown error in local processing");

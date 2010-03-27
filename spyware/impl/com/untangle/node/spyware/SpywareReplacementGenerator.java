@@ -22,13 +22,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
 
-public class SpywareReplacementGenerator
-    extends ReplacementGenerator<SpywareBlockDetails>
+public class SpywareReplacementGenerator extends ReplacementGenerator<SpywareBlockDetails>
 {
     private static final String SIMPLE_BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -58,9 +56,8 @@ public class SpywareReplacementGenerator
     protected String getReplacement(SpywareBlockDetails bd)
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
-        return String.format(SIMPLE_BLOCK_TEMPLATE, bd.getHost(), bd.getUrl(),
-                             bs.getContactHtml());
+        String contactHtml = uvm.brandingManager().getContactHtml();
+        return String.format(SIMPLE_BLOCK_TEMPLATE, bd.getHost(), bd.getUrl(), contactHtml);
     }
 
     protected String getRedirectUrl(String nonce, String host, Tid tid)

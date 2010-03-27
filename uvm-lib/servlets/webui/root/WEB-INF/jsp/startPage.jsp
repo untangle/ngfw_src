@@ -5,7 +5,7 @@
 <c:set var="isDebug" value="false"/>
 <head>
 
-    <title>${bbs.companyName}</title>
+    <title>${companyName}</title>
     <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
         @import "/ext/resources/css/ext-all.css?s=${buildStamp}";

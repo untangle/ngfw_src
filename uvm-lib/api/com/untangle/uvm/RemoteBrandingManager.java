@@ -41,25 +41,9 @@ package com.untangle.uvm;
  */
 public interface RemoteBrandingManager
 {
-    /**
-     * Get the branding base settings.
-     *
-     * @return the branding base settings.
-     */
-    BrandingBaseSettings getBaseSettings();
-
-    /**
-     * Set the branding base settings.
-     *
-     * @param bs the branding base settings.
-     */
-    void setBaseSettings(BrandingBaseSettings bs);
-    
-    /**
-     * Set the vendor logo to use, null means use the default Untangle logo.
-     *
-     * @param logo
-     */
-    void setLogo(byte[] logo);    
-    
+    public String getContactHtml();
+    public String getContactEmail();
+    public String getContactName();
+    public String getCompanyUrl();
+    public String getCompanyName();
 }

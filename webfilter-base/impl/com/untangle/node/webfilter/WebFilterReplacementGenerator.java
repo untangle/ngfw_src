@@ -21,7 +21,6 @@ package com.untangle.node.webfilter;
 import java.net.InetAddress;
 
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
@@ -32,8 +31,7 @@ import com.untangle.uvm.security.Tid;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class WebFilterReplacementGenerator
-    extends ReplacementGenerator<WebFilterBlockDetails>
+public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilterBlockDetails>
 {
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -60,12 +58,11 @@ public class WebFilterReplacementGenerator
     protected String getReplacement(WebFilterBlockDetails details)
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
 
         return String.format(BLOCK_TEMPLATE, details.getHeader(),
                              details.getHost(), details.getUri(),
                              details.getReason(),
-                             bs.getContactHtml());
+                             uvm.brandingManager().getContactHtml());
     }
 
     @Override

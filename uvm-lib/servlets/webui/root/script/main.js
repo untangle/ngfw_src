@@ -148,10 +148,9 @@ Ung.Main=Ext.extend(Object, {
         rpc.jsonrpc.RemoteUvmContext.brandingManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.brandingManager=result;
-            rpc.brandingManager.getBaseSettings(function (result, exception) {
+            rpc.brandingManager.getCompanyName(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                rpc.brandingBaseSettings=result;
-                document.title=rpc.brandingBaseSettings.companyName;
+                document.title=result;
                 this.postinit();// 11
             }.createDelegate(this));
         }.createDelegate(this));
@@ -569,14 +568,6 @@ Ung.Main=Ext.extend(Object, {
 
         }
         return rpc.brandingManager;
-    },
-
-    // get branding settings
-    getBrandingBaseSettings : function(forceReload) {
-        if (forceReload || rpc.brandingBaseSettings === undefined) {
-            rpc.brandingBaseSettings = main.getBrandingManager().getBaseSettings();
-        }
-        return rpc.brandingBaseSettings;
     },
 
     getLicenseManager : function(forceReload) {

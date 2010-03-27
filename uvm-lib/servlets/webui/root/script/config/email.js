@@ -280,7 +280,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         border : false,
                         html : String.format(this.i18n
                                 ._("The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. <br/>In most cases the default setting should work. If not, specify an valid SMTP server that will relay mail for the {0} Server."),
-                                main.getBrandingBaseSettings().companyName)
+                                main.getBrandingManager().getCompanyName())
                     }, {
                         xtype : 'radio',
                         id : 'email_smtpDisabled',
@@ -379,7 +379,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         cls: 'description',
                         border : false,
                     	html : String.format(this.i18n._("The {0} Server will send email from this address."),
-                                             main.getBrandingBaseSettings().companyName)
+                                             main.getBrandingManager().getCompanyName())
                     }, {
                         xtype : 'textfield',
                         name : 'Email From Address',

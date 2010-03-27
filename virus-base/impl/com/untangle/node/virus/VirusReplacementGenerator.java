@@ -19,7 +19,6 @@
 package com.untangle.node.virus;
 
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
@@ -30,8 +29,7 @@ import com.untangle.uvm.security.Tid;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class VirusReplacementGenerator
-    extends ReplacementGenerator<VirusBlockDetails>
+class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
 {
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -58,12 +56,11 @@ class VirusReplacementGenerator
     protected String getReplacement(VirusBlockDetails details)
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
 
         return String.format(BLOCK_TEMPLATE, details.getVendor(),
                              details.getHost(), details.getUri(),
                              details.getReason(),
-                             bs.getContactHtml());
+                             uvm.brandingManager().getContactHtml());
     }
 
     @Override

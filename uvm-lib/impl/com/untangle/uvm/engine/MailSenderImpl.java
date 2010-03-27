@@ -653,7 +653,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     {
         LocalUvmContext context = LocalUvmContextFactory.context();
         Map<String,String> i18nMap = context.languageManager().getTranslations("untangle-libuvm");
-        String companyName = context.brandingManager().getBaseSettings().getCompanyName();
+        String companyName = context.brandingManager().getCompanyName();
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String testMessageSubject = i18nUtil.tr("{0} Server Test Message", companyName);
         String testMessageBody =

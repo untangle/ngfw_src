@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.BrandingBaseSettings;
+import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
@@ -43,12 +43,11 @@ public class BlockPageUtil
     {
     }
 
-    public void handle(HttpServletRequest request, HttpServletResponse response,
-                       HttpServlet servlet, BlockPageParameters params)
+    public void handle(HttpServletRequest request, HttpServletResponse response, HttpServlet servlet, BlockPageParameters params)
         throws ServletException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
+        RemoteBrandingManager bm = uvm.brandingManager();
 
         String module = params.getI18n();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations(module);
@@ -57,10 +56,9 @@ public class BlockPageUtil
         /* These have to be registered against the request, otherwise
          * the included template cannot see them. */
         request.setAttribute( "ss", uvm.skinManager().getSkinSettings());
-        request.setAttribute( "bs", bs );
-        request.setAttribute( "pageTitle", params.getPageTitle( bs, i18n_map ));
-        request.setAttribute( "title", params.getTitle( bs, i18n_map ));
-        request.setAttribute( "footer", params.getFooter( bs, i18n_map ));
+        request.setAttribute( "pageTitle", params.getPageTitle( bm, i18n_map ));
+        request.setAttribute( "title", params.getTitle( bm, i18n_map ));
+        request.setAttribute( "footer", params.getFooter( bm, i18n_map ));
         
         if ( request.getAttribute( "untangle_plus") == null ) {
             boolean untanglePlus = false;
@@ -78,14 +76,14 @@ public class BlockPageUtil
         if ( value != null ) request.setAttribute( "javascript_file", value );
         value = params.getAdditionalFields( i18n_map );
         if ( value != null ) request.setAttribute( "additional_fields", value );
-        request.setAttribute( "description", params.getDescription( bs, i18n_map ));
+        request.setAttribute( "description", params.getDescription( bm, i18n_map ));
 
         /* Register the block detail with the page */
         BlockDetails bd = params.getBlockDetails();
         request.setAttribute( "bd", bd );
 
         /* Everything below here can be moved into a parent class, + i18n should go into an interface */
-        request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", bs.getContactHtml(), i18n_map));
+        request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", bm.getContactHtml(), i18n_map));
 
         UserWhitelistMode mode = params.getUserWhitelistMode();
         if (( UserWhitelistMode.NONE != mode ) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
@@ -112,12 +110,12 @@ public class BlockPageUtil
         public String getI18n();
 
         /* Retrieve the page title (in the window bar) of the page */
-        public String getPageTitle( BrandingBaseSettings bs, Map<String,String> i18n_map );
+        public String getPageTitle( RemoteBrandingManager bm, Map<String,String> i18n_map );
 
         /* Retrieve the title (top of the pae) of the page */
-        public String getTitle( BrandingBaseSettings bs, Map<String,String> i18n_map );
+        public String getTitle( RemoteBrandingManager bm, Map<String,String> i18n_map );
 
-        public String getFooter( BrandingBaseSettings bs, Map<String,String> i18n_map );
+        public String getFooter( RemoteBrandingManager bm, Map<String,String> i18n_map );
 
         /* Return the name of the script file to load, or null if there is not a script. */
         public String getScriptFile();
@@ -126,7 +124,7 @@ public class BlockPageUtil
         public String getAdditionalFields( Map<String,String> i18n_map );
 
         /* Retrieve the description of why this page was blocked. */
-        public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map );
+        public String getDescription( RemoteBrandingManager bm, Map<String,String> i18n_map );
 
         public BlockDetails getBlockDetails();
 

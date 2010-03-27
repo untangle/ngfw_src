@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import com.untangle.uvm.BrandingBaseSettings;
+import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 
@@ -52,7 +52,7 @@ public class BlockPageServlet extends HttpServlet
         throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
+        RemoteBrandingManager bm = uvm.brandingManager();
         LocalNodeManager nm = uvm.nodeManager();
 
         Map<String,String> i18n_map = LocalUvmContextFactory.context().
@@ -107,21 +107,21 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the page title (in the window bar) of the page */
-        public String getPageTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
+        public String getPageTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr("{0} | {1} Warning", 
-                               new Object[]{bs.getCompanyName(), this.blockDetails.getVendor()}, i18n_map);
+                               new Object[]{bm.getCompanyName(), this.blockDetails.getVendor()}, i18n_map);
         }
         
         /* Retrieve the title (top of the pae) of the page */
-        public String getTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
+        public String getTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
         {
             return this.nodeTitle;
         }
         
-        public String getFooter( BrandingBaseSettings bs, Map<String,String> i18n_map )
+        public String getFooter( RemoteBrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0} Virus Blocker", bs.getCompanyName(), i18n_map);
+            return I18nUtil.tr("{0} Virus Blocker", bm.getCompanyName(), i18n_map);
         }
         
         /* Return the name of the script file to load, or null if there is not a script. */
@@ -136,7 +136,7 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the description of why this page was blocked. */
-        public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map )
+        public String getDescription( RemoteBrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr("{0}This file was blocked{1} because it contained a virus.",
                     new Object[]{ "<b>","</b>" }, i18n_map);

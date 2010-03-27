@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.RemoteBrandingManager;
 
 /**
  * A servlet which will display the start page
@@ -47,11 +47,10 @@ public class StartPageServlet extends HttpServlet
         String url="/WEB-INF/jsp/startPage.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
-        BrandingBaseSettings bbs = LocalUvmContextFactory.context().remoteContext().
-            brandingManager().getBaseSettings();
+        String companyName = LocalUvmContextFactory.context().remoteContext().brandingManager().getCompanyName();
         boolean isRegistered = LocalUvmContextFactory.context().isRegistered();
         req.setAttribute( "isRegistered", isRegistered ? "true" : "false" );
-        req.setAttribute( "bbs", bbs );
+        req.setAttribute( "companyName", companyName );
         req.setAttribute( "storeWindowId", STORE_WINDOW_ID );
         req.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );
         rd.forward(req, resp);

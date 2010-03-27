@@ -44,7 +44,6 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.untangle.uvm.CronJob;
-import com.untangle.uvm.LocalBrandingManager;
 import com.untangle.uvm.LocalJStoreManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalTomcatManager;
@@ -139,7 +138,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private AppServerManagerImpl appServerManager;
     private RemoteAppServerManagerAdaptor remoteAppServerManager;
     private AddressBookFactory addressBookFactory;
-    private BrandingManagerFactory brandingManagerFactory;
+    private BrandingManagerImpl brandingManager;
     private RemoteSkinManagerImpl skinManager;
     private MessageManagerImpl localMessageManager;
     private RemoteMessageManager messageManager;
@@ -194,12 +193,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public RemoteBrandingManager brandingManager()
     {
-        return brandingManagerFactory.getRemoteBrandingManager();
-    }
-
-    public LocalBrandingManager localBrandingManager()
-    {
-        return brandingManagerFactory.getBrandingManager();
+        return this.brandingManager;
     }
 
     public RemoteSkinManagerImpl skinManager()
@@ -713,7 +707,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     }
     
     public String getCompanyName(){
-        return brandingManager().getBaseSettings().getCompanyName();
+        return this.brandingManager.getCompanyName();
     }
 
     // UvmContextBase methods --------------------------------------------------
@@ -736,91 +730,96 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         } catch (Exception e) {
             throw new IllegalStateException("register serializers should never fail!", e);
         }
+        
         String jStorePath = System.getProperty( "uvm.conf.dir" ) + "/jStore";
         jStoreManager.setBasePath(jStorePath);
         
         uploadManager.registerHandler(new RestoreUploadHandler());
 
-        cronManager = new CronManager();
-        syslogManager = SyslogManagerImpl.manager();
+        this.cronManager = new CronManager();
+
+        this.syslogManager = SyslogManagerImpl.manager();
+        
         UvmRepositorySelector repositorySelector = UvmRepositorySelector.selector();
 
         if (!testHibernateConnection()) {
             fatalError("Can not connect to database. Is postgres running?", null);
         }
 
-        loggingManager = new RemoteLoggingManagerImpl(repositorySelector);
+        this.loggingManager = new RemoteLoggingManagerImpl(repositorySelector);
         loggingManager.initSchema("uvm");
         loadRup(false);
         loggingManager.start();
-        eventLogger = EventLoggerFactory.factory().getEventLogger();
 
-        InheritableThreadLocal<HttpServletRequest> threadRequest
-            = new InheritableThreadLocal<HttpServletRequest>();
+        this.eventLogger = EventLoggerFactory.factory().getEventLogger();
 
-        tomcatManager = new TomcatManagerImpl(this, threadRequest,
-                                              System.getProperty("uvm.home"),
-                                              System.getProperty("uvm.web.dir"),
-                                              System.getProperty("uvm.log.dir"));
+        InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
+
+        this.tomcatManager = new TomcatManagerImpl(this, threadRequest,
+                                                   System.getProperty("uvm.home"),
+                                                   System.getProperty("uvm.web.dir"),
+                                                   System.getProperty("uvm.log.dir"));
 
         // start services:
-        adminManager = new RemoteAdminManagerImpl(this, threadRequest);
-        mailSender = MailSenderImpl.mailSender();
+        this.adminManager = new RemoteAdminManagerImpl(this, threadRequest);
 
-        logMailer = new LogMailerImpl();
+        this.mailSender = MailSenderImpl.mailSender();
+
+        this.logMailer = new LogMailerImpl();
+
         repositorySelector.setLogMailer(logMailer);
 
         // Fire up the policy manager.
-        policyManagerFactory = PolicyManagerFactory.makeInstance();
+        this.policyManagerFactory = PolicyManagerFactory.makeInstance();
 
-        toolboxManager = RemoteToolboxManagerImpl.toolboxManager();
+        this.toolboxManager = RemoteToolboxManagerImpl.toolboxManager();
 
-        upstreamManager = RemoteUpstreamManagerImpl.upstreamManager();
+        this.upstreamManager = RemoteUpstreamManagerImpl.upstreamManager();
 
         // Now that upstreamManager is alive, we can get the upgrade settings and
         // start the cron job
-        toolboxManager.start();
+        this.toolboxManager.start();
 
-        mPipeManager = MPipeManagerImpl.manager();
-        pipelineFoundry = PipelineFoundryImpl.foundry();
+        this.mPipeManager = MPipeManagerImpl.manager();
+        this.pipelineFoundry = PipelineFoundryImpl.foundry();
 
         // Retrieve the network settings manager.  (Kind of busted,
         // but NAT may register a listener, and thus the network
         // manager should exist.
-        networkManager = NetworkManagerImpl.getInstance();
-        remoteNetworkManager = new RemoteNetworkManagerAdaptor(networkManager);
+        this.networkManager = NetworkManagerImpl.getInstance();
+        this.remoteNetworkManager = new RemoteNetworkManagerAdaptor(networkManager);
 
         //Start AddressBookImpl
-        addressBookFactory = AddressBookFactory.makeInstance();
+        this.addressBookFactory = AddressBookFactory.makeInstance();
 
-        brandingManagerFactory = BrandingManagerFactory.makeInstance();
+        this.brandingManager = new BrandingManagerImpl();
 
         //Skins and Language managers
-        skinManager = new RemoteSkinManagerImpl(this);
-        languageManager = new RemoteLanguageManagerImpl(this);
+        this.skinManager = new RemoteSkinManagerImpl(this);
+        this.languageManager = new RemoteLanguageManagerImpl(this);
 
         loadPortalManager();
 
         // start nodes:
-        nodeManager = new NodeManagerImpl(repositorySelector);
-        remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
+        this.nodeManager = new NodeManagerImpl(repositorySelector);
+        this.remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
-        localMessageManager = new MessageManagerImpl();
-        messageManager = new RemoteMessageManagerAdaptor(localMessageManager);
+        this.localMessageManager = new MessageManagerImpl();
+        this.messageManager = new RemoteMessageManagerAdaptor(localMessageManager);
 
         // Retrieve the reporting configuration manager
-        reportingManager = RemoteReportingManagerImpl.reportingManager();
+        this.reportingManager = RemoteReportingManagerImpl.reportingManager();
 
         // Retrieve the connectivity tester
-        connectivityTester = RemoteConnectivityTesterImpl.getInstance();
+        this.connectivityTester = RemoteConnectivityTesterImpl.getInstance();
 
         // Retrieve the argon manager
-        argonManager = ArgonManagerImpl.getInstance();
+        this.argonManager = ArgonManagerImpl.getInstance();
 
-        appServerManager = new AppServerManagerImpl(this);
-        remoteAppServerManager = new RemoteAppServerManagerAdaptor(appServerManager);
+        this.appServerManager = new AppServerManagerImpl(this);
+        this.remoteAppServerManager = new RemoteAppServerManagerAdaptor(appServerManager);
         
-        licenseManagerFactory = LicenseManagerFactory.makeInstance();
+        this.licenseManagerFactory = LicenseManagerFactory.makeInstance();
         
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
@@ -837,7 +836,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             this.heapMonitor.start();
         }
 
-        remoteContext = new RemoteUvmContextAdaptor(this);
+        this.remoteContext = new RemoteUvmContextAdaptor(this);
         state = UvmState.INITIALIZED;
     }
 
@@ -1087,7 +1086,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             // Do these in same order as boot time.
             policyManagerFactory.refresh();
             addressBookFactory.refresh();
-            brandingManagerFactory.refresh();
         }
 
         return true;

@@ -22,14 +22,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.BrandingBaseSettings;
-import com.untangle.uvm.BrandingSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.Tid;
 
-class PhishReplacementGenerator
-    extends ReplacementGenerator<PhishBlockDetails>
+class PhishReplacementGenerator extends ReplacementGenerator<PhishBlockDetails>
 {
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -56,10 +53,9 @@ class PhishReplacementGenerator
     protected String getReplacement(PhishBlockDetails details)
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
 
         return String.format(BLOCK_TEMPLATE, details.getHost(),
-                             details.getUri(), bs.getContactHtml());
+                             details.getUri(), uvm.brandingManager().getContactHtml());
     }
 
     @Override

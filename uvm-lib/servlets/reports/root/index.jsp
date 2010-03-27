@@ -5,9 +5,8 @@
 LocalUvmContext uvm = LocalUvmContextFactory.context();
 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
 
-BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
-String company = bs.getCompanyName();
-String companyUrl = bs.getCompanyUrl();
+String company = uvm.brandingManager().getCompanyName();
+String companyUrl = uvm.brandingManager().getCompanyUrl();
 
 RemoteReportingManager reportingManager = uvm.reportingManager();
 

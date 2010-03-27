@@ -167,7 +167,9 @@ public class InboxMaintenenceControler extends HttpServlet
 
         /* Setup the cobranding settings. */
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        req.setAttribute( "bs", uvm.brandingManager().getBaseSettings());
+        req.setAttribute( "companyName", uvm.brandingManager().getCompanyName());
+        req.setAttribute( "companyUrl", uvm.brandingManager().getCompanyUrl());
+        
         /* setup the skinning settings */
         req.setAttribute( "ss", uvm.skinManager().getSkinSettings());
         serviceImpl(req, resp, account, quarantine, safelist);

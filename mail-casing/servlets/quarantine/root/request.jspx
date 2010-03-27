@@ -26,7 +26,7 @@
 
   <jsp:scriptlet>
     <![CDATA[
-             request.setAttribute( "bs", com.untangle.uvm.LocalUvmContextFactory.context().brandingManager().getBaseSettings());
+             request.setAttribute( "companyName", com.untangle.uvm.LocalUvmContextFactory.context().brandingManager().getCompanyName());
              request.setAttribute( "ss", com.untangle.uvm.LocalUvmContextFactory.context().skinManager().getSkinSettings()); 
              request.setAttribute( "i18n_map", com.untangle.uvm.LocalUvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail")); 
     ]]>
@@ -37,7 +37,7 @@
   </c:set>
 
   <c:set var="pageTitle" scope="request">
-    <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">{0} | Request Quarantine Digest Email</uvm:i18n>
+    <uvm:i18n p0="${companyName}" p1="${currentAddress}">{0} | Request Quarantine Digest Email</uvm:i18n>
   </c:set>
 
   <c:set var="javascript" scope="request">

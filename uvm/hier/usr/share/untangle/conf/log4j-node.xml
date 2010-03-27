@@ -169,6 +169,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle.node.branding">
+    <priority value="WARN"/>
+  </category>
+
   <category name="com.untangle.node.spyware">
     <priority value="WARN"/>
   </category>

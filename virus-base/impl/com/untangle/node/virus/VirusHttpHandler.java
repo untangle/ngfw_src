@@ -40,7 +40,7 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.BrandingBaseSettings;
+import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.MimeTypeRule;
@@ -291,8 +291,7 @@ class VirusHttpHandler extends HttpStateMachine
         String host = getResponseHost();
 
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
-        String message = String.format(BLOCK_MESSAGE, host, uri, bs.getContactHtml());
+        String message = String.format(BLOCK_MESSAGE, host, uri, uvm.brandingManager().getContactHtml());
 
         Header h = new Header();
         h.addField("Content-Length", Integer.toString(message.length()));

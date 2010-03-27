@@ -19,9 +19,8 @@
 
 <%
 LocalUvmContext uvm = LocalUvmContextFactory.context();
-BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
-String company = bs.getCompanyName();
-String companyUrl = bs.getCompanyUrl();
+String company = uvm.brandingManager().getCompanyName();
+String companyUrl = uvm.brandingManager().getCompanyUrl();
 
 boolean isValid;
 String debuggingMessages;

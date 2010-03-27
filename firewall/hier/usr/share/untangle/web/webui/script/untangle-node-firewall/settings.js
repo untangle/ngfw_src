@@ -126,7 +126,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     title : this.i18n._('Note'),
                     cls: 'description',
                     bodyStyle : 'padding:5px 5px 5px; 5px;',
-                    html : String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and log network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."),main.getBrandingBaseSettings().companyName)
+                    html : String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and log network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."),main.getBrandingManager().getCompanyName())
                         },this.gridRules= new Ung.EditorGrid({
                         name : 'Rules',
                         settingsCmp : this,

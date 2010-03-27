@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.node.http.BlockPageUtil;
 import com.untangle.node.http.UserWhitelistMode;
-import com.untangle.uvm.BrandingBaseSettings;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.Tid;
@@ -43,7 +43,7 @@ public class BlockPageServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        BrandingBaseSettings bs = uvm.brandingManager().getBaseSettings();
+        RemoteBrandingManager bm = uvm.brandingManager();
         LocalNodeManager nm = uvm.nodeManager();
 
         Map<String,String> i18n_map = LocalUvmContextFactory.context().
@@ -102,20 +102,20 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the page title (in the window bar) of the page */
-        public String getPageTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
+        public String getPageTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr( "{0} | Spyware Blocker Warning", bs.getCompanyName(), i18n_map);
+            return I18nUtil.tr( "{0} | Spyware Blocker Warning", bm.getCompanyName(), i18n_map);
         }
         
         /* Retrieve the title (top of the pae) of the page */
-        public String getTitle( BrandingBaseSettings bs, Map<String,String> i18n_map )
+        public String getTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
         {
             return "Spyware Blocker";
         }
         
-        public String getFooter( BrandingBaseSettings bs, Map<String,String> i18n_map )
+        public String getFooter( RemoteBrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr( "{0} Spyware Blocker", bs.getCompanyName(), i18n_map);
+            return I18nUtil.tr( "{0} Spyware Blocker", bm.getCompanyName(), i18n_map);
         }
         
         /* Return the name of the script file to load, or null if there is not a script. */
@@ -130,7 +130,7 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the description of why this page was blocked. */
-        public String getDescription( BrandingBaseSettings bs, Map<String,String> i18n_map )
+        public String getDescription( RemoteBrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr( "{0}This web page was blocked{1} because it may be designed to steal personal information.", new Object[]{ "<b>","</b>" },
                     i18n_map );

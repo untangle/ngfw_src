@@ -58,7 +58,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     title : this.i18n._('Note'),
                     cls: 'description',
                     html : String.format(this.i18n._("{0} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."),
-                                main.getBrandingBaseSettings().companyName)
+                                         main.getBrandingManager().getCompanyName())
                 }]
             });
         },

@@ -169,14 +169,6 @@ public interface LocalUvmContext
     RemoteBrandingManager brandingManager();
 
     /**
-     * The BrandingManager allows for customization of logo and
-     * branding information.
-     *
-     * @return the LocalBrandingManager.
-     */
-    LocalBrandingManager localBrandingManager();
-
-    /**
      * Get the <code>RemoteSkinManager</code> singleton.
      *
      * @return the RemoteSkinManager.
