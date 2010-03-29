@@ -42,6 +42,7 @@ from reports import TIME_SERIES_CHART
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
+from reports.engine import get_wan_clause
 from sql_helper import print_timing
 
 EVT_TYPE_REGISTER = 0
@@ -236,7 +237,7 @@ INSERT INTO reports.hnames (date, hname)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, hname
     FROM reports.session_totals
     WHERE trunc_time >= %s AND trunc_time < %s
-          AND client_intf = 1 AND NOT hname ISNULL""", (sd, ed),
+    AND client_intf IN """ + get_wan_clause() + """ AND NOT hname ISNULL""", (sd, ed),
                                connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.hnames', ed,

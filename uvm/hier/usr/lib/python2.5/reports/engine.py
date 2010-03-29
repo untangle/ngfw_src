@@ -41,6 +41,39 @@ HOST_DRILLDOWN = 'host-drilldown'
 EMAIL_DRILLDOWN = 'email-drilldown'
 MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
 
+# utility function for distinguishing WAN/non-WAN
+def get_interface_properties():
+    props = {}
+
+    f = None
+    try:
+        try:
+            f = open('/etc/untangle-net-alpaca/interface.properties',
+                     'r')
+            for l in f.readlines():
+                if l.startswith('#'):
+                    continue
+                m = re.match('^(.*)=(.*)$', l)
+                if m:
+                    props[m.group(1)] = m.group(2)
+        except:
+            logging.warn('could not read interface.properties',
+                         exc_info=True)
+    finally:
+        try:
+            f.close()
+        except:
+            logging.warn('could not close file', exc_info=True)
+
+    return props
+
+def get_number_wan_interfaces():
+    str = get_interface_properties().get('com.untangle.wan-interfaces', None)
+    return len(str.split(','))
+
+def get_wan_clause():
+    return '(%s)' % (get_interface_properties().get('com.untangle.wan-interfaces', None),)
+
 class Node:
     def __init__(self, name):
         self.__name = name
