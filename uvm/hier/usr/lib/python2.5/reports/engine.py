@@ -564,23 +564,19 @@ LIMIT 100
 
     return rv
 
-# do not care about uninstalled nodes anymore
+# do care about uninstalled nodes
 def __get_node_partial_order(exclude_uninstalled=True):
     global __nodes
 
-    if exclude_uninstalled:
-        installed = __get_installed_nodes()
+    installed = __get_installed_nodes()
 
     available = sets.Set(__nodes.keys());
     list = []
 
     while len(available):
         name = available.pop()
-        if exclude_uninstalled:
-            if name in installed or name == 'untangle-vm':
+        if name in installed or name == 'untangle-vm' or not exclude_uninstalled:
                 __add_node(name, list, available)
-        else:
-            __add_node(name, list, available)
 
     return list
 
@@ -592,7 +588,7 @@ def __get_installed_nodes():
         curs.execute("""\
 SELECT DISTINCT name
 FROM settings.u_node_persistent_state
-WHERE target_state IN ('initialized', 'running')
+WHERE target_state IN ('running')
 """)
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]

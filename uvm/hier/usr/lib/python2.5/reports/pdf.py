@@ -307,9 +307,9 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
                           STYLESHEET['Heading1'])],
                [Paragraph(date_str, STYLESHEET['Heading3'])]],
               style=[('BOTTOMPADDING', (0,0), (-1,-1), 25)])
-
-    story.append(Table([[Image('/var/www/images/BrandingLogo.gif'), t]],
-                       style=[('VALIGN', (1,0), (1,0), 'TOP')]))
+    top = Table([[Image('/var/www/images/BrandingLogo.gif'), t]],
+                       style=[('VALIGN', (1,0), (1,0), 'TOP')])
+    story.append(top)
 
     toc = TableOfContents()
     toc.levelStyles = [STYLESHEET['TocHeading1']]
@@ -337,32 +337,29 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
     style = [ ['ROWBACKGROUNDS', (0, 1), (-1, -1), zebra_colors],
               ['BACKGROUND', (0, 0), (-1, 0), grey],
               ['BOX', (0, 0), (-1, -1), 1, grey] ]
-    story += [Table(hs, style=style),]
-    story.append(PageBreak())
+    highlights = [Table(hs, style=style),]
     try:
-        doc.multiBuild(story)
+        logger.info('Building Highlight sections of the PDF report')
+        doc.multiBuild([top,]+highlights)
+        story += highlights
     except Exception, e:
         logger.error("Exception while building Highlights section of PDF report, not including it: ", exc_info = True)
-        story.pop()
-        story.pop()
+
+    story.append(PageBreak())
     
     # apps reports
     logger.info('Building PDF applications reports')
     for r in mail_reports:
         try:
+            logger.info('** for %s' % (r.name,))
             s = r.get_flowables(report_base, date_base, end_date, report_days)
+            doc.multiBuild([top,]+s)
+            story += s
         except Exception, e:
             logger.error("Exception while building PDF report for %s (not including it): " % (r.name,), exc_info = True)
-            continue
 
-        story += s
-        
-        try:
-            doc.multiBuild(story)            
-        except Exception, e:
-            logger.error("Exception while building PDF report for %s (not including it): " % (r.name,), exc_info = True)
-            story = story[:-len(s)]
-            
+    doc.multiBuild(story)
+
     return file
 
 def __node_cmp(x, y):
