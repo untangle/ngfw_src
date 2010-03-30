@@ -49,6 +49,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalTomcatManager;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.RemoteBrandingManager;
+import com.untangle.uvm.RemoteOemManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
@@ -1074,6 +1075,18 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.jStoreManager;
     }
 
+    @Override
+    public LocalBenchmarkManager localBenchmarkManager()
+    {
+        return this.benchmarkManager;
+    }
+
+    @Override
+    public RemoteOemManager oemManager()
+    {
+        return this.oemManager;
+    }
+
     // private methods --------------------------------------------------------
 
     private boolean loadRup(boolean refreshManagers)
@@ -1139,16 +1152,5 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         POP_ID_FILE = System.getProperty("uvm.home")
             + "/popid";
         ARGON_FAKE_KEY = "argon.fake";
-    }
-
-    @Override
-    public LocalBenchmarkManager localBenchmarkManager()
-    {
-        return this.benchmarkManager;
-    }
-
-    public OemManagerImpl oemManager()
-    {
-        return this.oemManager;
     }
 }

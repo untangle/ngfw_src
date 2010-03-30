@@ -18,6 +18,8 @@
 
 package com.untangle.uvm.engine;
 
+import org.apache.log4j.Logger;
+
 import java.lang.reflect.Constructor;
 
 import com.untangle.node.util.UtLogger;
@@ -30,6 +32,11 @@ class BrandingManagerImpl implements RemoteBrandingManager
 {
     private DefaultBrandingManager defaultBranding;
 
+    private final String defaultCompanyName = "Untangle";
+    private final String defaultCompanyUrl = "http://untangle.com/";
+
+    private final Logger logger = Logger.getLogger(UvmContextImpl.class);
+    
     public BrandingManagerImpl()
     {
         this.defaultBranding = new DefaultBrandingManager();
@@ -38,13 +45,57 @@ class BrandingManagerImpl implements RemoteBrandingManager
     @Override
     public String getCompanyName()
     {
-		return this.getBrandingManager().getCompanyName();
+        /**
+         * Start with the default
+         */
+        String ret = defaultCompanyName;
+
+        logger.info("BRAND:1 ret = " + ret);
+        
+        /**
+         * If there is an OEM name specified - use it instead
+         */
+        String oemName = LocalUvmContextFactory.context().oemManager().getOemName();
+        if (oemName != null)
+            ret = oemName;
+
+        logger.info("BRAND:2 ret = " + ret);
+        
+        /**
+         * If there is an Branding name specified - use it instead
+         */
+        String brandingName = this.getBrandingManager().getCompanyName();
+        if (brandingName != null)
+            ret = brandingName;
+
+        logger.info("BRAND:3 ret = " + ret);
+        
+        return ret;
     }
 
     @Override
     public String getCompanyUrl()
     {
-		return this.getBrandingManager().getCompanyUrl();
+        /**
+         * Start with the default
+         */
+        String ret = defaultCompanyUrl;
+
+        /**
+         * If there is an OEM name specified - use it instead
+         */
+        String oemUrl = LocalUvmContextFactory.context().oemManager().getOemUrl();
+        if (oemUrl != null)
+            ret = oemUrl;
+
+        /**
+         * If there is an Branding name specified - use it instead
+         */
+        String brandingUrl = this.getBrandingManager().getCompanyUrl();
+        if (brandingUrl != null)
+            ret = brandingUrl;
+            
+        return ret;
     }
 
     @Override
@@ -80,8 +131,8 @@ class BrandingManagerImpl implements RemoteBrandingManager
         public boolean isDefaultLogo() {return true;}
         public String getContactHtml() {return "<a href='mailto:" + this.getContactEmail() + "'>" + this.getContactName() + "</a>";}
         public String getContactEmail() {return null;}
-        public String getContactName() {return "your network administrator";} /* FIXME i18n */
-        public String getCompanyUrl() {return "http://untangle.com/";} /* FIXME OEM */
-        public String getCompanyName() {return "Untangle";} /* FIXME OEM */
+        public String getContactName() {return "your network administrator";} 
+        public String getCompanyUrl() {return null;} 
+        public String getCompanyName() {return null;} 
     }
 }

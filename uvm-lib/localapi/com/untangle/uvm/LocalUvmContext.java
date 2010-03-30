@@ -161,13 +161,20 @@ public interface LocalUvmContext
     RemoteAddressBook appAddressBook();
 
     /**
-     * The BrandingManager allows for customization of logo and
+     * The BrandingManager manages customization of logo and
      * branding information.
      *
      * @return the RemoteBrandingManager.
      */
     RemoteBrandingManager brandingManager();
 
+    /**
+     * The OemManager manages OEM parameteres such as CompanyName
+     *
+     * @return the RemoteOemManager
+     */
+    RemoteOemManager oemManager();
+    
     /**
      * Get the <code>RemoteSkinManager</code> singleton.
      *

@@ -33,9 +33,10 @@ import com.untangle.uvm.RemoteOemManager;
  */
 class OemManagerImpl implements RemoteOemManager
 {
-    private static final String OEM_PROPERTIES_FILE = System.getProperty("uvm.conf.dir") + "/oem.properties";
+    private static final String OEM_PROPERTIES_FILE = "/etc/untangle/oem/oem.properties";
 
     private static final String OEM_PROPERTY_NAME = "uvm.oem.name";
+    private static final String OEM_PROPERTY_URL = "uvm.oem.url";
 
     private final Logger logger = Logger.getLogger(UvmContextImpl.class);
 
@@ -44,8 +45,7 @@ class OemManagerImpl implements RemoteOemManager
     public OemManagerImpl()
     {
         /**
-         * FIXME XXX
-         * Need to check for a valid OEM license here
+         * FIXME Need to check for a valid OEM license here
          */
         boolean validOemLicense = true; 
         
@@ -71,9 +71,14 @@ class OemManagerImpl implements RemoteOemManager
          * Set the defaults if they have not been set
          */
         if (props.getProperty(OEM_PROPERTY_NAME) == null) {
-            logger.info("Loading OEM name default");
+            logger.info("Loading OEM Name default");
             props.setProperty(OEM_PROPERTY_NAME,"Untangle");
         }
+        if (props.getProperty(OEM_PROPERTY_URL) == null) {
+            logger.info("Loading OEM URL  default");
+            props.setProperty(OEM_PROPERTY_URL,"http://untangle.com/");
+        }
+
     }
 
     @Override
@@ -82,4 +87,10 @@ class OemManagerImpl implements RemoteOemManager
         return props.getProperty(OEM_PROPERTY_NAME);
     }
 
+    @Override
+    public String getOemUrl()
+    {
+        return props.getProperty(OEM_PROPERTY_URL);
+    }
+    
 }

@@ -41,4 +41,9 @@ public interface RemoteOemManager
      */
     public String getOemName();
 
+    /**
+     * Return the OEM Url
+     */
+    public String getOemUrl();
+
 }

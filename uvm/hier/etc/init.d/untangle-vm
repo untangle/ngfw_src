@@ -10,17 +10,13 @@
 # Short-Description: Untangle Virtual Machine
 ### END INIT INFO
 
-. /lib/lsb/init-functions
-
-DESC="Untangle VM"
-
-NAME="untangle VM"
-
+source /lib/lsb/init-functions
 
 if [ -f @PREFIX@/etc/default/untangle-vm ] ; then
-    . @PREFIX@/etc/default/untangle-vm
+    source @PREFIX@/etc/default/untangle-vm
 fi
 
+DESC="${OEM_NAME} VM"
 UVM_LOGDIR=${UVM_LOGDIR:-@PREFIX@/var/log/uvm}
 UVM_RUNDIR=${UVM_RUNDIR:-@PREFIX@/var/run}
 UVM_NICENESS=${UVM_NICENESS:-0}
