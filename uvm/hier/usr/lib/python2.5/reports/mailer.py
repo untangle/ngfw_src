@@ -149,7 +149,7 @@ def mail(file, zip_file, sender, receiver, date, company_name,
 
     smtp = smtplib.SMTP()
     smtp.connect('localhost')
-    logger.info("SENDER: '%s' RECEIVER: '%s'" % (sender, receiver))
+    logger.info("Emailing out: from '%s' to '%s'" % (sender, receiver))
     smtp.sendmail(sender, receiver, msgRoot.as_string())
     smtp.quit()
 
@@ -285,9 +285,10 @@ def __make_zip_file(end_date, report_days, mail_reports):
             finally:
                 f.close()
 
-    os.system("""\
-pushd %s;
-zip -r reports.zip ./reports > /dev/null 2>&1;
-popd""" % tmp_dir)
+    os.system("""
+{ pushd %s ;
+  zip -r reports.zip ./reports ;
+  popd ; } > /dev/null 2>&1"""
+              % tmp_dir)
 
     return tmp_dir

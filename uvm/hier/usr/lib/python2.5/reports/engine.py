@@ -279,12 +279,10 @@ def generate_reports(report_base, end_date, report_days):
 
     for node_name in __get_node_partial_order():
         try:
-            logger.debug('doing process_graphs for: %s' % node_name)
             node = __nodes.get(node_name, None)
             if not node:
                 logger.warn('could not get node %s' % node_name)
             else:
-                logger.info('generating report for %s' % node_name)                
                 tocs = node.get_toc_membership()
                 if TOP_LEVEL in tocs:
                     top_level.append(node_name)

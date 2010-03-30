@@ -321,7 +321,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
     mail_reports.sort(__node_cmp)
 
     # higlights summary
-    logger.info('Building highlights summary')
+    logger.info('Building Highlight sections of the PDF report')
     story += [SectionHeader(_("Highlights Summary")), Spacer(1, 0.25 * inch)]
     hs = [ [Paragraph(_('Highlights'), STYLESHEET['TableTitle']),], ]
     for r in mail_reports:
@@ -339,7 +339,6 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
               ['BOX', (0, 0), (-1, -1), 1, grey] ]
     highlights = [Table(hs, style=style),]
     try:
-        logger.info('Building Highlight sections of the PDF report')
         doc.multiBuild([top,]+highlights)
         story += highlights
     except Exception, e:
@@ -348,10 +347,10 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
     story.append(PageBreak())
     
     # apps reports
-    logger.info('Building PDF applications reports')
+    logger.info('Building application-specific sections of the PDF report')
     for r in mail_reports:
         try:
-            logger.info('** for %s' % (r.name,))
+            logger.info('** %s' % (r.name,))
             s = r.get_flowables(report_base, date_base, end_date, report_days)
             doc.multiBuild([top,]+s)
             story += s
