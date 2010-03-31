@@ -16,8 +16,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-# Robert Scott <rbscott@untangle.com>
-# Aaron Read <amread@untangle.com>
+# Dirk Morris <dmorris@untangle.com>
 
 require 'gettext/utils'
 
@@ -415,6 +414,7 @@ class ServletBuilder < Target
     cp += Jars::Base.map { |j| j.filename }
     cp += [uvm_lib["api"], uvm_lib["localapi"]].map { |t| t.filename }
     cp += Jars::Base.map {|f| f.filename }
+    cp += [SRC_HOME+"/buildtools"]
 
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
             "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
@@ -484,7 +484,7 @@ class JavaCompilerTarget < Target
 
   def make_dependencies
     if 0 == @javaFiles.length
-      info "#{self} has no input files."
+      ## info "#{self} has no input files."
       @isEmpty = true
       return
     end
@@ -584,7 +584,7 @@ class JavaMsgFmtTarget < Target
     # reenable stderr
     $stderr.reopen($stderr2)
 
-    info "[msgfmt] => #{@filename}"
+    info "[msgfmt  ] => #{@filename}"
 
     raise "msgfmt failed" unless
       Kernel.system <<CMD
@@ -636,7 +636,7 @@ class YuiCompressorTarget < Target
   protected
 
   def build()
-    info "YUI Compressor #{@filename}"
+    info "[compress] #{@filename}"
 
     ensureDirectory(File.dirname(@filename))
     args = [@script_file, "--type", @type, "-o", @filename]

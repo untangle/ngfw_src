@@ -205,9 +205,10 @@ class JavaCompiler
     cp = classpath.join(":")
 
     debug "javac classpath: #{cp}"
-    info "javac -d #{dstdir}"
+    info "[javac -d] #{dstdir}"
 
     raise "javac failed" unless
+#      Kernel.system(JavacCommand, "-Xlint", "-g", "-classpath", cp, "-d", dstdir, "@" + files.path)
       Kernel.system(JavacCommand, "-g", "-classpath", cp, "-d", dstdir, "@" + files.path)
   end
 
@@ -216,7 +217,7 @@ class JavaCompiler
     dst = jarTarget.jar_file
 
     if File.exist? src
-      info "Jar #{src} -> #{dst}"
+      info "[jar     ] #{src} -> #{dst}"
       raise "jar failed" unless
         Kernel.system(JarCommand, "cf", dst, "-C", src, ".")
     end
@@ -228,10 +229,11 @@ class JavaCompiler
     ensureDirectory(dest)
     src = File.expand_path(jt.jar_file)
 
-    info "UnJar #{src} -> #{dest}"
+    info "[unjar   ] #{src} -> #{dest}"
     wd = Dir.pwd
     Dir.chdir(dest)
-    raise "unjar failed" unless  Kernel.system(JarCommand, "xf", src)
+    raise "unjar failed" unless
+      Kernel.system(JarCommand, "xf", src)
     Dir.chdir(wd)
     dest
   end
@@ -270,12 +272,14 @@ class JavaCompiler
       JavaCompiler.selfSignedCert(ks, a, pw) if not File.file?(ks)
     end
 
+    info "[jarsign ] #{jar}"
+
     raise "JarSigner failed" unless
       Kernel.system(JarSignerCommand, '-keystore', ks, '-storepass', pw, jar, a)
   end
 
   def JavaCompiler.selfSignedCert(keystore, aliaz, passwd)
-    puts "Dynamically generating keystore"
+    info "[keytool ] keystore"
     raise "KeyTool failed" unless
       Kernel.system(KeyToolCommand, '-genkey', '-alias', aliaz,
                     '-keypass', passwd, '-storepass', passwd,
@@ -283,6 +287,7 @@ class JavaCompiler
   end
 
   def JavaCompiler.javah(jar, destination, classes)
+    info "[javah   ]"			      
     ensureDirectory destination
     raise "javah failed" unless
       Kernel.system(JavahCommand, "-d", destination, "-classpath", jar, *classes)
@@ -290,12 +295,16 @@ class JavaCompiler
 
   def JavaCompiler.run(classpath, classname, *args)
     cp = classpath.join(':')
+    info "[java    ] #{classname}"
+#    info "[java    ] #{classname} #{args.inspect}"
     raise "java #{classname} failed" unless
       Kernel.system(JavaCommand, "-cp", cp, classname, *args)
   end
   
   def JavaCompiler.runJar(classpath, jar, *args)
     cp = classpath.join(':')
+    info "[java    ] #{jar}"	      
+#    info "[java    ] #{jar} #{args.inspect}"	      
     raise "java #{jar} failed" unless
       ret = Kernel.system(JavaCommand, "-cp", cp, "-jar", jar, *args)
     return ret
