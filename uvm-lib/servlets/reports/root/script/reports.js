@@ -1289,7 +1289,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             pageSize: 40,
             store: store,
             displayInfo: true,
-            displayMsg: 'Displaying  items {0} - {1} of {2}',
+            displayMsg: 'To view more than 1000 events download the CSV data file &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Displaying  items {0} - {1} of {2}',
             emptyMsg: "No items to display",
 
             items:['-']
@@ -1301,8 +1301,9 @@ Ung.ReportDetails = Ext.extend(Object, {
             store: store,
             columns: columns,
             tbar: [{
-                tooltip:this.i18n._('Export Excel'),
+                tooltip:this.i18n._('Download Data'),
                 iconCls:'export-excel',
+                text : this.i18n._('Download Data'),
                 handler: function() {
                     var rd = new Date(reports.reportsDate.time);
                     var d = rd.getFullYear() + "-" + (rd.getMonth() + 1) + "-" + rd.getDate();
