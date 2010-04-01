@@ -203,7 +203,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     // Called from UvmContextImpl at postInit time, after the networking manager
     // is up and runing
     void postInit() {
-        ((NetworkManagerImpl)LocalUvmContextFactory.context().networkManager()).
+        ((NetworkManagerImpl)LocalUvmContextFactory.context().localNetworkManager()).
             registerListener(new AddressSettingsListener() {
                     public void event( AddressSettingsInternal settings )
                     {
@@ -270,7 +270,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         File exim_dir = new File(EXIM_CONF_DIR);
         if (exim_dir.isDirectory()) {
 
-            String hostName = LocalUvmContextFactory.context().networkManager().
+            String hostName = LocalUvmContextFactory.context().localNetworkManager().
                 getAddressSettingsInternal().getHostName().toString();
             if (hostName == null) {
                 logger.warn("null hostname, using untangle-server");

@@ -130,7 +130,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     public MessageQueue getMessageQueue(Integer key)
     {
-        LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
+        LocalNodeManager lm = UvmContextImpl.getInstance().localNodeManager();
         List<Tid> tids = lm.nodeInstances();
         tids.add(new Tid(0L));
         Map<Tid, Stats> stats = getStats(lm, tids);
@@ -140,7 +140,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     public MessageQueue getMessageQueue(Integer key, Policy p)
     {
-        LocalNodeManager lm = UvmContextImpl.getInstance().nodeManager();
+        LocalNodeManager lm = UvmContextImpl.getInstance().localNodeManager();
         List<Tid> tids = lm.nodeInstances(p);
         /* Add in the nodes with the null policy */
         tids.addAll( lm.nodeInstances((Policy)null));

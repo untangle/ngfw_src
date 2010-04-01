@@ -554,7 +554,7 @@ public class VpnNodeImpl extends AbstractNode
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if (null != LocalUvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP)) {
+            if (null != LocalUvmContextFactory.context().localAppServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP)) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );
@@ -563,13 +563,13 @@ public class VpnNodeImpl extends AbstractNode
 
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        LocalUvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
+        LocalUvmContextFactory.context().localNetworkManager().registerService( SERVICE_NAME );
     }
 
     private synchronized void unDeployWebApp()
     {
         if ( isWebAppDeployed ) {
-            if( LocalUvmContextFactory.context().appServerManager().unloadWebApp(WEB_APP_PATH )) {
+            if( LocalUvmContextFactory.context().localAppServerManager().unloadWebApp(WEB_APP_PATH )) {
                 logger.debug( "Unloaded openvpn web app" );
             } else logger.warn( "Unable to unload openvpn web app" );
         }
@@ -577,7 +577,7 @@ public class VpnNodeImpl extends AbstractNode
 
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+        LocalUvmContextFactory.context().localNetworkManager().unregisterService( SERVICE_NAME );
     }
 
     // AbstractNode methods ----------------------------------------------
@@ -702,7 +702,7 @@ public class VpnNodeImpl extends AbstractNode
 
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+        LocalUvmContextFactory.context().localNetworkManager().unregisterService( SERVICE_NAME );
     }
 
     @Override protected void postDestroy() throws NodeException

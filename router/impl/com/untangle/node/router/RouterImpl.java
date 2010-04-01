@@ -365,7 +365,7 @@ public class RouterImpl extends AbstractNode implements Router
 
     private LocalNetworkManager getNetworkManager()
     {
-        return LocalUvmContextFactory.context().networkManager();
+        return LocalUvmContextFactory.context().localNetworkManager();
     }
     
     private void deleteSettings()

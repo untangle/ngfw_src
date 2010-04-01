@@ -179,7 +179,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         this.mPipe = mPipe;
         this.node = mPipe.node();
         this.nodeContext = mPipe.node().getNodeContext();
-        this.nodeManager = UvmContextImpl.getInstance().nodeManager();
+        this.nodeManager = UvmContextImpl.getInstance().localNodeManager();
         lastSessionReadTime = lastCommandReadTime = MetaEnv.currentTimeMillis();
         sessionEventListener = null;
         NodeDesc td = node.getNodeDesc();

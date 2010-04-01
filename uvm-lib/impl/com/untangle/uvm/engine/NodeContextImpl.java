@@ -77,9 +77,7 @@ class NodeContextImpl implements NodeContext
     private final NodeManagerImpl nodeManager;
     private final RemoteToolboxManagerImpl toolboxManager;
 
-    NodeContextImpl(URLClassLoader classLoader, NodeDesc tDesc,
-                    String mackageName, boolean isNew)
-        throws DeployException
+    NodeContextImpl(URLClassLoader classLoader, NodeDesc tDesc, String mackageName, boolean isNew) throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
@@ -88,7 +86,7 @@ class NodeContextImpl implements NodeContext
         }
         mctx.schemaUtil().initSchema("settings", tDesc.getName());
 
-        nodeManager = mctx.nodeManager();
+        nodeManager = mctx.localNodeManager();
         toolboxManager = mctx.toolboxManager();
 
         RemoteLoggingManagerImpl lm = mctx.loggingManager();

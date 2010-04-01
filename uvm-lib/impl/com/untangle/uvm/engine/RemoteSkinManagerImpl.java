@@ -67,7 +67,8 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     private final UvmContextImpl uvmContext;
     private SkinSettings settings;
 
-    RemoteSkinManagerImpl(UvmContextImpl uvmContext) {
+    RemoteSkinManagerImpl(UvmContextImpl uvmContext)
+    {
     	this.uvmContext = uvmContext;    	
     	
         TransactionWork tw = new TransactionWork()
@@ -112,17 +113,18 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 
     // public methods ---------------------------------------------------------
 
-    public SkinSettings getSkinSettings() {
+    public SkinSettings getSkinSettings()
+    {
         return settings;
     }
 
-    public void setSkinSettings(SkinSettings settings) {
+    public void setSkinSettings(SkinSettings settings)
+    {
         /* delete whatever is in the db, and just make a fresh settings object */
         SkinSettings copy = new SkinSettings();
         settings.copy(copy);
 
-        boolean isExpired = uvmContext.remoteLicenseManager().
-            getLicenseStatus( ProductIdentifier.BRANDING_MANAGER ).isExpired();
+        boolean isExpired = uvmContext.licenseManager().getLicenseStatus( ProductIdentifier.BRANDING_MANAGER ).isExpired();
 
         if ( isExpired ) {
 	    String userSkin = this.settings.getUserPagesSkin();

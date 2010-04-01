@@ -120,7 +120,7 @@ class AppServerManagerImpl implements LocalAppServerManager
             logger.warn("could not start Tomcat", exn);
         }
 
-        mctx.networkManager().registerListener(new AddressSettingsListener() {
+        mctx.localNetworkManager().registerListener(new AddressSettingsListener() {
                 public void event(AddressSettingsInternal settings)
                 {
                     String existingAlias = getCurrentServerCertInfo().getSubjectCN();
@@ -337,7 +337,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     private String getFQDN()
     {
-        String fqdn = mctx.networkManager().getHostname().toString();
+        String fqdn = mctx.localNetworkManager().getHostname().toString();
         if (fqdn == null || fqdn.equals("")) {
             return "untangle.example.com";
         }

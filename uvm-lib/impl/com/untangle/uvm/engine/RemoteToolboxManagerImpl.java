@@ -238,7 +238,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().nodeManager();
+            .context().localNodeManager();
         List<NodeDesc> instances = tm.visibleNodes(p);
 
         Map<Tid, StatDescs> statDescs
@@ -277,8 +277,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         Map<String, LicenseStatus> licenseStatus
             = new HashMap<String, LicenseStatus>();
-        RemoteLicenseManager lm = LocalUvmContextFactory.context()
-            .remoteLicenseManager();
+        RemoteLicenseManager lm = LocalUvmContextFactory.context().licenseManager();
         for (NodeDesc nd : instances) {
             String n = nd.getMackageDesc().getName();
             licenseStatus.put(n, lm.getMackageStatus(n));
@@ -413,7 +412,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 public void doIt()
                 {
                     UvmContextImpl mctx = UvmContextImpl.getInstance();
-                    NodeManagerImpl tm = mctx.nodeManager();
+                    NodeManagerImpl tm = mctx.localNodeManager();
                     List<String> nodes = null;
 
                     // List of mackages that we will try to install in
@@ -582,7 +581,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().nodeManager();
+            .context().localNodeManager();
         for (Tid tid : tm.nodeInstances(mackageName)) {
             NodeContext tctx = tm.nodeContext(tid);
             try {
@@ -606,7 +605,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().nodeManager();
+            .context().localNodeManager();
         for (Tid tid : tm.nodeInstances(mackageName)) {
             NodeContext tctx = tm.nodeContext(tid);
             try {
@@ -685,7 +684,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
 
         NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().nodeManager();
+            .context().localNodeManager();
         tm.restart(pkgName);
         tm.startAutoStart(mackageDesc(pkgName));
     }
@@ -696,7 +695,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         // XXX protect this method
         // stop mackage intances
         NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().nodeManager();
+            .context().localNodeManager();
         List<Tid> tids = tm.nodeInstances(pkgName);
         logger.debug("unloading " + tids.size() + " nodes");
         for (Tid t : tids) {

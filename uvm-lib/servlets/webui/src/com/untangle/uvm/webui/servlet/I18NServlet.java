@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
 
 /**
@@ -49,7 +49,7 @@ public class I18NServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
-        RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
+        RemoteUvmContext uvm = RemoteUvmContextFactory.context();
         RemoteLanguageManager languageManager = uvm.languageManager();
 
         String module = req.getParameter("module");

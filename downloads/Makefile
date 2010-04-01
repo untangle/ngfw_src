@@ -29,7 +29,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz commons-beanutils-1.7.0.tar.gz \
 
 tarballs_bz2=ant-contrib-1.0b2.tar.bz2 jaf-1.0.2.tar.bz2 \
 	junit3.8.1.tar.bz2 junit4.1.tar.bz2  \
-	netbeans-3.5.tar.bz2 postgres-jdbc-7.4_215.tar.bz2 kunststoff-2_0_1.tar.bz2
+	netbeans-3.5.tar.bz2 postgres-jdbc-7.4_215.tar.bz2 
 
 zips=ant-pack200.zip javamail-1_3_3_01.zip alloylnf-1_4_4-1.zip \
 	htmlparser1_6_20060319.zip xstream-distribution-1.3-bin.zip \

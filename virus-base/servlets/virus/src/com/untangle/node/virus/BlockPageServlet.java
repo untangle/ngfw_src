@@ -53,7 +53,7 @@ public class BlockPageServlet extends HttpServlet
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         RemoteBrandingManager bm = uvm.brandingManager();
-        LocalNodeManager nm = uvm.nodeManager();
+        LocalNodeManager nm = uvm.localNodeManager();
 
         Map<String,String> i18n_map = LocalUvmContextFactory.context().
             languageManager().getTranslations( "untangle-base-virus" );

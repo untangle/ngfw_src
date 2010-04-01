@@ -46,7 +46,7 @@ public class NodeContextSwitcher<T>
 
     public void run(Event<T> event, T argument)
     {
-        LocalNodeManager tm = LocalUvmContextFactory.context().nodeManager();
+        LocalNodeManager tm = LocalUvmContextFactory.context().localNodeManager();
         try {
             tm.registerThreadContext(this.nodeContext);
             event.handle(argument);

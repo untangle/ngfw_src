@@ -50,8 +50,6 @@ class BrandingManagerImpl implements RemoteBrandingManager
          */
         String ret = defaultCompanyName;
 
-        logger.info("BRAND:1 ret = " + ret);
-        
         /**
          * If there is an OEM name specified - use it instead
          */
@@ -59,8 +57,6 @@ class BrandingManagerImpl implements RemoteBrandingManager
         if (oemName != null)
             ret = oemName;
 
-        logger.info("BRAND:2 ret = " + ret);
-        
         /**
          * If there is an Branding name specified - use it instead
          */
@@ -68,8 +64,6 @@ class BrandingManagerImpl implements RemoteBrandingManager
         if (brandingName != null)
             ret = brandingName;
 
-        logger.info("BRAND:3 ret = " + ret);
-        
         return ret;
     }
 
@@ -118,7 +112,7 @@ class BrandingManagerImpl implements RemoteBrandingManager
     
     private RemoteBrandingManager getBrandingManager()
     {
-        RemoteBrandingManager bnode = (RemoteBrandingManager)LocalUvmContextFactory.context().nodeManager().node("untangle-node-branding");
+        RemoteBrandingManager bnode = (RemoteBrandingManager)LocalUvmContextFactory.context().localNodeManager().node("untangle-node-branding");
         if (bnode != null && (((AbstractNode)bnode).getRunState() == NodeState.RUNNING)) {
             return bnode;
         }

@@ -91,7 +91,7 @@ abstract class IPSessionImpl
         } else {
             timesLogger = null;
         }
-        nodeManager = UvmContextImpl.getInstance().nodeManager();
+        nodeManager = UvmContextImpl.getInstance().localNodeManager();
         logger = disp.mPipe().sessionLogger();
     }
 

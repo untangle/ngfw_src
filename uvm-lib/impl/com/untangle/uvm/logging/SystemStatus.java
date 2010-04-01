@@ -404,7 +404,7 @@ public class SystemStatus
              * Network Config
              */
             sb.append(SPACER);
-            NetworkSpacesInternalSettings netConf = ((NetworkManagerImpl) LocalUvmContextFactory.context().networkManager()).getNetworkInternalSettings();
+            NetworkSpacesInternalSettings netConf = ((NetworkManagerImpl) LocalUvmContextFactory.context().localNetworkManager()).getNetworkInternalSettings();
             sb.append(netConf.toString());
             sb.append(RETCHAR);
 
@@ -412,7 +412,7 @@ public class SystemStatus
              * Node Config
              */
             sb.append(SPACER);
-            LocalNodeManager tm = LocalUvmContextFactory.context().nodeManager();
+            LocalNodeManager tm = LocalUvmContextFactory.context().localNodeManager();
             for (Tid t : tm.nodeInstances()) {
                 NodeContext tctx = tm.nodeContext(t);
                 if (tctx == null) {

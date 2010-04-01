@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.LanguageSettings;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.DateItem;
@@ -44,10 +44,8 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     private final RemoteUvmContext context;
 
     private final RemoteSkinManager skinManager = new RemoteSkinManagerImpl();
-    private final RemoteReportingManager reportingManager
-        = new RemoteReportingManagerImpl();
-    private final RemoteLanguageManager languageManager
-        = new RemoteLanguageManagerImpl();
+    private final RemoteReportingManager reportingManager = new RemoteReportingManagerImpl();
+    private final RemoteLanguageManager languageManager = new RemoteLanguageManagerImpl();
 
 
     private ReportsContextImpl( RemoteUvmContext context )
@@ -72,7 +70,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     static UtJsonRpcServlet.ReportsContext makeReportsContext()
     {
-        RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
+        RemoteUvmContext uvm = RemoteUvmContextFactory.context();
         return new ReportsContextImpl( uvm );
     }
 

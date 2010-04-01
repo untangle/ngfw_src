@@ -240,7 +240,9 @@ public class HostCache
         }
 
         long cutoff = System.currentTimeMillis() - CACHE_TTL;
-        
+
+        logger.info("Cleaning hostcache...");
+
         /* When expire all is true, just delete all of the records. */
         if ( expireAll ) {
             cutoff = Long.MAX_VALUE;

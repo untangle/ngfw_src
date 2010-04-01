@@ -70,7 +70,7 @@ import com.untangle.uvm.LocalTomcatManager;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface LocalUvmContext
+public interface LocalUvmContext extends RemoteUvmContext
 {
     /**
      * Gets the current state of the UVM
@@ -91,7 +91,7 @@ public interface LocalUvmContext
      *
      * @return a <code>NodeManager</code> value
      */
-    LocalNodeManager nodeManager();
+    LocalNodeManager localNodeManager();
 
     /**
      * Get the <code>RemoteLoggingManager</code> singleton.
@@ -117,7 +117,7 @@ public interface LocalUvmContext
      *
      * @return a <code>PolicyManager</code> value
      */
-    LocalPolicyManager policyManager();
+    LocalPolicyManager localPolicyManager();
 
     /**
      * Get the <code>RemoteAdminManager</code> singleton.
@@ -137,8 +137,7 @@ public interface LocalUvmContext
 
     LocalIntfManager localIntfManager();
 
-    // XXX has stuff for local use, should probably be renamed w/o 'Impl'
-    LocalNetworkManager networkManager();
+    LocalNetworkManager localNetworkManager();
 
     RemoteReportingManager reportingManager();
 
@@ -151,7 +150,7 @@ public interface LocalUvmContext
      *
      * @return the singleton
      */
-    LocalAppServerManager appServerManager();
+    LocalAppServerManager localAppServerManager();
 
     /**
      * Get the AddressBook singleton for this instance
@@ -192,13 +191,6 @@ public interface LocalUvmContext
     RemoteMessageManager messageManager();
 
     LocalMessageManager localMessageManager();
-
-    /**
-     * The license manager.
-     *
-     * @return the RemoteLicenseManager
-     */
-    RemoteLicenseManager remoteLicenseManager();
 
     /**
      * The license manager.
@@ -338,13 +330,6 @@ public interface LocalUvmContext
 
     LocalTomcatManager tomcatManager();
     
-    /**
-     * Get the remote context.
-     *
-     * @return the RemoteUvmContext.
-     */
-    RemoteUvmContext remoteContext();
-
     CronJob makeCronJob(Period p, Runnable r);
 
     /**

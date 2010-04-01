@@ -47,7 +47,7 @@ public class StartPageServlet extends HttpServlet
         String url="/WEB-INF/jsp/startPage.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
-        String companyName = LocalUvmContextFactory.context().remoteContext().brandingManager().getCompanyName();
+        String companyName = LocalUvmContextFactory.context().brandingManager().getCompanyName();
         boolean isRegistered = LocalUvmContextFactory.context().isRegistered();
         req.setAttribute( "isRegistered", isRegistered ? "true" : "false" );
         req.setAttribute( "companyName", companyName );

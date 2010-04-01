@@ -361,7 +361,9 @@ class AddressManagerImpl implements LocalAddressManager
         int port = address.getHttpsPort();
 
         try {
-            LocalUvmContextFactory.context().appServerManager().rebindExternalHttpsPort( port );
+            logger.warn("Setting port");
+            LocalUvmContextFactory.context().localAppServerManager().rebindExternalHttpsPort( port );
+            logger.warn("Done Setting port");
         } catch ( Exception e ) {
             if ( !LocalUvmContextFactory.context().state().equals( UvmState.RUNNING )) {
                 logger.info( "unable to rebind port at startup, expected. " + e );

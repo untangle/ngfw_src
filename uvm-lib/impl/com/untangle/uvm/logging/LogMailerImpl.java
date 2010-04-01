@@ -108,7 +108,7 @@ public class LogMailerImpl implements LogMailer, Runnable
                 if (now - MIN_MESSAGE_PERIOD < lastSendTime)
                     Thread.sleep(MIN_MESSAGE_PERIOD  - (now - lastSendTime));
                 if (LocalUvmContextFactory.state() == UvmState.RUNNING &&
-                    LocalUvmContextFactory.context().networkManager().
+                    LocalUvmContextFactory.context().localNetworkManager().
                     getMiscSettingsInternal().getIsExceptionReportingEnabled()) {
                     sendMessage(triggerer);
                 }
@@ -187,7 +187,7 @@ public class LogMailerImpl implements LogMailer, Runnable
 
     private void doSend(String subjectBase, String bodyBase,
                         List<MimeBodyPart> parts) {
-        String host = LocalUvmContextFactory.context().networkManager().
+        String host = LocalUvmContextFactory.context().localNetworkManager().
             getAddressSettingsInternal().getHostName().toString();
 
         String bodyText = sysstat.systemStatus();

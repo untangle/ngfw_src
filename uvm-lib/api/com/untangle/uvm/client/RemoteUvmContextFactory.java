@@ -43,45 +43,33 @@ import java.lang.reflect.Method;
  */
 public class RemoteUvmContextFactory
 {
-    private static final RemoteUvmContextFactory FACTORY
-        = new RemoteUvmContextFactory();
+    private static final RemoteUvmContextFactory FACTORY = new RemoteUvmContextFactory();
 
-    private RemoteUvmContext remoteContext;
-
-    // constructors -----------------------------------------------------------
-
-    private RemoteUvmContextFactory()
-    {
-        try {
-            Class c = Class.forName("com.untangle.uvm.engine.UvmContextImpl");
-            Method m = c.getMethod("context");
-            Object localUvmContext = m.invoke(null);
-            c = Class.forName("com.untangle.uvm.LocalUvmContext");
-            m = c.getMethod("remoteContext");
-            remoteContext = (RemoteUvmContext)m.invoke(localUvmContext);
-        } catch ( Exception e ) {
-            System.err.println("Cannot get RemoteUvmContext");
-            e.printStackTrace();
-        }
-    }
-
-    // factory methods --------------------------------------------------------
-
-    public static RemoteUvmContextFactory factory()
-    {
-        return FACTORY;
-    }
+    private static RemoteUvmContext UVM_CONTEXT = null;
 
     // public methods ---------------------------------------------------------
 
     /**
-     * Get the <code>RemoteUvmContext</code> from this classloader.
-     * used by the GUI to get the context remotely.
+     * Get the <code>RemoteUvmContext</code> 
      *
      * @return the <code>UvmContext</code>.
      */
-    public RemoteUvmContext uvmContext()
+    public static RemoteUvmContext context()
     {
-        return remoteContext;
+        if (null == UVM_CONTEXT) {
+            synchronized (RemoteUvmContextFactory.class) {
+                if (null == UVM_CONTEXT) {
+                    try {
+                        Class c = Class.forName("com.untangle.uvm.engine.UvmContextImpl");
+                        Method m = c.getMethod("context");
+                        UVM_CONTEXT = (RemoteUvmContext)m.invoke(null);
+                    } catch ( Exception e ) {
+                        System.err.println( "No class or method for the UVM context" );
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return UVM_CONTEXT;
     }
 }

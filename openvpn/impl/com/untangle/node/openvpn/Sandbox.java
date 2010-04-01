@@ -212,7 +212,7 @@ class Sandbox
     void autoDetectAddressPool() throws ValidateException
     {
         /* Load the list of networks. */
-        LocalNetworkManager lnm = LocalUvmContextFactory.context().networkManager();
+        LocalNetworkManager lnm = LocalUvmContextFactory.context().localNetworkManager();
         
         List<AddressRange> currentNetwork = new LinkedList<AddressRange>();
         for ( NetworkSpaceInternal space : lnm.getNetworkInternalSettings().getNetworkSpaceList()) {
@@ -270,7 +270,7 @@ class Sandbox
     void autoDetectExportList() throws ValidateException
     {
         /* Load the list of networks. */
-        LocalNetworkManager lnm = LocalUvmContextFactory.context().networkManager();
+        LocalNetworkManager lnm = LocalUvmContextFactory.context().localNetworkManager();
         
         byte intf = IntfConstants.INTERNAL_INTF;
         if ( lnm.isSingleNicModeEnabled()) intf = IntfConstants.EXTERNAL_INTF;

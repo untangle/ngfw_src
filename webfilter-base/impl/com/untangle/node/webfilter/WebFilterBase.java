@@ -745,7 +745,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
 
         LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -774,7 +774,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
 
         LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/webfilter")) {
             logger.debug("Unloaded WebFilter WebApp");

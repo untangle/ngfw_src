@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
 
 /**
@@ -76,8 +76,7 @@ public class ImageServlet extends HttpServlet {
     protected byte[] getImageData(HttpServletRequest request) {
         String name = request.getParameter("name");
 
-        // TODO cache uvm in session
-        RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
+        RemoteUvmContext uvm = RemoteUvmContextFactory.context();
 
     byte[] result = uvm.toolboxManager().mackageDesc(name).descIcon();
     if (result == null)

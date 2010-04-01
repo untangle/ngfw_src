@@ -90,12 +90,12 @@ public abstract class OutsideValve extends ValveBase
 
     protected AccessSettingsInternal getAccessSettings()
     {
-        return LocalUvmContextFactory.context().networkManager().getAccessSettingsInternal();
+        return LocalUvmContextFactory.context().localNetworkManager().getAccessSettingsInternal();
     }
 
     protected AddressSettingsInternal getAddressSettings()
     {
-        return LocalUvmContextFactory.context().networkManager().getAddressSettingsInternal();
+        return LocalUvmContextFactory.context().localNetworkManager().getAddressSettingsInternal();
     }
 
 
@@ -146,7 +146,7 @@ public abstract class OutsideValve extends ValveBase
             return isInsecureAccessAllowed;
         }
 
-        int blockPagePort = LocalUvmContextFactory.context().networkManager().
+        int blockPagePort = LocalUvmContextFactory.context().localNetworkManager().
             getAccessSettingsInternal().getBlockPagePort();
         
         if ( port == blockPagePort ) {

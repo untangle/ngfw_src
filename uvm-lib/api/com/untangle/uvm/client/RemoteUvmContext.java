@@ -48,6 +48,7 @@ import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.RemoteMessageManager;
+import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
@@ -316,5 +317,5 @@ public interface RemoteUvmContext
 
     String setProperty(String key, String value);
     
-    public RemoteBenchmarkManager benchmarkManager();
+    RemoteBenchmarkManager benchmarkManager();
 }

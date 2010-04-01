@@ -159,7 +159,7 @@ public class QuarantineEnduserServlet
      */
     private void initRemoteRefs() {
         try {
-            RemoteUvmContext ctx = RemoteUvmContextFactory.factory().uvmContext();
+            RemoteUvmContext ctx = RemoteUvmContextFactory.context();
             Tid tid = ctx.nodeManager().nodeInstances("untangle-casing-mail").get(0);
             NodeContext tc = ctx.nodeManager().nodeContext(tid);
             MailNode mt = (MailNode) tc.node();

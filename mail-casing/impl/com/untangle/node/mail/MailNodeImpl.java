@@ -131,7 +131,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void deployWebAppIfRequired(Logger logger) {
         if(!s_deployedWebApp) {
-            if (null != LocalUvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
+            if (null != LocalUvmContextFactory.context().localAppServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             }
             else {
@@ -143,7 +143,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
         if(!s_unDeployedWebApp) {
-            if (LocalUvmContextFactory.context().appServerManager().unloadWebApp("/quarantine")) {
+            if (LocalUvmContextFactory.context().localAppServerManager().unloadWebApp("/quarantine")) {
                 logger.debug("Unloaded Quarantine web app");
             }
             else {

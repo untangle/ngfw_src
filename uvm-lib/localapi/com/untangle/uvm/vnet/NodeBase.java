@@ -88,7 +88,7 @@ public abstract class NodeBase implements Node
     protected NodeBase()
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        nodeManager = uvm.nodeManager();
+        nodeManager = uvm.localNodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getTid();
 
@@ -407,8 +407,7 @@ public abstract class NodeBase implements Node
                 wasStarted = true;
             }
 
-            LocalMessageManager mm = LocalUvmContextFactory.context()
-                .localMessageManager();
+            LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
             NodeStateChange nsc = new NodeStateChange(nodeContext.getNodeDesc(), ts);
             mm.submitMessage(nsc);
 
@@ -419,7 +418,7 @@ public abstract class NodeBase implements Node
                 }
             }
             
-            LocalUvmContextFactory.context().nodeManager().flushNodeStateCache();
+            LocalUvmContextFactory.context().localNodeManager().flushNodeStateCache();
             LocalUvmContextFactory.context().pipelineFoundry().clearChains();
         }
     }

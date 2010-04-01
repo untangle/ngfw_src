@@ -23,11 +23,9 @@ import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
 
 import com.untangle.uvm.LanguageSettings;
-import com.untangle.uvm.LocalUvmContextFactory;
-
 import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
-
 import com.untangle.uvm.security.AdminSettings;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.security.User;
@@ -76,15 +74,14 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         am.setAdminSettings( as );
     }
     
-    public void setTimeZone( TimeZone timeZone )
-        throws TransactionRolledbackException
+    public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException
     {
         this.context.adminManager().setTimeZone( timeZone );
     }
 
     public static UtJsonRpcServlet.SetupContext makeSetupContext()
     {
-        RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
+        RemoteUvmContext uvm = RemoteUvmContextFactory.context();
         return new SetupContextImpl( uvm );
     }
 }

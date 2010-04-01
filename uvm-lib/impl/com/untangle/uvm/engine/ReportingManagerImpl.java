@@ -706,7 +706,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     public boolean isReportingEnabled() {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        LocalNodeManager nodeManager = uvm.nodeManager();
+        LocalNodeManager nodeManager = uvm.localNodeManager();
         List<Tid> tids = nodeManager.nodeInstances("untangle-node-reporting");
         if(tids == null || tids.size() == 0)
             return false;

@@ -283,7 +283,7 @@ public class PipelineFoundryImpl implements PipelineFoundry {
 
     PolicyRule selectPolicy(IPSessionDesc sd) {
         UvmContextImpl upi = UvmContextImpl.getInstance();
-        LocalPolicyManager pmi = upi.policyManager();
+        LocalPolicyManager pmi = upi.localPolicyManager();
         LocalIntfManager im = upi.localIntfManager();
 
         UserPolicyRule[] userRules = pmi.getUserRules();
@@ -373,7 +373,7 @@ public class PipelineFoundryImpl implements PipelineFoundry {
             Policy p, Map<Fitting, List<MPipe>> availMPipes,
             Map<MPipe, MPipe> availCasings) {
         UvmContextImpl upi = UvmContextImpl.getInstance();
-        LocalPolicyManager pmi = upi.policyManager();
+        LocalPolicyManager pmi = upi.localPolicyManager();
 
         boolean welded = false;
 
@@ -424,7 +424,7 @@ public class PipelineFoundryImpl implements PipelineFoundry {
             Fitting start, Policy p, Map<Fitting, List<MPipe>> availMPipes,
             Map<MPipe, MPipe> availCasings) {
         UvmContextImpl upi = UvmContextImpl.getInstance();
-        LocalPolicyManager pmi = upi.policyManager();
+        LocalPolicyManager pmi = upi.localPolicyManager();
 
         boolean welded = false;
 
@@ -475,11 +475,10 @@ public class PipelineFoundryImpl implements PipelineFoundry {
         chains.clear();
     }
     
-    private void removeDuplicates(Policy policy, List<MPipeFitting> chain) {
-        LocalPolicyManager pmi = LocalUvmContextFactory.context()
-                .policyManager();
-        LocalNodeManager nodeManager = LocalUvmContextFactory.context()
-                .nodeManager();
+    private void removeDuplicates(Policy policy, List<MPipeFitting> chain)
+    {
+        LocalPolicyManager pmi = LocalUvmContextFactory.context().localPolicyManager();
+        LocalNodeManager nodeManager = LocalUvmContextFactory.context().localNodeManager();
 
         Set<String> enabledNodes = nodeManager.getEnabledNodes(policy);
 

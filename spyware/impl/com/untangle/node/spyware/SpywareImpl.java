@@ -971,7 +971,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -1001,7 +1001,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/spyware")) {
             logger.debug("Unloaded Spyware WebApp");

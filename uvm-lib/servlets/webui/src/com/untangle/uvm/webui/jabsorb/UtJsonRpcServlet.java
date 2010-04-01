@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.servlet.ServletUtils;
 
@@ -58,8 +58,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         }
     }
 
-    public void service(HttpServletRequest req, HttpServletResponse resp)
-        throws IOException
+    public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         if (null != threadRequest) {
             threadRequest.set(req);
@@ -93,7 +92,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
             b.setCallbackController(new UtCallbackController(b));
 
-            RemoteUvmContext uvm = LocalUvmContextFactory.context().remoteContext();
+            RemoteUvmContext uvm = RemoteUvmContextFactory.context();
             b.registerObject("RemoteUvmContext", uvm, RemoteUvmContext.class);
         }
     }

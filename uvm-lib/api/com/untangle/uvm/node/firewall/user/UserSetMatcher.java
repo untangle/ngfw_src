@@ -82,7 +82,7 @@ public final class UserSetMatcher extends UserDBMatcher
         
         /* Now check all of the groups */
         for ( String group : groupSet ) {
-            boolean isMemberOf = RemoteUvmContextFactory.factory().uvmContext().appAddressBook().isMemberOf(user,group);
+            boolean isMemberOf = RemoteUvmContextFactory.context().appAddressBook().isMemberOf(user,group);
             
             if ( isMemberOf == true ) {
                 return true;

@@ -91,7 +91,7 @@ class SyslogManagerImpl implements SyslogManager
 
     void postInit()
     {
-        final LocalNetworkManager nmi = LocalUvmContextFactory.context().networkManager();
+        final LocalNetworkManager nmi = LocalUvmContextFactory.context().localNetworkManager();
 
         nmi.registerListener(new NetworkSettingsListener() {
                 public void event(NetworkSpacesInternalSettings s)

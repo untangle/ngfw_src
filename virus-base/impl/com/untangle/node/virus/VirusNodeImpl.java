@@ -724,7 +724,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         }
 
         LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -753,7 +753,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         }
 
         LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/virus")) {
             logger.debug("Unloaded Virus WebApp");

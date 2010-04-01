@@ -130,7 +130,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, persistent, true);
         } else {
-            LocalNetworkManager nm = LocalUvmContextFactory.context().networkManager();
+            LocalNetworkManager nm = LocalUvmContextFactory.context().localNetworkManager();
             InetAddress addr = nm.getInternalHttpAddress(session);
                 
             if (null == addr) {

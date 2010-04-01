@@ -181,7 +181,7 @@ class OpenVpnManager
         ScriptRunner.getInstance().exec( VPN_START_SCRIPT );
 
         try {
-            LocalUvmContextFactory.context().networkManager().updateAddress();
+            LocalUvmContextFactory.context().localNetworkManager().updateAddress();
         } catch ( Exception e ) {
             throw new NodeException( e );
         }
@@ -201,7 +201,7 @@ class OpenVpnManager
         try {
             //
             // am.disableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get());
-            LocalUvmContextFactory.context().networkManager().updateAddress();
+            LocalUvmContextFactory.context().localNetworkManager().updateAddress();
         } catch ( Exception e ) {
             throw new NodeException( e );
         }
@@ -374,7 +374,7 @@ class OpenVpnManager
         sw.appendVariable( FLAG_CA,   CLI_KEY_DIR + "/" + siteName + "-ca.crt" );
 
         /* VPN configuratoins needs information from the networking settings. */
-        RemoteNetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
+        RemoteNetworkManager networkManager = LocalUvmContextFactory.context().localNetworkManager();
 
         /* This is kind of janky */
         String publicAddress = networkManager.getPublicAddress();
@@ -408,8 +408,7 @@ class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous client configuration files." );
         }
-        ServicesInternalSettings sis = LocalUvmContextFactory.context().
-            networkManager().getServicesInternalSettings();
+        ServicesInternalSettings sis = LocalUvmContextFactory.context().localNetworkManager().getServicesInternalSettings();
 
         for ( VpnClient client : settings.getClientList()) {
             if ( !client.isEnabled()) continue;

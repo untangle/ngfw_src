@@ -45,7 +45,7 @@ public class UnblockerServlet extends HttpServlet
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
 
         try {
-            LocalNodeManager tman = LocalUvmContextFactory.context().nodeManager();
+            LocalNodeManager tman = LocalUvmContextFactory.context().localNodeManager();
             Tid tid = new Tid(Long.parseLong(tidStr));
             NodeContext tctx = tman.nodeContext(tid);
             Phish tran = (Phish)tctx.node();

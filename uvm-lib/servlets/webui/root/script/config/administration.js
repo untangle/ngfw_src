@@ -2244,8 +2244,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             if (remoteChanges) {
                 Ext.Msg.show({
                     title : this.i18n._("Warning"),
-                    msg : String.format(this.i18n._("Changing the administration settings may disconnect you from the {0} box. Do you want to proceed?"),
-                        main.getBrandingSettings().companyName),
+                    msg : String.format(this.i18n._("Changing the administration settings may disconnect you. Do you want to proceed?")),
                     buttons : Ext.Msg.YESNO,
                     icon : Ext.MessageBox.WARNING,
                     fn : function (btn, text) {
@@ -2261,7 +2260,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         completeCommitSettings : function(callback)
         {
             if (this.validate()) {
-                this.saveSemaphore = 6;
+                this.saveSemaphore = 5;
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
                 var listAdministration=this.gridAdminAccounts.getFullSaveList();
@@ -2287,12 +2286,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.afterSave(exception, callback);
                 }.createDelegate(this), this.getAdminSettings());
 
-                delete this.getAddressSettings().publicAddress;
+                if (this.getAddressSettings().publicAddress == null)
+                    delete this.getAddressSettings().publicAddress;
+                if (this.getAddressSettings().publicIPaddr == null)
+                    delete this.getAddressSettings().publicIPaddr;
                 rpc.networkManager.setAddressSettings(function(result, exception) {
                     this.afterSave(exception, callback);
-                }.createDelegate(this), this.getAddressSettings());
+                 }.createDelegate(this), this.getAddressSettings());
 
-               rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
+                rpc.adminManager.getSnmpManager().setSnmpSettings(function(result, exception) {
                    this.afterSave(exception, callback);
                 }.createDelegate(this), this.getSnmpSettings());
 

@@ -611,7 +611,7 @@ public class CPDImpl extends AbstractNode implements CPD {
         }
 
         LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -640,7 +640,7 @@ public class CPDImpl extends AbstractNode implements CPD {
         }
 
         LocalUvmContext mctx = LocalUvmContextFactory.context();
-        LocalAppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/users")) {
             logger.debug("Unloaded authentication webapp");

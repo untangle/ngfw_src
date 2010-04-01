@@ -71,7 +71,7 @@ public class SetupSettingsServlet extends HttpServlet
             throw new ServletException( "Unable to load the default serializer", e );
         }
 
-        LocalNetworkManager nm = context.networkManager();
+        LocalNetworkManager nm = context.localNetworkManager();
         AddressSettings addressSettings = nm.getAddressSettings();
         HostName hostname = addressSettings.getHostName();
         if ( hostname.isEmpty() || !hostname.isQualified()) {

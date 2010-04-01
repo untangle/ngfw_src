@@ -56,6 +56,7 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
@@ -79,7 +80,7 @@ import com.untangle.uvm.util.TransactionWork;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
+class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLoggingContextFactory
 {
     private static final String DESC_PATH = "META-INF/uvm-node.xml";
 
@@ -321,7 +322,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
             LocalMessageManager lmm = LocalUvmContextFactory.context()
                 .localMessageManager();
             Counters c = lmm.getCounters(node.getTid());
-            RemoteLicenseManager lm = LocalUvmContextFactory.context().remoteLicenseManager();
+            RemoteLicenseManager lm = LocalUvmContextFactory.context().licenseManager();
 
             NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs(),lm.getMackageStatus(mackageDesc.getName()));
             LocalMessageManager mm = mctx.localMessageManager();
@@ -901,7 +902,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
         if (MackageDesc.Type.SERVICE != mackageDesc.getType()) {
             return null;
         } else {
-            return LocalUvmContextFactory.context().policyManager().getDefaultPolicy();
+            return LocalUvmContextFactory.context().localPolicyManager().getDefaultPolicy();
         }
     }
 
@@ -935,7 +936,7 @@ class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 
     private List<Policy> getAllPolicies(Policy p)
     {
-        LocalPolicyManager lpi = LocalUvmContextFactory.context().policyManager();
+        LocalPolicyManager lpi = LocalUvmContextFactory.context().localPolicyManager();
 
         List<Policy> l = new ArrayList<Policy>();
         while (null != p) {

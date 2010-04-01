@@ -36,8 +36,7 @@ public class UnblockerServlet extends HttpServlet
     // HttpServlet methods ----------------------------------------------------
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-        throws ServletException
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException
     {
         resp.setContentType("text/xml");
         resp.addHeader("Cache-Control", "no-cache");
@@ -47,7 +46,7 @@ public class UnblockerServlet extends HttpServlet
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
 
         try {
-            LocalNodeManager tman = LocalUvmContextFactory.context().nodeManager();
+            LocalNodeManager tman = LocalUvmContextFactory.context().localNodeManager();
             Tid tid = new Tid(Long.parseLong(tidStr));
             NodeContext tctx = tman.nodeContext(tid);
             Spyware tran = (Spyware)tctx.node();

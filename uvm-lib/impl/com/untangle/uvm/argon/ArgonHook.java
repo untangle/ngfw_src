@@ -121,7 +121,7 @@ abstract class ArgonHook implements Runnable
                               " " + sessionGlobalState );
             }
 
-            LocalNetworkManager lnm = LocalUvmContextFactory.context().networkManager();
+            LocalNetworkManager lnm = LocalUvmContextFactory.context().localNetworkManager();
             boolean isSingleNicMode = lnm.isSingleNicModeEnabled();
 	    
             /* Update the server interface */
@@ -156,7 +156,7 @@ abstract class ArgonHook implements Runnable
             serverSide = clientSide;
 
             /* lookup the user information */
-            LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+            LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().localNodeManager().node("untangle-node-adconnector");
             if (adconnector != null) {
                 String username = adconnector.getPhoneBook().tryLookupUser( clientSide.clientAddr());
                 if (username != null && username.length() > 0 ) { 

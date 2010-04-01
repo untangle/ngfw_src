@@ -70,7 +70,7 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
      */
     public Status getStatus()
     {
-        BasicNetworkSettings basic = LocalUvmContextFactory.context().networkManager().getBasicSettings();
+        BasicNetworkSettings basic = LocalUvmContextFactory.context().localNetworkManager().getBasicSettings();
 
         InetAddress dnsPrimary   = basic.getDns1().getAddr();
         InetAddress dnsSecondary = ( basic.getDns2().isEmpty()) ? null : basic.getDns2().getAddr();

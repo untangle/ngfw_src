@@ -192,8 +192,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /**
      * Retrieve the settings related to limiting access to the box.
      */
+    @Override
     public AccessSettings getAccessSettings()
     {
+        logger.warn("getAccessSettings()");
         return this.accessManager.getSettings();
     }
 
@@ -202,8 +204,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return this.accessManager.getInternalSettings();
     }
 
+    @Override
     public void setAccessSettings( AccessSettings access )
     {
+        logger.warn("setAccessSettings()");
         this.accessManager.setSettings( access );
 
         updateAddress();
@@ -218,8 +222,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /**
      * Retrieve the settings related to the hostname and the address used to access to the box.
      */
+    @Override
     public AddressSettings getAddressSettings()
     {
+        logger.warn("getAddressSettings()");
         return this.addressManager.getSettings();
     }
 
@@ -228,8 +234,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return this.addressManager.getInternalSettings();
     }
 
+    @Override
     public void setAddressSettings( AddressSettings address )
     {
+        logger.warn("setAddressSettings(" + address.getHttpsPort() + ")" );
         this.addressManager.setSettings( address );
 
         updateAddress();

@@ -185,7 +185,7 @@ class DefaultPolicyManager implements LocalPolicyManager
         PolicyConfiguration result = new PolicyConfiguration(pl, cUserRules);
         result.setHasRackManagement(false);
         
-        LocalNodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
+        LocalNodeManager nodeManager = LocalUvmContextFactory.context().localNodeManager();
         List<Tid> l = nodeManager.nodeInstances( "untangle-node-adconnector" );
         result.setHasUserManagement(false);
         
@@ -372,7 +372,7 @@ class DefaultPolicyManager implements LocalPolicyManager
     void updateEngines()
     {
         /* At startup, these can be null */
-        LocalNodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
+        LocalNodeManager nodeManager = LocalUvmContextFactory.context().localNodeManager();
         if ( nodeManager != null ) {
             nodeManager.flushNodeStateCache();
         }

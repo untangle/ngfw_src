@@ -50,11 +50,14 @@ import com.untangle.uvm.LocalTomcatManager;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteOemManager;
+import com.untangle.uvm.RemoteAppServerManager;
+import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
+import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.LicenseManagerFactory;
@@ -69,7 +72,7 @@ import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
-import com.untangle.uvm.networking.RemoteNetworkManagerAdaptor;
+import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.RemoteNodeManager;
@@ -126,15 +129,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private MailSenderImpl mailSender;
     private LogMailerImpl logMailer;
     private NetworkManagerImpl networkManager;
-    private RemoteNetworkManagerAdaptor remoteNetworkManager;
     private RemoteReportingManagerImpl reportingManager;
     private RemoteConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private RemoteToolboxManagerImpl toolboxManager;
     private RemoteUpstreamManagerImpl upstreamManager;
     private NodeManagerImpl nodeManager;
-    private RemoteNodeManagerAdaptor remoteNodeManager;
-    private RemoteUvmContext remoteContext;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
     private RemoteAppServerManagerAdaptor remoteAppServerManager;
@@ -222,11 +222,16 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return portalManager;
     }
 
-    public AppServerManagerImpl appServerManager()
+    public AppServerManagerImpl localAppServerManager()
     {
         return appServerManager;
     }
 
+    public RemoteAppServerManager appServerManager()
+    {
+        return remoteAppServerManager;
+    }
+    
     public RemoteToolboxManagerImpl toolboxManager()
     {
         return toolboxManager;
@@ -237,14 +242,14 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return upstreamManager;
     }
 
-    public NodeManagerImpl nodeManager()
+    public NodeManagerImpl localNodeManager()
     {
         return nodeManager;
     }
 
-    public RemoteNodeManager remoteNodeManager()
+    public RemoteNodeManager nodeManager()
     {
-        return remoteNodeManager;
+        return nodeManager;
     }
 
     public RemoteLoggingManagerImpl loggingManager()
@@ -257,12 +262,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return syslogManager;
     }
 
-    public LocalPolicyManager policyManager()
+    public LocalPolicyManager localPolicyManager()
     {
         return policyManagerFactory.policyManager();
     }
 
-    public RemotePolicyManager remotePolicyManager()
+    public RemotePolicyManager policyManager()
     {
         return policyManagerFactory.remotePolicyManager();
     }
@@ -277,7 +282,14 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return adminManager;
     }
 
-    public NetworkManagerImpl networkManager()
+    @Override
+    public LocalNetworkManager localNetworkManager()
+    {
+        return networkManager;
+    }
+
+    @Override
+    public RemoteNetworkManager networkManager()
     {
         return networkManager;
     }
@@ -302,7 +314,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return argonManager.getIntfManager();
     }
 
-    public RemoteLicenseManager remoteLicenseManager()
+    public RemoteLicenseManager licenseManager()
     {
         return this.licenseManagerFactory.getRemoteLicenseManager();
     }
@@ -788,7 +800,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         // but NAT may register a listener, and thus the network
         // manager should exist.
         this.networkManager = NetworkManagerImpl.getInstance();
-        this.remoteNetworkManager = new RemoteNetworkManagerAdaptor(networkManager);
 
         //Start AddressBookImpl
         this.addressBookFactory = AddressBookFactory.makeInstance();
@@ -803,7 +814,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         // start nodes:
         this.nodeManager = new NodeManagerImpl(repositorySelector);
-        this.remoteNodeManager = new RemoteNodeManagerAdaptor(nodeManager);
 
         this.localMessageManager = new MessageManagerImpl();
         this.messageManager = new RemoteMessageManagerAdaptor(localMessageManager);
@@ -837,7 +847,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             this.heapMonitor.start();
         }
 
-        this.remoteContext = new RemoteUvmContextAdaptor(this);
         state = UvmState.INITIALIZED;
     }
 
@@ -973,12 +982,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return remoteAppServerManager;
     }
 
-    RemoteNetworkManagerAdaptor remoteNetworkManager()
-    {
-        return remoteNetworkManager;
-    }
-
-    RemoteIntfManager remoteIntfManager()
+    public RemoteIntfManager intfManager()
     {
         /* This doesn't have to be synchronized, because it doesn't
          * matter if two are created */
@@ -1023,11 +1027,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     public LocalTomcatManager tomcatManager()
     {
         return tomcatManager;
-    }
-
-    public RemoteUvmContext remoteContext()
-    {
-        return remoteContext;
     }
 
     boolean loadUvmResource(String name)
@@ -1081,6 +1080,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.benchmarkManager;
     }
 
+    @Override
+    public RemoteBenchmarkManager benchmarkManager()
+    {
+        return this.benchmarkManager;
+    }
+    
     @Override
     public RemoteOemManager oemManager()
     {

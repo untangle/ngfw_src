@@ -23,7 +23,7 @@ public class UserGroupMatcher extends UserDBMatcher {
         
         user = user.toLowerCase();
         
-        boolean isMemberOf = RemoteUvmContextFactory.factory().uvmContext().appAddressBook().isMemberOf(user,this.group);
+        boolean isMemberOf = RemoteUvmContextFactory.context().appAddressBook().isMemberOf(user,this.group);
         
         return isMemberOf;
     }
