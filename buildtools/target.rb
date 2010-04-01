@@ -414,7 +414,7 @@ class ServletBuilder < Target
     cp += Jars::Base.map { |j| j.filename }
     cp += [uvm_lib["api"], uvm_lib["localapi"]].map { |t| t.filename }
     cp += Jars::Base.map {|f| f.filename }
-    cp += [SRC_HOME+"/buildtools"]
+    cp += [SRC_HOME+"/buildtools"] unless SRC_HOME.nil?
 
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
             "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
