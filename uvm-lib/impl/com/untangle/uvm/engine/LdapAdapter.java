@@ -35,6 +35,7 @@
 package com.untangle.uvm.engine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -198,6 +199,7 @@ abstract class LdapAdapter {
                     ret.add(entry);
                 }
             }
+            Collections.sort(ret);
             return ret;
         }
         catch(NamingException ex) {

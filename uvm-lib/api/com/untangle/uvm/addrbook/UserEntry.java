@@ -41,7 +41,7 @@ import java.io.Serializable;
  * in the Address Book service.
  *
  */
-public final class UserEntry implements Serializable {
+public final class UserEntry implements Serializable, Comparable {
 
     public static final String UNCHANGED_PASSWORD = "***UNCHANGED***";
 
@@ -217,7 +217,9 @@ public final class UserEntry implements Serializable {
             makeNotNull(other.getStoredIn()).equals(makeNotNull(m_storedIn));
     }
     
-
+    public int compareTo(Object e) {
+        return m_uid.compareToIgnoreCase(((UserEntry)e).getUID());
+    }
 
     /**
      * hashcode for use in hashing

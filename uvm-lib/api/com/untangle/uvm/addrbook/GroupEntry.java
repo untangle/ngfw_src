@@ -42,7 +42,7 @@ import java.util.Collections;
  * in the Address Book service.
  *
  */
-public final class GroupEntry implements Serializable {
+public final class GroupEntry implements Serializable, Comparable {
 
     private String m_cn;
     private int m_gid;
@@ -184,6 +184,10 @@ public final class GroupEntry implements Serializable {
 
     public String getPrimaryGroupToken() {
         return primaryGroupToken;
+    }
+
+    public int compareTo(Object g) {
+        return m_cn.compareToIgnoreCase(((GroupEntry)g).getCN());
     }
 
     /**
