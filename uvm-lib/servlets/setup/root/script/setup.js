@@ -1897,8 +1897,7 @@ Ung.Setup = {
 
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
         
-        rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
-	oemName = rpc.jsonrpc.RemoteUvmContext.oemManager().getOemName();
+        oemName = rpc.setup.getOemName();
 
         i18n = new Ung.I18N( { "map" : Ung.SetupWizard.CurrentValues.languageMap });
 

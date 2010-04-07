@@ -130,5 +130,8 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         public void setAdminPassword( String password ) throws TransactionRolledbackException;
         
         public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException;
+
+        public String getOemName( );
+        
     }
 }

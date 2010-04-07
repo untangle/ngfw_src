@@ -79,6 +79,11 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         this.context.adminManager().setTimeZone( timeZone );
     }
 
+    public String getOemName()
+    {
+        return this.context.oemManager().getOemName();
+    }
+    
     public static UtJsonRpcServlet.SetupContext makeSetupContext()
     {
         RemoteUvmContext uvm = RemoteUvmContextFactory.context();
