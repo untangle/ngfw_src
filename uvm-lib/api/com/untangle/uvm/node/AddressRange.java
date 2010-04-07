@@ -66,6 +66,10 @@ public class AddressRange implements Comparable<AddressRange>
         return this.end;
     }
 
+    public String toString() {
+        return this.description;
+    }
+
     public boolean overlaps( AddressRange range )
     {
         if ( this.end < range.start ) return false;
