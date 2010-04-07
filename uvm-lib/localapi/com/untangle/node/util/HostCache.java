@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedList;
 import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
@@ -36,13 +37,13 @@ public class HostCache
      * If a new entry is added when at this limit the eldest is deleted
      * as per documented in LinkedHashMap
      */
-    private final static int CACHE_HARDMAX_ENTRIES = 50000;
+    private final static int CACHE_HARDMAX_ENTRIES = 100000;
 
     /**
      * The cache size will be reduced to this size when cleaned
      * Note: this is not actually enforced in real-time
      */
-    private final static int CACHE_MAX_ENTRIES = 4000;
+    private final static int CACHE_MAX_ENTRIES = 50000;
 
     /**
      * This is how long entries in the cache will be stored
@@ -64,7 +65,10 @@ public class HostCache
      * The cache cleaner thread
      */
     private final static Pulse cacheCleaner;
-    
+
+    /**
+     * log4j logger
+     */
     private final static Logger logger;
 
     static
@@ -74,6 +78,7 @@ public class HostCache
         cacheCleaner = new Pulse("HostCacheCleaner", true, new HostCacheCleaner());
         cacheCleaner.start(CACHE_CLEAN_FREQUENCY);
     }
+
     
     public HostCache()
     {
@@ -97,13 +102,13 @@ public class HostCache
         logger.debug("getCachedCategories( domain=" + domain + ", uri=" + uri + " )");
         
         for ( String dom = domain; null != dom ; dom = nextHost(dom) ) {
-            String value;
+            List<CacheRecord> cacheRecords;
             synchronized(cache) {
-                value = (String)cache.get(domain);
+                cacheRecords = (List<CacheRecord>)cache.get(domain);
             }
             
-            if (null != value) {
-                for (CacheRecord r : getRecords(value)) {
+            if (null != cacheRecords) {
+                for (CacheRecord r : cacheRecords) {
                     if (r.isExact()) {
                         if (domain.equals(dom) && uri.toLowerCase().equals(r.uri.toLowerCase())) {
                             logger.debug("getCachedCategories( domain=" + domain + ", uri=" + uri + " ) = " + r.getCategoryString());
@@ -157,53 +162,24 @@ public class HostCache
         logger.debug("addRecord( domain=" + domain + ", categories=" + categories + ", exact=" + exact + ", uri=" + uri + " )");
 
         synchronized(cache) {
-            String value = (String)cache.get(domain);
+            List<CacheRecord> cacheRecords = (List<CacheRecord>)cache.get(domain);
 
-            List<CacheRecord> l = getRecords(value);
-
-            for (Iterator<CacheRecord> i = l.iterator(); i.hasNext(); ) {
-                CacheRecord cr = i.next();
-                if (uri.equals(cr.getUri())) {
-                    i.remove();
+            if (cacheRecords == null) {
+                cacheRecords = new LinkedList();
+            } else {
+                for (Iterator<CacheRecord> i = cacheRecords.iterator(); i.hasNext(); ) {
+                    CacheRecord cr = i.next();
+                    if (uri.equals(cr.getUri())) {
+                        i.remove();
+                    }
                 }
-            }
+            } 
 
-            l.add(new CacheRecord(domain, categories, exact, uri));
+            cacheRecords.add(new CacheRecord(domain, categories, exact, uri));
 
-            String newValue = writeRecords(l);
-
-            logger.debug("cache.put( k=" + domain + ", v=" + newValue + " )");
-            cache.put(domain, newValue);
+            logger.debug("cache.put( domain=" + domain + ", records=" + cacheRecords + " )");
+            cache.put(domain, cacheRecords);
         }
-    }
-
-    private static List<CacheRecord> getRecords(String s)
-    {
-        List<CacheRecord> l = new ArrayList<CacheRecord>();
-
-        if (null != s) {
-            for (String r : s.split("\t")) {
-                CacheRecord cr = CacheRecord.readRecord(r);
-                if (null != cr) {
-                    l.add(cr);
-                }
-            }
-        }
-
-        return l;
-    }
-
-    private static String writeRecords(List<CacheRecord> l)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (CacheRecord cr : l) {
-            if (sb.length() > 0) {
-                sb.append("\t");
-            }
-
-            cr.writeRecord(sb);
-        }
-        return sb.toString();
     }
 
     public void cleanCache()
@@ -216,6 +192,7 @@ public class HostCache
         clean(expireAll);
     }
 
+    
     private static void clean(boolean expireAll)
     {
         long cutoff = System.currentTimeMillis() - CACHE_TTL;
@@ -232,7 +209,7 @@ public class HostCache
 
             for (Iterator itr = cache.keySet().iterator() ; itr.hasNext(); ) {
                 String key = (String)itr.next();
-                String value = (String)cache.get(key);
+                List<CacheRecord> cacheRecords = (List<CacheRecord>)cache.get(key);
 
                 logger.debug("Checking: " + key);
 
@@ -241,9 +218,7 @@ public class HostCache
                     removed++;
                     logger.debug("Removing: " + key + " (over max size)");
                 }
-                else if (null != value) {
-                    List<CacheRecord> cacheRecords = getRecords(value);
-
+                else if (null != cacheRecords) {
                     for (Iterator<CacheRecord> i = cacheRecords.iterator(); i.hasNext(); ) {
                         CacheRecord cr = i.next();
                         if (cr.getTime() < cutoff) {
@@ -252,8 +227,7 @@ public class HostCache
                     }
 
                     if (0 < cacheRecords.size()) {
-                        String newValue = writeRecords(cacheRecords);
-                        cache.put(key,newValue);
+                        cache.put(key,cacheRecords);
                         kept++;
                         logger.debug("Keeping : " + key);
                     } else {
@@ -270,7 +244,7 @@ public class HostCache
         printStats();
     }
 
-    private String nextHost(String host)
+    private static String nextHost(String host)
     {
         int i = host.indexOf('.');
         if (-1 == i) {
@@ -302,10 +276,14 @@ public class HostCache
 
     private static class LimitedSizeLinkedHashMap extends LinkedHashMap
     {
-
         protected boolean removeEldestEntry(Map.Entry eldest)
         {
-            return size() > CACHE_HARDMAX_ENTRIES;
+            boolean toobig = (size() > CACHE_HARDMAX_ENTRIES);
+
+            if (toobig) 
+                logger.warn("Max size reached, force pruning. (size: " + size() + ")");
+
+            return toobig;
         }
     }
     
@@ -375,7 +353,7 @@ public class HostCache
         @Override
         public String toString()
         {
-            return "CacheRecord time: " + time + " categoryStr: " + categoryStr + " exact: " + exact + " uri: " + uri;
+            return "[record" + " category: " + categoryStr + " exact: " + exact + " uri: " + uri + " expires: " + time;
         }
     }
 }
