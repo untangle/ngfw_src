@@ -342,6 +342,7 @@ Ung.Util= {
         }
         
         var data = [];
+        var datacount = 0;
         
         for ( var c = 0 ; c < this.interfaceEnumeration.length ; c++ ) {
             var key =this.interfaceEnumeration[c];
@@ -356,20 +357,6 @@ Ung.Util= {
             case "5": 
             case "6": name = String.format( i18n._("Interface {0}"), key ); break;
             case "7": name = i18n._("VPN") ; break;
-            case "more_trusted": 
-                if ( simpleMatchers === true ) {
-                    key = null;
-                    break;
-                }
-                name = i18n._("More Trusted");
-                break;
-            case "less_trusted": 
-                if ( simpleMatchers === true ) {
-                    key = null;
-                    break;
-                }
-                name = i18n._("Less Trusted") ; 
-                break;
             case "wan": 
                 if ( simpleMatchers === true ) {
                     key = null;
@@ -390,8 +377,9 @@ Ung.Util= {
                 /* XXX need to do something here? for interfaces like External | Internal XXX */
             }
             
-            if ( key != null ) {
-                data[c] = [ key,name ];
+            if ( key != null && key != "less_trusted" && key != "more_trusted" ) {
+                data[datacount] = [ key,name ];
+                datacount++;
             }
         }
         
