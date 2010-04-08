@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/zsh
 
 if [ $# -gt 1 ]; then
     echo "USAGE: $0 [<file>]"

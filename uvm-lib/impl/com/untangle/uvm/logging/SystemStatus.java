@@ -218,7 +218,7 @@ public class SystemStatus
              * uvm uptime
              */
             sb.append(SPACER);
-            proc = LocalUvmContextFactory.context().exec("/usr/share/untangle/bin/utuptime");
+            proc = LocalUvmContextFactory.context().exec("/usr/share/untangle/bin/untangle-vm-uptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append("UVM uptime: " + line + RETCHAR);

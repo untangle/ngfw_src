@@ -10,7 +10,7 @@ UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-"@PREFIX@/var/log/uvm/console.log"}
 UVM_UVM_LOG=${UVM_UVM_LOG:-"@PREFIX@/var/log/uvm/uvm.log"}
 UVM_GC_LOG=${UVM_GC_LOG:-"@PREFIX@/var/log/uvm/gc.log"}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-"@PREFIX@/var/log/uvm/wrapper.log"}
-UVM_LAUNCH=${UVM_LAUNCH:-"@PREFIX@/usr/share/untangle/bin/bunnicula"}
+UVM_LAUNCH=${UVM_LAUNCH:-"@PREFIX@/usr/share/untangle/bin/untangle-vm"}
 UVM_RUNDIR=${UVM_RUNDIR:-"@PREFIX@/var/run"}
 
 # Short enough to restart services and uvm promptly
@@ -18,10 +18,10 @@ SLEEP_TIME=15
 
 # Used to kill a child with extreme prejudice
 nukeIt() {
-    echo "$NAME: Killing -9 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+    echo "$NAME: Killing -9 all untangle-vm \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
     kill -3 $pid
     kill -9 $pid
-    kill -9 `ps awwx | grep java | grep bunnicula | awk '{print $1}'` 2>/dev/null
+    kill -9 `ps awwx | grep java | grep untangle-vm | awk '{print $1}'` 2>/dev/null
 }
 
 reapChildHardest() {
@@ -30,18 +30,18 @@ reapChildHardest() {
 }
 
 reapChildHarder() {
-    echo "$NAME: Killing -15 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+    echo "$NAME: Killing -15 all untangle-vm \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
     kill $pid
     sleep 1
-    if [ ! -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
-        echo "$NAME: Killing -15 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+    if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
+        echo "$NAME: Killing -15 all untangle-vm \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
         for i in `seq 1 5` ; do
-            if [ -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
+            if [ -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
                 flushIptables ; exit
             fi
             sleep 1
         done
-        if [ ! -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
+        if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
             reapChildHardest
         fi
     fi
@@ -53,20 +53,20 @@ getVirtualMemUsage() {
 }
 
 reapChild() {
-    echo "$NAME: shutting down bunnicula " >> $UVM_WRAPPER_LOG
+    echo "$NAME: shutting down untangle-vm " >> $UVM_WRAPPER_LOG
     kill -3 $pid
     @PREFIX@/usr/bin/mcli -t 20000 shutdown &> /dev/null
     sleep 1
     kill -INT $pid
-    if [ ! -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
-        echo "$NAME: Killing -INT all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+    if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
+        echo "$NAME: Killing -INT all untangle-vm \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
         for i in `seq 1 5` ; do
-            if [ -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
+            if [ -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
                 flushIptables ; exit
             fi
             sleep 1
         done
-        if [ ! -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
+        if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
             reapChildHarder
         fi
     fi
@@ -178,7 +178,7 @@ while true; do
     $UVM_LAUNCH $* >>$UVM_CONSOLE_LOG 2>&1 &
 
     pid=$!
-    echo "Bunnicula launched. (pid:$pid) (`date`)" >> $UVM_WRAPPER_LOG
+    echo "Untangle-Vm launched. (pid:$pid) (`date`)" >> $UVM_WRAPPER_LOG
 
     # Instead of waiting, we now monitor.
     while true; do
@@ -189,7 +189,7 @@ while true; do
             update_monit
 
             if [ ! -d /proc/$pid ] ; then
-                echo "*** restarting missing bunnicula $? on `date` ***" >> $UVM_WRAPPER_LOG
+                echo "*** restarting missing untangle-vm $? on `date` ***" >> $UVM_WRAPPER_LOG
                 break
             fi
 
@@ -199,7 +199,7 @@ while true; do
                     continue
                 fi
                 
-                echo "*** need to restart bunnicula $? on `date` ***" >> $UVM_WRAPPER_LOG
+                echo "*** need to restart untangle-vm $? on `date` ***" >> $UVM_WRAPPER_LOG
                 ## These file is created so it doesn't continuously restart every 15 seconds
                 touch "${UVM_RUNDIR}/last_forced_restart"
 
@@ -215,7 +215,7 @@ while true; do
 
 # Crash/Kill
     flushIptables
-    echo "*** bunnicula exited on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
+    echo "*** untangle-vm exited on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
     echo "*** copied $UVM_CONSOLE_LOG to $UVM_CONSOLE_LOG.crash ***" >> $UVM_WRAPPER_LOG
     echo "*** copied $UVM_UVM_LOG to $UVM_UVM_LOG.crash ***" >> $UVM_WRAPPER_LOG
     echo "*** copied $UVM_GC_LOG to $UVM_GC_LOG.crash ***" >> $UVM_WRAPPER_LOG
