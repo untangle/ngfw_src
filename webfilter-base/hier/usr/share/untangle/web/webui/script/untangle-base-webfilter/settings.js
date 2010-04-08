@@ -715,19 +715,17 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     buttonAlign : 'left'
                 },
                 items : [{
-                    title : this.i18n._('Sites'),
                     buttons : [{
                         name : 'Sites manage list',
-                        text : this.i18n._("manage list"),
+                        text : this.i18n._("Edit Passed Sites"),
                         handler : function() {
                             this.panelPassLists.onManagePassedUrls();
                         }.createDelegate(this)
                     }]
                 }, {
-                    title : this.i18n._('Client IP addresses'),
                     buttons : [{
                         name : 'Client IP addresses manage list',
-                        text : this.i18n._("manage list"),
+                        text : this.i18n._("Edit Passed Client IPs"),
                         handler : function() {
                             this.panelPassLists.onManagePassedClients();
                         }.createDelegate(this)
