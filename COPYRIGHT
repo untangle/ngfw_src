@@ -1,11 +1,12 @@
 Copyright (c) 2003-2010 Untangle, Inc.
 
-Untangle licenses the Untangle components of the Untangle Software under
-version 2 of the GNU General Public License (GPL). Certain third-party software
-components distributed with the Untangle Software are licensed under other free
-or open source license terms. Many of the Untangle components and data are also
-licensed with the GNU Classpath exception, which allows linking of independent
-non-GPL modules with the Untangle software. The GNU Classpath exception applies
-to source files in which Untangle has placed a notice stating the exception.
-See the source code files for more details.
+Untangle licenses the Untangle components of the Untangle Software
+under version 2 of the GNU General Public License (GPL). Certain
+third-party software components distributed with the Untangle Software
+are licensed under other free or open source license terms. Many of
+the Untangle components and data are also licensed with the GNU
+Classpath exception, which allows linking of independent non-GPL
+modules with the Untangle software. The GNU Classpath exception
+applies to source files in which Untangle has placed a notice stating
+the exception.  See the source code files for more details.
 
