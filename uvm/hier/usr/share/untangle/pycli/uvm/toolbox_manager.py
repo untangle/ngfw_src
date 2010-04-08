@@ -40,9 +40,9 @@ class ToolboxManager(Manager):
         self.__print_mackages( self.__toolbox.upgradable())
 
     def api_uptodate(self):
-        mkgs = self.__toolbox.upgradable()
-        for mkg in mkgs:
-            print "name: %s\tinstalled: %s\tavailable: %s" % ( mkg["name"], mkg["installedVersion"], mkg["availableVersion"])
+        pkgs = self.__toolbox.upgradable()
+        for pkg in pkgs:
+            print "name: %s\tinstalled: %s\tavailable: %s" % ( pkg["name"], pkg["installedVersion"], pkg["availableVersion"])
 
     def api_register(self, mackageName):
         print "Registering the mackage: ", mackageName

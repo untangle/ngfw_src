@@ -41,13 +41,13 @@ STDERR.flush
 def printusage()
   puts _('usage:')
 puts <<STR
-  mkg installed
-  mkg available
-  mkg install <mackage>
-  mkg remove
-  mkg predictInstall
-  mkg update
-  mkg upgrade
+  ut-apt installed
+  ut-apt available
+  ut-apt install <mackage>
+  ut-apt remove
+  ut-apt predictInstall
+  ut-apt update
+  ut-apt upgrade
 STR
   return 1
 end
@@ -57,7 +57,7 @@ def log(str)
   STDERR.flush
 end
 
-class DevMkg
+class DevApt
   def initialize(stamp)
     @pkg_list_dir = "#{PREFIX}/tmp"
     @stamp = stamp
@@ -129,7 +129,7 @@ class DevMkg
   end
 end
 
-class RealMkg
+class RealApt
   def initialize(stamp)
     @stamp = stamp
   end
@@ -271,7 +271,7 @@ class RealMkg
   end
 
   def get_tempdir()
-    tmp = Tempfile.new('mkg')
+    tmp = Tempfile.new('ut-apt')
     path = tmp.path
     tmp.delete
     Dir.mkdir(path)
@@ -337,31 +337,31 @@ end
 
 ret = 0
 
-mkg = PREFIX.empty? ? RealMkg.new(stamp) : DevMkg.new(stamp)
+apt = PREFIX.empty? ? RealApt.new(stamp) : DevApt.new(stamp)
 
 exit case ARGV.shift
      when 'installed'
-       mkg.installed()
+       apt.installed()
      when 'available'
-       mkg.available()
+       apt.available()
      when 'install'
        if ARGV.empty?
          printusage()
        else
-         mkg.install(ARGV.shift)
+         apt.install(ARGV.shift)
        end
      when 'update'
-       mkg.update()
+       apt.update()
      when 'upgrade'
-       mkg.upgrade()
+       apt.upgrade()
      when 'remove'
        if ARGV.empty?
          printusage()
        else
-         mkg.remove(ARGV.shift)
+         apt.remove(ARGV.shift)
        end
      when 'predictInstall'
-       mkg.predictInstall(ARGV.shift)
+       apt.predictInstall(ARGV.shift)
      else
          printusage()
      end

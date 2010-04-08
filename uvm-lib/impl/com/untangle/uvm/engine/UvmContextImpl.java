@@ -728,13 +728,13 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     @Override
     protected void init()
     {
+        this.oemManager = new OemManagerImpl();
+
         this.uploadManager = new UploadManagerImpl();
         
         this.jStoreManager = new LocalJStoreManagerImpl();
         
         this.benchmarkManager = new LocalBenchmarkManagerImpl();
-
-        this.oemManager = new OemManagerImpl();
         
         JSONSerializer serializer = new JSONSerializer();
         try {
@@ -1148,14 +1148,10 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     // static initializer -----------------------------------------------------
 
     static {
-        ACTIVATE_SCRIPT = System.getProperty("uvm.bin.dir")
-            + "/utactivate";
-        ACTIVATION_KEY_FILE = System.getProperty("uvm.home")
-            + "/activation.key";
-        REGISTRATION_INFO_FILE = System.getProperty("uvm.home")
-            + "/registration.info";
-        POP_ID_FILE = System.getProperty("uvm.home")
-            + "/popid";
+        ACTIVATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/utactivate";
+        ACTIVATION_KEY_FILE = System.getProperty("uvm.home") + "/activation.key";
+        REGISTRATION_INFO_FILE = System.getProperty("uvm.home") + "/registration.info";
+        POP_ID_FILE = System.getProperty("uvm.home") + "/popid";
         ARGON_FAKE_KEY = "argon.fake";
     }
 }

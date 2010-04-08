@@ -87,15 +87,11 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
     private final Logger logger = Logger.getLogger(getClass());
 
     private final NodeManagerState nodeManagerState;
-    private final Map<Tid, NodeContextImpl> tids
-        = new ConcurrentHashMap<Tid, NodeContextImpl>();
-    private final ThreadLocal<NodeContext> threadContexts
-        = new InheritableThreadLocal<NodeContext>();
+    private final Map<Tid, NodeContextImpl> tids = new ConcurrentHashMap<Tid, NodeContextImpl>();
+    private final ThreadLocal<NodeContext> threadContexts = new InheritableThreadLocal<NodeContext>();
     private final UvmRepositorySelector repositorySelector;
 
-    private final Pulse cleanerPulse = new Pulse("session-cleaner",
-                                                 true,
-                                                 new SessionExpirationWorker());
+    private final Pulse cleanerPulse = new Pulse("session-cleaner", true, new SessionExpirationWorker());
     
     private Map<String,Set<String>> enabledNodes = new HashMap<String,Set<String>>();
 
@@ -199,7 +195,6 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return l;
     }
 
-
     public List<Tid> nodeInstances(Policy policy)
     {
         return getNodesForPolicy(policy);
@@ -239,7 +234,8 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return tids.get(tid);
     }
 
-    public Node node(String name) {
+    public Node node(String name)
+    {
         Node node = null;
         List<Tid> nodeInstances = nodeInstances(name);
         if(nodeInstances.size()>0){
@@ -249,28 +245,24 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return node;
     }
 
-    public NodeDesc instantiate(String nodeName)
-        throws DeployException
+    public NodeDesc instantiate(String nodeName) throws DeployException
     {
         Policy policy = getDefaultPolicyForNode(nodeName);
         return instantiate(nodeName, policy, new String[0]);
     }
 
-    public NodeDesc instantiate(String nodeName, String[] args)
-        throws DeployException
+    public NodeDesc instantiate(String nodeName, String[] args) throws DeployException
     {
         Policy policy = getDefaultPolicyForNode(nodeName);
         return instantiate(nodeName, policy, args);
     }
 
-    public NodeDesc instantiate(String nodeName, Policy policy)
-        throws DeployException
+    public NodeDesc instantiate(String nodeName, Policy policy) throws DeployException
     {
         return instantiate(nodeName, policy, new String[0]);
     }
 
-    public NodeDesc instantiate(String nodeName, Policy p, String[] args)
-        throws DeployException
+    public NodeDesc instantiate(String nodeName, Policy p, String[] args) throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
@@ -334,8 +326,8 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return tDesc;
     }
 
-    public NodeDesc instantiateAndStart(String nodeName, Policy p)
-            throws DeployException, NodeStartException {
+    public NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException, NodeStartException
+    {
         NodeDesc nd = instantiate(nodeName, p);
         if (!nd.getNoStart()) {
             NodeContext nc = nodeContext(nd.getTid());
@@ -445,7 +437,6 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         cleanerPulse.start(60000);
     }
 
-    // destroy the node manager
     void destroy()
     {
         cleanerPulse.stop();
@@ -518,15 +509,14 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     void restart(String name)
     {
-        RemoteToolboxManager tbm = LocalUvmContextFactory
-            .context().toolboxManager();
+        RemoteToolboxManager tbm = LocalUvmContextFactory .context().toolboxManager();
 
         String availVer = tbm.mackageDesc(name).getInstalledVersion();
 
         synchronized (this) {
-            List<Tid> mkgTids = nodeInstances(name);
-            if (0 < mkgTids.size()) {
-                Tid t = mkgTids.get(0);
+            List<Tid> nTids = nodeInstances(name);
+            if (0 < nTids.size()) {
+                Tid t = nTids.get(0);
                 NodeContext tc = tids.get(t);
 
                 if (0 < tc.getNodeDesc().getExports().size()) {
@@ -541,7 +531,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
                         }
                     }
                 } else {
-                    for (Tid tid : mkgTids) {
+                    for (Tid tid : nTids) {
                         MackageDesc md = tids.get(tid).getMackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
@@ -663,9 +653,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     private static int startThreadNum = 0;
 
-    private void startUnloaded(List<NodePersistentState> startQueue,
-                               Map<Tid, NodeDesc> tDescs,
-                               Set<String> loadedParents)
+    private void startUnloaded(List<NodePersistentState> startQueue, Map<Tid, NodeDesc> tDescs, Set<String> loadedParents)
     {
         RemoteToolboxManager tbm = LocalUvmContextFactory
             .context().toolboxManager();
@@ -687,9 +675,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
                         logger.info("Restarting: " + tid + " (" + name + ")");
                         NodeContextImpl tc = null;
                         try {
-                            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), tDesc,
-                                                     mackageDesc.getName(),
-                                                     false);
+                            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), false);
                             tids.put(tid, tc);
                             tc.init(args);
                             logger.info("Restarted: " + tid);
@@ -746,9 +732,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return result;
     }
 
-    private List<NodePersistentState> getLoadable(List<NodePersistentState> unloaded,
-                                                  Map<Tid, NodeDesc> tDescs,
-                                                  Set<String> loadedParents)
+    private List<NodePersistentState> getLoadable(List<NodePersistentState> unloaded, Map<Tid, NodeDesc> tDescs, Set<String> loadedParents)
     {
         List<NodePersistentState> l = new ArrayList<NodePersistentState>(unloaded.size());
         Set<String> thisPass = new HashSet<String>(unloaded.size());
@@ -857,9 +841,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
      * @exception DeployException the descriptor does not parse or
      * parent cannot be loaded.
      */
-    private NodeDesc initNodeDesc(MackageDesc mackageDesc,
-                                  URL[] urls, Tid tid)
-        throws DeployException
+    private NodeDesc initNodeDesc(MackageDesc mackageDesc, URL[] urls, Tid tid) throws DeployException
     {
         // XXX assumes no parent cl has this file.
         InputStream is = new URLClassLoader(urls)
@@ -891,11 +873,9 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return nodeDesc;
     }
 
-    private Policy getDefaultPolicyForNode(String nodeName)
-        throws DeployException
+    private Policy getDefaultPolicyForNode(String nodeName) throws DeployException
     {
-        RemoteToolboxManager tbm = LocalUvmContextFactory
-            .context().toolboxManager();
+        RemoteToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if (mackageDesc == null)
             throw new DeployException("Node named " + nodeName + " not found");
@@ -906,8 +886,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         }
     }
 
-    private Tid newTid(Policy policy, String nodeName)
-        throws DeployException
+    private Tid newTid(Policy policy, String nodeName) throws DeployException
     {
         final Tid tid;
         synchronized (nodeManagerState) {
@@ -1027,7 +1006,8 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
      * Used to empty the cache of the enabled nodes.  This cache is used to build
      * the pipeline, so it must be updated whenever the node state changes.
      */
-    private void clearEnabledNodes() {
+    private void clearEnabledNodes()
+    {
         logger.debug( "clearing the cache of enabled nodes." );
         synchronized ( this.enabledNodes ) {
             this.enabledNodes.clear();
@@ -1037,8 +1017,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     // private static classes -------------------------------------------------
 
-    private static class NodeManagerLoggingContext
-        implements UvmLoggingContext
+    private static class NodeManagerLoggingContext implements UvmLoggingContext
     {
         private final NodeContext tctx;
 
@@ -1093,8 +1072,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         }
     }
 
-    private static class SessionExpirationWorker
-        implements Runnable
+    private static class SessionExpirationWorker implements Runnable
     {
         ExpiredPolicyMatcher matcher = new ExpiredPolicyMatcher();
 

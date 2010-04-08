@@ -23,7 +23,6 @@
 ENV["JAVA_HOME"] = "/usr/lib/jvm/java-6-sun"
 
 Kernel.system("pwd")
-Kernel.system("ls ../../work/src")
 SRC_HOME = [ ENV['SRC_HOME'], '../../work/src', '.' ].compact.find do |d|
   File.exist?(d)
 end

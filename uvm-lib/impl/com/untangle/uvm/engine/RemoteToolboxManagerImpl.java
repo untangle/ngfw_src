@@ -24,11 +24,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -100,10 +102,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     private static RemoteToolboxManagerImpl TOOLBOX_MANAGER;
 
-    
     /* Prints out true if the upgrade server is available */
-    private static final String UPGRADE_SERVER_AVAILABLE = System.getProperty( "uvm.home" ) + 
-        "/bin/upgrade-server-available";
+    private static final String UPGRADE_SERVER_AVAILABLE = System.getProperty("uvm.bin.dir") + "/ut-upgrade-avail";
 
     static {
         try {
@@ -490,7 +490,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     {
         try {
             removing = true;
-            execMkg("remove " + name);
+            execApt("remove " + name);
         } catch (MackageException exn) {
             throw new MackageUninstallException(exn);
         } finally {
@@ -511,7 +511,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 public Object call() throws Exception
                 {
                     updating = true;
-                    execMkg("update");
+                    execApt("update");
                     updating = false;
 
                     return this;
@@ -536,7 +536,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 }
             } catch (TimeoutException exn) {
                 f.cancel(true);
-                throw new MackageException("mkg timed out");
+                throw new MackageException("ut-apt timed out");
             }
         } while (tryAgain);
     }
@@ -558,7 +558,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 {
                     try {
                         upgrading = true;
-                        execMkg("upgrade", alt.getKey());
+                        execApt("upgrade", alt.getKey());
                     } catch (MackageException exn) {
                         logger.warn("could not upgrade", exn);
                     } finally {
@@ -799,7 +799,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 {
                     try {
                         installing = true;
-                        execMkg("install " + name, alt.getKey());
+                        execApt("install " + name, alt.getKey());
                     } catch (MackageException exn) {
                         logger.warn("install failed", exn);
                     } finally {
@@ -946,8 +946,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         upToDate = curList.toArray(new MackageDesc[curList.size()]);
     }
 
-    // XXX we need to hold a lock while updating
-
     private Map<String, MackageDesc> parsePkgs()
     {
         Map<String, String> instList = parseInstalled();
@@ -961,21 +959,18 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         Map<String, MackageDesc> pkgs;
 
         try {
-            String cmd = System.getProperty("uvm.bin.dir")
-                + "/mkg available";
+            String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt available";
             Process p = LocalUvmContextFactory.context().exec(cmd);
             pkgs = readPkgList(p.getInputStream(), instList);
         } catch (Exception exn) {
-            logger.fatal("Unable to parse mkg available list, proceeding with empty list", exn);
+            logger.fatal("Unable to parse ut-apt available list, proceeding with empty list", exn);
             return new HashMap<String, MackageDesc>();
         }
 
         return pkgs;
     }
 
-    private Map<String, MackageDesc> readPkgList(InputStream is,
-                                                 Map<String, String> instList)
-        throws IOException
+    private Map<String, MackageDesc> readPkgList(InputStream is, Map<String, String> instList) throws IOException
     {
         Map<String, MackageDesc> pkgs = new HashMap<String, MackageDesc>();
 
@@ -985,6 +980,12 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         StringBuilder key = new StringBuilder();
         StringBuilder value = new StringBuilder();
         String line;
+        List<String> hidePkgs = new LinkedList();
+        if (System.getProperty("uvm.hidden.libitems") != null) {
+            String[] libitems = System.getProperty("uvm.hidden.libitems").split(",");
+            hidePkgs = Arrays.asList(libitems);
+        }
+
         while (null != (line = br.readLine())) {
             if (line.startsWith("#")) {
                 continue;
@@ -1007,7 +1008,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
                 if (!m.containsKey("package")) { continue; }
 
-
                 String name = m.get("package");
 
                 MackageDesc md = new MackageDesc(m, instList.get(name));
@@ -1015,8 +1015,13 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     continue;
                 }
 
-                logger.debug("Added available mackage: " + name);
-                pkgs.put(name, md);
+                if (hidePkgs.contains(name)) {
+                    logger.info("Hiding package: " + name);
+                }
+                else {
+                    logger.debug("Added available mackage: " + name);
+                    pkgs.put(name, md);
+                }
 
                 m.clear();
             } else if (line.startsWith(" ") || line.startsWith("\t")) {
@@ -1055,7 +1060,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         try {
             String cmd = System.getProperty("uvm.bin.dir")
-                + "/mkg installed";
+                + "/ut-apt installed";
             Process p = LocalUvmContextFactory.context().exec(cmd);
             instList = readInstalledList(p.getInputStream());
         } catch (IOException exn) {
@@ -1065,8 +1070,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return instList;
     }
 
-    private Map<String, String> readInstalledList(InputStream is)
-        throws IOException
+    private Map<String, String> readInstalledList(InputStream is) throws IOException
     {
         Map<String, String> m = new HashMap();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -1095,10 +1099,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return m;
     }
 
-    private synchronized void execMkg(String command, long key)
-        throws MackageException
+    private synchronized void execApt(String command, long key) throws MackageException
     {
-        String cmdStr = System.getProperty("uvm.bin.dir") + "/mkg "
+        String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt "
             + (0 > key ? "" : "-k " + key + " ") + command;
 
         logger.debug("running: " + cmdStr);
@@ -1132,17 +1135,16 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         refreshLists();
     }
 
-    private void execMkg(String command) throws MackageException
+    private void execApt(String command) throws MackageException
     {
-        execMkg(command, -1);
+        execApt(command, -1);
     }
 
-    private List<String> predictNodeInstall(String mkg)
+    private List<String> predictNodeInstall(String pkg)
     {
         List<String> l = new ArrayList<String>();
 
-        String cmd = System.getProperty("uvm.bin.dir")
-            + "/mkg predictInstall " + mkg;
+        String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt predictInstall " + pkg;
         try {
             Process p = LocalUvmContextFactory.context().exec(cmd);
             InputStream is = p.getInputStream();
@@ -1163,7 +1165,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                 l.add(line);
             }
         } catch (IOException exn) {
-            logger.warn("could not predict node install: " + mkg, exn);
+            logger.warn("could not predict node install: " + pkg, exn);
         }
 
         return l;

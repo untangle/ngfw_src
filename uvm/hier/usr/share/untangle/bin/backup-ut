@@ -35,7 +35,7 @@ dump_installed()
 {
     instlist=$1
 
-    /usr/share/untangle/bin/mkg installed > $instlist
+    /usr/share/untangle/bin/ut-apt installed > $instlist
 }
 
 dump_db()

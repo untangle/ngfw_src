@@ -20,6 +20,7 @@ package com.untangle.uvm.engine;
 
 import org.apache.log4j.Logger;
 
+import java.util.Enumeration;
 import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,7 +67,6 @@ class OemManagerImpl implements RemoteOemManager
             }
         }
 
-
         /**
          * Set the defaults if they have not been set
          */
@@ -79,6 +79,12 @@ class OemManagerImpl implements RemoteOemManager
             props.setProperty(OEM_PROPERTY_URL,"http://untangle.com/");
         }
 
+        Enumeration e = props.keys();
+        while(e.hasMoreElements()) {
+            String key = (String)e.nextElement();
+            logger.info("Setting OEM property " + key +  " = " + props.getProperty(key));
+            System.setProperty(key,props.getProperty(key));
+        }
     }
 
     @Override

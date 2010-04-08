@@ -48,11 +48,4 @@ copytruncate
 missingok
 }
 
-/var/log/uvm/banner-nanny.log {
-rotate 9
-size 500k
-compress
-notifempty
-copytruncate
-missingok
-}
+
