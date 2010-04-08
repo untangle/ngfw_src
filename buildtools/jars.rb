@@ -139,7 +139,7 @@ class Jars
 
   ## Jars required to run/compile unit tests
   Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ]
-  Bdb        = [ Jars.downloadTarget('je-3.2.74/lib/je-3.2.74.jar') ]
+  Bdb        = [ Jars.downloadTarget('je-4.0.92/lib/je-4.0.92.jar') ]
   DnsJava    = [ Jars.downloadTarget('dnsjava-2.0.6/dnsjava-2.0.6.jar') ]
 
   HttpClient = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
