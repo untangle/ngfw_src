@@ -21,112 +21,111 @@ package com.untangle.node.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedList;
+import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 
-import com.sleepycat.je.Cursor;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.Pulse;
 
 public class HostCache
 {
-    private final long CACHE_TTL = 604800000; // 1 week
+    /**
+     * This is a hard-limit on the #domains in the cache
+     * If a new entry is added when at this limit the eldest is deleted
+     * as per documented in LinkedHashMap
+     */
+    private final static int CACHE_HARDMAX_ENTRIES = 50000;
 
-    private Database db;
+    /**
+     * The cache size will be reduced to this size when cleaned
+     * Note: this is not actually enforced in real-time
+     */
+    private final static int CACHE_MAX_ENTRIES = 40000;
 
-    private final Logger logger = Logger.getLogger(getClass());
-    private final Pulse cacheCleaner = new Pulse("HostCacheCleaner", true, new HostCacheCleaner());
+    /**
+     * This is how long entries in the cache will be stored
+     */
+    private final static long CACHE_TTL = 1000*60*60*24; // 24 hours
 
+    /**
+     * The cache will be cleaned every this many milliseconds
+     * during cleaned all expired (according to CACHE_TTL_ entries are removed
+     */
+    private final static long CACHE_CLEAN_FREQUENCY = 60*60*1000L;
+
+    /**
+     * This is a map of of all domains mapped to their associated URI and categories
+     */
+    private final static Map cache;
+
+    /**
+     * The cache cleaner thread
+     */
+    private final static Pulse cacheCleaner;
+    
+    private final static Logger logger;
+
+    static
+    {
+        logger = Logger.getLogger(HostCache.class);
+        cache = new LimitedSizeLinkedHashMap();
+        cacheCleaner = new Pulse("HostCacheCleaner", true, new HostCacheCleaner());
+        cacheCleaner.start(CACHE_CLEAN_FREQUENCY);
+    }
+    
     public HostCache()
     {
-        cacheCleaner.start(3600000L);
+        logger.info("Creating HostCache.");
     }
 
     public void open()
     {
-        Environment dbEnv = LocalUvmContextFactory.context().getBdbEnvironment();
-        DatabaseConfig dbCfg = new DatabaseConfig();
-        dbCfg.setAllowCreate(true);
-
-        Database d;
-        try {
-            d = dbEnv.openDatabase(null, "esoft-sitefinder", dbCfg);
-        } catch (DatabaseException exn) {
-            logger.warn("could not open database", exn);
-            d = null;
-        }
-        this.db = d;
+        /* no op */
+        logger.debug("open()");
     }
 
     public void close()
     {
-        Database db = this.db;
-        this.db = null;
-        try {
-            db.close();
-        } catch (DatabaseException exn) {
-            logger.warn("could not close database", exn);
-        }
+        /* no op */
+        logger.debug("close()");
     }
 
     public String getCachedCategories(String domain, String uri)
     {
-        Database db = this.db;
+        logger.debug("getCachedCategories( domain=" + domain + ", uri=" + uri + " )");
         
-        if (null == db) {
-            return null;
-        }
-
-        String dom = domain;
-
-        while (null != dom) {
-            String s = null;
-            try {
-                DatabaseEntry k = new DatabaseEntry(dom.getBytes());
-                DatabaseEntry v = new DatabaseEntry();
-
-                OperationStatus status = db.get(null, k, v,
-                                                LockMode.READ_UNCOMMITTED);
-                if (OperationStatus.SUCCESS == status) {
-                    byte[] data = v.getData();
-                    if (null != data) {
-                        s = new String(data);
-                    }
-                }
-            } catch (DatabaseException exn) {
-                logger.warn("could not access database", exn);
-            }
-
-            if (null != s) {
-                for (CacheRecord r : getRecords(s)) {
-                    if (r.isExact()) {
-                        if (domain.equals(dom)
-                            && uri.toLowerCase().equals(r.uri.toLowerCase())) {
-                            return r.getCategoryString();
-                        }
-                    } else {
-                        if (uri.toLowerCase().startsWith(r.uri.toLowerCase())) {
-                            return r.getCategoryString();
+        for ( String dom = domain; null != dom ; dom = nextHost(dom) ) {
+            List<CacheRecord> cacheRecords;
+            synchronized(cache) {
+                cacheRecords = (List<CacheRecord>)cache.get(dom);
+            
+                if (null != cacheRecords) {
+                    for (CacheRecord r : cacheRecords) {
+                        if (r.isExact()) {
+                            if (domain.equals(dom) && uri.toLowerCase().equals(r.uri.toLowerCase())) {
+                                logger.debug("getCachedCategories( domain=" + domain + ", uri=" + uri + " ) = " + r.getCategoryString());
+                                return r.getCategoryString();
+                            }
+                        } else {
+                            if (uri.toLowerCase().startsWith(r.uri.toLowerCase())) {
+                                logger.debug("getCachedCategories( domain=" + domain + ", uri=" + uri + " ) = " + r.getCategoryString());
+                                return r.getCategoryString();
+                            }
                         }
                     }
                 }
             }
-
-            dom = nextHost(dom);
         }
         return null;
     }
 
-    public void cacheCategories(String url, String categories,
-                                String origDomain, String origUri)
+    public void cacheCategories(String url, String categories, String origDomain, String origUri)
     {
+        logger.debug("cacheCategories( url=" + url + ", categories=" + categories + ", origDomain=" + origDomain + ", origUri=" + origUri + " )");
+
         String[] s = url.split("/", 2);
 
         if (s.length >= 1) {
@@ -154,141 +153,92 @@ public class HostCache
         }
     }
 
-    private void addRecord(String domain, String categories, boolean exact,
-                           String uri)
+    private void addRecord(String domain, String categories, boolean exact, String uri)
     {
-        if (db == null) {
-            return;
-        }
+        logger.debug("addRecord( domain=" + domain + ", categories=" + categories + ", exact=" + exact + ", uri=" + uri + " )");
 
-        DatabaseEntry k = new DatabaseEntry(domain.getBytes());
-        DatabaseEntry v = new DatabaseEntry();
+        synchronized(cache) {
+            List<CacheRecord> cacheRecords = (List<CacheRecord>)cache.get(domain);
 
-        String s = null;
-        try {
-            OperationStatus status = db.get(null, k, v,
-                                            LockMode.READ_UNCOMMITTED);
-            if (OperationStatus.SUCCESS == status) {
-                byte[] data = v.getData();
-                if (null != data) {
-                    s = new String(data);
+            if (cacheRecords == null) {
+                cacheRecords = new LinkedList();
+            } else {
+                for (Iterator<CacheRecord> i = cacheRecords.iterator(); i.hasNext(); ) {
+                    CacheRecord cr = i.next();
+                    if (uri.equals(cr.getUri())) {
+                        i.remove();
+                    }
                 }
-            }
-        } catch (DatabaseException exn) {
-            logger.warn("could not access database", exn);
+            } 
+
+            cacheRecords.add(new CacheRecord(domain, categories, exact, uri));
+
+            logger.debug("cache.put( domain=" + domain + ", records=" + cacheRecords + " )");
+            cache.put(domain, cacheRecords);
         }
-
-        List<CacheRecord> l = getRecords(s);
-        for (Iterator<CacheRecord> i = l.iterator(); i.hasNext(); ) {
-            CacheRecord cr = i.next();
-            if (uri.equals(cr.getUri())) {
-                i.remove();
-            }
-        }
-
-        l.add(new CacheRecord(domain, categories, exact, uri));
-
-        s = writeRecords(l);
-        v.setData(s.getBytes());
-
-        try {
-            db.put(null, k, v);
-        } catch (DatabaseException exn) {
-            logger.warn("could not set " + s, exn);
-        }
-    }
-
-    private List<CacheRecord> getRecords(String s)
-    {
-        List<CacheRecord> l = new ArrayList<CacheRecord>();
-
-        if (null != s) {
-            for (String r : s.split("\t")) {
-                CacheRecord cr = CacheRecord.readRecord(r);
-                if (null != cr) {
-                    l.add(cr);
-                }
-            }
-        }
-
-        return l;
-    }
-
-    private String writeRecords(List<CacheRecord> l)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (CacheRecord cr : l) {
-            if (sb.length() > 0) {
-                sb.append("\t");
-            }
-
-            cr.writeRecord(sb);
-        }
-        return sb.toString();
     }
 
     public void cleanCache()
     {
-        this.cleanCache(false);
+        clean(false);
     }
     
     public void cleanCache(boolean expireAll)
     {
-        Database cache = this.db;
-        if (null == cache) {
-            return;
-        }
+        clean(expireAll);
+    }
 
+    private static void clean(boolean expireAll)
+    {
         long cutoff = System.currentTimeMillis() - CACHE_TTL;
-        
+        int removed = 0;
+        int kept = 0;
+
         /* When expire all is true, just delete all of the records. */
         if ( expireAll ) {
             cutoff = Long.MAX_VALUE;
         }
 
-        Cursor c = null;
-        try {
-            
-            DatabaseEntry k = new DatabaseEntry();
-            DatabaseEntry v = new DatabaseEntry();
+        synchronized(cache) {
+            logger.info("Cleaning HostCache... (Current Size: " + cache.size() + ")");
 
-            c = cache.openCursor(null, null);
-            while (OperationStatus.SUCCESS == c.getNext(k, v, LockMode.DEFAULT)) {
-                byte[] data = v.getData();
-                if (null != data) {
-                    String s = new String(data);
-                    List<CacheRecord> l = getRecords(s);
+            for (Iterator itr = cache.keySet().iterator() ; itr.hasNext(); ) {
+                String key = (String)itr.next();
+                List<CacheRecord> cacheRecords = (List<CacheRecord>)cache.get(key);
 
-                    for (Iterator<CacheRecord> i = l.iterator(); i.hasNext(); ) {
+                logger.debug("Checking: " + key);
+
+                if (cache.size() >= CACHE_MAX_ENTRIES) {
+                    itr.remove();
+                    removed++;
+                    logger.debug("Removing: " + key + " (over max size)");
+                }
+                else if (null != cacheRecords) {
+                    for (Iterator<CacheRecord> i = cacheRecords.iterator(); i.hasNext(); ) {
                         CacheRecord cr = i.next();
                         if (cr.getTime() < cutoff) {
                             i.remove();
                         }
                     }
 
-                    if (0 < l.size()) {
-                        s = writeRecords(l);
-                        v.setData(s.getBytes());
-                        c.putCurrent(v);
+                    if (0 < cacheRecords.size()) {
+                        cache.put(key,cacheRecords);
+                        kept++;
+                        logger.debug("Keeping : " + key);
                     } else {
-                        c.delete();
+                        itr.remove();
+                        removed++; 
+                        logger.debug("Removing: " + key + " (expired)");
                     }
                 }
             }
-        } catch (DatabaseException exn) {
-            logger.warn("could not clear database");
-        } finally {
-            if (null != c) {
-                try {
-                    c.close();
-                } catch (DatabaseException exn) {
-                    logger.warn("could not close cursor", exn);
-                }
-            }
         }
+
+        logger.info("Cleaned  HostCache. (Kept: " + kept + " Removed: " + removed + ")");
+
+        printStats();
     }
 
-    // XXX duplicated code
     private String nextHost(String host)
     {
         int i = host.indexOf('.');
@@ -303,15 +253,31 @@ public class HostCache
             return host.substring(i + 1);
         }
     }
+
+    private static void printStats()
+    {
+        synchronized(cache) {
+            logger.info("HostCache Stats: #Domains:" + cache.size());
+        }
+    }
     
-    private class HostCacheCleaner implements Runnable
+    private static class HostCacheCleaner implements Runnable
     {
         public void run()
         {
-            HostCache.this.cleanCache(false);
+            clean(false);
         }
     }
 
+    private static class LimitedSizeLinkedHashMap extends LinkedHashMap
+    {
+
+        protected boolean removeEldestEntry(Map.Entry eldest)
+        {
+            return size() > CACHE_HARDMAX_ENTRIES;
+        }
+    }
+    
     private static class CacheRecord
     {
         private String time;
@@ -319,8 +285,7 @@ public class HostCache
         private String exact;
         private String uri;
 
-        CacheRecord(String domain, String categoryStr, boolean exact,
-                    String uri)
+        CacheRecord(String domain, String categoryStr, boolean exact, String uri)
         {
             this.time = Long.toString(System.currentTimeMillis());
             this.categoryStr = categoryStr;
@@ -328,8 +293,7 @@ public class HostCache
             this.uri = uri;
         }
 
-        private CacheRecord(String time, String categoryStr, String exact,
-                            String uri)
+        private CacheRecord(String time, String categoryStr, String exact, String uri)
         {
             this.time = time;
             this.categoryStr = categoryStr;
@@ -348,9 +312,9 @@ public class HostCache
             }
         }
 
-        private void writeRecord(StringBuilder sb) {
-            sb.append(time).append(" ").append(categoryStr).append(" ")
-                .append(exact).append(" ").append(uri);
+        private void writeRecord(StringBuilder sb)
+        {
+            sb.append(time).append(" ").append(categoryStr).append(" ").append(exact).append(" ").append(uri);
         }
 
         public long getTime()
@@ -380,8 +344,7 @@ public class HostCache
         @Override
         public String toString()
         {
-            return "CacheRecord time: " + time + " categoryStr: " + categoryStr
-                + " exact: " + exact + " uri: " + uri;
+            return "[record" + " category: " + categoryStr + " exact: " + exact + " uri: " + uri + " expires: " + time;
         }
     }
 }
