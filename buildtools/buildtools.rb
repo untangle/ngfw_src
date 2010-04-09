@@ -22,8 +22,9 @@
 # Certified Filthy2008
 ENV["JAVA_HOME"] = "/usr/lib/jvm/java-6-sun"
 
-Kernel.system("pwd")
-SRC_HOME = [ ENV['SRC_HOME'], '../../work/src', '.' ].compact.find do |d|
+POTENTIAL_SRC_HOMES = [ ENV['SRC_HOME'], '../../work/src' ]
+POTENTIAL_SRC_HOMES << '.' unless `pwd` =~ /rup$/
+SRC_HOME = POTENTIAL_SRC_HOMES.compact.find do |d|
   File.exist?(d)
 end
 puts "SRC_HOME = #{SRC_HOME}"
