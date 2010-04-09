@@ -173,7 +173,7 @@ Description: The Untangle Email Decoder
 
 Package: untangle-node-shield
 Architecture: all
-Depends: untangle-vm, untangle-shield, dash
+Depends: untangle-vm (= ${binary:Version}), untangle-shield, dash
 Conflicts: airgap-transform
 Provides: airgap-transform
 Replaces: airgap-transform
@@ -240,7 +240,7 @@ Description: Attack Blocker
 
 Package: untangle-node-spyware
 Architecture: all
-Depends: untangle-vm, untangle-casing-http
+Depends: untangle-vm (= ${binary:Version}), untangle-casing-http
 Conflicts: spyware-transform
 Provides: spyware-transform
 Replaces: spyware-transform
@@ -296,7 +296,7 @@ Description: Spyware Blocker
 
 Package: untangle-node-webfilter
 Architecture: all
-Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init
+Depends: untangle-vm (= ${binary:Version}), untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init
 Conflicts: httpblocker-transform
 Provides: httpblocker-transform
 Replaces: httpblocker-transform
@@ -365,7 +365,7 @@ Description: Web Filter
 
 Package: untangle-node-clam
 Architecture: all
-Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
+Depends: untangle-vm (= ${binary:Version}), untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
 Conflicts: clam-transform
 Provides: clam-transform
 Replaces: clam-transform
@@ -404,7 +404,7 @@ Description: Virus Blocker
 
 Package: untangle-node-protofilter
 Architecture: all
-Depends: untangle-vm
+Depends: untangle-vm (= ${binary:Version})
 Conflicts: protofilter-transform
 Provides: protofilter-transform
 Replaces: protofilter-transform
@@ -494,7 +494,7 @@ Description: Protocol Control
 
 Package: untangle-node-router
 Architecture: all
-Depends: untangle-vm, dnsmasq, untangle-casing-ftp
+Depends: untangle-vm (= ${binary:Version}), dnsmasq, untangle-casing-ftp
 Conflicts: nat-transform
 Provides: nat-transform
 Replaces: nat-transform
@@ -559,7 +559,7 @@ Description: Router
 
 Package: untangle-node-firewall
 Architecture: all
-Depends: untangle-vm
+Depends: untangle-vm (= ${binary:Version})
 Conflicts: firewall-transform
 Provides: firewall-transform
 Replaces: firewall-transform
@@ -615,7 +615,7 @@ Description: Firewall
 
 Package: untangle-node-spamassassin
 Architecture: all
-Depends: untangle-vm, untangle-base-spam, untangle-casing-mail
+Depends: untangle-vm (= ${binary:Version}), untangle-base-spam, untangle-casing-mail
 Conflicts: spamassassin-transform
 Provides: spamassassin-transform
 Replaces: spamassassin-transform
@@ -699,7 +699,7 @@ Description: Spam Blocker
 
 Package: untangle-node-phish
 Architecture: all
-Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
+Depends: untangle-vm (= ${binary:Version}), untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
 Conflicts: clamphish-transform
 Provides: clamphish-transform
 Replaces: clamphish-transform
@@ -797,7 +797,7 @@ Description: Phish Blocker
 
 Package: untangle-node-openvpn
 Architecture: all
-Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
+Depends: untangle-vm (= ${binary:Version}), untangle-nsis-addons, openssl, openvpn
 Conflicts: openvpn-transform
 Provides: openvpn-transform
 Replaces: openvpn-transform
@@ -870,7 +870,7 @@ Description: OpenVPN
 
 Package: untangle-node-ips
 Architecture: all
-Depends: untangle-vm, untangle-casing-http, untangle-snort-rules
+Depends: untangle-vm (= ${binary:Version}), untangle-casing-http, untangle-snort-rules
 Conflicts: ids-transform
 Provides: ids-transform
 Replaces: ids-transform
@@ -945,7 +945,7 @@ Description: Intrusion Prevention
 
 Package: untangle-node-reporting
 Architecture: all
-Depends: untangle-vm
+Depends: untangle-vm (= ${binary:Version})
 Conflicts: reporting-transform
 Provides: reporting-transform
 Replaces: reporting-transform
@@ -1000,7 +1000,7 @@ Description: Reports
 
 Package: untangle-node-adblocker
 Architecture: all
-Depends: untangle-vm, untangle-casing-http
+Depends: untangle-vm (= ${binary:Version}), untangle-casing-http
 Conflicts: adblocker-transform
 Provides: adblocker-transform
 Replaces: adblocker-transform
@@ -1096,7 +1096,7 @@ Description: Ad Blocker
 
 Package: untangle-node-cpd
 Architecture: all
-Depends: untangle-vm, untangle-cpd, php5-pgsql, php5-curl
+Depends: untangle-vm (= ${binary:Version}), untangle-cpd, php5-pgsql, php5-curl
 XB-Display-Name: Captive Portal
 XB-Untangle-Type: node
 XB-View-Position: 31
