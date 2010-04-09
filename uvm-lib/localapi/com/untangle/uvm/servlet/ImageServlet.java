@@ -87,8 +87,6 @@ public class ImageServlet extends HttpServlet
         InputStream is = null;
         byte[] result = null;
         
-        logger.warn("Checking: " + fileName);
-
         /**
          * Look on the local filesystem
          */
