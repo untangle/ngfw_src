@@ -163,7 +163,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 items = [{
                     cls: 'description',
                     border: false,
-                    html : this.i18n._( 'You must install the policy manager in order to add additional racks.' )
+                    html : this.i18n._( 'Policy Manager is required to add additional racks/policies.' )
                 }];
             }
             this.infoLabel = new Ext.form.FieldSet({
