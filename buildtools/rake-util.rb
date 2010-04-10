@@ -239,6 +239,9 @@ class JavaCompiler
   end
 
   def JavaCompiler.jarSigner(jar)
+    # disabled
+    return 
+
     ks = ENV['HADES_KEYSTORE']
     defaultAlias = 'hermes'
     defaultPasswd = 'hermes'

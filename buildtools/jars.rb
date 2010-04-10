@@ -60,6 +60,7 @@ class Jars
                     hibernate-3.2/lib/dom4j-1.6.1.jar
                     hibernate-3.2/lib/oscache-2.1.jar
                     hibernate-3.2/lib/jta.jar
+                    hibernate-3.2/lib/xerces-2.6.2.jar
                   ).map { |f| Jars.downloadTarget(f) }
   HibernateAnnotations = %w(
     hibernate-annotations-3.3.0.GA/hibernate-annotations.jar
@@ -92,7 +93,6 @@ class Jars
   TomcatServer  = [ 'catalina-optional.jar',
                     'catalina.jar',
                     'commons-modeler-2.0.1.jar',
-                    'jsp-api.jar',
                     'servlets-default.jar',
                     'tomcat-coyote.jar',
                     'tomcat-http.jar',

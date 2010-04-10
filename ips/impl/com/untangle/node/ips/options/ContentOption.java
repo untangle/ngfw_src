@@ -23,7 +23,7 @@ import java.text.CharacterIterator;
 
 import org.apache.log4j.Logger;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
+import org.apache.xerces.impl.xpath.regex.BMPattern;
 import com.untangle.node.ips.IpsSessionInfo;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.AsciiCharBufferCharacterIterator;
@@ -124,9 +124,7 @@ class ContentOption extends IpsOption
         return null; //error checking OMGWTFBBQ
     }
 
-
-    private void setStartAndEndPoints(int offset, int depth,
-                                      IpsSessionInfo sessionInfo)
+    private void setStartAndEndPoints(int offset, int depth, IpsSessionInfo sessionInfo)
     {
         sessionInfo.start = offset;
         sessionInfo.end = offset+depth;
@@ -186,8 +184,7 @@ class ContentOption extends IpsOption
      * string sections using a second sub function. That second sub function will also put all
      * the bytes of the string onto the byte buffer.
      */
-    private void buildBytePattern(ByteBuffer binaryBuffer, String params,
-                                  int index)
+    private void buildBytePattern(ByteBuffer binaryBuffer, String params, int index)
     {
         if(index == 0) {
             index = params.indexOf('|', 1);

@@ -18,7 +18,7 @@
 
 package com.untangle.node.ips.options;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
+import org.apache.xerces.impl.xpath.regex.BMPattern;
 import com.untangle.node.ips.IpsSessionInfo;
 
 public class UricontentOption extends IpsOption

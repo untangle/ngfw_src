@@ -167,7 +167,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }];
             }
             this.infoLabel = new Ext.form.FieldSet({
-                title : this.i18n._("Racks"),
+                title : this.i18n._("Racks/Policies"),
                 items : items,
                 autoHeight : true
             });
@@ -420,12 +420,12 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             });
             this.gridRules = new Ung.EditorGrid({
                 settingsCmp : this,
-                name : 'Policies',
+                name : 'Policy Rules',
                 height : 250,
                 anchor :"100% 50%",
                 autoScroll : true,
                 parentId : this.getId(),
-                title : this.i18n._('Policies'),
+                title : this.i18n._('Policy Rules'),
                 recordJavaClass : "com.untangle.uvm.policy.UserPolicyRule",
                 hasReorder : true,
                 configReorder:{width:35,fixed:false,tooltip:this.i18n._("Reorder")},
@@ -1081,7 +1081,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 if(rulesList[i].policy!=null) {
                     for(j=0;j<rackDeletedList.length;j++) {
                         if(rulesList[i].policy.id==rackDeletedList[j].id) {
-                            Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._('The rack named {0} cannot be removed because it is currently being used in "Custom Policies".'),rackDeletedList[j].name));
+                            Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._('The rack named {0} cannot be removed because it is currently being used in "Policy Rules".'),rackDeletedList[j].name));
                             return false;
                         }
                     }

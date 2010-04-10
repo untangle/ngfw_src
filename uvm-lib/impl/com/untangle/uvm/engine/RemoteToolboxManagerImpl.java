@@ -94,8 +94,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     static final URL TOOLBOX_URL;
 
-    private static final String DEFAULT_LIBRARY_HOST = "store.untangle.com";
-
     private static final Object LOCK = new Object();
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -564,52 +562,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return;
     }
 
-    public void enable(String mackageName) throws MackageException
-    {
-        MackageState ms = mackageState.get(mackageName);
-        if (null == ms) {
-            ms = new MackageState(mackageName, true);
-            mackageState.put(mackageName, ms);
-        } else {
-            ms.setEnabled(true);
-        }
-
-        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
-        for (Tid tid : nm.nodeInstances(mackageName)) {
-            NodeContext tctx = nm.nodeContext(tid);
-            try {
-                ((NodeBase)tctx.node()).enable();
-            } catch (NodeException exn) {
-                logger.warn("could not enable: " + tid, exn);
-            }
-        }
-
-        syncMackageState(ms);
-    }
-
-    public void disable(String mackageName) throws MackageException
-    {
-        MackageState ms = mackageState.get(mackageName);
-        if (null == ms) {
-            ms = new MackageState(mackageName, false);
-            mackageState.put(mackageName, ms);
-        } else {
-            ms.setEnabled(false);
-        }
-
-        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
-        for (Tid tid : nm.nodeInstances(mackageName)) {
-            NodeContext tctx = nm.nodeContext(tid);
-            try {
-                ((NodeBase)tctx.node()).disable();
-            } catch (NodeException exn) {
-                logger.warn("could not disable: " + tid, exn);
-            }
-        }
-
-        syncMackageState(ms);
-    }
-
     public void requestInstall(String mackageName)
     {
         MackageDesc md = packageMap.get(mackageName);
@@ -743,24 +695,6 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         LocalUvmContextFactory.context().runTransaction(tw);
 
         return tw.getResult();
-    }
-
-    public boolean hasPremiumSubscription()
-    {
-        for (MackageDesc md : this.installed) {
-            if (md.getName().equals("untangle-libitem-update-service")) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public String getLibraryHost()
-    {
-        String host = System.getProperty("uvm.store.host");
-        if (host == null) host = DEFAULT_LIBRARY_HOST;
-        return host;
     }
 
     // package private methods ------------------------------------------------

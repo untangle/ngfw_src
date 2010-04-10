@@ -98,7 +98,7 @@ class CCompilerEnv
   end
 
   def CCompilerEnv.defaultStripCommand
-    ( $DevelBuild ) ? "echo \"not stripping symbols for: \"" : "strip --strip-debug --remove-section=.note --remove-section=.comment -x"
+    ( $DevelBuild ) ? "echo \"[nostrip ] \"" : "strip --strip-debug --remove-section=.note --remove-section=.comment -x"
   end
 
   attr_reader     :warnings, :optimizations, :cc, :ranlib
@@ -116,7 +116,7 @@ class CBuilder
   end
 
   def makeObject(sourceFile, objectFile)
-    info "gcc #{sourceFile} => #{objectFile}"
+    info "[gcc     ] #{sourceFile} => #{objectFile}"
     cmd = "#{@env.cc} #{@objectArgs} -c #{sourceFile} -o #{objectFile}"
 
     debug "cmd: #{cmd}"
@@ -124,7 +124,7 @@ class CBuilder
   end
 
   def makeArchive(source, destination)
-    info "Archive: #{source} => #{destination}"
+    info "[archive ] #{source} => #{destination}"
 
     fileList = FileList[ "#{source}/*.o" ]
 
@@ -138,7 +138,7 @@ class CBuilder
   ## lib: Array of the libraries to include in the compilation.
   ## wLib: Array of the libraries that should be included in their entirety.
   def makeSharedLibrary(source, destination, libDir, lib, wLib = [])
-    info "SharedLibrary: #{destination}"
+    info "[sharedlb] #{destination}"
     wLibFlags = wLib.map{ |l| "-l#{l}" }.join( " " )
     flags = @env.linkerFlags( libDir, lib )
     cmd = "#{@env.cc} #{flags} -Wl,-whole-archive #{source.join( " " )} #{wLibFlags} -Wl,--no-whole-archive -shared -o #{destination}"
@@ -157,7 +157,7 @@ class CBuilder
   ## lib: Array of the libraries to include in the compilation.
   ## wLib: Array of the libraries that should be included in their entirety.
   def makeBinary(source, destination, libDir, lib, wLib = [])
-    info "Binary: #{destination}"
+    info "[binary  ] #{destination}"
     wLibFlags = wLib.map{ |l| "-l#{l}" }.join( " " )
     flags = @env.linkerFlags( libDir, lib )
     cmd = "#{@env.cc} #{flags} -Wl,-whole-archive #{source.join( " " )} #{wLibFlags} -Wl,--no-whole-archive -o #{destination}"

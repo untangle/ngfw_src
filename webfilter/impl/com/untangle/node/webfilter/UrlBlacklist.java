@@ -93,8 +93,6 @@ class UrlBlacklist extends Blacklist
             Map m = new HashMap();
             m.put("key", uvm.getActivationKey());
             RemoteToolboxManager tm = uvm.toolboxManager();
-            Boolean rup = tm.hasPremiumSubscription();
-            m.put("premium", rup.toString());
             m.put("client-version", uvm.getFullVersion());
 
             urlDatabase.clear();

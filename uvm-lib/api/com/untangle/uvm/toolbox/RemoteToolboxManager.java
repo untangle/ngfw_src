@@ -65,6 +65,12 @@ public interface RemoteToolboxManager
      */
     RackView getRackView(Policy p,String installationType);
 
+    /**
+     * Returns the current apt state of the system
+     *
+     * @param doUpdate will force an apt-get update before returning the state
+     * @return UgradeStatus the current state
+     */
     UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException;
 
     /**
@@ -139,6 +145,14 @@ public interface RemoteToolboxManager
      */
     void install(String name) throws MackageInstallException;
 
+    /**
+     * Install a Mackage in the Toolbox and instantiate in the Rack.
+     *
+     * @param name the name of the Mackage.
+     * @param p the policy to install
+     * @exception MackageInstallException when <code>name</code> cannot
+     *     be installed.
+     */
     void installAndInstantiate(String name, Policy p) throws MackageInstallException, DeployException;
 
     /**
@@ -150,15 +164,27 @@ public interface RemoteToolboxManager
      */
     void uninstall(String name) throws MackageUninstallException;
 
+    /**
+     * Updated the system package cache
+     *
+     * @param millis timeout in milliseconds
+     * @exception MackageException when timeout exceeded or an error occurs
+     */
     void update(long millis) throws MackageException;
 
+    /**
+     * Updated the system package cache (default timeout)
+     *
+     * @exception MackageException when timeout exceeded or an error occurs
+     */
     void update() throws MackageException;
 
+    /**
+     * Upgrade the system
+     *
+     * @exception MackageException when an error occurs
+     */
     void upgrade() throws MackageException;
-
-    void enable(String mackageName) throws MackageException;
-
-    void disable(String mackageName) throws MackageException;
 
     /**
      * This function sends message to UI to initiate a install
@@ -188,14 +214,15 @@ public interface RemoteToolboxManager
      */
     void unregister(String mackageName) throws MackageInstallException;
 
+    /**
+     * save Upgrade Settings
+     */
     void setUpgradeSettings(UpgradeSettings u);
 
-    UpgradeSettings getUpgradeSettings();
-
-    boolean hasPremiumSubscription();
-
     /**
-     * Get the host that is serving the library.
+     * get Upgrade Settings
+     *
+     * @return 
      */
-    String getLibraryHost();
+    UpgradeSettings getUpgradeSettings();
 }

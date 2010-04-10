@@ -57,6 +57,7 @@ public class Launcher extends HttpServlet
     private static final String HTTP_CONTENT_TYPE = "Content-Type";
 
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
+    private static final String PROPERTY_STORE_URL = "uvm.store.url";
     
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -154,13 +155,13 @@ public class Launcher extends HttpServlet
     private URL getActionURL( HttpServletRequest request, String action, String mackageName ) throws MalformedURLException
     {
         LocalUvmContext context = LocalUvmContextFactory.context();
-        String host = context.toolboxManager().getLibraryHost();
+        String url = System.getProperty(PROPERTY_STORE_URL);
 
         String query = getLibraryQuery( request, action );
         if ( mackageName != null ) query += "&name=" + URLEncoder.encode( mackageName );
 
         /* Open is a universal redirector which uses action to determine how it should redirect */
-        return new URL( "https" + "://" + host + "/open.php?" + query );
+        return new URL( url + "/open.php?" + query );
     }
 
     private URL getHelpURL( HttpServletRequest request, String source) throws MalformedURLException
@@ -168,11 +169,11 @@ public class Launcher extends HttpServlet
          LocalUvmContext context = LocalUvmContextFactory.context();
          String lang = context.languageManager().getLanguageSettings().getLanguage();
 
-         String Url = System.getProperty(PROPERTY_HELP_URL);
-         if (Url == null)
-             Url = "http://www.untangle.com/docs/get.php";
+         String url = System.getProperty(PROPERTY_HELP_URL);
+         if (url == null)
+             url = "http://www.untangle.com/docs/get.php";
          
-         return new URL(Url + "?"
+         return new URL(url + "?"
                         + "version=" + Version.getVersion()
                         + "&source=" + source
                         + "&lang=" + lang);

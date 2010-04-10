@@ -77,8 +77,7 @@ public abstract class NodeBase implements Node
     private final Set<NodeBase> parents = new HashSet<NodeBase>();
     private final Set<Node> children = new HashSet<Node>();
     private final LocalNodeManager nodeManager;
-    private final List<NodeListener> nodeListeners
-        = new LinkedList<NodeListener>();
+    private final List<NodeListener> nodeListeners = new LinkedList<NodeListener>();
 
     private final Object stateChangeLock = new Object();
 
@@ -147,16 +146,14 @@ public abstract class NodeBase implements Node
         }
     }
 
-    public final void start()
-        throws NodeStartException, IllegalStateException
+    public final void start() throws NodeStartException, IllegalStateException
     {
         synchronized (stateChangeLock) {
             start(true);
         }
     }
 
-    public final void stop()
-        throws NodeStopException, IllegalStateException
+    public final void stop() throws NodeStopException, IllegalStateException
     {
         synchronized (stateChangeLock) {
             stop(true);
@@ -221,16 +218,14 @@ public abstract class NodeBase implements Node
      */
     public void destroySettings() { }
 
-    public void init(String[] args)
-        throws NodeException, IllegalStateException
+    public void init(String[] args) throws NodeException, IllegalStateException
     {
         synchronized (stateChangeLock) {
             init(true, args);
         }
     }
 
-    public void disable()
-        throws NodeException, IllegalStateException
+    public void disable() throws NodeException, IllegalStateException
     {
         if (NodeState.LOADED == runState
             || NodeState.DESTROYED == runState) {
@@ -242,8 +237,7 @@ public abstract class NodeBase implements Node
         changeState(NodeState.DISABLED, true);
     }
 
-    public void resumeState(NodeState ts, String[] args)
-        throws NodeException
+    public void resumeState(NodeState ts, String[] args) throws NodeException
     {
         if (NodeState.LOADED == ts) {
             logger.debug("leaving node in LOADED state");
@@ -266,8 +260,7 @@ public abstract class NodeBase implements Node
         }
     }
 
-    public void destroy()
-        throws NodeException, IllegalStateException
+    public void destroy() throws NodeException, IllegalStateException
     {
         uninstall();
 
@@ -301,8 +294,7 @@ public abstract class NodeBase implements Node
         }
     }
 
-    public void enable()
-        throws NodeException, IllegalStateException
+    public void enable() throws NodeException, IllegalStateException
     {
         if (NodeState.LOADED == runState
             || NodeState.DESTROYED == runState) {
@@ -323,14 +315,16 @@ public abstract class NodeBase implements Node
      * Called when the node is being uninstalled, rather than
      * just being taken down with the UVM.
      */
-    protected void uninstall() { }
+    protected void uninstall()
+    { }
 
     /**
      * Called as the instance is created, but is not configured.
      *
      * @param args[] the node-specific arguments.
      */
-    protected void preInit(String args[]) throws NodeException { }
+    protected void preInit(String args[]) throws NodeException
+    { }
 
     /**
      * Same as <code>preInit</code>, except now officially in the
@@ -338,7 +332,8 @@ public abstract class NodeBase implements Node
      *
      * @param args[] the node-specific arguments.
      */
-    protected void postInit(String args[]) throws NodeException { }
+    protected void postInit(String args[]) throws NodeException
+    { }
 
     /**
      * Called just after connecting to MPipe, but before starting.
@@ -358,19 +353,22 @@ public abstract class NodeBase implements Node
      * Called just before stopping MPipe and disconnecting.
      *
      */
-    protected void preStop() throws NodeStopException { }
+    protected void preStop() throws NodeStopException
+    { }
 
     /**
      * Called after stopping MPipe and disconnecting.
      *
      */
-    protected void postStop() throws NodeStopException { }
+    protected void postStop() throws NodeStopException
+    { }
 
     /**
      * Called just before this instance becomes invalid.
      *
      */
-    protected void preDestroy() throws NodeException { }
+    protected void preDestroy() throws NodeException
+    { }
 
     /**
      * Same as <code>postDestroy</code>, except now officially in the
@@ -378,7 +376,8 @@ public abstract class NodeBase implements Node
      *
      * @param args[] a <code>String</code> value
      */
-    protected void postDestroy() throws NodeException { }
+    protected void postDestroy() throws NodeException
+    { }
 
     // private methods ---------------------------------------------------------
 

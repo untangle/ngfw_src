@@ -43,9 +43,7 @@ public class UpgradeStatus implements Serializable
     private volatile boolean installing = false;
     private volatile boolean removing = false;
 
-    public UpgradeStatus(boolean updating, boolean upgrading,
-                         boolean installing, boolean removing,
-                         boolean upgradesAvailable)
+    public UpgradeStatus(boolean updating, boolean upgrading, boolean installing, boolean removing, boolean upgradesAvailable)
     {
         this.updating = updating;
         this.upgrading = upgrading;
