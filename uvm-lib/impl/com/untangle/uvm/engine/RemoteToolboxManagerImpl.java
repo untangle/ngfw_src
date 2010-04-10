@@ -90,11 +90,11 @@ import com.untangle.uvm.vnet.NodeBase;
  */
 class RemoteToolboxManagerImpl implements RemoteToolboxManager
 {
-    private static final int UPDATE_TIMEOUT = 40000;
+    static final int UPDATE_TIMEOUT = 40000;
 
     static final URL TOOLBOX_URL;
 
-    private static final String DEFAULT_LIBRARY_HOST = "library.untangle.com";
+    private static final String DEFAULT_LIBRARY_HOST = "store.untangle.com";
 
     private static final Object LOCK = new Object();
 
@@ -107,10 +107,10 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     static {
         try {
-            String s = "file://" + System.getProperty("uvm.toolbox.dir")
-                + "/";
+            String s = "file://" + System.getProperty("uvm.toolbox.dir") + "/";
             TOOLBOX_URL = new URL(s);
-        } catch (MalformedURLException exn) { /* should never happen */
+        } catch (MalformedURLException exn) { 
+            /* should never happen */
             throw new RuntimeException("bad toolbox URL", exn);
         }
     }
@@ -237,9 +237,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             }
         }
 
-        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().localNodeManager();
-        List<NodeDesc> instances = tm.visibleNodes(p);
+        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
+        List<NodeDesc> instances = nm.visibleNodes(p);
 
         Map<Tid, StatDescs> statDescs
             = new HashMap<Tid, StatDescs>(instances.size());
@@ -275,33 +274,24 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         Collections.sort(apps);
 
-        Map<String, LicenseStatus> licenseStatus
-            = new HashMap<String, LicenseStatus>();
+        Map<String, LicenseStatus> licenseStatus = new HashMap<String, LicenseStatus>();
         RemoteLicenseManager lm = LocalUvmContextFactory.context().licenseManager();
         for (NodeDesc nd : instances) {
             String n = nd.getMackageDesc().getName();
             licenseStatus.put(n, lm.getMackageStatus(n));
         }
-        Map<Tid, NodeState> runStates=tm.allNodeStates();
-        return new RackView(apps, instances, statDescs, licenseStatus,
-                            runStates);
+        Map<Tid, NodeState> runStates=nm.allNodeStates();
+        return new RackView(apps, instances, statDescs, licenseStatus, runStates);
     }
 
-    public UpgradeStatus getUpgradeStatus(boolean doUpdate)
-        throws MackageException, InterruptedException
+    public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException
     {
-        if(doUpdate && !upgrading && !installing) {
-            if(!updating) {
-                update();
-            } else {
-                int maxTries=UPDATE_TIMEOUT/1000;
-                while(updating && maxTries-- > 0) {
-                    Thread.sleep(1000);
-                }
-            }
-        }
-        return new UpgradeStatus(updating, upgrading, installing, removing,
-                                 upgradable.length > 0);
+        if(doUpdate && !upgrading && !installing) 
+            update();
+
+        boolean canupgrade = upgradable.length > 0;
+        
+        return new UpgradeStatus(updating, upgrading, installing, removing, canupgrade);
     }
 
     /**
@@ -387,107 +377,115 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         return packageMap.get(name);
     }
 
-    public void install(String name)
+    public void install(String name) throws MackageInstallException
     {
-        install(name, true);
+        MackageDesc req = mackageDesc(name);
+        if (null == req) {
+            logger.warn("No such mackage: " + name);
+        }
+
+        final AptLogTail alt;
+
+        synchronized (tails) {
+            long i = ++lastTailKey;
+            alt = new AptLogTail(i, req);
+            tails.put(i, alt);
+        }
+
+        LocalUvmContextFactory.context().newThread(alt).start();
+
+        try {
+            installing = true;
+            execApt("install " + name, alt.getKey());
+        } catch (MackageException exn) {
+            logger.warn("install failed", exn);
+            throw new MackageInstallException(exn);
+        } finally {
+            installing = false;
+        }
     }
 
     private final Object installAndInstantiateLock = new Object();
 
-    public void installAndInstantiate(final String name, final Policy p)
-        throws MackageInstallException
+    public void installAndInstantiate(final String name, final Policy p) throws MackageInstallException
     {
-        Runnable r = new Runnable()
-            {
-                public void run()
-                {
-                    synchronized (installAndInstantiateLock) {
-                        doIt();
+        synchronized (installAndInstantiateLock) {
+            UvmContextImpl mctx = UvmContextImpl.getInstance();
+            NodeManagerImpl nm = mctx.localNodeManager();
+            List<String> nodes = null;
+
+            // List of mackages that we will try to install in
+            // this run
+            List<String> willInstall = new ArrayList<String>();
+
+            try {
+                if (isInstalled(name)) {
+                    logger.warn("mackage " + name + " already installed, debouncing");
+                    return;
+                }
+                synchronized (beingInstalled) {
+                    if (beingInstalled.contains(name)) {
+                        logger.warn("mackage " + name + " being installed, debouncing");
+                        return;
+                    }
+                    beingInstalled.add(name);
+                    willInstall.add(name);
+                    nodes = predictNodeInstall(name);
+                    for (Iterator<String> iter = nodes.iterator();
+                         iter.hasNext();) {
+                        String newNode = iter.next();
+                        if (beingInstalled.contains(newNode)) {
+                            logger.warn("mackage " + newNode + " being subinstalled, debouncing");
+                            // Let the other guy install it.
+                            iter.remove();
+                        } else {
+                            beingInstalled.add(newNode);
+                            willInstall.add(newNode);
+                        }
                     }
                 }
 
-                // Now keeps a record of which nodes are being
-                // installed (globally), and which ones are being
-                // installed by this run.
-                public void doIt()
-                {
-                    UvmContextImpl mctx = UvmContextImpl.getInstance();
-                    NodeManagerImpl tm = mctx.localNodeManager();
-                    List<String> nodes = null;
-
-                    // List of mackages that we will try to install in
-                    // this run
-                    List<String> willInstall = new ArrayList<String>();
-
+                install(name);
+                for (String nn : nodes) {
                     try {
-                        if (isInstalled(name)) {
-                            logger.warn("mackage " + name
-                                        + " already installed, debouncing");
-                            return;
+                        register(nn);
+                        NodeDesc nd = nm.instantiate(nn, p);
+                        if (nd != null && !nd.getNoStart()) {
+                            NodeContext nc = nm.nodeContext(nd.getTid());
+                            nc.node().start();
                         }
-                        synchronized (beingInstalled) {
-                            if (beingInstalled.contains(name)) {
-                                logger.warn("mackage " + name
-                                            + " being installed, debouncing");
-                                return;
-                            }
-                            beingInstalled.add(name);
-                            willInstall.add(name);
-                            nodes = predictNodeInstall(name);
-                            for (Iterator<String> iter = nodes.iterator();
-                                 iter.hasNext();) {
-                                String newNode = iter.next();
-                                if (beingInstalled.contains(newNode)) {
-                                    logger.warn("mackage " + newNode
-                                                + " being subinstalled, debouncing");
-                                    // Let the other guy install it.
-                                    iter.remove();
-                                } else {
-                                    beingInstalled.add(newNode);
-                                    willInstall.add(newNode);
-                                }
-                            }
-                        }
-
-                        install(name, false);
-                        for (String nn : nodes) {
-                            try {
-                                register(nn);
-                                NodeDesc nd = tm.instantiate(nn, p);
-                                if (nd != null && !nd.getNoStart()) {
-                                    NodeContext nc = tm
-                                        .nodeContext(nd.getTid());
-                                    nc.node().start();
-                                }
-                            } catch (NodeStartException exn) {
-                                // XXX send out error message
-                                logger.warn("could not start", exn);
-                            } catch (DeployException exn) {
-                                // XXX send out error message
-                                logger.warn("could not deploy", exn);
-                            } catch (MackageInstallException e) {
-                                // TODO Auto-generated catch block
-                                logger.warn("could not register", e);
-                            }
-                        }
-                    } finally {
-                        synchronized (beingInstalled) {
-                            for (String newNode : willInstall)
-                                beingInstalled.remove(newNode);
-                        }
+                    } catch (NodeStartException exn) {
+                        logger.warn("could not start", exn);
+                    } catch (DeployException exn) {
+                        logger.warn("could not deploy", exn);
+                    } catch (MackageInstallException e) {
+                        logger.warn("could not register", e);
                     }
-
-                    LocalMessageManager mm = mctx.localMessageManager();
-                    MackageDesc mackageDesc = mackageDesc(name);
-                    Message m = new InstallAndInstantiateComplete(mackageDesc);
-                    mm.submitMessage(m);
                 }
-            };
-        LocalUvmContextFactory.context().newThread(r).start();
+            } finally {
+                synchronized (beingInstalled) {
+                    for (String newNode : willInstall)
+                        beingInstalled.remove(newNode);
+                }
+            }
+
+            LocalMessageManager mm = mctx.localMessageManager();
+            MackageDesc mackageDesc = mackageDesc(name);
+            Message m = new InstallAndInstantiateComplete(mackageDesc);
+            mm.submitMessage(m);
+        }
     }
 
     public void uninstall(String name) throws MackageUninstallException
     {
+        // stop intances
+        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
+        List<Tid> tids = nm.nodeInstances(name);
+        logger.debug("unloading " + tids.size() + " nodes");
+        for (Tid t : tids) {
+            nm.unload(t); 
+        }
+
         try {
             removing = true;
             execApt("remove " + name);
@@ -541,7 +539,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         } while (tryAgain);
     }
 
-    public long upgrade() throws MackageException
+    public void upgrade() throws MackageException
     {
         final AptLogTail alt;
 
@@ -553,21 +551,17 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
         LocalUvmContextFactory.context().newThread(alt).start();
 
-        LocalUvmContextFactory.context().newThread(new Runnable() {
-                public void run()
-                {
-                    try {
-                        upgrading = true;
-                        execApt("upgrade", alt.getKey());
-                    } catch (MackageException exn) {
-                        logger.warn("could not upgrade", exn);
-                    } finally {
-                        upgrading = false;
-                    }
-                }
-            }).start();
-
-        return alt.getKey();
+        try {
+            upgrading = true;
+            execApt("upgrade", alt.getKey());
+        } catch (MackageException exn) {
+            logger.warn("could not upgrade", exn);
+            throw exn;
+        } finally {
+            upgrading = false;
+        }
+        
+        return;
     }
 
     public void enable(String mackageName) throws MackageException
@@ -580,10 +574,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             ms.setEnabled(true);
         }
 
-        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().localNodeManager();
-        for (Tid tid : tm.nodeInstances(mackageName)) {
-            NodeContext tctx = tm.nodeContext(tid);
+        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
+        for (Tid tid : nm.nodeInstances(mackageName)) {
+            NodeContext tctx = nm.nodeContext(tid);
             try {
                 ((NodeBase)tctx.node()).enable();
             } catch (NodeException exn) {
@@ -604,10 +597,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             ms.setEnabled(false);
         }
 
-        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().localNodeManager();
-        for (Tid tid : tm.nodeInstances(mackageName)) {
-            NodeContext tctx = tm.nodeContext(tid);
+        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
+        for (Tid tid : nm.nodeInstances(mackageName)) {
+            NodeContext tctx = nm.nodeContext(tid);
             try {
                 ((NodeBase)tctx.node()).disable();
             } catch (NodeException exn) {
@@ -670,12 +662,9 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         mm.submitMessage(mir);
     }
     
-    // RemoteToolboxManagerPriv implementation --------------------------------
-
     // registers a mackage and restarts all instances in previous state
     public void register(String pkgName) throws MackageInstallException
     {
-        // XXX protect this method
         logger.debug("registering mackage: " + pkgName);
 
         UvmContextImpl mctx = UvmContextImpl.getInstance();
@@ -683,23 +672,22 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             mctx.refreshSessionFactory();
         }
 
-        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().localNodeManager();
-        tm.restart(pkgName);
-        tm.startAutoStart(mackageDesc(pkgName));
+        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
+        nm.restart(pkgName);
+        nm.startAutoStart(mackageDesc(pkgName));
     }
 
     // unregisters a mackage and unloads all instances
     public void unregister(String pkgName)
     {
-        // XXX protect this method
+        logger.debug("unregistering mackage: " + pkgName);
+
         // stop mackage intances
-        NodeManagerImpl tm = (NodeManagerImpl)LocalUvmContextFactory
-            .context().localNodeManager();
-        List<Tid> tids = tm.nodeInstances(pkgName);
+        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
+        List<Tid> tids = nm.nodeInstances(pkgName);
         logger.debug("unloading " + tids.size() + " nodes");
         for (Tid t : tids) {
-            tm.unload(t); // XXX not destroy, release
+            nm.unload(t); 
         }
     }
 
@@ -777,45 +765,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     // package private methods ------------------------------------------------
 
-    private void install(final String name, boolean async)
-    {
-        MackageDesc req = mackageDesc(name);
-        if (null == req) {
-            logger.warn("No such mackage: " + name);
-        }
-
-        final AptLogTail alt;
-
-        synchronized (tails) {
-            long i = ++lastTailKey;
-            alt = new AptLogTail(i, req);
-            tails.put(i, alt);
-        }
-
-        LocalUvmContextFactory.context().newThread(alt).start();
-
-        Runnable r = new Runnable() {
-                public void run()
-                {
-                    try {
-                        installing = true;
-                        execApt("install " + name, alt.getKey());
-                    } catch (MackageException exn) {
-                        logger.warn("install failed", exn);
-                    } finally {
-                        installing = false;
-                    }
-                }
-            };
-
-        if (async) {
-            LocalUvmContextFactory.context().newThread(r).start();
-        } else {
-            r.run();
-        }
-    }
-
-    URL getResourceDir(MackageDesc md)
+    protected  URL getResourceDir(MackageDesc md)
     {
         try {
             return new URL(TOOLBOX_URL, md.getName() + "-impl/");
@@ -825,13 +775,13 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         }
     }
 
-    boolean isEnabled(String mackageName)
+    protected  boolean isEnabled(String mackageName)
     {
         MackageState ms = mackageState.get(mackageName);
         return null == ms ? true : ms.isEnabled();
     }
 
-    List<MackageDesc> getInstalledAndAutoStart()
+    protected List<MackageDesc> getInstalledAndAutoStart()
     {
         List<MackageDesc> mds = new ArrayList<MackageDesc>();
 
@@ -958,13 +908,15 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     {
         Map<String, MackageDesc> pkgs;
 
-        try {
-            String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt available";
-            Process p = LocalUvmContextFactory.context().exec(cmd);
-            pkgs = readPkgList(p.getInputStream(), instList);
-        } catch (Exception exn) {
-            logger.fatal("Unable to parse ut-apt available list, proceeding with empty list", exn);
-            return new HashMap<String, MackageDesc>();
+        synchronized(this) {
+            try {
+                String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt available";
+                Process p = LocalUvmContextFactory.context().exec(cmd);
+                pkgs = readPkgList(p.getInputStream(), instList);
+            } catch (Exception exn) {
+                logger.fatal("Unable to parse ut-apt available list, proceeding with empty list", exn);
+                return new HashMap<String, MackageDesc>();
+            }
         }
 
         return pkgs;
@@ -1058,13 +1010,14 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     {
         Map<String, String> instList;
 
-        try {
-            String cmd = System.getProperty("uvm.bin.dir")
-                + "/ut-apt installed";
-            Process p = LocalUvmContextFactory.context().exec(cmd);
-            instList = readInstalledList(p.getInputStream());
-        } catch (IOException exn) {
-            throw new RuntimeException(exn); // XXX
+        synchronized(this) {
+            try {
+                String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt installed";
+                Process p = LocalUvmContextFactory.context().exec(cmd);
+                instList = readInstalledList(p.getInputStream());
+            } catch (IOException exn) {
+                throw new RuntimeException(exn); 
+            }
         }
 
         return instList;
@@ -1101,35 +1054,36 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     private synchronized void execApt(String command, long key) throws MackageException
     {
-        String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt "
-            + (0 > key ? "" : "-k " + key + " ") + command;
+        String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
 
-        logger.debug("running: " + cmdStr);
-        try {
-            Process proc = LocalUvmContextFactory.context().exec(cmdStr);
-            InputStream is = proc.getInputStream();
-            byte[] outBuf = new byte[4092];
-            int i;
-            while (-1 != (i = is.read(outBuf))) {
-                System.out.write(outBuf, 0, i);
-            }
-            is.close();
-            boolean tryAgain;
-            do {
-                tryAgain = false;
-                try {
-                    proc.waitFor();
-                } catch (InterruptedException e) {
-                    tryAgain = true;
+        synchronized(this) {
+            logger.debug("running: " + cmdStr);
+            try {
+                Process proc = LocalUvmContextFactory.context().exec(cmdStr);
+                InputStream is = proc.getInputStream();
+                byte[] outBuf = new byte[4092];
+                int i;
+                while (-1 != (i = is.read(outBuf))) {
+                    System.out.write(outBuf, 0, i);
                 }
-            } while (tryAgain);
-            logger.debug("apt done.");
-            int e = proc.exitValue();
-            if (0 != e) {
-                throw new MackageException("apt exited with: " + e);
+                is.close();
+                boolean tryAgain;
+                do {
+                    tryAgain = false;
+                    try {
+                        proc.waitFor();
+                    } catch (InterruptedException e) {
+                        tryAgain = true;
+                    }
+                } while (tryAgain);
+                logger.debug("apt done.");
+                int e = proc.exitValue();
+                if (0 != e) {
+                    throw new MackageException("apt exited with: " + e);
+                }
+            } catch (IOException e) {
+                logger.info( "exception while in mackage: ", e);
             }
-        } catch (IOException e) {
-            logger.info( "exception while in mackage: ", e);
         }
 
         refreshLists();
@@ -1143,29 +1097,31 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
     private List<String> predictNodeInstall(String pkg)
     {
         List<String> l = new ArrayList<String>();
-
         String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt predictInstall " + pkg;
-        try {
-            Process p = LocalUvmContextFactory.context().exec(cmd);
-            InputStream is = p.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while (null != (line = br.readLine())) {
-                MackageDesc md = packageMap.get(line);
-                if (md == null) {
-                    logger.debug("Ignoring non-mackage: " + line);
-                    continue;
+
+        synchronized(this) {
+            try {
+                Process p = LocalUvmContextFactory.context().exec(cmd);
+                InputStream is = p.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                String line;
+                while (null != (line = br.readLine())) {
+                    MackageDesc md = packageMap.get(line);
+                    if (md == null) {
+                        logger.debug("Ignoring non-mackage: " + line);
+                        continue;
+                    }
+                    MackageDesc.Type mdType = md.getType();
+                    if (mdType != MackageDesc.Type.NODE
+                        && mdType != MackageDesc.Type.SERVICE) {
+                        logger.debug("Ignoring non-node/service mackage: " + line);
+                        continue;
+                    }
+                    l.add(line);
                 }
-                MackageDesc.Type mdType = md.getType();
-                if (mdType != MackageDesc.Type.NODE
-                    && mdType != MackageDesc.Type.SERVICE) {
-                    logger.debug("Ignoring non-node/service mackage: " + line);
-                    continue;
-                }
-                l.add(line);
+            } catch (IOException exn) {
+                logger.warn("could not predict node install: " + pkg, exn);
             }
-        } catch (IOException exn) {
-            logger.warn("could not predict node install: " + pkg, exn);
         }
 
         return l;

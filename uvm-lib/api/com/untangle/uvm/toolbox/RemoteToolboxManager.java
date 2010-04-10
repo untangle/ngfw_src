@@ -154,14 +154,22 @@ public interface RemoteToolboxManager
 
     void update() throws MackageException;
 
-    long upgrade() throws MackageException;
+    void upgrade() throws MackageException;
 
     void enable(String mackageName) throws MackageException;
 
     void disable(String mackageName) throws MackageException;
 
+    /**
+     * This function sends message to UI to initiate a install
+     * The UI is responsible for actually initiating the install
+     */
     void requestInstall(String mackageName);
 
+    /**
+     * This function sends message to UI to initiate a uninstall
+     * The UI is responsible for actually initiating the uninstall
+     */
     void requestUninstall(String mackageName);
 
     /**

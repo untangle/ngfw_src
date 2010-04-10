@@ -41,8 +41,7 @@ public class ImageInstaller extends HttpServlet
     
     private static final Pattern LIBITEM_PATTERN = Pattern.compile( "[a-z][-a-z0-9+.]+" );
 
-    protected void doGet( HttpServletRequest request,  HttpServletResponse response )
-        throws ServletException, IOException
+    protected void doGet( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
     {
         ServletStreamer ss = ServletStreamer.getInstance();
 

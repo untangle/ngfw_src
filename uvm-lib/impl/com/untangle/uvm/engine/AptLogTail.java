@@ -46,8 +46,7 @@ import com.untangle.uvm.toolbox.MackageDesc;
  */
 class AptLogTail implements Runnable
 {
-    private static final String APT_LOG
-        = System.getProperty("uvm.log.dir") + "/apt.log";
+    private static final String APT_LOG = System.getProperty("uvm.log.dir") + "/apt.log";
     private static final long TIMEOUT = 500000;
 
     private static final Pattern FETCH_PATTERN;
@@ -120,8 +119,7 @@ class AptLogTail implements Runnable
 
     public void doIt()
     {
-        LocalMessageManager mm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
 
         // find `start key'
         logger.debug("finding start key: \"start " + key + "\"");
@@ -158,8 +156,7 @@ class AptLogTail implements Runnable
             return;
         }
 
-        mm.submitMessage(new DownloadSummary(downloadQueue.size(),
-                                             totalSize, requestingMackage));
+        mm.submitMessage(new DownloadSummary(downloadQueue.size(), totalSize, requestingMackage));
 
         for (PackageInfo pi : downloadQueue) {
             logger.debug("downloading: " + pi);
@@ -209,8 +206,7 @@ class AptLogTail implements Runnable
 
     private String readLine()
     {
-        LocalMessageManager mm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
 
         try {
             while (true) {
@@ -226,8 +222,7 @@ class AptLogTail implements Runnable
                             logger.warn("AptLogTail timing out: "
                                         + (t - lastActivity));
                             mm.submitMessage(new InstallTimeout(t, requestingMackage));
-                            throw new RuntimeException("timing out: "
-                                                       + (t - lastActivity));
+                            throw new RuntimeException("timing out: " + (t - lastActivity));
                         } else {
                             Thread.sleep(100);
                         }
@@ -275,8 +270,7 @@ class AptLogTail implements Runnable
 
         public String toString()
         {
-            return "PackageInfo url: " + url + " file: " + file
-                + " size: " + size + " hash: " + hash;
+            return "PackageInfo url: " + url + " file: " + file + " size: " + size + " hash: " + hash;
         }
     }
 }

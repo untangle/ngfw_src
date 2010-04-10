@@ -232,8 +232,8 @@ Ung.Util= {
                 if (exception.stack) {
                     message = exception.stack;
                 }
-                if(exception.name=="com.untangle.uvm.toolbox.MackageException" && exception.message=="mkg timed out") {
-                    message=i18n._("Service busy or timed out.");
+                if(exception.name=="com.untangle.uvm.toolbox.MackageException" && exception.message=="ut-apt timed out") {
+                    message=i18n._("Service busy or timed out. Unable to contact app store.");
                 }
                 if (message == null || message == "Unknown") {
                     message=i18n._("Please Try Again");
@@ -1652,7 +1652,7 @@ Ung.MessageManager = {
                             if(node!=null) {
                                 node.updateRunState(msg.nodeState);
                             }
-                        }else if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
+                        } else if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
                             if(!msg.installed) {
                                 var policy=null;
                                 policy = rpc.currentPolicy;
@@ -1664,6 +1664,23 @@ Ung.MessageManager = {
                                         main.getIframeWin().closeActionFn();
                                     }
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
+                            }
+                        } else if (msg.javaClass.indexOf("MackageUninstallRequest") >= 0) {
+                            if(!msg.installed) {
+                                var appItemDisplayName=msg.mackageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.mackageDesc.fullVersion):msg.mackageDesc.displayName;
+                                Ung.AppItem.updateState(appItemDisplayName, "uninstall");
+                                rpc.toolboxManager.unregister(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)) return;
+                                    if ( main.getIframeWin() != null  ) {
+                                        main.getIframeWin().closeActionFn();
+                                    }
+                                }.createDelegate(this),msg.mackageDesc.name);
+                                rpc.toolboxManager.uninstall(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)) return;
+                                    if ( main.getIframeWin() != null  ) {
+                                        main.getIframeWin().closeActionFn();
+                                    }
+                                }.createDelegate(this),msg.mackageDesc.name);
                             }
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
