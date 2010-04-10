@@ -56,12 +56,11 @@ public class Launcher extends HttpServlet
     private static final String HTTP_USER_AGENT = "User-Agent";
     private static final String HTTP_CONTENT_TYPE = "Content-Type";
 
-    private static final String PROPERTY_HELP_URL = "com.untangle.helpUrl";
+    private static final String PROPERTY_HELP_URL = "uvm.help.url";
     
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    protected void doGet( HttpServletRequest request,  HttpServletResponse response )
-        throws ServletException, IOException
+    protected void doGet( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
     {
         try {
 
@@ -114,6 +113,7 @@ public class Launcher extends HttpServlet
     {
         return getActionURL( request, "my_account", null );
     }
+
     private URL getOfflineURL( HttpServletRequest request) throws MalformedURLException 
     {
         String protocol = request.getParameter( FIELD_PROTOCOL );    
@@ -121,6 +121,7 @@ public class Launcher extends HttpServlet
         String path = "/webui/offline.jsp";    
         return new URL(protocol + "://" + host + path);
     }
+
     private URL getUpgradeAvailableURL(HttpServletRequest request) throws MalformedURLException 
     {
         String protocol = request.getParameter( FIELD_PROTOCOL );    
@@ -128,6 +129,7 @@ public class Launcher extends HttpServlet
         String path = "/webui/upgrade.jsp";    
         return new URL(protocol + "://" + host + path);    
     }
+
     private URL getWizardURL( HttpServletRequest request ) throws MalformedURLException
 
     {
@@ -143,13 +145,13 @@ public class Launcher extends HttpServlet
     {
         return getActionURL( request, "buy", mackageName );
     }
+
     private URL getWelcomeURL( HttpServletRequest request, String mackageName ) throws MalformedURLException
     {
         return getActionURL( request, "welcome", mackageName );
     }
 
-    private URL getActionURL( HttpServletRequest request, String action, String mackageName )
-        throws MalformedURLException
+    private URL getActionURL( HttpServletRequest request, String action, String mackageName ) throws MalformedURLException
     {
         LocalUvmContext context = LocalUvmContextFactory.context();
         String host = context.toolboxManager().getLibraryHost();
@@ -161,8 +163,7 @@ public class Launcher extends HttpServlet
         return new URL( "https" + "://" + host + "/open.php?" + query );
     }
 
-    private URL getHelpURL( HttpServletRequest request, String source)
-        throws MalformedURLException
+    private URL getHelpURL( HttpServletRequest request, String source) throws MalformedURLException
      {
          LocalUvmContext context = LocalUvmContextFactory.context();
          String lang = context.languageManager().getLanguageSettings().getLanguage();
