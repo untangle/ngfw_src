@@ -1660,10 +1660,10 @@ Ung.MessageManager = {
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
-                                    if ( main.getIframeWin() != null  ) {
-                                        main.getIframeWin().closeActionFn();
-                                    }
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
+                                if ( main.getIframeWin() != null  ) {
+                                    main.getIframeWin().closeActionFn();
+                                }
                             }
                         } else if (msg.javaClass.indexOf("MackageUninstallRequest") >= 0) {
                             if(!msg.installed) {
@@ -1671,9 +1671,6 @@ Ung.MessageManager = {
                                 Ung.AppItem.updateState(appItemDisplayName, "uninstall");
                                 rpc.toolboxManager.unregister(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
-                                    if ( main.getIframeWin() != null  ) {
-                                        main.getIframeWin().closeActionFn();
-                                    }
                                 }.createDelegate(this),msg.mackageDesc.name);
                                 rpc.toolboxManager.uninstall(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
