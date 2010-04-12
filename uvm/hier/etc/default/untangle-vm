@@ -67,7 +67,7 @@ UVM_ARGS="${UVM_ARGS} -Dje.maxMemory=${MAX_BERKDB_MEG}"
 UVM_ARGS="${UVM_ARGS} -Dnetworkaddress.cache.ttl=30 -Dsun.net.inetaddr.ttl=30 -Dnetworkaddress.cache.negative.ttl=10"
 
 ## Alternative store
-#UVM_ARGS="${UVM_ARGS} -Duvm.store.url=http://store.untangle.com"
+#UVM_ARGS="${UVM_ARGS} -Duvm.store.url=https://store.untangle.com"
 
 ## Default Logging
 UVM_ARGS="${UVM_ARGS}  -Dlog4j.configuration=file:@PREFIX@/usr/share/untangle/conf/log4j-uvm.xml"

@@ -57,8 +57,11 @@ public class Launcher extends HttpServlet
     private static final String HTTP_CONTENT_TYPE = "Content-Type";
 
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
+    private static final String DEFAULT_HELP_URL = "http://www.untangle.com/docs/get.php";
+
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
-    
+    private static final String DEFAULT_STORE_URL = "https://store.untangle.com";
+        
     private final Logger logger = Logger.getLogger( this.getClass());
 
     protected void doGet( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
@@ -156,7 +159,9 @@ public class Launcher extends HttpServlet
     {
         LocalUvmContext context = LocalUvmContextFactory.context();
         String url = System.getProperty(PROPERTY_STORE_URL);
-
+        if (url == null)
+            url = DEFAULT_STORE_URL;
+        
         String query = getLibraryQuery( request, action );
         if ( mackageName != null ) query += "&name=" + URLEncoder.encode( mackageName );
 
@@ -171,7 +176,7 @@ public class Launcher extends HttpServlet
 
          String url = System.getProperty(PROPERTY_HELP_URL);
          if (url == null)
-             url = "http://www.untangle.com/docs/get.php";
+             url = DEFAULT_HELP_URL;
          
          return new URL(url + "?"
                         + "version=" + Version.getVersion()
