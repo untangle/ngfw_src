@@ -207,7 +207,7 @@ class CCompilerTarget < Target
 
   ## Nothing to build
   def build
-    puts "Completing building #{@targetName}"
+    puts "[build   ] completing #{@targetName}"
   end
 
   def to_s

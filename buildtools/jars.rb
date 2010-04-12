@@ -39,7 +39,9 @@ class Jars
           "#{p}: #{File.exist?(p)}"
         end
 
-        warn "Could not find #{path} (#{h.join(',')})"
+	if not $CleanBuild
+	  warn "Could not find #{path} (#{h.join(',')})"
+        end
       else
         ThirdpartyJar.get(p)
       end
