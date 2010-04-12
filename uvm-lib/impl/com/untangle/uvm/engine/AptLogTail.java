@@ -107,20 +107,23 @@ class AptLogTail implements Runnable
     public void run()
     {
         try {
-            doIt();
-        } finally {
-            try {
-                raf.close();
-            } catch (IOException exn) {
-                logger.warn("could not close: " + APT_LOG);
-            }
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {}
+        
+        logger.debug("tailing apt log");
+        doIt();
+
+        try {
+            raf.close();
+        } catch (IOException exn) {
+            logger.warn("could not close: " + APT_LOG);
         }
     }
 
     public void doIt()
     {
         LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
-
+        
         // find `start key'
         logger.debug("finding start key: \"start " + key + "\"");
         for (String line = readLine(); !line.equals("start " + key); line = readLine());
@@ -156,6 +159,7 @@ class AptLogTail implements Runnable
             return;
         }
 
+        logger.debug("Sending DownloadSummary");
         mm.submitMessage(new DownloadSummary(downloadQueue.size(), totalSize, requestingMackage));
 
         for (PackageInfo pi : downloadQueue) {
@@ -164,11 +168,11 @@ class AptLogTail implements Runnable
                 String line = readLine();
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
                 if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
-                    logger.debug("download succeeded");
+                    logger.debug("Sending DownloadComplete");
                     mm.submitMessage(new DownloadComplete(true, requestingMackage));
                     break;
                 } else if (line.startsWith("DOWNLOAD FAILED: " )) {
-                    logger.debug("download failed");
+                    logger.debug("Sending DownloadComplete (failed)");
                     mm.submitMessage(new DownloadComplete(false, requestingMackage));
                     break;
                 } else if (m.matches()) {
@@ -191,16 +195,16 @@ class AptLogTail implements Runnable
                         dpe = new DownloadProgress(pi.file, soFar, totalSize,
                                                    speed, requestingMackage);
                     }
-                    logger.debug("Adding event: " + dpe);
 
+                    logger.debug("Sending DownloadSummary:" + dpe);
                     mm.submitMessage(dpe);
                 } else {
-                    logger.debug("ignoring line: " + line);
+                    logger.debug("ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
                 }
             }
         }
 
-        logger.debug("installation complete");
+        logger.debug("Sending InstallComplete");
         mm.submitMessage(new InstallComplete(true, requestingMackage));
     }
 

@@ -60,23 +60,17 @@ class MessageManagerImpl implements LocalMessageManager
 {
     private static final long CLIENT_TIMEOUT = 1800000; // 30 min
 
-    private static final Pattern MEMINFO_PATTERN
-        = Pattern.compile("(\\w+):\\s+(\\d+)\\s+kB");
+    private static final Pattern MEMINFO_PATTERN = Pattern.compile("(\\w+):\\s+(\\d+)\\s+kB");
 
-    private static final Pattern VMSTAT_PATTERN
-        = Pattern.compile("(\\w+)\\s+(\\d+)");
+    private static final Pattern VMSTAT_PATTERN = Pattern.compile("(\\w+)\\s+(\\d+)");
 
-    private static final Pattern CPUINFO_PATTERN
-        = Pattern.compile("([ 0-9a-zA-Z]*\\w)\\s*:\\s*(.*)$");
+    private static final Pattern CPUINFO_PATTERN = Pattern.compile("([ 0-9a-zA-Z]*\\w)\\s*:\\s*(.*)$");
 
-    private static final Pattern CPU_USAGE_PATTERN
-        = Pattern.compile("cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)");
+    private static final Pattern CPU_USAGE_PATTERN = Pattern.compile("cpu\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)");
 
-    private static final Pattern NET_DEV_PATTERN
-        = Pattern.compile("^\\s*([a-z]+\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
+    private static final Pattern NET_DEV_PATTERN = Pattern.compile("^\\s*([a-z]+\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
 
-    private static final Pattern DISK_STATS_PATTERN
-        = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
+    private static final Pattern DISK_STATS_PATTERN = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
 
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
@@ -86,18 +80,19 @@ class MessageManagerImpl implements LocalMessageManager
     private final Random random = new Random();
 
     private final Map<Integer, List<Message>> messages = new HashMap<Integer, List<Message>>();
+
     private final Map<Integer, Long> lastMessageAccess = new HashMap<Integer, Long>();
 
     private final Map<Tid, List<ActiveStat>> activeMetrics = new HashMap<Tid, List<ActiveStat>>();
 
-    private final Pulse updatePulse = new Pulse("system-stat-collector",
-                                                true,
-                                                new SystemStatCollector());
+    private final Pulse updatePulse = new Pulse("system-stat-collector", true, new SystemStatCollector());
 
     private final Map<String,Long> rxtxBytes0 = new HashMap<String,Long>();
+
     private long lastNetDevUpdate = System.currentTimeMillis();
 
     private final Map<String,Long> diskRW0 = new HashMap<String,Long>();
+
     private long lastDiskUpdate = System.currentTimeMillis();
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
@@ -140,6 +135,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     public MessageQueue getMessageQueue(Integer key, Policy p)
     {
+        logger.info("getMessageQueue()");
         LocalNodeManager lm = UvmContextImpl.getInstance().localNodeManager();
         List<Tid> tids = lm.nodeInstances(p);
         /* Add in the nodes with the null policy */
@@ -147,6 +143,7 @@ class MessageManagerImpl implements LocalMessageManager
         Map<Tid, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages(key);
 
+        logger.info("getMessageQueue(): return");
         return new MessageQueue(messages, stats, systemStats);
     }
 
@@ -210,8 +207,7 @@ class MessageManagerImpl implements LocalMessageManager
         return l;
     }
 
-    public void setActiveMetrics(final Tid tid,
-                                 final List<ActiveStat> activeMetrics)
+    public void setActiveMetrics(final Tid tid, final List<ActiveStat> activeMetrics)
     {
         synchronized (this.activeMetrics) {
             this.activeMetrics.put(tid, activeMetrics);
@@ -313,8 +309,7 @@ class MessageManagerImpl implements LocalMessageManager
         }
     }
 
-    public void setActiveMetricsIfNotSet(final Tid tid,
-                                         final BlingBlinger... blingers)
+    public void setActiveMetricsIfNotSet(final Tid tid, final BlingBlinger... blingers)
     {
         TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
             {

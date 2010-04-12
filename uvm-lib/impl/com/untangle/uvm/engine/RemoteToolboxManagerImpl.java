@@ -377,6 +377,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     public void install(String name) throws MackageInstallException
     {
+        logger.info("install(" + name + ")");
+
         MackageDesc req = mackageDesc(name);
         if (null == req) {
             logger.warn("No such mackage: " + name);
@@ -401,19 +403,22 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         } finally {
             installing = false;
         }
+
+        logger.info("install(" + name + ") return"); 
     }
 
     private final Object installAndInstantiateLock = new Object();
 
     public void installAndInstantiate(final String name, final Policy p) throws MackageInstallException
     {
+        logger.info("installAndInstantiate( " + name + ")");
+        
         synchronized (installAndInstantiateLock) {
             UvmContextImpl mctx = UvmContextImpl.getInstance();
             NodeManagerImpl nm = mctx.localNodeManager();
             List<String> nodes = null;
 
-            // List of mackages that we will try to install in
-            // this run
+            // List of mackages that we will try to install in this run
             List<String> willInstall = new ArrayList<String>();
 
             try {
@@ -429,20 +434,18 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                     beingInstalled.add(name);
                     willInstall.add(name);
                     nodes = predictNodeInstall(name);
-                    for (Iterator<String> iter = nodes.iterator();
-                         iter.hasNext();) {
+                    for (Iterator<String> iter = nodes.iterator(); iter.hasNext();) {
                         String newNode = iter.next();
                         if (beingInstalled.contains(newNode)) {
                             logger.warn("mackage " + newNode + " being subinstalled, debouncing");
-                            // Let the other guy install it.
-                            iter.remove();
+                            iter.remove(); // Let the other guy install it.
                         } else {
                             beingInstalled.add(newNode);
                             willInstall.add(newNode);
                         }
                     }
                 }
-
+                
                 install(name);
                 for (String nn : nodes) {
                     try {
@@ -472,6 +475,8 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
             Message m = new InstallAndInstantiateComplete(mackageDesc);
             mm.submitMessage(m);
         }
+
+        logger.info("installAndInstantiate( " + name + ") return");
     }
 
     public void uninstall(String name) throws MackageUninstallException
@@ -1028,8 +1033,13 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
         execApt(command, -1);
     }
 
+    /**
+     * Returns a list of packages that will be installed as a result of installing this node
+     */
     private List<String> predictNodeInstall(String pkg)
     {
+        logger.info("predictNodeInstall(" + pkg + ")");
+        
         List<String> l = new ArrayList<String>();
         String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt predictInstall " + pkg;
 
