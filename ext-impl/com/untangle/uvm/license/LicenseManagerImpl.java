@@ -30,28 +30,22 @@ import com.untangle.node.util.UtLogger;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.Pulse;
 
-public class LicenseManagerImpl implements LicenseManager {
+public class LicenseManagerImpl implements LicenseManager
+{
     private static final int SELF_SIGNED_VERSION = 0x1F;
 
-    private static final String LICENSE_DIRECTORY = System
-            .getProperty("uvm.conf.dir")
-            + "/licenses";
-
+    private static final String LICENSE_DIRECTORY = System.getProperty("uvm.conf.dir") + "/licenses";
     private static final String PROPERTY_BASE = "com.untangle.uvm.license";
-
-    private static final String PROPERTY_PRODUCT_IDENTIFIER = PROPERTY_BASE
-            + ".identifier";
+    private static final String PROPERTY_PRODUCT_IDENTIFIER = PROPERTY_BASE + ".identifier";
     private static final String PROPERTY_LICENSE_TYPE = PROPERTY_BASE + ".type";
     /* The package that this product is in, this is for mcli extraname */
     private static final String PROPERTY_MACKAGE = PROPERTY_BASE + ".mackage";
     private static final String PROPERTY_START = PROPERTY_BASE + ".start";
     private static final String PROPERTY_END = PROPERTY_BASE + ".end";
     private static final String PROPERTY_KEY = PROPERTY_BASE + ".key";
-    private static final String PROPERTY_KEY_VERSION = PROPERTY_BASE
-            + ".keyVersion";
+    private static final String PROPERTY_KEY_VERSION = PROPERTY_BASE + ".keyVersion";
 
-    private static final long LICENSE_SUBSCRIPTION_EXTENSION = (1000l * 60 * 60
-            * 24 * 365 * 8) + 835l;
+    private static final long LICENSE_SUBSCRIPTION_EXTENSION = (1000l * 60 * 60 * 24 * 365 * 8) + 835l;
 
     /* 30 day keys */
     private static final long OLD_TRIAL_KEY_DURATION = (1000l * 60 * 60 * 24 * 30) + 539;
@@ -69,13 +63,10 @@ public class LicenseManagerImpl implements LicenseManager {
 
     /* These are the various license types */
     private static enum LicenseType {
-        TRIAL14("14 Day Trial", 1000l * 60 * 60 * 24 * 15 + 278), TRIAL(
-                "30 Day Trial", 1000l * 60 * 60 * 24 * 31 + 539), SUBSCRIPTION(
-                "Subscription", 1000l * 60 * 60 * 24 * 365 * 2 + 344), DEVELOPMENT(
-                "Untangle Development", 1000l * 60 * 60 * 24 * 60 + 960),
-
-        // This one is used for NAS, which is limited by space rather than time.
-        TRIAL_LIMITED("Limited Trial", 1000l * 60 * 60 * 24 * 365 * 10 + 37);
+        TRIAL14("14 Day Trial", 1000l * 60 * 60 * 24 * 15 + 278),
+        TRIAL("30 Day Trial", 1000l * 60 * 60 * 24 * 31 + 539),
+        SUBSCRIPTION("Subscription", 1000l * 60 * 60 * 24 * 365 * 2 + 344),
+        DEVELOPMENT("Untangle Development", 1000l * 60 * 60 * 24 * 60 + 960);
 
         private final String name;
         private final long duration;
@@ -155,7 +146,8 @@ public class LicenseManagerImpl implements LicenseManager {
     private String standardLicense = null;
     private String professionalLicense = null;
 
-    private LicenseManagerImpl() {
+    private LicenseManagerImpl()
+    {
         /*
          * This shouldn't be in properties, it is too easy to override. *
          * this.timerDelay = Long.getLong(
@@ -172,7 +164,8 @@ public class LicenseManagerImpl implements LicenseManager {
      *            The product to register.
      */
     @Override
-    public final void register(Product product) {
+    public final void register(Product product)
+    {
         synchronized (this) {
             this.products.add(product);
         }
@@ -194,18 +187,21 @@ public class LicenseManagerImpl implements LicenseManager {
      * Reload all of the licenses from the file system.
      */
     @Override
-    public final void reloadLicenses() {
+    public final void reloadLicenses()
+    {
         scheduleAndWait();
     }
 
     @Override
-    public final LicenseStatus getLicenseStatus(String identifier) {
+    public final LicenseStatus getLicenseStatus(String identifier)
+    {
         /* The mackage map contains both expired and unexpired licenses. */
         return getStatus(identifier, null);
     }
 
     @Override
-    public final LicenseStatus getMackageStatus(String mackageName) {
+    public final LicenseStatus getMackageStatus(String mackageName)
+    {
         /* The mackage map contains both expired and unexpired licenses. */
         String identifier = MACKAGE_TO_IDENTIFIER_MAP.get(mackageName);
         if (identifier == null)
@@ -214,12 +210,14 @@ public class LicenseManagerImpl implements LicenseManager {
     }
 
     @Override
-    public final boolean hasPremiumLicense() {
+    public final boolean hasPremiumLicense()
+    {
         return this.licenseSettings.getLicenses().size() > 0;
     }
 
     @Override
-    public final synchronized String getLicenseAgreement() {
+    public final synchronized String getLicenseAgreement()
+    {
         loadLicenseAgreement();
 
         String licenseText = this.standardLicense;
@@ -230,7 +228,8 @@ public class LicenseManagerImpl implements LicenseManager {
     }
 
     @Override
-    public final boolean getUntanglePlus() {
+    public final boolean getUntanglePlus()
+    {
         return !this.getLicenseStatus(ProductIdentifier.BRANDING_MANAGER)
                 .isExpired();
     }
@@ -238,8 +237,8 @@ public class LicenseManagerImpl implements LicenseManager {
     /* --------------------- PACKAGE --------------------- */
 
     /* --------------------- PRIVATE --------------------- */
-    private synchronized LicenseStatus getStatus(String identifier,
-            String mackageName) {
+    private synchronized LicenseStatus getStatus(String identifier, String mackageName)
+    {
         License license = this.licenseMap.get(identifier);
 
         if (mackageName == null)
@@ -271,7 +270,8 @@ public class LicenseManagerImpl implements LicenseManager {
     /**
      * Read the licenses and load them into the current settings object
      */
-    private synchronized void readLicenses() {
+    private synchronized void readLicenses()
+    {
         /* Open up the directory with all of the licenses */
         File licenseDirectory = new File(LICENSE_DIRECTORY);
 
@@ -350,7 +350,8 @@ public class LicenseManagerImpl implements LicenseManager {
     /**
      * update the license map.
      */
-    private synchronized void mapLicenses() {
+    private synchronized void mapLicenses()
+    {
         /* Create a new map of all of the valid licenses */
         Map<String, License> newMap = new HashMap<String, License>();
 
@@ -374,7 +375,8 @@ public class LicenseManagerImpl implements LicenseManager {
     /**
      * Notify the products.
      */
-    private synchronized void notifyProducts() {
+    private synchronized void notifyProducts()
+    {
 
         long nextExpirationDate = (System.nanoTime() / 1000000l)
                 + this.validationPeriod;
@@ -409,7 +411,8 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
-    private synchronized void notifyClients() {
+    private synchronized void notifyClients()
+    {
         Map<String, LicenseStatus> identifierMap = new HashMap<String, LicenseStatus>();
         Map<String, LicenseStatus> mackageMap = new HashMap<String, LicenseStatus>();
 
@@ -437,8 +440,8 @@ public class LicenseManagerImpl implements LicenseManager {
                 message);
     }
 
-    private String createSelfSignedLicenseKey(License license)
-            throws NoSuchAlgorithmException {
+    private String createSelfSignedLicenseKey(License license) throws NoSuchAlgorithmException
+    {
         if (license.getKeyVersion() != SELF_SIGNED_VERSION)
             return null;
 
@@ -456,11 +459,13 @@ public class LicenseManagerImpl implements LicenseManager {
         return toHex(data);
     }
 
-    private boolean verifyLicense(License license) {
+    private boolean verifyLicense(License license)
+    {
         return verifyLicense(license, true);
     }
 
-    private boolean verifyLicense(License license, boolean verifyExpiration) {
+    private boolean verifyLicense(License license, boolean verifyExpiration)
+    {
         int version = license.getKeyVersion();
 
         long now = System.currentTimeMillis();
@@ -530,7 +535,8 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
-    private String buildLicenseFile(License license) {
+    private String buildLicenseFile(License license)
+    {
         StringBuilder sb = new StringBuilder();
         /*
          * just a little string to make it slightly harder to guess the
@@ -557,7 +563,8 @@ public class LicenseManagerImpl implements LicenseManager {
         return sb.toString();
     }
 
-    private String toHex(byte data[]) {
+    private String toHex(byte data[])
+    {
         String response = "";
         for (byte b : data) {
             int c = (int) b;
@@ -569,7 +576,8 @@ public class LicenseManagerImpl implements LicenseManager {
         return response;
     }
 
-    private String timeRemaining(long now, long expiration) {
+    private String timeRemaining(long now, long expiration)
+    {
         if (now > expiration)
             return EXPIRED;
 
@@ -588,8 +596,8 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
-    private LicenseStatus makeLicenseStatus(String identifier,
-            String mackageName, License license) {
+    private LicenseStatus makeLicenseStatus(String identifier, String mackageName, License license)
+    {
         if (license == null) {
             if (mackageName == null)
                 mackageName = "no-mackage";
@@ -609,14 +617,14 @@ public class LicenseManagerImpl implements LicenseManager {
         String timeLeft = timeRemaining(System.currentTimeMillis(), end);
         String type = license.getType();
         boolean isTrial = type.equals(LicenseType.TRIAL14.getName())
-                || type.equals(LicenseType.TRIAL.getName())
-                || type.equals(LicenseType.TRIAL_LIMITED.getName());
+            || type.equals(LicenseType.TRIAL.getName());
 
         return new LicenseStatus(true, identifier, mackageName, license
                 .getType(), new Date(end), timeLeft, isTrial);
     }
 
-    private void scheduleAndWait() {
+    private void scheduleAndWait()
+    {
         /*
          * update all of the licenses for products, run all of them in the timer
          * task to avoid synchronization issues.
@@ -629,11 +637,13 @@ public class LicenseManagerImpl implements LicenseManager {
     /**
      * This starts the task beating at a fixed rate
      */
-    private void scheduleFixedTask() {
+    private void scheduleFixedTask()
+    {
         this.pulse.start(this.timerDelay);
     }
 
-    private synchronized void loadLicenseAgreement() {
+    private synchronized void loadLicenseAgreement()
+    {
         if (this.professionalLicense == null) {
             this.professionalLicense = LicenseManagerFactory
                     .loadLicenseText(LicenseManagerFactory.PROFESSIONAL_LICENSE_RESOURCE);
@@ -646,11 +656,13 @@ public class LicenseManagerImpl implements LicenseManager {
     }
 
     /* statics */
-    public static LicenseManager getInstance() {
+    public static LicenseManager getInstance()
+    {
         return INSTANCE;
     }
 
-    private class LicenseUpdateTask implements Runnable {
+    private class LicenseUpdateTask implements Runnable
+    {
         public void run() {
             // NO_DEBUG_IN_LOGGING logger.debug(
             // "testing licenses and updating products." );
@@ -669,7 +681,8 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
-    private static void addMackageMap(String mackageName, String identifier) {
+    private static void addMackageMap(String mackageName, String identifier)
+    {
         IDENTIFIER_TO_MACKAGE_MAP.put(identifier, mackageName);
         MACKAGE_TO_IDENTIFIER_MAP.put(mackageName, identifier);
     }
@@ -678,26 +691,19 @@ public class LicenseManagerImpl implements LicenseManager {
         /* Add the license to the map */
         LICENSE_MAP.put(LicenseType.TRIAL.getName(), LicenseType.TRIAL);
         LICENSE_MAP.put(LicenseType.TRIAL14.getName(), LicenseType.TRIAL14);
-        LICENSE_MAP.put(LicenseType.TRIAL_LIMITED.getName(),
-                LicenseType.TRIAL_LIMITED);
-        LICENSE_MAP.put(LicenseType.SUBSCRIPTION.getName(),
-                LicenseType.SUBSCRIPTION);
-        LICENSE_MAP.put(LicenseType.DEVELOPMENT.getName(),
-                LicenseType.DEVELOPMENT);
+        LICENSE_MAP.put(LicenseType.SUBSCRIPTION.getName(), LicenseType.SUBSCRIPTION);
+        LICENSE_MAP.put(LicenseType.DEVELOPMENT.getName(), LicenseType.DEVELOPMENT);
 
         addMackageMap("untangle-node-adconnector", ProductIdentifier.PHONE_BOOK);
         addMackageMap("untangle-node-policy", ProductIdentifier.POLICY_MANAGER);
         addMackageMap("untangle-node-kav", ProductIdentifier.KASPERSKY_AV);
         addMackageMap("untangle-node-portal", ProductIdentifier.PORTAL);
         addMackageMap("untangle-node-license", "untangle-license-manager");
-        addMackageMap("untangle-node-branding",
-                ProductIdentifier.BRANDING_MANAGER);
-        addMackageMap("untangle-node-boxbackup",
-                ProductIdentifier.CONFIGURATION_BACKUP);
+        addMackageMap("untangle-node-branding", ProductIdentifier.BRANDING_MANAGER);
+        addMackageMap("untangle-node-boxbackup", ProductIdentifier.CONFIGURATION_BACKUP);
         addMackageMap("untangle-node-pcremote", ProductIdentifier.PC_REMOTE);
         addMackageMap("untangle-node-sitefilter", ProductIdentifier.SITEFILTER);
         addMackageMap("untangle-node-commtouch", ProductIdentifier.COMMTOUCH);
-        addMackageMap("untangle-node-nas", ProductIdentifier.NAS);
         addMackageMap("untangle-node-splitd", ProductIdentifier.SPLITD);
         addMackageMap("untangle-node-faild", ProductIdentifier.FAILD);
 
