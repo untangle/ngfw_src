@@ -1,22 +1,24 @@
 #! /bin/bash
 
+exec > /dev/null 2>&1
+
 REGDONE="@UVM_HOME@/.regdone"
 REGINFO="@UVM_HOME@/registration.info"
 
 if [ -f "@UVM_HOME@/activation.key" ]; then
     mkdir -p @UVM_HOME@/autodump @UVM_HOME@/tmp
 
-    /usr/bin/uvmdb-backup local @UVM_HOME@/autodump > /dev/null 2>&1
+    /usr/bin/uvmdb-backup local @UVM_HOME@/autodump
     /usr/bin/find @UVM_HOME@/autodump -type f -mtime +31 | /usr/bin/xargs -r /bin/rm
 
     /usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
     /usr/bin/find @UVM_HOME@/tmp -name velocity -prune -o -type f -mtime +15 -print | /usr/bin/xargs -r /bin/rm
 
-    /usr/lib/python2.5/reports/process.py 2>&1
+    /usr/lib/python2.5/reports/process.py
 
     yesterday=$(date --date="1 day ago" "+%y-%m-%d")
     for trial in $(/usr/share/untangle/bin/expiring_packages $yesterday) ; do
-      /usr/lib/python2.5/reports/process.py -t $trial 2>&1      
+      /usr/lib/python2.5/reports/process.py -t $trial
     done
 
     @UVM_HOME@/bin/utregister
@@ -26,6 +28,5 @@ if [ -f "@UVM_HOME@/activation.key" ]; then
         @UVM_HOME@/bin/update_blockpage || true
     fi
 fi
-
 
 exit 0
