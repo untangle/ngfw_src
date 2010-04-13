@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/toolbox/RemoteUpstreamManager.java $
+ * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/toolbox/UpstreamManager.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ package com.untangle.uvm.toolbox;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface RemoteUpstreamManager
+public interface UpstreamManager
 {
     // Built-in service names are statically defined here.  User could still
     // remove them from the upstream-services definition file, so don't skip

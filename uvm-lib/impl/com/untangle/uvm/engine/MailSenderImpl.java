@@ -64,7 +64,7 @@ import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.security.AdminSettings;
 import com.untangle.uvm.security.User;
-import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.ConfigFileUtil;
 import com.untangle.uvm.util.HasConfigFiles;
@@ -235,7 +235,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     public boolean isAutoConfigEnabled()
     {
         UpstreamService svc = LocalUvmContextFactory.context().
-            upstreamManager().getService(RemoteUpstreamManager.EXIM_SERVICE_NAME);
+            upstreamManager().getService(UpstreamManager.EXIM_SERVICE_NAME);
         if (svc == null)
             return false;
         return svc.enabled();

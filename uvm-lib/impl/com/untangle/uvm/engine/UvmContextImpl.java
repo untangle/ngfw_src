@@ -132,8 +132,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private RemoteReportingManagerImpl reportingManager;
     private RemoteConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
-    private RemoteToolboxManagerImpl toolboxManager;
-    private RemoteUpstreamManagerImpl upstreamManager;
+    private ToolboxManagerImpl toolboxManager;
+    private UpstreamManagerImpl upstreamManager;
     private NodeManagerImpl nodeManager;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
@@ -232,12 +232,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return remoteAppServerManager;
     }
     
-    public RemoteToolboxManagerImpl toolboxManager()
+    public ToolboxManagerImpl toolboxManager()
     {
         return toolboxManager;
     }
 
-    public RemoteUpstreamManagerImpl upstreamManager()
+    public UpstreamManagerImpl upstreamManager()
     {
         return upstreamManager;
     }
@@ -785,9 +785,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         // Fire up the policy manager.
         this.policyManagerFactory = PolicyManagerFactory.makeInstance();
 
-        this.toolboxManager = RemoteToolboxManagerImpl.toolboxManager();
+        this.toolboxManager = ToolboxManagerImpl.toolboxManager();
 
-        this.upstreamManager = RemoteUpstreamManagerImpl.upstreamManager();
+        this.upstreamManager = UpstreamManagerImpl.upstreamManager();
 
         // Now that upstreamManager is alive, we can get the upgrade settings and
         // start the cron job
@@ -931,7 +931,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         try {
             toolboxManager.destroy();
         } catch (Exception exn) {
-            logger.warn("could not destroy RemoteToolboxManager", exn);
+            logger.warn("could not destroy ToolboxManager", exn);
         }
         toolboxManager = null;
 

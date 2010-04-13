@@ -56,8 +56,8 @@ import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.security.RegistrationInfo;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.servlet.UploadManager;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.MPipeManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
@@ -80,11 +80,11 @@ public interface LocalUvmContext extends RemoteUvmContext
     UvmState state();
 
     /**
-     * Get the <code>RemoteToolboxManager</code> singleton.
+     * Get the <code>ToolboxManager</code> singleton.
      *
-     * @return a <code>RemoteToolboxManager</code> value
+     * @return a <code>ToolboxManager</code> value
      */
-    RemoteToolboxManager toolboxManager();
+    ToolboxManager toolboxManager();
 
     /**
      * Get the <code>NodeManager</code> singleton.
@@ -110,7 +110,7 @@ public interface LocalUvmContext extends RemoteUvmContext
      *
      * @return the <code>UpstreamManager</code>
      */
-    RemoteUpstreamManager upstreamManager();
+    UpstreamManager upstreamManager();
 
     /**
      * Get the <code>PolicyManager</code> singleton.

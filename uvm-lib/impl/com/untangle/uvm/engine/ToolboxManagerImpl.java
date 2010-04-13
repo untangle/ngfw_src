@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/uvm-lib/impl/com/untangle/uvm/engine/ToolboxManagerImpl.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -74,8 +74,8 @@ import com.untangle.uvm.toolbox.MackageInstallRequest;
 import com.untangle.uvm.toolbox.MackageUninstallException;
 import com.untangle.uvm.toolbox.MackageUninstallRequest;
 import com.untangle.uvm.toolbox.RackView;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.toolbox.UpgradeSettings;
 import com.untangle.uvm.toolbox.UpgradeStatus;
 import com.untangle.uvm.toolbox.UpstreamService;
@@ -83,12 +83,12 @@ import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
 
 /**
- * Implements RemoteToolboxManager.
+ * Implements ToolboxManager.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class RemoteToolboxManagerImpl implements RemoteToolboxManager
+class ToolboxManagerImpl implements ToolboxManager
 {
     static final int UPDATE_TIMEOUT = 40000;
 
@@ -98,7 +98,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static RemoteToolboxManagerImpl TOOLBOX_MANAGER;
+    private static ToolboxManagerImpl TOOLBOX_MANAGER;
 
     /* Prints out true if the upgrade server is available */
     private static final String UPGRADE_SERVER_AVAILABLE = System.getProperty("uvm.bin.dir") + "/ut-upgrade-avail";
@@ -134,18 +134,18 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     private List<String> beingInstalled = new ArrayList<String>();
 
-    private RemoteToolboxManagerImpl()
+    private ToolboxManagerImpl()
     {
         mackageState = loadMackageState();
 
         refreshLists();
     }
 
-    static RemoteToolboxManagerImpl toolboxManager()
+    static ToolboxManagerImpl toolboxManager()
     {
         synchronized (LOCK) {
             if (null == TOOLBOX_MANAGER) {
-                TOOLBOX_MANAGER = new RemoteToolboxManagerImpl();
+                TOOLBOX_MANAGER = new ToolboxManagerImpl();
             }
         }
         return TOOLBOX_MANAGER;
@@ -161,13 +161,13 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
 
     void destroy()
     {
-        logger.info("RemoteToolboxManager destroyed");
+        logger.info("ToolboxManager destroyed");
         if (cronJob != null) {
             cronJob.cancel();
         }
     }
 
-    // RemoteToolboxManager implementation ------------------------------------
+    // ToolboxManager implementation ------------------------------------
 
     public RackView getRackView(Policy p)
     {
@@ -686,7 +686,7 @@ class RemoteToolboxManagerImpl implements RemoteToolboxManager
                         // only turn on auto-upgrade for full ISO install
                         UpstreamService upgradeSvc =
                             LocalUvmContextFactory.context().upstreamManager()
-                            .getService(RemoteUpstreamManager.AUTO_UPGRADE_SERVICE_NAME);
+                            .getService(UpstreamManager.AUTO_UPGRADE_SERVICE_NAME);
                         if (upgradeSvc != null) {
                             us.setAutoUpgrade(upgradeSvc.enabled());
                         }

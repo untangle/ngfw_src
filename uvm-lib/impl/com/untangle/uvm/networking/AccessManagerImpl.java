@@ -34,7 +34,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.script.ScriptWriter;
-import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.DataSaver;
 import com.untangle.uvm.util.DeletingDataSaver;
@@ -185,9 +185,9 @@ class AccessManagerImpl implements LocalAccessManager
         
         try {
             if ( access.getIsSupportEnabled()) {
-                LocalUvmContextFactory.context().upstreamManager().enableService(RemoteUpstreamManager.SUPPORT_SERVICE_NAME);
+                LocalUvmContextFactory.context().upstreamManager().enableService(UpstreamManager.SUPPORT_SERVICE_NAME);
             } else {
-                LocalUvmContextFactory.context().upstreamManager().disableService(RemoteUpstreamManager.SUPPORT_SERVICE_NAME);
+                LocalUvmContextFactory.context().upstreamManager().disableService(UpstreamManager.SUPPORT_SERVICE_NAME);
             }
         } catch ( Exception ex ) {
             logger.error( "Unable to enable support", ex );

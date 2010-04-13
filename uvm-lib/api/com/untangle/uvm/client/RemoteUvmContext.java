@@ -54,8 +54,8 @@ import com.untangle.uvm.node.RemoteNodeManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.security.RemoteAdminManager;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.UpstreamManager;
 
 /**
  * Provides an interface to get major UVM components that are
@@ -67,11 +67,11 @@ import com.untangle.uvm.toolbox.RemoteUpstreamManager;
 public interface RemoteUvmContext
 {
     /**
-     * Get the <code>RemoteToolboxManager</code> singleton.
+     * Get the <code>ToolboxManager</code> singleton.
      *
-     * @return the RemoteToolboxManager.
+     * @return the ToolboxManager.
      */
-    RemoteToolboxManager toolboxManager();
+    ToolboxManager toolboxManager();
 
     /**
      * Get the <code>NodeManager</code> singleton.
@@ -88,13 +88,13 @@ public interface RemoteUvmContext
     RemoteLoggingManager loggingManager();
 
     /**
-     * Get the <code>RemoteUpstreamManager</code> singleton.
+     * Get the <code>UpstreamManager</code> singleton.
      * This provides registration & control of upstream
      * services, normally those running on the local machine.
      *
      * @return the <code>UpstreamManager</code>
      */
-    RemoteUpstreamManager upstreamManager();
+    UpstreamManager upstreamManager();
 
     /**
      * Get the <code>PolicyManager</code> singleton.

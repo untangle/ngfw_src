@@ -63,7 +63,7 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -168,7 +168,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                     while (fail) {
                         Map m = new HashMap();
                         m.put("key", uvm.getActivationKey());
-                        RemoteToolboxManager tm = uvm.toolboxManager();
+                        ToolboxManager tm = uvm.toolboxManager();
                         m.put("client-version", uvm.getFullVersion());
 
                         try {

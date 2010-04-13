@@ -49,7 +49,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.StringUtil;
 
@@ -381,7 +381,7 @@ class NetworkConfigurationLoader
     {
         boolean enabled = false;
         UpstreamService supportSvc =
-            LocalUvmContextFactory.context().upstreamManager().getService(RemoteUpstreamManager.SUPPORT_SERVICE_NAME);
+            LocalUvmContextFactory.context().upstreamManager().getService(UpstreamManager.SUPPORT_SERVICE_NAME);
         if (supportSvc != null)
             enabled = supportSvc.enabled();
 

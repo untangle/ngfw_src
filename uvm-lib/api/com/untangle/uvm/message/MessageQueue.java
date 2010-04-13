@@ -45,8 +45,7 @@ public class MessageQueue implements Serializable
     private final Map<Tid, Stats> stats;
     private final Map<String, Object> systemStats;
 
-    public MessageQueue(List<Message> messages, Map<Tid, Stats> stats,
-                        Map<String, Object> systemStats)
+    public MessageQueue(List<Message> messages, Map<Tid, Stats> stats, Map<String, Object> systemStats)
     {
         this.messages = messages;
         this.stats = stats;

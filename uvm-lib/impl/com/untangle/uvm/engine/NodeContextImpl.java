@@ -75,7 +75,7 @@ class NodeContextImpl implements NodeContext
     private String mackageName;
 
     private final NodeManagerImpl nodeManager;
-    private final RemoteToolboxManagerImpl toolboxManager;
+    private final ToolboxManagerImpl toolboxManager;
 
     NodeContextImpl(URLClassLoader classLoader, NodeDesc tDesc, String mackageName, boolean isNew) throws DeployException
     {

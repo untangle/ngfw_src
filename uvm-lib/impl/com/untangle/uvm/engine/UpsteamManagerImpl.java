@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm-lib/impl/com/untangle/uvm/engine/RemoteToolboxManagerImpl.java $
+ * $HeadURL: svn://chef/work/src/uvm-lib/impl/com/untangle/uvm/engine/ToolboxManagerImpl.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,41 +31,44 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.MackageInstallException;
 import com.untangle.uvm.toolbox.MackageUninstallException;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
-import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
 
 /**
- * Implements RemoteUpstreamManager.
+ * Implements UpstreamManager.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
+class UpstreamManagerImpl implements UpstreamManager
 {
     private static final Object LOCK = new Object();
 
     private static final File UPSTREAM_SERVICES_FILE;
+
     private static final String NO_PACKAGE = "NONE";
 
-    private RemoteToolboxManager toolboxMgr;
+    private ToolboxManager toolboxMgr;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static RemoteUpstreamManagerImpl UPSTREAM_MANAGER;
+    private static UpstreamManagerImpl UPSTREAM_MANAGER;
 
     // There are few enough upstream services that we don't bother
     // with a Map.
     private List<UpstreamService> services; 
 
-    private RemoteUpstreamManagerImpl(RemoteToolboxManager toolboxMgr) {
+    private UpstreamManagerImpl(ToolboxManager toolboxMgr) {
         this.toolboxMgr = toolboxMgr;
 
         refresh();
     }
 
     // Called at init time and whenever refreshToolbox runs.
-    void refresh() {
+
+    void refresh()
+    {
         MackageDesc[] installed = toolboxMgr.installed();
         services = new ArrayList<UpstreamService>();
 
@@ -120,22 +123,23 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
         }
     }
 
-    static RemoteUpstreamManagerImpl upstreamManager()
+    static UpstreamManagerImpl upstreamManager()
     {
         if (null == UPSTREAM_MANAGER) {
             synchronized (LOCK) {
                 if (null == UPSTREAM_MANAGER) {
                     UPSTREAM_MANAGER =
-                        new RemoteUpstreamManagerImpl(LocalUvmContextFactory.context().toolboxManager());
+                        new UpstreamManagerImpl(LocalUvmContextFactory.context().toolboxManager());
                 }
             }
         }
         return UPSTREAM_MANAGER;
     }
 
-    // RemoteUpstreamManager implementation ------------------------------------
+    // UpstreamManager implementation ------------------------------------
 
     // all known services
+
     public String[] allServiceNames()
     {
         String[] result = new String[services.size()];
@@ -155,8 +159,7 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
         return null;
     }
 
-    public void enableService(String name)
-        throws IllegalArgumentException, MackageInstallException
+    public void enableService(String name) throws IllegalArgumentException, MackageInstallException
     {
         UpstreamService service = getService(name);
         if (service == null)
@@ -175,8 +178,7 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
         services.add(new UpstreamService(name, true, configPackage));
     }
 
-    public void disableService(String name)
-        throws IllegalArgumentException, MackageUninstallException
+    public void disableService(String name) throws IllegalArgumentException, MackageUninstallException
     {
         UpstreamService service = getService(name);
         if (service == null)
@@ -195,23 +197,9 @@ class RemoteUpstreamManagerImpl implements RemoteUpstreamManager
         services.add(new UpstreamService(name, false, configPackage));
     }
 
-
     static {
         String cd = System.getProperty("uvm.conf.dir");
         UPSTREAM_SERVICES_FILE = new File(cd, "upstream-services");
     }
 
-    // Test
-    public static void main(String[] args) {
-        BufferedReader in = new BufferedReader(new java.io.InputStreamReader(System.in));
-        try {
-            String line = in.readLine();
-            String[] strs = line.split("\\s+");
-            for (String str : strs) {
-                System.out.println("'" + str + "'");
-            }
-        } catch (IOException x) { }
-        //        RemoteUpstreamManager mgr =
-        //             new RemoteUpstreamManagerImpl(RemoteToolboxManagerImpl.toolboxManager());
-    }
 }

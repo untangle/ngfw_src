@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/toolbox/ToolboxManager.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ import com.untangle.uvm.policy.Policy;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface RemoteToolboxManager
+public interface ToolboxManager
 {
     /**
      * Get the view of the rack for a policy.

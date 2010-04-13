@@ -35,7 +35,7 @@ import com.untangle.node.util.UrlDatabase;
 import com.untangle.node.util.UrlList;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -92,7 +92,7 @@ class UrlBlacklist extends Blacklist
             LocalUvmContext uvm = LocalUvmContextFactory.context();
             Map m = new HashMap();
             m.put("key", uvm.getActivationKey());
-            RemoteToolboxManager tm = uvm.toolboxManager();
+            ToolboxManager tm = uvm.toolboxManager();
             m.put("client-version", uvm.getFullVersion());
 
             urlDatabase.clear();

@@ -70,7 +70,7 @@ import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.RemoteToolboxManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -266,7 +266,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)mctx.toolboxManager();
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
 
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
 
@@ -509,7 +509,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     void restart(String name)
     {
-        RemoteToolboxManager tbm = LocalUvmContextFactory .context().toolboxManager();
+        ToolboxManager tbm = LocalUvmContextFactory .context().toolboxManager();
 
         String availVer = tbm.mackageDesc(name).getInstalledVersion();
 
@@ -550,7 +550,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     void startAutoStart(MackageDesc extraPkg)
     {
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
 
         List<MackageDesc> mds = new ArrayList<MackageDesc>();
 
@@ -655,7 +655,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     private void startUnloaded(List<NodePersistentState> startQueue, Map<Tid, NodeDesc> tDescs, Set<String> loadedParents)
     {
-        RemoteToolboxManager tbm = LocalUvmContextFactory
+        ToolboxManager tbm = LocalUvmContextFactory
             .context().toolboxManager();
 
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
@@ -774,7 +774,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     private Map<Tid, NodeDesc> loadNodeDescs(List<NodePersistentState> unloaded)
     {
-        RemoteToolboxManagerImpl tbm = (RemoteToolboxManagerImpl)LocalUvmContextFactory
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
 
         Map<Tid, NodeDesc> tDescs = new HashMap<Tid, NodeDesc>(unloaded.size());
@@ -875,7 +875,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     private Policy getDefaultPolicyForNode(String nodeName) throws DeployException
     {
-        RemoteToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
+        ToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if (mackageDesc == null)
             throw new DeployException("Node named " + nodeName + " not found");

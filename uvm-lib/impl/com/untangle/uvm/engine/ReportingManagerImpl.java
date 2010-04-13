@@ -538,7 +538,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         List<String> appNames = getAppNames(dirName, type);
 
-        RemoteToolboxManagerImpl tm = RemoteToolboxManagerImpl.toolboxManager();
+        ToolboxManagerImpl tm = ToolboxManagerImpl.toolboxManager();
 
         Map<Integer, Application> m = new TreeMap<Integer, Application>();
 

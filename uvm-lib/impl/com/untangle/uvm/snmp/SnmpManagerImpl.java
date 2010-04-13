@@ -27,7 +27,7 @@ import org.hibernate.Session;
 
 import com.untangle.node.util.IOUtil;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.toolbox.RemoteUpstreamManager;
+import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.TransactionWork;
@@ -283,7 +283,7 @@ public class SnmpManagerImpl
     public boolean isAutoConfigEnabled()
     {
         UpstreamService svc = LocalUvmContextFactory.context().
-            upstreamManager().getService(RemoteUpstreamManager.SNMPD_SERVICE_NAME);
+            upstreamManager().getService(UpstreamManager.SNMPD_SERVICE_NAME);
         if (svc == null)
             return false;
         return svc.enabled();
