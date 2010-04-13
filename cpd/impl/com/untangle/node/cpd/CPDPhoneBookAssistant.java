@@ -157,7 +157,7 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
 
         LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
-            adconnector.getPhoneBook().lookupUser( addr );
+            adconnector.getPhoneBook().expireUser( addr );
         }
     }
 

@@ -138,6 +138,11 @@ public interface RemoteUvmContext
      */
     RemoteConnectivityTester getRemoteConnectivityTester();
 
+    /**
+     * get the <code>MailSender</code> - Used for sending mail
+     *
+     * @return the MailSender
+     */
     MailSender mailSender();
 
     /**
@@ -169,6 +174,11 @@ public interface RemoteUvmContext
      */
     RemoteSkinManager skinManager();
 
+    /**
+     * Get the <code>RemoteMessageManager</code> singleton.
+     *
+     * @return the RemoteMessageManager
+     */
     RemoteMessageManager messageManager();
 
     /**
