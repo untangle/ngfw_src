@@ -226,8 +226,11 @@ Ung.Util= {
                 return true;
             }else {
                 var message=null;
-                if (exception.name) {
+                if (exception.name && exception.message) {
                     message = i18n._("An error has occurred") + ":<br/>" + exception.name + ":<br/> " + exception.message;
+                }
+                if (exception.name && (exception.message == null)) {
+                    message = i18n._("An error has occurred") + ":<br/>" + exception.name;
                 }
                 if (exception.name == "com.untangle.uvm.toolbox.MackageException" && exception.message == "ut-apt timed out") {
                     message = i18n._("Service busy or timed out. Unable to contact app store.") + "<br/>" + i18n._("Check internet connectivity and network settings.");
@@ -909,6 +912,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 this.displayButtonsOrProgress(false);
                 this.progressBar.reset();
                 this.progressBar.updateProgress(0, i18n._("Downloading..."));
+                this.progressBar.waitDefault(i18n._("Downloading..."));
                 break;
             case "download_summary" :
                 this.displayButtonsOrProgress(false);
@@ -937,7 +941,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                     this.download.completeSize=options.bytesDownloaded;
                     var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
                     var progressIndex = parseFloat(0.9 * currentPercentComplete);
-                    var progressString = String.format(i18n._("Pkg {0}/{1} @ {2}kB/s"), this.download.completePackages, this.download.summary.count, options.speed);
+                    var progressString = String.format(i18n._("Pkg {0}/{1} @ {2} kB/s"), this.download.completePackages, this.download.summary.count, options.speed);
                     this.progressBar.reset();
                     this.progressBar.updateProgress(progressIndex, progressString);
                 }
@@ -1661,14 +1665,14 @@ Ung.MessageManager = {
                                 policy = rpc.currentPolicy;
                                 var appItemDisplayName=msg.mackageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.mackageDesc.fullVersion):msg.mackageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
+                                if ( main.getIframeWin() != null  ) {
+                                    main.getIframeWin().closeActionFn();
+                                }
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                         if (exception)
                                             Ung.AppItem.updateState(appItemDisplayName, null);
                                         if(Ung.Util.handleException(exception)) return;
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
-                                if ( main.getIframeWin() != null  ) {
-                                    main.getIframeWin().closeActionFn();
-                                }
                             }
                         } else if (msg.javaClass.indexOf("MackageUninstallRequest") >= 0) {
                             if(!msg.installed) {
@@ -1717,7 +1721,7 @@ Ung.MessageManager = {
                                     if(msg.success) {
                                        Ung.AppItem.updateState(appItemDisplayName, "download_complete");
                                     } else {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}. Install Aborted."),appItemDisplayName));
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}: {1}"),appItemDisplayName,msg.errorMessage));
                                         Ung.AppItem.updateState(appItemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
@@ -1725,7 +1729,7 @@ Ung.MessageManager = {
                                         this.installInProgress++;
                                        Ung.AppItem.updateState(appItemDisplayName, "installing");
                                     } else {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}. Install Aborted."),appItemDisplayName));
+                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}: Aborted."),appItemDisplayName));
                                         Ung.AppItem.updateState(appItemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {

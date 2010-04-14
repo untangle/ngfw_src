@@ -47,13 +47,22 @@ public class DownloadComplete extends Message
 
     private final boolean success;
     private final MackageDesc requestingMackage;
-
+    private final String errorMessage;
+    
     public DownloadComplete(boolean success, MackageDesc requestingMackage)
     {
         this.success = success;
         this.requestingMackage = requestingMackage;
+        this.errorMessage = null;
     }
 
+    public DownloadComplete(boolean success, MackageDesc requestingMackage, String errorMessage)
+    {
+        this.success = success;
+        this.requestingMackage = requestingMackage;
+        this.errorMessage = errorMessage;
+    }
+    
     // accessors --------------------------------------------------------------
 
     public boolean getSuccess()
@@ -70,4 +79,10 @@ public class DownloadComplete extends Message
     {
         return null == requestingMackage;
     }
+
+    public String getErrorMessage()
+    {
+        return errorMessage;
+    }
+
 }

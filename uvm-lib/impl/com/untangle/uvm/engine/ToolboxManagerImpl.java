@@ -132,8 +132,6 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private long lastTailKey = System.currentTimeMillis();
 
-    private List<String> beingInstalled = new ArrayList<String>();
-
     private ToolboxManagerImpl()
     {
         mackageState = loadMackageState();
@@ -384,6 +382,30 @@ class ToolboxManagerImpl implements ToolboxManager
             logger.warn("No such mackage: " + name);
         }
 
+        /**
+         * check that all versions match untangle-vm version
+         */
+        List<String> subnodes = predictNodeInstall(name);
+        for (String node : subnodes) {
+            MackageDesc pkgDesc = mackageDesc(node);
+            MackageDesc uvmDesc = mackageDesc("untangle-vm");
+            if (pkgDesc == null || uvmDesc == null) {
+                logger.warn("Unable to read package desc");
+                continue; //assume it matches
+            } 
+
+            String pkgVer = pkgDesc.getAvailableVersion();
+            String uvmVer = uvmDesc.getInstalledVersion();
+            if (pkgVer == null || uvmVer == null) {
+                logger.warn("Unable to read package version: " + pkgVer + " " + uvmVer);
+                continue; //assume it matches
+            } 
+
+            if (!pkgVer.equals(uvmVer)) {
+                throw new MackageInstallException("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
+            }
+        }
+
         final AptLogTail alt;
 
         synchronized (tails) {
@@ -416,57 +438,41 @@ class ToolboxManagerImpl implements ToolboxManager
         synchronized (installAndInstantiateLock) {
             UvmContextImpl mctx = UvmContextImpl.getInstance();
             NodeManagerImpl nm = mctx.localNodeManager();
-            List<String> nodes = null;
+            List<String> subnodes = null;
 
-            // List of mackages that we will try to install in this run
-            List<String> willInstall = new ArrayList<String>();
+            if (isInstalled(name)) {
+                logger.warn("mackage " + name + " already installed, debouncing");
+                throw new MackageInstallException("package " + name + " already installed");
+            }
 
-            try {
-                if (isInstalled(name)) {
-                    logger.warn("mackage " + name + " already installed, debouncing");
-                    return;
-                }
-                synchronized (beingInstalled) {
-                    if (beingInstalled.contains(name)) {
-                        logger.warn("mackage " + name + " being installed, debouncing");
-                        return;
-                    }
-                    beingInstalled.add(name);
-                    willInstall.add(name);
-                    nodes = predictNodeInstall(name);
-                    for (Iterator<String> iter = nodes.iterator(); iter.hasNext();) {
-                        String newNode = iter.next();
-                        if (beingInstalled.contains(newNode)) {
-                            logger.warn("mackage " + newNode + " being subinstalled, debouncing");
-                            iter.remove(); // Let the other guy install it.
-                        } else {
-                            beingInstalled.add(newNode);
-                            willInstall.add(newNode);
-                        }
-                    }
-                }
+            /**
+             * Get the list of all subnodes
+             */
+            subnodes = predictNodeInstall(name);
                 
-                install(name);
-                for (String nn : nodes) {
-                    try {
-                        register(nn);
-                        NodeDesc nd = nm.instantiate(nn, p);
-                        if (nd != null && !nd.getNoStart()) {
-                            NodeContext nc = nm.nodeContext(nd.getTid());
-                            nc.node().start();
-                        }
-                    } catch (NodeStartException exn) {
-                        logger.warn("could not start", exn);
-                    } catch (DeployException exn) {
-                        logger.warn("could not deploy", exn);
-                    } catch (MackageInstallException e) {
-                        logger.warn("could not register", e);
+            /**
+             * Install the package
+             */
+            install(name);
+
+            /**
+             * Instantiate all subnodes
+             */
+            for (String node : subnodes) {
+                try {
+                    logger.info("instantiate( " + node + ")");
+                    register(node);
+                    NodeDesc nd = nm.instantiate(node, p);
+                    if (nd != null && !nd.getNoStart()) {
+                        NodeContext nc = nm.nodeContext(nd.getTid());
+                        nc.node().start();
                     }
-                }
-            } finally {
-                synchronized (beingInstalled) {
-                    for (String newNode : willInstall)
-                        beingInstalled.remove(newNode);
+                } catch (NodeStartException exn) {
+                    logger.warn("could not start", exn);
+                } catch (DeployException exn) {
+                    logger.warn("could not deploy", exn);
+                } catch (MackageInstallException e) {
+                    logger.warn("could not register", e);
                 }
             }
 
