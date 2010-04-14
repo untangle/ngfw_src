@@ -225,20 +225,23 @@ Ung.Util= {
                 Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
                 return true;
             }else {
-                var message=exception.message;
-                if (exception.lineNumber && exception.fileName) {
-                    message = message + " " + i18n._("on line")+" "+exception.lineNumber +" "+ i18n._("in file")+" "+exception.fileName;
+                var message=null;
+                if (exception.name) {
+                    message = i18n._("An error has occurred") + ":<br/>" + exception.name + ":<br/> " + exception.message;
                 }
-                if (exception.stack) {
+                if (exception.name == "com.untangle.uvm.toolbox.MackageException" && exception.message == "ut-apt timed out") {
+                    message = i18n._("Service busy or timed out. Unable to contact app store.") + "<br/>" + i18n._("Check internet connectivity and network settings.");
+                }
+                if (exception.name == "java.lang.NoSuchMethodError") {
+                    message = i18n._("Unexpected response from server") + ":<br/>" + "No Such Method Error:<br/>" + exception.message;
+                }
+                if (message == null && exception.stack != null) {
                     message = exception.stack;
                 }
-                if(exception.name=="com.untangle.uvm.toolbox.MackageException" && exception.message=="ut-apt timed out") {
-                    message=i18n._("Service busy or timed out. Unable to contact app store.");
-                }
                 if (message == null || message == "Unknown") {
-                    message=i18n._("Please Try Again");
+                    message = i18n._("Please Try Again");
                 }
-                if(handler==null) {
+                if (handler==null) {
                     Ext.MessageBox.alert(i18n._("Failed"), message);
                 } else if(type==null || type== "alertCallback"){
                     Ext.MessageBox.alert(i18n._("Failed"), message, handler);
@@ -930,14 +933,14 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 break;
             case "download_progress" :
                 this.displayButtonsOrProgress(false);
-                if(this.download!=null) {
+                if(this.download!=null && this.download.summary!=null) {
                     this.download.completeSize=options.bytesDownloaded;
+                    var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
+                    var progressIndex = parseFloat(0.9 * currentPercentComplete);
+                    var progressString = String.format(i18n._("Pkg {0}/{1} @ {2}kB/s"), this.download.completePackages, this.download.summary.count, options.speed);
+                    this.progressBar.reset();
+                    this.progressBar.updateProgress(progressIndex, progressString);
                 }
-                var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
-                var progressIndex = parseFloat(0.9 * currentPercentComplete);
-                var progressString = String.format(i18n._("Get@{0}"), options.speed);
-                this.progressBar.reset();
-                this.progressBar.updateProgress(progressIndex, progressString);
                 break;
             case "installing" :
                 this.displayButtonsOrProgress(false);
@@ -1659,7 +1662,9 @@ Ung.MessageManager = {
                                 var appItemDisplayName=msg.mackageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.mackageDesc.fullVersion):msg.mackageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
+                                        if (exception)
+                                            Ung.AppItem.updateState(appItemDisplayName, null);
+                                        if(Ung.Util.handleException(exception)) return;
                                 }.createDelegate(this),msg.mackageDesc.name, policy);
                                 if ( main.getIframeWin() != null  ) {
                                     main.getIframeWin().closeActionFn();
@@ -1731,8 +1736,8 @@ Ung.MessageManager = {
                                     startUpgradeMode=true;
                                 }
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
-                                    if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Downloading updates...")) {
-                                        Ext.MessageBox.wait(i18n._("Downloading updates..."), i18n._("Please wait"));
+                                    if(Ext.MessageBox.isVisible() && Ext.MessageBox.getDialog().title==i18n._("Downloading upgrades...")) {
+                                        Ext.MessageBox.wait(i18n._("Downloading upgrades..."), i18n._("Please wait"));
                                     }
                                     this.upgradeSummary=msg;
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
@@ -1782,11 +1787,11 @@ Ung.MessageManager = {
                     }
                     if(lastUpgradeDownloadProgressMsg!=null && lastUpgradeDownloadProgressMsg!="stop") {
                         var msg=lastUpgradeDownloadProgressMsg;
-                        var text=String.format(i18n._("Downloading {0}. <br/>Status: {1} KB/{2} KB downloaded. <br/>Speed: {3}."),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
+                        var text=String.format(i18n._("Package: {0}<br/>Progress: {1} kB/{2} kB <br/>Speed: {3}kB/sec"),msg.name, Math.round(msg.bytesDownloaded/1024), Math.round(msg.size/1024), msg.speed);
                         if(this.upgradeSummary) {
-                            text+=String.format(i18n._("<br/>Package {0}/{1}."),this.upgradesComplete+1, this.upgradeSummary.count);
+                            text+=String.format(i18n._("<br/>Package {0}/{1}"),this.upgradesComplete+1, this.upgradeSummary.count);
                         }
-                        var msgTitle=i18n._("Updating... Please wait");
+                        var msgTitle=i18n._("Downloading upgrades... Please wait");
                         if(!Ext.MessageBox.isVisible() || Ext.MessageBox.getDialog().title!=msgTitle) {
                             Ext.MessageBox.progress(msgTitle, text);
                         }
