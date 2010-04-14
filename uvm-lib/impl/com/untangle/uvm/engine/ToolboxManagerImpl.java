@@ -175,8 +175,7 @@ class ToolboxManagerImpl implements ToolboxManager
     public RackView getRackView(Policy p, String installationType)
     {
         if (installationType == null) {
-            installationType = LocalUvmContextFactory.context()
-                .installationType();
+            installationType = LocalUvmContextFactory.context().installationType();
         }
 
         if (installationType == null || installationType.length()==0) {
@@ -213,35 +212,31 @@ class ToolboxManagerImpl implements ToolboxManager
         for (MackageDesc md : installed) {
             String dn = md.getDisplayName();
             MackageDesc.Type type = md.getType();
+
             if (type == MackageDesc.Type.LIB_ITEM) {
                 libitems.remove(dn);
                 trials.remove(dn);
                 hiddenApps.remove(dn);
             } else if (type == MackageDesc.Type.TRIAL) {
-                // Workaround for Trial display names. better solution
-                // is welcome.
+                // Workaround for Trial display names. better solution is welcome.
                 String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
                 realDn=realDn.replaceFirst(" Limited Trial","");
                 trials.remove(realDn);
                 hiddenApps.remove(dn);
-            } else if (!md.isInvisible()
-                       && (type == MackageDesc.Type.NODE
-                           || type == MackageDesc.Type.SERVICE)) {
+            } else if (!md.isInvisible() && (type == MackageDesc.Type.NODE || type == MackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);
                 nodes.put(dn, md);
                 hiddenApps.remove(dn);
-            }
+            } 
         }
 
         NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
         List<NodeDesc> instances = nm.visibleNodes(p);
 
-        Map<Tid, StatDescs> statDescs
-            = new HashMap<Tid, StatDescs>(instances.size());
+        Map<Tid, StatDescs> statDescs = new HashMap<Tid, StatDescs>(instances.size());
         for (NodeDesc nd : instances) {
             Tid t = nd.getTid();
-            LocalMessageManager lmm = LocalUvmContextFactory.context()
-                .localMessageManager();
+            LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
             Counters c = lmm.getCounters(t);
             StatDescs sd = c.getStatDescs();
             statDescs.put(t, sd);
@@ -254,15 +249,13 @@ class ToolboxManagerImpl implements ToolboxManager
 
         displayNames.remove(null);
 
-        List<Application> apps
-            = new ArrayList<Application>(displayNames.size());
+        List<Application> apps = new ArrayList<Application>(displayNames.size());
         for (String dn : displayNames) {
             MackageDesc l = libitems.get(dn);
             MackageDesc t = trials.get(dn);
             MackageDesc n = nodes.get(dn);
 
-            if (!hiddenApps.contains(dn)
-                && ( l != null || t != null || n != null)) {
+            if (!hiddenApps.contains(dn) && ( l != null || t != null || n != null)) {
                 Application a = new Application(l, t, n);
                 apps.add(a);
             }
@@ -385,7 +378,13 @@ class ToolboxManagerImpl implements ToolboxManager
         /**
          * check that all versions match untangle-vm version
          */
-        List<String> subnodes = predictNodeInstall(name);
+        List<String> subnodes;
+        try {
+            subnodes = predictNodeInstall(name);
+        }
+        catch (MackageException e) {
+            throw new MackageInstallException(e);
+        }
         for (String node : subnodes) {
             MackageDesc pkgDesc = mackageDesc(node);
             MackageDesc uvmDesc = mackageDesc("untangle-vm");
@@ -448,7 +447,12 @@ class ToolboxManagerImpl implements ToolboxManager
             /**
              * Get the list of all subnodes
              */
-            subnodes = predictNodeInstall(name);
+            try {
+                subnodes = predictNodeInstall(name);
+            }
+            catch (MackageException e) {
+                throw new MackageInstallException(e);
+            }
                 
             /**
              * Install the package
@@ -1021,7 +1025,7 @@ class ToolboxManagerImpl implements ToolboxManager
                         tryAgain = true;
                     }
                 } while (tryAgain);
-                logger.debug("apt done.");
+                logger.debug("ut-apt done.");
                 int e = proc.exitValue();
                 if (0 != e) {
                     throw new MackageException("ut-apt exited with: " + e);
@@ -1042,7 +1046,7 @@ class ToolboxManagerImpl implements ToolboxManager
     /**
      * Returns a list of packages that will be installed as a result of installing this node
      */
-    private List<String> predictNodeInstall(String pkg)
+    private List<String> predictNodeInstall(String pkg) throws MackageException
     {
         logger.info("predictNodeInstall(" + pkg + ")");
         
@@ -1051,8 +1055,8 @@ class ToolboxManagerImpl implements ToolboxManager
 
         synchronized(this) {
             try {
-                Process p = LocalUvmContextFactory.context().exec(cmd);
-                InputStream is = p.getInputStream();
+                Process proc = LocalUvmContextFactory.context().exec(cmd);
+                InputStream is = proc.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line;
                 while (null != (line = br.readLine())) {
@@ -1062,12 +1066,33 @@ class ToolboxManagerImpl implements ToolboxManager
                         continue;
                     }
                     MackageDesc.Type mdType = md.getType();
-                    if (mdType != MackageDesc.Type.NODE
-                        && mdType != MackageDesc.Type.SERVICE) {
+                    if (mdType != MackageDesc.Type.NODE && mdType != MackageDesc.Type.SERVICE) {
                         logger.debug("Ignoring non-node/service mackage: " + line);
                         continue;
                     }
                     l.add(line);
+                }
+
+                /**
+                 * Wait for completion
+                 */
+                boolean tryAgain;
+                do {
+                    tryAgain = false;
+                    try {
+                        proc.waitFor();
+                    } catch (InterruptedException e) {
+                        tryAgain = true;
+                    }
+                } while (tryAgain);
+                logger.debug("ut-apt done.");
+
+                /**
+                 * If returns non-zero throw an exception
+                 */
+                int e = proc.exitValue();
+                if (0 != e) {
+                    throw new MackageException("ut-apt exited with: " + e);
                 }
             } catch (IOException exn) {
                 logger.warn("could not predict node install: " + pkg, exn);

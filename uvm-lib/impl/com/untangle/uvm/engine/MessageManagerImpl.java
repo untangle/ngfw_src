@@ -698,14 +698,13 @@ class MessageManagerImpl implements LocalMessageManager
             }
         }
 
-        private synchronized void getNetDevUsage(Map<String, Object> m)
-            throws IOException
+        private synchronized void getNetDevUsage(Map<String, Object> m) throws IOException
         {
             long rxBytes0 = 0, rxBytes1 = 0;
             long txBytes0 = 0, txBytes1 = 0;
 
-	    ArgonManager am = UvmContextImpl.getInstance().argonManager();
-	    String external = am.getIntfManager().getExternal().getPhysicalName();
+            ArgonManager am = UvmContextImpl.getInstance().argonManager();
+            String external = am.getIntfManager().getExternal().getPhysicalName();
 	    
             long currentTime = System.currentTimeMillis();
 
@@ -718,9 +717,9 @@ class MessageManagerImpl implements LocalMessageManager
                     if (matcher.find()) {
                         String iface = matcher.group(1);
 
-			// Restrict to only the external interface (bug 5616)
-			if (!iface.equals(external))
-			    continue;
+                        // Restrict to only the external interface (bug 5616)
+                        if (!iface.equals(external))
+                            continue;
 
                         // get stored previous values or initialize them to 0
                         Long rxbytes0 = rxtxBytes0.get("rx"+i);
