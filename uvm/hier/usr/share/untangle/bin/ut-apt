@@ -33,6 +33,7 @@ UPDT_OPTS = " --yes --force-yes --purge "
 REMO_OPTS = " --yes --force-yes --fix-broken --purge "
 
 PREFIX = "@PREFIX@"
+$ERROR = ""
 
 STDERR.reopen('@UVM_LOG@/apt.log', 'a')
 STDERR.puts(Time.new.strftime("%Y/%m/%d %H:%M:%S"))
@@ -287,6 +288,9 @@ class RealApt
           log l
           pkg_list << $1
         end
+        if /^'(.*ERROR.*)' / =~ l
+          $ERROR = l
+        end
       end
     end
 
@@ -307,7 +311,7 @@ class RealApt
           end
           log "DOWNLOAD SUCCEEDED: #{p}"
         else
-          log "DOWNLOAD FAILED: #{p}"
+          log "DOWNLOAD FAILED: #{$ERROR}"
           return -1
         end
 
