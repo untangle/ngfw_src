@@ -56,7 +56,8 @@ class AptLogTail implements Runnable
 
     static {
         FETCH_PATTERN = Pattern.compile("'(http://.*)' (.*\\.deb) ([0-9]+) (MD5Sum:|SHA1:|SHA256:)?([0-9a-z]+)");
-        DOWNLOAD_PATTERN = Pattern.compile("( *[0-9]+)K[ .]+([0-9]+)% *([0-9]+\\.[0-9]+ .*/s)");
+        //6850K .......... .......... .......... .......... .......... 96% 46.6K 6s
+        DOWNLOAD_PATTERN = Pattern.compile("( *[0-9]+)K[ .]+([0-9]+)% *([0-9]+\\.[0-9]+)K.*");
     }
 
     private final long key;
@@ -159,7 +160,7 @@ class AptLogTail implements Runnable
             return;
         }
 
-        logger.debug("Sending DownloadSummary");
+        logger.debug("Sending DownloadSummary(downloadQueue.size()=" + downloadQueue.size() + ", totalSize=" + totalSize + ")");
         mm.submitMessage(new DownloadSummary(downloadQueue.size(), totalSize, requestingMackage));
 
         for (PackageInfo pi : downloadQueue) {
@@ -192,11 +193,10 @@ class AptLogTail implements Runnable
                             soFar += ppi.bytesDownloaded;
                         }
 
-                        dpe = new DownloadProgress(pi.file, soFar, totalSize,
-                                                   speed, requestingMackage);
+                        dpe = new DownloadProgress(pi.file, soFar, totalSize, speed, requestingMackage);
                     }
 
-                    logger.debug("Sending DownloadSummary:" + dpe);
+                    logger.debug("Sending DownloadProgress:" + dpe);
                     mm.submitMessage(dpe);
                 } else {
                     logger.debug("ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");

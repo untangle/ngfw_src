@@ -1018,7 +1018,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 logger.debug("apt done.");
                 int e = proc.exitValue();
                 if (0 != e) {
-                    throw new MackageException("apt exited with: " + e);
+                    throw new MackageException("ut-apt exited with: " + e);
                 }
             } catch (IOException e) {
                 logger.info( "exception while in mackage: ", e);
