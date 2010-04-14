@@ -50,16 +50,6 @@ CREATE TABLE settings.u_upgrade_settings (
     period int8 NOT NULL,
     PRIMARY KEY (upgrade_settings_id));
 
--- com.untangle.uvm.BrandingSettings
-CREATE TABLE settings.uvm_branding_settings (
-    settings_id int8 NOT NULL,
-    company_name text,
-    company_url text,
-    logo bytea,
-    contact_name text,
-    contact_email text,
-    PRIMARY KEY (settings_id));
-
 -- com.untangle.uvm.SkinSettings
 CREATE TABLE settings.u_skin_settings (
     skin_settings_id int8 NOT NULL,

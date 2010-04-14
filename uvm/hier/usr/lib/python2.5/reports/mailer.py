@@ -200,6 +200,13 @@ WHERE target_state = 'running' OR target_state = 'initialized'
     return (receivers, report_email)
 
 def __get_branding_info():
+    company = "Untangle"
+
+    if (os.path.isfile("/etc/untangle/oem/oem.py")):
+        sys.path.append("/etc/untangle/oem")
+        import oem
+        company = oem.oemName()
+
     conn = sql_helper.get_connection()
 
     try:
@@ -211,15 +218,13 @@ SELECT company_name FROM settings.uvm_branding_settings""")
         row = curs.fetchone()
 
         if row:
-            rv = row[0]
-        else:
-            rv = 'Untangle'
+            company = row[0]
     except Exception, e:
-        rv = 'Untangle'
+        pass
     finally:
         conn.commit()
 
-    return rv
+    return company
 
 def __get_url(date):
     rv = None

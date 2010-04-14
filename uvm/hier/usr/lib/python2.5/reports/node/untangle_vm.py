@@ -88,7 +88,7 @@ class UvmNode(Node):
         conn = sql_helper.get_connection()
         curs = conn.cursor()
         try:
-            curs.execute("SELECT company_name FROM uvm_branding_settings")
+            curs.execute("SELECT company_name FROM n_branding_settings")
             while 1:
                 r = curs.fetchone()
                 if not r:
