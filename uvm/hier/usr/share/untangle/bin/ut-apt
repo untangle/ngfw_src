@@ -225,7 +225,10 @@ class RealApt
   end
 
   def predictInstall(pkg)
+    ret = 0
+
     IO.popen("apt-get install -s #{pkg}") do |io|
+      ret = $?
       io.each_line do |l|
         if /^Inst ([^ ]+) / =~ l
           puts $1
@@ -233,7 +236,7 @@ class RealApt
       end
     end
 
-    0
+    ret
   end
 
   private
