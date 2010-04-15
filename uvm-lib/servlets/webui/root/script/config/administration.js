@@ -83,23 +83,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
             },{
                 title : i18n._('Administration')
             }];
-            this.getBrandingSettings();
-            this.getBrandingManager();
             this.skinManager = new Ung.Config.Administration.SkinManager({ 'i18n' :  i18n });
             this.buildAdministration();
             this.buildPublicAddress();
             this.buildCertificates();
             this.buildMonitoring();
             this.buildSkins();
-            if (!this.isBrandingExpired()) {
-                this.buildBranding();
-            }
 
             // builds the tab panel with the tabs
             var adminTabs = [this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring, this.panelSkins];
-            if (!this.isBrandingExpired()) {
-                adminTabs.push(this.panelBranding);
-            }
             this.buildTabPanel(adminTabs);
             this.tabs.activate(this.panelAdministration);
             Ung.Administration.superclass.initComponent.call(this);
@@ -196,44 +188,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
             }
             return this.rpc.hostname;
-        },
-        // is Branding Expired
-        isBrandingExpired : function(forceReload) {
-            if (forceReload || this.rpc.isBrandingExpired === undefined) {
-                try {
-                    this.rpc.isBrandingExpired = main.getLicenseManager().getLicenseStatus('untangle-branding-manager').expired;
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-
-            }
-            return this.rpc.isBrandingExpired;
-        },
-        // get branding manager
-        getBrandingManager : function(forceReload) {
-            if (forceReload || this.rpc.brandingManager === undefined) {
-                try {
-                    this.rpc.brandingManager = main.getBrandingManager();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-
-            }
-            return this.rpc.brandingManager;
-        },
-        // get branding settings
-        getBrandingSettings : function(forceReload) {
-            if (forceReload || this.rpc.brandingSettings === undefined) {
-                try {
-                    var node = rpc.nodeManager.node("untangle-node-branding");
-                    if (node != null) 
-                        this.rpc.brandingSettings = node.getBrandingSettings();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-
-            }
-            return this.rpc.brandingSettings;
         },
         buildAdministration : function() {
             // keep initial access and address settings
@@ -1653,298 +1607,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             });
         },
 
-        buildBranding : function() {
-            // keep initial branding settings
-            this.initialBrandingSettings = Ung.Util.clone(this.getBrandingSettings());
-            var brandingSettings = this.getBrandingSettings();
-
-            var userFacingSkinsStore = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [false, true], false),
-                reader : new Ext.data.JsonReader({
-                    root : 'list',
-                    fields: [{
-                        name: 'name'
-                    },{
-                        name: 'displayName',
-                        convert : function(v) {
-                            if ( v == "Default" ) return this.i18n._("Default");
-                            return v;
-                        }.createDelegate(this)
-                    }]
-                })
-            });
-
-            this.skinManager.addRefreshableStore( userFacingSkinsStore );
-
-            this.panelBranding = new Ext.Panel({
-                // private fields
-                name : 'Branding',
-                helpSource: 'branding',
-                parentId : this.getId(),
-                title : this.i18n._('Branding'),
-                layout : "form",
-                cls: 'ung-panel',
-                autoScroll : true,
-                defaults : {
-                    xtype : 'fieldset',
-                    autoHeight : true,
-                    buttonAlign : 'left'
-                },
-                enableFileUpload : function(enabled) {
-                    try {
-                        var formItem = this.items.get(1).items.get(2);
-                        if (enabled) {
-                            formItem.items.get(0).enable();
-                            formItem.items.get(1).enable();
-                        } else {
-                            formItem.items.get(0).disable();
-                            formItem.items.get(1).disable();
-
-                        }
-                    } catch (e) {
-                    }
-                },
-                items : [{
-                    items : [{
-                        cls: 'description',
-                        border : false,
-                        html : this.i18n._("The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).")
-                    }]
-                },{
-                    title : this.i18n._('Logo'),
-                    items : [{
-                        xtype : 'radio',
-                        name : 'Logo',
-                        id : 'administration_branding_default_logo',
-                        hideLabel : true,
-                        boxLabel : this.i18n._('Use Default Logo'),
-                        value : 'default',
-                        checked : brandingSettings.defaultLogo,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    if (checked) {
-                                        this.getBrandingSettings().defaultLogo = true;
-                                        this.panelBranding.enableFileUpload(false);
-                                    }
-                                }.createDelegate(this)
-                            }
-                        }
-                    },{
-                        xtype : 'radio',
-                        name : 'Logo',
-                        hideLabel : true,
-                        boxLabel : this.i18n._('Use Custom Logo. Maximum size is 166 x 100.'),
-                        value : 'custom',
-                        checked : !brandingSettings.defaultLogo,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, checked) {
-                                    if (checked) {
-                                        this.getBrandingSettings().defaultLogo = false;
-                                        this.panelBranding.enableFileUpload(true);
-                                    }
-                                }.createDelegate(this)
-                            }
-                        }
-                    },{
-                        fileUpload : true,
-                        xtype : 'form',
-                        bodyStyle : 'padding:0px 0px 0px 25px',
-                        buttonAlign : 'left',
-                        id : 'upload_logo_form',
-                        url : 'upload',
-                        border : false,
-                        items : [{
-                            fieldLabel : this.i18n._('File'),
-                            name : 'File',
-                            id : 'upload_logo_file_textfield',
-                            inputType : 'file',
-                            xtype : 'textfield',
-                            disabled : brandingSettings.defaultLogo,
-                            allowBlank : false
-                        },{
-                            id : 'upload_logo_file_button',
-                            xtype : 'button',
-                            text : this.i18n._("Upload"),
-                            handler : function() {
-                                this.panelBranding.onUpload();
-                            }.createDelegate(this),
-                            disabled : (brandingSettings.defaultLogo)
-                        },{
-                            xtype : 'hidden',
-                            name : 'type',
-                            value : 'logo'
-                        }]
-                    }]
-                },{
-                    title : this.i18n._('Contact Information'),
-                    defaults : {
-                        width : 300
-                    },
-                    items : [{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Company Name'),
-                        name : 'Company Name',
-                        id : 'administration_branding_company_name',
-                        allowBlank : true,
-                        value : brandingSettings.companyName,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getBrandingSettings().companyName = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Company URL'),
-                        name : 'Company URL',
-                        id : 'administration_branding_company_url',
-                        allowBlank : true,
-                        value : brandingSettings.companyUrl,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getBrandingSettings().companyUrl = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Contact Name'),
-                        name : 'Contact Name',
-                        id : 'administration_branding_contact_name',
-                        allowBlank : true,
-                        value : this.i18n._(brandingSettings.contactName),
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getBrandingSettings().contactName = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Contact Email'),
-                        name : 'Contact Email',
-                        id : 'administration_branding_contact_email',
-                        allowBlank : true,
-                        value : brandingSettings.contactEmail,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getBrandingSettings().contactEmail = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }]
-                },{
-                    xtype : 'fieldset',
-                    title : this.i18n._('Block Page Skin'),
-                    items : [{
-                        cls: 'description',
-                        border : false,
-                        html : this.i18n._("This skin will used in the user pages like quarantine and block pages")
-                    },{
-                        xtype : 'combo',
-                        name : "userPagesSkin",
-                        id : "administration_user_pages_skin_combo",
-                        store : userFacingSkinsStore,
-                        displayField : 'displayName',
-                        valueField : 'name',
-                        forceSelection : true,
-                        typeAhead : true,
-                        mode : 'local',
-                        triggerAction : 'all',
-                        listClass : 'x-combo-list-small',
-                        selectOnFocus : true,
-                        hideLabel : true,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                        this.getSkinSettings().userPagesSkin = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }]
-                },{
-
-                    xtype : 'fieldset',
-                    title : this.i18n._('Upload New Skin'),
-                    items : {
-                        fileUpload : true,
-                        xtype : 'form',
-                        id : 'upload_branding_skin_form',
-                        url : 'upload',
-                        border : false,
-                        items : [{
-                            fieldLabel : this.i18n._('File'),
-                            name : 'upload_skin_textfield',
-                            inputType : 'file',
-                            xtype : 'textfield',
-                            allowBlank : false
-                        },{
-                            xtype : 'button',
-                            text : this.i18n._("Upload"),
-                            handler : function() {
-                                this.panelBranding.onUploadSkin();
-                            }.createDelegate(this)
-                        },{
-                            xtype : 'hidden',
-                            name : 'type',
-                            value : 'skin'
-                        }]
-                    }
-                }],
-
-                onUpload : function() {
-                    var prova = Ext.getCmp('upload_logo_form');
-                    var cmp = Ext.getCmp(this.parentId);
-                    var fileText = prova.items.get(0);
-                    if (fileText.getValue().length == 0) {
-                        Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._('Please select an image to upload.'));
-                        return false;
-                    }
-                    var form = prova.getForm();
-                    form.submit({
-                        parentId : cmp.getId(),
-                        waitMsg : cmp.i18n._('Please wait while your logo image is uploaded...'),
-                        success : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload Logo Succeeded."),
-                                function() {
-                                    Ext.getCmp('upload_logo_file_textfield').reset();
-                                }
-                            );
-                            cmp.uploadedCustomLogo = true;
-                        },
-                        failure : function(form, action) {
-                            var cmp = Ext.getCmp(action.options.parentId);
-                            Ext.MessageBox.alert(cmp.i18n._("Failed"), cmp.i18n._("Upload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, or JPG format."));
-                        }
-                    });
-                },
-
-                onUploadSkin : function() {
-                    var prova = Ext.getCmp('upload_branding_skin_form');
-                    var cmp = Ext.getCmp(this.parentId);
-                    var form = prova.getForm();
-
-                    cmp.skinManager.uploadSkin( cmp, form, 'upload_branding_skin_file_textfield' );
-                }
-            });
-
-            userFacingSkinsStore.load({
-                callback : function() {
-                    var skinCombo=Ext.getCmp('administration_user_pages_skin_combo');
-                    if(skinCombo!=null) {
-                        skinCombo.setValue(this.getSkinSettings().userPagesSkin);
-                    }
-                }.createDelegate(this)
-            });
-        },
-
         isBlankField : function (cmp, errMsg) {
             if (cmp.getValue().length == 0) {
                 Ext.MessageBox.alert(this.i18n._('Warning'), errMsg ,
@@ -2197,18 +1859,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         reloadSettings : function()
         {
-            /* If necessary, refresh the branding settings */
-            if (!this.isBrandingExpired()) {
-                this.needRefresh = this.needRefresh
-                    || !this.initialBrandingSettings.defaultLogo && !this.getBrandingSettings().defaultLogo && this.uploadedCustomLogo;
-            }
             if (this.needRefresh) {
                 Ung.Util.goToStartPage();
                 return;
             }
 
             this.initialSkinSettings = Ung.Util.clone(this.getSkinSettings(true));
-            this.initialBrandingSettings = Ung.Util.clone(this.getBrandingSettings(true));
             this.getAdminSettings(true);
             this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings(true));
             this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings(true));
@@ -2306,30 +1962,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.afterSave(exception, callback);
                 }.createDelegate(this), this.getSkinSettings());
 
-                if (!this.isBrandingExpired()) {
-                    var node = rpc.nodeManager.node("untangle-node-branding");
-                    if (node != null ) {
-                        node.setBrandingSettings(function(result, exception) {
-                                // update global branding settings
-                                node.getBrandingSettings(function (result, exception) {
-                            
-                                        if(exception) { 
-                                            var message = exception.message;
-                                            if (message == "Unknown") {
-                                                message = i18n._("Please Try Again");
-                                            }
-                                            Ext.MessageBox.alert("Failed",message); 
-                                            return;
-                                        }
-                                        rpc.brandingSettings=result;
-                                        document.title=rpc.brandingSettings.companyName;
-                                        this.afterSave(null,callback);
-                                    }.createDelegate(this));
-                            }.createDelegate(this), this.getBrandingSettings());
-                    }
-                } else {
-                    this.afterSave(null,callback);
-                }
+                this.afterSave(null,callback);
             }
         },
         afterSave : function(exception,callback)
@@ -2347,23 +1980,11 @@ if (!Ung.hasResource["Ung.Administration"]) {
         finalizeSave : function(callback)
         {
             this.needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
-            if (!this.isBrandingExpired()) {
-                this.needRefresh = this.needRefresh
-                       || this.initialBrandingSettings.defaultLogo != this.getBrandingSettings().defaultLogo
-                       || this.initialBrandingSettings.companyName != this.getBrandingSettings().companyName
-                       || this.initialBrandingSettings.companyUrl != this.getBrandingSettings().companyUrl
-                       || this.initialBrandingSettings.contactName != this.getBrandingSettings().contactName
-                       || this.initialBrandingSettings.contactEmail != this.getBrandingSettings().contactEmail;
-            }
             callback();
         },
 
         closeWindow : function() {
             Ung.Administration.superclass.closeWindow.call(this);
-            if (!this.isBrandingExpired()) {
-                this.needRefresh = this.needRefresh
-                       || !this.initialBrandingSettings.defaultLogo && !this.getBrandingSettings().defaultLogo && this.uploadedCustomLogo;
-            }
             if (this.needRefresh) {
                 Ung.Util.goToStartPage();
             }
@@ -2393,8 +2014,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 || !Ung.Util.equals(this.getAccessSettings(), this.initialAccessSettings)
                 || !Ung.Util.equals(this.getSnmpSettings(), this.initialSnmpSettings)
                 || !Ung.Util.equals(this.getLoggingSettings(), this.initialLoggingSettings)
-                || !Ung.Util.equals(this.getSkinSettings(), this.initialSkinSettings)
-                || !this.isBrandingExpired() && !Ung.Util.equals(this.getBrandingSettings(), this.initialBrandingSettings);
+                || !Ung.Util.equals(this.getSkinSettings(), this.initialSkinSettings)               
         },
 
         buildUserList : function(forceReload)
