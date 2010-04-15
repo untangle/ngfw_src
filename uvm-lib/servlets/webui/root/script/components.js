@@ -226,24 +226,42 @@ Ung.Util= {
                 return true;
             }else {
                 var message=null;
+
+                /* build decent message for generic errors */
                 if (exception.name && exception.message) {
                     message = i18n._("An error has occurred") + ":<br/>" + exception.name + ":<br/> " + exception.message;
                 }
                 if (exception.name && (exception.message == null)) {
                     message = i18n._("An error has occurred") + ":<br/>" + exception.name;
                 }
-                if (exception.name == "com.untangle.uvm.toolbox.MackageException" && exception.message == "ut-apt timed out") {
-                    message = i18n._("Service busy or timed out. Unable to contact app store.") + "<br/>" + i18n._("Check internet connectivity and network settings.");
+
+                /* build better message for specific errors */
+                if (exception.name == "com.untangle.uvm.toolbox.MackageInstallException" && (exception.message.indexOf("ut-apt exited with") >= 0)) {
+                    message =  i18n._("Unable to contact app store") + ":<br/>";
+                    message += i18n._("An error has occured: ") + exception.message + "<br/>";
+                    message += i18n._("<br/>");
+                    message += i18n._("Check internet connectivity and network settings.");
+                }
+                if (exception.name == "com.untangle.uvm.toolbox.MackageException" && (exception.message.indefOf("ut-apt timed out") >= 0)) {
+                    message =  i18n._("Unable to contact app store") + ":<br/>";
+                    message += i18n._("Connection timed out") + "<br/>";
+                    message += i18n._("<br/>");
+                    message += i18n._("Check internet connectivity and network settings.");
                 }
                 if (exception.name == "java.lang.NoSuchMethodError") {
-                    message = i18n._("Unexpected response from server") + ":<br/>" + "No Such Method Error:<br/>" + exception.message;
+                    message =  i18n._("Unexpected response from server") + ":<br/>";
+                    message += "No Such Method Error:<br/>";
+                    message += exception.message;
                 }
+
+                /* worst case - just say something */
                 if (message == null && exception.stack != null) {
                     message = exception.stack;
                 }
                 if (message == null || message == "Unknown") {
                     message = i18n._("Please Try Again");
                 }
+                
                 if (handler==null) {
                     Ext.MessageBox.alert(i18n._("Failed"), message);
                 } else if(type==null || type== "alertCallback"){
