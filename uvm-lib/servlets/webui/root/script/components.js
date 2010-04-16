@@ -241,6 +241,7 @@ Ung.Util= {
                     message += i18n._("An error has occured: ") + exception.message + "<br/>";
                     message += i18n._("<br/>");
                     message += i18n._("Check internet connectivity and network settings.");
+                    message += i18n._("Check that the server is fully up to date.");
                 }
                 if (exception.name == "com.untangle.uvm.toolbox.MackageException" && (exception.message.indefOf("ut-apt timed out") >= 0)) {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
