@@ -1033,14 +1033,18 @@ if (!Ung.hasResource["Ung.System"]) {
                         success : function(form, action) {
                             languagesStore.load();
                             var cmp = Ext.getCmp(action.options.parentId);
-                            if (action.result && action.result.msg) {
-                                Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._("Language pack uploaded with errors"));
-                            } else {
+                            if(action.result.success===true){
                                 Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"), 
                                     function() {
                                     	Ext.getCmp("upload_language_file_textfield").reset();
                                     } 
                                 );
+                            }else{
+                                var msg = "An error occured while uploading the language pack";
+                                if(action.result.msg){
+                                    msg = action.result.msg;
+                                }
+                                Ext.MessageBox.alert(cmp.i18n._("Warning"), cmp.i18n._(msg));                                
                             }
                         },
                         failure : function(form, action) {
