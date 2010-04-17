@@ -808,3 +808,17 @@ diff -Naur jabsorb-1.2.2/src/org/json/JSONBean.java jabsorb-1.2.2.patched/src/or
 +        String property() default "";
 +    }
 +}
+diff -urN jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java jabsorb-1.2.2-patched/src/org/jabsorb/serializer/ObjectMatch.java
+--- jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java   2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2-patched/src/org/jabsorb/serializer/ObjectMatch.java   2010-04-16 16:43:10.000000000 -0700
+@@ -102,6 +102,10 @@
+    */
+   public ObjectMatch max(ObjectMatch m)
+   {
++      if (m == null)
++          {
++              return this;
++          }
+     if (this.mismatch > m.mismatch)
+     {
+       return this;
