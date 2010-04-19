@@ -490,7 +490,7 @@ int netcap_interface_dst_intf       ( netcap_session_t* session )
     struct in_addr src = { .s_addr = session->nat_info.reply.dst_address };
 
     if ( netcap_arp_dst_intf( &session->srv.intf, session->cli.intf, &src, &dst ) < 0 ) {
-        return errlog( ERR_CRITICAL, "netcap_arp_dst_intf\n" );
+        return errlog( ERR_CRITICAL, "netcap_arp_dst_intf (%s -> %s)\n", unet_next_inet_ntoa( src.s_addr ), unet_next_inet_ntoa( dst.s_addr ) );
     }
     
     debug( 10, "INTERFACE: (%10u) Session (%s -> %s) is going out %d\n", 
