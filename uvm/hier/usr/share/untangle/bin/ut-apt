@@ -224,13 +224,6 @@ class RealApt
     0
   end
 
-    ret = 0
-
-    IO.popen("apt-get install -s #{pkg}") do |io|
-    end
-
-    ret
-
   def predictInstall(pkg)
     ret = 0
 

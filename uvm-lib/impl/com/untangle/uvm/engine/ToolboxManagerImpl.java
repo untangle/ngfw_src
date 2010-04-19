@@ -393,12 +393,21 @@ class ToolboxManagerImpl implements ToolboxManager
                 continue; //assume it matches
             } 
 
-            String pkgVer = pkgDesc.getAvailableVersion();
-            String uvmVer = uvmDesc.getInstalledVersion();
+            String[] pkgVers = pkgDesc.getAvailableVersion().split("~");
+            String[] uvmVers = uvmDesc.getInstalledVersion().split("~");
+
+            if (pkgVers.length < 2 || uvmVers.length < 2) {
+                //example 7.2.0~svnblahblah
+                logger.warn("Misunderstood version strings: " + pkgDesc.getAvailableVersion() + " & " + uvmDesc.getInstalledVersion());
+                continue; //assume it matches
+            }
+            
+            String pkgVer = pkgVers[0];
+            String uvmVer = uvmVers[0];
             if (pkgVer == null || uvmVer == null) {
                 logger.warn("Unable to read package version: " + pkgVer + " " + uvmVer);
                 continue; //assume it matches
-            } 
+            }
 
             if (!pkgVer.equals(uvmVer)) {
                 throw new MackageInstallException("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
