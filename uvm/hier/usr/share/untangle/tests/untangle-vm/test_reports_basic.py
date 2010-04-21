@@ -55,7 +55,7 @@ class TestReportsBasic(ReportsSetup):
         cls.run_reports()
 
     def test_session_totals_time( self ):
-        yield self.check_session_totals, "", 11
+        yield self.check_session_totals, "", 10
         ## Truncate the time
         timestamp = PipelineEndpoint.DEFAULT_TIMESTAMP.replace( second = 0, microsecond = 0 )
         yield self.check_session_totals, "trunc_time=timestamp '%s'" % timestamp, 6
@@ -67,12 +67,12 @@ class TestReportsBasic(ReportsSetup):
         yield self.check_session_totals, "trunc_time=timestamp '%s'" % timestamp, 1
 
     def test_session_totals_address( self ):
-        yield self.check_session_totals, "hname='%s'" % PipelineEndpoint.DEFAULT_CLIENT_ADDRESS, 8
+        yield self.check_session_totals, "hname='%s'" % PipelineEndpoint.DEFAULT_CLIENT_ADDR, 8
         yield self.check_session_totals, "hname='%s'" % "10.0.0.1", 1
-        yield self.check_session_totals, "hname='%s'" % "10.0.0.2", 2
+        yield self.check_session_totals, "hname='%s'" % "10.0.0.2", 1
 
-    def test_session_totals_address( self ):
-        yield self.check_session_totals, "c_server_port=%d" % PipelineEndpoint.DEFAULT_SERVER_PORT, 9
+    def test_session_totals_port( self ):
+        yield self.check_session_totals, "c_server_port=%d" % PipelineEndpoint.DEFAULT_SERVER_PORT, 8
         yield self.check_session_totals, "c_server_port=%d" % (PipelineEndpoint.DEFAULT_SERVER_PORT + 1), 1
         yield self.check_session_totals, "c_server_port=%d" % (PipelineEndpoint.DEFAULT_SERVER_PORT + 2), 1
         
