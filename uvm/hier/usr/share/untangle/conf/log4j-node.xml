@@ -45,7 +45,7 @@
     <param name="Threshold" value="ALL"/>
     <layout class="com.untangle.uvm.logging.UtPatternlayout">
       <param name="ConversionPattern"
-             value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
+             value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"
     </layout>
   </appender>
 
@@ -58,7 +58,7 @@
          here at the top level so that the SmtpAppender constructor
          can create the correct layout. -->
     <param name="LayoutConversionPattern"
-           value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
+             value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"
   </appender>
 
   <category name="org.apache.catalina">
