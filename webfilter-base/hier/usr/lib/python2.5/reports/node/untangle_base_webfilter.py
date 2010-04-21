@@ -483,13 +483,14 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
              sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)::int as wf_%s_violations
       FROM reports.n_http_totals
       WHERE trunc_time >= %%s AND trunc_time < %%s
-      GROUP BY day) as foo GROUP BY day
 """ % (8*(self.__vendor_name,))
             if host:
                 q = q + " AND hname = %s"
             elif user:
                 q = q + " AND uid = %s"
 
+            query += " GROUP BY day) AS foo GROUP BY day"
+            
             curs = conn.cursor()
 
             if host:
