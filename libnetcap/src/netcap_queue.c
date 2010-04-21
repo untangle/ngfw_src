@@ -386,9 +386,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         return errlog( ERR_CRITICAL, "Packet doesn't match either side of the conntrack data\n" );
     }
     
-        
     ip_header->check = 0;
-    debug( 1, "WARNING, New checksum doesn't include options.\n" );
     ip_header->check = unet_in_cksum((u_int16_t *) ip_header, sizeof(struct iphdr));
 
     pkt->src.host.s_addr = ip_header->saddr;

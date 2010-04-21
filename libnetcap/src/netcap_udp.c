@@ -293,8 +293,9 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
 
         // Put the packet into the mailbox
         if (mailbox_size(&session->cli_mb) > MAX_MB_SIZE ) {
-            errlog( ERR_WARNING,"Mailbox Full: Dropping Packet (from %s:%i)\n",
-                    inet_ntoa( pkt->src.host ), pkt->src.port );
+            errlog( ERR_WARNING,"Mailbox Full: Dropping Packet (%s:%i -> %s:%i)\n",
+                    unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
+                    unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port);
             netcap_pkt_action_raze( pkt, NF_DROP );
             full_pkt = NULL;
         } else if (mailbox_put(&session->cli_mb,(void*)pkt)<0) {
