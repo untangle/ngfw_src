@@ -1686,6 +1686,8 @@ Ung.MessageManager = {
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 if ( main.getIframeWin() != null  ) {
                                     main.getIframeWin().closeActionFn();
+                                }else if(main.IEWin != null){
+                                    main.IEWin.close();
                                 }
                                 rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                         if (exception)
