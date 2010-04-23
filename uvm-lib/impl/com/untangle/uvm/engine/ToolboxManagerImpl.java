@@ -450,7 +450,9 @@ class ToolboxManagerImpl implements ToolboxManager
 
             if (isInstalled(name)) {
                 logger.warn("mackage " + name + " already installed, debouncing");
-                throw new MackageInstallException("package " + name + " already installed");
+                //fix for bug #7675
+                //throw new MackageInstallException("package " + name + " already installed");
+                return;
             }
 
             /**
