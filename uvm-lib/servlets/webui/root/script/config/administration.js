@@ -1942,10 +1942,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     this.afterSave(exception, callback);
                 }.createDelegate(this), this.getAdminSettings());
 
-                if (this.getAddressSettings().publicAddress == null)
-                    delete this.getAddressSettings().publicAddress;
-                if (this.getAddressSettings().publicIPaddr == null)
-                    delete this.getAddressSettings().publicIPaddr;
                 rpc.networkManager.setAddressSettings(function(result, exception) {
                     this.afterSave(exception, callback);
                  }.createDelegate(this), this.getAddressSettings());
