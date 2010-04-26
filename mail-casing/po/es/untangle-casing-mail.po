@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-15 14:27-0700\n"
-"PO-Revision-Date: 2009-02-06 06:31-0800\n"
-"Last-Translator: Juan Machado <juan@itos.uga.edu>\n"
+"PO-Revision-Date: 2010-01-14 07:00-0800\n"
+"Last-Translator: Andrés Gatica <agatica@comdiel.cl>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,25 +26,22 @@ msgstr "No hay mensajes en cuarentena para la cuenta {0}."
 #: ../servlets/quarantine/root/request.js:79
 #: ../servlets/quarantine/root/safelist.js:155
 msgid "Please Try Again"
-msgstr ""
+msgstr "Inténtelo Nuevamente"
 
 #: ../servlets/quarantine/root/quarantine.js:248
 #: ../servlets/quarantine/root/quarantine.js:405
-#, fuzzy
 msgid "Move to Inbox (0  messages)"
-msgstr "Mover al buzón de entrada"
+msgstr "Mover a Bandeja  (0  mensajes)"
 
 #: ../servlets/quarantine/root/quarantine.js:255
 #: ../servlets/quarantine/root/quarantine.js:404
-#, fuzzy
 msgid "Delete (0  messages)"
-msgstr "Eliminar {0} mensajes"
+msgstr "Eliminar (0  mensajes)"
 
 #: ../servlets/quarantine/root/quarantine.js:262
 #: ../servlets/quarantine/root/quarantine.js:422
-#, fuzzy
 msgid "Add to Safelist (0  Senders)"
-msgstr "Agregar remitente a la lista segura"
+msgstr "Agregar a Lista Segura (0  Remitentes)"
 
 #: ../servlets/quarantine/root/quarantine.js:365
 msgid "Deleted one Message"
@@ -64,41 +61,35 @@ msgstr "Se han liberado {0} mensajes"
 
 #: ../servlets/quarantine/root/quarantine.js:379
 msgid "Safelisted one Address"
-msgstr "Se ha incluido una dirección en lista segura"
+msgstr "Se ha incluido una Dirección en Lista Segura"
 
 #: ../servlets/quarantine/root/quarantine.js:380
 msgid "Safelisted {0} Addresses"
-msgstr "Se han incluido {0} direcciones en lista segura"
+msgstr "Se han incluido {0} Direcciones en Lista Segura"
 
 #: ../servlets/quarantine/root/quarantine.js:409
-#, fuzzy
 msgid "Delete (1  message)"
-msgstr "Mensajes eliminados"
+msgstr "Eliminar (1  mensaje)"
 
 #: ../servlets/quarantine/root/quarantine.js:410
-#, fuzzy
 msgid "Move to Inbox (1  message)"
-msgstr "Mover al buzón de entrada"
+msgstr "Mover a Bandeja (1  mensaje)"
 
 #: ../servlets/quarantine/root/quarantine.js:414
-#, fuzzy
 msgid "Delete ({0} messages)"
-msgstr "Eliminar {0} mensajes"
+msgstr "Eliminar ({0} mensajes)"
 
 #: ../servlets/quarantine/root/quarantine.js:415
-#, fuzzy
 msgid "Move to Inbox ({0} messages)"
-msgstr "Mover al buzón de entrada"
+msgstr "Mover a Bandeja ({0} mensajes)"
 
 #: ../servlets/quarantine/root/quarantine.js:425
-#, fuzzy
 msgid "Add to Safelist (1  Sender)"
-msgstr "Agregar remitente a la lista segura"
+msgstr "Agregar a Lista Segura (1  Remitente)"
 
 #: ../servlets/quarantine/root/quarantine.js:428
-#, fuzzy
 msgid "Add to Safelist ({0} Senders)"
-msgstr "Se han incluido {0} direcciones en lista segura"
+msgstr "Agregar a Lista Segura ({0} Remitentes)"
 
 #: ../servlets/quarantine/root/quarantine.js:539
 msgid "From"
@@ -106,7 +97,7 @@ msgstr "Remitente"
 
 #: ../servlets/quarantine/root/quarantine.js:546
 msgid "Number of Attachments in the email."
-msgstr "Cantidad de documentos adjuntos al mensaje."
+msgstr "Cantidad de Adjuntos en el correo."
 
 #: ../servlets/quarantine/root/quarantine.js:549
 msgid "Score"
@@ -126,7 +117,7 @@ msgstr "Tamaño (KB)"
 
 #: ../servlets/quarantine/root/quarantine.js:583
 msgid "Showing items {0} - {1} of {2}"
-msgstr "Mostrando los elementos {0} - {1} de {2}"
+msgstr "Mostrando elementos {0} - {1} de {2}"
 
 #: ../servlets/quarantine/root/quarantine.js:584
 msgid "No messages to display"
@@ -136,30 +127,30 @@ msgstr "No hay mensajes para mostrar"
 msgid "The messages below were quarantined and will be deleted after {0} days."
 msgstr ""
 "Los mensajes de abajo fueron puestos en cuarentena y serán borrados depués "
-"de {0}  días. "
+"de {0} días. "
 
 #: ../servlets/quarantine/root/quarantine.js:662
 msgid "Quarantined Messages"
-msgstr "Mensajes en cuarentena"
+msgstr "Mensajes en Cuarentena"
 
 #: ../servlets/quarantine/root/quarantine.js:667
 msgid ""
 "You can use the Safelist to make sure that messages from these senders are "
 "never quarantined."
 msgstr ""
-"Puede usar la lista segura para asegurarse de que los mensajes de estos "
-"remitentes nunca se pongan en cuarentena."
+"Puede usar la Lista Segura para que los mensajes de estos remitentes nunca "
+"sean puestos en cuarentena."
 
 #: ../servlets/quarantine/root/quarantine.js:670
 msgid "Safelist"
-msgstr "Lista segura"
+msgstr "Lista Segura"
 
 #: ../servlets/quarantine/root/remaps.js:40
 #: ../servlets/quarantine/root/request.js:48
 #: ../servlets/quarantine/root/safelist.js:43
 #: ../servlets/quarantine/root/safelist.js:112
 msgid "Email Address"
-msgstr "Dirección de email"
+msgstr "Dirección de Email"
 
 #: ../servlets/quarantine/root/remaps.js:56
 #: ../servlets/quarantine/root/remaps.js:66
@@ -168,11 +159,11 @@ msgstr "Dirección de email"
 #: ../servlets/quarantine/root/safelist.js:81
 #: ../servlets/quarantine/root/safelist.js:185
 msgid "Delete Addresses"
-msgstr "Eliminar direcciones"
+msgstr "Eliminar Direcciones"
 
 #: ../servlets/quarantine/root/remaps.js:93
 msgid "Forward Quarantined Messages To:"
-msgstr "Reenviar mensajes en cuarentena a:"
+msgstr "Reenviar Mensajes en Cuarentena a:"
 
 #: ../servlets/quarantine/root/remaps.js:114
 msgid "Address"
@@ -180,11 +171,11 @@ msgstr "Dirección"
 
 #: ../servlets/quarantine/root/remaps.js:138
 msgid "Received Quarantined Messages From:"
-msgstr "Mensajes en cuarentena recibidos de:"
+msgstr "Mensajes en Cuarentena recibidos de:"
 
 #: ../servlets/quarantine/root/remaps.js:157
 msgid "Forward or Receive Quarantines"
-msgstr "Reenviar o recibir cuarentenas"
+msgstr "Reenviar o Recibir Cuarentenas"
 
 #: ../servlets/quarantine/root/remaps.js:179
 msgid "Unable to set the forward."
@@ -195,42 +186,45 @@ msgid "Unable to delete an entry."
 msgstr "Imposible eliminar una entrada."
 
 #: ../servlets/quarantine/root/remaps.js:201
+#, fuzzy
 msgid "Delete one Remap"
-msgstr "Eliminar una reasignación"
+msgstr "Eliminar una Reasignación"
 
 #: ../servlets/quarantine/root/remaps.js:202
+#, fuzzy
 msgid "Deleted {0} Remaps"
-msgstr "Se han eliminado {0} reasignaciones"
+msgstr "Se han eliminado {0} Reasignaciones"
 
 #: ../servlets/quarantine/root/remaps.js:208
+#, fuzzy
 msgid "Unable to update remap table."
 msgstr "Imposible actualizar la tabla de reasignación."
 
 #: ../servlets/quarantine/root/remaps.js:216
 msgid "Delete one Addressess"
-msgstr "Eliminar una dirección"
+msgstr "Eliminar una Dirección"
 
 #: ../servlets/quarantine/root/remaps.js:216
 #: ../servlets/quarantine/root/safelist.js:180
 msgid "Delete {0} Addresses"
-msgstr "Eliminar {0} direcciones"
+msgstr "Eliminar {0} Direcciones"
 
 #: ../servlets/quarantine/root/request.js:21
 msgid ""
 "Your Remote Access Portal login is not configured with a valid email address."
 msgstr ""
-"Su portal de acceso remoto no está configurado con una dirección de email "
-"válida."
+"El login de su Portal de Acceso Remoto no está configurado con una dirección "
+"de email válida."
 
 #: ../servlets/quarantine/root/request.js:31
 msgid "Select User"
-msgstr "Seleccionar usuario"
+msgstr "Seleccionar Usuario"
 
 #: ../servlets/quarantine/root/request.js:31
 msgid "Enter the email address for which you would like the Quarantine Digest"
 msgstr ""
-"Escriba la dirección de email para la cual desea recibir un resumen de "
-"cuarentena"
+"Escriba la dirección de email para la cual desea recibir un Resumen de "
+"Cuarentena"
 
 #: ../servlets/quarantine/root/request.js:35
 msgid "Request"
@@ -238,16 +232,15 @@ msgstr "Solicitud"
 
 #: ../servlets/quarantine/root/request.js:88
 msgid "Successfully sent digest to '{0}'"
-msgstr ""
+msgstr "Se ha enviado resumen a '{0}' con éxito"
 
 #: ../servlets/quarantine/root/request.js:90
 msgid "A quarantine does not exist for '{0}'"
-msgstr ""
+msgstr "No existe cuarentena para '{0}'"
 
 #: ../servlets/quarantine/root/request.js:94
-#, fuzzy
 msgid "Quarantine Request"
-msgstr "Resumen de cuarentena"
+msgstr "Resumen de Cuarentena"
 
 #: ../servlets/quarantine/root/safelist.js:59
 msgid "Add"
@@ -255,7 +248,7 @@ msgstr "Agregar"
 
 #: ../servlets/quarantine/root/safelist.js:125
 msgid "Add an Email Address to Safelist"
-msgstr "Agregar una dirección de email a la lista segura"
+msgstr "Agregar una Dirección de Email a la Lista Segura"
 
 #: ../servlets/quarantine/root/safelist.js:128
 msgid "Save"
@@ -275,49 +268,58 @@ msgstr "Se han eliminado {0} direcciones"
 
 #: ../servlets/quarantine/root/safelist.js:180
 msgid "Delete one Address"
-msgstr "Eliminar una dirección"
+msgstr "Eliminar una Dirección"
 
 #: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:755
 msgid "Quarantine Digest"
-msgstr "Resumen de cuarentena"
+msgstr "Resumen de Cuarentena"
 
 #: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:20
 #: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:25
 msgid "Quarantine Digest for {0}"
-msgstr "Resumen de cuarentena para {0}"
+msgstr "Resumen de Cuarentena para {0}"
 
 #: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:27
 msgid "Click here to access your spam quarantine."
-msgstr "Presione aquí para accesar su cuarentena de spam."
+msgstr "Presione aquí para acceder su cuarentena de spam."
 
 #: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:29
 msgid ""
 "The spam quarantine contains emails that are being held from your email "
 "account."
 msgstr ""
+"La cuarentena de spam contiene emails que están siendo retenidos de su "
+"cuenta de email."
 
 #: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:31
 msgid ""
 "Quarantined emails can be released to your inbox or deleted using the spam "
 "quarantine link."
 msgstr ""
+"Los emails en cuarentena pueden ser liberados a su bandeja de entrada o "
+"eliminados usando el enlace a la cuarentena de spam."
 
 #: ../servlets/quarantine/root/inbox.jspx:34
 msgid "Quarantine Digest for: {0}"
-msgstr "Resumen de cuarentena para: {0}"
+msgstr "Resumen de Cuarentena para: {0}"
 
 #: ../servlets/quarantine/root/inbox.jspx:39
 msgid "{0} | Quarantine Digest for: {1}"
-msgstr "{0} | Resumen de cuarentena para: {1}"
+msgstr "{0} | Resumen de Cuarentena para: {1}"
 
 #: ../servlets/quarantine/root/request.jspx:36
-#, fuzzy
 msgid "Request Quarantine Digest Emails"
-msgstr "Solicitar email de resumen de cuarentena"
+msgstr "Solicitar Emails de Resumen de Cuarentena"
 
 #: ../servlets/quarantine/root/request.jspx:40
 msgid "{0} | Request Quarantine Digest Email"
-msgstr "{0} | Solicitar email de resumen de cuarentena"
+msgstr "{0} | Solicitar Email de Resumen de Cuarentena"
+
+#~ msgid "Move to Inbox"
+#~ msgstr "Mover al buzón de entrada"
+
+#~ msgid "Delete Messages"
+#~ msgstr "Mensajes eliminados"
 
 #~ msgid "Add Sender(s) to Safelist"
 #~ msgstr "Agregar remitente(s) a la lista segura"
@@ -331,19 +333,18 @@ msgstr "{0} | Solicitar email de resumen de cuarentena"
 #~ msgid "Move {0} Messages to Inbox"
 #~ msgstr "Mover {0} mensajes al buzón de entrada"
 
+#~ msgid "Add Sender to Safelist"
+#~ msgstr "Agregar remitente a la lista segura"
+
 #~ msgid "Add {0} Senders to Safelist"
 #~ msgstr "Agregar {0} remitentes a la lista segura"
 
 #~ msgid ""
-#~ "From this link you can have a specific email delivered to your email "
-#~ "account or delete an email from the quarantine."
+#~ "From this link you can have a specific email delivered to your email account "
+#~ "or delete an email from the quarantine."
 #~ msgstr ""
 #~ "Desde este enlace, usted puede obtener un email específico enviado a su "
 #~ "cuenta de email o borrar un email de la cuarentena."
 
-#~ msgid ""
-#~ "Your Remote Access Portal login has been configured without an email "
-#~ "address or with an incorrect email address."
-#~ msgstr ""
-#~ "Su portal de acceso remoto fue configurado sin una dirección de email o "
-#~ "con una dirección de email incorrecta."
+#~ msgid "Your Remote Access Portal login has been configured without an email address or with an incorrect email address."
+#~ msgstr "Su portal de acceso remoto fue configurado sin una dirección de email o con una dirección de email incorrecta."

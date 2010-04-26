@@ -6,129 +6,139 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-04 13:57-0800\n"
-"PO-Revision-Date: 2009-03-08 19:14-0700\n"
-"Last-Translator: Nito Kazunori <kazu.nito@gmail.com>\n"
+"POT-Creation-Date: 2009-09-15 14:27-0700\n"
+"PO-Revision-Date: 2010-01-03 17:31+0900\n"
+"Last-Translator: kazu.nito@gmail.com <Nito Kazunori>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-#: ../servlets/quarantine/root/quarantine.js:194
+#: ../servlets/quarantine/root/quarantine.js:193
 msgid "The account {0} doesn't have any quarantined messages."
 msgstr "このアカウント {0} は、隔離メッセージを持っていません"
 
-#: ../servlets/quarantine/root/quarantine.js:244
-#: ../servlets/quarantine/root/quarantine.js:396
-msgid "Move to Inbox"
-msgstr "受信トレイに移動"
+#: ../servlets/quarantine/root/quarantine.js:198
+#: ../servlets/quarantine/root/quarantine.js:325
+#: ../servlets/quarantine/root/request.js:79
+#: ../servlets/quarantine/root/safelist.js:155
+msgid "Please Try Again"
+msgstr "もう一度やり直してください"
 
-#: ../servlets/quarantine/root/quarantine.js:251
-#: ../servlets/quarantine/root/quarantine.js:395
-msgid "Delete Messages"
-msgstr "メッセージの削除"
+#: ../servlets/quarantine/root/quarantine.js:248
+#: ../servlets/quarantine/root/quarantine.js:405
+msgid "Move to Inbox (0  messages)"
+msgstr "受信トレイに（0メッセージ）を移動"
 
-#: ../servlets/quarantine/root/quarantine.js:258
-#: ../servlets/quarantine/root/quarantine.js:413
-msgid "Add Sender(s) to Safelist"
-msgstr "送信先をセーフリストに追加"
+#: ../servlets/quarantine/root/quarantine.js:255
+#: ../servlets/quarantine/root/quarantine.js:404
+#, fuzzy
+msgid "Delete (0  messages)"
+msgstr "{0} メッセージを削除"
 
-#: ../servlets/quarantine/root/quarantine.js:356
+#: ../servlets/quarantine/root/quarantine.js:262
+#: ../servlets/quarantine/root/quarantine.js:422
+msgid "Add to Safelist (0  Senders)"
+msgstr "セーフリストに (0 差出人)を追加"
+
+#: ../servlets/quarantine/root/quarantine.js:365
 msgid "Deleted one Message"
 msgstr "1メッセージを削除しました"
 
-#: ../servlets/quarantine/root/quarantine.js:357
+#: ../servlets/quarantine/root/quarantine.js:366
 msgid "Deleted {0} Messages"
 msgstr "{0} メッセージを削除しました"
 
-#: ../servlets/quarantine/root/quarantine.js:363
+#: ../servlets/quarantine/root/quarantine.js:372
 msgid "Released one Message"
 msgstr "1メッセージをリリースしました"
 
-#: ../servlets/quarantine/root/quarantine.js:364
+#: ../servlets/quarantine/root/quarantine.js:373
 msgid "Released {0} Messages"
 msgstr "{0} メッセージをリリースしました"
 
-#: ../servlets/quarantine/root/quarantine.js:370
+#: ../servlets/quarantine/root/quarantine.js:379
 msgid "Safelisted one Address"
 msgstr "アドレス一つをセーフリストしました"
 
-#: ../servlets/quarantine/root/quarantine.js:371
+#: ../servlets/quarantine/root/quarantine.js:380
 msgid "Safelisted {0} Addresses"
 msgstr "{0} アドレスをセーフリストしました"
 
-#: ../servlets/quarantine/root/quarantine.js:400
-msgid "Delete one Message"
-msgstr "メッセージを一件削除"
-
-#: ../servlets/quarantine/root/quarantine.js:401
-msgid "Move one Message to Inbox"
-msgstr "メッセージ一件を受信トレイに移動"
-
-#: ../servlets/quarantine/root/quarantine.js:405
-msgid "Delete {0} Messages"
+#: ../servlets/quarantine/root/quarantine.js:409
+#, fuzzy
+msgid "Delete (1  message)"
 msgstr "{0} メッセージを削除"
 
-#: ../servlets/quarantine/root/quarantine.js:406
-msgid "Move {0} Messages to Inbox"
-msgstr "{0} メッセージを受信トレイに移動"
+#: ../servlets/quarantine/root/quarantine.js:410
+msgid "Move to Inbox (1  message)"
+msgstr "受信トレイに（1メッセージ）を移動"
 
-#: ../servlets/quarantine/root/quarantine.js:416
-msgid "Add Sender to Safelist"
-msgstr "送信者をセーフリストに追加"
+#: ../servlets/quarantine/root/quarantine.js:414
+#, fuzzy
+msgid "Delete ({0} messages)"
+msgstr "{0} メッセージを削除"
 
-#: ../servlets/quarantine/root/quarantine.js:419
-msgid "Add {0} Senders to Safelist"
-msgstr "{0}送信者をセーフリストに追加"
+#: ../servlets/quarantine/root/quarantine.js:415
+msgid "Move to Inbox ({0} messages)"
+msgstr "受信トレイに（{0}メッセージ）を移動"
 
-#: ../servlets/quarantine/root/quarantine.js:530
+#: ../servlets/quarantine/root/quarantine.js:425
+msgid "Add to Safelist (1  Sender)"
+msgstr "セーフリストに (1 差出人)を追加"
+
+#: ../servlets/quarantine/root/quarantine.js:428
+msgid "Add to Safelist ({0} Senders)"
+msgstr "セーフリストに ({0} 差出人)を追加"
+
+#: ../servlets/quarantine/root/quarantine.js:539
 msgid "From"
 msgstr "差出人"
 
-#: ../servlets/quarantine/root/quarantine.js:537
+#: ../servlets/quarantine/root/quarantine.js:546
 msgid "Number of Attachments in the email."
 msgstr "メールの添付ファイルの数"
 
-#: ../servlets/quarantine/root/quarantine.js:540
+#: ../servlets/quarantine/root/quarantine.js:549
 msgid "Score"
 msgstr "スコア"
 
-#: ../servlets/quarantine/root/quarantine.js:545
+#: ../servlets/quarantine/root/quarantine.js:554
 msgid "Subject"
 msgstr "件名"
 
-#: ../servlets/quarantine/root/quarantine.js:549
+#: ../servlets/quarantine/root/quarantine.js:558
 msgid "Date"
 msgstr "日付"
 
-#: ../servlets/quarantine/root/quarantine.js:560
+#: ../servlets/quarantine/root/quarantine.js:569
 msgid "Size (KB)"
 msgstr "サイズ(KB)"
 
-#: ../servlets/quarantine/root/quarantine.js:574
+#: ../servlets/quarantine/root/quarantine.js:583
 msgid "Showing items {0} - {1} of {2}"
 msgstr "表示項目 {2}の内の{0} - {1}  "
 
-#: ../servlets/quarantine/root/quarantine.js:575
+#: ../servlets/quarantine/root/quarantine.js:584
 msgid "No messages to display"
 msgstr "表示するメッセージがありません"
 
-#: ../servlets/quarantine/root/quarantine.js:648
+#: ../servlets/quarantine/root/quarantine.js:657
 msgid "The messages below were quarantined and will be deleted after {0} days."
 msgstr "以下のメッセージは検疫されたあと、{0} 日後に削除されます。"
 
-#: ../servlets/quarantine/root/quarantine.js:653
+#: ../servlets/quarantine/root/quarantine.js:662
 msgid "Quarantined Messages"
 msgstr "検疫されたメッセージ"
 
-#: ../servlets/quarantine/root/quarantine.js:658
+#: ../servlets/quarantine/root/quarantine.js:667
 msgid ""
 "You can use the Safelist to make sure that messages from these senders are "
 "never quarantined."
-msgstr "これらの送信者からのメッセージが決して検疫されないようにSafelistを使用できます。"
+msgstr "これらの送信者からのメッセージが決して検疫されないようにセーフリストを使用できます。"
 
-#: ../servlets/quarantine/root/quarantine.js:661
+#: ../servlets/quarantine/root/quarantine.js:670
 msgid "Safelist"
 msgstr "セーフリスト"
 
@@ -144,7 +154,7 @@ msgstr "Eメールアドレス"
 #: ../servlets/quarantine/root/remaps.js:221
 #: ../servlets/quarantine/root/safelist.js:68
 #: ../servlets/quarantine/root/safelist.js:81
-#: ../servlets/quarantine/root/safelist.js:180
+#: ../servlets/quarantine/root/safelist.js:185
 msgid "Delete Addresses"
 msgstr "アドレスの削除"
 
@@ -189,7 +199,7 @@ msgid "Delete one Addressess"
 msgstr "アドレスを一つ削除"
 
 #: ../servlets/quarantine/root/remaps.js:216
-#: ../servlets/quarantine/root/safelist.js:175
+#: ../servlets/quarantine/root/safelist.js:180
 msgid "Delete {0} Addresses"
 msgstr "{0}アドレスを削除"
 
@@ -210,15 +220,15 @@ msgstr "検疫ダイジェストを希望する場合は、メールアドレス
 msgid "Request"
 msgstr "リクエスト"
 
-#: ../servlets/quarantine/root/request.js:86
+#: ../servlets/quarantine/root/request.js:88
 msgid "Successfully sent digest to '{0}'"
 msgstr "'{0}'　への正常送信ダイジェスト"
 
-#: ../servlets/quarantine/root/request.js:88
+#: ../servlets/quarantine/root/request.js:90
 msgid "A quarantine does not exist for '{0}'"
 msgstr "検疫'{0}'は存在しません"
 
-#: ../servlets/quarantine/root/request.js:92
+#: ../servlets/quarantine/root/request.js:94
 msgid "Quarantine Request"
 msgstr "検疫要求"
 
@@ -238,19 +248,19 @@ msgstr "保存"
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: ../servlets/quarantine/root/safelist.js:162
+#: ../servlets/quarantine/root/safelist.js:167
 msgid "Deleted one address"
 msgstr "アドレスを一件削除しました"
 
-#: ../servlets/quarantine/root/safelist.js:162
+#: ../servlets/quarantine/root/safelist.js:167
 msgid "Deleted {0} addresses"
 msgstr "{0}アドレスを削除しました"
 
-#: ../servlets/quarantine/root/safelist.js:175
+#: ../servlets/quarantine/root/safelist.js:180
 msgid "Delete one Address"
 msgstr "アドレスを一件削除"
 
-#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:747
+#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:755
 msgid "Quarantine Digest"
 msgstr "検疫ダイジェスト"
 
@@ -263,11 +273,17 @@ msgstr "{0}のための検疫ダイジェスト"
 msgid "Click here to access your spam quarantine."
 msgstr "ここをクリックして、スパム検疫にアクセスします。"
 
-#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:28
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:29
 msgid ""
-"From this link you can have a specific email delivered to your email account "
-"or delete an email from the quarantine."
-msgstr "このリンクから、あなたのメールアカウントに特定のメールを送らせるか、または隔離したメールを削除できます。"
+"The spam quarantine contains emails that are being held from your email "
+"account."
+msgstr "スパム検疫は、あなたの電子メールアカウントが持っている電子メールを含みます。"
+
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:31
+msgid ""
+"Quarantined emails can be released to your inbox or deleted using the spam "
+"quarantine link."
+msgstr "隔離されたメールを受信トレイに公開するか、またはスパム検疫関連を使用して削除できます。"
 
 #: ../servlets/quarantine/root/inbox.jspx:34
 msgid "Quarantine Digest for: {0}"
@@ -278,9 +294,39 @@ msgid "{0} | Quarantine Digest for: {1}"
 msgstr "{0} | 検疫ダイジェスト: {1}"
 
 #: ../servlets/quarantine/root/request.jspx:36
-msgid "Request Quarantine Digest Email"
+#, fuzzy
+msgid "Request Quarantine Digest Emails"
 msgstr "検疫ダイジェストメールをリクエスト"
 
 #: ../servlets/quarantine/root/request.jspx:40
 msgid "{0} | Request Quarantine Digest Email"
 msgstr "{0} | 検疫ダイジェストメールをリクエスト"
+
+#~ msgid "Move to Inbox"
+#~ msgstr "受信トレイに移動"
+
+#~ msgid "Delete Messages"
+#~ msgstr "メッセージの削除"
+
+#~ msgid "Add Sender(s) to Safelist"
+#~ msgstr "送信先をセーフリストに追加"
+
+#~ msgid "Delete one Message"
+#~ msgstr "メッセージを一件削除"
+
+#~ msgid "Move one Message to Inbox"
+#~ msgstr "メッセージ一件を受信トレイに移動"
+
+#~ msgid "Move {0} Messages to Inbox"
+#~ msgstr "{0} メッセージを受信トレイに移動"
+
+#~ msgid "Add Sender to Safelist"
+#~ msgstr "送信者をセーフリストに追加"
+
+#~ msgid "Add {0} Senders to Safelist"
+#~ msgstr "{0}送信者をセーフリストに追加"
+
+#~ msgid ""
+#~ "From this link you can have a specific email delivered to your email account "
+#~ "or delete an email from the quarantine."
+#~ msgstr "このリンクから、あなたのメールアカウントに特定のメールを送らせるか、または隔離したメールを削除できます。"

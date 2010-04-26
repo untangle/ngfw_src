@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-04 13:57-0800\n"
+"POT-Creation-Date: 2009-09-15 14:27-0700\n"
 "PO-Revision-Date: 2008-11-27 23:32-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -19,120 +19,130 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Country: CHINA\n"
 
-#: ../servlets/quarantine/root/quarantine.js:194
+#: ../servlets/quarantine/root/quarantine.js:193
 msgid "The account {0} doesn't have any quarantined messages."
 msgstr "账户{0}没有任何被隔离的邮件。"
 
-#: ../servlets/quarantine/root/quarantine.js:244
-#: ../servlets/quarantine/root/quarantine.js:396
-msgid "Move to Inbox"
-msgstr "移动到收件箱"
+#: ../servlets/quarantine/root/quarantine.js:198
+#: ../servlets/quarantine/root/quarantine.js:325
+#: ../servlets/quarantine/root/request.js:79
+#: ../servlets/quarantine/root/safelist.js:155
+msgid "Please Try Again"
+msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:251
-#: ../servlets/quarantine/root/quarantine.js:395
-msgid "Delete Messages"
-msgstr "删除邮件"
+#: ../servlets/quarantine/root/quarantine.js:248
+#: ../servlets/quarantine/root/quarantine.js:405
+msgid "Move to Inbox (0  messages)"
+msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:258
-#: ../servlets/quarantine/root/quarantine.js:413
-msgid "Add Sender(s) to Safelist"
-msgstr "将发件人添加到安全列表"
+#: ../servlets/quarantine/root/quarantine.js:255
+#: ../servlets/quarantine/root/quarantine.js:404
+#, fuzzy
+msgid "Delete (0  messages)"
+msgstr "删除{0}封邮件"
 
-#: ../servlets/quarantine/root/quarantine.js:356
+#: ../servlets/quarantine/root/quarantine.js:262
+#: ../servlets/quarantine/root/quarantine.js:422
+msgid "Add to Safelist (0  Senders)"
+msgstr ""
+
+#: ../servlets/quarantine/root/quarantine.js:365
 msgid "Deleted one Message"
 msgstr "删除了一封邮件"
 
-#: ../servlets/quarantine/root/quarantine.js:357
+#: ../servlets/quarantine/root/quarantine.js:366
 msgid "Deleted {0} Messages"
 msgstr "删除了{0}封邮件"
 
-#: ../servlets/quarantine/root/quarantine.js:363
+#: ../servlets/quarantine/root/quarantine.js:372
 msgid "Released one Message"
 msgstr "释放了一封邮件"
 
-#: ../servlets/quarantine/root/quarantine.js:364
+#: ../servlets/quarantine/root/quarantine.js:373
 msgid "Released {0} Messages"
 msgstr "释放了{0}封邮件"
 
-#: ../servlets/quarantine/root/quarantine.js:370
+#: ../servlets/quarantine/root/quarantine.js:379
 msgid "Safelisted one Address"
 msgstr "添加了一个地址到安全列表"
 
-#: ../servlets/quarantine/root/quarantine.js:371
+#: ../servlets/quarantine/root/quarantine.js:380
 msgid "Safelisted {0} Addresses"
 msgstr "添加了{0}个地址到安全列表"
 
-#: ../servlets/quarantine/root/quarantine.js:400
-msgid "Delete one Message"
-msgstr "删除一封邮件"
-
-#: ../servlets/quarantine/root/quarantine.js:401
-msgid "Move one Message to Inbox"
-msgstr "移动一封邮件到收件箱"
-
-#: ../servlets/quarantine/root/quarantine.js:405
-msgid "Delete {0} Messages"
+#: ../servlets/quarantine/root/quarantine.js:409
+#, fuzzy
+msgid "Delete (1  message)"
 msgstr "删除{0}封邮件"
 
-#: ../servlets/quarantine/root/quarantine.js:406
-msgid "Move {0} Messages to Inbox"
-msgstr "移动{0}封邮件到收件箱"
+#: ../servlets/quarantine/root/quarantine.js:410
+msgid "Move to Inbox (1  message)"
+msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:416
-msgid "Add Sender to Safelist"
-msgstr "将发件人添加到安全列表"
+#: ../servlets/quarantine/root/quarantine.js:414
+#, fuzzy
+msgid "Delete ({0} messages)"
+msgstr "删除{0}封邮件"
 
-#: ../servlets/quarantine/root/quarantine.js:419
-msgid "Add {0} Senders to Safelist"
-msgstr "将{0}个发件人添加到安全列表"
+#: ../servlets/quarantine/root/quarantine.js:415
+msgid "Move to Inbox ({0} messages)"
+msgstr ""
 
-#: ../servlets/quarantine/root/quarantine.js:530
+#: ../servlets/quarantine/root/quarantine.js:425
+msgid "Add to Safelist (1  Sender)"
+msgstr ""
+
+#: ../servlets/quarantine/root/quarantine.js:428
+msgid "Add to Safelist ({0} Senders)"
+msgstr ""
+
+#: ../servlets/quarantine/root/quarantine.js:539
 msgid "From"
 msgstr "来至"
 
-#: ../servlets/quarantine/root/quarantine.js:537
+#: ../servlets/quarantine/root/quarantine.js:546
 msgid "Number of Attachments in the email."
 msgstr "电子邮件中的附件数。"
 
-#: ../servlets/quarantine/root/quarantine.js:540
+#: ../servlets/quarantine/root/quarantine.js:549
 msgid "Score"
 msgstr "积分"
 
-#: ../servlets/quarantine/root/quarantine.js:545
+#: ../servlets/quarantine/root/quarantine.js:554
 msgid "Subject"
 msgstr "主题"
 
-#: ../servlets/quarantine/root/quarantine.js:549
+#: ../servlets/quarantine/root/quarantine.js:558
 msgid "Date"
 msgstr "日期"
 
-#: ../servlets/quarantine/root/quarantine.js:560
+#: ../servlets/quarantine/root/quarantine.js:569
 msgid "Size (KB)"
 msgstr "大小(KB)"
 
-#: ../servlets/quarantine/root/quarantine.js:574
+#: ../servlets/quarantine/root/quarantine.js:583
 msgid "Showing items {0} - {1} of {2}"
 msgstr "正在显示{0}项 - {2}中的第{1}"
 
-#: ../servlets/quarantine/root/quarantine.js:575
+#: ../servlets/quarantine/root/quarantine.js:584
 msgid "No messages to display"
 msgstr "没有可显示邮件"
 
-#: ../servlets/quarantine/root/quarantine.js:648
+#: ../servlets/quarantine/root/quarantine.js:657
 msgid "The messages below were quarantined and will be deleted after {0} days."
 msgstr "以下的邮件已被隔离并将在{0}日后被删除。"
 
-#: ../servlets/quarantine/root/quarantine.js:653
+#: ../servlets/quarantine/root/quarantine.js:662
 msgid "Quarantined Messages"
 msgstr "已隔离邮件"
 
-#: ../servlets/quarantine/root/quarantine.js:658
+#: ../servlets/quarantine/root/quarantine.js:667
 msgid ""
 "You can use the Safelist to make sure that messages from these senders are "
 "never quarantined."
 msgstr "你可以使用安全列表来确保来至这些发件人的邮件永远不会被隔离。"
 
-#: ../servlets/quarantine/root/quarantine.js:661
+#: ../servlets/quarantine/root/quarantine.js:670
 msgid "Safelist"
 msgstr "安全列表"
 
@@ -148,7 +158,7 @@ msgstr "电子邮件地址"
 #: ../servlets/quarantine/root/remaps.js:221
 #: ../servlets/quarantine/root/safelist.js:68
 #: ../servlets/quarantine/root/safelist.js:81
-#: ../servlets/quarantine/root/safelist.js:180
+#: ../servlets/quarantine/root/safelist.js:185
 msgid "Delete Addresses"
 msgstr "删除地址"
 
@@ -193,7 +203,7 @@ msgid "Delete one Addressess"
 msgstr "删除一个地址"
 
 #: ../servlets/quarantine/root/remaps.js:216
-#: ../servlets/quarantine/root/safelist.js:175
+#: ../servlets/quarantine/root/safelist.js:180
 msgid "Delete {0} Addresses"
 msgstr "删除{0}个地址"
 
@@ -214,15 +224,15 @@ msgstr "输入您希望隔离摘要发送的电子邮件地址"
 msgid "Request"
 msgstr "请求"
 
-#: ../servlets/quarantine/root/request.js:86
+#: ../servlets/quarantine/root/request.js:88
 msgid "Successfully sent digest to '{0}'"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:88
+#: ../servlets/quarantine/root/request.js:90
 msgid "A quarantine does not exist for '{0}'"
 msgstr ""
 
-#: ../servlets/quarantine/root/request.js:92
+#: ../servlets/quarantine/root/request.js:94
 msgid "Quarantine Request"
 msgstr ""
 
@@ -242,19 +252,19 @@ msgstr "保存"
 msgid "Cancel"
 msgstr "取消"
 
-#: ../servlets/quarantine/root/safelist.js:162
+#: ../servlets/quarantine/root/safelist.js:167
 msgid "Deleted one address"
 msgstr "删除了一个地址"
 
-#: ../servlets/quarantine/root/safelist.js:162
+#: ../servlets/quarantine/root/safelist.js:167
 msgid "Deleted {0} addresses"
 msgstr "删除了{0}个地址"
 
-#: ../servlets/quarantine/root/safelist.js:175
+#: ../servlets/quarantine/root/safelist.js:180
 msgid "Delete one Address"
 msgstr "删除一个地址"
 
-#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:747
+#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:755
 msgid "Quarantine Digest"
 msgstr ""
 
@@ -268,10 +278,16 @@ msgstr "隔离摘要为：{0}"
 msgid "Click here to access your spam quarantine."
 msgstr ""
 
-#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:28
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:29
 msgid ""
-"From this link you can have a specific email delivered to your email account "
-"or delete an email from the quarantine."
+"The spam quarantine contains emails that are being held from your email "
+"account."
+msgstr ""
+
+#: ../impl/resources/com/untangle/node/mail/impl/quarantine/DigestSimpleEmail_HTML.vm:31
+msgid ""
+"Quarantined emails can be released to your inbox or deleted using the spam "
+"quarantine link."
 msgstr ""
 
 #: ../servlets/quarantine/root/inbox.jspx:34
@@ -283,12 +299,37 @@ msgid "{0} | Quarantine Digest for: {1}"
 msgstr "{0} | 隔离摘要为：{1}"
 
 #: ../servlets/quarantine/root/request.jspx:36
-msgid "Request Quarantine Digest Email"
+#, fuzzy
+msgid "Request Quarantine Digest Emails"
 msgstr "请求隔离摘要电子邮件"
 
 #: ../servlets/quarantine/root/request.jspx:40
 msgid "{0} | Request Quarantine Digest Email"
 msgstr "{0} | 请求隔离摘要电子邮件"
+
+#~ msgid "Move to Inbox"
+#~ msgstr "移动到收件箱"
+
+#~ msgid "Delete Messages"
+#~ msgstr "删除邮件"
+
+#~ msgid "Add Sender(s) to Safelist"
+#~ msgstr "将发件人添加到安全列表"
+
+#~ msgid "Delete one Message"
+#~ msgstr "删除一封邮件"
+
+#~ msgid "Move one Message to Inbox"
+#~ msgstr "移动一封邮件到收件箱"
+
+#~ msgid "Move {0} Messages to Inbox"
+#~ msgstr "移动{0}封邮件到收件箱"
+
+#~ msgid "Add Sender to Safelist"
+#~ msgstr "将发件人添加到安全列表"
+
+#~ msgid "Add {0} Senders to Safelist"
+#~ msgstr "将{0}个发件人添加到安全列表"
 
 #~ msgid "Your Remote Access Portal login has been configured without an email address or with an incorrect email address."
 #~ msgstr "您远程访问门户的登录没有配置电子邮件地址或是一个不正确的电子邮件地址。"
