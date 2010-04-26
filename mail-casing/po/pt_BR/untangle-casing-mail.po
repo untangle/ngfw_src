@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-15 14:27-0700\n"
-"PO-Revision-Date: 2009-03-06 14:05-0800\n"
+"PO-Revision-Date: 2009-03-11 05:23-0700\n"
 "Last-Translator: Ricardo Miguel P.M.Aroso <ricardo.aroso@ersuc.pt>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
@@ -30,9 +30,8 @@ msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:248
 #: ../servlets/quarantine/root/quarantine.js:405
-#, fuzzy
 msgid "Move to Inbox (0  messages)"
-msgstr "Mover para caixa de entrada"
+msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:255
 #: ../servlets/quarantine/root/quarantine.js:404
@@ -42,9 +41,8 @@ msgstr "Excluir {0} mensagens"
 
 #: ../servlets/quarantine/root/quarantine.js:262
 #: ../servlets/quarantine/root/quarantine.js:422
-#, fuzzy
 msgid "Add to Safelist (0  Senders)"
-msgstr "Adicionar remetente à lista segura"
+msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:365
 msgid "Deleted one Message"
@@ -73,12 +71,11 @@ msgstr "Endereços {0} em lista segura"
 #: ../servlets/quarantine/root/quarantine.js:409
 #, fuzzy
 msgid "Delete (1  message)"
-msgstr "Excluir mensagens"
+msgstr "Excluir {0} mensagens"
 
 #: ../servlets/quarantine/root/quarantine.js:410
-#, fuzzy
 msgid "Move to Inbox (1  message)"
-msgstr "Mover para caixa de entrada"
+msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:414
 #, fuzzy
@@ -86,19 +83,16 @@ msgid "Delete ({0} messages)"
 msgstr "Excluir {0} mensagens"
 
 #: ../servlets/quarantine/root/quarantine.js:415
-#, fuzzy
 msgid "Move to Inbox ({0} messages)"
-msgstr "Mover para caixa de entrada"
+msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:425
-#, fuzzy
 msgid "Add to Safelist (1  Sender)"
-msgstr "Adicionar remetente à lista segura"
+msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:428
-#, fuzzy
 msgid "Add to Safelist ({0} Senders)"
-msgstr "Endereços {0} em lista segura"
+msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:539
 msgid "From"
@@ -134,7 +128,7 @@ msgstr "Nenhuma mensagem a exibir"
 
 #: ../servlets/quarantine/root/quarantine.js:657
 msgid "The messages below were quarantined and will be deleted after {0} days."
-msgstr ""
+msgstr "As mensagens abaixo estão de quarentena e serão apagadas após {0} dias."
 
 #: ../servlets/quarantine/root/quarantine.js:662
 msgid "Quarantined Messages"
@@ -243,8 +237,9 @@ msgid "A quarantine does not exist for '{0}'"
 msgstr ""
 
 #: ../servlets/quarantine/root/request.js:94
+#, fuzzy
 msgid "Quarantine Request"
-msgstr ""
+msgstr "Resumo de Quarentena"
 
 #: ../servlets/quarantine/root/safelist.js:59
 msgid "Add"
@@ -316,6 +311,12 @@ msgstr "Solicitar e-mail com Sumário de Quarentena"
 msgid "{0} | Request Quarantine Digest Email"
 msgstr "{0} | Solicitar e-mail de Sumário de Quarentena"
 
+#~ msgid "Move to Inbox"
+#~ msgstr "Mover para caixa de entrada"
+
+#~ msgid "Delete Messages"
+#~ msgstr "Excluir mensagens"
+
 #~ msgid "Add Sender(s) to Safelist"
 #~ msgstr "Adicionar remetente(s) à lista segura"
 
@@ -328,19 +329,18 @@ msgstr "{0} | Solicitar e-mail de Sumário de Quarentena"
 #~ msgid "Move {0} Messages to Inbox"
 #~ msgstr "Mover {0} mensagens para a caixa de entrada"
 
+#~ msgid "Add Sender to Safelist"
+#~ msgstr "Adicionar remetente à lista segura"
+
 #~ msgid "Add {0} Senders to Safelist"
 #~ msgstr "Adicionar {0} remetentes à lista segura"
 
 #~ msgid ""
-#~ "From this link you can have a specific email delivered to your email "
-#~ "account or delete an email from the quarantine."
+#~ "From this link you can have a specific email delivered to your email account "
+#~ "or delete an email from the quarantine."
 #~ msgstr ""
-#~ "Através deste link pode especificar um email de devolução para a sua "
-#~ "conta ou apagar qualquer email da lista de quarentena."
+#~ "Através deste link pode especificar um email de devolução para a sua conta "
+#~ "ou apagar qualquer email da lista de quarentena."
 
-#~ msgid ""
-#~ "Your Remote Access Portal login has been configured without an email "
-#~ "address or with an incorrect email address."
-#~ msgstr ""
-#~ "Seu login do Portal de Acesso Remoto foi configurado sem um endereço de e-"
-#~ "mail ou com um endereço de e-mail incorreto."
+#~ msgid "Your Remote Access Portal login has been configured without an email address or with an incorrect email address."
+#~ msgstr "Seu login do Portal de Acesso Remoto foi configurado sem um endereço de e-mail ou com um endereço de e-mail incorreto."
