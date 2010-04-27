@@ -201,7 +201,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                             }
                         }
                     }),{
-                        fieldLabel : i18n._("Where will you be using Untangle"),
+                        fieldLabel : String.format(i18n._("Where will you be using {0}"),main.getBrandingManager().getCompanyName()),
                         name : "environment",
                         xtype : 'radio',
                         inputValue : "my-business",
