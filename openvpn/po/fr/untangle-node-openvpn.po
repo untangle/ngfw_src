@@ -2,14 +2,13 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2009-02-23 13:01-0800\n"
-"Last-Translator: Thierry D'AMBROSIO <thierry@dambrosio.fr>\n"
+"POT-Creation-Date: 2010-03-03 16:41-0800\n"
+"PO-Revision-Date: 2010-04-12 17:58-0700\n"
+"Last-Translator: Nito Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,755 +17,809 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:26
 msgid "Failure"
-msgstr "Echec"
+msgstr "失敗"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:27
 msgid "You must specify an email address to send the key to."
-msgstr "Vous devez spécifier une adresse courriel à qui envoyer la clé."
+msgstr "キーを送信するEメールアドレスを指定しなければいけません"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:33
 msgid "Distributing digital key..."
-msgstr "Distribution de la clé digitale en cours..."
+msgstr "デジタルキーを配信中..."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:33
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:322
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:350
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1717
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1942
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1991
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:324
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:355
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1745
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2027
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2076
 msgid "Please wait"
-msgstr "SVP attendez"
+msgstr "しばらくお待ちください"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:41
 msgid "Error saving/sending key"
-msgstr "Erreur lors de l'enregistrement / l'envoi de clé"
+msgstr "エラー保存/キー送信"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:42
 msgid ""
 "OpenVPN was not able to send your digital key via email.  Please try again."
-msgstr ""
-"OpenVPN n'a pas été en mesure d'envoyer votre clé digitale par courrier "
-"électronique.  SVP essayez de nouveau."
+msgstr "OpenVPNはEメールを介してあなたのデジタルキーを送信できませんでした。もう一度実行してください。"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:47
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:405
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:410
 msgid "Success"
-msgstr "Succès"
+msgstr "成功"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:48
 msgid "OpenVPN successfully sent your digital key via email."
-msgstr ""
-"OpenVPN a envoyé votre clé digitale avec succès par courrier électronique."
+msgstr "OpenVPNはEメールであなたのデジタルキーの送信に成功しました"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:79
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:90
 msgid "Download Key"
-msgstr "Télécharger la clé"
+msgstr "キーをダウンロードする"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:83
 msgid "Download VPN Site configuration."
-msgstr "Télécharger la configuration du Site VPN."
+msgstr "VPNサイト設定をダウンロードする"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:94
 msgid "Click here to download a key for Windows clients."
-msgstr "Cliquez ici pour télécharger une clé pour les clients Windows."
+msgstr "ここをクリックして、Windowsクライアントのためにキーをダウンロードする"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:98
 msgid "Click here to download a key for all other clients."
-msgstr "Cliquez ici pour télécharger une clé pour tous les autres clients."
+msgstr "ここをクリックして他のすべてのクライアントのためにキーをダウンロードする"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:111
 msgid "Distribute via Email"
-msgstr "Distribuer par courrier électronique"
+msgstr "Eメールで配信する"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:115
 msgid ""
 "Click \"Send Email\" to send an email to \"Email Address\" with information "
 "to retrieve the OpenVPN Client."
-msgstr ""
-"Cliquez sur \"Envoyer un courrier électronique\" pour envoyer un courriel à "
-"l'adresse \"Addresse Courriel\" avec l'information pour récupérer le client "
-"OpenVPN."
+msgstr "\"Ｅメールを送信する\"をクリックして、OpenVPNクライアントを検索するために\"Eメールアドレス\"に情報と一緒にEメールを送信する。"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:120
 msgid "Email Address"
-msgstr "Adresse courriel"
+msgstr "Eメールアドレス"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:126
 msgid "Send Email"
-msgstr "Envoyer un courrier électronique"
+msgstr "Eメールを送信する"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:134
 msgid "Distribute VPN Client"
-msgstr "Distribuer le client VPN"
+msgstr "VPNクライアントを配信する"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:140
 msgid "Close"
-msgstr "Fermer"
+msgstr "閉じる"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:164
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1823
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:166
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1908
 msgid "Welcome"
-msgstr "Bienvenue"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:168
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1828
-msgid "Welcome to the OpenVPN Setup Wizard!"
-msgstr "Bienvenue dans l'assistant d'installation d'OpenVPN!"
+msgstr "ようこそ"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:170
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1913
+msgid "Welcome to the OpenVPN Setup Wizard!"
+msgstr "OpenVPN設定ウィザードへようこそ！"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:172
 msgid ""
 "This wizard will help guide you through your initial setup and configuration "
 "of OpenVPN as a VPN Client."
-msgstr ""
-"Cet assistant vous guidera dans votre installation et la configuration "
-"initiale de OpenVPN comme un client VPN."
+msgstr "このウィザードはVPNクライアントとして初期設定とOpenVPN設定を案内をします。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:175
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1836
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:177
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1921
 msgid ""
 "Warning: Completing this wizard will overwrite any previous OpenVPN settings "
 "with new settings. All previous settings will be lost!"
-msgstr ""
-"Attention: Remplir cet assistant écrasera toutes configurations OpenVPN "
-"précédentes avec de nouveaux paramètres de réglages. Tous les réglages "
-"seront perdus!"
+msgstr "警告：このウィザードを完了すると、以前のOpenVPN設定は新しい設定に上書きされます。以前の設定はすべて失われます。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:190
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:192
 msgid "Install Configuration"
-msgstr "Configuration d'Installation "
+msgstr "設定内容をインストールする"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:196
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:198
 msgid "Download Configuration"
-msgstr "Téléchargement de la Configuration"
+msgstr "設定内容をダウンロードする"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:201
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:203
 msgid "Please specify where your VPN Client configuration should come from."
-msgstr "SVP spécifier l'endroit d'où votre configuration client VPN doit venir."
+msgstr "あなたのVPNクライアントの設定がどこから来たのか特定してください。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:210
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:212
 msgid "Download from Server"
-msgstr "Télécharger à partir du serveur"
+msgstr "サーバーからダウンロードする"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:223
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:225
 msgid "Server IP Address"
-msgstr "Adresse IP du Serveur"
+msgstr "サーバーIPアドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:230
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:232
 msgid "Password"
-msgstr "Mot de passe"
+msgstr "パスワード"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:236
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:238
 msgid "Upload Configuration"
-msgstr "Envoyer la Configuration"
+msgstr "設定内容をアップロードする"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:300
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:302
 msgid "Invalid Server Address"
-msgstr "Adresse du Serveur invalide"
+msgstr "サーバーアドレスが無効です"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:314
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:316
 msgid "Select a value"
-msgstr "Sélectionnez une valeur"
+msgstr "値を選んでください"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:314
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:316
 msgid "Please choose 'Download from Server' or 'Upload Configuration'."
-msgstr "SVP choisir 'Télécharger du serveur' ou 'Envoyer la configuration'."
+msgstr "'サーバーからダウンロード'か'設定内容のアップロード'を選んでください。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:321
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:323
 msgid "Downloading Configuration... (This may take up to one minute)"
-msgstr ""
-"Téléchargement de la configuration... (Cela peut prendre jusqu'à une minute)"
+msgstr "設定内容をダウンロード中...（一分ほどかかります）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:338
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:343
 msgid "Error downloading configuration from server."
-msgstr "Erreur lors du téléchargement de configuration du serveur."
+msgstr "サーバーから設定内容のダウンロード中にエラー"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:339
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:344
 msgid ""
 "Your VPN Client configuration could not be downloaded from the server.  "
 "Please try again."
-msgstr ""
-"Votre configuration Client VPN n'a pas pu être téléchargé à partir du "
-"serveur.  SVP essayez à nouveau."
+msgstr "サーバーからあなたのVPNクライアント設定をダウンロードできませんでした。もう一度実行してください。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:349
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:354
 msgid "Uploading Configuration... (This may take up to one minute)"
-msgstr "Envoi de la configuration... (Cela peut prendre jusqu'à une minute)"
+msgstr "設定内容をアップロード中...（一分ほどかかります）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:358
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:395
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:401
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1453
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1465
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1477
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1488
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1513
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1527
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1539
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1554
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1571
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1582
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1600
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1667
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1699
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1931
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1935
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1939
-msgid "Failed"
-msgstr "Echec"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:358
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:401
-msgid "Unable to load VPN Client"
-msgstr "Impossible de charger le Client VPN"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:365
-msgid "Select File"
-msgstr "Sélectionnez un fichier"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:365
-msgid "Please choose a file to upload."
-msgstr "SVP choisissez un fichier à envoyer."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:388
-msgid "Unable to install OpenVPN client."
-msgstr "Impossible d'installer le client OpenVPN."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:390
-msgid "Unable to verify connection to server."
-msgstr "Impossible de vérifier la connexion au serveur."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:392
-msgid "The selected configuration file is invalid."
-msgstr "Le fichier de configuration sélectionné est invalide."
-
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:363
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:400
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:406
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1471
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1495
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1506
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1531
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1545
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1557
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1572
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1589
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1600
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1618
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1685
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1717
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2016
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2020
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2024
+msgid "Failed"
+msgstr "失敗"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:363
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:406
+msgid "Unable to load VPN Client"
+msgstr "VPNクライアントをロードできません"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:370
+msgid "Select File"
+msgstr "ファイルを選択"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:370
+msgid "Please choose a file to upload."
+msgstr "アップロードするファイルを選択してください"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:393
+msgid "Unable to install OpenVPN client."
+msgstr "OpenVPNクライアントをインストールできません"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:395
+msgid "Unable to verify connection to server."
+msgstr "サーバーへの接続をベリファイできません"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:397
+msgid "The selected configuration file is invalid."
+msgstr "選択した設定ファイルは無効です。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:411
 msgid "Installed OpenVPN client."
-msgstr "Le client OpenVPN est installé. "
+msgstr "OpenVPNクライアントをインストール"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:419
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:423
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2007
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2012
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:424
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:428
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2092
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2097
 msgid "Finished!"
-msgstr "Terminé!"
+msgstr "完了！"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:427
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:432
 msgid "Congratulations! OpenVPN is configured as a VPN Client."
-msgstr "Félicitations! OpenVPN est configuré en tant que Client VPN."
+msgstr "おめでとうございます！OpenVPNがVPNクライアントとして設定されました。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:463
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:469
 msgid ""
 "A client name should only contains numbers, letters, dashes and periods.  "
 "Spaces are not allowed."
-msgstr ""
-"Un nom de client ne doit contenir que des nombres, des lettres, des tirets "
-"et des points.   Les espaces ne sont pas autorisés."
+msgstr "クライアント名は数字、文字、句読点のみ含みます。スペースは入れられません。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:533
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:545
 msgid "Unconfigured: Use buttons below."
-msgstr "Non-configuré(e): Utilisez les boutons ci-dessous."
+msgstr "未設定：下のボタンを使用してください。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:535
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:547
 msgid "VPN Client: Connected to {0}"
-msgstr "Client VPN: Connecté à {0}"
+msgstr "VPNクライアント：{0}に接続する"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:539
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:551
 msgid "VPN Server"
-msgstr "Serveur VPN"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:549
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:566
-msgid "Status"
-msgstr "Etat"
+msgstr "VPNサーバー"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:561
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:578
+msgid "Status"
+msgstr "状態"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:573
 msgid "Current Mode"
-msgstr "Mode courant"
+msgstr "現在のモード"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:571
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:583
 msgid "Wizard"
-msgstr "Assistant"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:579
-msgid "Configure as VPN Server"
-msgstr "Configurer comme un Serveur VPN"
+msgstr "ウィザード"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:591
+msgid "Configure as VPN Server"
+msgstr "VPNサーバーとして設定"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:603
 msgid ""
 "This configures OpenVPN so remote users and networks can connect and access "
 "exported hosts and networks."
-msgstr ""
-"Cela configure OpenVPN afin que les utilisateurs et les réseaux distants "
-"puissent se connecter et accéder aux hôtes et aux réseaux exportés."
+msgstr "これはOpenVPNを設定し、遠隔ユーザーとネットワークが接続し、外部ホストがネットワークにアクセスできます。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:598
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:610
 msgid "Configure as VPN Client"
-msgstr "Configurer comme un Client VPN"
+msgstr "VPNクライアントとして設定"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:609
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:621
 msgid ""
 "This configures OpenVPN so it connects to a remote OpenVPN Server and can "
 "access exported hosts and networks."
-msgstr ""
-"Cela configure OpenVPN afin qu'il puisse se connecter à un Serveur OpenVPN "
-"distant et ainsi se connecter et accéder aux hôtes et aux réseaux exportés."
+msgstr "これはOpenVPNを設定し、遠隔OpenVPNサーバーに接続し、外部ホストがネットワークにアクセスできます。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:662
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:674
 msgid "start time"
-msgstr "heure de début"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:670
-msgid "end time"
-msgstr "heure de fin"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:676
-msgid "active connection"
-msgstr "connexion active"
+msgstr "開始時間"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:682
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:834
+msgid "end time"
+msgstr "終了時間"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:688
+msgid "active connection"
+msgstr "アクティブコネクション"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:694
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:851
 msgid "client name"
-msgstr "nom du client"
+msgstr "クライアント名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:687
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:699
 msgid "client address"
-msgstr "adresse du client"
+msgstr "クライアントアドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:692
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:704
 msgid "KB sent"
-msgstr "Ko envoyé(s)"
+msgstr "送信KB"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:700
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:712
 msgid "KB received"
-msgstr "Ko reçu(s)"
+msgstr "受信KB"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:715
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:727
 msgid "distribute"
-msgstr "distribuer"
+msgstr "配信"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:724
-msgid "Distribute Client"
-msgstr "Distribuer le Client"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:732
+msgid "Updating OpenVPN Client..."
+msgstr "OpenVPNクライアント更新中..."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:733
+#, fuzzy
+msgid "Please Wait"
+msgstr "しばらくお待ちください"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:741
+msgid "Distribute Client"
+msgstr "クライアントを配信"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:750
 msgid "address pool"
-msgstr "plage d'adresses"
+msgstr "アドレスプール"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:774
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:890
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1081
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1187
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:791
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:907
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1099
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1205
 msgid "enabled"
-msgstr "activé(e)"
+msgstr "有効"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:800
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:917
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1096
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1210
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:817
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:934
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1114
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1228
 msgid "[no name]"
-msgstr "[pas de nom]"
+msgstr "[名前無し]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:805
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:822
 msgid "VPN Clients"
-msgstr "Clients VPN"
+msgstr "VPNクライアント"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:843
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:860
 msgid "virtual address"
-msgstr "adresse virtuelle"
+msgstr "バーチャルアドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:847
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:864
 msgid "unassigned"
-msgstr "non-assigné(e)"
+msgstr "未指定"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:858
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1012
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1153
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1273
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1371
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:875
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1029
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1171
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1291
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1389
 msgid "Enabled"
-msgstr "Activé(e)"
+msgstr "有効"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:863
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:880
 msgid "Client name"
-msgstr "Nom du client"
+msgstr "クライアント名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:871
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1025
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:888
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1042
 msgid "Address pool"
-msgstr "Plage d'adresses"
+msgstr "アドレスプール"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:931
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:948
 msgid "VPN Sites"
-msgstr "Sites VPN"
+msgstr "VPNサイト"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:969
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:986
 msgid "site name"
-msgstr "nom du site"
+msgstr "サイト名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:979
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:996
 msgid "network address"
-msgstr "adresse réseau"
+msgstr "ネットワークアドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:992
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1009
 msgid "network mask"
-msgstr "masque de sous-réseau"
+msgstr "ネットワークマスク"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1017
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1034
 msgid "Site name"
-msgstr "Nom du site"
+msgstr "サイト名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1038
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1055
 msgid "Network address"
-msgstr "Adresse réseau"
+msgstr "ネットワークアドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1046
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1064
 msgid "Network mask"
-msgstr "Masque de sous-réseau"
+msgstr "ネットワークマスク"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1062
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1080
 msgid "Clients"
-msgstr "Clients"
+msgstr "クライアント"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1100
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1118
 msgid "Exported Hosts and Networks"
-msgstr "Hôtes et réseaux exportés"
+msgstr "外部ホストとネットワーク"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1121
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1139
 msgid "host/network name"
-msgstr "nom d'hôte/réseau"
+msgstr "ホスト／ネットワーク名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1128
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1165
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1248
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1285
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1146
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1183
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1266
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1303
 msgid "IP address"
-msgstr "adresse IP"
+msgstr "IPアドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1137
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1257
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1155
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1275
 msgid "netmask"
-msgstr "masque de sous-réseau"
+msgstr "ネットマスク"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1158
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1176
 msgid "Host/network name"
-msgstr "Nom d'hôte/réseau"
+msgstr "ホスト／ネットワーク名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1172
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1293
-msgid "Netmask"
-msgstr "Masque de sous-réseau"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1194
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1301
-msgid "export DNS"
-msgstr "exporter le(s) DNS"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1215
-msgid "Address Pools"
-msgstr "Plages d'adresses"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1239
-msgid "pool name"
-msgstr "nom de la plage"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1278
-msgid "Pool name"
-msgstr "Nom de la plage"
-
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1190
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1311
+msgid "Netmask"
+msgstr "ネットマスク"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1212
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1319
+msgid "export DNS"
+msgstr "DNSをエクスポート"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1233
+msgid "Address Pools"
+msgstr "アドレスプール"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1257
+msgid "pool name"
+msgstr "プール名"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1296
+msgid "Pool name"
+msgstr "プール名"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1329
 msgid "Advanced"
-msgstr "Paramètres Avancés"
+msgstr "アドバンス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1333
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1351
 msgid "Server Port (UDP)"
-msgstr "Port Serveur (UDP)"
+msgstr "サーバーポート（UDP）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1341
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1453
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1359
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1471
 msgid "You must provide a valid port."
-msgstr "Vous devez fournir un port valide."
+msgstr "有効なポートを指定してください"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1352
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1370
 msgid "Site Name"
-msgstr "Nom du Site"
+msgstr "サイト名"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1357
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1465
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1375
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1483
 msgid "You must enter a site name."
-msgstr "Vous devez entrer un nom de site."
+msgstr "サイト名を入力してください"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1367
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1385
 msgid "DNS Override"
-msgstr "Ne pas tenir compte des DNS"
+msgstr "DNSを上書き"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1391
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1409
 msgid "Disabled"
-msgstr "Désactivé(e)"
+msgstr "無効"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1420
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1438
 msgid "Primary IP"
-msgstr "IP primaire"
+msgstr "プライマリIP"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1426
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1444
 msgid "A Valid Primary IP Address must be specified."
-msgstr "Une Adresse IP Primaire Valide doit être spécifiée."
+msgstr "有効なプライマリIPアドレスを指定しなければいけません。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1430
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1448
 msgid "Secondary IP (optional)"
-msgstr "IP secondaire (optionnel)"
+msgstr "セカンダリIP（オプショナル）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1477
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1495
 msgid "A valid Primary IP Address must be specified."
-msgstr "Une Adresse IP Primaire valide doit être spécifiée."
+msgstr "有効なプライマリIPアドレスを指定しなければいけません。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1488
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1506
 msgid "A valid Secondary IP Address must be specified."
-msgstr "Une Adresse IP Secondaire valide doit être spécifiée."
+msgstr "有効なセカンダリIPアドレスをしていしなければいけません。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1513
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1531
 msgid "You must create at least one group."
-msgstr "Vous devez créer au moins un groupe."
+msgstr "最低１つのグループを作成しなければいけません。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1528
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1546
 msgid ""
 "The group: \"{0}\" cannot be deleted because it is being used by the client: "
 "{1} in the Client To Site List."
-msgstr ""
-"Le groupe: \"{0}\" ne peut pas être supprimé car il est utilisé par le client: "
-"{1} dans la Liste des Clients du Site."
+msgstr "グループ：”{0}”他のクライアントが使用中なので削除できません：{1}Client To Siteリストにある"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1540
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1558
 msgid ""
 "The group: \"{0}\" cannot be deleted because it is being used by the site: "
 "{1} in the Site To Site List."
-msgstr ""
-"Le groupe: \"{0}\" ne peut pas être supprimé car il est utilisé par le site: "
-"{1} dans la Liste des Sites du Site."
+msgstr "グループ：”{0}”他のサイトが使用中なので削除できません：{1} Site To Siteリストにあります"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1554
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1572
 msgid "The group name: \"{0}\" in row: {1} already exists."
-msgstr "Le nom de groupe: \"{0}\" à la ligne: {1} existe déjà."
+msgstr "グループ名：\"{0}\"行に存在:{1}既に存在します。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1571
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1589
 msgid ""
 "Unable to change name once you've saved. Create a new user. Client name "
 "should be {0}."
-msgstr ""
-"Impossible de changer de nom une fois que vous l'avez enregistré. Créer un "
-"nouvel utilisateur. Le nom du client doit être {0}."
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1582
-msgid "The client name: \"{0}\" in row: {1} already exists."
-msgstr "Le nom de client: \"{0}\" à la ligne: {1} existe déjà."
+msgstr "一度保存すると名前の変更ができません。新しいユーザーを作成してください。クライアント名は{0}にすべきです。"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1600
+msgid "The client name: \"{0}\" in row: {1} already exists."
+msgstr "クライアント名：\"{0}\"行に存在：{1}既に存在します。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1618
 msgid "The site name: \"{0}\" in row: {1} already exists."
-msgstr "Le nom de site: \"{0}\" à la ligne: {1} existe déjà."
+msgstr "サイト名：\"{0}\"行に存在:{1}既に存在します。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1645
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1649
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1653
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1690
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1663
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1667
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1671
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1708
 msgid "The two networks: {0} and {1} cannot overlap"
-msgstr "Les deux réseaux: {0} et {1} ne peuvent pas se chevaucher"
+msgstr "二つのネットワーク：{0}と{1}はオーバーラップできません"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1659
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1695
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1677
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1713
 msgid "Validation failed"
-msgstr "La Validation a échoué"
+msgstr "バリデーション失敗"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1717
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1745
 msgid "Saving..."
-msgstr "Sauvegarde en cours..."
+msgstr "保存中..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1776
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1855
 msgid "OpenVPN Client Setup Wizard"
-msgstr "Assistant de configuration du Client OpenVPN"
+msgstr "OpenVPNクライアント設定ウィザード"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1804
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2073
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1883
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2156
 msgid "Setup Wizard Warning"
-msgstr "Alerte de l'Assistant de configuration"
+msgstr "設定ウィザード警告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1804
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2073
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1883
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2156
 msgid ""
 "You have not finished configuring OpenVPN. Please run the Setup Wizard again."
-msgstr ""
-"Vous n'avez pas fini de configurer OpenVPN. SVP lancez l'Assistant de "
-"Configuration de nouveau."
+msgstr "OpenVPNの設定が完了してません。設定ウィザードを再度起動してください。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1830
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1915
 msgid ""
 "This wizard will help guide you through your initial setup and configuration "
 "of OpenVPN as a VPN Routing Server."
-msgstr ""
-"Cet assistant vous guidera dans votre première installation et la "
-"configuration de OpenVPN comme un Serveur de Routage VPN."
+msgstr "このウィザードは、VPNルーティングサーバーとしてOpenVPNの初期設定と設定内容を案内します。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1870
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1875
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1955
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1960
 msgid "Step 1 - Certificate"
-msgstr "Etape 1 - Certificat"
+msgstr "ステップ１ - 認証"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1878
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1963
 msgid ""
 "Please specify some information about your location. This information will "
 "be used to generate a secure digital certificate."
-msgstr ""
-"SVP précisez quelques informations sur votre localisation. Cette information "
-"sera utilisée pour générer un certificat digital sécurisé."
+msgstr "あなたのロケーションについての情報を提示してください。この情報は安全なデジタル認証を作成するために使用されます。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1885
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1970
 msgid "This information is required."
-msgstr "Cette information est obligatoire."
+msgstr "この情報が必要です。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1890
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1975
 msgid "Organization"
-msgstr "Organisation"
+msgstr "組織"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1895
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1980
 msgid "Country"
-msgstr "Pays"
+msgstr "国"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1910
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1995
 msgid "State/Province"
-msgstr "Etat/Province"
+msgstr "州／都道府県"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1918
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2003
 msgid "City"
-msgstr "Ville"
+msgstr "市区町村"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1931
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2016
 msgid "You must fill out the name of your organization."
-msgstr "Vous devez renseigner le nom de votre organisation."
+msgstr "組織名を記入する必要があります"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1935
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2020
 msgid "You must fill out the name of your state."
-msgstr "Vous devez renseigner le nom de votre état."
+msgstr "州（都道府県）を記入する必要があります"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1939
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2024
 msgid "You must fill out the name of your locality."
-msgstr "Vous devez renseigner le nom de votre localité."
+msgstr "地域（地方）を記入する必要があります"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1942
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2027
 msgid "Generating Certificate..."
-msgstr "Génération du Certificat en cours..."
+msgstr "認証を作成中..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1964
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1969
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2049
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2054
 msgid "Step 2 - Exports"
-msgstr "Etape 2 - Exportations"
+msgstr "ステップ２ - エクスポート"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1971
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2056
 msgid ""
 "Please complete the list of exports. This is a list of hosts and networks "
 "which remote VPN users and networks will be able to contact."
-msgstr ""
-"SVP complétez la liste des exportations. Ceci est une liste d'hôtes et de "
-"réseaux que les utilisateurs et les réseaux VPN distants seront en mesure de "
-"contacter."
+msgstr "エクスポートリストを完成してください。これは、遠隔VPNユーザーとネットワークがコンタクトできるよなホストとネットワークのリストです。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1976
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2061
 msgid "By default the entire internal network is exported."
-msgstr "Par défaut, le réseau interne complet est exporté."
+msgstr "初期設定により、内部ネットワーク全体をエクスポートします。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:1991
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2076
 msgid "Adding Exports..."
-msgstr "Ajout des exportations en cours..."
+msgstr "エクスポート追加中..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2014
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2099
 msgid "Congratulations!"
-msgstr "Félicitations!"
+msgstr "おめでとうございます！"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2018
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2103
 msgid ""
 "You are now ready to begin adding remote clients and sites you wish to have "
 "access to your VPN."
-msgstr ""
-"Vous êtes maintenant prêt à commencer à ajouter des clients et des sites "
-"distants  auxquels vous souhaitez avoir accès à partir de votre VPN."
+msgstr "これで、あなたのVPNにアクセスしたいリモートクライアントとサイトの追加を始められます。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2023
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2108
 msgid ""
 "To add remote users, click on the Clients tab and add to the VPN Clients "
 "table.<br/>To add remote networks, click on the Clients tab and add to the "
 "VPN Sites table."
 msgstr ""
-"Pour ajouter les utilisateurs à distance, cliquez sur l'onglet Clients et "
-"ajouter les à la table des clients VPN.<br/>Pour ajouter des réseaux "
-"distants, cliquez sur l'onglet Clients et ajouter les à la table des sites "
-"VPN."
+"リモートユーザーを追加するには、Clients "
+"タブをクリックして、そのVPNクライアントテーブルを追加してください。<br/>　ネットワークを追加するには、Clients "
+"タブをクリックして、VPNサイトテーブルを追加してください。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2046
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-openvpn/settings.js:2129
 msgid "OpenVPN Server Setup Wizard"
-msgstr "Assistant d'Installation du serveur OpenVPN"
+msgstr "OpenVPNサーバー設定ウィザード"
 
 #: ../impl/com/untangle/node/openvpn/ClientConnectEventAllFilter.java:28
 msgid "Closed Sessions"
-msgstr "Sessions fermées"
+msgstr "閉じたセッション"
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnMonitor.java:93
 msgid "Active Sessions"
-msgstr "Sessions actives"
+msgstr "アクティブセッション"
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnMonitor.java:94
 msgid "All Sessions"
-msgstr "Toutes les sessions"
+msgstr "全てのセッション"
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:139
 msgid "Clients blocked"
-msgstr "Clients bloqués"
+msgstr "ブロックされたクライアント"
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:130
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:139
 msgid "BLOCK"
-msgstr "BLOQUER"
+msgstr "ブロック"
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:131
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:140
 msgid "Clients passed"
-msgstr "Clients passés"
+msgstr "パスしたクライアント"
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:131
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:140
 msgid "PASS"
-msgstr "PASSER"
+msgstr "パス"
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:132
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:141
 msgid "Clients connected"
-msgstr "Clients connectés"
+msgstr "接続したクライアント"
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:132
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:141
 msgid "CONNECT"
-msgstr "CONNECTER"
+msgstr "接続"
+
+#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:334
+msgid "Please input the following information into the \"VPN Client\" wizard."
+msgstr "”VPNクライアント”ウィザードに以下の情報を入力してください。"
+
+#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:335
+msgid "Server Address:"
+msgstr "サーバーアドレス"
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:336
-msgid "Please input the following information into the \"VPN Client\" wizard."
-msgstr "SVP entrez les informations suivantes dans l'assistant \"Client VPN\"."
-
-#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:337
-msgid "Server Address:"
-msgstr "Adresse Serveur:"
+msgid "Passphrase:"
+msgstr "パスフレーズ："
 
 #: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:338
-msgid "Passphrase:"
-msgstr "Phrase secrète:"
-
-#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:340
 msgid "Click here to download the OpenVPN client."
-msgstr "Cliquez ici pour télécharger le client OpenVPN."
+msgstr "OpenVPNクライアントをダウンロードするために、ここをクリックしなさい。"
 
-#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:341
+#: ../impl/com/untangle/node/openvpn/OpenVpnManager.java:339
 msgid "Or copy and paste the following link into your Web Browser."
-msgstr "Ou copiez et collez le lien suivant dans votre navigateur Web."
+msgstr "もしくは、以下のリンクをあなたのウェブブラウザにコピーかペーストしなさい。"
 
 #: ../impl/com/untangle/node/openvpn/Sandbox.java:250
 msgid "default"
-msgstr "défaut"
+msgstr "デフォルト"
 
 #: ../impl/com/untangle/node/openvpn/Sandbox.java:305
 msgid "internal network"
-msgstr "réseau interne"
+msgstr "インターナルネットワーク"
 
-#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:362
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:405
 msgid "OpenVPN Client"
-msgstr "Client OpenVPN"
+msgstr "OpenVPNクライアント"
+
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:652
+msgid "An Internal Error Occurred, Please try again."
+msgstr "内部エラーが発生しました、もう一度やり直してください。"
+
+#: ../impl/com/untangle/node/openvpn/VpnNodeImpl.java:661
+msgid ""
+"You must configure OpenVPN as either a VPN Routing Server or a VPN Client "
+"before you can turn it on.  You may do this through its Setup Wizard (in its "
+"settings)."
+msgstr ""
+"あなたは、OpenVPNのとして、VPNルーティングサーバーまたはVPNクライアントのいずれかを構成する必要があります、また有効にすることができます。あ"
+"なたは設定ウイザード(設定)を通してこれができます。"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:73
+msgid "Summary Report"
+msgstr "サマリーレポート"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:117
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:176
+msgid "Bandwidth Usage"
+msgstr "帯域幅の使用量"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:146
+msgid "Avg Data Rate"
+msgstr "平均データ速度"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:148
+msgid "Max Data Rate"
+msgstr "最大データ速度"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:177
+msgid "Hour of Day"
+msgstr "時間の日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:178
+msgid "Throughput (Kb/sec)"
+msgstr "スループット（KB /秒）"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:181
+msgid "Usage (KB/sec)"
+msgstr "使用量（KB/秒）"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:189
+msgid "Top Users"
+msgstr "トップユーザ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:220
+msgid "bytes"
+msgstr "バイト"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:225
+msgid "OpenVPN Top Users"
+msgstr "OpenVPNのトップユーザ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:233
+msgid "Login Events"
+msgstr "ログインイベント"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:239
+msgid "Time"
+msgstr "時間"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:241
+#, fuzzy
+msgid "Client"
+msgstr "クライアント"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:242
+msgid "Address"
+msgstr "アドレス"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_openvpn.py:243
+msgid "Port"
+msgstr "ポート"
+
+#, python-format
+#~ msgid "Avg data rate (%s-day)"
+#~ msgstr "平均データ転送速度（%s日）"
+
+#, python-format
+#~ msgid "Peak data rate (%s-day)"
+#~ msgstr "ピークデータ転送速度(%s日)"
