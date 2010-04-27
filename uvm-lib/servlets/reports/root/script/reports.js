@@ -512,7 +512,7 @@ Ung.Reports = Ext.extend(Object,{
                     text : i18n._(tableOfContents.platform.title),
                     name : tableOfContents.platform.name,
                     leaf: true,
-                    icon : "./node-icons/untangle-vm.png"
+                    icon : "./node-icons/untangle-system.png"
     			},
                 {
         		    text : i18n._("Server"),
