@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2009-02-21 08:49-0800\n"
-"Last-Translator: Michael Pfautsch <mp@m2lp-consult.de>\n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"PO-Revision-Date: 2009-05-27 14:00-0700\n"
+"Last-Translator: Marcus Lumpp <ml@m2lp-consult.de>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,8 +28,8 @@ msgid "Pass"
 msgstr "Zulassen"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:50
-msgid "Block"
-msgstr "Sperren"
+msgid "Drop"
+msgstr "Verwerfen"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:50
 msgid "Quarantine"
@@ -142,12 +142,13 @@ msgstr "Nachricht zulassen"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:345
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:354
-msgid "mark infection"
-msgstr "Infektion markieren"
+#, fuzzy
+msgid "mark message"
+msgstr "Nachricht zulassen"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:356
-msgid "block message"
-msgstr "Nachricht sperren"
+msgid "drop message"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:358
 msgid "quarantine message"
@@ -173,50 +174,95 @@ msgstr "Empfänger"
 msgid "sender"
 msgstr "Versender"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:435
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:460
 msgid "Saving..."
 msgstr "Speichern..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:435
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:460
 msgid "Please wait"
 msgstr "Bitte warten"
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:65
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:74
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:65
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:74
 msgid "Feature is not installed."
 msgstr "Feature ist nicht installiert."
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:105
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:105
 #, java-format
 msgid "{0} | Phish Blocker Warning"
 msgstr "{0} | Phish Blocker Warnungen"
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:116
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:116
 #, java-format
 msgid "{0}  Phish Blocker"
 msgstr "{0}  Phish Blocker"
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:128
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:133
 #, java-format
 msgid ""
-"{0}This web page was blocked{1} because it may be designed to steal personal "
-"information."
+"{0}Warning - Suspected phishing page.{1} This page may be a forgery or "
+"imitation of another website, designed to trick users into sharing personal "
+"or financial information. Entering any personal information on this page may "
+"result in identity theft or other abuse. "
 msgstr ""
-"{0}Diese Webseite wurde blockiert{1}, da sie eventuell konstruiert wurde um "
-"persönliche Informationen zu stehlen."
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:87
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "Bei Fragen wenden sie sich bitte an {0}."
 
+#: ../../spam-base/impl/com/untangle/node/spam/RBLAllFilter.java:27
 #: ../../spam-base/impl/com/untangle/node/spam/SpamAllFilter.java:27
 msgid "All Events"
 msgstr "Alle Ereignisse"
 
+#: ../../spam-base/impl/com/untangle/node/spam/RBLSkippedFilter.java:27
+msgid "Skipped Events"
+msgstr ""
+
 #: ../../spam-base/impl/com/untangle/node/spam/SpamLogFilter.java:27
 msgid "POP/IMAP Events"
 msgstr "POP/IMAP Ereignisse"
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:124
+msgid "Messages passed"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:124
+msgid "PASS"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:125
+msgid "Messages dropped"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:125
+msgid "DROP"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:126
+msgid "Messages marked"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:126
+msgid "MARK"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:127
+msgid "Messages quarantined"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:127
+msgid "QUARANTINE"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:128
+msgid "Spam detected"
+msgstr ""
+
+#: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:129
+msgid "Messages received"
+msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamSmtpFilter.java:27
 msgid "SMTP Events"
@@ -242,22 +288,59 @@ msgstr "Gesperrter Phish HTTP Datenverkehr"
 msgid "Passed Phish HTTP Traffic"
 msgstr "Zugelassener Phish HTTP Datenverkehr"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+msgid "Phish"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+msgid "Clean"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+msgid "Hourly Phish Rate"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+msgid "Daily Phish Rate"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
+msgid "Top Ten Phishing Victims"
+msgstr ""
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:75
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:77
 msgid "Reason:"
 msgstr "Grund:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:87
 msgid "Unblock For Now"
 msgstr "Entsperre vorläufig"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:93
 msgid "Unblock Permanently"
 msgstr "Entsperre dauerhaft"
+
+#~ msgid "mark infection"
+#~ msgstr "Infektion markieren"
+
+#~ msgid "block message"
+#~ msgstr "Nachricht sperren"
+
+#, java-format
+#~ msgid ""
+#~ "{0}This web page was blocked{1} because it may be designed to steal personal "
+#~ "information."
+#~ msgstr ""
+#~ "{0}Diese Webseite wurde blockiert{1}, da sie eventuell konstruiert wurde um "
+#~ "persönliche Informationen zu stehlen."
+
+#~ msgid "Block"
+#~ msgstr "Sperren"

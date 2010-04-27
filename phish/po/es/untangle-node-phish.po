@@ -94,8 +94,7 @@ msgstr "Activar filtración de páginas web de phishing"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:230
 msgid "Phish Blocker web signatures were last updated "
-msgstr ""
-"Última actualización de las firmas de web de Phish Blocker realizada el"
+msgstr "Última actualización de las firmas de web de Phish Blocker realizada el"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:255
 msgid "Web Event Log"
@@ -121,7 +120,6 @@ msgstr "medida"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:302
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:405
-#, fuzzy
 msgid "client"
 msgstr "cliente"
 
@@ -150,9 +148,8 @@ msgid "mark message"
 msgstr "permitir mensaje"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:356
-#, fuzzy
 msgid "drop message"
-msgstr "permitir mensaje"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-phish/settings.js:358
 msgid "quarantine message"
@@ -186,22 +183,22 @@ msgstr "Guardando..."
 msgid "Please wait"
 msgstr "Espere"
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:65
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:74
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:65
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:74
 msgid "Feature is not installed."
 msgstr "La función no está instalada."
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:105
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:105
 #, java-format
 msgid "{0} | Phish Blocker Warning"
 msgstr "{0} | Aviso de Phish Blocker"
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:116
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:116
 #, java-format
 msgid "{0}  Phish Blocker"
 msgstr "{0}  Phish Blocker"
 
-#: ../servlets/phish/src/com/untangle/node/phish/BlockPageServlet.java:133
+#: ../servlets/idblocker/src/com/untangle/node/phish/BlockPageServlet.java:133
 #, java-format
 msgid ""
 "{0}Warning - Suspected phishing page.{1} This page may be a forgery or "
@@ -221,9 +218,8 @@ msgid "All Events"
 msgstr "Todos los eventos"
 
 #: ../../spam-base/impl/com/untangle/node/spam/RBLSkippedFilter.java:27
-#, fuzzy
 msgid "Skipped Events"
-msgstr "Eventos de correo basura"
+msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamLogFilter.java:27
 msgid "POP/IMAP Events"
@@ -254,9 +250,8 @@ msgid "MARK"
 msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:127
-#, fuzzy
 msgid "Messages quarantined"
-msgstr "Cuarentena"
+msgstr ""
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:127
 msgid "QUARANTINE"
@@ -299,9 +294,8 @@ msgid "Phish"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
-#, fuzzy
 msgid "Clean"
-msgstr "cliente"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_phish.py:23
 msgid "Hourly Phish Rate"
@@ -335,18 +329,19 @@ msgstr "Desbloquear por ahora"
 msgid "Unblock Permanently"
 msgstr "Desbloquear permanentemente"
 
-#~ msgid ""
-#~ "{0}This web page was blocked{1} because it may be designed to steal "
-#~ "personal information."
-#~ msgstr ""
-#~ "{0}Esta página web fue bloqueada{1} porque es posible que haya sido "
-#~ "diseñada para robar datos personales."
-
-#~ msgid "Block"
-#~ msgstr "Bloquear"
-
 #~ msgid "mark infection"
 #~ msgstr "marcar infección"
 
 #~ msgid "block message"
 #~ msgstr "bloquear mensaje"
+
+#, java-format
+#~ msgid ""
+#~ "{0}This web page was blocked{1} because it may be designed to steal personal "
+#~ "information."
+#~ msgstr ""
+#~ "{0}Esta página web fue bloqueada{1} porque es posible que haya sido diseñada "
+#~ "para robar datos personales."
+
+#~ msgid "Block"
+#~ msgstr "Bloquear"
