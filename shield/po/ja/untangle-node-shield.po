@@ -2,14 +2,13 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-10 11:22-0800\n"
-"PO-Revision-Date: 2009-02-10 22:48-0800\n"
-"Last-Translator: Noah Lubarsky <nclubarsky@hotmail.com>\n"
+"POT-Creation-Date: 2010-03-03 16:41-0800\n"
+"PO-Revision-Date: 2010-01-09 14:20+0900\n"
+"Last-Translator: kazu.nito@gmail.com <Nito Kazunori>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,19 +24,19 @@ msgstr "ステータス"
 msgid "Statistics"
 msgstr "統計"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:36
 msgid "active"
 msgstr "アクティブ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:35
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:36
 msgid "inactive"
 msgstr "インアクティブ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:43
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:44
 msgid "Note"
 msgstr "注釈"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:47
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:48
 msgid ""
 "Attack Blocker is a heuristic based intrusion prevention and requires no "
 "configuration. Users can modify the treatment of certain IP and/or networks "
@@ -46,91 +45,225 @@ msgstr ""
 "Attack Blockerは侵入防止をベースにしたヒューリスティックで設定は必要ありません。ユーザーは一定のIPと（もしくは）exception "
 "tab上のネットワークの処理を修正できます。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:55
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:56
 msgid "enable"
 msgstr "イネーブル（有効）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:60
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:61
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:62
 msgid "users"
 msgstr "ユーザー"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:61
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:62
 msgid "unlimited"
 msgstr "無制限"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:74
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:75
 msgid "[no description]"
 msgstr "[無記述]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:76
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:77
 msgid "Exceptions"
 msgstr "例外"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:101
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:102
 msgid "address"
 msgstr "アドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:111
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:112
 msgid "user count"
 msgstr "ユーザカウント"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:137
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:138
 msgid "description"
 msgstr "記述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:151
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:152
 msgid "Enable"
 msgstr "可能"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:155
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:156
 msgid "Address"
 msgstr "アドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:162
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:163
 msgid "User Count"
 msgstr "ユーザカウント"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:177
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:178
 msgid "Description"
 msgstr "記述"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:213
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:214
 msgid "timestamp"
 msgstr "タイムスタンプ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:221
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:222
 msgid "source"
 msgstr "ソース"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:227
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:228
 msgid "source interface"
 msgstr "ソースインタフェース"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:232
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:233
 msgid "reputation"
 msgstr "評判"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:240
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:241
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:220
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:305
 msgid "limited"
 msgstr "限界"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:248
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:249
 msgid "dropped"
 msgstr "ドロップ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:256
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:257
 msgid "reject"
 msgstr "拒否"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:276
 msgid "Saving..."
 msgstr "保存..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:271
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:276
 msgid "Please wait"
 msgstr "待ってください"
 
 #: ../impl/com/untangle/node/shield/LogIteration.java:194
 msgid "type"
 msgstr "タイプ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:84
+msgid "Summary Report"
+msgstr "サマリーレポート"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:99
+msgid "scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:100
+msgid "sessions and blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:101
+msgid "of them"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:134
+#, fuzzy
+msgid "Daily Requests"
+msgstr "ディリーリポート"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:164
+msgid "Avg Requests"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:165
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:168
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:171
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:174
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:177
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:180
+msgid "sessions/minute"
+msgstr "セッション数/分"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:167
+msgid "Max Requests"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:170
+msgid "Avg Limited"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:173
+msgid "Max Limited"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:176
+msgid "Avg Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:179
+msgid "Max Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:214
+msgid "Daily Request"
+msgstr "ディリーリポート"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:215
+msgid "Hour of Day"
+msgstr "時間の日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:216
+msgid "Requests per Minute"
+msgstr "１分あたりの要求"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:219
+msgid "accepted"
+msgstr "許可"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:221
+msgid "blocked"
+msgstr "ブロック"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:227
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:265
+msgid "Top Blocked Hosts"
+msgstr "トップのブロックされたホスト"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:258
+msgid "blocks"
+msgstr "ブロック"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:274
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:311
+msgid "Top Limited Hosts"
+msgstr "トップの限定ホスト"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:320
+msgid "Attack Events"
+msgstr "攻撃イベント"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:326
+msgid "Time"
+msgstr "時間"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:328
+msgid "Client"
+msgstr "クライアント"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:329
+#, fuzzy
+msgid "Limited"
+msgstr "限界"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:330
+#, fuzzy
+msgid "Dropped"
+msgstr "ドロップ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:331
+msgid "Rejected"
+msgstr "拒否"
+
+#~ msgid "avg requests/minute (7-days)"
+#~ msgstr "平均要求数/分（7日）"
+
+#~ msgid "max requests/minute (7-days)"
+#~ msgstr "最大要求数/分（7日）"
+
+#~ msgid "avg limited/minute (7-days)"
+#~ msgstr "平均制限数/分（7日）"
+
+#~ msgid "max limited/minute (7-days)"
+#~ msgstr "最大制限数/分（7日）"
+
+#~ msgid "avg blocked/minute (7-days)"
+#~ msgstr "平均ブロック数/分（7日）"
+
+#~ msgid "max blocked/minute (7-days)"
+#~ msgstr "最大ブロック数/分(7日)"
