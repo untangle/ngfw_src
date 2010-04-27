@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
 "PO-Revision-Date: 2008-11-27 21:27-0500\n"
 "Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
 "Language-Team: Chinese <j.zhu@impactek.com>\n"
@@ -51,7 +51,7 @@ msgid ""
 msgstr "{0}通过自动更新继续维持默认的签名设置。尽管并不需要，但您可以随意的修改和添加签名。"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:70
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:313
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:314
 msgid "block"
 msgstr "阻止"
 
@@ -126,7 +126,7 @@ msgid "Log"
 msgstr "日志"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:219
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:293
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:294
 msgid "Description"
 msgstr "描述"
 
@@ -143,7 +143,7 @@ msgid "name"
 msgstr "名称"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:261
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:315
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:316
 msgid "pass"
 msgstr "通过"
 
@@ -151,31 +151,31 @@ msgstr "通过"
 msgid "Pass"
 msgstr "通过"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:337
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:338
 msgid "timestamp"
 msgstr "时间戳"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:345
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:346
 msgid "action"
 msgstr "动作"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:350
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:351
 msgid "client"
 msgstr "客户端"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:357
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:358
 msgid "reason for action"
 msgstr "动作原因"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:362
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:363
 msgid "server"
 msgstr "服务器"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:380
 msgid "Saving..."
 msgstr "正在保存。。。"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:380
 msgid "Please wait"
 msgstr "请等待"
 
@@ -210,6 +210,105 @@ msgstr "已阻止的会话"
 #: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
 msgid "BLOCK"
 msgstr "阻止"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:74
+msgid "Summary Report"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:144
+msgid "scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:145
+msgid "sessions and detected"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:146
+msgid "attacks of which"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:147
+msgid "were blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:191
+msgid "Top Ten Attacks By Hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:232
+msgid "hits"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:239
+msgid "Attacks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:240
+msgid "Hits per Day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:248
+msgid "Daily Attacks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:289
+msgid "Avg Attacks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:289
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:291
+msgid "attacks/day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:291
+msgid "Max Attacks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:349
+msgid "Date"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:350
+msgid "Attacks per Day"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:354
+msgid "attacks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:360
+msgid "Attack Events"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:366
+msgid "Time"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:369
+#, fuzzy
+msgid "Client"
+msgstr "客户端"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:371
+msgid "User"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:373
+msgid "SID:description"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:374
+msgid "Blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:375
+#, fuzzy
+msgid "Server"
+msgstr "服务器"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:376
+msgid "Port"
+msgstr ""
 
 #~ msgid "Failed"
 #~ msgstr "失败"

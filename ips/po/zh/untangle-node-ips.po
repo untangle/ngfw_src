@@ -1,194 +1,215 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Untangle, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: Untangle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"PO-Revision-Date: 2008-11-27 21:27-0500\n"
+"Last-Translator: Jie Zhu <j.zhu@impactek.com>\n"
+"Language-Team: Chinese <j.zhu@impactek.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Translate Toolkit 1.1.1\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Country: CHINA\n"
+
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:27
 msgid "Status"
-msgstr ""
+msgstr "状态"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:37
 msgid "Statistics"
-msgstr ""
+msgstr "统计信息"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:45
 msgid "Total Signatures Available"
-msgstr ""
+msgstr "总的可用签名"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:49
 msgid "Total Signatures Logging"
-msgstr ""
+msgstr "总的签名记录"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:53
 msgid "Total Signatures Blocking"
-msgstr ""
+msgstr "总阻止的签名"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:58
 msgid "Note"
-msgstr ""
+msgstr "注释"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:60
 msgid ""
 "{0} continues to maintain the default signature settings through automatic "
 "updates. You are free to modify and add signatures, however it is not "
 "required."
-msgstr ""
+msgstr "{0}通过自动更新继续维持默认的签名设置。尽管并不需要，但您可以随意的修改和添加签名。"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:70
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:314
 msgid "block"
-msgstr ""
+msgstr "阻止"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:77
 msgid "log"
-msgstr ""
+msgstr "日志"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:87
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:112
 msgid "Rules"
-msgstr ""
+msgstr "规则"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:103
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:106
 msgid "[no category]"
-msgstr ""
+msgstr "【无分类】"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:104
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:231
 msgid "[no name]"
-msgstr ""
+msgstr "【无名称】"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:105
 msgid "[no signature]"
-msgstr ""
+msgstr "【无签名】"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:110
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:233
 msgid "[no description]"
-msgstr ""
+msgstr "【无描述】"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:140
 msgid "category"
-msgstr ""
+msgstr "分类"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:148
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:269
 msgid "description"
-msgstr ""
+msgstr "描述"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:165
 msgid "id"
-msgstr ""
+msgstr "标识"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:171
 msgid "info"
-msgstr ""
+msgstr "信息"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:187
 msgid "Category"
-msgstr ""
+msgstr "分类"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:193
 msgid "Signature"
-msgstr ""
+msgstr "签名"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:199
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:281
 msgid "Name"
-msgstr ""
+msgstr "名称"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:205
 msgid "SID"
-msgstr ""
+msgstr "安全标识"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:211
 msgid "Block"
-msgstr ""
+msgstr "阻止"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:215
 msgid "Log"
-msgstr ""
+msgstr "日志"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:219
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:294
 msgid "Description"
-msgstr ""
+msgstr "描述"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:232
 msgid "[no definition]"
-msgstr ""
+msgstr "【无定义】"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:235
 msgid "Variables"
-msgstr ""
+msgstr "变量"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:253
 msgid "name"
-msgstr ""
+msgstr "名称"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:261
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:316
 msgid "pass"
-msgstr ""
+msgstr "通过"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:287
 msgid "Pass"
-msgstr ""
+msgstr "通过"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:338
 msgid "timestamp"
-msgstr ""
+msgstr "时间戳"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:346
 msgid "action"
-msgstr ""
+msgstr "动作"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:351
 msgid "client"
-msgstr ""
+msgstr "客户端"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:358
 msgid "reason for action"
-msgstr ""
+msgstr "动作原因"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:363
 msgid "server"
-msgstr ""
+msgstr "服务器"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:380
 msgid "Saving..."
-msgstr ""
+msgstr "正在保存。。。"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:380
 msgid "Please wait"
-msgstr ""
+msgstr "请等待"
 
 #: ../impl/com/untangle/node/ips/IpsBlockedFilter.java:27
 msgid "Blocked Events"
-msgstr ""
+msgstr "已阻止的事件"
 
 #: ../impl/com/untangle/node/ips/IpsLogFilter.java:27
 msgid "All Events"
-msgstr ""
+msgstr "所有事件"
 
 #: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
 msgid "Sessions scanned"
-msgstr ""
+msgstr "已扫描的会话"
 
 #: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
 msgid "SCAN"
-msgstr ""
+msgstr "扫描"
 
 #: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
 msgid "Sessions logged"
-msgstr ""
+msgstr "已记录的会话"
 
 #: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
 msgid "DETECT"
-msgstr ""
+msgstr "探测"
 
 #: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
 msgid "Sessions blocked"
-msgstr ""
+msgstr "已阻止的会话"
 
 #: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
 msgid "BLOCK"
-msgstr ""
+msgstr "阻止"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:74
 msgid "Summary Report"
@@ -264,8 +285,9 @@ msgid "Time"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:369
+#, fuzzy
 msgid "Client"
-msgstr ""
+msgstr "客户端"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:371
 msgid "User"
@@ -280,9 +302,13 @@ msgid "Blocked"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:375
+#, fuzzy
 msgid "Server"
-msgstr ""
+msgstr "服务器"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:376
 msgid "Port"
 msgstr ""
+
+#~ msgid "Failed"
+#~ msgstr "失败"

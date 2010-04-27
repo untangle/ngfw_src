@@ -89,7 +89,6 @@ msgstr "Categoría"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:148
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:269
-#, fuzzy
 msgid "description"
 msgstr "Descripción"
 
@@ -119,7 +118,6 @@ msgid "SID"
 msgstr "SID"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:211
-#, fuzzy
 msgid "Block"
 msgstr "Bloquear"
 
@@ -162,7 +160,6 @@ msgid "action"
 msgstr "medida"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:351
-#, fuzzy
 msgid "client"
 msgstr "cliente"
 
@@ -171,7 +168,6 @@ msgid "reason for action"
 msgstr "motivo de la medida tomada"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:363
-#, fuzzy
 msgid "server"
 msgstr "servidor"
 
@@ -188,7 +184,6 @@ msgid "Blocked Events"
 msgstr "Eventos bloqueados"
 
 #: ../impl/com/untangle/node/ips/IpsLogFilter.java:27
-#, fuzzy
 msgid "All Events"
 msgstr "Todos los sucesos"
 
@@ -221,23 +216,20 @@ msgid "Summary Report"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:144
-#, fuzzy
 msgid "scanned"
-msgstr "Sesiones analizadas"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:145
-#, fuzzy
 msgid "sessions and detected"
-msgstr "Sesiones analizadas"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:146
 msgid "attacks of which"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:147
-#, fuzzy
 msgid "were blocked"
-msgstr "Sesiones bloqueadas"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:191
 msgid "Top Ten Attacks By Hits"
@@ -285,9 +277,8 @@ msgid "attacks"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:360
-#, fuzzy
 msgid "Attack Events"
-msgstr "Todos los sucesos"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:366
 msgid "Time"
@@ -299,19 +290,16 @@ msgid "Client"
 msgstr "cliente"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:371
-#, fuzzy
 msgid "User"
-msgstr "servidor"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:373
-#, fuzzy
 msgid "SID:description"
-msgstr "Descripción"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:374
-#, fuzzy
 msgid "Blocked"
-msgstr "Bloquear"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:375
 #, fuzzy

@@ -6,15 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2009-01-22 15:36+0100\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"PO-Revision-Date: 2010-03-03 15:28-0800\n"
+"Last-Translator: Marcus Lumpp <ml@m2lp-consult.de>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Translate Toolkit 1.1.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: German\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:27
@@ -52,7 +52,7 @@ msgstr ""
 "aber nicht erforderlich."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:70
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:313
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:314
 msgid "block"
 msgstr "sperre"
 
@@ -127,7 +127,7 @@ msgid "Log"
 msgstr "Log"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:219
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:293
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:294
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -144,7 +144,7 @@ msgid "name"
 msgstr "Name"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:261
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:315
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:316
 msgid "pass"
 msgstr "zulassen"
 
@@ -152,31 +152,31 @@ msgstr "zulassen"
 msgid "Pass"
 msgstr "Zulassen"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:337
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:338
 msgid "timestamp"
 msgstr "Zeitstempel"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:345
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:346
 msgid "action"
 msgstr "Aktion"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:350
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:351
 msgid "client"
 msgstr "Client"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:357
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:358
 msgid "reason for action"
 msgstr "Grund der Aktion"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:362
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:363
 msgid "server"
 msgstr "Server"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:380
 msgid "Saving..."
 msgstr "Speichern..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:375
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-ips/settings.js:380
 msgid "Please wait"
 msgstr "Bitte warten"
 
@@ -211,3 +211,106 @@ msgstr "Gesperrte Sitzungen"
 #: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
 msgid "BLOCK"
 msgstr "SPERREN"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:74
+msgid "Summary Report"
+msgstr "zusammenfassender Bericht"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:144
+msgid "scanned"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:145
+msgid "sessions and detected"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:146
+msgid "attacks of which"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:147
+msgid "were blocked"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:191
+msgid "Top Ten Attacks By Hits"
+msgstr "Top Ten Angriffe nach Hits"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:232
+msgid "hits"
+msgstr "hits"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:239
+msgid "Attacks"
+msgstr "Angriffe"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:240
+msgid "Hits per Day"
+msgstr "Hits pro Tag"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:248
+msgid "Daily Attacks"
+msgstr "Tägliche Angriffe"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:289
+msgid "Avg Attacks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:289
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:291
+msgid "attacks/day"
+msgstr "Angriffe/Tag"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:291
+msgid "Max Attacks"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:349
+msgid "Date"
+msgstr "Datum"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:350
+msgid "Attacks per Day"
+msgstr "Angriffe pro Tag"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:354
+msgid "attacks"
+msgstr "Angriffe"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:360
+msgid "Attack Events"
+msgstr "Angriff Ereignisse"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:366
+msgid "Time"
+msgstr "Uhrzeit"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:369
+msgid "Client"
+msgstr "Client"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:371
+msgid "User"
+msgstr "Benutzer"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:373
+msgid "SID:description"
+msgstr "SID:Beschreibung"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:374
+msgid "Blocked"
+msgstr "Blockiert"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:375
+msgid "Server"
+msgstr "Server"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:376
+msgid "Port"
+msgstr "Port"
+
+#~ msgid "max attacks (7-days)"
+#~ msgstr "maximale Angriffe (7-Tage)"
+
+#~ msgid "avg attacks (7-days)"
+#~ msgstr "durchschnittliche Angriffe (7-Tage)"
