@@ -2,14 +2,13 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2009-02-10 23:15-0800\n"
-"Last-Translator: Noah Lubarsky <nclubarsky@hotmail.com>\n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"PO-Revision-Date: 2010-04-04 00:28+0900\n"
+"Last-Translator: kazu.nito@gmail.com <Nito Kazunori>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,11 +33,11 @@ msgstr "{プロトコル無し}"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:42
 msgid "[no description]"
-msgstr "{無記述}"
+msgstr "{説明無し}"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:43
 msgid "[no signature]"
-msgstr "{シグネチャー無し}"
+msgstr "{署名無し}"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:45
 msgid "Protocol List"
@@ -61,6 +60,9 @@ msgid "Category"
 msgstr "カテゴリー"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:114
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:342
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:401
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:662
 msgid "Protocol"
 msgstr "プロトコル"
 
@@ -74,11 +76,11 @@ msgstr "ログ"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:128
 msgid "Description"
-msgstr "記述"
+msgstr "説明"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:134
 msgid "Signature"
-msgstr "シグネチャー"
+msgstr "署名"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
 msgid "blocked"
@@ -120,13 +122,13 @@ msgstr "アクションの理由"
 msgid "server"
 msgstr "サーバー"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:224
 msgid "Saving..."
-msgstr "保存..."
+msgstr "保存中..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:220
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:224
 msgid "Please wait"
-msgstr "お待ちください"
+msgstr "しばらくお待ちください"
 
 #: ../impl/com/untangle/node/protofilter/ProtoFilterAllFilter.java:27
 msgid "Protocol Events"
@@ -159,3 +161,165 @@ msgstr "セッションがログされました"
 #: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:92
 msgid "DETECT"
 msgstr "検出"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:69
+msgid "Summary Report"
+msgstr "サマリーレポート"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:134
+msgid "scanned"
+msgstr "スキャンする"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:135
+msgid "sessions and detected"
+msgstr "セッションと検出"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:136
+msgid "protocols of which"
+msgstr "どのプロトコル"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:137
+msgid "were blocked"
+msgstr "ブロックされた"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:182
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:281
+msgid "Daily Usage"
+msgstr "毎日の使用量"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:222
+msgid "Avg Detections"
+msgstr "平均検出"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:222
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:224
+msgid "detections/day"
+msgstr "検出数/日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:224
+msgid "Max Detections"
+msgstr "最大検出"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:282
+msgid "Date"
+msgstr "日付"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:283
+msgid "Detections per Day"
+msgstr "1日あたりの検出数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:287
+msgid "detections"
+msgstr "検出"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:295
+msgid "Top Ten Blocked Protocols By Hits"
+msgstr "ヒット数ではトップ10のブロックプロトコル"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:334
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:393
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:453
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:513
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:573
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:632
+msgid "hits"
+msgstr "ヒット数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:341
+msgid "Top Ten Blocked Protocols (by hits)"
+msgstr "トップ10のブロックプロトコル（ヒット数による）"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:343
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:402
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:463
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:522
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:582
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:641
+msgid "Blocks per Day"
+msgstr "1日あたりのブロック数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:351
+msgid "Top Ten Detected Protocols By Hits"
+msgstr "ヒット数ではトップ10の検出プロトコル"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:400
+msgid "Top Ten Detected Protocols (by hits)"
+msgstr "トップ10の検出プロトコル（ヒット数による）"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:410
+msgid "Top Ten Blocked Hosts By Hits"
+msgstr "ヒット数ではトップ10のブロックホスト"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:461
+msgid "Top Ten Blocked Hosts (by hits)"
+msgstr "トップ10のブロックホスト（ヒット数による）"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:462
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:521
+msgid "Host"
+msgstr "ホスト"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:472
+msgid "Top Ten Logged Hosts By Hits"
+msgstr "ヒット数ではトップ10のログインホスト"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:520
+msgid "Top Ten Logged Hosts (by hits)"
+msgstr "トップ10のログインホスト（ヒット数による）"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:530
+msgid "Top Ten Blocked Users By Hits"
+msgstr "ヒット数ではトップ10のブロックユーザ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:580
+msgid "Top Ten Blocked Users (by hits)"
+msgstr "トップ10のブロックユーザー（ヒット数による)"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:581
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:640
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:660
+msgid "User"
+msgstr "ユーザ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:590
+msgid "Top Ten Logged Users By Hits"
+msgstr "ヒット数ではトップ10のログインユーザ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:639
+msgid "Top Ten Logged Users (by hits)"
+msgstr "トップ10のログインユーザー（ヒット数による)"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:649
+msgid "Detection Events"
+msgstr "検出イベント"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:655
+msgid "Time"
+msgstr "時間"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:658
+#, fuzzy
+msgid "Client"
+msgstr "クライアント"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:663
+#, fuzzy
+msgid "Blocked"
+msgstr "ブロック"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:664
+#, fuzzy
+msgid "Server"
+msgstr "サーバー"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:665
+msgid "Port"
+msgstr "ポート"
+
+#, python-format
+#~ msgid "max detections (%s-days)"
+#~ msgstr "最大検出数 (%s日)"
+
+#, python-format
+#~ msgid "avg detections (%s-days)"
+#~ msgstr "平均検出数（%s日）"

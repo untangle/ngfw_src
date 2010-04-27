@@ -54,9 +54,8 @@ msgid "protocol"
 msgstr "protocolo"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:94
-#, fuzzy
 msgid "description"
-msgstr "Descripción"
+msgstr "descripción"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:108
 msgid "Category"
@@ -86,7 +85,6 @@ msgid "Signature"
 msgstr "Firma"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:144
-#, fuzzy
 msgid "blocked"
 msgstr "bloqueado"
 
@@ -111,7 +109,6 @@ msgid "action"
 msgstr "medida"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:191
-#, fuzzy
 msgid "client"
 msgstr "cliente"
 
@@ -124,7 +121,6 @@ msgid "reason for action"
 msgstr "motivo de la medida tomada"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-protofilter/settings.js:207
-#, fuzzy
 msgid "server"
 msgstr "servidor"
 
@@ -141,9 +137,8 @@ msgid "Protocol Events"
 msgstr "Eventos de protocolo"
 
 #: ../impl/com/untangle/node/protofilter/ProtoFilterBlockedFilter.java:27
-#, fuzzy
 msgid "Blocked Protocol Events"
-msgstr "Eventos de protocolo"
+msgstr "Eventos de protocolo bloqueados"
 
 #: ../impl/com/untangle/node/protofilter/ProtoFilterImpl.java:90
 msgid "Sessions scanned"
@@ -174,24 +169,20 @@ msgid "Summary Report"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:134
-#, fuzzy
 msgid "scanned"
-msgstr "Sesiones analizadas"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:135
-#, fuzzy
 msgid "sessions and detected"
-msgstr "Sesiones analizadas"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:136
-#, fuzzy
 msgid "protocols of which"
-msgstr "protocolo"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:137
-#, fuzzy
 msgid "were blocked"
-msgstr "bloqueado"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:182
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:281
@@ -199,9 +190,8 @@ msgid "Daily Usage"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:222
-#, fuzzy
 msgid "Avg Detections"
-msgstr "descripción"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:222
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:224
@@ -209,9 +199,8 @@ msgid "detections/day"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:224
-#, fuzzy
 msgid "Max Detections"
-msgstr "descripción"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:282
 msgid "Date"
@@ -222,14 +211,12 @@ msgid "Detections per Day"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:287
-#, fuzzy
 msgid "detections"
-msgstr "descripción"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:295
-#, fuzzy
 msgid "Top Ten Blocked Protocols By Hits"
-msgstr "Eventos de protocolo bloqueados"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:334
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:393
@@ -241,9 +228,8 @@ msgid "hits"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:341
-#, fuzzy
 msgid "Top Ten Blocked Protocols (by hits)"
-msgstr "Eventos de protocolo bloqueados"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:343
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:402
@@ -294,9 +280,8 @@ msgstr ""
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:581
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:640
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:660
-#, fuzzy
 msgid "User"
-msgstr "servidor"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:590
 msgid "Top Ten Logged Users By Hits"
@@ -307,9 +292,8 @@ msgid "Top Ten Logged Users (by hits)"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:649
-#, fuzzy
 msgid "Detection Events"
-msgstr "descripción"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_protofilter.py:655
 msgid "Time"
