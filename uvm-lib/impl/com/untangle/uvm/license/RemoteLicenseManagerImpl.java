@@ -21,21 +21,24 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-public class RemoteLicenseManagerImpl implements RemoteLicenseManager {
+public class RemoteLicenseManagerImpl implements RemoteLicenseManager
+{
     private final Logger logger = Logger.getLogger(getClass());
 
     private String standardLicense;
 
     private final LocalLicenseManager licenseManager;
 
-    RemoteLicenseManagerImpl(LocalLicenseManager licenseManager) {
+    RemoteLicenseManagerImpl(LocalLicenseManager licenseManager)
+    {
         this.licenseManager = licenseManager;
     }
 
     /**
      * Reload all of the available licenses
      */
-    public void reloadLicenses() {
+    public void reloadLicenses()
+    {
         if (this.licenseManager == null) {
             logger
                     .warn("The license manager is not available, unable to load licenses");
@@ -48,7 +51,8 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager {
     /**
      * Get the status of a license on a product.
      */
-    public LicenseStatus getLicenseStatus(String identifier) {
+    public LicenseStatus getLicenseStatus(String identifier)
+    {
         if (this.licenseManager == null) {
             /* no manager, so status is always no license */
             return new LicenseStatus(false, identifier, "no-mackage",
@@ -58,7 +62,11 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager {
         return this.licenseManager.getLicenseStatus(identifier);
     }
 
-    public synchronized LicenseStatus getMackageStatus(String mackageName) {
+    /**
+     * 
+     */
+    public synchronized LicenseStatus getMackageStatus(String mackageName)
+    {
         if (this.licenseManager == null) {
             /* no manager, so status is always no license */
             return new LicenseStatus(false, "unknown", mackageName, "invalid",
@@ -71,7 +79,8 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager {
     /**
      * Return true if the user has any premium products.
      */
-    public boolean hasPremiumLicense() {
+    public boolean hasPremiumLicense()
+    {
         if (this.licenseManager == null) {
             /*
              * can only have a premium license if they have the full license
@@ -87,7 +96,8 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager {
      * Return the content of the license agreement.
      */
     @Override
-    public String getLicenseAgreement() {
+    public String getLicenseAgreement()
+    {
         if (this.licenseManager == null) {
             if (this.standardLicense == null)
                 loadLicenseAgreement();
@@ -101,15 +111,16 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager {
     }
 
     @Override
-    public boolean getUntanglePlus() {
+    public boolean getUntanglePlus()
+    {
         if (this.licenseManager == null) {
             return false;
         }
         return this.licenseManager.getUntanglePlus();
     }
 
-    private void loadLicenseAgreement() {
-        this.standardLicense = LicenseManagerFactory
-                .loadLicenseText(LicenseManagerFactory.STANDARD_LICENSE_RESOURCE);
+    private void loadLicenseAgreement()
+    {
+        this.standardLicense = LicenseManagerFactory.loadLicenseText(LicenseManagerFactory.STANDARD_LICENSE_RESOURCE);
     }
 }
