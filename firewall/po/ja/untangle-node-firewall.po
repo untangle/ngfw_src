@@ -2,177 +2,216 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2009-02-11 00:17-0800\n"
-"Last-Translator: Noah Lubarsky <nclubarsky@hotmail.com>\n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"PO-Revision-Date: 2010-04-12 18:09-0700\n"
+"Last-Translator: Nito Kazunori <kazu.nito@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:24
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:23
+msgid "Remove"
+msgstr "削除"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:31
+msgid "Help"
+msgstr "ヘルプ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:39
+msgid "Cancel"
+msgstr "取消し"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:48
+msgid "Save"
+msgstr "保存"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:60
 msgid "Enable"
 msgstr "イネーブル（有効化）"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:331
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:65
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:419
 msgid "Pass"
 msgstr "パス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:318
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:65
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:406
 msgid "Block"
 msgstr "ブロック"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:37
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:70
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:73
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:153
 msgid "Rules"
 msgstr "ルール"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:65
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:126
+msgid "Note"
+msgstr "注釈"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:129
+msgid ""
+" <b>Firewall</b> is a simple application designed to block and log network "
+"traffic based on a set of rules. To learn more click on the <b>Help</b> "
+"button below.<br/> Routing and Port Forwarding functionality can be found "
+"elsewhere in Config->Networking."
+msgstr ""
+" <b>ファイアウォール</b>は、一連の規則に基づきネットワークトラフィックをブロックして、記録するように設計された単純なアプリケーションです。 "
+"詳しく知るために、下記の <b>ヘルプボタン</b>をクリックしてください。<br/> "
+"ルーティングとポートフォワーディング機能を「Config->Networking」のどこかほかで見つかります。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:148
 msgid "[no name]"
 msgstr "[氏名無し]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:66
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:149
 msgid "[no category]"
 msgstr "[カテゴリー無し]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:67
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:150
 msgid "[no description]"
 msgstr "[無表記]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:106
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:235
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:189
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:319
 msgid "Description"
 msgstr "表記"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:194
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:278
 msgid "Warning"
 msgstr "警告"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:194
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:278
 msgid "The form is not valid!"
 msgstr "フォームが無効"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:229
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:313
 msgid "Enable Rule"
 msgstr "ルールを有効化する"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:241
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:325
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:481
 msgid "Action"
 msgstr "アクション"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:259
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:343
 msgid "Log"
 msgstr "ログ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:262
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:346
 msgid "Rule"
 msgstr "ルール"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:270
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:354
 msgid "Traffic Type"
 msgstr "トラフィックタイプ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:275
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:359
 msgid "Source Interface"
 msgstr "ソースインターフェース"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:281
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:365
 msgid "Destination Interface"
 msgstr "宛先インターフェース"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:286
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:371
 msgid "Source Address"
 msgstr "ソースアドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:293
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:379
 msgid "Destination Address"
 msgstr "宛先アドレス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:299
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:386
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:485
 msgid "Source Port"
 msgstr "ソースポート"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:305
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:393
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:483
 msgid "Destination Port"
 msgstr "宛先ポート"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:315
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:403
 msgid "Default Action"
 msgstr "初期アクション"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:361
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:449
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:289
 msgid "blocked"
 msgstr "ブロック"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:361
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:449
 msgid "passed"
 msgstr "パス"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:375
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:463
 msgid "timestamp"
 msgstr "タイムスタンプ"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:383
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:471
 msgid "action"
 msgstr "アクション"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:388
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:476
 msgid "client"
 msgstr "クライアント"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:395
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:483
 msgid "reason for action"
 msgstr "アクションの理由"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:400
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:488
 msgid "rule #{0}"
 msgstr "ルール#{0}"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:403
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:491
 msgid "server"
 msgstr "サーバー"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:455
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:543
 msgid "Invalid address specified for Source Address"
 msgstr "ソースアドレスが無効"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:458
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:546
 msgid "Invalid address specified for Destination Address"
 msgstr "宛先アドレスが無効"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:461
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:549
 msgid "Invalid port specified for Source Port"
 msgstr "ソースポートが無効"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:464
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:552
 msgid "Invalid port specified for Destination Port"
 msgstr "宛先ポートが無効"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:469
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:557
 msgid "Validation failed"
 msgstr "バリデーション失敗"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:473
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:563
+msgid "Please Try Again"
+msgstr "もう一度やり直してください"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:566
 msgid "Failed"
 msgstr "失敗"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:580
 msgid "Saving..."
 msgstr "保存..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:580
 msgid "Please wait"
 msgstr "お待ちください"
 
 #: ../impl/com/untangle/node/firewall/FirewallAllFilter.java:27
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:467
 msgid "Firewall Events"
 msgstr "ファイアーウォールイベント"
 
@@ -199,3 +238,134 @@ msgstr "パス"
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:95
 msgid "Sessions logged"
 msgstr "パス"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:72
+msgid "Summary Report"
+msgstr "サマリーレポート"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:134
+msgid "scanned"
+msgstr "スキャン"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:135
+#, fuzzy
+msgid "sessions and blocked"
+msgstr "セッションとブロックする"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:136
+msgid "according to the rules"
+msgstr "規則に従って"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:179
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:283
+msgid "Daily Rules"
+msgstr "毎日のルール"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:218
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:222
+msgid "Avg"
+msgstr "平均"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:218
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:220
+msgid "logged/day"
+msgstr "記録/日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:220
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:224
+msgid "Max"
+msgstr "最大"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:222
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:224
+msgid "blocked/day"
+msgstr "ブロック数/日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:284
+msgid "Day"
+msgstr "日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:285
+msgid "sessions/day"
+msgstr "セッション/日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:290
+msgid "logged"
+msgstr "記録する"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:296
+msgid "Top Ten Firewall Blocked Hosts By Hits"
+msgstr "ヒット数でのトップ10のフィアヤーウォールにブロックされたホスト"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:336
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:392
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:450
+msgid "hits"
+msgstr "ヒット数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:343
+msgid "Top Ten Firewall Blocked Hosts (by hits)"
+msgstr "トップ10のフィアヤーウォールにブロックされたホスト（ヒット数による）"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:344
+msgid "Host"
+msgstr "ホスト"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:345
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:401
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:459
+msgid "Blocks per Day"
+msgstr "1日あたりのブロック数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:352
+msgid "Top Ten Firewall Blocking Rules By Hits"
+msgstr "ヒット数でのトップ10のフィアヤーウォールブロックルール"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:399
+msgid "Top Ten Firewall Blocking Rules (by hits)"
+msgstr "トップ10のフィアヤーウォールブロックツール（ヒット数による）"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:400
+msgid "Rule #"
+msgstr "ルール#"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:409
+msgid "Top Ten Firewall Blocked Users By Hits"
+msgstr "ヒット数でのトップ10のフィアヤーウォールブロックユーザ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:457
+msgid "Top Ten Firewall Blocked Users (by hits)"
+msgstr "トップ10のフィアヤーウォールブロックユーザ（ヒット数による）"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:458
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:478
+msgid "User"
+msgstr "ユーザ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:473
+msgid "Time"
+msgstr "時間"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:476
+#, fuzzy
+msgid "Client"
+msgstr "クライアント"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:480
+msgid "Rule Applied"
+msgstr "ルールの応用"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:482
+#, fuzzy
+msgid "Destination IP"
+msgstr "宛先IP"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:484
+msgid "Source IP"
+msgstr "送信元IP"
+
+#~ msgid "avg (1-week)"
+#~ msgstr "平均（１週間）"
+
+#~ msgid "max (1-week)"
+#~ msgstr "最大 (１週間)"

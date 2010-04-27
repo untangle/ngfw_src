@@ -7,31 +7,31 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-02-09 16:23-0800\n"
-"PO-Revision-Date: 2008-11-23 19:27-0800\n"
-"Last-Translator: Claudia\n"
+"PO-Revision-Date: 2010-03-26 04:54-0700\n"
+"Last-Translator: Andre Cardoso <andrecv@hsbs.com.br>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Translate Toolkit 1.1.1\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Portuguese\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:23
 msgid "Remove"
-msgstr ""
+msgstr "Remover"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:31
 msgid "Help"
-msgstr ""
+msgstr "Ajuda"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:39
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:48
 msgid "Save"
-msgstr ""
+msgstr "Salvar"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:60
 msgid "Enable"
@@ -54,7 +54,7 @@ msgstr "Regras"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:126
 msgid "Note"
-msgstr ""
+msgstr "Nota"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:129
 msgid ""
@@ -63,6 +63,11 @@ msgid ""
 "button below.<br/> Routing and Port Forwarding functionality can be found "
 "elsewhere in Config->Networking."
 msgstr ""
+" <b>Firewall</b> é uma aplicação simples criada para bloquear e resgistrar o "
+"tráfego de rede baseado num conjunto de regras. Para aprender mais clique "
+"no botão <b>Ajuda</b> abaixo.<br/> Os recursos de Roteamento e "
+"Redirecionamento de Portas podem ser encontrados em outro local: "
+"Config->Rede."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:148
 msgid "[no name]"
@@ -90,9 +95,8 @@ msgid "The form is not valid!"
 msgstr "A forma não é válida!"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:313
-#, fuzzy
 msgid "Enable Rule"
-msgstr "Habilitar"
+msgstr "Habilitar regra"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:325
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:481
@@ -104,9 +108,8 @@ msgid "Log"
 msgstr "Registro"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:346
-#, fuzzy
 msgid "Rule"
-msgstr "Regras"
+msgstr "Regra"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:354
 msgid "Traffic Type"
@@ -160,7 +163,6 @@ msgid "action"
 msgstr "ação"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:476
-#, fuzzy
 msgid "client"
 msgstr "cliente"
 
@@ -173,7 +175,6 @@ msgid "rule #{0}"
 msgstr "regra no. {0}"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:491
-#, fuzzy
 msgid "server"
 msgstr "servidor"
 
@@ -198,9 +199,8 @@ msgid "Validation failed"
 msgstr "Falha de validação"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:563
-#, fuzzy
 msgid "Please Try Again"
-msgstr "Aguarde"
+msgstr "Por favor, tente novamente"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:566
 msgid "Failed"
@@ -220,9 +220,8 @@ msgid "Firewall Events"
 msgstr "Eventos de firewall"
 
 #: ../impl/com/untangle/node/firewall/FirewallBlockedFilter.java:27
-#, fuzzy
 msgid "Firewall Block Events"
-msgstr "Eventos de firewall"
+msgstr "Eventos de bloqueio de firewall"
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:93
 msgid "Sessions blocked"
@@ -246,11 +245,11 @@ msgstr "Sessões registradas"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:72
 msgid "Summary Report"
-msgstr ""
+msgstr "Relatório Resumido"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:134
 msgid "scanned"
-msgstr ""
+msgstr "verificado"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:135
 #, fuzzy
@@ -259,47 +258,44 @@ msgstr "Sessões bloqueadas"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:136
 msgid "according to the rules"
-msgstr ""
+msgstr "de acordo com as regras"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:179
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:283
-#, fuzzy
 msgid "Daily Rules"
-msgstr "Habilitar regra"
+msgstr "Regras Diárias"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:218
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:222
 msgid "Avg"
-msgstr ""
+msgstr "Méd"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:218
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:220
 msgid "logged/day"
-msgstr ""
+msgstr "registrado/dia"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:220
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:224
 msgid "Max"
-msgstr ""
+msgstr "Máx"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:222
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:224
-#, fuzzy
 msgid "blocked/day"
-msgstr "bloqueado"
+msgstr "bloqueado/dia"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:284
 msgid "Day"
-msgstr ""
+msgstr "Dia"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:285
 msgid "sessions/day"
-msgstr ""
+msgstr "sessões/dia"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:290
-#, fuzzy
 msgid "logged"
-msgstr "bloqueado"
+msgstr "registrado"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:296
 msgid "Top Ten Firewall Blocked Hosts By Hits"
@@ -326,23 +322,20 @@ msgid "Blocks per Day"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:352
-#, fuzzy
 msgid "Top Ten Firewall Blocking Rules By Hits"
-msgstr "Eventos de bloqueio de firewall"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:399
 msgid "Top Ten Firewall Blocking Rules (by hits)"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:400
-#, fuzzy
 msgid "Rule #"
-msgstr "Regra"
+msgstr "Número da Regra"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:409
-#, fuzzy
 msgid "Top Ten Firewall Blocked Users By Hits"
-msgstr "Eventos de bloqueio de firewall"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:457
 msgid "Top Ten Firewall Blocked Users (by hits)"
@@ -350,32 +343,30 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:458
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:478
-#, fuzzy
 msgid "User"
-msgstr "servidor"
+msgstr "Usuário"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:473
 msgid "Time"
-msgstr ""
+msgstr "Horário"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:476
 #, fuzzy
 msgid "Client"
-msgstr "cliente"
+msgstr "Cliente"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:480
 msgid "Rule Applied"
-msgstr ""
+msgstr "Regra aplicada"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:482
 #, fuzzy
 msgid "Destination IP"
-msgstr "Porta de destino"
+msgstr "IP de Destino"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:484
-#, fuzzy
 msgid "Source IP"
-msgstr "Porta de origem"
+msgstr "IP de Origem"
 
 #~ msgid "Category"
 #~ msgstr "Categoria"

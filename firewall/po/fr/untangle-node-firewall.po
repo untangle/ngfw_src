@@ -7,172 +7,213 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2009-02-20 03:28-0800\n"
-"Last-Translator: Thierry D'AMBROSIO <thierry@dambrosio.fr>\n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"PO-Revision-Date: 2010-03-31 07:06-0700\n"
+"Last-Translator: Thomas Prévot <prevot.thomas@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:24
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:23
+msgid "Remove"
+msgstr "Supprimer"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:31
+msgid "Help"
+msgstr "Aide"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:39
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:48
+msgid "Save"
+msgstr "Sauvegarder"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:60
 msgid "Enable"
 msgstr "Activer"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:331
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:65
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:419
 msgid "Pass"
 msgstr "Passer"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:29
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:318
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:65
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:406
 msgid "Block"
 msgstr "Bloquer"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:37
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:70
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:73
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:153
 msgid "Rules"
 msgstr "Règles"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:65
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:126
+msgid "Note"
+msgstr "Note"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:129
+msgid ""
+" <b>Firewall</b> is a simple application designed to block and log network "
+"traffic based on a set of rules. To learn more click on the <b>Help</b> "
+"button below.<br/> Routing and Port Forwarding functionality can be found "
+"elsewhere in Config->Networking."
+msgstr ""
+" <b>Firewall</b> est une application simple conçue pour bloquer et consigner "
+"le trafic réseau basé sur un ensemble de règles. Pour en savoir plus, "
+"cliquez sur le lien <b>Aide</b> ci-dessous.<br/>La fonctionnalité de routage "
+"et de Port Forwarding peut être trouvé ailleurs dans Config->Networking."
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:148
 msgid "[no name]"
 msgstr "[pas de nom]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:66
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:149
 msgid "[no category]"
 msgstr "[pas de catégorie]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:67
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:150
 msgid "[no description]"
 msgstr "[pas de description]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:106
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:235
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:189
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:319
 msgid "Description"
 msgstr "Description"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:194
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:278
 msgid "Warning"
 msgstr "Attention"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:194
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:278
 msgid "The form is not valid!"
 msgstr "Le formulaire n'est pas valide!"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:229
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:313
 msgid "Enable Rule"
 msgstr "Activer la Règle"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:241
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:325
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:481
 msgid "Action"
 msgstr "Action"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:259
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:343
 msgid "Log"
 msgstr "Enregistrer"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:262
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:346
 msgid "Rule"
 msgstr "Règle"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:270
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:354
 msgid "Traffic Type"
 msgstr "Type de Trafic"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:275
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:359
 msgid "Source Interface"
 msgstr "Interface Source"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:281
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:365
 msgid "Destination Interface"
-msgstr "Interface Destination"
+msgstr "Interface de Destination"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:286
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:371
 msgid "Source Address"
 msgstr "Adresse Source"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:293
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:379
 msgid "Destination Address"
-msgstr "Adresse Destination"
+msgstr "Adresse de Destination"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:299
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:386
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:485
 msgid "Source Port"
 msgstr "Port Source"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:305
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:393
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:483
 msgid "Destination Port"
 msgstr "Port Destination"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:315
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:403
 msgid "Default Action"
 msgstr "Action par défaut"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:361
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:449
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:289
 msgid "blocked"
 msgstr "bloqué(e)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:361
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:449
 msgid "passed"
 msgstr "passé(e)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:375
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:463
 msgid "timestamp"
 msgstr "référence temporelle"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:383
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:471
 msgid "action"
 msgstr "action"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:388
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:476
 msgid "client"
 msgstr "client"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:395
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:483
 msgid "reason for action"
 msgstr "raison de l'action"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:400
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:488
 msgid "rule #{0}"
 msgstr "règle #{0}"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:403
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:491
 msgid "server"
 msgstr "serveur"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:455
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:543
 msgid "Invalid address specified for Source Address"
 msgstr "Adresse spécifiée invalide pour l'Adresse Source"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:458
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:546
 msgid "Invalid address specified for Destination Address"
 msgstr "Adresse spécifiée invalide pour l'Adresse Destination"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:461
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:549
 msgid "Invalid port specified for Source Port"
 msgstr "Port spécifié invalide pour le Port Source"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:464
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:552
 msgid "Invalid port specified for Destination Port"
-msgstr "Port spécifié invalide pour le Port Destination"
+msgstr "Port spécifié invalide pour le Port de Destination"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:469
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:557
 msgid "Validation failed"
 msgstr "Echec de la Validation"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:473
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:563
+msgid "Please Try Again"
+msgstr "SVP essayer à nouveau"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:566
 msgid "Failed"
 msgstr "Echec"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:580
 msgid "Saving..."
 msgstr "Sauvegarde en cours..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:483
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:580
 msgid "Please wait"
 msgstr "SVP attendez"
 
 #: ../impl/com/untangle/node/firewall/FirewallAllFilter.java:27
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:467
 msgid "Firewall Events"
 msgstr "Evènements du Pare-Feu"
 
@@ -199,3 +240,131 @@ msgstr "PASSAGE"
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:95
 msgid "Sessions logged"
 msgstr "Sessions enregistrées"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:72
+msgid "Summary Report"
+msgstr "Rapport sommaire"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:134
+msgid "scanned"
+msgstr "a scanné"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:135
+msgid "sessions and blocked"
+msgstr "sessions et bloqués"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:136
+msgid "according to the rules"
+msgstr "selon les règles"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:179
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:283
+msgid "Daily Rules"
+msgstr "Règles quotidiennes"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:218
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:222
+msgid "Avg"
+msgstr "Moyenne"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:218
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:220
+msgid "logged/day"
+msgstr "consigné(es)/jour"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:220
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:224
+msgid "Max"
+msgstr "Max"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:222
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:224
+msgid "blocked/day"
+msgstr "bloqué(es)/jour"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:284
+msgid "Day"
+msgstr "Jour"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:285
+msgid "sessions/day"
+msgstr "sessions/jour"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:290
+msgid "logged"
+msgstr "Consigné(es)"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:296
+msgid "Top Ten Firewall Blocked Hosts By Hits"
+msgstr "Top Ten Firewall des hôtes bloqués par Hits"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:336
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:392
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:450
+msgid "hits"
+msgstr "hits"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:343
+msgid "Top Ten Firewall Blocked Hosts (by hits)"
+msgstr "Top Ten Firewall des hôtes bloqués (par Hits)"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:344
+msgid "Host"
+msgstr "Hôte"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:345
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:401
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:459
+msgid "Blocks per Day"
+msgstr "Blocages par jour"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:352
+msgid "Top Ten Firewall Blocking Rules By Hits"
+msgstr "Top Ten Firewall des règles bloquantes par Hits"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:399
+msgid "Top Ten Firewall Blocking Rules (by hits)"
+msgstr "Top Ten Firewall des règles bloquantes (par Hits)"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:400
+msgid "Rule #"
+msgstr "Règle #"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:409
+msgid "Top Ten Firewall Blocked Users By Hits"
+msgstr "Top Ten Firewall des Utilisateurs bloqués par Hits"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:457
+msgid "Top Ten Firewall Blocked Users (by hits)"
+msgstr "Top Ten Firewall des Utilisateurs bloqués (par Hits)"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:458
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:478
+msgid "User"
+msgstr "Utilisateur"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:473
+msgid "Time"
+msgstr "Heure"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:476
+msgid "Client"
+msgstr "Client"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:480
+msgid "Rule Applied"
+msgstr "Règle appliquée"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:482
+msgid "Destination IP"
+msgstr "IP de Destination"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:484
+msgid "Source IP"
+msgstr "IP Source "
+
+#~ msgid "avg (1-week)"
+#~ msgstr "moy (1 semaine)"
+
+#~ msgid "max (1-week)"
+#~ msgstr "max (1 semaine)"

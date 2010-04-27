@@ -90,9 +90,8 @@ msgid "The form is not valid!"
 msgstr "¡El formulario no es válido!"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:313
-#, fuzzy
 msgid "Enable Rule"
-msgstr "Habilitar"
+msgstr "Habilitar regla"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:325
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:481
@@ -104,9 +103,8 @@ msgid "Log"
 msgstr "Log"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:346
-#, fuzzy
 msgid "Rule"
-msgstr "Reglas"
+msgstr "Regla"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:354
 msgid "Traffic Type"
@@ -160,7 +158,6 @@ msgid "action"
 msgstr "medida"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:476
-#, fuzzy
 msgid "client"
 msgstr "cliente"
 
@@ -173,7 +170,6 @@ msgid "rule #{0}"
 msgstr "regla núm. {0}"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:491
-#, fuzzy
 msgid "server"
 msgstr "servidor"
 
@@ -198,9 +194,8 @@ msgid "Validation failed"
 msgstr "Error de validación"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:563
-#, fuzzy
 msgid "Please Try Again"
-msgstr "Espere"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-firewall/settings.js:566
 msgid "Failed"
@@ -220,9 +215,8 @@ msgid "Firewall Events"
 msgstr "Eventos de cortafuegos"
 
 #: ../impl/com/untangle/node/firewall/FirewallBlockedFilter.java:27
-#, fuzzy
 msgid "Firewall Block Events"
-msgstr "Eventos de cortafuegos"
+msgstr "Eventos de bloqueo de cortafuegos"
 
 #: ../impl/com/untangle/node/firewall/FirewallImpl.java:93
 msgid "Sessions blocked"
@@ -263,9 +257,8 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:179
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:283
-#, fuzzy
 msgid "Daily Rules"
-msgstr "Habilitar regla"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:218
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:222
@@ -284,9 +277,8 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:222
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:224
-#, fuzzy
 msgid "blocked/day"
-msgstr "bloqueado"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:284
 msgid "Day"
@@ -297,9 +289,8 @@ msgid "sessions/day"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:290
-#, fuzzy
 msgid "logged"
-msgstr "bloqueado"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:296
 msgid "Top Ten Firewall Blocked Hosts By Hits"
@@ -326,23 +317,20 @@ msgid "Blocks per Day"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:352
-#, fuzzy
 msgid "Top Ten Firewall Blocking Rules By Hits"
-msgstr "Eventos de bloqueo de cortafuegos"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:399
 msgid "Top Ten Firewall Blocking Rules (by hits)"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:400
-#, fuzzy
 msgid "Rule #"
-msgstr "Regla"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:409
-#, fuzzy
 msgid "Top Ten Firewall Blocked Users By Hits"
-msgstr "Eventos de bloqueo de cortafuegos"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:457
 msgid "Top Ten Firewall Blocked Users (by hits)"
@@ -350,9 +338,8 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:458
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:478
-#, fuzzy
 msgid "User"
-msgstr "servidor"
+msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:473
 msgid "Time"
@@ -373,9 +360,8 @@ msgid "Destination IP"
 msgstr "Puerto de destino"
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_firewall.py:484
-#, fuzzy
 msgid "Source IP"
-msgstr "Puerto de origen"
+msgstr ""
 
 #~ msgid "Category"
 #~ msgstr "Categoría"
