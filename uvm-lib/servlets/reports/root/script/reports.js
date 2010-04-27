@@ -692,7 +692,9 @@ Ung.Reports = Ext.extend(Object,{
         }
         rpc.applicationData=result;
         reports.breadcrumbs.push({ text: this.selectedNode.attributes.text,
-                                   handler: this.getApplicationData.createDelegate(this, [nodeName,numDays])
+                                   handler: this.getApplicationData.createDelegate(this, [nodeName,numDays]),
+                                   drilldownType : rpc.drilldownType,
+                                   drilldownValue : rpc.drilldownValue                                   
                                  });
     
         Ung.Util.loadModuleTranslations( nodeName, i18n,
@@ -726,7 +728,9 @@ Ung.Reports = Ext.extend(Object,{
                                          rpc.applicationData=result;
                                          reports.breadcrumbs.push({
                                              text: value +" "+i18n._("Reports"),
-                                             handler: this.getDrilldownTableOfContents.createDelegate(this, [fnName, type, value])
+                                            handler: this.getDrilldownTableOfContents.createDelegate(this, [fnName, type, value]),
+                                            drilldownType : rpc.drilldownType,
+                                            drilldownValue : rpc.drilldownValue                                                                                          
                                          });
                                          this.reportDetails.buildReportDetails(); // XXX take to correct page
                                          reports.progressBar.hide();
@@ -768,7 +772,9 @@ Ung.Reports = Ext.extend(Object,{
                                          }                                         
                                          rpc.applicationData=result;
                                          reports.breadcrumbs.push({ text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
-                                                                    handler: this[fnName].createDelegate(this,[app, type, value])
+                                                                    handler: this[fnName].createDelegate(this,[app, value]),
+                                                                   drilldownType : rpc.drilldownType,
+                                                                   drilldownValue : rpc.drilldownValue                                                                    
                                                                   });
                                          this.reportDetails.buildReportDetails(); // XXX take to correct page
                                          reports.progressBar.hide();
@@ -794,6 +800,8 @@ Ung.Reports = Ext.extend(Object,{
         if (this.breadcrumbs.length>breadcrumbIndex) {
             var breadcrumb = this.breadcrumbs[breadcrumbIndex];
             reports.breadcrumbs.splice(breadcrumbIndex, this.breadcrumbs.length-breadcrumbIndex);
+            rpc.drilldownType = breadcrumb.drilldownType;
+            rpc.drilldownValue = breadcrumb.drilldownValue;
             breadcrumb.handler.call(this);
         }
     }
@@ -1307,7 +1315,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 handler: function() {
                     var rd = new Date(reports.reportsDate.time);
                     var d = rd.getFullYear() + "-" + (rd.getMonth() + 1) + "-" + rd.getDate();
-                    var u = 'csv?date=' + d + '&app=' + appName + '&detail=' + section.name + '&numDays=' + reports.getAvailableReportsData()[0].numDays;
+                    var u = 'csv?date=' + d + '&app=' + appName + '&detail=' + section.name + '&numDays=' + reports.numDays;
                     var t = store.initialData.drilldownType;
                     if (t) {
                         u += '&type=' + t;
