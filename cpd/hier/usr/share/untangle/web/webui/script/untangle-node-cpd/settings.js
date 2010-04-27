@@ -66,7 +66,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     title : this.i18n._("Note"),
                     cls: "description",
                     bodyStyle : "padding: 5px 5px 5px; 5px;",
-                    html : this.i18n._("The <b>Capture Rules</b> are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evailuated in order.")
+                    html : this.i18n._("The <b>Capture Rules</b> are a  set of rules to define which hosts and traffic are subject to the Captive Portal.  The rules are evaluated in order.")
                 }, this.gridCaptureRules, {
                     xtype : "fieldset",
                     autoHeight : true,

@@ -39,6 +39,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
+import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.logging.EventLogger;
@@ -566,15 +567,17 @@ public class CPDImpl extends AbstractNode implements CPD {
     private String getDefaultPageParameters() {
 
         try {
+            RemoteBrandingManager brand = LocalUvmContextFactory.context().brandingManager();
+
             JSONObject parameters = new JSONObject();
             parameters.put( "basicLoginPageTitle", "Captive Portal");
-            parameters.put( "basicLoginPageWelcome", "Welcome to the Untangle&reg; Captive Portal");
+            parameters.put( "basicLoginPageWelcome", "Welcome to the " + brand.getCompanyName() + " Captive Portal");
             parameters.put( "basicLoginUsername", "Username:");
             parameters.put( "basicLoginPassword", "Password:");
             parameters.put( "basicLoginMessageText", "Please enter your username and password to connect to the Internet.");
             parameters.put( "basicLoginFooter", "If you have any questions, please contact your network administrator.");
             parameters.put( "basicMessagePageTitle", "Captive Portal");
-            parameters.put( "basicMessagePageWelcome", "Welcome to the Untangle&reg; Captive Portal");
+            parameters.put( "basicMessagePageWelcome", "Welcome to the " + brand.getCompanyName() + " Captive Portal");
             parameters.put( "basicMessageMessageText", "Click Continue to connect to the Internet.");
             parameters.put( "basicMessageAgreeText", "Clicking here means you agree to the terms above.");
             parameters.put( "basicMessageFooter", "If you have any questions, please contact your network administrator.");

@@ -20,10 +20,23 @@ function get_skin_settings()
 function get_branding_settings()
 {
     global $uvm_db;
-    $result = pg_query($uvm_db, "SELECT * FROM uvm_branding_settings ORDER BY settings_id DESC LIMIT 1");
-    $row = pg_fetch_assoc($result);    
-    pg_free_result($result);
-    return $row;
+    $result = @pg_query($uvm_db, "SELECT * FROM n_branding_settings ORDER BY settings_id DESC LIMIT 1");
+    if ($result) {
+        $row = pg_fetch_assoc($result);    
+	pg_free_result($result);
+	return $row;
+    } else {
+       $oem_name = "Untangle";
+       $oem_url = "http://untangle.com";
+
+       $oem_file = "/etc/untangle/oem/oem.php";
+       if (is_file($oem_file)) {
+       	  include($oem_file);
+       } 
+
+       $row = array("company_url" => $oem_url, "company_name" => $oem_name);
+       return $row;
+    } 
 }
 
 function get_cpd_settings()
