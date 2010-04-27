@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-04 16:58-0700\n"
-"PO-Revision-Date: 2009-02-10 08:51-0800\n"
-"Last-Translator: Juan Machado <juan@itos.uga.edu>\n"
+"POT-Creation-Date: 2010-03-18 16:15-0700\n"
+"PO-Revision-Date: 2009-03-18 06:44-0700\n"
+"Last-Translator: José A. Ferrer <jose.ferrer@totware.com>\n"
 "Language-Team: Spanish <dprussi@qwest.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,29 +36,24 @@ msgid "Quarantine"
 msgstr "Cuarentena"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:99
-#, fuzzy
 msgid "Low (Threshold: 5.0)"
-msgstr "Bajo (Intensidad: 5.0)"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:99
-#, fuzzy
 msgid "Medium (Threshold: 4.3)"
-msgstr "Medio (Intensidad: 4.3)"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:99
-#, fuzzy
 msgid "High (Threshold: 3.5)"
-msgstr "Alto (Intensidad: 3.5)"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:100
-#, fuzzy
 msgid "Very High (Threshold: 3.3)"
-msgstr "Muy Alto (Intensidad: 3.3)"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:100
-#, fuzzy
 msgid "Extreme (Threshold: 3.0)"
-msgstr "Extremo (Intensidad: 3.0)"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:100
 msgid "Custom"
@@ -103,13 +98,12 @@ msgid "Action"
 msgstr "Medida"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:255
-#, fuzzy
 msgid "Drop Super Spam"
-msgstr "Super Bloqueo de Spam"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:284
 msgid "Super Spam Threshold"
-msgstr ""
+msgstr "Umbral de Super Spam"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:322
 msgid "Advanced SMTP Configuration"
@@ -208,14 +202,12 @@ msgstr "permitir mensaje"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:815
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:833
-#, fuzzy
 msgid "unknown action"
-msgstr "desconocido"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:825
-#, fuzzy
 msgid "drop message"
-msgstr "permitir mensaje"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:827
 msgid "quarantine message"
@@ -258,9 +250,8 @@ msgid "sender"
 msgstr "remitente"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:898
-#, fuzzy
 msgid "spam score"
-msgstr "Valor de correo basura"
+msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spamassassin/settings.js:903
 msgid "server"
@@ -322,7 +313,7 @@ msgstr "PERMITIR"
 #: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:125
 #, fuzzy
 msgid "Messages dropped"
-msgstr "Mensajes permitidos"
+msgstr "Mensajes bloqueados"
 
 #: ../../spam-base/impl/com/untangle/node/spam/SpamNodeImpl.java:125
 msgid "DROP"
@@ -381,12 +372,11 @@ msgid "Daily Spam Rate"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spamassassin.py:23
-#, fuzzy
 msgid "Top Ten Spammed"
-msgstr "Super Bloqueo de Spam"
+msgstr ""
 
-#~ msgid "Block"
-#~ msgstr "Bloquear"
+#~ msgid "Drop Super Spam from Quarantine"
+#~ msgstr "Eliminar Super Spam de la cuarentena"
 
 #~ msgid "Enable Spam Headers"
 #~ msgstr "Usar encabezados Spam"
@@ -397,14 +387,35 @@ msgstr "Super Bloqueo de Spam"
 #~ msgid "block message"
 #~ msgstr "bloquear mensaje"
 
-#~ msgid "Messages blocked"
-#~ msgstr "Mensajes bloqueados"
+#~ msgid "SPAM score"
+#~ msgstr "Valor de correo basura"
+
+#~ msgid "Block"
+#~ msgstr "Bloquear"
+
+#~ msgid "Low (Strength: 5.0)"
+#~ msgstr "Bajo (Intensidad: 5.0)"
+
+#~ msgid "Medium (Strength: 4.3)"
+#~ msgstr "Medio (Intensidad: 4.3)"
+
+#~ msgid "High (Strength: 3.5)"
+#~ msgstr "Alto (Intensidad: 3.5)"
+
+#~ msgid "Very High (Strength: 3.3)"
+#~ msgstr "Muy Alto (Intensidad: 3.3)"
+
+#~ msgid "Extreme (Strength: 3.0)"
+#~ msgstr "Extremo (Intensidad: 3.0)"
 
 #~ msgid "BLOCK"
 #~ msgstr "BLOQUEAR"
 
 #~ msgid "Enable Super Spam Blocking"
 #~ msgstr "Usar Super Bloqueo de Spam"
+
+#~ msgid "Super Spam Level"
+#~ msgstr "Super Bloqueo de Spam"
 
 #~ msgid "Fail Closed"
 #~ msgstr "Falla cerrada"
