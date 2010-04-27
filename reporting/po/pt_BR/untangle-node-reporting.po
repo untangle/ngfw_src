@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Untangle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-02-09 16:23-0800\n"
-"PO-Revision-Date: 2008-11-24 19:35-0800\n"
-"Last-Translator: Claudia\n"
+"PO-Revision-Date: 2010-03-26 04:37-0700\n"
+"Last-Translator: Andre Cardoso <andrecv@hsbs.com.br>\n"
 "Language-Team: Portuguese <claudia@englishtoportuguese.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Translate Toolkit 1.1.1\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Pootle 1.1.0\n"
 "X-Poedit-Language: Portuguese\n"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:55
@@ -29,9 +29,8 @@ msgstr "Ver relatórios"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:150
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:252
-#, fuzzy
 msgid "Online Reports"
-msgstr "Ver relatórios"
+msgstr "Relatórios Online"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:158
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:248
@@ -41,7 +40,7 @@ msgstr "Relatórios diários"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:166
 msgid "change password"
-msgstr ""
+msgstr "trocar senha"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:183
 msgid "Generation"
@@ -53,12 +52,12 @@ msgstr "E-mail"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:199
 msgid "Reports Recipients and Users"
-msgstr ""
+msgstr "Destinatários e Usuários de Relatórios"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:231
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:242
 msgid "Email Address (username)"
-msgstr ""
+msgstr "Endereço de E-mail (Nome de Usuário)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:237
 msgid "The email address cannot be blank."
@@ -72,36 +71,35 @@ msgstr "O endereço de e-mail não pode ficar em branco."
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:259
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:524
 msgid "Password"
-msgstr ""
+msgstr "Senha"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:260
 msgid "(required for 'Online Reports')"
-msgstr ""
+msgstr "(necessário para 'Relatórios Online')"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:263
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:527
 msgid "The password is shorter than the minimum {0} characters."
-msgstr ""
+msgstr "A senha é menos que o mínimo de {0} caracteres."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:270
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:534
 msgid "Confirm Password"
-msgstr ""
+msgstr "Confirme a Senha"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:275
 msgid "Email Attachment Settings"
-msgstr ""
+msgstr "Configurações de Anexos de E-mail"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:278
 msgid "Attach Detailed Report Logs to Email (CSV Zip File)"
-msgstr ""
+msgstr "Incluir Logs Detalhados dos Relatórios  no E-mail (Arquivo CSV Zipado)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:291
 msgid "Attachment size limit (MB)"
-msgstr ""
+msgstr "Limite do arquivo anexado (MB)"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:310
-#, fuzzy
 msgid "Daily Reports"
 msgstr "Relatórios diários"
 
@@ -209,32 +207,32 @@ msgid ""
 "Limit Data Retention to a number of days. The smaller the number the lower "
 "the disk space requirements and resource usage during report generation."
 msgstr ""
+"Limita a Retenção de Dados a um número de dias. Quanto menor for esse "
+"número, menor será o espaço em disco necessário e o consumo de recursos "
+"durante a geração do relatório."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:468
 #, fuzzy
 msgid "Limit Data Retention"
-msgstr "Limitar retenção de dados"
+msgstr "Limitar Retenção de Dados"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:487
-#, fuzzy
 msgid "Reports Retention"
-msgstr "Retenção de dados"
+msgstr "Retenção de Relatórios"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:492
 msgid "Keep old reports on the server for this number of days."
-msgstr ""
+msgstr "Manter relatórios antigos no servidor por esse número de dias."
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:495
-#, fuzzy
 msgid "Reports Retention days"
-msgstr "Retenção de dados"
+msgstr "Dias para Retenção dos Relatórios"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:547
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:573
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:589
-#, fuzzy
 msgid "Name Map"
-msgstr "Nome"
+msgstr "Mapa de Nomes"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:550
 msgid "[no name]"
@@ -261,9 +259,8 @@ msgid "Validation failed"
 msgstr "Falha de validação"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:645
-#, fuzzy
 msgid "Please Try Again"
-msgstr "Aguarde"
+msgstr "Por favor, Tente Novamente"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:647
 msgid "Failed"
@@ -279,7 +276,7 @@ msgstr "Aguarde"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-reporting/settings.js:756
 msgid "[reports only user]"
-msgstr ""
+msgstr "[usuário apenas para relatórios]"
 
 #~ msgid "Recipients"
 #~ msgstr "Recipientes"
@@ -298,15 +295,15 @@ msgstr ""
 #~ "This makes emailed reports larger, but includes information about each "
 #~ "incident/violation."
 #~ msgstr ""
-#~ "Isto torna os relatórios enviados por e-mail maiores, mas inclui "
-#~ "informações sobre cada incidente/violação."
+#~ "Isto torna os relatórios enviados por e-mail maiores, mas inclui informações "
+#~ "sobre cada incidente/violação."
 
 #~ msgid ""
-#~ "Limits data retention to one week, this allows reports to run faster on "
-#~ "high traffic sites."
+#~ "Limits data retention to one week, this allows reports to run faster on high "
+#~ "traffic sites."
 #~ msgstr ""
-#~ "Limita a retenção de dados em uma semana, permitindo que os relatórios "
-#~ "sejam executados com mais rapidez em sites de alto tráfego."
+#~ "Limita a retenção de dados em uma semana, permitindo que os relatórios sejam "
+#~ "executados com mais rapidez em sites de alto tráfego."
 
 #~ msgid "Keep One Week's Data"
 #~ msgstr "Manter os dados de uma semana"
