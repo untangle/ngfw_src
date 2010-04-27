@@ -2,14 +2,13 @@
 # Copyright (C) YEAR Untangle, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-02 14:20-0800\n"
-"PO-Revision-Date: 2009-02-15 00:16-0800\n"
-"Last-Translator: Noah Lubarsky <nclubarsky@hotmail.com>\n"
+"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"PO-Revision-Date: 2010-04-04 00:52+0900\n"
+"Last-Translator: kazu.nito@gmail.com <Nito Kazunori>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,8 +17,8 @@ msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:32
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:194
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:228
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:262
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:248
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:302
 msgid "Block Lists"
 msgstr "ブロックリスト"
 
@@ -41,19 +40,19 @@ msgstr "None"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:67
 msgid "Temporary"
-msgstr "テンポラリ"
+msgstr "一時的"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:68
 msgid "Permanent and Global"
-msgstr "パーマネントとグローバル"
+msgstr "常設とグローバル"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:84
 msgid "Cookies"
-msgstr "Cookies"
+msgstr "クッキー"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:87
 msgid "Block Tracking & Ad Cookies"
-msgstr "トラッキングとAd Cookiesをブロック"
+msgstr "トラッキングとAd クッキーをブロック"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:101
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:137
@@ -67,11 +66,11 @@ msgstr "ActiveX"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:110
 msgid "Block Malware ActiveX Installs"
-msgstr "Malware ActiveXインストールをブロック"
+msgstr "マルウェアActiveXインストールをブロック"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:123
 msgid "Block All ActiveX"
-msgstr "すべてのActiveXをブロック"
+msgstr "全てのActiveXをブロック"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:143
 msgid "Traffic"
@@ -83,199 +82,208 @@ msgstr "不審なトラフィックをモニター"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:167
 msgid "Spyware Blocker signatures were last updated"
-msgstr "スパイウェアブロッカーシグネチャーが前回アップデートされました"
+msgstr "スパイウェアブロッカーの特徴がアップデートされました"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:169
 msgid "Unknown"
 msgstr "不明"
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:199
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:300
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:360
 msgid "Cookies List"
-msgstr "Cookiesリスト"
+msgstr "クッキーリスト"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:233
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:357
-msgid "ActiveX List"
-msgstr "ActiveXリスト"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:267
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:415
-msgid "Subnet List"
-msgstr "サブネットリスト"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:286
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:343
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:583
-msgid "block"
-msgstr "ブロック"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:296
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:353
-msgid "[no identification]"
-msgstr "[ＩＤ無し]"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:298
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:355
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:413
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:508
-msgid "[no description]"
-msgstr "[記述無し]"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:316
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:373
-msgid "identification"
-msgstr "アイデンティフィケーション"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:330
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:387
-msgid "Identification"
-msgstr "アイデンティフィケーション"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:336
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:393
-msgid "Block"
-msgstr "ブロック"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:400
-msgid "log"
-msgstr "ログ"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:411
-msgid "[no name]"
-msgstr "[名前無し]"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:433
-msgid "name"
-msgstr "名前"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:441
-msgid "subnet"
-msgstr "サブネット"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:455
-msgid "Name"
-msgstr "名前"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:461
-msgid "Subnet"
-msgstr "サブネット"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:467
-msgid "Log"
-msgstr "ログ"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:475
-msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
-msgstr "指定した\"URL\"は安全なhttpを使用しているため、ブロックされませんでした。"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:487
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:535
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:557
-msgid "Invalid \"URL\" specified"
-msgstr "無効な\"URL\"が特定された"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:493
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:583
-msgid "pass"
-msgstr "パス"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:507
-msgid "[no category]"
-msgstr "[カテゴリー無し]"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:510
-msgid "Pass List"
-msgstr "パスリスト"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:529
-msgid "site"
-msgstr "サイト"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:539
-msgid "description"
-msgstr "記述"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:553
-msgid "Site"
-msgstr "サイト"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:561
-msgid "Pass"
-msgstr "パス"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:565
-msgid "Description"
-msgstr "記述"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:608
-msgid "in Subnet List"
-msgstr "サブネットリスト内"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:611
-msgid "in ActiveX List"
-msgstr "ActiveXリスト内"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:614
-msgid "in URL List"
-msgstr "URLリスト内"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:617
-msgid "in Cookie List"
-msgstr "Coockieリスト内"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:624
-msgid "timestamp"
-msgstr "タイムスタンプ"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:632
-msgid "action"
-msgstr "アクション"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:637
-msgid "client"
-msgstr "クライアント"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:644
-msgid "request"
-msgstr "リクエスト"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:649
-msgid "reason for action"
-msgstr "アクションの理由"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:654
-msgid "server"
-msgstr "サーバー"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:727
-msgid "Invalid subnet specified"
-msgstr "無効なサブネットが特定された"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:735
-msgid "Validation failed"
-msgstr "バリデーション失敗"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:739
-msgid "Failed"
-msgstr "失敗"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:754
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:203
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:257
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:311
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:822
 msgid "Saving..."
 msgstr "保存中..."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:754
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:203
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:257
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:311
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:822
 msgid "Please wait"
-msgstr "お待ちください"
+msgstr "しばらくお待ちください"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:253
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:417
+msgid "ActiveX List"
+msgstr "ActiveXリスト"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:307
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:475
+msgid "Subnet List"
+msgstr "サブネットリスト"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:346
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:403
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:643
+msgid "block"
+msgstr "ブロック"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:356
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:413
+msgid "[no identification]"
+msgstr "[ＩＤ無し]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:358
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:415
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:473
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:568
+msgid "[no description]"
+msgstr "[記述無し]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:376
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:433
+msgid "identification"
+msgstr "識別"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:390
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:447
+msgid "Identification"
+msgstr "識別"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:396
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:453
+msgid "Block"
+msgstr "ブロック"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:460
+msgid "log"
+msgstr "ログ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:471
+msgid "[no name]"
+msgstr "[名前無し]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:493
+msgid "name"
+msgstr "名前"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:501
+msgid "subnet"
+msgstr "サブネット"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:515
+msgid "Name"
+msgstr "名前"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:521
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:858
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1111
+msgid "Subnet"
+msgstr "サブネット"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:527
+msgid "Log"
+msgstr "ログ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:535
+msgid "\"URL\" specified cannot be blocked because it uses secure http (https)"
+msgstr "指定した\"URL\"はセキュアhttpを使用しているため、ブロックされませんでした。"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:547
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:595
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:617
+msgid "Invalid \"URL\" specified"
+msgstr "無効な\"URL\"が特定された"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:553
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:643
+msgid "pass"
+msgstr "パス"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:567
+msgid "[no category]"
+msgstr "[カテゴリー無し]"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:570
+msgid "Pass List"
+msgstr "パスリスト"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:589
+msgid "site"
+msgstr "サイト"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:599
+msgid "description"
+msgstr "説明"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:613
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:603
+msgid "Site"
+msgstr "サイト"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:621
+msgid "Pass"
+msgstr "パス"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:625
+msgid "Description"
+msgstr "説明"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:668
+msgid "in Subnet List"
+msgstr "サブネットリスト内"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:671
+msgid "in ActiveX List"
+msgstr "ActiveXリスト内"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:674
+msgid "in URL List"
+msgstr "URLリスト内"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:677
+msgid "in Cookie List"
+msgstr "クッキーリスト内"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:684
+msgid "timestamp"
+msgstr "タイムスタンプ"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:692
+msgid "action"
+msgstr "アクション"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:697
+msgid "client"
+msgstr "クライアント"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:704
+msgid "request"
+msgstr "リクエスト"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:709
+msgid "reason for action"
+msgstr "アクションの理由"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:714
+msgid "server"
+msgstr "サーバー"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:787
+msgid "Invalid subnet specified"
+msgstr "無効なサブネットが特定された"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:795
+msgid "Validation failed"
+msgstr "バリデーション失敗"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-spyware/settings.js:801
+msgid "Please Try Again"
+msgstr "もう一度やり直してください"
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:58
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:69
 msgid "Feature is not installed."
-msgstr "フィーチャーはインストールされない"
+msgstr "機能がインストールされていません。"
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:78
 msgid "This request has expired."
-msgstr "このリクエストは切れました"
+msgstr "このリクエストは切れました。"
 
 #: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:108
 #, java-format
@@ -287,21 +295,21 @@ msgstr "{0} |スパイウェアブロッカー警告"
 msgid "{0} Spyware Blocker"
 msgstr "{0}スパイウェアブロッカー"
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:131
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:136
 #, java-format
 msgid ""
 "{0}This web page was blocked{1} because it may be designed to steal personal "
 "information."
-msgstr "{0}このウェブページはブロックされました{1}個人情報を盗むようデザインされているかもしれないので"
+msgstr "{0}このウェブページはブロックされました{1}個人情報を盗むようデザインされているかもしれません。"
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:67
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:87
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr "ご質問があれば、{0}にご連絡ください"
 
 #: ../impl/com/untangle/node/spyware/SpywareAccessFilter.java:27
-msgid "Access Events"
-msgstr "スイベントにアクセス"
+msgid "Traffic Events"
+msgstr "トラフィックイベント"
 
 #: ../impl/com/untangle/node/spyware/SpywareActiveXFilter.java:27
 msgid "ActiveX Events"
@@ -312,57 +320,330 @@ msgid "All Events"
 msgstr "すべてのイベント"
 
 #: ../impl/com/untangle/node/spyware/SpywareBlacklistFilter.java:27
-msgid "Blacklist Events"
-msgstr "ブラックリストイベント"
+msgid "Web Events"
+msgstr "ウェブイベント"
 
 #: ../impl/com/untangle/node/spyware/SpywareBlockedFilter.java:27
 msgid "Blocked Events"
 msgstr "ブロックされたイベント"
 
 #: ../impl/com/untangle/node/spyware/SpywareCookieFilter.java:27
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1004
 msgid "Cookie Events"
-msgstr "Cookieイベント"
+msgstr "クッキーイベント"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "Pages scanned"
 msgstr "スキャンしたページ"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:213
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "SCAN"
 msgstr "スキャン"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
 msgid "Pages blocked"
 msgstr "ブロックしたページ"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:214
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
 msgid "BLOCK"
 msgstr "ブロック"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
 msgid "Pages passed"
 msgstr "パスしたページ"
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:215
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
 msgid "PASS"
 msgstr "パス"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:95
+msgid "Summary Report"
+msgstr "サマリーレポート"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:222
+msgid "scanned"
+msgstr "スキャンする"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:223
+msgid "web hits and blocked"
+msgstr "ウェブヒットとブロック"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:224
+msgid "activities"
+msgstr "動作中"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:269
+msgid "Hourly Blocked Incidents"
+msgstr "時間毎のインシデントをブロック"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:319
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:501
+msgid "Avg URLs Blocked"
+msgstr "平均URLブロック数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:321
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:324
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:328
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:331
+msgid "blocks/hour"
+msgstr "ブロック/時"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:323
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:504
+msgid "Max URLs Blocked"
+msgstr "最大URLブロック数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:326
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:785
+#, fuzzy
+msgid "Avg Cookies Blocked"
+msgstr "平均のクッキーブロック数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:330
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:788
+#, fuzzy
+msgid "Max Cookies Blocked"
+msgstr "最大のクッキーブロック数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:365
+#, fuzzy
+msgid "Avg Suspicious Traffic"
+msgstr "不審なトラフィックをモニター"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:367
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:370
+msgid "detected/hour"
+msgstr "検出/時"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:369
+#, fuzzy
+msgid "Max Suspicious Traffic"
+msgstr "不審なトラフィックをモニター"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:418
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1010
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1054
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1099
+msgid "Time"
+msgstr "時間"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:419
+msgid "Hits per Minute"
+msgstr "１分あたりのヒット数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:422
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:550
+#, fuzzy
+msgid "URLs"
+msgstr "URL:"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:423
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:801
+#, fuzzy
+msgid "cookies"
+msgstr "クッキー"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:451
+msgid "Detections"
+msgstr "検出"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:458
+msgid "Daily Blocked URLs"
+msgstr "１日のURLブロック数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:502
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:505
+msgid "hits/day"
+msgstr "ヒット/日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:545
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:796
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:993
+msgid "Date"
+msgstr "日付"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:546
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:604
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:661
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:718
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:797
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:859
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:917
+msgid "Blocks per Day"
+msgstr "1日あたりのブロック数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:556
+msgid "Top Ten Blocked Spyware Sites By Hits"
+msgstr "トップ10のブロックされたスパイウェアサイトのヒット数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:595
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:651
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:709
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:850
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:907
+msgid "hits"
+msgstr "ヒット数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:612
+msgid "Top Ten Blocked Hosts By Hits"
+msgstr "トップ10のブロックされたホストのヒット数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:660
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:916
+#, fuzzy
+msgid "Host"
+msgstr "ホスト："
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:669
+msgid "Top Ten Blocked Cookies"
+msgstr "トップ10のブロックされたクッキー"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:717
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1022
+#, fuzzy
+msgid "Cookie"
+msgstr "クッキー"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:726
+msgid "Blocked Cookies"
+msgstr "クッキーブロック数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:786
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:788
+msgid "blocks/day"
+msgstr "ブロック/日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:808
+msgid "Top Ten Suspicious Traffic Networks"
+msgstr "トップ10の不審ネットワークトラフィック"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:867
+msgid "Top Ten Suspicious Traffic Hosts By Hits"
+msgstr "トップ10の不審なトラフィックホストのヒット数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:925
+msgid "Suspicious Traffic Detected"
+msgstr "不審なトラフィックの検出"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:982
+#, fuzzy
+msgid "Avg Suspicious Detected"
+msgstr "平均の不審検出数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:983
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:985
+msgid "/day"
+msgstr "/日"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:985
+#, fuzzy
+msgid "Max Suspicious Detected"
+msgstr "最大の不審検出数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:994
+msgid "Detections per Day"
+msgstr "1日あたりの検出数"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:998
+msgid "detections"
+msgstr "検出"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1013
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1015
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1057
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1059
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1102
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1104
+#, fuzzy
+msgid "Client"
+msgstr "クライアント"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1018
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1020
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1062
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1064
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1107
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1109
+msgid "User"
+msgstr "ユーザ"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1023
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1068
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1112
+msgid "Server IP"
+msgstr "サーバIPアドレス"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1024
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1069
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1113
+msgid "Server Port"
+msgstr "サーバポート"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1048
+#, fuzzy
+msgid "URL Blocklist Events"
+msgstr "ブラックリストイベント"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1066
+#, fuzzy
+msgid "Server"
+msgstr "サーバー"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1067
+msgid "URI"
+msgstr "URI"
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1093
+msgid "Subnet Events"
+msgstr "サブネットイベント"
+
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Host:"
 msgstr "ホスト："
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:75
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:77
 msgid "Reason:"
 msgstr "理由："
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:87
 msgid "Unblock For Now"
 msgstr "現時点においてブロックしない"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:93
 msgid "Unblock Permanently"
 msgstr "永久にブロックしない"
+
+#~ msgid "Hourly Spyware Incidents"
+#~ msgstr "1時間毎のスパイウェアインシデント"
+
+#, python-format
+#~ msgid "avg URLs blocked (%s-day)"
+#~ msgstr "平均URLブロック数 (%s日)"
+
+#, python-format
+#~ msgid "max cookies blocked (%s-day)"
+#~ msgstr "最大クッキーブロック数(%s日)"
+
+#, python-format
+#~ msgid "avg suspicious detected (%s-day)"
+#~ msgstr "平均"
+
+#~ msgid "Hour of Day"
+#~ msgstr "時間の日"
+
+#~ msgid "Avg URLs blocked (7-days)"
+#~ msgstr "平均URLブロック数(7日)"
+
+#~ msgid "Max URLs blocked (7-days)"
+#~ msgstr "最大URLブロック数(7日)"
+
+#~ msgid "Failed"
+#~ msgstr "失敗"
+
+#, python-format
+#~ msgid "Access Events"
+#~ msgstr "アクセスイベント"
