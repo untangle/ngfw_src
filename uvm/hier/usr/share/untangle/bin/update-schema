@@ -270,60 +270,6 @@ def run_schema_convert(dbh, dir, type, n)
   run_file(dbh, f)
 end
 
-def pre50_hacks(dbh)
-  ps = dbh.prepare(<<SQL)
-UPDATE settings.split_schema_ver SET component = ?
-WHERE component = ?
-SQL
-
-  { 'uvm' => 'mvvm',
-    'untangle-node-webfilter' => 'httpblocker-transform',
-    'untangle-node-openvpn' => 'openvpn-transform',
-    'untangle-node-ips' => 'ids-transform',
-    'untangle-node-sigma' => 'sigma-transform',
-    'untangle-node-spamassassin' => 'spamassassin-transform',
-    'untangle-node-reporting' => 'reporting-transform',
-    'untangle-node-protofilter' => 'protofilter-transform',
-    'untangle-node-clam' => 'clam-transform',
-    'untangle-node-test' => 'test-transform',
-    'untangle-node-router' => 'nat-transform',
-    'untangle-node-spyware' => 'spyware-transform',
-    'untangle-node-firewall' => 'firewall-transform',
-    'untangle-node-shield' => 'airgap-transform',
-    'untangle-node-phish' => 'clamphish-transform',
-    'untangle-node-portal' => 'portal-transform',
-    'untangle-node-hauri' => 'hauri-transform',
-    'untangle-node-kav' => 'kav-transform',
-    'untangle-node-boxbackup' => 'boxbackup-transform',
-    'untangle-casing-ftp' => 'ftp-casing',
-    'untangle-casing-http' => 'http-casing',
-    'untangle-casing-mail' => 'mail-casing',
-    'untangle-base-virus' => 'virus-base',
-    'untangle-base-spam' => 'spam-base'
-  }.each_pair do |k, v|
-    ps.bind_param(1, k)
-    ps.bind_param(2, v)
-    ps.execute()
-  end
-end
-
-def pre52_hacks(dbh)
-  ps = dbh.execute(<<SQL)
-DELETE FROM settings.split_schema_ver WHERE component = 'rupuvm';
-SQL
-end
-
-def pre60_hacks(dbh)
-  begin
-    ps = dbh.execute(<<SQL)
-UPDATE settings.split_schema_ver SET component = 'untangle-base-webfilter'
-WHERE component = 'untangle-node-webfilter'
-SQL
-  rescue DBI::DatabaseError => e
-    SqlHelper.log_sql_error("Could not do 6.0 hacks", e)
-  end
-end
-
 def setup_schema(dbh)
   begin
     dbh.do('CREATE SCHEMA settings')
@@ -363,9 +309,6 @@ begin
   dbh = DBI.connect('DBI:Pg:uvm', 'postgres')
 
   setup_schema(dbh)
-  pre50_hacks(dbh)
-  pre52_hacks(dbh)
-  pre60_hacks(dbh)
 
   latest_version = get_latest_version(SCHEMA_DIR, TYPE)
   inst_version = get_inst_version(dbh, COMPONENT, TYPE)
