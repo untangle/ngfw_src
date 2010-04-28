@@ -163,7 +163,9 @@ class AddressManagerImpl implements LocalAddressManager
         AddressSettings settings = this.addressSettings.toSettings();
         String hostname = properties.getProperty( "com.untangle.networking.hostname" );
         try {
-            if ( hostname == null ) settings.setHostName( null );
+            if ( hostname == null ) {
+                settings.setHostName( HostName.parse( LocalUvmContextFactory.context().brandingManager().getCompanyName().toLowerCase() + ".example.com") );
+            }
             else {
                 settings.setHostName( HostName.parse( hostname ));
             }

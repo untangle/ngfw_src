@@ -1719,7 +1719,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             if ( hostname == null ) {
                 hostname = "example.com";
             }
-            this.panel.find( "name", "from-address-textfield" )[0].setValue( "untangle@" + hostname );
+            this.panel.find( "name", "from-address-textfield" )[0].setValue( oemName.toLowerCase() + "@" + hostname );
         }
 
         this.isInitialized = true;
@@ -1798,7 +1798,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
     {
         var settings = Ung.SetupWizard.CurrentValues.mailSettings;
 
-        settings.fromAddress = "untangle@" + Ung.SetupWizard.CurrentValues.addressSettings.hostName;
+        settings.fromAddress = oemName.toLowerCase() + "@" + Ung.SetupWizard.CurrentValues.addressSettings.hostName;
         settings.useMxRecords = true;
         settings.smtpHost = "";
         settings.smtpPort = 25;
