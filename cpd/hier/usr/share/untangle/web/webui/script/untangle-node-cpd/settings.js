@@ -37,14 +37,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
             // builds the tabs
             this.buildCaptiveHosts();
             this.buildPassedHosts();
-            this.buildUserAuthentication();
             this.buildCaptivePage();
+            this.buildUserAuthentication();
             this.buildLoginEventLog();
             this.buildBlockEventLog();
 
             // builds the tab panel with the tabs
-            this.buildTabPanel([ this.panelCaptiveHosts, this.panelPassedHosts, this.panelUserAuthentication,
-                                 this.panelCaptivePage, this.gridLoginEventLog, this.gridBlockEventLog ]);
+            this.buildTabPanel([ this.panelCaptiveHosts, this.panelPassedHosts, this.panelCaptivePage, 
+                                 this.panelUserAuthentication, this.gridLoginEventLog, this.gridBlockEventLog ]);
 
             Ung.CPD.superclass.initComponent.call(this);
         },
