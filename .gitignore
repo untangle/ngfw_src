@@ -1,0 +1,6 @@
+dist/*
+downloads/*
+staging/*
+taskstamps.txt
+*~
+\#*#
