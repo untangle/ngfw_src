@@ -144,8 +144,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         return tomcatManager.loadSystemApp(urlBase, rootDir);
     }
 
-    public ServletContext loadSystemApp(String urlBase, String rootDir,
-                                        Valve valve)
+    public ServletContext loadSystemApp(String urlBase, String rootDir, Valve valve)
     {
         return tomcatManager.loadSystemApp(urlBase, rootDir, valve);
     }
@@ -155,8 +154,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         return tomcatManager.loadGlobalApp(urlBase, rootDir);
     }
 
-    public ServletContext loadGlobalApp(String urlBase, String rootDir,
-                                        Valve valve)
+    public ServletContext loadGlobalApp(String urlBase, String rootDir, Valve valve)
     {
         return tomcatManager.loadGlobalApp(urlBase, rootDir, valve);
     }
@@ -166,8 +164,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         return tomcatManager.loadInsecureApp(urlBase, rootDir);
     }
 
-    public ServletContext loadInsecureApp(String urlBase, String rootDir,
-                                          Valve valve)
+    public ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve)
     {
         return tomcatManager.loadInsecureApp(urlBase, rootDir, valve);
     }
@@ -193,14 +190,10 @@ class AppServerManagerImpl implements LocalAppServerManager
         tomcatManager.setRootWelcome(welcomeFile);
     }
 
-
     public String getRootWelcome()
     {
         return tomcatManager.getRootWelcome();
     }
-
-    //TODO bscott Sometime in the next two years we need a way for them
-    //     to roll to a new key while maintaing their existing signed cert.
 
     public boolean regenCert(RFC2253Name dn, int durationInDays)
     {

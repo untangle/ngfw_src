@@ -449,7 +449,7 @@ class ToolboxManagerImpl implements ToolboxManager
             List<String> subnodes = null;
 
             if (isInstalled(name)) {
-                logger.warn("mackage " + name + " already installed, debouncing");
+                logger.warn("mackage " + name + " already installed, ignoring");
                 //fix for bug #7675
                 //throw new MackageInstallException("package " + name + " already installed");
                 return;

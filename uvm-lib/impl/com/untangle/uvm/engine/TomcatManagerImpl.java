@@ -175,24 +175,21 @@ public class TomcatManagerImpl implements LocalTomcatManager
      * @param ksPass the password for the keystore file
      * @param ksAlias the alias within the KeyStore file
      */
-    void setSecurityInfo(String ksFile, String ksPass, String ksAlias)
-        throws Exception
+    void setSecurityInfo(String ksFile, String ksPass, String ksAlias) throws Exception
     {
         this.keystoreFile = ksFile;
         this.keystorePass = ksPass;
         this.keyAlias = ksAlias;
     }
 
-    public ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm,
-                                 AuthenticatorBase auth)
+    public ServletContext loadPortalApp(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
     {
         // Need a large timeout since we handle that ourselves.
         WebAppOptions options = new WebAppOptions(false, 24*60);
         return loadWebApp(urlBase, rootDir, realm, auth, options);
     }
 
-    ServletContext loadSystemApp(String urlBase, String rootDir,
-                                 WebAppOptions options)
+    ServletContext loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
     {
         return loadWebApp(urlBase, rootDir, null, null, options);
     }
@@ -206,8 +203,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
         return loadSystemApp(urlBase, rootDir, new WebAppOptions());
     }
 
-    ServletContext loadGlobalApp(String urlBase, String rootDir,
-                                 WebAppOptions options)
+    ServletContext loadGlobalApp(String urlBase, String rootDir, WebAppOptions options)
     {
         return loadWebApp(urlBase, rootDir, null, null, options);
     }
@@ -270,12 +266,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
         }
     }
 
-    // XXX exception handling
-    synchronized void startTomcat(int internalHTTPPort,
-                                  int internalHTTPSPort,
-                                  int externalHTTPSPort,
-                                  int internalOpenHTTPSPort)
-        throws Exception
+    synchronized void startTomcat(int internalHTTPPort, int internalHTTPSPort, int externalHTTPSPort, int internalOpenHTTPSPort) throws Exception
     {
         // Change for 4.0: Put the Tomcat class loader insdie the UVM
         // class loader.
@@ -297,6 +288,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
             // start operation
             try {
                 emb.start();
+                logger.info("jkConnector started");
             } catch (LifecycleException exn) {
                 // Note -- right now wrapped is always null!  Thus the
                 // following horror:
@@ -318,7 +310,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
                                         logger.info("Tomcat successfully started");
                                         break;
                                     } catch (InterruptedException x) {
-                                        logger.warn( "Interrupted while trying to start tomcat, returning. BUG 7337");
+                                        logger.warn( "Interrupted while trying to start tomcat, returning. BUG 7337", x);
                                         return;
                                     } catch (LifecycleException x) {
                                         boolean isAddressInUse = isAIUExn(x);
@@ -345,6 +337,8 @@ public class TomcatManagerImpl implements LocalTomcatManager
             Thread.currentThread().setContextClassLoader(uvmCl);
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
+
+        logger.info("Tomcat started");
     }
 
     void resetRootWelcome()
