@@ -44,8 +44,7 @@
     <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="ALL"/>
     <layout class="com.untangle.uvm.logging.UtPatternlayout">
-      <param name="ConversionPattern"
-             value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
     </layout>
   </appender>
 
@@ -57,8 +56,7 @@
          name in there.  Instead we provide the Conversion Pattern
          here at the top level so that the SmtpAppender constructor
          can create the correct layout. -->
-    <param name="LayoutConversionPattern"
-             value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"
+    <param name="LayoutConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
   </appender>
 
   <category name="org.apache.catalina">
