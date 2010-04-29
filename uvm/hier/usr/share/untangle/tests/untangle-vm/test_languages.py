@@ -26,7 +26,7 @@ class TestLanguages(UvmSetup):
         language_list = language_manager.getLanguagesList()["list"]
 
         ## This actually creates 4 different test cases.
-        for x in ( "en", "de", "zh", "pt_BR", "fr", "es", "zh_CN", "ga", "nl" ):
+        for x in ( "en", "de", "zh", "pt_BR", "fr", "es", "zh_CN", "nl" ):
             yield self.check_language, language_list, x
 
             
