@@ -31,7 +31,11 @@ class CurlRequestHandler(object):
         self.__curl.setopt( pycurl.VERBOSE, False )
         self.__curl.setopt( pycurl.POSTFIELDS, str( postdata ))
         self.__curl.setopt( pycurl.WRITEFUNCTION, response.write )
-        self.__curl.perform()
+        try:
+            self.__curl.perform()
+        except Exception, e:
+            print "Problem while asking for " + url
+            raise e
 
         if ( self.__curl.getinfo( pycurl.HTTP_CODE ) != 200 ): raise JSONRPCException("Invalid username or password")
 
