@@ -78,6 +78,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private static final String BASENAME_COMMUNITY_PREFIX = "i18n.community";
     private static final String BASENAME_OFFICIAL_PREFIX = "i18n.official";
     private static final String LANGUAGES_CFG = "lang.cfg";
+    private static final String BLACKLIST_CFG = "blacklist.cfg";
     private static final String COUNTRIES_CFG = "country.cfg";
     private static final String LC_MESSAGES = "LC_MESSAGES";
     private static final int BUFFER = 2048;
@@ -87,6 +88,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
     private final UvmContextImpl uvmContext;
     private LanguageSettings settings;
     private Map<String, String> allLanguages;
+    private ArrayList<String> blacklist;
     private Map<String, String> allCountries;
 
     static {
@@ -124,6 +126,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         uvmContext.runTransaction(tw);
 
         allLanguages = loadAllLanguages();
+        blacklist = loadBlacklist();
         allCountries = loadAllCountries();
         
         LocalUvmContextFactory.context().uploadManager().registerHandler(new LanguageUploadHandler());
@@ -311,20 +314,22 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         Set<String> availableLanguages = new HashSet<String>();
         // add default language
         availableLanguages.add(DEFAULT_LANGUAGE);
-        // get available official languages
+
+        // Add languages for which we have translations:
+        //  * available official languages
         Collections.addAll(availableLanguages, (new File(LANGUAGES_OFFICIAL_DIR)).list());
-        // get available community languages
+        //  * available community languages
         Collections.addAll(availableLanguages, (new File(LANGUAGES_COMMUNITY_DIR)).list());
 
-        // From all languages from config file, keep only the
-        // one which we have translations for
         for (String code : availableLanguages) {
             String tokens[] = code.split("_");
             String langCode = tokens[0];
             String langName = allLanguages.get(langCode);
             String countryCode = tokens.length == 2 ? tokens[1] : null;
             String countryName = countryCode == null ? null : allCountries.get(countryCode);
-            locales.add(new LocaleInfo(langCode, langName, countryCode, countryName));
+            if (! blacklist.contains(code)) {
+                locales.add(new LocaleInfo(langCode, langName, countryCode, countryName));
+            }
         }
 
         return locales;
@@ -404,6 +409,27 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         this.settings = saver.saveData(settings);
     }
 
+    private ArrayList<String> loadBlacklist() {
+        ArrayList<String> bl = new ArrayList<String>();
+
+        // Reading from config file
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + BLACKLIST_CFG));
+            String s = new String();
+            while((s = in.readLine())!= null) {
+                s = s.trim();
+                if (s.length() > 0){
+                    bl.add(s);
+                }
+            }
+            in.close();
+        } catch (IOException e) {
+            logger.warn("Failed getting blacklisted languages!", e);
+        }
+
+        return bl;
+    }
+
     private Map<String, String> loadAllLanguages() {
         Map<String, String> languages = new HashMap<String, String>();
 
@@ -412,11 +438,12 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             BufferedReader in = new BufferedReader(new FileReader(LANGUAGES_DIR + File.separator + LANGUAGES_CFG));
             String s = new String();
             while((s = in.readLine())!= null) {
-                if (s.trim().length() > 0){
+                s = s.trim();
+                if (s.length() > 0){
                     String[] tokens = s.split("\\s+");
                     if (tokens.length >= 2) {
                         String langCode = tokens[0];
-                        String langName = s.replaceFirst(langCode, "").trim();
+                        String langName = tokens[1];
                         languages.put(langCode, langName);
                     }
                 }
