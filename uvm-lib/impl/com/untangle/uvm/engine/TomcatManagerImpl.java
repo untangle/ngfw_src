@@ -277,6 +277,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
             Thread.currentThread().setContextClassLoader(tomcatParent);
 
             Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
+            jkConnector.setProperty("port", "8009");
             jkConnector.setProperty("address", "127.0.0.1");
             jkConnector.setProperty("tomcatAuthentication", "false");
             String secret = getSecret();
@@ -330,6 +331,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
                     new Thread(tryAgain, "Tomcat starter").start();
                 } else {
                     // Something else, just die die die.
+                    logger.warn("Exception starting Tomcat",exn);
                     throw exn;
                 }
             }
