@@ -268,76 +268,65 @@ public class TomcatManagerImpl implements LocalTomcatManager
 
     synchronized void startTomcat(int internalHTTPPort, int internalHTTPSPort, int externalHTTPSPort, int internalOpenHTTPSPort) throws Exception
     {
-        // Change for 4.0: Put the Tomcat class loader insdie the UVM
-        // class loader.
-        ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
-        ClassLoader tomcatParent = uvmCl;
+        Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
+        jkConnector.setProperty("port", "8009");
+        jkConnector.setProperty("address", "127.0.0.1");
+        jkConnector.setProperty("tomcatAuthentication", "false");
+        
+        String secret = getSecret();
+        if (null != secret) {
+            jkConnector.setProperty("request.secret", secret);
+        }
+        emb.addConnector(jkConnector);
+
+        // start operation
         try {
-            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(tomcatParent);
-
-            Connector jkConnector = new Connector("org.apache.jk.server.JkCoyoteHandler");
-            jkConnector.setProperty("port", "8009");
-            jkConnector.setProperty("address", "127.0.0.1");
-            jkConnector.setProperty("tomcatAuthentication", "false");
-            String secret = getSecret();
-            if (null != secret) {
-                jkConnector.setProperty("request.secret", secret);
-            }
-            emb.addConnector(jkConnector);
-
-            // start operation
-            try {
-                emb.start();
-                logger.info("jkConnector started");
-            } catch (LifecycleException exn) {
-                // Note -- right now wrapped is always null!  Thus the
-                // following horror:
-                boolean isAddressInUse = isAIUExn(exn);
-                if (isAddressInUse) {
-                    Runnable tryAgain = new Runnable() {
-                            public void run() {
-                                int i;
-                                for (i = 0; i < NUM_TOMCAT_RETRIES; i++) {
+            emb.start();
+            logger.info("jkConnector started");
+        } catch (LifecycleException exn) {
+            // Note -- right now wrapped is always null!  Thus the
+            // following horror:
+            boolean isAddressInUse = isAIUExn(exn);
+            if (isAddressInUse) {
+                Runnable tryAgain = new Runnable() {
+                        public void run() {
+                            int i;
+                            for (i = 0; i < NUM_TOMCAT_RETRIES; i++) {
+                                try {
+                                    logger.warn("could not start Tomcat (address in use), sleeping 20 and trying again");
+                                    Thread.sleep(TOMCAT_SLEEP_TIME);
                                     try {
-                                        logger.warn("could not start Tomcat (address in use), sleeping 20 and trying again");
-                                        Thread.sleep(TOMCAT_SLEEP_TIME);
-                                        try {
-                                            emb.stop();
-                                        } catch (LifecycleException exn) {
-                                            logger.warn(exn, exn);
-                                        }
-                                        emb.start();
-                                        logger.info("Tomcat successfully started");
-                                        break;
-                                    } catch (InterruptedException x) {
-                                        logger.warn( "Interrupted while trying to start tomcat, returning. BUG 7337", x);
+                                        emb.stop();
+                                    } catch (LifecycleException exn) {
+                                        logger.warn(exn, exn);
+                                    }
+                                    emb.start();
+                                    logger.info("Tomcat successfully started");
+                                    break;
+                                } catch (InterruptedException x) {
+                                    logger.warn( "Interrupted while trying to start tomcat, returning.", x);
+                                    return;
+                                } catch (LifecycleException x) {
+                                    boolean isAddressInUse = isAIUExn(x);
+                                    if (!isAddressInUse) {
+                                        UvmContextImpl.getInstance().fatalError("Starting Tomcat", x);
                                         return;
-                                    } catch (LifecycleException x) {
-                                        boolean isAddressInUse = isAIUExn(x);
-                                        if (!isAddressInUse) {
-                                            UvmContextImpl.getInstance().fatalError("Starting Tomcat", x);
-                                            return;
-                                        }
                                     }
                                 }
-                                if (i == NUM_TOMCAT_RETRIES)
-                                    UvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " +
-                                                                             NUM_TOMCAT_RETRIES
-                                                                             + " tries, giving up",
-                                                                             null);
                             }
-                        };
-                    new Thread(tryAgain, "Tomcat starter").start();
-                } else {
-                    // Something else, just die die die.
-                    logger.warn("Exception starting Tomcat",exn);
-                    throw exn;
-                }
+                            if (i == NUM_TOMCAT_RETRIES)
+                                UvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " +
+                                                                        NUM_TOMCAT_RETRIES
+                                                                        + " tries, giving up",
+                                                                        null);
+                        }
+                    };
+                new Thread(tryAgain, "Tomcat starter").start();
+            } else {
+                // Something else, just die die die.
+                logger.warn("Exception starting Tomcat",exn);
+                throw exn;
             }
-        } finally {
-            Thread.currentThread().setContextClassLoader(uvmCl);
-            // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
 
         logger.info("Tomcat started");
@@ -534,7 +523,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
         writeIncludes();
 
         try {
-            logger.info("Reload Apache Config");
+            logger.info("Reloading Apache...");
             ProcessBuilder pb = new ProcessBuilder("/etc/init.d/apache2",
                                                    "reload");
 
@@ -543,7 +532,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
             InputStream is = p.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             for (String line = br.readLine(); null != line; line = br.readLine()) {
-                logger.info(line);
+                logger.debug(line);
             }
 
             boolean done = false;

@@ -69,7 +69,11 @@
   <!-- ============================================== -->
 
   <category name="org.apache.catalina">
-    <priority value="WARN"/>
+    <priority value="INFO"/>
+  </category>
+
+  <category name="org.apache.jk">
+    <priority value="INFO"/>
   </category>
 
   <category name="org.hibernate">

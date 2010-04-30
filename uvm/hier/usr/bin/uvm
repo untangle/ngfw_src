@@ -118,6 +118,13 @@ needToRestart() {
         fi
     fi
 
+    # Tomcat picked the wrong port (read bug #7337 for more info)
+    tomcat=`tail -1000 $UVM_UVM_LOG | grep -i "ajp13 listening on /127.0.0.1:8010"`
+    if [ ! -z "$tomcat" ] ; then
+            echo "*** Tomcat bound to wrong port on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
+            return 0;
+    fi
+
     return 1;
 }
 

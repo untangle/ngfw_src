@@ -116,6 +116,7 @@ public class Main
     public void fatalError(String throwingLocation, Throwable x)
     {
         try {
+            logger.error("FATAL ERROR: " + throwingLocation);
             System.err.println("FATAL ERROR: " + throwingLocation);
             if (x != null) {
                 System.err.println("Throwable: " + x.getMessage());
