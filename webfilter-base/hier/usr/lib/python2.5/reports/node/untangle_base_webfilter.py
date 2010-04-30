@@ -489,7 +489,7 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
             elif user:
                 q = q + " AND uid = %s"
 
-            query += " GROUP BY day) AS foo GROUP BY day"
+            q += " GROUP BY day) AS foo GROUP BY day"
             
             curs = conn.cursor()
 
