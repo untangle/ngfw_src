@@ -111,6 +111,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle.node.router">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.node.adconnector">
     <priority value="WARN"/>
   </category>
