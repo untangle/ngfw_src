@@ -434,7 +434,18 @@ class Highlight:
 
         for k,v in self.__values.iteritems():
             value_element = Element('highlight-value')
-            value_element.set('name', str(k))
+
+            try:
+                k = k.decode('utf-8')
+            except:
+                pass
+
+            try:
+                value_element.set('name', k)
+            except:
+                logger.critical("Could not set name to '%s' (type '%s')" % (k, type(k)))
+                raise
+
             value_element.set('value', str(v))
             element.append(value_element)
 
@@ -527,7 +538,18 @@ class Graph:
             name = ks.name
             if not ks.name:
                 name = ''
-            ks_element.set('name', str(name))
+
+            try:
+                name = name.decode('utf-8')
+            except:
+                pass
+
+            try:
+                ks_element.set('name', name)
+            except:
+                logger.critical("Could not set name to '%s' (type '%s')" % (name, type(name)))
+                raise
+
             if type(ks.value) == float:
                 ks.value = '%.2f' % ks.value
             ks_element.set('value', str(ks.value))
