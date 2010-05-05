@@ -282,6 +282,8 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
             language = languageSettings.getLanguage();
         }
 
+        String oemName = uvmContext.oemManager().getOemName();
+        
         try {
             FileWriter writer = new FileWriter(regFile);
             writer.write("regKey=");
@@ -293,6 +295,10 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
             if ( language != null ) {
                 writer.write("&language=");
                 writer.write(URLEncoder.encode(language, "UTF-8"));
+            }
+            if (oemName != null) {
+                writer.write("&oem=");
+                writer.write(oemName);
             }
             writer.write("&");
             writer.write(info.toForm());
