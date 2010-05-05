@@ -50,7 +50,8 @@ public class SnmpManagerImpl
         "/etc/default/snmpd";
     private static final String CONF_FILE_NAME =
         "/etc/snmp/snmpd.conf";
-
+    private static final String WRAPPER_NAME =
+        "/usr/share/untangle/bin/snmpd-restart";
 
     private static final SnmpManagerImpl s_instance =
         new SnmpManagerImpl();
@@ -257,7 +258,7 @@ public class SnmpManagerImpl
         try {
             m_logger.debug("Restarting the snmpd...");
             Process p = LocalUvmContextFactory.context().exec(new String[] {
-                "/etc/init.d/snmpd", "restart"});
+                    WRAPPER_NAME });
             p.waitFor();
             m_logger.debug("Restart of SNMPD exited with " +
                            p.exitValue());
