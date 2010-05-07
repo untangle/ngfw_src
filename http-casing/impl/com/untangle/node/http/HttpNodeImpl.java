@@ -39,9 +39,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 public class HttpNodeImpl extends AbstractNode
     implements HttpNode
 {
-    private final CasingPipeSpec pipeSpec = new CasingPipeSpec
-        ("http", this, new HttpCasingFactory(this),
-         Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
+    private final CasingPipeSpec pipeSpec = new CasingPipeSpec("http", this, new HttpCasingFactory(this), Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
     private final EventLogger eventLogger;

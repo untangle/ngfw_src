@@ -205,8 +205,7 @@ public class RouterImpl extends AbstractNode implements Router
         getNetworkManager().registerListener( this.listener );
 
         /* Check if the settings have been upgraded yet */
-        DataLoader<RouterSettingsImpl> natLoader = 
-            new DataLoader<RouterSettingsImpl>( "RouterSettingsImpl", getNodeContext());
+        DataLoader<RouterSettingsImpl> natLoader = new DataLoader<RouterSettingsImpl>( "RouterSettingsImpl", getNodeContext());
 
         RouterSettingsImpl settings = natLoader.loadData();
 

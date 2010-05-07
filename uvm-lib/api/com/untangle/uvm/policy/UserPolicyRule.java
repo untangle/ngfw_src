@@ -76,12 +76,10 @@ public class UserPolicyRule extends PolicyRule
     private ProtocolMatcher protocol;
 
     /* True if this matches client interface */
-    private IntfMatcher clientIntf = IntfMatcherFactory.getInstance()
-        .getExternalMatcher();
+    private IntfMatcher clientIntf = IntfMatcherFactory.getInstance().getExternalMatcher();
 
     /* True if this matches the server interface */
-    private IntfMatcher serverIntf = IntfMatcherFactory.getInstance()
-        .getInternalMatcher();
+    private IntfMatcher serverIntf = IntfMatcherFactory.getInstance().getInternalMatcher();
 
     private IPMatcher clientAddr;
     private IPMatcher serverAddr;
@@ -92,13 +90,11 @@ public class UserPolicyRule extends PolicyRule
     private Date startTime;
     private Date endTime;
 
-    private DayOfWeekMatcher dayOfWeek = DayOfWeekMatcherFactory.getInstance()
-        .getAllMatcher();
+    private DayOfWeekMatcher dayOfWeek = DayOfWeekMatcherFactory.getInstance().getAllMatcher();
 
     private boolean invertEntireDuration;
 
-    private UserMatcher user = UserMatcherFactory.getInstance()
-        .getAllMatcher();
+    private UserMatcher user = UserMatcherFactory.getInstance().getAllMatcher();
 
     // constructors -----------------------------------------------------------
 
@@ -110,7 +106,8 @@ public class UserPolicyRule extends PolicyRule
                           PortMatcher clientPort, PortMatcher serverPort,
                           Date startTime, Date endTime,
                           DayOfWeekMatcher dayOfWeek, UserMatcher user,
-                          boolean live, boolean invertEntireDuration) {
+                          boolean live, boolean invertEntireDuration)
+    {
         super(live, policy);
         this.clientIntf = clientIntf;
         this.serverIntf = serverIntf;

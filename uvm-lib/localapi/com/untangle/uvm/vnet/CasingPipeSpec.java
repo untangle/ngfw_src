@@ -65,38 +65,29 @@ public class CasingPipeSpec extends PipeSpec
     private final Logger logger = Logger.getLogger(getClass());
 
     private MPipe insideMPipe;
-
     private MPipe outsideMPipe;
 
     private boolean releaseParseExceptions = true;
 
     // constructors -----------------------------------------------------------
 
-    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions,
-                          CasingFactory casingFactory,
-                          Fitting input, Fitting output)
+    public CasingPipeSpec(String name, Node node, Set<Subscription> subscriptions, CasingFactory casingFactory, Fitting input, Fitting output)
     {
         super(name, node, subscriptions);
 
-        insideAdaptor = new CasingAdaptor(node, casingFactory, true,
-                                          true);
-        outsideAdaptor = new CasingAdaptor(node, casingFactory, false,
-                                           true);
+        insideAdaptor = new CasingAdaptor(node, casingFactory, true, true);
+        outsideAdaptor = new CasingAdaptor(node, casingFactory, false, true);
 
         this.input = input;
         this.output = output;
     }
 
-    public CasingPipeSpec(String name, Node node,
-                          CasingFactory casingFactory,
-                          Fitting input, Fitting output)
+    public CasingPipeSpec(String name, Node node, CasingFactory casingFactory, Fitting input, Fitting output)
     {
         super(name, node);
 
-        insideAdaptor = new CasingAdaptor(node, casingFactory, true,
-                                          true);
-        outsideAdaptor = new CasingAdaptor(node, casingFactory, false,
-                                           true);
+        insideAdaptor = new CasingAdaptor(node, casingFactory, true, true);
+        outsideAdaptor = new CasingAdaptor(node, casingFactory, false, true);
 
         this.input = input;
         this.output = output;
