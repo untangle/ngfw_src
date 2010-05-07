@@ -61,11 +61,11 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class PipelineFoundryImpl implements PipelineFoundry {
+public class PipelineFoundryImpl implements PipelineFoundry
+{
     private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL = new PipelineFoundryImpl();
 
-    private static final EventLogger<LogEvent> eventLogger = UvmContextImpl.context()
-            .eventLogger();
+    private static final EventLogger<LogEvent> eventLogger = UvmContextImpl.context().eventLogger();
     private final Logger logger = Logger.getLogger(getClass());
 
     private final Map<Fitting, List<MPipe>> mPipes = new HashMap<Fitting, List<MPipe>>();
@@ -79,14 +79,15 @@ public class PipelineFoundryImpl implements PipelineFoundry {
     // is currently useful for the null policy.
     private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> chains = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
     
-    private PipelineFoundryImpl() {
-    }
+    private PipelineFoundryImpl() {}
 
-    public static PipelineFoundryImpl foundry() {
+    public static PipelineFoundryImpl foundry()
+    {
         return PIPELINE_FOUNDRY_IMPL;
     }
 
-    public PipelineDesc weld(IPSessionDesc sd) {
+    public PipelineDesc weld(IPSessionDesc sd)
+    {
         Long t0 = System.nanoTime();
 
         PolicyRule pr = selectPolicy(sd);
@@ -131,7 +132,8 @@ public class PipelineFoundryImpl implements PipelineFoundry {
                 }
             }
         } else {
-            start = Fitting.OCTET_STREAM; // XXX we should have UDP hier.
+            /* UDP */
+            start = Fitting.OCTET_STREAM; 
         }
 
         long ct0 = System.nanoTime();
@@ -162,7 +164,6 @@ public class PipelineFoundryImpl implements PipelineFoundry {
                 // policy (is a service).
                 if (pipeSpec.matches(sd)) {
                     ml.add(mpf);
-                    /* XXXX Nasty cast */
                     al.add(((MPipeImpl) mPipe).getArgonAgent());
                 } else {
                     end = mpf.end;
@@ -177,24 +178,31 @@ public class PipelineFoundryImpl implements PipelineFoundry {
 
         Long t1 = System.nanoTime();
         if (logger.isDebugEnabled()) {
-            logger.debug("sid: " + sd.id() + " pipe in " + (t1 - t0)
-                    + " made: " + (ct1 - ct0) + " filtered: " + (ft1 - ft0)
-                    + " chain: " + ml);
+            logger.debug("sid: " + sd.id() +
+                         " policy " + policy +
+                         " policyManager " + UvmContextImpl.getInstance().localPolicyManager().getClass().getName());
+            logger.debug("sid: " + sd.id() +
+                         " pipe in " + (t1 - t0) +
+                         " made: " + (ct1 - ct0) +
+                         " filtered: " + (ft1 - ft0) +
+                         " chain: " + ml);
         }
 
         return new PipelineDesc(pr, al);
     }
 
-    public PipelineEndpoints createInitialEndpoints(IPSessionDesc start) {
+    public PipelineEndpoints createInitialEndpoints(IPSessionDesc start)
+    {
         return new PipelineEndpoints(start);
     }
 
-    public void registerEndpoints(PipelineEndpoints pe) {
+    public void registerEndpoints(PipelineEndpoints pe)
+    {
         eventLogger.log(pe);
     }
 
-    public void destroy(IPSessionDesc start, IPSessionDesc end,
-            PipelineEndpoints pe, String uid) {
+    public void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe, String uid)
+    {
         PipelineImpl pipeline = pipelines.remove(start.id());
 
         if (logger.isDebugEnabled()) {
@@ -209,7 +217,8 @@ public class PipelineFoundryImpl implements PipelineFoundry {
         pipeline.destroy();
     }
 
-    public void registerMPipe(MPipe mPipe) {
+    public void registerMPipe(MPipe mPipe)
+    {
         SoloPipeSpec sps = (SoloPipeSpec) mPipe.getPipeSpec();
         Fitting f = sps.getFitting();
 
@@ -227,7 +236,8 @@ public class PipelineFoundryImpl implements PipelineFoundry {
         clearCache();
     }
 
-    public void deregisterMPipe(MPipe mPipe) {
+    public void deregisterMPipe(MPipe mPipe)
+    {
         SoloPipeSpec sps = (SoloPipeSpec) mPipe.getPipeSpec();
         Fitting f = sps.getFitting();
 
@@ -243,7 +253,8 @@ public class PipelineFoundryImpl implements PipelineFoundry {
         clearCache();
     }
 
-    public void registerCasing(MPipe insideMPipe, MPipe outsideMPipe) {
+    public void registerCasing(MPipe insideMPipe, MPipe outsideMPipe)
+    {
         if (insideMPipe.getPipeSpec() != outsideMPipe.getPipeSpec()) {
             throw new IllegalArgumentException("casing constraint violated");
         }
@@ -254,19 +265,21 @@ public class PipelineFoundryImpl implements PipelineFoundry {
         }
     }
 
-    public void deregisterCasing(MPipe insideMPipe) {
+    public void deregisterCasing(MPipe insideMPipe)
+    {
         synchronized (this) {
             casings.remove(insideMPipe);
             clearCache();
         }
     }
 
-    public void registerConnection(InetSocketAddress socketAddress,
-            Fitting fitting) {
+    public void registerConnection(InetSocketAddress socketAddress, Fitting fitting)
+    {
         connectionFittings.put(socketAddress, fitting);
     }
 
-    public Pipeline getPipeline(int sessionId) {
+    public Pipeline getPipeline(int sessionId)
+    {
         return (Pipeline) pipelines.get(sessionId);
     }
     
@@ -281,13 +294,12 @@ public class PipelineFoundryImpl implements PipelineFoundry {
 
     // package protected methods ----------------------------------------------
 
-    PolicyRule selectPolicy(IPSessionDesc sd) {
+    PolicyRule selectPolicy(IPSessionDesc sd)
+    {
         UvmContextImpl upi = UvmContextImpl.getInstance();
         LocalPolicyManager pmi = upi.localPolicyManager();
         LocalIntfManager im = upi.localIntfManager();
-
         UserPolicyRule[] userRules = pmi.getUserRules();
-
         InterfaceComparator c = im.getInterfaceComparator();
 
         for (UserPolicyRule upr : userRules) {
