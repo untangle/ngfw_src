@@ -262,7 +262,7 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
 
     date_base = 'data/%d-%02d-%02d' % (end_date.year, end_date.month,
                                        end_date.day)
-    date_str = end_date.strftime("%A %d %B %Y")
+    date_str = (end_date-mx.DateTime.DateTimeDelta(1)).strftime("%A %d %B %Y")
 
     if report_days == 1:
         days = _('day')
