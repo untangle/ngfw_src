@@ -527,8 +527,29 @@ class Graph:
         self.__plot.generate_csv('%s/%s.csv' % (report_base, filename_base))
 
         element = Element('graph')
-        element.set('name', self.__name)
-        element.set('title', self.__title)
+
+        try:
+            __name = __name.decode('utf-8')
+        except:
+            pass
+
+        try:
+            element.set('name', self.__name)
+        except:
+            logger.critical("Could not set name to '%s' (type '%s')" % (__name, type(__name)))
+            raise
+
+        try:
+            self.__title = self.__title.decode('utf-8')
+        except:
+            pass
+
+        try:
+            element.set('title', self.__title)
+        except:
+            logger.critical("Could not set title to '%s' (type '%s')" % (self.__title, type(__title)))
+            raise
+
         element.set('type', self.__plot.type)
         element.set('image', filename_base + '.png')
         element.set('csv', filename_base + '.csv')
@@ -553,8 +574,19 @@ class Graph:
             if type(ks.value) == float:
                 ks.value = '%.2f' % ks.value
             ks_element.set('value', str(ks.value))
+
             if ks.unit:
-                ks_element.set('unit', ks.unit)
+                try:
+                    ks.unit = ks.unit.decode('utf-8')
+                except:
+                    pass
+
+                try:
+                    ks_element.set('unit', ks.unit)
+                except:
+                    logger.critical("Could not set unit to '%s' (type '%s')" % (ks.unit, type(ks.unit)))
+                    raise
+
             if ks.link_type:
                 ks_element.set('link-type', ks.link_type)
             element.append(ks_element)
@@ -713,11 +745,41 @@ class Chart:
         if self.__type:
             element.set('type', self.__type)
         if self.__title:
-            element.set('title', self.__title)
+            try:
+                self.__title = self.__title.decode('utf-8')
+            except:
+                pass
+
+            try:
+                element.set('title', self.__title)
+            except:
+                logger.critical("Could not set title to '%s' (type '%s')" % (self.__title, type(self.__title)))
+                raise
         if self.__xlabel:
-            element.set('x-label', self.__xlabel)
+            try:
+                self.__xlabel = self.__xlabel.decode('utf-8')
+            except:
+                pass
+
+            try:
+                element.set('x-label', self.__xlabel)
+            except:
+                logger.critical("Could not set x-label to '%s' (type '%s')" % (self.__xlabel, type(self.__xlabel)))
+                raise
+
         if self.__ylabel:
-            element.set('y-label', self.__ylabel)
+            try:
+                self.__ylabel = self.__ylabel.decode('utf-8')
+            except:
+                pass
+
+            try:
+                element.set('y-label', self.__ylabel)
+            except:
+                logger.critical("Could not set y-bale to '%s' (type '%s')" % (self.__ylabel, type(self.__ylabel)))
+                raise
+            
+
         if self.__major_formatter:
             element.set('major-formatter', self.__major_formatter.name)
         if self.__display_limit:
