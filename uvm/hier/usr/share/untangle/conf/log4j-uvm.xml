@@ -97,6 +97,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle.uvm.snmp">
+    <priority value="INFO"/>
+  </category>
+
   <!-- reports logs go *only* to a separate file -->
   <category name="com.untangle.uvm.reporting" additivity="false">
     <priority value="INFO"/>
