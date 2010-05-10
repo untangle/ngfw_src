@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 # $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
 # Copyright (c) 2003-2009 Untangle, Inc.
 #
@@ -86,6 +85,7 @@ attach_csv = False
 attachment_size_limit = 10
 events_retention = 3
 end_date = mx.DateTime.today()
+end_date_forced = False
 locale = None
 db_retention = None
 file_retention = None
@@ -119,6 +119,7 @@ for opt in opts:
      elif k == '-v' or k == '--verbose':
           setConsoleLogLevel(logging.DEBUG)
      elif k == '-d' or k == '--date':
+          end_date_forced = True
           end_date = mx.DateTime.DateFrom(v)
      elif k == '-l' or k == '--locale':
           locale = v
@@ -330,6 +331,8 @@ if trial_report:
 
 if not no_migration:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
+     if end_date_forced:
+          sql_helper.clear_partitioned_tables(init_date, end_date)
      reports.engine.setup(init_date, end_date)
      reports.engine.process_fact_tables(init_date, end_date)
      reports.engine.post_facttable_setup(init_date, end_date)

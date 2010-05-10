@@ -138,6 +138,15 @@ def drop_partitioned_table(tablename, cutoff_date):
         if date < cutoff_date:
             drop_table(t, schema='reports')
 
+def clear_partitioned_tables(start_date, end_date, tablename=None):
+    logger.debug('Forcing removal of existing partitioned...')
+
+    for table, date in find_partitioned_tables(tablename):
+        if date >= start_date and date < end_date:
+            drop_table(table, 'reports')
+    run_sql("UPDATE reports.table_updates SET last_update = %s",
+            (DateFromMx(start_date),))
+
 def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
                              clear_tables=False):
     (schema, tablename) = __get_tablename(table_ddl)
@@ -171,12 +180,10 @@ CREATE TABLE %s
 (CHECK (%s >= %%s AND %s < %%s))
 INHERITS (%s)""" % (tn, timestamp_column, timestamp_column, full_tablename),
                 (DateFromMx(d), DateFromMx(d + mx.DateTime.DateTimeDelta(1))))
-        logger.debug("Created partitioned table for %s (%s -> %s)" % (full_tablename,
-                                                                      DateFromMx(d),
-                                                                      DateFromMx(d + mx.DateTime.DateTimeDelta(1))))
+        logger.debug("created partitioned table %s" % (__tablename_for_date(full_tablename, d)))
+
     if clear_tables:
-        for d in all_dates:
-            drop_table(__tablename_for_date(full_tablename, d))
+        clear_partitioned_tables(start_date, end_date, tablename)
 
     __make_trigger(schema, tablename, timestamp_column, all_dates)
 
@@ -205,6 +212,7 @@ SELECT last_update FROM reports.table_updates WHERE tablename = %s
 
 def set_update_info(tablename, last_update, connection=get_connection(),
                     auto_commit=True):
+    logger.debug("Setting update_info for %s to %s" % (tablename, last_update))
     try:
         curs = connection.cursor()
 
@@ -285,10 +293,15 @@ WHERE tablename LIKE %s""", '%s%%' % prefix)
 
     return rv
 
-def find_partitioned_tables(tablename):
+def find_partitioned_tables(tablename=None):
+    if not tablename:
+        prefix = ''
+    else:
+        prefix = '%s_' % tablename
+        
     tables = []
-    for t in get_tables(schema='reports', prefix='%s_' % tablename):
-        m = re.search('%s_(\d+)_(\d+)_(\d+)' % tablename, t)
+    for t in get_tables(schema='reports', prefix=prefix):
+        m = re.search('%s(\d+)_(\d+)_(\d+)' % prefix, t)
         if m:
             d = mx.DateTime.Date(*map(int, m.groups()))
             tables.append((t, d))
