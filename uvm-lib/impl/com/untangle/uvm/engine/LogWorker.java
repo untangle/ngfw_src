@@ -4,7 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
+ * as published by the Freeoftware Foundation.
  *
  * This program is distributed in the hope that it will be useful, but
  * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,12 +47,18 @@ class LogWorker implements Runnable
     private static final int SYNC_TIME;
 
     private final RemoteLoggingManagerImpl loggingManager;
-    private final List<LogEvent> logQueue = new LinkedList<LogEvent>();
-    private final BlockingQueue<LogEventDesc> inputQueue
-        = new LinkedBlockingQueue<LogEventDesc>();
 
-    private final SyslogManager syslogManager = LocalUvmContextFactory
-        .context().syslogManager();
+    /**
+     * The queue of events waiting to be written to the database
+     */
+    private final List<LogEvent> logQueue = new LinkedList<LogEvent>();
+
+    /**
+     * XXX what is this?
+     */
+    private final BlockingQueue<LogEventDesc> inputQueue = new LinkedBlockingQueue<LogEventDesc>();
+
+    private final SyslogManager syslogManager = LocalUvmContextFactory.context().syslogManager();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -144,18 +150,30 @@ class LogWorker implements Runnable
         return true;
     }
 
+    /**
+     * write the logQueue to the database
+     */
     private void persist()
     {
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
-                    for (Iterator<LogEvent> i = logQueue.iterator();
-                         i.hasNext(); ) {
-                        LogEvent e = i.next();
-                        s.saveOrUpdate(e);
+                    logger.debug("Writing events to database... (size: " + logQueue.size() + ")");
+
+                    for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
+                        LogEvent event = i.next();
+
+                        try {
+                            s.saveOrUpdate(event);
+                        } catch (Exception exc) {
+                            logger.error("could not log event: ", exc);
+                        }
+
                         i.remove();
                     }
+
+                    logger.debug("Writing events to database... Complete");
 
                     return true;
                 }
