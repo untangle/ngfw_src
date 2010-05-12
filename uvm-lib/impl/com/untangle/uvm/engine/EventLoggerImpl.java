@@ -55,16 +55,14 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
     EventLoggerImpl()
     {
         this.nodeContext = null;
-        inputQueue = UvmContextImpl.getInstance().loggingManager()
-            .getInputQueue();
+        inputQueue = UvmContextImpl.getInstance().loggingManager().getInputQueue();
         this.tag = "uvm[0]: ";
     }
 
     EventLoggerImpl(NodeContext nodeContext)
     {
         this.nodeContext = nodeContext;
-        inputQueue = UvmContextImpl.getInstance().loggingManager()
-            .getInputQueue();
+        inputQueue = UvmContextImpl.getInstance().loggingManager().getInputQueue();
         String name = nodeContext.getNodeDesc().getSyslogName();
         this.tag = name + "[" + nodeContext.getTid().getId() + "]: ";
     }
@@ -149,8 +147,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     // private classes --------------------------------------------------------
 
-    private static class EventRepositoryCache<E extends LogEvent>
-        extends EventCache<E>
+    private static class EventRepositoryCache<E extends LogEvent> extends EventCache<E>
     {
         private final EventRepository<E> eventRepository;
 
