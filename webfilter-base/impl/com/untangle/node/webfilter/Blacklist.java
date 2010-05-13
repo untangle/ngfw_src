@@ -379,7 +379,7 @@ public abstract class Blacklist
     {
         String dom;
         for (dom = host ; null != dom ; dom = nextHost(dom)) {
-            StringRule sr = findCategory(passedUrls, dom + uri.getPath(), settings.getPassedUrls());
+            StringRule sr = findCategory(passedUrls, dom + uri, settings.getPassedUrls());
             String category = null == sr ? null : sr.getDescription();
 
             if (null != category) {
@@ -601,6 +601,8 @@ public abstract class Blacklist
         if (null == val || null == strs) {
             return -1;
         }
+
+        val = normalizeDomain(val);
 
 	// we should probably do the "transform globbing into regex"
 	// once and for all, at the time they are entered by the
