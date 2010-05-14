@@ -136,7 +136,7 @@ def mail(file, zip_file, sender, receiver, date, company_name,
     part.set_payload(open(file, 'rb').read())
     Encoders.encode_base64(part)
     part.add_header('Content-Disposition', 'attachment; filename="reports-%s-%s.pdf"'
-                    % (h['date_end'],a))
+                    % (h['date_end'].replace('/', '_'),a))
     msgRoot.attach(part)
 
     if zip_file and not attachment_too_big:
@@ -144,7 +144,7 @@ def mail(file, zip_file, sender, receiver, date, company_name,
         part.set_payload(open(zip_file, 'rb').read())
         Encoders.encode_base64(part)
         part.add_header('Content-Disposition', 'attachment; filename="reports-%s.zip"'
-                        % (date.strftime(locale.nl_langinfo(locale.D_FMT)),))
+                        % (h['date_end'].replace('/', '_'),a))
         msgRoot.attach(part)
 
     smtp = smtplib.SMTP()
