@@ -26,11 +26,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.util.Pair;
 
-
-//===============================================
-// TODO really weak crypto, but should we even
-//      care given the exposure?
-
 /**
  * Class responsible for wrapping/unwrapping
  * Authentication Tokens.  Not based on any
@@ -46,8 +41,7 @@ class AuthTokenManager {
     };
 
 
-    private final Logger m_logger =
-        Logger.getLogger(AuthTokenManager.class);
+    private final Logger m_logger = Logger.getLogger(AuthTokenManager.class);
 
     private static final String ALG = "Blowfish";
     private static final byte[] INNER_MAGIC = "eks".getBytes();
@@ -55,12 +49,11 @@ class AuthTokenManager {
 
     private SecretKeySpec m_key;
 
-
-
     /**
      * Set the key to be used
      */
-    void setKey(byte[] key) {
+    void setKey(byte[] key)
+    {
         try {
             m_key = new SecretKeySpec(key, ALG);
         }
@@ -79,11 +72,13 @@ class AuthTokenManager {
      *
      * @return the token
      */
-    String createAuthToken(String username) {
+    String createAuthToken(String username)
+    {
         try {
             //Create the encrypted payload
             byte[] usernameBytes = username.getBytes();
             byte[] toEncrypt = new byte[usernameBytes.length + INNER_MAGIC.length];
+
             System.arraycopy(INNER_MAGIC, 0, toEncrypt, 0, INNER_MAGIC.length);
             System.arraycopy(usernameBytes, 0, toEncrypt, INNER_MAGIC.length, usernameBytes.length);
 
@@ -92,13 +87,12 @@ class AuthTokenManager {
             c.init(Cipher.ENCRYPT_MODE, m_key);
             byte[] encrypted = c.doFinal(toEncrypt);
 
-            //Put the known chars at the front, to detect a goofed
-            //token
+            //Put the known chars at the front, to detect a token
             byte[] toEncode = new byte[encrypted.length + OUTER_MAGIC.length];
             System.arraycopy(OUTER_MAGIC, 0, toEncode, 0, OUTER_MAGIC.length);
             System.arraycopy(encrypted, 0, toEncode, OUTER_MAGIC.length, encrypted.length);
 
-            return Base64.encodeBase64(toEncode).toString();
+            return new String(Base64.encodeBase64(toEncode));
         }
         catch(Exception ex) {
             m_logger.warn("Unable to create token", ex);
@@ -115,7 +109,8 @@ class AuthTokenManager {
      * @return the outcome, where the String is only valid
      *         if the outcome is "OK"
      */
-    Pair<DecryptOutcome, String> decryptAuthToken(String token) {
+    Pair<DecryptOutcome, String> decryptAuthToken(String token)
+    {
         try {
             //Decode
             byte[] decodedBytes = Base64.decodeBase64(token.getBytes());
@@ -149,10 +144,8 @@ class AuthTokenManager {
     }
 
 
-    private boolean matches(byte[] pattern,
-                            byte[] inspect,
-                            int start,
-                            int len) {
+    private boolean matches(byte[] pattern, byte[] inspect, int start, int len)
+    {
         if(inspect == null ||
            len < pattern.length) {
             return false;
@@ -165,20 +158,19 @@ class AuthTokenManager {
         return true;
     }
 
-    /*
-      public static void main(String[] args) throws Exception {
-      byte[] bytes = new byte[4];
-      new java.util.Random().nextBytes(bytes);
 
-      AuthTokenManager atm = new AuthTokenManager();
-      atm.setKey(bytes);
+//     public static void main(String[] args) throws Exception {
+//         byte[] bytes = new byte[4];
+//         new java.util.Random().nextBytes(bytes);
 
-      String tkn = atm.createAuthToken("bscott@untangle.com");
-      System.out.println(tkn);
-      Pair<DecryptOutcome, String> p = atm.decryptAuthToken(tkn);
+//         AuthTokenManager atm = new AuthTokenManager();
+//         atm.setKey(bytes);
 
-      System.out.println(p.a + ", " + p.b);
+//         String tkn = atm.createAuthToken("dmorris@untangle.com");
+//         System.out.println("Token: " + tkn);
 
-      }
-    */
+//         Pair<DecryptOutcome, String> p = atm.decryptAuthToken(tkn);
+//         System.out.println(p.a + ", " + p.b);
+//       }
+
 }
