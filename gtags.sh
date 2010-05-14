@@ -7,6 +7,7 @@ while getopts "u" flag ; do
     UPDATE=1
   fi
 done
+shift $((${OPTIND}-1))
  
 rup=${1:-$DEFAULT_RUP}
 
