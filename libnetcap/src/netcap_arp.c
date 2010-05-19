@@ -471,20 +471,23 @@ static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf,
 	int ret;
     netcap_intf_string_t buffer;
     
-    struct 
-    {
-        int command;
-        // This is read as the bridge, and overwritten with outgoing interface.
-        netcap_intf_string_t* bridge;
-        struct ether_addr* mac_address;
-        void* unused;
-    } args = {
-        .command     = BRCTL_GET_DEVNAME,
-        .bridge      = &buffer,
-        .mac_address = mac_address,
-        .unused      = NULL
-    };
+/*     struct  */
+/*     { */
+/*         int command; */
+/*         // This is read as the bridge, and overwritten with outgoing interface. */
+/*         netcap_intf_string_t* bridge; */
+/*         struct ether_addr* mac_address; */
+/*         void* unused; */
+/*     } args = { */
+/*         .command     = BRCTL_GET_DEVNAME, */
+/*         .bridge      = &buffer, */
+/*         .mac_address = mac_address, */
+/*         .unused      = NULL */
+/*     }; */
 
+    /* this way is more 32/64-bit compatible */
+    unsigned long args[4] = {BRCTL_GET_DEVNAME, (unsigned long)&buffer, (unsigned long)mac_address, 0};
+    
 	strncpy( buffer.s, intf_info->name.s, sizeof( buffer ));
 	strncpy( ifr.ifr_name, intf_info->name.s, sizeof( ifr.ifr_name ));
 	ifr.ifr_data = (char*)&args;
