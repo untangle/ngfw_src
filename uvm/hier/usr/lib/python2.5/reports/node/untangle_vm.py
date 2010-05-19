@@ -624,11 +624,12 @@ class VmHighlight(Highlight):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """
-SELECT round((COALESCE(sum(s2c_bytes + c2s_bytes), 0) / 1000000000)::numeric, 2) AS traffic,
-       COALESCE(sum(num_sessions), 0)::int AS sessions
-FROM reports.session_totals AS st, reports.session_counts AS sc
-WHERE st.trunc_time >= %s AND st.trunc_time < %s
-AND sc.trunc_time >= %s AND sc.trunc_time < %s"""
+SELECT (SELECT round((COALESCE(sum(s2c_bytes + c2s_bytes), 0) / 1000000000)::numeric, 2) AS traffic
+        FROM reports.session_totals
+        WHERE trunc_time >= %s AND trunc_time < %s),
+       (SELECT COALESCE(sum(num_sessions), 0)::int AS sessions
+        FROM reports.session_counts
+        WHERE trunc_time >= %s AND trunc_time < %s)"""
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
