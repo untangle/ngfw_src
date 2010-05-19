@@ -406,8 +406,9 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         try {
             conn = DataSourceFactory.factory().getConnection();
 
-            PreparedStatement ps = conn.prepareStatement("SELECT hname FROM reports.hnames WHERE date = ?");
-            ps.setDate(1, new java.sql.Date(getDayBefore(d)));
+            PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT hname FROM reports.hnames WHERE date >= ? AND date < ?");
+            ps.setDate(1, new java.sql.Date(getDaysBefore(d, numDays).getTime()));
+            ps.setDate(2, new java.sql.Date(d.getTime()));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String s = rs.getString(1);
@@ -435,8 +436,9 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         try {
             conn = DataSourceFactory.factory().getConnection();
 
-            PreparedStatement ps = conn.prepareStatement("SELECT username FROM reports.users WHERE date = ?");
-            ps.setDate(1, new java.sql.Date(getDayBefore(d)));
+            PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT username FROM reports.users WHERE date >= ? AND date < ?");
+            ps.setDate(1, new java.sql.Date(getDaysBefore(d, numDays).getTime()));
+            ps.setDate(2, new java.sql.Date(d.getTime()));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String s = rs.getString(1);
@@ -464,8 +466,9 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         try {
             conn = DataSourceFactory.factory().getConnection();
 
-            PreparedStatement ps = conn.prepareStatement("SELECT email FROM reports.email WHERE date = ?");
-            ps.setDate(1, new java.sql.Date(getDayBefore(d)));
+            PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT email FROM reports.email WHERE date <= ? AND date > ?");
+            ps.setDate(1, new java.sql.Date(getDaysBefore(d, numDays).getTime()));
+            ps.setDate(2, new java.sql.Date(d.getTime()));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String s = rs.getString(1);
