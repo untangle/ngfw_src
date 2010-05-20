@@ -31,8 +31,7 @@ import com.untangle.uvm.node.NodeContext;
  */
 public class EventLoggerFactoryImpl extends EventLoggerFactory
 {
-    private static final EventLoggerFactoryImpl FACTORY
-        = new EventLoggerFactoryImpl();
+    private static final EventLoggerFactoryImpl FACTORY = new EventLoggerFactoryImpl();
 
     public static EventLoggerFactoryImpl factory()
     {

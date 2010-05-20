@@ -410,6 +410,7 @@ class ToolboxManagerImpl implements ToolboxManager
             }
 
             if (!pkgVer.equals(uvmVer)) {
+                logger.warn("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
                 throw new MackageInstallException("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
             }
         }
