@@ -47,14 +47,14 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_IncomingSocketQueue_create
     mvpoll_key_t*   key;
 
     if (( key = socket_queue_key_create( _this )) == NULL ) {
-        return (jlong)errlog_null( ERR_CRITICAL, "socket_queue_key_create\n" );
+        return (uintptr_t)errlog_null( ERR_CRITICAL, "socket_queue_key_create\n" );
     }
     
     if (( snk = jvector_sink_create( _this, key )) == NULL ) {
-        return (jlong)errlog_null( ERR_CRITICAL, "jvector_sink_create\n" );
+        return (uintptr_t)errlog_null( ERR_CRITICAL, "jvector_sink_create\n" );
     }
 
-    return (jlong)snk;
+    return (uintptr_t)snk;
 }
 
 /*
@@ -65,7 +65,7 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_IncomingSocketQueue_create
 JNIEXPORT void JNICALL Java_com_untangle_jvector_IncomingSocketQueue_mvpollNotifyObservers
   (JNIEnv* env, jclass _this, jlong pointer, jint eventmask )
 {
-    jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;
+    jvector_sink_t* jv_snk = (jvector_sink_t*)(uintptr_t)pointer;
     
     if (( jv_snk == NULL ) || ( jv_snk->key == NULL )) {
         return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL sink or key\n" );

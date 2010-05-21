@@ -626,7 +626,7 @@ JNIEXPORT jlong JNICALL JF_ICMPTraffic( icmpSource )
     }
     
     do {
-        if (( ret = netcap_icmp_get_source( data, limit, pkt, &source )) < 0 ) {
+        if (( ret = netcap_icmp_get_source( (char*)data, limit, pkt, &source )) < 0 ) {
             jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_icmp_get_source\n" );
             break;
         }

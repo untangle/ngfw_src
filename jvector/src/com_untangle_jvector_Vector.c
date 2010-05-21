@@ -73,7 +73,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_cLoad
 JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Vector_vector_1create
     (JNIEnv* env, jobject _this, jlong list_ptr)
 {
-    return (jlong)vector_create((list_t*)list_ptr);
+    return (uintptr_t)vector_create((list_t*)(uintptr_t)list_ptr);
 }
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Vector_vector_1create
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1raze
     (JNIEnv* env, jobject _this, jlong vec_ptr)
 {
-    return (jint)vector_raze((vector_t*)vec_ptr);
+    return (uintptr_t)vector_raze((vector_t*)(uintptr_t)vec_ptr);
 }
 
 /*
@@ -95,7 +95,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1raze
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1send_1msg
     ( JNIEnv* env, jobject _this, jlong vec_ptr, jint vec_msg, jlong arg )
 {
-    return (jint)vector_send_msg((vector_t*)vec_ptr,(vector_msg_t)vec_msg,(void*)arg);
+    return (uintptr_t)vector_send_msg((vector_t*)(uintptr_t)vec_ptr,(vector_msg_t)vec_msg,(void*)(uintptr_t)arg);
 }
 
 /*
@@ -106,7 +106,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector_1send_1msg
 JNIEXPORT void JNICALL Java_com_untangle_jvector_Vector_vector_1set_1timeout
     (JNIEnv* env, jobject _this, jlong vec_ptr, jint time)
 {
-    return vector_set_timeout((vector_t*)vec_ptr,(int)time);
+    return vector_set_timeout((vector_t*)(uintptr_t)vec_ptr,(int)time);
 }
 
 /*
@@ -117,7 +117,7 @@ JNIEXPORT void JNICALL Java_com_untangle_jvector_Vector_vector_1set_1timeout
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector
     ( JNIEnv* env, jobject _this, jlong vec_ptr )
 {
-    return (jint)vector((vector_t*)vec_ptr);
+    return (jint)vector((vector_t*)(uintptr_t)vec_ptr);
 }
 
 /*
@@ -128,7 +128,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_vector
 JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Vector_list_1create 
     (JNIEnv* env, jobject _this, jint flags)
 {
-    return (jlong)list_create((u_int)flags);
+    return (uintptr_t)list_create((u_int)flags);
 }
 
 /*
@@ -139,7 +139,7 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Vector_list_1create
 JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Vector_list_1add_1tail
     (JNIEnv* env, jobject _this, jlong list_ptr, jlong arg)
 {
-    return (jlong)list_add_tail((list_t*)list_ptr,(void*)arg);
+    return (uintptr_t)list_add_tail((list_t*)(uintptr_t)list_ptr,(void*)(uintptr_t)arg);
 }
 
 /*
@@ -150,7 +150,7 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_Vector_list_1add_1tail
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_Vector_list_1raze
     (JNIEnv* env, jobject _this, jlong list_ptr)
 {
-    return (jint)list_raze((list_t*)list_ptr);
+    return (jint)list_raze((list_t*)(uintptr_t)list_ptr);
 }
 
 /*

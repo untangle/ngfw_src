@@ -54,23 +54,23 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_TCPSink_create
     int fd;
     
     if (( fd = dup( _fd )) < 0 ) {
-        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "dup: %s\n", errstr );
+        return (uintptr_t)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "dup: %s\n", errstr );
     }
 
     /* Set to NON-blocking */
     if ( unet_blocking_disable( fd ) < 0 ) {
-        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
+        return (uintptr_t)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
     }
 
     if (( key = mvpoll_key_fd_create( fd )) == NULL ) {
-        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
+        return (uintptr_t)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
     }
     
     if (( snk = jvector_sink_create( _this, key )) == NULL ) {
-        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_sink_create\n" );
+        return (uintptr_t)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_sink_create\n" );
     }
     
-    return (jlong)snk;    
+    return (uintptr_t)snk;    
 }
 
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_write
@@ -185,7 +185,7 @@ JNIEXPORT void JNICALL Java_com_untangle_jvector_TCPSink_reset
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_shutdown
   (JNIEnv *env, jclass _this, jlong pointer)
 {
-    jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;
+    jvector_sink_t* jv_snk = (jvector_sink_t*)(uintptr_t)pointer;
     int fd;
 
     if ( jv_snk == NULL || jv_snk->key == NULL ) return errlogargs();
@@ -215,9 +215,9 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_shutdown
 static int _sink_get_fd( jlong pointer )
 {
     /* XXX This should be throwing errors left and right */
-    if ( pointer == (jlong)NULL || ((jvector_sink_t*)pointer)->key == NULL ) {
+    if ( pointer == (uintptr_t)NULL || ((jvector_sink_t*)(uintptr_t)pointer)->key == NULL ) {
         return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid pointer\n" );
     }
     
-    return ((jvector_sink_t*)pointer)->key->data.fd;
+    return ((jvector_sink_t*)(uintptr_t)pointer)->key->data.fd;
 }

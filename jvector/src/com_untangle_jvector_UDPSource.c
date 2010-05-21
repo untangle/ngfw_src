@@ -49,23 +49,23 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_UDPSource_create
     mvpoll_key_t* key;
     mailbox_t* mb;
     
-    if (( mb = (mailbox_t*)pointer) == NULL ) return (jlong)errlogargs_null();
+    if (( mb = (mailbox_t*)(uintptr_t)pointer) == NULL ) return (uintptr_t)errlogargs_null();
         
     if (( key = mailbox_get_mvpoll_src_key( mb )) == NULL ) {
-        return (jlong)errlog_null( ERR_CRITICAL, "mailbox_get_mvpoll_src_key\n" );
+        return (uintptr_t)errlog_null( ERR_CRITICAL, "mailbox_get_mvpoll_src_key\n" );
     }
 
     if (( src = jvector_source_create( _this, key )) == NULL ) {
-        return (jlong)errlog_null( ERR_CRITICAL, "jvector_source_create\n" );
+        return (uintptr_t)errlog_null( ERR_CRITICAL, "jvector_source_create\n" );
     }
     
-    return (jlong)src;    
+    return (uintptr_t)src;    
 }
 
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSource_shutdown
 (JNIEnv *env, jclass _this, jlong pointer, jlong mailbox_pointer )
 {
-    jvector_source_t* jv_src = (jvector_source_t*)pointer;
+    jvector_source_t* jv_src = (jvector_source_t*)(uintptr_t)pointer;
     
     if ( jv_src == NULL || jv_src->key == NULL ) return errlogargs();
     

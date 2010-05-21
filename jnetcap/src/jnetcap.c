@@ -600,7 +600,7 @@ JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
             break;
         }
         
-        if (( ret = netcap_icmp_update_pkt( data, data_len, data_lim, icmp_type, icmp_code, icmp_pid, icmp_mb )) < 0 ) {
+        if (( ret = netcap_icmp_update_pkt( (char*) data, data_len, data_lim, icmp_type, icmp_code, icmp_pid, icmp_mb )) < 0 ) {
             ret = jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_icmp_update_pkt\n" );
             break;
         }        

@@ -37,7 +37,7 @@
 JNIEXPORT void JNICALL Java_com_untangle_jvector_Source_raze
     ( JNIEnv *env, jobject _this, jlong pointer )
 {
-    jvector_source_t* jv_src = (jvector_source_t*)pointer;
+    jvector_source_t* jv_src = (jvector_source_t*)(uintptr_t)pointer;
     
     if ( jv_src == NULL ) {
         errlogargs();

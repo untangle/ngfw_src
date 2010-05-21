@@ -54,18 +54,18 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_TCPSource_create
 
     /* Set to non-blocking */
     if ( unet_blocking_disable( fd ) < 0 ) {
-        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
+        return (uintptr_t)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
     }
 
     if (( key = mvpoll_key_fd_create( fd )) == NULL ) {
-        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
+        return (uintptr_t)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
     }
 
     if (( src = jvector_source_create( _this, key )) == NULL ) {
-        return (jlong)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_source_create\n" );
+        return (uintptr_t)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_source_create\n" );
     }
     
-    return (jlong)src;    
+    return (uintptr_t)src;    
 }
 
 /*
@@ -80,7 +80,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_read
     int ret = 0;
     int data_len;
     int fd;
-    jvector_source_t* src = (jvector_source_t*)pointer;
+    jvector_source_t* src = (jvector_source_t*)(uintptr_t)pointer;
     eventmask_t events;
 
     /* source_get_fd checks for NULL */
@@ -161,7 +161,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_read
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_shutdown
 (JNIEnv *env, jclass _this, jlong pointer)
 {
-    jvector_source_t* jv_src = (jvector_source_t*)pointer;
+    jvector_source_t* jv_src = (jvector_source_t*)(uintptr_t)pointer;
     int fd;
     
     if ( jv_src == NULL || jv_src->key == NULL ) return errlogargs();
@@ -186,9 +186,9 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_shutdown
 
 static int _source_get_fd( jlong pointer )
 {
-    if ( pointer == (jlong)NULL ) return errlog( ERR_CRITICAL, "Invalid pointer\n" );
+    if ( pointer == (uintptr_t)NULL ) return errlog( ERR_CRITICAL, "Invalid pointer\n" );
     
-    return ((jvector_source_t*)pointer)->key->data.fd;
+    return ((jvector_source_t*)(uintptr_t)pointer)->key->data.fd;
 }
 
 

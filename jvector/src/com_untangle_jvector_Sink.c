@@ -37,7 +37,7 @@
 JNIEXPORT void JNICALL Java_com_untangle_jvector_Sink_raze
     ( JNIEnv *env, jobject _this, jlong pointer )
 {
-    jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;
+    jvector_sink_t* jv_snk = (jvector_sink_t*)(uintptr_t)pointer;
     
     if ( jv_snk == NULL ) {
         errlogargs();

@@ -248,7 +248,7 @@ int  netcap_nfqueue_read( u_char* buf, int buf_len, netcap_pkt_t* pkt )
         
         debug( 11, "NFQUEUE Received %d bytes.\n", pkt_len );
         
-        if ( nfq_handle_packet( _queue.nfq_h, buf, pkt_len ) < 0 ) {
+        if ( nfq_handle_packet( _queue.nfq_h, (char*)buf, pkt_len ) < 0 ) {
             return errlog(ERR_WARNING, "nfq_handle_packet\n" );
         }
         

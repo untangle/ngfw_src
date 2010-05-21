@@ -69,9 +69,9 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_UDPSink_create
     
 
     /* XXX What is this about */
-    if (( key = malloc( sizeof( mvpoll_key_t ))) == NULL ) return (jlong)errlogmalloc_null();
+    if (( key = malloc( sizeof( mvpoll_key_t ))) == NULL ) return (uintptr_t)errlogmalloc_null();
 
-    if ( mvpoll_key_base_init( key ) < 0 ) return (jlong)errlog_null( ERR_CRITICAL, "mvpoll_key_base_init\n" );
+    if ( mvpoll_key_base_init( key ) < 0 ) return (uintptr_t)errlog_null( ERR_CRITICAL, "mvpoll_key_base_init\n" );
 
     key->type            = JV_UDP_KEY_TYPE;
     key->arg             = NULL;
@@ -80,10 +80,10 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_UDPSink_create
     key->poll            = _poll;
     
     if (( snk = jvector_sink_create( _this, key )) == NULL ) {
-        return (jlong)errlog_null( ERR_CRITICAL, "jvector_sink_create\n" );
+        return (uintptr_t)errlog_null( ERR_CRITICAL, "jvector_sink_create\n" );
     }
     
-    return (jlong)snk;    
+    return (uintptr_t)snk;    
 }
 
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
@@ -93,7 +93,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     jbyte* data;
     int number_bytes = 0;
     int data_len;
-    netcap_pkt_t* pkt = (netcap_pkt_t*)pointer;
+    netcap_pkt_t* pkt = (netcap_pkt_t*)(uintptr_t)pointer;
 
     /* Save these values for later */
     int prev_ttl = pkt->ttl;
@@ -122,11 +122,11 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     /* XXX options */
     if  ( is_udp == JNI_TRUE ) {
         if ( pkt->packet_id != 0 ) {
-            if (( number_bytes = _accept_packet( data, data_len, pkt )) < 0 ) {
+            if (( number_bytes = _accept_packet( (char*)data, data_len, pkt )) < 0 ) {
                 errlog( ERR_CRITICAL, "_accept_packet" );
             }
         } else {
-            if (( number_bytes = netcap_udp_send( data, data_len, pkt )) < 0 ) {
+            if (( number_bytes = netcap_udp_send( (char*)data, data_len, pkt )) < 0 ) {
                 perrlog( "netcap_udp_send" );
             }
         }
@@ -137,7 +137,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
             pkt->src.host.s_addr = (in_addr_t)( src_address & 0xFFFFFFFF );
         }
         
-        if (( number_bytes = netcap_icmp_send( data, data_len, pkt )) < 0 ) {
+        if (( number_bytes = netcap_icmp_send( (char*)data, data_len, pkt )) < 0 ) {
             perrlog( "netcap_icmp_send" );
         }
         
