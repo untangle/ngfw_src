@@ -54,7 +54,7 @@ class LogWorker implements Runnable
     private final List<LogEvent> logQueue = new LinkedList<LogEvent>();
 
     /**
-     * XXX what is this?
+     * This is a queue of incoming events
      */
     private final BlockingQueue<LogEventDesc> inputQueue = new LinkedBlockingQueue<LogEventDesc>();
 
@@ -81,21 +81,25 @@ class LogWorker implements Runnable
         long lastSync = System.currentTimeMillis();
         long nextSync = lastSync + SYNC_TIME;
 
-        while (null != thread) {
+        while (thread != null) {
             long t = System.currentTimeMillis();
 
             if (t < nextSync) {
-                LogEventDesc ed;
+                LogEventDesc event;
 
                 synchronized (this) {
                     interruptable = true;
                 }
 
                 try {
-                    if (0 < logQueue.size()) {
-                        ed = inputQueue.poll(nextSync - t, TimeUnit.MILLISECONDS);
+                    /**
+                     * If there are events waiting to be written only wait a certain amount of time
+                     * Otherwise wait indefinitely because no reason to wake up
+                     */
+                    if (logQueue.size() > 0) {
+                        event = inputQueue.poll(nextSync - t, TimeUnit.MILLISECONDS);
                     } else {
-                        ed = inputQueue.take();
+                        event = inputQueue.take();
                     }
                 } catch (InterruptedException exn) {
                     continue;
@@ -105,7 +109,7 @@ class LogWorker implements Runnable
                     interruptable = false;
                 }
 
-                accept(ed);
+                accept(event);
             }
 
             if (logQueue.size() >= BATCH_SIZE || t >= nextSync) {
@@ -129,23 +133,29 @@ class LogWorker implements Runnable
         }
     }
 
-    private boolean accept(LogEventDesc ed)
+    private boolean accept(LogEventDesc event)
     {
-        if (null == ed) { return false; }
+        if (null == event) { return false; }
 
-        LogEvent e = ed.getLogEvent();
+        LogEvent e = event.getLogEvent();
 
         if (e.isPersistent()) {
+            /**
+             * Add it to the queue to be written to database
+             */
             logQueue.add(e);
 
+            /**
+             * Send it to syslog (make best attempt - ignore errors)
+             */
             try {
-                syslogManager.sendSyslog(e, ed.getTag());
-            } catch (Exception exn) { // never say die
+                syslogManager.sendSyslog(e, event.getTag());
+            } catch (Exception exn) { 
                 logger.warn("failed to send syslog", exn);
             }
         }
 
-        ed.getEventLogger().doLog(e);
+        event.getEventLogger().doLog(e);
 
         return true;
     }
@@ -164,6 +174,10 @@ class LogWorker implements Runnable
                     for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
                         LogEvent event = i.next();
 
+                        /**
+                         * Write event to database
+                         * If fails, just move on
+                         */
                         try {
                             s.saveOrUpdate(event);
                         } catch (Exception exc) {
@@ -219,11 +233,10 @@ class LogWorker implements Runnable
             try {
                 i = Integer.parseInt(p);
             } catch (NumberFormatException exn) {
-                Logger.getLogger(LogWorker.class)
-                    .warn("ignoring invalid sync time: " + p);
+                Logger.getLogger(LogWorker.class).warn("ignoring invalid sync time: " + p);
             }
 
-            SYNC_TIME = 0 > i ? DEFAULT_SYNC_TIME : i;
+            SYNC_TIME = i < 0 ? DEFAULT_SYNC_TIME : i;
         }
     }
 }
