@@ -43,7 +43,6 @@ import com.untangle.uvm.networking.SetupState;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeContextSwitcher;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
@@ -390,27 +389,12 @@ public class RouterImpl extends AbstractNode implements Router
         getNodeContext().runTransaction( tw );
     }
 
-    class SettingsListener
-        implements NetworkSettingsListener, NodeContextSwitcher.Event<NetworkSpacesInternalSettings>
+    class SettingsListener implements NetworkSettingsListener
     {
-        /* Use this to automatically switch context */
-        private final NodeContextSwitcher<NetworkSpacesInternalSettings> tcs;
-
         /* This are the settings passed in by the network settings */
         private NetworkSpacesInternalSettings settings;
 
-        SettingsListener()
-        {
-            tcs = new NodeContextSwitcher<NetworkSpacesInternalSettings>( getNodeContext());
-        }
-
         public void event( NetworkSpacesInternalSettings settings )
-        {
-            tcs.run( this, settings );
-        }
-
-        /* NodeContextSwitcher.Event */
-        public void handle( NetworkSpacesInternalSettings settings )
         {
             if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
             try {
