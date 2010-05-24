@@ -10,8 +10,9 @@ cp ../uvm-lib/po/untangle-libuvm.pot ./pot/
 cp ../../pkgs/untangle-apache2-config/po/untangle-apache2-config.pot ./pot/
 cp ../../pkgs/untangle-net-alpaca/po/untangle-net-alpaca.pot ./pot/
 cp ../../../internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/po/templates.pot ./pot/untangle-system-stats.pot
-cp ../../../internal/isotools/wintangle-systray/untangle-systray.pot ./pot/
-cp ../../../internal/isotools/wintangle-installer/LanguageStrings.nsh ./pot/
+# lines below is part of winuntangle which has been EOL.
+# cp ../../../internal/isotools/wintangle-systray/untangle-systray.pot ./pot/
+# cp ../../../internal/isotools/wintangle-installer/LanguageStrings.nsh ./pot/
 
 for module in ../* ../../../hades/rup/* ; do
     module_suffix=`basename ${module} | sed -e 's|-base||' -e 's|-casing||'`
