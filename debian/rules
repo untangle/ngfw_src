@@ -105,8 +105,6 @@ binary-arch: install
 	@find debian/untangle-libuvmthirdparty -name '*.jar' | xargs chmod 644
 	@dh_md5sums
 	@dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
-	# FIXME: oh, nastiness (not as nasty as Dirk's rebuildmvvm.sh, but that ain't saying much heh)
-	@cp -f ../untangle-node-router_*`cat debian/version`*deb $(UVM_DESTDIR)/var/lib/uvm/untangle-node-router.deb
 	@dh_md5sums
 	@dh_builddeb -p untangle-vm --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
 

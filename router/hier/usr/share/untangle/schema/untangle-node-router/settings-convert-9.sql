@@ -1,5 +1,5 @@
--- settings schema for release-5.0
--- $HeadURL$
+-- settings conversion for release-5.0
+-- $HeadURL: svn://chef/work/src/router/hier/usr/share/untangle/schema/untangle-node-router/settings-convert-8.sql $
 -- Copyright (c) 2003-2007 Untangle, Inc. 
 --
 -- This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
--------------
--- settings |
--------------
-
+DELETE TABLE n_router_dhcp_leases;
+DELETE TABLE n_router_settings;
+DELETE TABLE n_router_redirects;
+DELETE TABLE n_router_dns_hosts;

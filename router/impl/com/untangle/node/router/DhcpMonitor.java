@@ -201,7 +201,7 @@ class DhcpMonitor implements Runnable
     {
         BufferedReader in = null;
 
-        Set<InetAddress> deletedSet = new HashSet( currentLeaseMap.keySet());
+        Set<InetAddress> deletedSet = new HashSet<InetAddress>( currentLeaseMap.keySet() );
 
         /* If there are no leases, this should never expire */
         nextExpiration = NEVER;

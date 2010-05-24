@@ -50,7 +50,6 @@ import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.util.DataLoader;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.JsonClient;
-import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.node.LocalADConnector;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -79,17 +78,6 @@ public class RouterImpl extends AbstractNode implements Router
 
     private final EventLogger<LogEvent> eventLogger;
 
-    /* Indication of what should happen at startup. */
-    /* WIZARD : Wizard needs to be run, initialize to the default settings.
-     * UPGRADE : An upgrade has been performed, need to migrate the settings.
-     * DISABLED : Do nothing at startup, just start as usual.
-     */
-    private enum StartupType { WIZARD, UPGRADE, DISABLED };
-
-    /** Used to turn on network spaces if the appliances is on,
-     * otherwise, network spaces are not turned on at startup. */
-    private StartupType startupType  = StartupType.DISABLED;
-
     private final Logger logger = Logger.getLogger( RouterImpl.class );
 
     public RouterImpl()
@@ -102,47 +90,15 @@ public class RouterImpl extends AbstractNode implements Router
 
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
-        natPipeSpec = new SoloPipeSpec
-            ("nat", this, this.handler, Fitting.OCTET_STREAM, Affinity.SERVER,
-             SoloPipeSpec.MAX_STRENGTH - 1);
+        natPipeSpec = new SoloPipeSpec("nat", this, this.handler, Fitting.OCTET_STREAM, Affinity.SERVER, SoloPipeSpec.MAX_STRENGTH - 1);
 
         /* This subscription has to evaluate after NAT */
-        natFtpPipeSpec = new SoloPipeSpec
-            ("nat-ftp", this, new TokenAdaptor(this, new RouterFtpFactory(this)),
-             Fitting.FTP_TOKENS, Affinity.SERVER, 0);
+        natFtpPipeSpec = new SoloPipeSpec("nat-ftp", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_TOKENS, Affinity.SERVER, 0);
 
         pipeSpecs = new SoloPipeSpec[] { natPipeSpec, natFtpPipeSpec };
 
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-
-        SimpleEventFilter ef = new RouterRedirectFilter();
-        eventLogger.addSimpleEventFilter(ef);
-    }
-
-    public RouterCommonSettings getRouterSettings()
-    {
-        logger.warn( "getRouterSettings: This method is no longer used.", new Exception());
-
-        return new RouterSettingsImpl( getTid(), SetupState.BASIC, 
-                                       RouterUtil.getInstance().getEmptyLocalMatcherList());
-    }
-
-    public void setRouterSettings( RouterCommonSettings settings )
-    {
-        logger.warn( "setRouterSettings: This method is no longer used.", new Exception());
-    }
-
-    /* Reinitialize the settings to basic nat */
-    public void resetBasic()
-    {
-        logger.warn( "resetBasic: This method is no longer used.", new Exception());
-    }
-
-    /* Convert the basic settings to advanced Network Spaces */
-    public void switchToAdvanced()
-    {
-        logger.warn( "switchToAdvanced: This method is no longer used.", new Exception());
     }
 
     public SetupState getSetupState()
@@ -201,68 +157,11 @@ public class RouterImpl extends AbstractNode implements Router
         super.postInit( args );
 
         /* Register a listener, this should hang out until the node is removed dies. */
-        getNetworkManager().registerListener( this.listener );
-
-        /* Check if the settings have been upgraded yet */
-        DataLoader<RouterSettingsImpl> natLoader = new DataLoader<RouterSettingsImpl>( "RouterSettingsImpl", getNodeContext());
-
-        RouterSettingsImpl settings = natLoader.loadData();
-
-        if ( settings == null ) {
-            /* Router settings are typically null, as they should come from the NetworkManager. */
-            logger.info( "null router settings." );
-        } else {
-            /* In deprecated, mode, update and save new settings */
-            SetupState state = settings.getSetupState();
-            if ( state.equals( SetupState.NETWORK_SHARING )) {
-                logger.warn( "Settings are in the deprecated mode, ignoring settings." );
-                settings.setSetupState( SetupState.BASIC );
-            } else if ( state.equals( SetupState.WIZARD )) {
-                /* Enable the wizard configuration at startup */
-                this.startupType = StartupType.WIZARD;
-            }  else {
-                logger.info( "Settings are in [" + settings.getSetupState() +"]  mode, ignoring." );
-            }
-
-            /* Just delete all of the settings, settings are only used to indicate that the 
-             * router should go into the wizard */
-            deleteSettings();
-        }
+        LocalUvmContextFactory.context().localNetworkManager().registerListener( this.listener );
     }
 
     protected void preStart() throws NodeStartException
     {
-        LocalUvmContext context = LocalUvmContextFactory.context();
-        UvmState state = context.state();
-        LocalNetworkManager networkManager = getNetworkManager();
-
-
-        switch ( this.startupType ) {
-        case WIZARD:
-            /* Run the commands to initialize the alpaca for the wizard */
-            logger.info( "Initializing the alpaca to the wizard configuration" );
-            
-            /* Make a synchronous request */
-            try {
-                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
-            } catch ( Exception e ) {
-                logger.warn( "Unable to initialize the wizard", e );
-            }
-            break;
-
-        case UPGRADE:
-            /* Not sure what to do here? */
-            logger.info( "In the upgrade state." );
-            break;
-
-        case DISABLED:
-            /* No longer need to do anything at router startup */
-            logger.debug( "nothing to do at startup" );
-        }
-        
-        /* no longer at startup. */
-        this.startupType = StartupType.DISABLED;
-
         try {
             networkSettingsEvent();
         } catch ( Exception e ) {
@@ -295,8 +194,7 @@ public class RouterImpl extends AbstractNode implements Router
     @Override protected void postDestroy() throws NodeException
     {
         /* Deregister the network settings listener */
-        getNetworkManager().unregisterListener( this.listener );
-
+        LocalUvmContextFactory.context().localNetworkManager().unregisterListener( this.listener );
     }
 
     public void networkSettingsEvent() throws NodeException
@@ -304,7 +202,7 @@ public class RouterImpl extends AbstractNode implements Router
         logger.info("networkSettingsEvent");
 
         /* Retrieve the new settings from the network manager */
-        LocalNetworkManager nm = getNetworkManager();
+        LocalNetworkManager nm = LocalUvmContextFactory.context().localNetworkManager();
         ServicesInternalSettings servicesSettings = nm.getServicesInternalSettings();
 
         /* Default to it is disabled */
@@ -323,16 +221,6 @@ public class RouterImpl extends AbstractNode implements Router
 
     }
 
-
-    private void updateToCurrent( RouterSettings settings )
-    {
-        if (settings == null) {
-            logger.error("NULL Router Settings");
-        } else {
-            logger.info( "Update Settings Complete" );
-        }
-    }
-
     /* Kill all sessions when starting or stopping this node */
     protected SessionMatcher sessionMatcher()
     {
@@ -347,46 +235,6 @@ public class RouterImpl extends AbstractNode implements Router
     void log(LogEvent le)
     {
         eventLogger.log(le);
-    }
-
-    // XXX soon to be deprecated ----------------------------------------------
-
-    public Object getSettings()
-    {
-        return getRouterSettings();
-    }
-
-    public void setSettings(Object settings) throws Exception
-    {
-        setRouterSettings((RouterCommonSettings)settings);
-    }
-
-    private LocalNetworkManager getNetworkManager()
-    {
-        return LocalUvmContextFactory.context().localNetworkManager();
-    }
-    
-    private void deleteSettings()
-    {
-        TransactionWork tw = new TransactionWork() {
-                public boolean doWork( Session s )
-                {
-                    Query q = s.createQuery( "from RouterSettingsImpl" );
-                    for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
-                        RouterSettingsImpl settings = (RouterSettingsImpl)iter.next();
-                        s.delete( settings );
-                    }
-
-                    return true;
-                }
-
-                public Object getResult()
-                {
-                    return null;
-                }
-            };
-
-        getNodeContext().runTransaction( tw );
     }
 
     class SettingsListener implements NetworkSettingsListener

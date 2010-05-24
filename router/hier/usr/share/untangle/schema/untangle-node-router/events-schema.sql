@@ -53,34 +53,5 @@ CREATE TABLE events.n_router_evt_dhcp_abs_leases (
     position int4 NOT NULL,
     PRIMARY KEY (event_id, position));
 
--- com.untangle.tran.nat.RedirectEvent
-CREATE TABLE events.n_router_redirect_evt (
-    event_id int8 NOT NULL,
-    pl_endp_id int8,
-    rule_index int4,
-    is_dmz bool,
-    time_stamp timestamp,
-    PRIMARY KEY (event_id));
 
--- com.untangle.tran.nat.NatStatisticEvent
-CREATE TABLE events.n_router_statistic_evt (
-    event_id int8 NOT NULL,
-    nat_sessions int4,
-    dmz_sessions int4,
-    tcp_incoming int4,
-    tcp_outgoing int4,
-    udp_incoming int4,
-    udp_outgoing int4,
-    icmp_incoming int4,
-    icmp_outgoing int4,
-    time_stamp timestamp,
-    PRIMARY KEY (event_id));
 
-----------------
--- constraints |
-----------------
-
--- indeces for reporting
-
-CREATE INDEX n_router_redirect_evt_plepid_idx ON events.n_router_redirect_evt (pl_endp_id);
-CREATE INDEX n_router_redirect_evt_ts_idx ON events.n_router_redirect_evt (time_stamp);

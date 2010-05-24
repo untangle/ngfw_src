@@ -86,6 +86,8 @@ import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.util.XMLRPCUtil;
+import com.untangle.uvm.util.JsonClient;
 
 /**
  * Implements LocalUvmContext.
@@ -113,6 +115,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM";
     private static final String PROPERTY_INSTALLTION_TYPE = "com.untangle.installationType";
 
+    private static final String FACTORY_DEFAULT_FLAG = System.getProperty("uvm.conf.dir") + "/factory-defaults";
+    
     private final Object startupWaitLock = new Object();
     private final Logger logger = Logger.getLogger(UvmContextImpl.class);
     private final BackupManager backupManager;
@@ -847,6 +851,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             this.heapMonitor.start();
         }
 
+        if (isFactoryDefaults())
+            initializeWizard();
+        
         state = UvmState.INITIALIZED;
     }
 
@@ -1145,6 +1152,32 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         
     }
 
+    private boolean isFactoryDefaults()
+    {
+        return (new File(FACTORY_DEFAULT_FLAG)).exists(); 
+    }
+
+    private void initializeWizard()
+    {
+        /**
+         * Tell alpaca to initialize wizard settings
+         */
+        try {
+            JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
+        } catch (Exception exc) {
+            logger.error("Failed to initialize Factory Defaults",exc);
+        }
+
+        /**
+         * Remove the flag after setting initial settings
+         */
+        File f = new File(FACTORY_DEFAULT_FLAG);
+        if (f.exists()) {
+            f.delete();
+        }
+            
+    }
+    
     // static initializer -----------------------------------------------------
 
     static {
