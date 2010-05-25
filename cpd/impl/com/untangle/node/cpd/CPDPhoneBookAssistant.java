@@ -39,9 +39,6 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
     /* how often to refresh internal cache from database */
     private final long DATABASE_READER_INTERVAL = 10000L;
 
-    /* how long cache entries last - this should be greater than reader interval in case it has delays cache will still be valid */
-    private final long DATABASE_CACHE_TIME = DATABASE_READER_INTERVAL * 2;
-
     private final int ASSISTANT_PRIORITY = 3;
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -51,10 +48,13 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
     private final Pulse databaseReader;
 
     private boolean registered = false;
+
+    private CPDImpl cpd;
     
     /* -------------- Constructors -------------- */
     public CPDPhoneBookAssistant(CPDImpl cpd)
     {
+        this.cpd = cpd;
         this.databaseReader = new Pulse("CPDDatabaseReader", true, new CPDDatabaseReader(cpd,this));
         this.startDatabaseReader();
         this.registered = false;
@@ -131,7 +131,8 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
     public void addCache(InetAddress addr, String username)
     {
         MapValue newCacheEntry = new MapValue();
-        newCacheEntry.expirationDate = new Date(System.currentTimeMillis() + DATABASE_CACHE_TIME);
+
+        newCacheEntry.expirationDate = new Date(System.currentTimeMillis() + (this.cpd.getCPDSettings().getBaseSettings().getTimeout()*1000));
         newCacheEntry.username = username;
         cache.put(addr,newCacheEntry);
         logger.debug( "Add    Cache Entry: (IP " + addr + ") (Username " + username + ")");
@@ -201,6 +202,7 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
             this.assistant = assistant;
         }
         
+        @SuppressWarnings("unchecked") /* for cast of Query result */
         public void run()
         {
             if (this.cpd.getRunState() !=  NodeState.RUNNING)
@@ -246,7 +248,7 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
                                 }
                                 /* if cache hit - update expire time as its still in the database */
                                 else {
-                                    cacheEntry.expirationDate = new Date(now.getTime() + DATABASE_CACHE_TIME);
+                                    cacheEntry.expirationDate = new Date(now.getTime() + (cpd.getCPDSettings().getBaseSettings().getTimeout()*1000));
                                 }
                             }
 
@@ -267,7 +269,7 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
                                 /**
                                  * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
                                  */
-                                if (value.expirationDate.after(new Date(now.getTime() + DATABASE_CACHE_TIME*10))) {
+                                if (value.expirationDate.after(new Date(now.getTime() + (cpd.getCPDSettings().getBaseSettings().getTimeout()*1000)*10))) {
                                     logger.warn("cache entry expires too far in the future - removing");
                                     removeCache(inet);
                                 }

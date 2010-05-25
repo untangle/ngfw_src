@@ -16,8 +16,10 @@ import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name="n_cpd_host_database_entry", schema="events")
-public class HostDatabaseEntry implements Serializable {
-    
+public class HostDatabaseEntry implements Serializable
+{
+    private static final long serialVersionUID = 42L;
+
     private Long id;
     private String hardwareAddress;
     private InetAddress ipv4Address;

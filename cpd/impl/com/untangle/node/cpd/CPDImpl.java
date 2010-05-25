@@ -88,7 +88,8 @@ public class CPDImpl extends AbstractNode implements CPD {
 
     // constructor ------------------------------------------------------------
 
-    public CPDImpl() {
+    public CPDImpl()
+    {
         NodeContext nodeContext = getNodeContext();
         this.loginEventLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
         this.loginEventLogger.addSimpleEventFilter(new LoginEventFilter());
@@ -105,7 +106,8 @@ public class CPDImpl extends AbstractNode implements CPD {
         lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, authorizeBlinger);
     }
 
-    public void initializeSettings() {
+    public void initializeSettings()
+    {
         logger.info("Initializing Settings...");
         
         CPDSettings settings = new CPDSettings(this.getTid());

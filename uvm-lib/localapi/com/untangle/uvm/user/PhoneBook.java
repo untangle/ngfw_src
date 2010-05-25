@@ -27,6 +27,8 @@ public interface PhoneBook
     public String tryLookupUser( InetAddress address );
 
     public void expireUser ( InetAddress address );
+
+    public void refreshUser ( InetAddress address );
     
     public void registerAssistant( PhoneBookAssistant newAssistant );
 
