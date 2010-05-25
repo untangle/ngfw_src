@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"POT-Creation-Date: 2010-05-25 10:45-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -278,33 +278,33 @@ msgstr ""
 msgid "Please Try Again"
 msgstr ""
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:58
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:69
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:57
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:68
 msgid "Feature is not installed."
 msgstr ""
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:78
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:77
 msgid "This request has expired."
 msgstr ""
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:108
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:107
 #, java-format
 msgid "{0} | Spyware Blocker Warning"
 msgstr ""
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:119
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:118
 #, java-format
 msgid "{0} Spyware Blocker"
 msgstr ""
 
-#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:136
+#: ../servlets/spyware/src/com/untangle/node/spyware/BlockPageServlet.java:135
 #, java-format
 msgid ""
 "{0}This web page was blocked{1} because it may be designed to steal personal "
 "information."
 msgstr ""
 
-#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:87
+#: ../../http-casing/localapi/com/untangle/node/http/BlockPageUtil.java:86
 #, java-format
 msgid "If you have any questions, Please contact {0}."
 msgstr ""
@@ -334,27 +334,27 @@ msgstr ""
 msgid "Cookie Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:228
 msgid "Pages scanned"
 msgstr ""
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:228
 msgid "SCAN"
 msgstr ""
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:229
 msgid "Pages blocked"
 msgstr ""
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:231
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:229
 msgid "BLOCK"
 msgstr ""
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "Pages passed"
 msgstr ""
 
-#: ../impl/com/untangle/node/spyware/SpywareImpl.java:232
+#: ../impl/com/untangle/node/spyware/SpywareImpl.java:230
 msgid "PASS"
 msgstr ""
 
@@ -584,24 +584,4 @@ msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_spyware.py:1093
 msgid "Subnet Events"
-msgstr ""
-
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:74
-msgid "Host:"
-msgstr ""
-
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:75
-msgid "URL:"
-msgstr ""
-
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:77
-msgid "Reason:"
-msgstr ""
-
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:87
-msgid "Unblock For Now"
-msgstr ""
-
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:93
-msgid "Unblock Permanently"
 msgstr ""

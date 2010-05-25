@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"POT-Creation-Date: 2010-05-25 10:45-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,8 +111,8 @@ msgid "reputation"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-shield/settings.js:241
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:219
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:304
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:224
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:309
 msgid "limited"
 msgstr ""
 
@@ -136,113 +136,113 @@ msgstr ""
 msgid "type"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:84
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:88
 msgid "Summary Report"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:99
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:103
 msgid "scanned"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:100
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:104
 msgid "sessions and blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:101
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:105
 msgid "of them"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:134
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:138
 msgid "Daily Requests"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:163
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:168
 msgid "Avg Requests"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:164
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:167
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:170
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:173
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:176
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:179
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:169
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:172
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:175
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:178
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:181
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:184
 msgid "sessions/minute"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:166
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:171
 msgid "Max Requests"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:169
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:174
 msgid "Avg Limited"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:172
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:177
 msgid "Max Limited"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:175
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:180
 msgid "Avg Blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:178
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:183
 msgid "Max Blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:213
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:218
 msgid "Daily Request"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:214
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:219
 msgid "Hour of Day"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:215
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:220
 msgid "Requests per Minute"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:218
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:223
 msgid "accepted"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:220
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:225
 msgid "blocked"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:226
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:264
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:231
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:269
 msgid "Top Blocked Hosts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:257
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:262
 msgid "blocks"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:273
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:310
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:278
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:315
 msgid "Top Limited Hosts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:319
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:324
 msgid "Attack Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:325
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:330
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:327
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:332
 msgid "Client"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:328
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:333
 msgid "Limited"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:329
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:334
 msgid "Dropped"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:330
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_shield.py:335
 msgid "Rejected"
 msgstr ""

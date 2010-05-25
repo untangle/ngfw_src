@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"POT-Creation-Date: 2010-05-25 10:45-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,27 +185,27 @@ msgstr ""
 msgid "All Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:95
 msgid "Sessions scanned"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:95
 msgid "SCAN"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:96
 msgid "Sessions logged"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
-msgid "DETECT"
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:96
+msgid "LOG"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
 msgid "Sessions blocked"
 msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
 msgid "BLOCK"
 msgstr ""
 

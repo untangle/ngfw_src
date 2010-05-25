@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 14:27-0700\n"
+"POT-Creation-Date: 2010-05-25 10:45-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -259,7 +259,7 @@ msgstr ""
 msgid "Delete one Address"
 msgstr ""
 
-#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:755
+#: ../impl/com/untangle/node/mail/impl/quarantine/Quarantine.java:756
 msgid "Quarantine Digest"
 msgstr ""
 
@@ -282,20 +282,4 @@ msgstr ""
 msgid ""
 "Quarantined emails can be released to your inbox or deleted using the spam "
 "quarantine link."
-msgstr ""
-
-#: ../servlets/quarantine/root/inbox.jspx:34
-msgid "Quarantine Digest for: {0}"
-msgstr ""
-
-#: ../servlets/quarantine/root/inbox.jspx:39
-msgid "{0} | Quarantine Digest for: {1}"
-msgstr ""
-
-#: ../servlets/quarantine/root/request.jspx:36
-msgid "Request Quarantine Digest Emails"
-msgstr ""
-
-#: ../servlets/quarantine/root/request.jspx:40
-msgid "{0} | Request Quarantine Digest Email"
 msgstr ""
