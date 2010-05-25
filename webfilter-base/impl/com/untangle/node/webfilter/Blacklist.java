@@ -20,6 +20,7 @@ package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -173,8 +174,6 @@ public abstract class Blacklist
      * @param port Port that the request was made to.
      * @param requestLine
      * @param header
-     * @param host the requested host.
-     * @param path the requested path.
      * @param event This is the new sessions request associated with this request, (or null if this is later.)
      * @return an HTML response.
      */
@@ -182,7 +181,13 @@ public abstract class Blacklist
                                RequestLineToken requestLine, Header header,
                                TCPNewSessionRequestEvent event)
     {
-        URI uri = requestLine.getRequestUri().normalize();
+        URI uri = null;
+        try {
+            uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("/+", "/"));
+        } catch (URISyntaxException e) {
+            logger.fatal("Could not parse URI '" + uri + "'");
+        }
+
         String description;
 
         String path = uri.getPath();
@@ -196,6 +201,8 @@ public abstract class Blacklist
             }
         }
         host = normalizeHostname(host);
+
+        logger.debug("checkRequest: " + host + uri);
 
         // check client IP address pass list
         description = isClientPassListed(clientIp);
@@ -228,8 +235,6 @@ public abstract class Blacklist
             node.log(hbe, host, port, event);
             return null;
         }
-
-        logger.debug("CHECK: " + host + uri);
 
         // only check block all IP hosts on http traffic
         if (80 == port && settings.getBaseSettings().getBlockAllIpHosts()) {
@@ -298,7 +303,12 @@ public abstract class Blacklist
         }
 
         String contentType = header.getValue("content-type");
-        URI uri = requestLine.getRequestUri().normalize();
+        URI uri = null;
+        try {
+            uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("/+", "/"));
+        } catch (URISyntaxException e) {
+            logger.fatal("Could not parse URI '" + uri + "'");
+        }
         String host = normalizeHostname(requestLine.getRequestLine().getUrl().getHost());
 
         if (isClientPassListed(clientIp) != null)
@@ -308,7 +318,7 @@ public abstract class Blacklist
         if (isSiteBypassed(host,uri,clientIp))
             return null;
 
-        logger.debug("CHECK: " + host + uri + " content: " + contentType);
+        logger.debug("checkResponse: " + host + uri + " content: " + contentType);
 
         // check mime-type list
         for (MimeTypeRule rule : settings.getBlockedMimeTypes()) {
@@ -464,6 +474,10 @@ public abstract class Blacklist
         } else {
             uri = reqUri.normalize().toString();
         }
+
+        uri = uri.replaceAll("/+", "/");
+
+        logger.debug("checkBlacklist: " + host + uri);
 
         BlacklistCategory category = findBestCategory(host, port, uri);
 
