@@ -176,6 +176,10 @@ class RealApt
     IO.popen("apt-get install #{INST_OPTS} #{pkg} #{recs}", 'r') do |input|
       input.each_line { |l| log l }
       input.close
+      begin
+        Process.wait
+      rescue
+      end
       r = $?
     end
 
@@ -190,6 +194,10 @@ class RealApt
     IO.popen("apt-get update #{UPDT_OPTS}") do |io|
       io.each_line { |l| log l }
       io.close
+      begin
+        Process.wait
+      rescue
+      end
       r = $?
     end
 
@@ -235,6 +243,10 @@ class RealApt
         end
       end
       io.close
+      begin
+        Process.wait
+      rescue
+      end
       ret = $?
     end
 
@@ -273,6 +285,10 @@ class RealApt
     IO.popen(cmd) do |io|
       io.each_line { |l| log l }
       io.close
+      begin
+        Process.wait
+      rescue
+      end
     end
     $?
   end
