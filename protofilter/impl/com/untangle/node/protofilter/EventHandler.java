@@ -111,8 +111,7 @@ public class EventHandler extends AbstractEventHandler
         return IPDataResult.PASS_THROUGH;
     }
 
-    public void handleUDPClientPacket (UDPPacketEvent e)
-        throws MPipeException
+    public void handleUDPClientPacket (UDPPacketEvent e) throws MPipeException
     {
         UDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
@@ -120,8 +119,7 @@ public class EventHandler extends AbstractEventHandler
         sess.sendServerPacket(packet, e.header());
     }
 
-    public void handleUDPServerPacket (UDPPacketEvent e)
-        throws MPipeException
+    public void handleUDPServerPacket (UDPPacketEvent e) throws MPipeException
     {
         UDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
@@ -162,8 +160,7 @@ public class EventHandler extends AbstractEventHandler
 
         int chunkBytes = chunk.remaining();
         int bufferSize = server ? sessInfo.serverBufferSize: sessInfo.clientBufferSize;
-        int bytesToWrite = chunkBytes > (this._byteLimit - bufferSize) ? this._byteLimit - bufferSize :
-            chunkBytes;
+        int bytesToWrite = chunkBytes > (this._byteLimit - bufferSize) ? this._byteLimit - bufferSize : chunkBytes;
         AsciiCharBuffer buf;
         int chunkCount;
         int written = 0;
@@ -277,8 +274,7 @@ public class EventHandler extends AbstractEventHandler
 
             }
 
-            ProtoFilterLogEvent evt = new ProtoFilterLogEvent
-                (sess.pipelineEndpoints(), sessInfo.protocol, elem.isBlocked());
+            ProtoFilterLogEvent evt = new ProtoFilterLogEvent(sess.pipelineEndpoints(), sessInfo.protocol, elem.isBlocked());
             node.log(evt);
 
             // We release session immediately upon first match.
@@ -313,7 +309,8 @@ public class EventHandler extends AbstractEventHandler
     }
 
     // Only works with non-direct ByteBuffers.  Ignores mark.
-    private AsciiCharBuffer ensureRoomFor(AsciiCharBuffer abuf, int bytesToAdd) {
+    private AsciiCharBuffer ensureRoomFor(AsciiCharBuffer abuf, int bytesToAdd)
+    {
         if (abuf.remaining() < bytesToAdd) {
             ByteBuffer buf = abuf.getWrappedBuffer();
             int oldCapacity = buf.capacity();
