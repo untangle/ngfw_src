@@ -176,16 +176,12 @@ class RealApt
     IO.popen("apt-get install #{INST_OPTS} #{pkg} #{recs}", 'r') do |input|
       input.each_line { |l| log l }
       input.close
-      begin
-        Process.wait
-      rescue
-      end
       r = $?
     end
 
     log "done #{@stamp}"
 
-    r
+    (r == 0) ? 0 : 1
   end
 
   def update()
@@ -194,16 +190,13 @@ class RealApt
     IO.popen("apt-get update #{UPDT_OPTS}") do |io|
       io.each_line { |l| log l }
       io.close
-      begin
-        Process.wait
-      rescue
-      end
       r = $?
     end
 
     log "done #{@stamp}"
 
     # Update doesn't need to show errors.
+    #(r == 0) ? 0 : 1
     0
   end
 
@@ -243,14 +236,10 @@ class RealApt
         end
       end
       io.close
-      begin
-        Process.wait
-      rescue
-      end
       ret = $?
     end
 
-    ret
+    (ret == 0) ? 0 : 1
   end
 
   private
@@ -285,12 +274,8 @@ class RealApt
     IO.popen(cmd) do |io|
       io.each_line { |l| log l }
       io.close
-      begin
-        Process.wait
-      rescue
-      end
     end
-    $?
+    ($? == 0) ? 0 : 1
   end
 
   def get_tempdir()
