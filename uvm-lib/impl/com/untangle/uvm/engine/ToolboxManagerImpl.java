@@ -1104,7 +1104,7 @@ class ToolboxManagerImpl implements ToolboxManager
                  */
                 int e = proc.exitValue();
                 if (0 != e) {
-                    throw new MackageException("ut-apt exited with: " + e);
+                    throw new MackageException("ut-apt predictInstall exited with: " + e);
                 }
             } catch (IOException exn) {
                 logger.warn("could not predict node install: " + pkg, exn);
