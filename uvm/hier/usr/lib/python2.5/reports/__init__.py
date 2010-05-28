@@ -560,6 +560,11 @@ class Graph:
             if not ks.name:
                 name = ''
 
+            try: # it could be an int
+                name = str(name)
+            except:
+                pass
+
             try:
                 name = name.decode('utf-8')
             except:
