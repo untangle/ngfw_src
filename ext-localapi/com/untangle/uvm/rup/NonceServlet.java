@@ -27,6 +27,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.TransactionWork;
 
+@SuppressWarnings("serial")
 public class NonceServlet extends HttpServlet
 {
     private final Random rand = new SecureRandom();

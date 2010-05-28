@@ -22,7 +22,7 @@ class LicenseSettings
     
     LicenseSettings( Collection<License> licenses )
     {
-        this.licenses = Collections.unmodifiableList( new ArrayList( licenses ));
+        this.licenses = Collections.unmodifiableList( new ArrayList<License>( licenses ));
     }
 
     /**

@@ -464,6 +464,7 @@ public class LicenseManagerImpl implements LicenseManager
         return verifyLicense(license, true);
     }
 
+    @SuppressWarnings("fallthrough")
     private boolean verifyLicense(License license, boolean verifyExpiration)
     {
         int version = license.getKeyVersion();
