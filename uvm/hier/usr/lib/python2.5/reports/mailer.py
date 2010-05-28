@@ -143,7 +143,7 @@ def mail(file, zip_file, sender, receiver, date, company_name,
         part = MIMEBase('application', "zip")
         part.set_payload(open(zip_file, 'rb').read())
         Encoders.encode_base64(part)
-        part.add_header('Content-Disposition', 'attachment; filename="reports-%s.zip"'
+        part.add_header('Content-Disposition', 'attachment; filename="reports-%s-%s.zip"'
                         % (h['date_end'].replace('/', '_'),a))
         msgRoot.attach(part)
 
