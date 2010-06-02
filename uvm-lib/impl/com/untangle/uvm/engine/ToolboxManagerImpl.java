@@ -90,7 +90,7 @@ import com.untangle.uvm.vnet.NodeBase;
  */
 class ToolboxManagerImpl implements ToolboxManager
 {
-    static final int UPDATE_TIMEOUT = 40000;
+    static final int UPDATE_TIMEOUT = 120000;
 
     static final URL TOOLBOX_URL;
 
