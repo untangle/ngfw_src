@@ -92,7 +92,6 @@
     <priority value="WARN"/>
   </category>
 
-
   <category name="com.untangle.uvm.logging">
     <priority value="WARN"/>
   </category>
@@ -115,6 +114,10 @@
 
   <!-- normal level for engine and following is INFO -->
   <category name="com.untangle.uvm.engine">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.uvm.engine.LogWorker">
     <priority value="INFO"/>
   </category>
 
