@@ -543,7 +543,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         s.add(new StringRule("exe", "executable", "download" , true));
         s.add(new StringRule("com", "executable", "download", true));
         s.add(new StringRule("ocx", "executable", "ActiveX", true));
-        s.add(new StringRule("dll", "executable", "ActiveX", true));
+        s.add(new StringRule("dll", "executable", "ActiveX", false));
         s.add(new StringRule("cab", "executable", "ActiveX", true));
         s.add(new StringRule("bin", "executable", "download", true));
         s.add(new StringRule("bat", "executable", "download", true));
