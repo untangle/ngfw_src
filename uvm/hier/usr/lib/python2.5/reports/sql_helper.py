@@ -71,6 +71,7 @@ def get_connection():
         __conn = psycopg.connect("dbname=uvm user=postgres")
 
     try:
+        __conn.commit()
         curs = __conn.cursor()
         curs.execute("SELECT 1")
         __conn.commit()
@@ -118,16 +119,17 @@ def run_sql(sql, args=None, connection=get_connection(), auto_commit=True, force
         
         show_error = True
         if re.search(r'^\s*(DELETE|DROP) ', sql, re.I):
-            logger.debug("SQL exception begin: %s" % (e.message,))
-            logger.debug("SQL exception end")            
             show_error = False
         if re.search(r'^\s*(CREATE|ALTER) ', sql, re.I):
             show_error = False
             
-        if auto_commit:
-            connection.rollback()
         if show_error:
             raise e
+
+        try:
+            connection.rollback()
+        except:
+            pass
 
 def add_column(tablename, column, type):
     sql = "ALTER TABLE %s ADD COLUMN %s %s" % (tablename, column, type)
