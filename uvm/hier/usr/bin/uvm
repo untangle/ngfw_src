@@ -229,12 +229,15 @@ while true; do
     cp -fa $UVM_CONSOLE_LOG.crash.1 $UVM_CONSOLE_LOG.crash.2
     cp -fa $UVM_CONSOLE_LOG.crash $UVM_CONSOLE_LOG.crash.1
     cp -fa $UVM_CONSOLE_LOG $UVM_CONSOLE_LOG.crash
+    rm -f  $UVM_CONSOLE_LOG
     cp -fa $UVM_UVM_LOG.crash.1 $UVM_UVM_LOG.crash.2
     cp -fa $UVM_UVM_LOG.crash $UVM_UVM_LOG.crash.1
     cp -fa $UVM_UVM_LOG $UVM_UVM_LOG.crash
+    rm -f  $UVM_UVM_LOG
     cp -fa $UVM_GC_LOG.crash.1 $UVM_GC_LOG.crash.2
     cp -fa $UVM_GC_LOG.crash $UVM_GC_LOG.crash.1
     cp -fa $UVM_GC_LOG $UVM_GC_LOG.crash
+    rm -f  $UVM_GC_LOG
     cp -fa $MONIT_LOG.crash.1 $MONIT_LOG.crash.2
     cp -fa $MONIT_LOG.crash $MONIT_LOG.crash.1
     cp -fa $MONIT_LOG $MONIT_LOG.crash
