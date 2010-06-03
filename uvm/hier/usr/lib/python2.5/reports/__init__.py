@@ -98,7 +98,7 @@ class UnicodeReader:
 
     def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
         f = UTF8Recoder(f, encoding)
-        self.reader = csv.reader(f, dialect=dialect, **kwds)
+        self.reader = csv.reader(f, dialect=dialect, quoting=csv.QUOTE_ALL, **kwds)
 
     def next(self):
         row = self.reader.next()
@@ -116,12 +116,12 @@ class UnicodeWriter:
     def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
         # Redirect output to a queue
         self.queue = cStringIO.StringIO()
-        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
+        self.writer = csv.writer(self.queue, dialect=dialect, quoting=csv.QUOTE_ALL, **kwds)
         self.stream = f
         self.encoding = encoding
 
     def writerow(self, row):
-        self.writer.writerow([unicode(s).encode("utf-8") for s in row])        
+        self.writer.writerow([unicode(s).encode("utf-8").replace(",", ';') for s in row])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")
@@ -822,7 +822,9 @@ class Chart:
         rows = [[k] + v for (k, v) in data.iteritems()]
         rows.sort()
 
-        w = csv.writer(open(filename, 'w'))
+        f = codecs.open(filename, 'w', 'utf-8')
+        w = UnicodeWriter(f)
+
         w.writerow(self.__header)
         for r in rows:
             if self.__major_formatter:
@@ -840,7 +842,9 @@ class Chart:
 
         items.sort(cmp=self.__pie_sort, reverse=True)
 
-        w = csv.writer(open(filename, 'w'))
+        f = codecs.open(filename, 'w', 'utf-8')
+        w = UnicodeWriter(f)
+
         w.writerow([_('slice'), _('value')])
         for e in items:
             k = e[0]
