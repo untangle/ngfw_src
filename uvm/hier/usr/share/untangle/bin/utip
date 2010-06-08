@@ -1,0 +1,11 @@
+#! /bin/bash
+
+getIP() {
+  ifconfig $1 | perl -nle 'print $1 if (m/inet addr:(.*?)\s/)'
+}
+
+if brctl show | grep -q eth0 ; then # use br.eth0's IP
+  getIP br.eth0
+else # use eth0's IP
+  getIP eth0
+fi
