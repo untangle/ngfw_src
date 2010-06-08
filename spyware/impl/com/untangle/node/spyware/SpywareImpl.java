@@ -601,7 +601,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         domain = domain.startsWith(".") && 1 < domain.length()
             ? domain.substring(1) : domain;
 
-        if (null == cookieRules && !settings.getBaseSettings().getCookieBlockerEnabled()) {
+        if (null == cookieRules || !settings.getBaseSettings().getCookieBlockerEnabled()) {
             return false;
         }
 
