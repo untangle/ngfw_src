@@ -265,15 +265,27 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
     public NodeDesc instantiate(String nodeName, Policy p, String[] args) throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
-
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
-
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
 
         if (MackageDesc.Type.SERVICE == mackageDesc.getType()) {
             p = null;
         }
 
+        /**
+         * Check if this type of node already exists in this rack
+         * If so, throw an exception (more info in Bug #7801)
+         */
+        for (Tid tid : getNodesForPolicy(p,false)) {
+            NodeContext nc = nodeContext(tid);
+            MackageDesc md = nc.getMackageDesc();
+
+            if (md.getName().equals(mackageDesc.getName())) {
+                throw new DeployException("Node " + mackageDesc.getName() + " already exists in Policy " + p + ".");
+            }
+        }
+
+        
         NodeContextImpl tc;
         NodeDesc tDesc;
         synchronized (this) {
