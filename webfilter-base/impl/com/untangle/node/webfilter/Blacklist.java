@@ -609,14 +609,16 @@ public abstract class Blacklist
 
     private int findMatch(CharSequence[] strs, String val)
     {
-	logger.debug("findMatch: strs = '" + Arrays.asList(strs) +
-		     "', val = '" + val  + "'");
-
         if (null == val || null == strs) {
             return -1;
         }
 
+        String oldVal = val;
         val = normalizeDomain(val);
+
+	logger.debug("findMatch: strs = '" + Arrays.asList(strs) +
+		     "', val = '" + val + "' (normalized from '" + 
+                     oldVal + ";");
 
 	// we should probably do the "transform globbing into regex"
 	// once and for all, at the time they are entered by the
@@ -627,8 +629,10 @@ public abstract class Blacklist
 	CharSequence str;
 	for (int i = 0; i < strs.length; i++) {
 	    str = strs[i];
-	    // transform globbing operators into regex ones
 	    re = str.toString();
+	    // remove potential '\*\.?' at the beginning
+	    re = re.replaceAll("^"+Pattern.quote("*."), "");
+	    // next 3: transform globbing operators into regex ones
 	    re = re.replaceAll(Pattern.quote("."), "\\.");
 	    re = re.replaceAll(Pattern.quote("*"), ".*");
 	    re = re.replaceAll(Pattern.quote("?"), ".");
