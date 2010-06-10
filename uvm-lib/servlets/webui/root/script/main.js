@@ -645,6 +645,7 @@ Ung.Main=Ext.extend(Object, {
                 }
         }.createDelegate(mackageDesc), mackageDesc.name);
     },
+
     // open context sensitive help
     openHelp: function(source) {
         var url = "../library/launcher?";
@@ -654,7 +655,7 @@ Ung.Main=Ext.extend(Object, {
         }
         window.open(url);
     },
-
+    
     // load policies list
     loadPolicies: function() {
         Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));

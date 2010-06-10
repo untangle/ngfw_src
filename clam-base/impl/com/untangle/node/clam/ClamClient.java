@@ -199,8 +199,9 @@ public class ClamClient extends VirusClient {
             //clogger.debug(dbgName + ", finish");
             cleanExit(clamcSocket, cContext.getHost(), cContext.getPort());
             clamcSocket = null;
-            return;
         }
+        
+        return;
     }
 
     private void cleanup(VirusClientSocket cSocket, String host, int port) {

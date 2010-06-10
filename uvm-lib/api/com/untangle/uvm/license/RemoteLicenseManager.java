@@ -55,13 +55,4 @@ public interface RemoteLicenseManager
      */
     public boolean hasPremiumLicense();
 
-    /**
-     * Return the content of the license agreement.
-     */
-    public String getLicenseAgreement();
-    
-    /**
-     * Return true if this is Untangle Plus
-     */
-    public boolean getUntanglePlus();
 }

@@ -30,6 +30,7 @@ import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.ParseException;
 
+@SuppressWarnings("serial")
 public class Downloader extends HttpServlet
 {
     private static final String CONFIG_PAGE        = "/config.zip";

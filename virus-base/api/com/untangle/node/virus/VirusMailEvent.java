@@ -56,146 +56,146 @@ import com.untangle.uvm.node.PipelineEndpoints;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="n_virus_evt_mail", schema="events")
-    public class VirusMailEvent extends VirusEvent
+@Table(name="n_virus_evt_mail", schema="events")
+@SuppressWarnings("serial")
+public class VirusMailEvent extends VirusEvent
+{
+    private MessageInfo messageInfo;
+    private VirusScannerResult result;
+    private VirusMessageAction action;
+    private String vendorName;
+
+    // constructors -----------------------------------------------------------
+
+    public VirusMailEvent() { }
+
+    public VirusMailEvent(MessageInfo messageInfo, VirusScannerResult result,
+                          VirusMessageAction action, String vendorName)
     {
-        private MessageInfo messageInfo;
-        private VirusScannerResult result;
-        private VirusMessageAction action;
-        private String vendorName;
+        this.messageInfo = messageInfo;
+        this.result = result;
+        this.action = action;
+        this.vendorName = vendorName;
+    }
 
-        // constructors -----------------------------------------------------------
+    // VirusEvent methods -----------------------------------------------------
 
-        public VirusMailEvent() { }
+    @Transient
+    public String getType()
+    {
+        return "POP/IMAP";
+    }
 
-        public VirusMailEvent(MessageInfo messageInfo, VirusScannerResult result,
-                              VirusMessageAction action, String vendorName)
-        {
-            this.messageInfo = messageInfo;
-            this.result = result;
-            this.action = action;
-            this.vendorName = vendorName;
-        }
+    @Transient
+    public String getLocation()
+    {
+        return null == messageInfo ? "" : messageInfo.getSubject();
+    }
 
-        // VirusEvent methods -----------------------------------------------------
+    @Transient
+    public boolean isInfected()
+    {
+        return !result.isClean();
+    }
 
-        @Transient
-        public String getType()
-        {
-            return "POP/IMAP";
-        }
-
-        @Transient
-        public String getLocation()
-        {
-            return null == messageInfo ? "" : messageInfo.getSubject();
-        }
-
-        @Transient
-        public boolean isInfected()
-        {
-            return !result.isClean();
-        }
-
-        @Transient
-        public int getActionType()
-        {
-            if (VirusMessageAction.PASS_KEY == action.getKey()) {
-                return PASSED;
-            } else { // REMOVE_KEY
-                return CLEANED;
-            }
-        }
-
-        @Transient
-        public String getActionName()
-        {
-            return action.getName();
-        }
-
-        @Transient
-        public String getVirusName()
-        {
-            String n = result.getVirusName();
-
-            return null == n ? "" : n;
-        }
-
-        @Transient
-        public PipelineEndpoints getPipelineEndpoints()
-        {
-            return null == messageInfo ? null : messageInfo.getPipelineEndpoints();
-        }
-
-        // accessors --------------------------------------------------------------
-
-        /**
-         * Associate e-mail message info with event.
-         *
-         * @return e-mail message info.
-         */
-        @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-        @JoinColumn(name="msg_id")
-        public MessageInfo getMessageInfo()
-        {
-            return messageInfo;
-        }
-
-        public void setMessageInfo(MessageInfo messageInfo)
-        {
-            this.messageInfo = messageInfo;
-        }
-
-        /**
-         * Virus scan result.
-         *
-         * @return the scan result.
-         */
-        @Columns(columns = {
-            @Column(name="clean"),
-            @Column(name="virus_name"),
-            @Column(name="virus_cleaned")
-        })
-        @Type(type="com.untangle.node.virus.VirusScannerResultUserType")
-        public VirusScannerResult getResult()
-        {
-            return result;
-        }
-
-        public void setResult(VirusScannerResult result)
-        {
-            this.result = result;
-        }
-
-        /**
-         * The action taken
-         *
-         * @return action.
-         */
-        @Type(type="com.untangle.node.virus.VirusMessageActionUserType")
-        public VirusMessageAction getAction()
-        {
-            return action;
-        }
-
-        public void setAction(VirusMessageAction action)
-        {
-            this.action = action;
-        }
-
-        /**
-         * Spam scanner vendor.
-         *
-         * @return the vendor
-         */
-        @Column(name="vendor_name")
-        public String getVendorName()
-        {
-            return vendorName;
-        }
-
-        public void setVendorName(String vendorName)
-        {
-            this.vendorName = vendorName;
+    @Transient
+    public int getActionType()
+    {
+        if (VirusMessageAction.PASS_KEY == action.getKey()) {
+            return PASSED;
+        } else { // REMOVE_KEY
+            return CLEANED;
         }
     }
+
+    @Transient
+    public String getActionName()
+    {
+        return action.getName();
+    }
+
+    @Transient
+    public String getVirusName()
+    {
+        String n = result.getVirusName();
+
+        return null == n ? "" : n;
+    }
+
+    @Transient
+    public PipelineEndpoints getPipelineEndpoints()
+    {
+        return null == messageInfo ? null : messageInfo.getPipelineEndpoints();
+    }
+
+    // accessors --------------------------------------------------------------
+
+    /**
+     * Associate e-mail message info with event.
+     *
+     * @return e-mail message info.
+     */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="msg_id")
+    public MessageInfo getMessageInfo()
+    {
+        return messageInfo;
+    }
+
+    public void setMessageInfo(MessageInfo messageInfo)
+    {
+        this.messageInfo = messageInfo;
+    }
+
+    /**
+     * Virus scan result.
+     *
+     * @return the scan result.
+     */
+    @Columns(columns = {
+    @Column(name="clean"),
+    @Column(name="virus_name"),
+    @Column(name="virus_cleaned")})
+    @Type(type="com.untangle.node.virus.VirusScannerResultUserType")
+    public VirusScannerResult getResult()
+    {
+        return result;
+    }
+
+    public void setResult(VirusScannerResult result)
+    {
+        this.result = result;
+    }
+
+    /**
+     * The action taken
+     *
+     * @return action.
+     */
+    @Type(type="com.untangle.node.virus.VirusMessageActionUserType")
+    public VirusMessageAction getAction()
+    {
+        return action;
+    }
+
+    public void setAction(VirusMessageAction action)
+    {
+        this.action = action;
+    }
+
+    /**
+     * Spam scanner vendor.
+     *
+     * @return the vendor
+     */
+    @Column(name="vendor_name")
+    public String getVendorName()
+    {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName)
+    {
+        this.vendorName = vendorName;
+    }
+}

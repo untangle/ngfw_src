@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 
 /* This is used to guarantee that the client is authenticated when
  * they retrieve the final install image. */
+@SuppressWarnings("serial")
 public class Launcher extends HttpServlet
 {
     private static final String FIELD_ACTION  = "action";
@@ -50,6 +51,7 @@ public class Launcher extends HttpServlet
     private static final String ACTION_BUY = "buy";
     private static final String ACTION_WIZARD = "wizard";
     private static final String ACTION_HELP = "help";
+    private static final String ACTION_LICENSE = "license";
     private static final String ACTION_OFFLINE = "offline";
     private static final String ACTION_UPGRADE = "upgrade";
 
@@ -61,7 +63,10 @@ public class Launcher extends HttpServlet
 
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
     private static final String DEFAULT_STORE_URL = "https://store.untangle.com";
-        
+
+    private static final String PROPERTY_LICENSE_URL = "uvm.license.url";
+    private static final String DEFAULT_LICENSE_URL = "http://www.untangle.com/license";
+    
     private final Logger logger = Logger.getLogger( this.getClass());
 
     protected void doGet( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
@@ -90,6 +95,8 @@ public class Launcher extends HttpServlet
             } else if ( ACTION_HELP.equals( action )) {
                 String source = request.getParameter( FIELD_SOURCE );
                 redirect = getHelpURL( request, source );
+            } else if ( ACTION_LICENSE.equals( action )) {
+                redirect = getLicenseURL( request );
             } else if ( ACTION_WIZARD.equals( action )) {
                 redirect = getWizardURL( request );
             } else if ( ACTION_BUY.equals( action )) {
@@ -163,27 +170,44 @@ public class Launcher extends HttpServlet
             url = DEFAULT_STORE_URL;
         
         String query = getLibraryQuery( request, action );
-        if ( mackageName != null ) query += "&name=" + URLEncoder.encode( mackageName );
+        if ( mackageName != null ) {
+            try {
+                query += "&name=" + URLEncoder.encode( mackageName, "UTF-8" );
+            }
+            catch (java.io.UnsupportedEncodingException exc) {
+                throw new RuntimeException("unsupported encoding"); //should never happen
+            }
+        }
 
         /* Open is a universal redirector which uses action to determine how it should redirect */
         return new URL( url + "/open.php?" + query );
     }
 
     private URL getHelpURL( HttpServletRequest request, String source) throws MalformedURLException
-     {
-         LocalUvmContext context = LocalUvmContextFactory.context();
-         String lang = context.languageManager().getLanguageSettings().getLanguage();
+    {
+        LocalUvmContext context = LocalUvmContextFactory.context();
+        String lang = context.languageManager().getLanguageSettings().getLanguage();
 
-         String url = System.getProperty(PROPERTY_HELP_URL);
-         if (url == null)
-             url = DEFAULT_HELP_URL;
+        String url = System.getProperty(PROPERTY_HELP_URL);
+        if (url == null)
+            url = DEFAULT_HELP_URL;
          
-         return new URL(url + "?"
-                        + "version=" + Version.getVersion()
-                        + "&source=" + source
-                        + "&lang=" + lang);
+        return new URL(url + "?"
+                       + "version=" + Version.getVersion()
+                       + "&source=" + source
+                       + "&lang=" + lang);
     }
 
+    private URL getLicenseURL( HttpServletRequest request ) throws MalformedURLException
+    {
+        String url = System.getProperty(PROPERTY_LICENSE_URL);
+        if (url == null)
+            url = DEFAULT_LICENSE_URL;
+         
+        return new URL(url);
+    }
+
+    
     private String getLibraryQuery( HttpServletRequest request, String action )
     {
         LocalUvmContext context = LocalUvmContextFactory.context();
@@ -221,16 +245,22 @@ public class Launcher extends HttpServlet
             logger.info( "Request is missing the port, using the port[ " + port + "]" );
         }
 
-        String query = "boxkey=" + URLEncoder.encode( context.getActivationKey());
-        String lang = context.languageManager().getLanguageSettings().getLanguage();        
-        query += "&untangleFullVersion=" + URLEncoder.encode( Version.getFullVersion());
-        query += "&host=" + URLEncoder.encode( host );
-        if ( port != null ) query += "&port=" + port;
-        query += "&protocol=" + URLEncoder.encode( protocol );
-        query += "&action=" + URLEncoder.encode( action );
-        query += "&webui=" + URLEncoder.encode( String.valueOf( true ));
-        query += "&arch=" + URLEncoder.encode( System.getProperty( "os.arch" ));
-        query += "&lang=" +URLEncoder.encode(lang);
+        String query = "";
+        try {
+            query = "boxkey=" + URLEncoder.encode( context.getActivationKey(), "UTF-8");
+            query += "&untangleFullVersion=" + URLEncoder.encode( Version.getFullVersion(), "UTF-8");
+            query += "&host=" + URLEncoder.encode( host, "UTF-8");
+            if ( port != null ) query += "&port=" + port;
+            query += "&protocol=" + URLEncoder.encode( protocol, "UTF-8" );
+            query += "&action=" + URLEncoder.encode( action, "UTF-8" );
+            query += "&webui=" + URLEncoder.encode( String.valueOf( true ), "UTF-8");
+            query += "&arch=" + URLEncoder.encode( System.getProperty( "os.arch" ), "UTF-8");
+            String lang = context.languageManager().getLanguageSettings().getLanguage();        
+            query += "&lang=" +URLEncoder.encode(lang, "UTF-8");
+        }
+        catch (java.io.UnsupportedEncodingException exc) {
+            throw new RuntimeException("unsupported encoding"); //should never happen
+        }
         return query;
     }
 }

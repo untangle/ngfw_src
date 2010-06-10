@@ -50,6 +50,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Embeddable
+@SuppressWarnings("serial")
 public class VirusBaseSettings implements Serializable {
     private boolean ftpDisableResume = true;
     private boolean httpDisableResume = true;

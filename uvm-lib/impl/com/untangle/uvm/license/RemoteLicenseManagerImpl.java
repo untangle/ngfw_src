@@ -92,35 +92,4 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
         return this.licenseManager.hasPremiumLicense();
     }
 
-    /**
-     * Return the content of the license agreement.
-     */
-    @Override
-    public String getLicenseAgreement()
-    {
-        if (this.licenseManager == null) {
-            if (this.standardLicense == null)
-                loadLicenseAgreement();
-            if (this.standardLicense == null)
-                return "";
-
-            return this.standardLicense;
-        }
-
-        return this.licenseManager.getLicenseAgreement();
-    }
-
-    @Override
-    public boolean getUntanglePlus()
-    {
-        if (this.licenseManager == null) {
-            return false;
-        }
-        return this.licenseManager.getUntanglePlus();
-    }
-
-    private void loadLicenseAgreement()
-    {
-        this.standardLicense = LicenseManagerFactory.loadLicenseText(LicenseManagerFactory.STANDARD_LICENSE_RESOURCE);
-    }
 }

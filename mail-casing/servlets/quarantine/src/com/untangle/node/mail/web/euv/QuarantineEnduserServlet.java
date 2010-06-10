@@ -39,9 +39,9 @@ import org.apache.log4j.Logger;
  *
  * This servlet serves no pages.
  */
-public class QuarantineEnduserServlet
-    extends HttpServlet {
-
+@SuppressWarnings("serial")
+public class QuarantineEnduserServlet extends HttpServlet
+{
     private final Logger m_logger = Logger.getLogger(QuarantineEnduserServlet.class);
 
     private static QuarantineEnduserServlet s_instance;
@@ -50,12 +50,14 @@ public class QuarantineEnduserServlet
     private SafelistEndUserView m_safelist;
     private Exception m_ex;
 
-    public QuarantineEnduserServlet() {
+    public QuarantineEnduserServlet()
+    {
         assignInstance(this);
     }
 
     protected void service(HttpServletRequest req, HttpServletResponse resp)
-        throws ServletException, IOException {
+        throws ServletException, IOException
+    {
 
         resp.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
@@ -63,7 +65,8 @@ public class QuarantineEnduserServlet
     /**
      * Hack, 'cause servlets suck
      */
-    public static QuarantineEnduserServlet instance() {
+    public static QuarantineEnduserServlet instance()
+    {
         return s_instance;
     }
 
@@ -77,7 +80,8 @@ public class QuarantineEnduserServlet
      *
      * @return the safelist.
      */
-    public SafelistEndUserView getSafelist() {
+    public SafelistEndUserView getSafelist()
+    {
         if(m_safelist == null) {
             initRemoteRefs();
         }
@@ -106,7 +110,6 @@ public class QuarantineEnduserServlet
         
         return m_mailNode;
     }
-    
 
     /**
      * Access the remote reference to the QuarantineUserView.  If this
@@ -118,7 +121,8 @@ public class QuarantineEnduserServlet
      *
      * @return the Quarantine.
      */
-    public QuarantineUserView getQuarantine() {
+    public QuarantineUserView getQuarantine()
+    {
         if(m_quarantine == null) {
             initRemoteRefs();
         }
@@ -134,7 +138,8 @@ public class QuarantineEnduserServlet
         return m_quarantine;
     }
 
-    public String getMaxDaysToIntern() {
+    public String getMaxDaysToIntern()
+    {
         if (null == m_mailNode) {
             initRemoteRefs();
         }
@@ -144,7 +149,8 @@ public class QuarantineEnduserServlet
         return maxDaysToIntern;
     }
 
-    public String getMaxDaysIdleInbox() {
+    public String getMaxDaysIdleInbox()
+    {
         if (null == m_mailNode) {
             initRemoteRefs();
         }
@@ -157,7 +163,8 @@ public class QuarantineEnduserServlet
     /**
      * Attempts to create a remote references
      */
-    private void initRemoteRefs() {
+    private void initRemoteRefs()
+    {
         try {
             RemoteUvmContext ctx = RemoteUvmContextFactory.context();
             Tid tid = ctx.nodeManager().nodeInstances("untangle-casing-mail").get(0);
@@ -174,7 +181,8 @@ public class QuarantineEnduserServlet
         }
     }
 
-    private static synchronized void assignInstance(QuarantineEnduserServlet servlet) {
+    private static synchronized void assignInstance(QuarantineEnduserServlet servlet)
+    {
         if(s_instance == null) {
             s_instance = servlet;
         }

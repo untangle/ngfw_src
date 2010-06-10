@@ -54,10 +54,12 @@ import com.untangle.node.util.Pair;
 /**
  * Controler used for inbox maintenence (purge/rescue/refresh/view).
  */
+@SuppressWarnings("serial")
 public class InboxMaintenenceControler extends HttpServlet
 {
     protected void service(HttpServletRequest req, HttpServletResponse resp)
-        throws ServletException, IOException {
+        throws ServletException, IOException
+    {
 
         String authTkn = req.getParameter(Constants.AUTH_TOKEN_RP);
         if(authTkn == null) {
@@ -175,12 +177,9 @@ public class InboxMaintenenceControler extends HttpServlet
         serviceImpl(req, resp, account, quarantine, safelist);
     }
 
-    protected void serviceImpl(HttpServletRequest req,
-                               HttpServletResponse resp,
-                               String account,
-                               QuarantineUserView quarantine,
-                               SafelistEndUserView safelist)
-        throws ServletException, IOException {
+    protected void serviceImpl(HttpServletRequest req, HttpServletResponse resp, String account, QuarantineUserView quarantine, SafelistEndUserView safelist)
+        throws ServletException, IOException
+    {
 
         try {
             //Now, figure out what they wanted to do.  Either

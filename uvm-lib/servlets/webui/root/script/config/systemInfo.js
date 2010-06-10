@@ -47,28 +47,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }
             return this.rpc.registrationInfo;
         },
-        hasPremiumLicense : function(forceReload) {
-            if (forceReload || this.rpc.hasPremiumLicense === undefined) {
-                try {
-                    this.rpc.hasPremiumLicense = main.getLicenseManager().hasPremiumLicense();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-                    
-            }
-            return this.rpc.hasPremiumLicense;
-        },
-        getLicenseAgreement : function(forceReload) {
-            if (forceReload || this.rpc.getLicenseAgreement === undefined) {
-                try {
-                    this.rpc.getLicenseAgreement = main.getLicenseManager().getLicenseAgreement();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-                    
-            }
-            return this.rpc.getLicenseAgreement;
-        },
         buildVersion : function() {
             this.panelVersion = new Ext.Panel({
                 name : 'Version',
@@ -266,14 +244,14 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 parentId : this.getId(),
                 title : this.i18n._('License Agreement'),
                 cls: 'ung-panel',
-                items: [ new Ext.form.TextArea({
-                    name : 'License Agreement',
-                    hideLabel : true,
-                    readOnly : true,
-                    width : 600,
-                    height : 400,
-                    value : this.getLicenseAgreement()
-                })]
+                items: [{
+                    xtype : "button",
+                    text : this.i18n._("View License"),
+                    name : "View License",
+                    iconCls : "reboot-icon",
+                    handler : function() {window.open("../library/launcher?action=license");}
+                }]
+                
            });
         },
         onFieldChange : function() {

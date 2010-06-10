@@ -33,6 +33,7 @@ import org.jabsorb.JSONRPCServlet;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class UtJsonRpcServlet extends JSONRPCServlet
 {
     private static final String BRIDGE_ATTRIBUTE = "JSONRPCBridge";

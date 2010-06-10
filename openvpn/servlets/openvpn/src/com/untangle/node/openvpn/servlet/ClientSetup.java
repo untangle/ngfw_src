@@ -54,6 +54,8 @@ import com.untangle.node.openvpn.VpnNode;
 /**
  * Servlet used to upload a client configuration file.
  */
+//http://mail-archives.apache.org/mod_mbox/commons-user/200604.mbox/%3C16d6c6200604042045k3293e258n8545268fd8b98827@mail.gmail.com%3E
+@SuppressWarnings({"deprecation","serial"}) 
 public class ClientSetup extends HttpServlet
 {
     private static ServletFileUpload SERVLET_FILE_UPLOAD;
@@ -65,6 +67,7 @@ public class ClientSetup extends HttpServlet
         logger.warn( "Retrieve a GET request for client setup." );
     }
 
+    @SuppressWarnings("unchecked") // uplead.parseRequest
     protected void doPost( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException
     {
@@ -103,7 +106,7 @@ public class ClientSetup extends HttpServlet
         
         List<FileItem> items = null;
         try {
-            items = upload.parseRequest( request );
+            items = (List<FileItem>)upload.parseRequest( request );
         } catch ( FileUploadException e ) {
             logger.warn( "Unable to parse the request", e );
             writer.write( "{ \"success\" : false, \"code\" : \"client error\", \"type\" : 2 }" );
