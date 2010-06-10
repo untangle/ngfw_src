@@ -43,6 +43,7 @@ import java.util.Date;
  * @version 1.0
  * @see MessageQueue
  */
+@SuppressWarnings("serial")
 public class Message implements Serializable
 {
     private final Date time = new Date();

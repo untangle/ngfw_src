@@ -38,19 +38,27 @@ package com.untangle.node.mime;
  * characters cannot be converted into a
  * valid email address.
  */
-public class BadEmailAddressFormatException
-    extends Exception {
+@SuppressWarnings("serial")
+public class BadEmailAddressFormatException extends Exception
+{
 
-    public BadEmailAddressFormatException() {
+    public BadEmailAddressFormatException()
+    {
         super();
     }
-    public BadEmailAddressFormatException(Exception ex) {
+    
+    public BadEmailAddressFormatException(Exception ex)
+    {
         super(ex);
     }
-    public BadEmailAddressFormatException(String msg) {
+    
+    public BadEmailAddressFormatException(String msg)
+    {
         super(msg);
     }
-    public BadEmailAddressFormatException(String msg, Exception ex) {
+    
+    public BadEmailAddressFormatException(String msg, Exception ex)
+    {
         super(msg, ex);
     }
 

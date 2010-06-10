@@ -37,6 +37,7 @@ import org.apache.log4j.spi.LoggingEvent;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 class UtPatternParser extends PatternParser
 {
     // constructors -----------------------------------------------------------
@@ -107,8 +108,7 @@ class UtPatternParser extends PatternParser
         // DateFormat methods -------------------------------------------------
 
         @Override
-        public StringBuffer format(Date date, StringBuffer sbuf,
-                                   FieldPosition fieldPosition)
+        public StringBuffer format(Date date, StringBuffer sbuf, FieldPosition fieldPosition)
         {
             long now = date.getTime();
             int millis = (int)(now % 1000);

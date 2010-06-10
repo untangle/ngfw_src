@@ -247,7 +247,7 @@ public class Main
 
     private void startUvm() throws Exception
     {
-        List<URL> urls = new ArrayList();
+        List<URL> urls = new ArrayList<URL>();
         String uvmLib = System.getProperty("uvm.lib.dir");
         urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-impl/"));
         urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-api/"));
@@ -259,18 +259,14 @@ public class Main
         urls.add(new URL("file://" + uvmLang + "/"));
 
         String uvmToolbox = System.getProperty("uvm.toolbox.dir");
-        mcl = new UvmClassLoader(urls.toArray(new URL[urls.size()]),
-                                  getClass().getClassLoader(),
-                                  new File(uvmToolbox));
+        mcl = new UvmClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader(), new File(uvmToolbox));
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             // Entering UVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(mcl);
 
-            uvmContext = (UvmContextBase)mcl
-                .loadClass(UVM_LOCAL_CONTEXT_CLASSNAME)
-                .getMethod("context").invoke(null);
+            uvmContext = (UvmContextBase)mcl.loadClass(UVM_LOCAL_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
 
             uvmContext.doInit(this);
         } finally {

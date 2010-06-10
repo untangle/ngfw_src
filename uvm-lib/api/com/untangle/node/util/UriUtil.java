@@ -52,7 +52,7 @@ public class UriUtil
         StringBuilder sb = new StringBuilder(uri.length() + 32);
 
         for (int i = 0; i < uri.length(); i++) {
-            char c = (char)uri.charAt(i);
+            char c = uri.charAt(i);
 
             switch (c) {
                 // unwise

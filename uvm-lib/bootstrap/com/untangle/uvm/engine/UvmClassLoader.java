@@ -20,6 +20,7 @@ package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashSet;
@@ -104,7 +105,7 @@ class UvmClassLoader extends URLClassLoader
     private boolean addFile(File f)
     {
         try {
-            URL url = f.toURL();
+            URL url = f.toURI().toURL();
             if (!resources.contains(url)) {
                 addURL(url);
                 resources.add(url);

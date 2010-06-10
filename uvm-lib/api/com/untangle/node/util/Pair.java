@@ -44,17 +44,21 @@ package com.untangle.node.util;
  * myList.put(new Pair&lt;String, InetAddress>("localhost", InetAddress.getByName("localhost"));
  * </code>
  */
-public class Pair<A,B> implements java.io.Serializable {
+@SuppressWarnings("serial")
+public class Pair<A,B> implements java.io.Serializable
+{
 
     public final A a;
     public final B b;
 
-    public Pair(A a) {
+    public Pair(A a)
+    {
         this.a = a;
         this.b = null;
     }
 
-    public Pair(A a, B b) {
+    public Pair(A a, B b)
+    {
         this.a = a;
         this.b = b;
     }
