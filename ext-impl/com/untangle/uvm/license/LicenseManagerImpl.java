@@ -215,25 +215,6 @@ public class LicenseManagerImpl implements LicenseManager
         return this.licenseSettings.getLicenses().size() > 0;
     }
 
-    @Override
-    public final synchronized String getLicenseAgreement()
-    {
-        loadLicenseAgreement();
-
-        String licenseText = this.standardLicense;
-        if (hasPremiumLicense())
-            licenseText = this.professionalLicense;
-
-        return licenseText;
-    }
-
-    @Override
-    public final boolean getUntanglePlus()
-    {
-        return !this.getLicenseStatus(ProductIdentifier.BRANDING_MANAGER)
-                .isExpired();
-    }
-
     /* --------------------- PACKAGE --------------------- */
 
     /* --------------------- PRIVATE --------------------- */
@@ -641,19 +622,6 @@ public class LicenseManagerImpl implements LicenseManager
     private void scheduleFixedTask()
     {
         this.pulse.start(this.timerDelay);
-    }
-
-    private synchronized void loadLicenseAgreement()
-    {
-        if (this.professionalLicense == null) {
-            this.professionalLicense = LicenseManagerFactory
-                    .loadLicenseText(LicenseManagerFactory.PROFESSIONAL_LICENSE_RESOURCE);
-        }
-
-        if (this.standardLicense == null) {
-            this.standardLicense = LicenseManagerFactory
-                    .loadLicenseText(LicenseManagerFactory.STANDARD_LICENSE_RESOURCE);
-        }
     }
 
     /* statics */
