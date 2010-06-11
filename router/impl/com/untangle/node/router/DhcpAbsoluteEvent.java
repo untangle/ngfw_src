@@ -31,7 +31,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
@@ -46,7 +45,7 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="n_router_evt_dhcp_abs", schema="events")
+@Table(name="n_router_evt_dhcp_abs", schema="events")
 @SuppressWarnings("serial")
     public class DhcpAbsoluteEvent extends LogEvent implements Serializable
     {
@@ -73,7 +72,8 @@ import org.hibernate.annotations.IndexColumn;
         @IndexColumn(name="position")
         public List<DhcpAbsoluteLease> getAbsoluteLeaseList()
         {
-            return UvmUtil.eliminateNulls(absoluteLeaseList);
+            absoluteLeaseList.removeAll(java.util.Collections.singleton(null));
+            return absoluteLeaseList;
         }
 
         public void setAbsoluteLeaseList( List<DhcpAbsoluteLease> s )

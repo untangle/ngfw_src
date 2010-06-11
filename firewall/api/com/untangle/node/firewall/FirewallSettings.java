@@ -36,7 +36,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.security.Tid;
 
 /**
@@ -50,8 +49,6 @@ import com.untangle.uvm.security.Tid;
 @SuppressWarnings("serial")
 public class FirewallSettings implements Serializable
 {
-    /* XXX Must be updated */
-
     private Long id;
     private Tid tid;
 
@@ -125,12 +122,13 @@ public class FirewallSettings implements Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<FirewallRule> getFirewallRuleList()
     {
-        return UvmUtil.eliminateNulls(firewallRuleList);
+        firewallRuleList.removeAll(java.util.Collections.singleton(null));
+        return firewallRuleList;
     }
 
     public void setFirewallRuleList(List<FirewallRule> s)

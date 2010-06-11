@@ -61,7 +61,7 @@ public class IPaddr implements Comparable, Serializable
     /* Should be an unmodifiable list or vector */
     static final IPaddr CIDR_CONVERTER[] = new IPaddr[CIDR_STRINGS.length];
     
-    static final Map NET_TO_CIDR = new HashMap();
+    static final Map<IPaddr,Integer> NET_TO_CIDR = new HashMap<IPaddr,Integer>();
 
     static final int INADDRSZ = 4;
 
@@ -158,7 +158,7 @@ public class IPaddr implements Comparable, Serializable
 
     public int toCidr() throws ParseException
     {
-        Integer cidr = (Integer)NET_TO_CIDR.get( this );
+        Integer cidr = NET_TO_CIDR.get( this );
 
         if ( cidr == null ) throw new ParseException( "The ipaddr " + this + " is not a valid netmask" );
         return cidr;

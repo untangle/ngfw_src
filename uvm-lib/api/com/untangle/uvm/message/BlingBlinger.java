@@ -35,6 +35,7 @@ package com.untangle.uvm.message;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Calendar;
 
 @SuppressWarnings("serial")
 public class BlingBlinger implements CounterStats, Serializable
@@ -70,11 +71,15 @@ public class BlingBlinger implements CounterStats, Serializable
     {
         synchronized (this) {
             now.setTime(System.currentTimeMillis());
-
+            Calendar lastUpdateCal = Calendar.getInstance();
+            Calendar nowCal = Calendar.getInstance();
+            lastUpdateCal.setTime(lastUpdate);
+            nowCal.setTime(now);
+            
             count += delta;
-            if (lastUpdate.getDay() == now.getDay()
-                && lastUpdate.getMonth() == now.getMonth()
-                && lastUpdate.getYear() == now.getYear()) {
+            if (lastUpdateCal.get(Calendar.DAY_OF_WEEK) == nowCal.get(Calendar.DAY_OF_WEEK) &&
+                lastUpdateCal.get(Calendar.MONTH) == nowCal.get(Calendar.MONTH) &&
+                lastUpdateCal.get(Calendar.YEAR) == nowCal.get(Calendar.YEAR)) {
                 countSinceMidnight += delta;
             } else {
                 countSinceMidnight = 0;

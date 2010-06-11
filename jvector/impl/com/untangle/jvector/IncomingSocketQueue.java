@@ -87,7 +87,7 @@ public class IncomingSocketQueue extends Sink
         }
 
         /* XXX This should throw an exception if there isn't anything in there */
-        Crumb crumb = (Crumb)currentCrumb;
+        Crumb crumb = currentCrumb;
 
         /* Null out the current crumb to indicate that the data has been read */
         currentCrumb = null;
@@ -107,6 +107,7 @@ public class IncomingSocketQueue extends Sink
         return crumb;
     }
 
+    @SuppressWarnings("fallthrough")
     public int send_event( Crumb crumb )
     {
         boolean wasShutdown = isShutdown;

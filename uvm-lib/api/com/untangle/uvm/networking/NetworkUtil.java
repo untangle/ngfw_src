@@ -258,7 +258,7 @@ public class NetworkUtil
         }
 
         /* Have to validate that all of the next hops are reachable */
-        for ( Route route : (List<Route>)settings.getRoutingTable()) validate( route );
+        for ( Route route : settings.getRoutingTable()) validate( route );
 
         for ( Interface intf : settings.getInterfaceList()) {
             NetworkSpace space = intf.getNetworkSpace();
@@ -284,7 +284,7 @@ public class NetworkUtil
     public void validate( NetworkSpace space ) throws ValidateException
     {
         boolean isDhcpEnabled = space.getIsDhcpEnabled();
-        List<IPNetworkRule> networkList = (List<IPNetworkRule>)space.getNetworkList();
+        List<IPNetworkRule> networkList = space.getNetworkList();
 
         if (( space.getName() == null ) || ( space.getName().trim().length() == 0 )) {
             throw new ValidateException( "A network space should have a non-empty an empty name" );

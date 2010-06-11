@@ -40,6 +40,7 @@ public class TCPSink extends Sink
         this.listener = listener;
     }
     
+    @SuppressWarnings("fallthrough")
     protected int send_event( Crumb crumb )
     {
         if ( Vector.isDebugEnabled())

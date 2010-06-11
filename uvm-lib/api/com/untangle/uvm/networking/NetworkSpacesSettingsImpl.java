@@ -52,7 +52,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
@@ -83,7 +82,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     private List<Interface> interfaceList = new LinkedList<Interface>();
 
     /* The current list of network spaces. */
-    private List<NetworkSpace> networkSpaceList = new LinkedList();
+    private List<NetworkSpace> networkSpaceList = new LinkedList<NetworkSpace>();
 
     /* The routing table */
     private List<Route> routingTable = new LinkedList<Route>();
@@ -178,7 +177,8 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         if ( this.interfaceList == null ) {
             this.interfaceList = new LinkedList<Interface>();
         }
-        return UvmUtil.eliminateNulls(this.interfaceList);
+        this.interfaceList.removeAll(java.util.Collections.singleton(null));;
+        return this.interfaceList;
     }
 
     /**
@@ -188,7 +188,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      */
     public void setInterfaceList( List<Interface> newValue )
     {
-        if ( newValue == null ) newValue = new LinkedList();
+        if ( newValue == null ) newValue = new LinkedList<Interface>();
         this.interfaceList = newValue;
     }
 
@@ -208,7 +208,8 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         if ( this.networkSpaceList == null ) {
             this.networkSpaceList = new LinkedList<NetworkSpace>();
         }
-        return UvmUtil.eliminateNulls(this.networkSpaceList);
+        this.networkSpaceList.removeAll(java.util.Collections.singleton(null));
+        return this.networkSpaceList;
     }
 
 
@@ -236,7 +237,8 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     public List<Route> getRoutingTable()
     {
         if ( this.routingTable == null ) this.routingTable = new LinkedList<Route>();
-        return UvmUtil.eliminateNulls(this.routingTable);
+        this.routingTable.removeAll(java.util.Collections.singleton(null));
+        return this.routingTable;
     }
 
     /**
@@ -267,8 +269,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * Set the IP address of the default route.
      *
      * @param newValue The new default route for the untangle.
-     */
-    public void setDefaultRoute( IPaddr newValue )
+     */    public void setDefaultRoute( IPaddr newValue )
     {
         if ( newValue == null || newValue.isEmpty()) newValue = NetworkUtil.EMPTY_IPADDR;
         this.defaultRoute = newValue;
@@ -292,7 +293,8 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     public List<RedirectRule> getRedirectList()
     {
         if ( this.redirectList == null ) this.redirectList = new LinkedList<RedirectRule>();
-        return UvmUtil.eliminateNulls(this.redirectList);
+        this.redirectList.removeAll(java.util.Collections.singleton(null));
+        return this.redirectList;
     }
 
     /**

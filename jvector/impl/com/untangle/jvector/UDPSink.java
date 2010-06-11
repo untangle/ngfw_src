@@ -68,6 +68,7 @@ public class UDPSink extends Sink
         this.listener = listener;
     }
     
+    @SuppressWarnings("fallthrough")
     protected int send_event( Crumb o )
     {
         switch ( o.type() ) {
@@ -91,6 +92,7 @@ public class UDPSink extends Sink
         }
     }
 
+    @SuppressWarnings("fallthrough")
     protected int write( DataCrumb crumb )
     {
         int numWritten;

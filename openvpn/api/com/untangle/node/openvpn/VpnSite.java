@@ -31,7 +31,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ValidateException;
 
@@ -79,7 +78,8 @@ public class VpnSite extends VpnClientBase
     {
         if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ClientSiteNetwork>();
 
-        return UvmUtil.eliminateNulls(this.exportedAddressList);
+        this.exportedAddressList.removeAll(java.util.Collections.singleton(null));
+        return this.exportedAddressList;
     }
 
     public void setExportedAddressList( List<ClientSiteNetwork> exportedAddressList )

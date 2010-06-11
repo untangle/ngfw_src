@@ -52,7 +52,6 @@ import javax.xml.bind.ValidationException;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 
@@ -122,13 +121,16 @@ public class PPPoESettings implements Serializable, Validatable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<PPPoEConnectionRule> getConnectionList()
     {
-        if ( this.connectionList == null ) this.connectionList = new LinkedList<PPPoEConnectionRule>();
-        return UvmUtil.eliminateNulls(this.connectionList);
+        if ( this.connectionList == null )
+            this.connectionList = new LinkedList<PPPoEConnectionRule>();
+        
+        this.connectionList.removeAll(java.util.Collections.singleton(null));
+        return this.connectionList;
     }
 
     /**

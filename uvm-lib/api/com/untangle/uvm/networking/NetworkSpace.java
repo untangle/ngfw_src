@@ -51,7 +51,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Rule;
 
@@ -67,7 +66,7 @@ import com.untangle.uvm.node.Rule;
 public class NetworkSpace extends Rule
 {
     /* There should be at least one */
-    private List<IPNetworkRule> networkList = new LinkedList();
+    private List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
 
     /* The default MTU for a network space */
     public static final int DEFAULT_MTU = 1500;
@@ -123,8 +122,8 @@ public class NetworkSpace extends Rule
     private DhcpStatus dhcpStatus = DhcpStatus.EMPTY_STATUS;
 
     /** Helper constructor */
-    public NetworkSpace( boolean isEnabled,
-                         List networkList, boolean isDhcpEnabled, boolean isTrafficForwarded, int mtu,
+    public NetworkSpace( boolean isEnabled, List<IPNetworkRule> networkList,
+                         boolean isDhcpEnabled, boolean isTrafficForwarded, int mtu,
                          boolean isNatEnabled, IPaddr natAddress,
                          boolean isDmzHostEnabled, boolean isDmzHostLoggingEnabled, IPaddr dmzHost )
     {
@@ -192,7 +191,8 @@ public class NetworkSpace extends Rule
     {
         if ( this.networkList == null ) this.networkList = new LinkedList<IPNetworkRule>();
 
-        return UvmUtil.eliminateNulls(this.networkList);
+        this.networkList.removeAll(java.util.Collections.singleton(null));
+        return this.networkList;
     }
 
     /**

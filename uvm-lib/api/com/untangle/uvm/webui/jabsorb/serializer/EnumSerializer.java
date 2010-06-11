@@ -6,7 +6,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial","unchecked"})
 public class EnumSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise to.
@@ -48,7 +48,7 @@ public class EnumSerializer extends AbstractSerializer {
 	 *      java.lang.Object, java.lang.Object)
 	 */
 	public Object marshall(SerializerState state, Object p, Object o)
-			throws MarshallException {
+        throws MarshallException {
 		if (o instanceof Enum) {
 			return o.toString();
 		}
@@ -62,15 +62,15 @@ public class EnumSerializer extends AbstractSerializer {
 	 *      java.lang.Class, java.lang.Object)
 	 */
 	public ObjectMatch tryUnmarshall(SerializerState state, Class clazz,
-			Object json) throws UnmarshallException {
+                                     Object json) throws UnmarshallException {
 
-//		Class classes[] = json.getClass().getClasses();
-//		for (int i = 0; i < classes.length; i++) {
-//			if (classes[i].isEnum()) {
-//				state.setSerialized(json, ObjectMatch.OKAY);
-//				return ObjectMatch.OKAY;
-//			}
-//		}
+        //		Class classes[] = json.getClass().getClasses();
+        //		for (int i = 0; i < classes.length; i++) {
+        //			if (classes[i].isEnum()) {
+        //				state.setSerialized(json, ObjectMatch.OKAY);
+        //				return ObjectMatch.OKAY;
+        //			}
+        //		}
 
 		state.setSerialized(json, ObjectMatch.OKAY);
 		return ObjectMatch.OKAY;
@@ -83,7 +83,7 @@ public class EnumSerializer extends AbstractSerializer {
 	 *      java.lang.Class, java.lang.Object)
 	 */
 	public Object unmarshall(SerializerState state, Class clazz, Object json)
-			throws UnmarshallException {
+        throws UnmarshallException {
 		String val = json instanceof String ? (String) json : json.toString();
 		if (clazz.isEnum()) {
 			return Enum.valueOf(clazz, val);

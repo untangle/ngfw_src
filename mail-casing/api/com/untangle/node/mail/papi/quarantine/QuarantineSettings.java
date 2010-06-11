@@ -55,7 +55,6 @@ import org.hibernate.annotations.IndexColumn;
 
 import com.untangle.node.mail.papi.EmailAddressPairRule;
 import com.untangle.node.mail.papi.EmailAddressRule;
-import com.untangle.node.util.UvmUtil;
 
 /**
  * Settings for the quarantine stuff
@@ -69,15 +68,15 @@ public class QuarantineSettings implements Serializable {
     public static final long DAY = HOUR*24L; // millisecs per day
     public static final long WEEK = DAY*7L; // millisecs per week
 
-    private Long m_id;
-    private long m_maxMailIntern = 2L*WEEK;
-    private long m_maxIdleInbox = 4L*WEEK;
-    private byte[] m_secretKey;
-    private int m_digestHOD;//Hour Of Day
-    private int m_digestMOD;//Minute Of Day
-    private long m_maxQuarantineSz;
-    private List<EmailAddressPairRule> m_addressRemaps;
-    private List<EmailAddressRule> m_allowedAddressPatterns;
+    private Long id;
+    private long maxMailIntern = 2L*WEEK;
+    private long maxIdleInbox = 4L*WEEK;
+    private byte[] secretKey;
+    private int digestHOD;//Hour Of Day
+    private int digestMOD;//Minute Of Day
+    private long maxQuarantineSz;
+    private List<EmailAddressPairRule> addressRemaps;
+    private List<EmailAddressRule> allowedAddressPatterns;
     private boolean sendDailyDigests = true;
     
     private boolean quarantineExternalMail = false;
@@ -86,11 +85,11 @@ public class QuarantineSettings implements Serializable {
     @Column(name="settings_id")
     @GeneratedValue
     public Long getId() {
-        return m_id;
+        return id;
     }
 
     public void setId(Long id) {
-        m_id = id;
+        id = id;
     }
 
     /**
@@ -109,17 +108,18 @@ public class QuarantineSettings implements Serializable {
     @JoinColumn(name="settings_id", nullable=false)
     @IndexColumn(name="position")
     public List<EmailAddressRule> getAllowedAddressPatterns() {
-        if (m_allowedAddressPatterns == null) {
+        if (allowedAddressPatterns == null) {
             setAllowedAddressPatterns(null);
         }
-        return UvmUtil.eliminateNulls(m_allowedAddressPatterns);
+        allowedAddressPatterns.removeAll(java.util.Collections.singleton(null));
+        return allowedAddressPatterns;
     }
 
     public void setAllowedAddressPatterns(List<EmailAddressRule> patterns) {
         if (patterns == null) {
             patterns = new ArrayList<EmailAddressRule>();
         }
-        m_allowedAddressPatterns = patterns;
+        allowedAddressPatterns = patterns;
     }
 
     /**
@@ -147,10 +147,11 @@ public class QuarantineSettings implements Serializable {
     @JoinColumn(name="settings_id", nullable=false)
     @IndexColumn(name="position")
     public List<EmailAddressPairRule> getAddressRemaps() {
-        if(m_addressRemaps == null) {
+        if(addressRemaps == null) {
             setAddressRemaps(null);
         }
-        return UvmUtil.eliminateNulls(m_addressRemaps);
+        addressRemaps.removeAll(java.util.Collections.singleton(null));
+        return addressRemaps;
     }
 
     /**
@@ -167,12 +168,12 @@ public class QuarantineSettings implements Serializable {
         if(remaps == null) {
             remaps = new ArrayList<EmailAddressPairRule>();
         }
-        m_addressRemaps = remaps;
+        addressRemaps = remaps;
     }
 
     @Column(name="max_quarantine_sz", nullable=false)
     public long getMaxQuarantineTotalSz() {
-        return m_maxQuarantineSz;
+        return maxQuarantineSz;
     }
 
     /**
@@ -182,7 +183,7 @@ public class QuarantineSettings implements Serializable {
      * @param max the max size
      */
     public void setMaxQuarantineTotalSz(long max) {
-        m_maxQuarantineSz = max;
+        maxQuarantineSz = max;
     }
 
 
@@ -191,7 +192,7 @@ public class QuarantineSettings implements Serializable {
      */
     @Column(name="hour_in_day")
     public int getDigestHourOfDay() {
-        return m_digestHOD;
+        return digestHOD;
     }
 
     /**
@@ -202,7 +203,7 @@ public class QuarantineSettings implements Serializable {
      * @param hod the hour of the day
      */
     public void setDigestHourOfDay(int hod) {
-        m_digestHOD = hod;
+        digestHOD = hod;
     }
 
     /**
@@ -211,7 +212,7 @@ public class QuarantineSettings implements Serializable {
      */
     @Column(name="minute_in_day")
     public int getDigestMinuteOfDay() {
-        return m_digestMOD;
+        return digestMOD;
     }
 
     /**
@@ -222,7 +223,7 @@ public class QuarantineSettings implements Serializable {
      * @param mod the minute of the day
      */
     public void setDigestMinuteOfDay(int mod) {
-        m_digestMOD = mod;
+        digestMOD = mod;
     }
 
     /**
@@ -232,7 +233,7 @@ public class QuarantineSettings implements Serializable {
      */
     @Column(name="secret_key", length=32, nullable=false)
     public byte[] getSecretKey() {
-        return m_secretKey;
+        return secretKey;
     }
 
     /**
@@ -241,14 +242,14 @@ public class QuarantineSettings implements Serializable {
      * folks with older emails won't be able to use the links).
      */
     public void setSecretKey(byte[] key) {
-        m_secretKey = key;
+        secretKey = key;
     }
 
     @Transient
     public String getSecretKeyString()
     {
         try {
-            return URLEncoder.encode(new String(this.m_secretKey),"UTF-8");
+            return URLEncoder.encode(new String(this.secretKey),"UTF-8");
         } catch ( UnsupportedEncodingException e ) {
             return null;
         }
@@ -261,7 +262,7 @@ public class QuarantineSettings implements Serializable {
         }
 
         try {
-            this.m_secretKey = URLDecoder.decode(new String(newValue),"UTF-8").getBytes();
+            this.secretKey = URLDecoder.decode(new String(newValue),"UTF-8").getBytes();
         } catch ( UnsupportedEncodingException e ) {
             /* nothing to do */
         }
@@ -269,7 +270,7 @@ public class QuarantineSettings implements Serializable {
 
     @Column(name="max_intern_time", nullable=false)
     public long getMaxMailIntern() {
-        return m_maxMailIntern;
+        return maxMailIntern;
     }
 
     /**
@@ -277,12 +278,12 @@ public class QuarantineSettings implements Serializable {
      * before it is automagically purged.
      */
     public void setMaxMailIntern(long max) {
-        m_maxMailIntern = max;
+        maxMailIntern = max;
     }
 
     @Column(name="max_idle_inbox_time", nullable=false)
     public long getMaxIdleInbox() {
-        return m_maxIdleInbox;
+        return maxIdleInbox;
     }
 
     /**
@@ -291,7 +292,7 @@ public class QuarantineSettings implements Serializable {
      * cleaned-up.  This is a relative unit (ie "2 weeks")
      */
     public void setMaxIdleInbox(long max) {
-        m_maxIdleInbox = max;
+        maxIdleInbox = max;
     }
     
     /**

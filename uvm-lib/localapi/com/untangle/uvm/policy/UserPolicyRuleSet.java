@@ -49,8 +49,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.node.util.UvmUtil;
-
 /**
  * A collection of UserPolicyRules (currently only one row in this
  * table).
@@ -106,7 +104,8 @@ public class UserPolicyRuleSet implements Serializable
     @IndexColumn(name="position")
     public List<UserPolicyRule> getRules()
     {
-        return UvmUtil.eliminateNulls(rules);
+        rules.removeAll(java.util.Collections.singleton(null));
+        return rules;
     }
 
     public void setRules(List<UserPolicyRule> rules)

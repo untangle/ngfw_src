@@ -40,7 +40,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Validatable;
@@ -237,7 +236,8 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.groupList == null ) this.groupList = new LinkedList<VpnGroup>();
 
-        return UvmUtil.eliminateNulls(this.groupList);
+        this.groupList.removeAll(java.util.Collections.singleton(null));
+        return this.groupList;
     }
 
     public void setGroupList( List<VpnGroup> groupList )
@@ -259,7 +259,8 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.clientList == null ) this.clientList = new LinkedList<VpnClient>();
 
-        return UvmUtil.eliminateNulls(this.clientList);
+        this.clientList.removeAll(java.util.Collections.singleton(null));
+        return this.clientList;
     }
 
     public void setClientList( List<VpnClient> clientList )
@@ -281,7 +282,8 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.siteList == null ) this.siteList = new LinkedList<VpnSite>();
 
-        return UvmUtil.eliminateNulls(this.siteList);
+        this.siteList.removeAll(java.util.Collections.singleton(null));
+        return this.siteList;
     }
 
     public void setSiteList( List<VpnSite> siteList )
@@ -388,7 +390,8 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ServerSiteNetwork>();
 
-        return UvmUtil.eliminateNulls(this.exportedAddressList);
+        this.exportedAddressList.removeAll(java.util.Collections.singleton(null));
+        return this.exportedAddressList;
     }
     public void setExportedAddressList( List<ServerSiteNetwork> exportedAddressList )
     {

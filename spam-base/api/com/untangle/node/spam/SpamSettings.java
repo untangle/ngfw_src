@@ -54,7 +54,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.security.Tid;
 
 /**
@@ -147,7 +146,8 @@ public class SpamSettings implements Serializable
     @IndexColumn(name="position")
     public List<SpamRBL> getSpamRBLList()
     {
-        return UvmUtil.eliminateNulls(spamRBLList);
+        spamRBLList.removeAll(java.util.Collections.singleton(null));
+        return spamRBLList;
     }
 
     public void setSpamRBLList(List<SpamRBL> spamRBLList)

@@ -72,7 +72,7 @@ public class Vector
 
     /* This list is always razed */
 
-    public Vector (LinkedList list)
+    public Vector (LinkedList<Relay> list)
     {
         list_ptr = list_create(0);
         

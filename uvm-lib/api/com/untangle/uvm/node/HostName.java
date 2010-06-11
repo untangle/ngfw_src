@@ -48,7 +48,7 @@ public class HostName implements Serializable {
     private static final int HOSTNAME_MAXLEN  = 255;
 
     private static final HostName EMPTY_HOSTNAME = new HostName( "" );
-    private static final List RESERVED_HOSTNAME_LIST = new LinkedList();
+    private static final List<String> RESERVED_HOSTNAME_LIST = new LinkedList<String>();
 
 
     private final String hostName;
@@ -192,8 +192,6 @@ public class HostName implements Serializable {
         HOSTLABEL_STRICT_MATCHER = q;
         
         /* Local host is a reserved hostname */
-        /* XXX */
         RESERVED_HOSTNAME_LIST.add( "localhost" );
-        RESERVED_HOSTNAME_LIST.add( "mv-edgeguard" );
     }
 }

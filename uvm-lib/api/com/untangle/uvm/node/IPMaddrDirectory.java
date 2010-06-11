@@ -50,8 +50,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.node.util.UvmUtil;
-
 /**
  * A sorted list of IPMaddrRules, used as a directory
  *
@@ -107,7 +105,8 @@ public class IPMaddrDirectory implements Serializable
     @IndexColumn(name="position")
     public List<IPMaddrRule> getEntries()
     {
-        return UvmUtil.eliminateNulls(entries);
+        entries.removeAll(java.util.Collections.singleton(null));
+        return entries;
     }
 
     public void setEntries(List<IPMaddrRule> entries)

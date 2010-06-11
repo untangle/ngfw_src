@@ -43,11 +43,11 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class HostNameList implements Serializable
 {
-    private final List hostNameList;
+    private final LinkedList<HostName> hostNameList;
 
-    private HostNameList( List hostNameList )
+    private HostNameList( List<HostName> hostNameList )
     {
-        this.hostNameList = hostNameList;
+        this.hostNameList = new LinkedList<HostName>(hostNameList);
         
         /* Remove any duplicates */
         for ( Iterator iter = this.hostNameList.iterator() ; iter.hasNext() ; ) {
@@ -60,7 +60,7 @@ public class HostNameList implements Serializable
 
     public HostNameList( HostNameList list )
     {
-        this.hostNameList = new LinkedList( list.hostNameList );
+        this.hostNameList = new LinkedList<HostName>(list.hostNameList);
     }
     
     public String toString()
@@ -114,7 +114,7 @@ public class HostNameList implements Serializable
      */
     public void qualify( HostName domain )
     {
-        List tmp = new LinkedList();
+        List<HostName> tmp = new LinkedList<HostName>();
         for ( Iterator iter = this.hostNameList.iterator() ; iter.hasNext() ; ) {
             HostName hostName = (HostName)iter.next();
             if ( !hostName.isQualified()) {
@@ -136,7 +136,7 @@ public class HostNameList implements Serializable
     public static HostNameList parse( String input ) throws ParseException
     { 
         input = input.trim();
-        List hostNameList = new LinkedList();
+        List<HostName> hostNameList = new LinkedList<HostName>();
         
         String[] tmp = input.split( " " );
         
@@ -151,6 +151,6 @@ public class HostNameList implements Serializable
     {
         /* Implemented this way so you can always add domains to the empty list without modifying 
          * the global static object */
-        return new HostNameList( new LinkedList());
+        return new HostNameList( new LinkedList<HostName>());
     }
 }

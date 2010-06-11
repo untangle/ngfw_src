@@ -51,7 +51,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
-import com.untangle.node.util.UvmUtil;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 
@@ -260,7 +259,8 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @IndexColumn(name="position")
     public List<DhcpLeaseRule> getDhcpLeaseList()
     {
-        return UvmUtil.eliminateNulls(dhcpLeaseList);
+        dhcpLeaseList.removeAll(java.util.Collections.singleton(null));
+        return dhcpLeaseList;
     }
 
 
@@ -341,7 +341,8 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @IndexColumn(name="position")
     public List<DnsStaticHostRule> getDnsStaticHostList()
     {
-        return UvmUtil.eliminateNulls(dnsStaticHostList);
+        dnsStaticHostList.removeAll(java.util.Collections.singleton(null));
+        return dnsStaticHostList;
     }
 
     /**

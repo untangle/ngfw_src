@@ -227,6 +227,7 @@ public class OutgoingSocketQueue extends Source
         return this.attachment;
     }
 
+    @SuppressWarnings("fallthrough")
     public boolean add( Crumb crumb )
     {
         switch( crumb.type()) {
